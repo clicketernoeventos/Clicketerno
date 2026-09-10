@@ -504,7 +504,7 @@ function pintarQR(nodo,texto,tam){
   if(window.QRCode){ try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){} }
   nodo.innerHTML=`<div style="width:${tam}px;height:${tam}px;display:grid;place-items:center;color:#111;font:500 10px Jost;text-align:center;padding:6px">${esc(texto.split('/').pop())}</div>`;
 }
-const enlaceDe=c=>`https://clicketerno.com.ar/app.html#subir/${c}`;
+const enlaceDe=c=>`https://clicketerno.com.ar/app#subir/${c}`;
 
 /* polvo de estrellas */
 (function(){
