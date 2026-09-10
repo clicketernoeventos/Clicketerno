@@ -363,19 +363,28 @@ const SB = {
   }
 };
 
-/* dataURL ➜ archivo real, para no guardar fotos dentro de la base */
-function aBlob(dataUrl){
-  const [cab,cuerpo]=dataUrl.split(',');
-  const tipo=(cab.match(/:(.*?);/)||[,'application/octet-stream'])[1];
-  const bin=atob(cuerpo); const n=bin.length; const u=new Uint8Array(n);
-  for(let i=0;i<n;i++) u[i]=bin.charCodeAt(i);
-  return new Blob([u],{type:tipo});
+/* dataURL ➜ archivo real. Lo convierte el propio navegador: es más
+   robusto que decodificar a mano, que fallaba en Safari. */
+async function aBlob(dataUrl){
+  try{
+    const r = await fetch(dataUrl);
+    return await r.blob();
+  }catch(e){
+    // respaldo manual, por si el navegador no acepta el dataURL en fetch
+    const coma = dataUrl.indexOf(',');
+    const cab  = dataUrl.slice(0,coma);
+    const cuerpo = dataUrl.slice(coma+1).replace(/\s/g,'');
+    const tipo = (cab.match(/:(.*?);/)||[,'application/octet-stream'])[1];
+    const bin = atob(cuerpo); const u = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+    return new Blob([u],{type:tipo});
+  }
 }
 const EXT={'image/jpeg':'jpg','image/png':'png','image/webp':'webp',
            'video/mp4':'mp4','video/quicktime':'mov','audio/webm':'webm','audio/mp4':'m4a'};
 async function subirDato(dataUrl, base){
-  const b=aBlob(dataUrl);
-  return SB.archivo(`${base}.${EXT[b.type]||'bin'}`, b);
+  const b = await aBlob(dataUrl);
+  return SB.archivo(`${base}.${EXT[b.type]||'jpg'}`, b);
 }
 
 /* ── funciones que usa toda la app (misma firma, con o sin nube) ── */
@@ -497,7 +506,8 @@ async function comprimir(file,max=1200,q=.62){
       c.getContext('2d').drawImage(im,0,0,c.width,c.height);
       res(c.toDataURL('image/jpeg',q));
     };
-    im.onerror=()=>res(url); im.src=url;
+    im.onerror=()=>{ console.warn('no pude comprimir, subo el original'); res(url); };
+    im.src=url;
   });
 }
 function fotoDemo(seed){
@@ -562,7 +572,7 @@ async function vPortada(){
       <b style="color:var(--oro);font-weight:400">Modo demostración.</b> Todavía no está conectada la base de datos,
       así que cada celular ve solo sus propias fotos. Sirve para probar, no para un evento real.</p>`}
     <p class="pie-nota sube" style="animation-delay:.5s;opacity:.5;font-size:11px;letter-spacing:.2em">
-      VERSIÓN v7 · <a href="#diagnostico" style="color:var(--oro)">Diagnóstico</a></p>
+      VERSIÓN v8 · <a href="#diagnostico" style="color:var(--oro)">Diagnóstico</a></p>
     <p class="pie-nota sube" style="animation-delay:.55s">${evs.length? evs.length+' evento'+(evs.length>1?'s':'')+' guardado'+(evs.length>1?'s':'') : 'Se guarda compartido: abrilo en otro celular y vas a ver lo mismo.'}</p>
   </div>`;
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
@@ -1141,7 +1151,7 @@ async function vCartel(codigo){
 
 async function vDiagnostico(){
   parar(); tono();
-  app.innerHTML=`${barra('Diagnóstico','Versión v7')}
+  app.innerHTML=`${barra('Diagnóstico','Versión v8')}
   <div class="wrap" style="padding-top:24px">
     <div id="res" style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.9;
       white-space:pre-wrap;word-break:break-word;color:#B5AC9E"></div>
@@ -1150,7 +1160,7 @@ async function vDiagnostico(){
   const out=app.querySelector('#res');
   const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
 
-  linea('Versión de la app: v7');
+  linea('Versión de la app: v8');
   linea('Nube configurada: '+(HAY_NUBE?'sí':'NO'), HAY_NUBE);
   linea('URL: '+NUBE.url);
   linea('Clave: '+(NUBE.clave? NUBE.clave.slice(0,18)+'…' : 'vacía'), !!NUBE.clave);
