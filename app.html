@@ -301,6 +301,51 @@ option{background:#0B0A08}
   display:grid;place-items:center;font-size:11.5px;font-weight:600;letter-spacing:0;padding:0 7px}
 .pendientes p{font-size:13.5px;color:#B5AC9E;line-height:1.6}
 
+/* ═══════════ estructura de app ═══════════
+   Cabecera fija, el pulso del evento siempre a la vista, el contenido en
+   pestañas y la navegación abajo, al alcance del pulgar. */
+.cabecera{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--gris)}
+.cabecera .cab-fila{display:flex;align-items:center;gap:14px;padding:16px 26px 14px;max-width:620px;margin:0 auto}
+.cabecera .atras{color:var(--oro);font-size:20px;line-height:1;padding:2px 8px 4px 0;flex:none}
+.cabecera .quien-ev{flex:1;min-width:0}
+.cabecera .quien-ev b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-size:21px;
+  font-weight:400;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cabecera .quien-ev span{display:block;font-size:9.5px;letter-spacing:.3em;color:var(--mute);
+  text-transform:uppercase;margin-top:5px}
+.cabecera .marca{width:62px;opacity:.45;flex:none}
+.pulso-ev{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--gris);
+  max-width:620px;margin:0 auto}
+.pulso-ev div{padding:12px 4px 13px;text-align:center;border-right:1px solid var(--gris)}
+.pulso-ev div:last-child{border-right:0}
+.pulso-ev b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;line-height:1}
+.pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
+
+.barra-abajo{position:fixed;left:0;right:0;bottom:0;z-index:45;display:grid;grid-template-columns:repeat(3,1fr);
+  background:rgba(0,0,0,.94);backdrop-filter:blur(18px);border-top:1px solid var(--gris);
+  padding-bottom:env(safe-area-inset-bottom);max-width:620px;margin:0 auto}
+.barra-abajo button{position:relative;padding:13px 6px 15px;display:flex;flex-direction:column;
+  align-items:center;gap:7px;color:var(--mute);transition:color .3s}
+.barra-abajo button:before{content:'';position:absolute;top:0;left:50%;width:34px;height:2px;
+  background:var(--oro);transform:translateX(-50%) scaleX(0);transition:transform .4s var(--e)}
+.barra-abajo button[aria-selected=true]{color:var(--oro)}
+.barra-abajo button[aria-selected=true]:before{transform:translateX(-50%) scaleX(1)}
+.barra-abajo svg{width:21px;height:21px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.barra-abajo em{font-style:normal;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
+.barra-abajo .globo-n{position:absolute;top:8px;left:calc(50% + 8px);min-width:17px;height:17px;padding:0 5px;
+  background:var(--oro);color:#0A0806;border-radius:999px;display:grid;place-items:center;
+  font-size:10px;font-weight:600;letter-spacing:0}
+.wrap-ev{max-width:620px;margin:0 auto;padding:24px 26px 124px}
+.panel-ev[hidden]{display:none}
+.panel-ev{animation:entraBloque .42s var(--e) both}
+.tarjeta{border:1px solid var(--gris);padding:26px 24px;margin-bottom:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,.022),transparent)}
+.tarjeta.principal{border-color:var(--hilo)}
+.titu-s{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-bottom:16px}
+.vacio-mod{text-align:center;padding:54px 22px;color:var(--mute);line-height:1.9;font-size:14px}
+.vacio-mod .estrella{width:22px;height:22px;color:var(--oro);opacity:.45;margin-bottom:18px}
+
 /* ═══════════ movimiento ═══════════
    Un solo sistema: cada vista entra igual, y dentro de la vista los
    bloques suben escalonados. Como cada vista se redibuja entera, las
@@ -962,58 +1007,95 @@ async function vEvento(codigo){
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
   const n=k=>apro.filter(i=>i.kind===k).length;
 
+  const ICONO={
+    compartir:`<svg viewBox="0 0 24 24"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.2"/></svg>`,
+    moderar:`<svg viewBox="0 0 24 24"><path d="M20 6.8 9.6 17.2 4 11.7"/></svg>`,
+    ajustes:`<svg viewBox="0 0 24 24"><path d="M4 8.5h8.5M17 8.5h3M4 15.5h3.5M12 15.5h8"/><circle cx="14.8" cy="8.5" r="2.3"/><circle cx="9.8" cy="15.5" r="2.3"/></svg>`
+  };
+  const cifra=(k,t)=>`<div><b data-cifra="${n(k)}" data-kind="${k}">0</b><span>${t}</span></div>`;
+
   app.innerHTML=`
-  ${barra(esc(m.nombre),esc(m.codigo))}
-  <div class="wrap">
-    <div class="ficha" style="margin-top:26px">
-      <div class="qr-caja">
-        <div class="qr" id="qr"></div>
-        <div style="flex:1;min-width:180px">
-          <p class="espaciado" style="margin-bottom:12px">Código del evento</p>
-          <p style="font-size:14.5px;line-height:1.7;color:#B5AC9E">Imprimilo en las mesas.<br>Escanean con la cámara y suben.</p>
-          <button class="hilo-btn" id="copiar" style="margin-top:16px">Copiar enlace</button>
-        </div>
-      </div>
+  <header class="cabecera">
+    <div class="cab-fila">
+      <button class="atras" aria-label="Volver">←</button>
+      <span class="quien-ev"><b>${esc(m.nombre)}</b><span>${esc(m.codigo)}</span></span>
+      <img class="marca" src="${LOGO_MARK}" alt="Click Eterno">
     </div>
+    <div class="pulso-ev">
+      ${cifra('foto','Fotos')}${cifra('video','Videos')}${cifra('mensaje','Mensajes')}${cifra('audio','Audios')}
+    </div>
+  </header>
 
-    ${pend.length?`<div class="pendientes">
-      <div class="titu"><span class="globo">${pend.length}</span> Esperando tu aprobación</div>
-      <p>Nada de esto se proyecta hasta que lo apruebes.</p>
-      <div class="cola" id="cola"></div></div>`:''}
+  <div class="wrap-ev">
+    <section class="panel-ev" id="pCompartir">
+      <div class="tarjeta principal" style="text-align:center">
+        <p class="titu-s">Código del evento</p>
+        <div class="qr" id="qr" style="display:inline-block;background:#fff;padding:13px;line-height:0"></div>
+        <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin:20px auto 0;max-width:30ch">
+          Escanean con la cámara del celular y suben. No hay que instalar nada.</p>
+        <button class="hilo-btn" id="copiar">Copiar enlace</button>
+        <button class="hilo-btn" data-ir="cartel/${codigo}">Cartel para las mesas</button>
+      </div>
+      <button class="oro-btn" data-ir="pantalla/${codigo}">Abrir pantalla del salón</button>
+      <p class="pie-nota">Dejala abierta en la notebook conectada al proyector. Se actualiza sola.</p>
+      <div class="filete">${ESTRELLA}</div>
+      <button class="hilo-btn" data-ir="subir/${codigo}" style="margin-top:0">Ver la vista del invitado</button>
+      <button class="hilo-btn" data-ir="album/${codigo}">Ver el álbum digital</button>
+    </section>
 
-    <details class="plegable">
-      <summary>Configuración del evento</summary>
-      <div class="cuerpo-p">
-        <p class="espaciado" style="margin-bottom:6px">Portada del álbum</p>
+    <section class="panel-ev" id="pModerar" hidden>
+      <div class="llave" style="border-bottom:0;padding-top:0">
+        <p>Aprobar antes de proyectar<small>Nada llega a la pantalla sin que alguien lo mire primero.</small></p>
+        <button class="palanca" id="mod" aria-pressed="${!!m.moderar}"></button></div>
+      ${pend.length
+        ? `<p class="titu-s" style="margin-top:26px">Esperando tu aprobación</p><div class="cola" id="cola"></div>`
+        : `<div class="vacio-mod">${ESTRELLA}<br>
+             ${m.moderar?'No hay nada esperando.<br>Lo que suban tus invitados aparece acá.'
+                        :'La moderación está apagada:<br>lo que suben va directo a la pantalla.'}</div>`}
+    </section>
+
+    <section class="panel-ev" id="pAjustes" hidden>
+      <div class="tarjeta">
+        <p class="titu-s">Portada del álbum</p>
         <div class="porta-fila" id="porta"></div>
-        <p class="espaciado" style="margin:26px 0 12px">Consignas de la noche</p>
+      </div>
+      <div class="tarjeta">
+        <p class="titu-s">Consignas de la noche</p>
         <textarea id="consignas" placeholder="Una por línea. Si lo dejás vacío usamos las nuestras." style="min-height:104px">${esc((m.consignas||[]).join('\n'))}</textarea>
         <button class="hilo-btn" id="guardarC">Guardar consignas</button>
-        <button class="hilo-btn" data-ir="cartel/${codigo}">Cartel de mesa para imprimir</button>
       </div>
-    </details>
+      <div class="llave" style="border-bottom:0">
+        <p>Muro cerrado<small>Corta las subidas y publica el álbum final.</small></p>
+        <button class="palanca" id="cerr" aria-pressed="${!!m.cerrado}"></button></div>
+    </section>
+  </div>
 
-    <div class="cifras4">
-      <div><b data-cifra="${n('foto')}" data-kind="foto">0</b><span>Fotos</span></div>
-      <div><b data-cifra="${n('video')}" data-kind="video">0</b><span>Videos</span></div>
-      <div><b data-cifra="${n('mensaje')}" data-kind="mensaje">0</b><span>Mensajes</span></div>
-      <div><b data-cifra="${n('audio')}" data-kind="audio">0</b><span>Audios</span></div>
-    </div>
+  <nav class="barra-abajo" role="tablist">
+    <button role="tab" data-sol="pCompartir" aria-selected="true">${ICONO.compartir}<em>Compartir</em></button>
+    <button role="tab" data-sol="pModerar" aria-selected="false">${ICONO.moderar}<em>Moderar</em>
+      ${pend.length?`<span class="globo-n" id="globoPend">${pend.length}</span>`:''}</button>
+    <button role="tab" data-sol="pAjustes" aria-selected="false">${ICONO.ajustes}<em>Ajustes</em></button>
+  </nav>`;
 
-    <div class="llave"><p>Aprobar antes de proyectar<small>Nada llega a la pantalla sin que alguien lo mire primero.</small></p>
-      <button class="palanca" id="mod" aria-pressed="${!!m.moderar}"></button></div>
-    <div class="llave" style="border-bottom:0"><p>Muro cerrado<small>Corta las subidas y publica el álbum final.</small></p>
-      <button class="palanca" id="cerr" aria-pressed="${!!m.cerrado}"></button></div>
-
-    <div class="filete">${ESTRELLA}</div>
-    <button class="oro-btn" data-ir="pantalla/${codigo}">Abrir pantalla del salón</button>
-    <button class="hilo-btn" data-ir="subir/${codigo}">Ver la vista del invitado</button>
-    <button class="hilo-btn" data-ir="album/${codigo}">Ver el álbum digital</button>
-    <p class="pie-nota">Dejá la pantalla abierta en la notebook conectada al proyector. Se actualiza sola.</p>
-  </div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('panel');
+  app.querySelector('.atras').onclick=()=>ir('panel');
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
+  app.querySelectorAll('.estrella').forEach(e=>{ if(!e.innerHTML) e.innerHTML=ESTRELLA; });
   animarCifras();
+
+  /* pestañas */
+  const solapas=[...app.querySelectorAll('[data-sol]')];
+  const mostrar=id=>{
+    solapas.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sol===id)));
+    app.querySelectorAll('.panel-ev').forEach(s=>{
+      const activo=s.id===id;
+      s.hidden=!activo;
+      if(activo){ s.style.animation='none'; void s.offsetWidth; s.style.animation=''; }
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  solapas.forEach(b=>b.onclick=()=>mostrar(b.dataset.sol));
+  /* si hay cosas esperando, abrimos ahí: es lo urgente */
+  if(pend.length) mostrar('pModerar');
   pintarQR(app.querySelector('#qr'),enlaceDe(codigo),106);
 
   const porta=app.querySelector('#porta');
@@ -1107,12 +1189,12 @@ async function vEvento(codigo){
                     cif.dataset.cifra=(Number(cif.dataset.cifra)||0)+1;
           }
           const quedan=cola.querySelectorAll('.espera').length;
-          const globo=app.querySelector('.pendientes .globo');
-          if(globo) globo.textContent=quedan;
+          const globo=app.querySelector('#globoPend');
+          if(globo){ if(quedan) globo.textContent=quedan; else globo.remove(); }
           if(!quedan){
-            const caja=app.querySelector('.pendientes');
-            if(caja){ caja.classList.add('se-va');
-              caja.addEventListener('animationend',()=>caja.remove(),{once:true}); }
+            const titulo=app.querySelector('#pModerar .titu-s');
+            if(titulo) titulo.remove();
+            cola.outerHTML=`<div class="vacio-mod">${ESTRELLA}<br>Listo, no queda nada esperando.</div>`;
           }
         },{once:true});
       }catch(err){ recado('No se pudo: '+motivo(err)); }
