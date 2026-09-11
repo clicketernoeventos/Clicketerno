@@ -33,7 +33,8 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
 
 <noscript><style>.ap{opacity:1!important;transform:none!important}</style></noscript>
 <style>
@@ -153,6 +154,21 @@ nav .links a:hover:after{width:100%}
   .bajar{display:none}
 }
 
+/* entrada del hero: el logo primero, después el resto */
+@keyframes heroEntra{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.hero .logo-full,.hero h1,.hero .bajada,.hero .acciones,.hero .fino,.telefono{
+  animation:heroEntra .85s var(--e) both}
+.hero .logo-full{animation-delay:.06s}
+.hero h1{animation-delay:.2s}
+.hero .bajada{animation-delay:.34s}
+.hero .acciones{animation-delay:.46s}
+.hero .fino{animation-delay:.58s}
+.telefono{animation-delay:.34s}
+/* respuesta al toque en el celular */
+.btn{-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.975)}
+.trabajo:active .cuerpo-t{transform:translateY(-6px) scale(.99)}
+
 /* ═══ celular ═══ */
 .telefono{width:min(300px,76vw);margin-inline:auto;position:relative;perspective:1200px;max-width:100%}
 .telefono .cuerpo{position:relative;border-radius:42px;padding:11px;
@@ -168,17 +184,20 @@ nav .links a:hover:after{width:100%}
 /* invitación de muestra */
 .invi{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:34px 20px;gap:14px;
-  background:radial-gradient(120% 80% at 50% 0,#243329,#0F1512 60%,#080B09)}
-.invi .adorno{font-size:15px;letter-spacing:.5em;color:#8FBF9E;opacity:.75}
-.invi .quien{font-family:'Bodoni Moda',serif;font-style:italic;font-size:38px;color:#F3EDE0;line-height:1}
-.invi .que{font-size:9.5px;letter-spacing:.42em;text-transform:uppercase;color:#9FBFA8}
+  --tinta:#F3EDE0; --suave:#9FBFA8; --borde:rgba(216,178,106,.35);
+  background:radial-gradient(120% 80% at 50% 0,#243329,#0F1512 60%,#080B09);
+  transition:opacity .45s var(--e),background .7s var(--e)}
+.invi.cambiando{opacity:0}
+.invi .adorno{font-size:15px;letter-spacing:.5em;color:var(--suave);opacity:.8}
+.invi .quien{font-family:'Bodoni Moda',serif;font-style:italic;font-size:38px;color:var(--tinta);line-height:1}
+.invi .que{font-size:9.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--suave)}
 .invi .reloj{display:flex;gap:9px;margin-top:6px}
-.invi .reloj div{min-width:44px;padding:9px 4px;border:1px solid rgba(216,178,106,.3);border-radius:3px;
-  background:rgba(0,0,0,.25)}
-.invi .reloj b{display:block;font-family:'Bodoni Moda',serif;font-size:19px;color:var(--champan);font-weight:400}
-.invi .reloj span{font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:#8FA898}
+.invi .reloj div{min-width:44px;padding:9px 4px;border:1px solid var(--borde);border-radius:3px;
+  background:rgba(0,0,0,.22)}
+.invi .reloj b{display:block;font-family:'Bodoni Moda',serif;font-size:19px;color:var(--tinta);font-weight:400}
+.invi .reloj span{font-size:7px;letter-spacing:.16em;text-transform:uppercase;color:var(--suave);opacity:.9}
 .invi .rsvp{margin-top:10px;font-size:9px;letter-spacing:.24em;text-transform:uppercase;
-  border:1px solid rgba(216,178,106,.55);color:var(--champan);padding:11px 20px;border-radius:2px;
+  border:1px solid var(--borde);color:var(--tinta);padding:11px 20px;border-radius:2px;
   animation:latir 3s var(--e) infinite}
 @keyframes latir{0%,100%{box-shadow:0 0 0 0 rgba(216,178,106,.3)}50%{box-shadow:0 0 0 9px rgba(216,178,106,0)}}
 .invi .hada{position:absolute;font-size:13px;opacity:.5;animation:flotar 7s var(--e) infinite}
@@ -730,6 +749,41 @@ addEventListener('load',()=>setTimeout(()=>{
     cuerpo.style.transform=`rotateY(${x*13}deg) rotateX(${-y*13}deg) translateZ(14px)`;
   });
   cont.addEventListener('mouseleave',()=>cuerpo.style.transform='');
+})();
+
+/* ═══ la invitación del hero cambia de estilo ═══ */
+/* Muestra los tres mundos que hacemos en vez de uno fijo: es la prueba
+   de que cada fiesta se diseña distinta. */
+(function(){
+  const invi=document.querySelector('.invi'); if(!invi) return;
+  const ESTILOS=[
+    {fondo:'radial-gradient(120% 80% at 50% 0,#243329,#0F1512 60%,#080B09)',
+     tinta:'#F3EDE0',suave:'#9FBFA8',borde:'rgba(216,178,106,.35)',
+     adorno:'🍃 ✦ 🍃',que:'Mis quince años',quien:'Delfina',hadas:['🍄','🧚','🍃']},
+    {fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)',
+     tinta:'#5A2E3E',suave:'#B9738D',borde:'rgba(90,46,62,.28)',
+     adorno:'✦ 💌 ✦',que:'Mis quince años',quien:'Xiomara',hadas:['🌸','✨','🎀']},
+    {fondo:'radial-gradient(120% 80% at 50% 0,#2A2017,#100E0B 60%,#080706)',
+     tinta:'#EFDCBC',suave:'#C9A063',borde:'rgba(216,178,106,.42)',
+     adorno:'✦ ✦ ✦',que:'Nuestro casamiento',quien:'Flor & Juan',hadas:['✦','✨','✦']}
+  ];
+  const adorno=invi.querySelector('.adorno'), que=invi.querySelector('.que'),
+        quien=invi.querySelector('.quien'), hadas=[...invi.querySelectorAll('.hada')];
+  const poner=e=>{
+    invi.style.background=e.fondo;
+    invi.style.setProperty('--tinta',e.tinta);
+    invi.style.setProperty('--suave',e.suave);
+    invi.style.setProperty('--borde',e.borde);
+    adorno.textContent=e.adorno; que.textContent=e.que; quien.textContent=e.quien;
+    hadas.forEach((h,k)=>h.textContent=e.hadas[k]||'');
+  };
+  let i=0; poner(ESTILOS[0]);
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  setInterval(()=>{
+    if(document.hidden) return;
+    invi.classList.add('cambiando');
+    setTimeout(()=>{ i=(i+1)%ESTILOS.length; poner(ESTILOS[i]); invi.classList.remove('cambiando'); },460);
+  },5400);
 })();
 
 /* ═══ marquesina ═══ */

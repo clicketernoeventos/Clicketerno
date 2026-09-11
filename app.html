@@ -9,7 +9,8 @@
 <link rel="icon" href="marca.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
@@ -144,9 +145,19 @@ option{background:#0B0A08}
 
 /* ── momento click ── */
 .momento{min-height:100svh;display:grid;place-items:center;text-align:center;padding:34px}
+/* el instante en que la foto llega a la pantalla: es el momento que se
+   lleva el invitado, así que se le da un golpe de luz */
 .chispas{position:relative;width:130px;height:130px;margin:0 auto 34px}
+.chispas:before,.chispas:after{content:'';position:absolute;left:50%;top:50%;
+  width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+  border:1px solid var(--hilo2);opacity:0;animation:halo 1.8s var(--e) forwards}
+.chispas:after{animation-delay:.34s}
+@keyframes halo{0%{opacity:0;transform:scale(.25)}20%{opacity:.7}100%{opacity:0;transform:scale(3.6)}}
+@keyframes brillo-c{0%,100%{filter:drop-shadow(0 0 9px rgba(217,174,114,.3))}
+  50%{filter:drop-shadow(0 0 20px rgba(217,174,114,.6))}}
 .chispas .estrella{position:absolute;color:var(--oro);opacity:0}
-.chispas .c1{width:42px;height:42px;left:44px;top:44px;animation:chispa 1.1s var(--e) .05s forwards}
+.chispas .c1{width:42px;height:42px;left:44px;top:44px;
+  animation:chispa 1.1s var(--e) .05s forwards,brillo-c 3.4s var(--e) 1.3s infinite}
 .chispas .c2{width:17px;height:17px;left:8px;top:24px;animation:chispa 1s var(--e) .28s forwards}
 .chispas .c3{width:12px;height:12px;right:14px;top:16px;animation:chispa 1s var(--e) .42s forwards}
 .chispas .c4{width:15px;height:15px;right:26px;bottom:14px;animation:chispa 1s var(--e) .56s forwards}
@@ -289,6 +300,71 @@ option{background:#0B0A08}
 .pendientes .globo{background:var(--oro);color:#0A0806;border-radius:999px;min-width:22px;height:22px;
   display:grid;place-items:center;font-size:11.5px;font-weight:600;letter-spacing:0;padding:0 7px}
 .pendientes p{font-size:13.5px;color:#B5AC9E;line-height:1.6}
+
+/* ═══════════ movimiento ═══════════
+   Un solo sistema: cada vista entra igual, y dentro de la vista los
+   bloques suben escalonados. Como cada vista se redibuja entera, las
+   animaciones arrancan solas al insertarse: no hace falta JS. */
+@keyframes entraBloque{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+@keyframes entraBarra{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+@keyframes escala{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+
+#app>.top{animation:entraBarra .45s var(--e) both}
+#app>.portada,#app>.momento,#app>.final,#app>.album,#app>.sala,#app>.dejar{
+  animation:aparece .5s var(--e) both}
+#app>.wrap>*{animation:entraBloque .5s var(--e) both}
+#app>.wrap>*:nth-child(1){animation-delay:.05s}
+#app>.wrap>*:nth-child(2){animation-delay:.10s}
+#app>.wrap>*:nth-child(3){animation-delay:.15s}
+#app>.wrap>*:nth-child(4){animation-delay:.20s}
+#app>.wrap>*:nth-child(5){animation-delay:.25s}
+#app>.wrap>*:nth-child(6){animation-delay:.29s}
+#app>.wrap>*:nth-child(7){animation-delay:.33s}
+#app>.wrap>*:nth-child(8){animation-delay:.36s}
+#app>.wrap>*:nth-child(n+9){animation-delay:.39s}
+
+/* el QR y la previa no aparecen de golpe */
+.qr canvas,.qr img,.qr-c canvas,.qr-c img,.qr-sala canvas,.qr-sala img{animation:escala .55s var(--e) both}
+.previa{animation:escala .45s var(--e) both}
+.consigna{animation:entraBloque .6s var(--e) both}
+
+/* respuesta al toque: sin esto en el celular se siente muerto */
+.puerta,.fila,.oro-btn,.hilo-btn,.lente,.seg button,.espera .par button,.plegable>summary{
+  -webkit-tap-highlight-color:transparent}
+.oro-btn,.hilo-btn,.lente{transition:transform .18s var(--e),filter .3s,border-color .3s,color .3s}
+.oro-btn:active,.hilo-btn:active{transform:scale(.975)}
+.lente:active{transform:scale(.99)}
+.puerta:active,.fila:active{background:rgba(217,174,114,.05)}
+.espera .par button:active{background:rgba(217,174,114,.09)}
+
+/* barrido dorado, igual que en el sitio */
+.oro-btn{position:relative;overflow:hidden}
+.oro-btn:after{content:'';position:absolute;top:0;left:-130%;width:58%;height:100%;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transition:left .75s var(--e)}
+.oro-btn:hover:after{left:140%}
+/* durante la subida el propio botón se llena */
+.oro-btn.subiendo{background:linear-gradient(90deg,
+  var(--oro) 0 var(--avance,0%),rgba(217,174,114,.25) var(--avance,0%) 100%);
+  color:var(--champan);transition:background .25s linear}
+.oro-btn.subiendo:after{display:none}
+
+/* esqueleto con brillo mientras carga */
+@keyframes brilla{to{background-position:-220% 0}}
+.hueso{border-radius:2px;background:linear-gradient(100deg,
+  rgba(255,255,255,.035) 30%,rgba(217,174,114,.11) 50%,rgba(255,255,255,.035) 70%);
+  background-size:220% 100%;animation:brilla 1.5s linear infinite}
+.rejilla-hueso{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:26px}
+.rejilla-hueso i{aspect-ratio:1;display:block}
+.tapa-hueso{height:210px;margin-bottom:76px}
+
+/* moderación: la ficha se va sola, sin redibujar toda la pantalla */
+@keyframes vuela{to{opacity:0;transform:translateY(-30px) scale(.96)}}
+@keyframes seVa{to{opacity:0;transform:scale(.94)}}
+.espera.vuela{animation:vuela .45s var(--e) forwards;pointer-events:none}
+.espera.se-va{animation:seVa .35s var(--e) forwards;pointer-events:none}
+.pendientes.se-va{animation:seVa .4s var(--e) forwards}
+
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cartel-hoja{max-width:420px;margin:34px auto;border:1px solid var(--hilo);padding:44px 34px;text-align:center;background:#000}
 .cartel-hoja .marca-c{width:150px;opacity:.95;margin-bottom:26px}
@@ -569,6 +645,20 @@ const parar=()=>{
   if(window._limpiarSala){window._limpiarSala();window._limpiarSala=null;}
   hojaPostal(false);
 };
+
+/* los números suben en vez de aparecer de golpe */
+function contarHasta(el,fin,ms){
+  if(!el) return;
+  const n=Number(fin)||0;
+  if(!n||matchMedia('(prefers-reduced-motion:reduce)').matches){ el.textContent=n; return; }
+  const t0=performance.now(), d=ms||900;
+  (function paso(t){
+    const q=Math.min(1,((t||t0)-t0)/d);
+    el.textContent=Math.round(n*(1-Math.pow(1-q,3)));
+    if(q<1) requestAnimationFrame(paso);
+  })(t0);
+}
+const animarCifras=()=>app.querySelectorAll('[data-cifra]').forEach(el=>contarHasta(el,el.dataset.cifra));
 
 /* contador de caracteres vivo en los campos con límite */
 function contador(sel){
@@ -904,10 +994,10 @@ async function vEvento(codigo){
     </details>
 
     <div class="cifras4">
-      <div><b>${n('foto')}</b><span>Fotos</span></div>
-      <div><b>${n('video')}</b><span>Videos</span></div>
-      <div><b>${n('mensaje')}</b><span>Mensajes</span></div>
-      <div><b>${n('audio')}</b><span>Audios</span></div>
+      <div><b data-cifra="${n('foto')}" data-kind="foto">0</b><span>Fotos</span></div>
+      <div><b data-cifra="${n('video')}" data-kind="video">0</b><span>Videos</span></div>
+      <div><b data-cifra="${n('mensaje')}" data-kind="mensaje">0</b><span>Mensajes</span></div>
+      <div><b data-cifra="${n('audio')}" data-kind="audio">0</b><span>Audios</span></div>
     </div>
 
     <div class="llave"><p>Aprobar antes de proyectar<small>Nada llega a la pantalla sin que alguien lo mire primero.</small></p>
@@ -923,6 +1013,7 @@ async function vEvento(codigo){
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('panel');
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
+  animarCifras();
   pintarQR(app.querySelector('#qr'),enlaceDe(codigo),106);
 
   const porta=app.querySelector('#porta');
@@ -1004,7 +1095,26 @@ async function vEvento(codigo){
       try{
         await cambiarEstado(codigo,p.id,estado);
         recado(aviso,accion);
-        vEvento(codigo);
+        if(estado==='pendiente') return vEvento(codigo);   // al recuperar, redibujamos
+        /* La ficha se va sola: redibujar todo hacía saltar la pantalla
+           justo cuando estás aprobando una atrás de otra. */
+        d.classList.add(estado==='aprobado'?'vuela':'se-va');
+        d.addEventListener('animationend',()=>{
+          d.remove();
+          if(estado==='aprobado'){
+            const cif=app.querySelector(`[data-kind="${p.kind}"]`);
+            if(cif) contarHasta(cif,(Number(cif.dataset.cifra)||0)+1,420),
+                    cif.dataset.cifra=(Number(cif.dataset.cifra)||0)+1;
+          }
+          const quedan=cola.querySelectorAll('.espera').length;
+          const globo=app.querySelector('.pendientes .globo');
+          if(globo) globo.textContent=quedan;
+          if(!quedan){
+            const caja=app.querySelector('.pendientes');
+            if(caja){ caja.classList.add('se-va');
+              caja.addEventListener('animationend',()=>caja.remove(),{once:true}); }
+          }
+        },{once:true});
       }catch(err){ recado('No se pudo: '+motivo(err)); }
     };
     d.querySelector('.si').onclick=()=>mover('aprobado','Ya está en la pantalla');
@@ -1141,16 +1251,23 @@ async function vSubir(codigo){
     if(medio && !medio.blob) return recado('La foto no quedó lista, elegila de nuevo');
     const btn=app.querySelector('#enviar');
     btn.disabled=true; btn.textContent=medio?'Subiendo…':'Revelando…';
+    if(medio) btn.classList.add('subiendo');
+    const avance=f=>{
+      btn.style.setProperty('--avance',Math.round(f*100)+'%');
+      btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`;
+    };
     try{
       await sumar(codigo,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
         kind:medio?medio.kind:'mensaje', blob:medio?medio.blob:null, data:'', autor, texto, ts:Date.now(),
         estado:m.moderar?'pendiente':'aprobado'},
-        f=>{ btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`; });
+        avance);
       if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
       vMomento(m,autor);
     }catch(e){
       console.error('subir',e);
-      btn.disabled=false; btn.textContent='Enviar a la pantalla';
+      btn.disabled=false; btn.classList.remove('subiendo');
+      btn.style.removeProperty('--avance');
+      btn.textContent='Enviar a la pantalla';
       recado('Falló al '+(e.paso||'preparar')+' · '+(e.name||'')+' · '+motivo(e));
     }
   };
@@ -1259,7 +1376,11 @@ async function vPantalla(codigo){
     if(!cuenta||!tela.isConnected) return false;   // la vista ya no está
     const nuevos=idx.filter(i=>!ids.includes(i.id));
     ids=idx.map(i=>i.id);
-    cuenta.innerHTML=ids.length+'<small>En el muro</small>';
+    if(cuenta.dataset.n!==String(ids.length)){
+      cuenta.innerHTML='<b style="font:inherit">0</b><small>En el muro</small>';
+      contarHasta(cuenta.querySelector('b'),ids.length,700);
+      cuenta.dataset.n=String(ids.length);
+    }
     if(nuevos.length){
       const ultimo=nuevos[nuevos.length-1].id;
       cursor=ids.indexOf(ultimo);
@@ -1301,7 +1422,15 @@ async function vAlbum(codigo){
   parar();
   const m=await meta(codigo); if(!m) return ir('portada');
   tono(m.tono);
-  app.innerHTML=`${barra('Álbum','Cargando')}<div class="vacio">Revelando el álbum…</div>`;
+  app.innerHTML=`${barra('Álbum','Revelando')}
+    <div class="album">
+      <div class="tapa-hueso hueso"></div>
+      <div class="wrap">
+        <div class="hueso" style="height:34px;width:60%;margin:0 auto"></div>
+        <div class="hueso" style="height:12px;width:38%;margin:18px auto 0"></div>
+        <div class="rejilla-hueso">${'<i class="hueso"></i>'.repeat(9)}</div>
+      </div>
+    </div>`;
   const idx=(await indice(codigo)).filter(i=>i.estado==='aprobado').reverse();
   const items=[];
   for(const i of idx){const it=await item(codigo,i.id); if(it) items.push(it);}
@@ -1309,7 +1438,7 @@ async function vAlbum(codigo){
   /* si un item quedó sin archivo (subida cortada) no lo mostramos roto */
   const visuales=items.filter(i=>(i.kind==='foto'||i.kind==='video')&&urlSegura(i.data));
   const portada=m.portada||(visuales.find(i=>i.kind==='foto')||{}).data||'';
-  const cifra=(t,v)=>`<div class="cifra ${v?'':'cero'}"><span>${t}</span><b>${v}</b></div>`;
+  const cifra=(t,v)=>`<div class="cifra ${v?'':'cero'}"><span>${t}</span><b data-cifra="${v}">0</b></div>`;
 
   app.innerHTML=`
   ${barra('Álbum digital',esc(m.codigo))}
@@ -1337,6 +1466,7 @@ async function vAlbum(codigo){
     </div>
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);
+  animarCifras();
   const dl=app.querySelector('#dl');
   if(dl){
     const base=nombreSeguro(m.nombre);
