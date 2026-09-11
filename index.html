@@ -5,23 +5,49 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Click Eterno · Invitaciones digitales y experiencias para eventos · Rosario</title>
 <meta name="description" content="Invitaciones digitales para XV años, casamientos y cumpleaños. Con cuenta regresiva, confirmación de asistencia, playlist y más. Desde Rosario para todo el país.">
+<link rel="canonical" href="https://clicketerno.com.ar/">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="apple-touch-icon" href="marca.webp">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="Click Eterno">
+<meta property="og:url" content="https://clicketerno.com.ar/">
 <meta property="og:title" content="Click Eterno · Un click, para toda la vida">
 <meta property="og:description" content="Invitaciones digitales y experiencias para eventos. Desde Rosario.">
+<meta property="og:image" content="https://clicketerno.com.ar/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Click Eterno · Invitaciones digitales">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Click Eterno · Un click, para toda la vida">
+<meta name="twitter:description" content="Invitaciones digitales y experiencias para eventos. Desde Rosario.">
+<meta name="twitter:image" content="https://clicketerno.com.ar/og.jpg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"LocalBusiness","name":"Click Eterno",
+"description":"Invitaciones digitales y experiencias para eventos: XV años, casamientos y cumpleaños.",
+"url":"https://clicketerno.com.ar/","image":"https://clicketerno.com.ar/og.jpg",
+"email":"clicketernoeventos@gmail.com","telephone":"+5493412506451",
+"address":{"@type":"PostalAddress","addressLocality":"Rosario","addressRegion":"Santa Fe","addressCountry":"AR"},
+"areaServed":{"@type":"Country","name":"Argentina"}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
+<noscript><style>.ap{opacity:1!important;transform:none!important}</style></noscript>
 <style>
 :root{
   --negro:#000; --carbon:#0A0908; --humo:#131110;
   --crema:#F6F2EA; --crema2:#EDE6DA;
   --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#8A8177; --mute-claro:#6E665C;
+  --texto:#F6F2EA; --mute:#9B9287; --mute-claro:#7E766B;
   --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26); --hilo2:rgba(217,174,114,.55);
   --e:cubic-bezier(.22,.7,.24,1);
   --e-suave:cubic-bezier(.4,0,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
 html{scroll-behavior:smooth;overflow-x:hidden}
 body,main,section{max-width:100%;overflow-x:clip}
 body{background:var(--negro);color:var(--texto);font-family:Jost,system-ui,sans-serif;font-weight:300;
@@ -343,7 +369,13 @@ nav .links a:hover:after{width:100%}
   animation:aro 2.6s var(--e) infinite}
 @keyframes aro{from{transform:scale(1);opacity:1}to{transform:scale(1.6);opacity:0}}
 
-footer{border-top:1px solid var(--gris);padding:50px 0 34px}
+footer{border-top:1px solid var(--gris);padding:50px 0 34px;
+  padding-bottom:calc(34px + env(safe-area-inset-bottom))}
+@media(max-width:900px){
+  /* el botón flotante ocupa la esquina: le dejamos aire al pie */
+  footer{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+  .contacto .mail{display:inline-block;margin-bottom:12px}
+}
 footer .wrap{display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;align-items:center}
 footer .datos{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);line-height:2.2}
 footer .datos a:hover{color:var(--oro)}
@@ -648,12 +680,26 @@ menu.querySelectorAll('a').forEach(a=>a.onclick=()=>{
 });
 
 /* ═══ aparición al scrollear ═══ */
-const io=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting){e.target.classList.add('ver');io.unobserve(e.target);}
-}),{threshold:.14,rootMargin:'0px 0px -40px'});
-document.querySelectorAll('.ap').forEach((el,i)=>{
-  el.style.transitionDelay=((i%3)*.1)+'s'; io.observe(el);
-});
+/* Los .ap arrancan invisibles: si esto fallara, la página quedaría en blanco.
+   Por eso hay salida por si el navegador no soporta IntersectionObserver. */
+let io={observe(){},unobserve(){}};
+if('IntersectionObserver' in window){
+  io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('ver');io.unobserve(e.target);}
+  }),{threshold:.14,rootMargin:'0px 0px -40px'});
+  document.querySelectorAll('.ap').forEach((el,i)=>{
+    el.style.transitionDelay=((i%3)*.1)+'s'; io.observe(el);
+  });
+}else{
+  document.querySelectorAll('.ap').forEach(el=>el.classList.add('ver'));
+}
+/* último recurso: si algo quedó invisible dentro de la pantalla, se muestra */
+addEventListener('load',()=>setTimeout(()=>{
+  document.querySelectorAll('.ap:not(.ver)').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<innerHeight&&r.bottom>0) el.classList.add('ver');
+  });
+},1400));
 
 /* ═══ cuenta regresiva del celular ═══ */
 (function(){
@@ -661,12 +707,15 @@ document.querySelectorAll('.ap').forEach((el,i)=>{
   const p2=n=>String(n).padStart(2,'0');
   const el={dd:document.getElementById('dd'),hh:document.getElementById('hh'),
             mm:document.getElementById('mm'),ss:document.getElementById('ss')};
+  if(!el.dd) return;
   (function tic(){
-    const f=Math.max(0,meta-Date.now()), s=Math.floor(f/1000);
-    el.dd.textContent=p2(Math.floor(s/86400));
-    el.hh.textContent=p2(Math.floor(s%86400/3600));
-    el.mm.textContent=p2(Math.floor(s%3600/60));
-    el.ss.textContent=p2(s%60);
+    if(!document.hidden){
+      const f=Math.max(0,meta-Date.now()), s=Math.floor(f/1000);
+      el.dd.textContent=p2(Math.floor(s/86400));
+      el.hh.textContent=p2(Math.floor(s%86400/3600));
+      el.mm.textContent=p2(Math.floor(s%3600/60));
+      el.ss.textContent=p2(s%60);
+    }
     setTimeout(tic,1000);
   })();
 })();

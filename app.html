@@ -1,6 +1,12 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Click Eterno · Muro en vivo</title>
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<link rel="icon" href="marca.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -11,12 +17,20 @@
 :root{
   --negro:#000; --carbon:#0B0A08; --humo:#141210;
   --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#8A8177;
+  --texto:#F6F2EA; --mute:#9B9287;
   --hilo:rgba(217,174,114,.22); --hilo2:rgba(217,174,114,.45); --gris:rgba(255,255,255,.08);
   --acc:#D9AE72;
   --e:cubic-bezier(.22,.7,.24,1);
 }
 *{box-sizing:border-box}
+/* foco visible con los colores de la marca (antes quedaba el del navegador) */
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+.puerta:focus-visible,.fila:focus-visible,.seg button:focus-visible{outline-offset:-2px}
+.cuenta-chars{display:block;text-align:right;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);margin-top:7px;min-height:13px}
+.cuenta-chars.poco{color:var(--oro)}
+.aviso-peso{font-size:12.5px;line-height:1.7;color:var(--oro);border:1px solid var(--hilo);
+  padding:12px 14px;margin-bottom:18px;border-radius:2px}
 html,body{margin:0;background:var(--negro);color:var(--texto)}
 body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 h1,h2,h3{margin:0;font-weight:400}
@@ -205,12 +219,13 @@ option{background:#0B0A08}
 .palanca:after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--mute);transition:.35s var(--e)}
 .palanca[aria-pressed=true]{border-color:var(--oro)}
 .palanca[aria-pressed=true]:after{transform:translateX(22px);background:var(--oro)}
-.cola{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.cola{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px}
+@media(min-width:470px){.cola{grid-template-columns:1fr 1fr}}
 .espera{border:1px solid var(--gris)}
 .espera img,.espera video{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .espera .tx{padding:16px;font-size:14px;line-height:1.6;min-height:100px;font-family:'Bodoni Moda',serif;font-style:italic}
 .espera .par{display:flex;border-top:1px solid var(--gris)}
-.espera .par button{flex:1;padding:12px;font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.espera .par button{flex:1;min-width:0;padding:13px 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .espera .par button+button{border-left:1px solid var(--gris)}
 .si{color:var(--oro)}.no{color:#8A8177}
 .cifras4{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--gris);border-bottom:1px solid var(--gris);margin:30px 0}
@@ -256,6 +271,24 @@ option{background:#0B0A08}
   transition:.35s var(--e);pointer-events:none;max-width:92vw;text-align:center;
   box-shadow:0 16px 40px -14px rgba(0,0,0,.9)}
 .recado.on{opacity:1;transform:translate(-50%,0)}
+.recado.con-accion{pointer-events:auto}
+.recado-accion{margin-left:16px;font:inherit;font-weight:600;font-size:13px;letter-spacing:.1em;
+  text-transform:uppercase;color:inherit;border-bottom:1px solid currentColor;padding:0 0 2px}
+/* bloque plegable de configuración */
+.plegable{border:1px solid var(--gris);margin-top:16px}
+.plegable>summary{cursor:pointer;list-style:none;padding:20px 22px;display:flex;align-items:center;
+  justify-content:space-between;gap:14px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.plegable>summary::-webkit-details-marker{display:none}
+.plegable>summary:after{content:'+';font-size:17px;color:var(--oro);line-height:1}
+.plegable[open]>summary:after{content:'−'}
+.plegable[open]>summary{color:var(--oro);border-bottom:1px solid var(--gris)}
+.plegable .cuerpo-p{padding:24px 22px}
+.pendientes{border:1px solid var(--hilo2);background:rgba(217,174,114,.05);padding:20px 22px;margin-top:26px}
+.pendientes .titu{display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--oro);margin-bottom:6px}
+.pendientes .globo{background:var(--oro);color:#0A0806;border-radius:999px;min-width:22px;height:22px;
+  display:grid;place-items:center;font-size:11.5px;font-weight:600;letter-spacing:0;padding:0 7px}
+.pendientes p{font-size:13.5px;color:#B5AC9E;line-height:1.6}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cartel-hoja{max-width:420px;margin:34px auto;border:1px solid var(--hilo);padding:44px 34px;text-align:center;background:#000}
 .cartel-hoja .marca-c{width:150px;opacity:.95;margin-bottom:26px}
@@ -271,14 +304,20 @@ option{background:#0B0A08}
 .porta-fila .mini.vacia{display:grid;place-items:center;color:var(--oro);opacity:.5}
 .porta-fila .mini.vacia .estrella{width:16px;height:16px}
 @media print{
-  @page{size:105mm 148mm;margin:0}
-  #brillo,#polvo,#grano,.top,.acciones,.no-imprime{display:none!important}
+  #brillo,#polvo,#grano,.top,.acciones,.no-imprime,.recado,.sumate{display:none!important}
   body{background:#fff;color:#111}
   .cartel-hoja{border:0;margin:0;width:105mm;height:148mm;padding:12mm 9mm;background:#000;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;flex-direction:column;justify-content:center}
+  /* el álbum se imprime en hoja normal y sin cortar fotos al medio */
+  body.imp-album .album .rejilla a,body.imp-album .dedicatoria,body.imp-album .cifra{
+    break-inside:avoid;page-break-inside:avoid}
+  body.imp-album .tapa{height:150px}
+  body.imp-album .pie-marca{opacity:1}
 }
 @media(min-width:820px){.rejilla{grid-template-columns:repeat(4,1fr)}}
 </style>
+</head>
+<body>
 
 <div id="brillo"></div>
 <div id="polvo"></div>
@@ -305,9 +344,24 @@ const HAY_NUBE = !!(NUBE.url && NUBE.clave);
 
 const LISTA='ce:eventos', cacheItem={}, memoria={};
 let timerSala=null;
-const esc=s=>String(s==null?'':s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+/* Solo dejamos pasar direcciones que parezcan una imagen/archivo real.
+   Cualquier otra cosa (texto inyectado en la base) se descarta. */
+const urlSegura=u=>{const t=String(u==null?'':u).trim();
+  return /^(https?:\/\/|data:(image|video|audio)\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif|mp4|webm)$/i.test(t)?t:'';};
+const src=u=>esc(urlSegura(u));
+/* nombre de archivo que no rompa en Windows/Mac */
+const nombreSeguro=s=>(String(s==null?'':s).replace(/[\\/:*?"<>|\n\r]+/g,'-').trim().slice(0,40)||'album');
 const hoy=()=>new Date().toISOString().slice(0,10);
-const bonito=f=>{const[a,m,d]=f.split('-');return `${d} · ${m} · ${a}`;};
+/* Nunca devuelve el dato crudo: si no es una fecha válida, texto fijo.
+   (Devolverlo tal cual permitía inyectar HTML desde la base.) */
+const bonito=f=>{
+  if(!f) return 'Fecha a confirmar';
+  const p=String(f).slice(0,10).split('-');
+  if(p.length!==3||!/^\d{4}$/.test(p[0])||!/^\d{1,2}$/.test(p[1])||!/^\d{1,2}$/.test(p[2]))
+    return 'Fecha a confirmar';
+  return `${p[2]} · ${p[1]} · ${p[0]}`;
+};
 
 /* ── almacenamiento local (solo si no hay nube) ───────────── */
 const local = {
@@ -352,22 +406,38 @@ const SB = {
       method:'PATCH', headers:this.cab({Prefer:'return=minimal'}), body:JSON.stringify(obj)
     });
   },
-  async archivo(ruta, blob){
-    const r = await fetch(`${NUBE.url}/storage/v1/object/ce-medios/${ruta}`, {
-      method:'POST',
-      headers:{apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,
-               'Content-Type':blob.type||'application/octet-stream', 'x-upsert':'true'},
-      body:blob
+  /* XHR en vez de fetch para poder mostrar el avance y cortar si se cuelga:
+     en un salón con mala señal, "Revelando…" quedaba girando sin fin. */
+  archivo(ruta, blob, alAvanzar){
+    return new Promise((res,rej)=>{
+      const x=new XMLHttpRequest();
+      x.open('POST',`${NUBE.url}/storage/v1/object/ce-medios/${ruta}`);
+      x.setRequestHeader('apikey',NUBE.clave);
+      x.setRequestHeader('Authorization','Bearer '+NUBE.clave);
+      x.setRequestHeader('Content-Type',blob.type||'application/octet-stream');
+      x.setRequestHeader('x-upsert','true');
+      x.timeout=180000;
+      if(x.upload&&alAvanzar) x.upload.onprogress=e=>{
+        if(e.lengthComputable) alAvanzar(e.loaded/e.total);
+      };
+      x.onload=()=>{
+        if(x.status>=200&&x.status<300) res(`${NUBE.url}/storage/v1/object/public/ce-medios/${ruta}`);
+        else rej(new Error(x.responseText||('HTTP '+x.status)));
+      };
+      x.onerror=()=>rej(new Error('Failed to fetch'));
+      x.ontimeout=()=>rej(new Error('La subida tardó demasiado'));
+      x.send(blob);
     });
-    if(!r.ok) throw new Error((await r.text()) || ('HTTP '+r.status));
-    return `${NUBE.url}/storage/v1/object/public/ce-medios/${ruta}`;
   }
 };
 
-const EXT={'image/jpeg':'jpg','image/png':'png','image/webp':'webp',
-           'video/mp4':'mp4','video/quicktime':'mov','audio/webm':'webm','audio/mp4':'m4a'};
-async function subirArchivo(blob, base){
-  return SB.archivo(`${base}.${EXT[blob.type]||'jpg'}`, blob);
+const EXT={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif',
+           'image/heic':'heic','image/heif':'heif',
+           'video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm',
+           'audio/webm':'webm','audio/mp4':'m4a','audio/mpeg':'mp3'};
+const MAX_MB=60;
+async function subirArchivo(blob, base, alAvanzar){
+  return SB.archivo(`${base}.${EXT[blob.type]||'jpg'}`, blob, alAvanzar);
 }
 
 /* ── funciones que usa toda la app (misma firma, con o sin nube) ── */
@@ -428,7 +498,7 @@ async function item(c,id){
   if(v) cacheItem[k]=v;
   return v;
 }
-async function sumar(c,it){
+async function sumar(c,it,alAvanzar){
   if(!HAY_NUBE){
     await local.set(kItem(c,it.id),it);
     const idx=await leerLocal(kIndex(c),[]);
@@ -439,7 +509,7 @@ async function sumar(c,it){
   let url='';
   if(it.blob){
     try{
-      url = await subirArchivo(it.blob, `${c}/${it.id}`);
+      url = await subirArchivo(it.blob, `${c}/${it.id}`, alAvanzar);
     }catch(e){ e.paso='subir el archivo'; throw e; }
   }
   try{
@@ -460,18 +530,65 @@ async function cambiarEstado(c,id,estado){
 }
 const leer=leerLocal;
 
-function recado(t){
-  const el=document.getElementById('recado'); el.textContent=t; el.classList.add('on');
-  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2800);
+function recado(t,accion){
+  const el=document.getElementById('recado');
+  el.textContent=t;
+  el.classList.toggle('con-accion',!!accion);
+  if(accion){
+    const b=document.createElement('button');
+    b.className='recado-accion'; b.textContent=accion.texto;
+    b.onclick=()=>{ el.classList.remove('on','con-accion'); clearTimeout(el._t); accion.hacer(); };
+    el.appendChild(b);
+  }
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('on','con-accion'),accion?7000:2800);
+}
+/* El tamaño 10x15 se aplicaba a TODA la app: al "Guardar en PDF" del álbum
+   también le salía hoja postal. Ahora se activa solo en la vista del cartel. */
+function hojaPostal(activar){
+  let e=document.getElementById('hojaPostal');
+  if(activar){
+    if(!e){
+      e=document.createElement('style'); e.id='hojaPostal';
+      e.textContent='@page{size:105mm 148mm;margin:0}';
+      document.head.appendChild(e);
+    }
+  }else if(e) e.remove();
 }
 const parar=()=>{
   if(timerSala){clearInterval(timerSala);timerSala=null;}
   if(window._limpiarSala){window._limpiarSala();window._limpiarSala=null;}
+  hojaPostal(false);
 };
+
+/* contador de caracteres vivo en los campos con límite */
+function contador(sel){
+  const el=app.querySelector(sel);
+  if(!el||!el.maxLength||el.maxLength<1) return;
+  const c=document.createElement('span'); c.className='cuenta-chars';
+  el.insertAdjacentElement('afterend',c);
+  const refrescar=()=>{
+    const quedan=el.maxLength-el.value.length;
+    const desde=Math.min(20,Math.ceil(el.maxLength*0.35));
+    c.textContent=quedan<=desde?`Quedan ${quedan}`:'';
+    c.classList.toggle('poco',quedan<=5);
+  };
+  el.addEventListener('input',refrescar); refrescar();
+}
 const tono=t=>document.documentElement.style.setProperty('--acc',t||'#D9AE72');
 
+/* En navegación privada (o con cookies bloqueadas) tocar localStorage tira
+   excepción y mataba la app entera al cargar. Ahora nunca propaga. */
+const guarda={
+  leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  escribir(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}},
+  borrar(k){try{localStorage.removeItem(k);}catch(e){}},
+  leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
+  escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
+};
 const PIN_KEY='ce:pin';
-let pinOK=sessionStorage.getItem('ce:pinOK')==='1';
+let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 
 const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
@@ -525,6 +642,21 @@ function fotoDemo(seed){
   x.fillStyle=v; x.fillRect(0,0,c.width,c.height);
   return c.toDataURL('image/jpeg',.72);
 }
+/* Baja cualquier cosa (data: o https:) como archivo real.
+   Antes se usaba <a download> con una URL de otro dominio: el navegador
+   ignora download y te saca de la página. */
+async function aBlob(dato){
+  const u=urlSegura(dato); if(!u) return null;
+  const r=await fetch(u);
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return await r.blob();
+}
+function bajarBlob(blob,nombre){
+  const u=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=u; a.download=nombre; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
 function pintarQR(nodo,texto,tam){
   nodo.innerHTML='';
   if(window.QRCode){ try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){} }
@@ -574,21 +706,39 @@ async function vPortada(){
   const d=app.querySelector('#demo'); if(d) d.onclick=sembrar;
 }
 
+const dataABlob=async d=>{ try{ return await (await fetch(d)).blob(); }catch(e){ return null; } };
+
 async function sembrar(){
+  const b=document.getElementById('demo');
+  if(b){ if(b.disabled) return; b.disabled=true; b.textContent='Preparando…'; }
   recado('Preparando la fiesta de ejemplo…');
-  const codigo='QUI-7FCE64';
-  await guardarMeta({codigo,nombre:'Sana',fecha:'2026-08-21',tipo:'XV',tono:'#D9AE72',
-    moderar:false,cerrado:false,portada:fotoDemo(3),creado:Date.now()});
-  if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
-  const gente=['Delfina','Tomás','Mica y Juli','Abuela Nélida','Francisco','Lucía','Nacho','Las primas','Sofía'];
-  const frases=['Bailá como si nadie te viera, que igual te estamos filmando.',
-    'Quince años y ya nos hacés llorar a todos.','La mejor noche del año, sin discusión.'];
-  for(let i=0;i<9;i++) await sumar(codigo,{id:'d'+i,kind:'foto',data:fotoDemo(i+1),autor:gente[i],
-    texto:i%3===0?'Qué noche':'',ts:Date.now()-(9-i)*60000,estado:'aprobado'});
-  for(let i=0;i<3;i++) await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
-    ts:Date.now()-(3-i)*30000,estado:'aprobado'});
-  recado('Listo · fiesta "Sana" cargada');
-  ir('evento/'+codigo);
+  try{
+    const codigo='QUI-7FCE64';
+    const tapa=fotoDemo(3);
+    const datos={codigo,nombre:'Sana',fecha:'2026-08-21',tipo:'XV',tono:'#D9AE72',
+      moderar:false,cerrado:false,portada:HAY_NUBE?null:tapa,creado:Date.now()};
+    /* En la nube las fotos van al depósito de archivos: antes se guardaban
+       los items sin archivo y el muro quedaba con fotos vacías. */
+    if(HAY_NUBE) datos.portadaBlob=await dataABlob(tapa);
+    await guardarMeta(datos);
+    if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
+    const gente=['Delfina','Tomás','Mica y Juli','Abuela Nélida','Francisco','Lucía','Nacho','Las primas','Sofía'];
+    const frases=['Bailá como si nadie te viera, que igual te estamos filmando.',
+      'Quince años y ya nos hacés llorar a todos.','La mejor noche del año, sin discusión.'];
+    for(let i=0;i<9;i++){
+      const d=fotoDemo(i+1);
+      await sumar(codigo,{id:'d'+i,kind:'foto',data:d,blob:HAY_NUBE?await dataABlob(d):null,
+        autor:gente[i],texto:i%3===0?'Qué noche':'',ts:Date.now()-(9-i)*60000,estado:'aprobado'});
+    }
+    for(let i=0;i<3;i++) await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
+      ts:Date.now()-(3-i)*30000,estado:'aprobado'});
+    recado('Listo · fiesta "Sana" cargada');
+    ir('evento/'+codigo);
+  }catch(e){
+    console.error('sembrar',e);
+    recado('No pude cargar la fiesta de ejemplo: '+motivo(e));
+    if(b){ b.disabled=false; b.textContent='Cargar una fiesta de ejemplo'; }
+  }
 }
 
 const barra=(titulo,sub)=>`<div class="top"><button class="vuelve">←</button>
@@ -598,7 +748,7 @@ const barra=(titulo,sub)=>`<div class="top"><button class="vuelve">←</button>
 async function vAcceso(){
   parar(); tono();
   if(pinOK) return vPanel();
-  const guardado=localStorage.getItem(PIN_KEY);
+  const guardado=guarda.leer(PIN_KEY);
   const nuevo=!guardado;
   app.innerHTML=`
   ${barra('Panel','Acceso del organizador')}
@@ -622,9 +772,11 @@ async function vAcceso(){
   const probar=async()=>{
     const v=campo.value.trim();
     if(v.length<4) return recado('Mínimo 4 números');
-    if(nuevo){ localStorage.setItem(PIN_KEY,v); }
+    if(nuevo && !guarda.escribir(PIN_KEY,v)){
+      return recado('Tu navegador no deja guardar la clave. Probá sin modo privado.');
+    }
     else if(v!==guardado){ campo.value=''; return recado('Clave incorrecta'); }
-    pinOK=true; sessionStorage.setItem('ce:pinOK','1');
+    pinOK=true; guarda.escribirSesion('ce:pinOK','1');
     vPanel();
   };
   app.querySelector('#entrar').onclick=probar;
@@ -639,7 +791,7 @@ async function vPanel(){
   <div class="wrap">
     ${evs.length?`<div style="margin-top:14px">${evs.map(e=>`
       <button class="fila" data-cod="${esc(e.codigo)}" data-nom="${esc(e.nombre)}">
-        <span class="sello">${e.portada?`<img src="${e.portada}" style="width:100%;height:100%;object-fit:cover">`:esc((e.nombre||'?')[0])}</span>
+        <span class="sello">${urlSegura(e.portada)?`<img src="${src(e.portada)}" style="width:100%;height:100%;object-fit:cover">`:esc((e.nombre||'?')[0])}</span>
         <span style="flex:1"><b>${esc(e.nombre)}</b><span>${bonito(e.fecha)}</span></span>
         <span class="clave">${esc(e.codigo)}</span></button>`).join('')}</div>`
     :`<div class="vacio">Todavía no creaste ningún evento.<br>Empezá por el nombre y la fecha.</div>`}
@@ -656,6 +808,7 @@ async function vPanel(){
     </div>
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('portada');
+  contador('#n');
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
     let t=null;
@@ -693,7 +846,7 @@ async function vPanel(){
       btn.textContent='✓ Evento creado';
       recado('✓ '+nombre+' · '+codigo);
       window.scrollTo({top:0,behavior:'smooth'});
-      setTimeout(()=>{ location.hash='evento/'+codigo; vEvento(codigo); }, 900);
+      setTimeout(()=>ir('evento/'+codigo), 900);
     }catch(e){
       console.error('crear evento',e);
       btn.disabled=false; btn.textContent='Crear evento';
@@ -725,14 +878,22 @@ async function vEvento(codigo){
       </div>
     </div>
 
-    <div class="ficha" style="margin-top:16px">
-      <p class="espaciado" style="margin-bottom:6px">Portada del álbum</p>
-      <div class="porta-fila" id="porta"></div>
-      <p class="espaciado" style="margin:26px 0 12px">Consignas de la noche</p>
-      <textarea id="consignas" placeholder="Una por línea. Si lo dejás vacío usamos las nuestras." style="min-height:104px">${(m.consignas||[]).join('\n')}</textarea>
-      <button class="hilo-btn" id="guardarC">Guardar consignas</button>
-      <button class="hilo-btn" data-ir="cartel/${codigo}">Cartel de mesa para imprimir</button>
-    </div>
+    ${pend.length?`<div class="pendientes">
+      <div class="titu"><span class="globo">${pend.length}</span> Esperando tu aprobación</div>
+      <p>Nada de esto se proyecta hasta que lo apruebes.</p>
+      <div class="cola" id="cola"></div></div>`:''}
+
+    <details class="plegable">
+      <summary>Configuración del evento</summary>
+      <div class="cuerpo-p">
+        <p class="espaciado" style="margin-bottom:6px">Portada del álbum</p>
+        <div class="porta-fila" id="porta"></div>
+        <p class="espaciado" style="margin:26px 0 12px">Consignas de la noche</p>
+        <textarea id="consignas" placeholder="Una por línea. Si lo dejás vacío usamos las nuestras." style="min-height:104px">${esc((m.consignas||[]).join('\n'))}</textarea>
+        <button class="hilo-btn" id="guardarC">Guardar consignas</button>
+        <button class="hilo-btn" data-ir="cartel/${codigo}">Cartel de mesa para imprimir</button>
+      </div>
+    </details>
 
     <div class="cifras4">
       <div><b>${n('foto')}</b><span>Fotos</span></div>
@@ -746,9 +907,6 @@ async function vEvento(codigo){
     <div class="llave" style="border-bottom:0"><p>Muro cerrado<small>Corta las subidas y publica el álbum final.</small></p>
       <button class="palanca" id="cerr" aria-pressed="${!!m.cerrado}"></button></div>
 
-    ${pend.length?`<div class="filete">${ESTRELLA}</div>
-      <p class="espaciado">Esperando aprobación · ${pend.length}</p><div class="cola" id="cola"></div>`:''}
-
     <div class="filete">${ESTRELLA}</div>
     <button class="oro-btn" data-ir="pantalla/${codigo}">Abrir pantalla del salón</button>
     <button class="hilo-btn" data-ir="subir/${codigo}">Ver la vista del invitado</button>
@@ -760,38 +918,93 @@ async function vEvento(codigo){
   pintarQR(app.querySelector('#qr'),enlaceDe(codigo),106);
 
   const porta=app.querySelector('#porta');
-  porta.innerHTML=`${m.portada?`<img class="mini" src="${m.portada}" alt="Portada">`:`<span class="mini vacia">${ESTRELLA}</span>`}
-    <span style="flex:1;font-size:13.5px;color:#B5AC9E;line-height:1.6">${m.portada?'Se usa en la tapa del álbum.':'Sin elegir: usamos la primera foto que llegue.'}</span>
+  const hayTapa=!!urlSegura(m.portada);
+  porta.innerHTML=`${hayTapa?`<img class="mini" src="${src(m.portada)}" alt="Portada">`:`<span class="mini vacia">${ESTRELLA}</span>`}
+    <span style="flex:1;font-size:13.5px;color:#B5AC9E;line-height:1.6">${hayTapa?'Se usa en la tapa del álbum.':'Sin elegir: usamos la primera foto que llegue.'}</span>
     <label class="hilo-btn" style="width:auto;margin:0;padding:11px 18px;cursor:pointer">Elegir<input id="fporta" type="file" accept="image/*" hidden></label>`;
   porta.querySelector('#fporta').onchange=async e=>{
     const a=e.target.files[0]; if(!a) return;
+    if(!/^image\//.test(a.type)) return recado('Eso no es una imagen');
     recado('Preparando portada…');
-    m.portadaBlob=await comprimirBlob(a,1200,.72); await guardarMeta(m);
-    recado('Portada actualizada'); vEvento(codigo);
+    try{
+      m.portadaBlob=await comprimirBlob(a,1200,.72);
+      await guardarMeta(m);
+      delete m.portadaBlob;
+      recado('Portada actualizada');
+      vEvento(codigo);
+    }catch(err){
+      delete m.portadaBlob;
+      recado('No pude guardar la portada: '+motivo(err));
+    }
   };
-  app.querySelector('#guardarC').onclick=async()=>{
+  app.querySelector('#guardarC').onclick=async e=>{
+    const b=e.currentTarget, antes=m.consignas;
+    b.disabled=true;
     m.consignas=app.querySelector('#consignas').value.split('\n').map(t=>t.trim()).filter(Boolean);
-    await guardarMeta(m);
-    recado(m.consignas.length?m.consignas.length+' consignas guardadas':'Volvemos a las consignas nuestras');
+    try{
+      await guardarMeta(m);
+      recado(m.consignas.length?m.consignas.length+' consignas guardadas':'Volvemos a las consignas nuestras');
+    }catch(err){ m.consignas=antes; }
+    b.disabled=false;
   };
-  app.querySelector('#copiar').onclick=()=>{navigator.clipboard?.writeText(enlaceDe(codigo));recado('Enlace copiado');};
-  app.querySelector('#mod').onclick=async e=>{
-    m.moderar=!m.moderar; await guardarMeta(m); e.currentTarget.setAttribute('aria-pressed',m.moderar);
-    recado(m.moderar?'Ahora aprobás vos cada foto':'Las fotos van directo a la pantalla');
+  app.querySelector('#copiar').onclick=async()=>{
+    const enlace=enlaceDe(codigo);
+    try{
+      if(!navigator.clipboard) throw new Error('sin portapapeles');
+      await navigator.clipboard.writeText(enlace);
+      return recado('Enlace copiado');
+    }catch(e){
+      const t=document.createElement('textarea');
+      t.value=enlace; t.setAttribute('readonly','');
+      t.style.cssText='position:fixed;left:-9999px;top:0';
+      document.body.appendChild(t); t.select(); t.setSelectionRange(0,99999);
+      let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+      t.remove();
+      recado(ok?'Enlace copiado':'Copialo a mano: '+enlace);
+    }
   };
-  app.querySelector('#cerr').onclick=async e=>{
-    m.cerrado=!m.cerrado; await guardarMeta(m); e.currentTarget.setAttribute('aria-pressed',m.cerrado);
-    recado(m.cerrado?'Muro cerrado · álbum publicado':'Muro abierto de nuevo');
+  /* Después de un await, e.currentTarget ya es null: tocar un switch tiraba
+     la app entera. Ahora movemos el switch al toque y volvemos atrás si falla. */
+  const switche=(sel,campo,siOn,siOff)=>{
+    const b=app.querySelector(sel); if(!b) return;
+    b.onclick=async()=>{
+      if(b.dataset.ocupado) return;           // doble toque
+      b.dataset.ocupado='1';
+      const antes=!!m[campo];
+      m[campo]=!antes;
+      b.setAttribute('aria-pressed',String(m[campo]));
+      try{
+        await guardarMeta(m);
+        recado(m[campo]?siOn:siOff);
+      }catch(err){
+        m[campo]=antes;                       // no quedó guardado: deshacer
+        b.setAttribute('aria-pressed',String(antes));
+      }
+      delete b.dataset.ocupado;
+    };
   };
+  switche('#mod','moderar','Ahora aprobás vos cada foto','Las fotos van directo a la pantalla');
+  switche('#cerr','cerrado','Muro cerrado · álbum publicado','Muro abierto de nuevo');
   const cola=app.querySelector('#cola');
   if(cola) for(const p of pend){
     const it=await item(codigo,p.id); if(!it) continue;
     const d=document.createElement('div'); d.className='espera';
-    d.innerHTML=`${it.kind==='foto'?`<img src="${it.data}">`:it.kind==='video'?`<video src="${it.data}" muted></video>`
+    d.innerHTML=`${it.kind==='foto'?`<img src="${src(it.data)}" alt="">`:it.kind==='video'?`<video src="${src(it.data)}" muted></video>`
       :`<div class="tx">${esc(it.texto||'Saludo de voz')}</div>`}
       <div class="par"><button class="si">Aprobar</button><button class="no">Descartar</button></div>`;
-    d.querySelector('.si').onclick=async()=>{await cambiarEstado(codigo,p.id,'aprobado');recado('Ya está en la pantalla');vEvento(codigo);};
-    d.querySelector('.no').onclick=async()=>{await cambiarEstado(codigo,p.id,'rechazado');vEvento(codigo);};
+    const mover=async(estado,aviso,accion)=>{
+      try{
+        await cambiarEstado(codigo,p.id,estado);
+        recado(aviso,accion);
+        vEvento(codigo);
+      }catch(err){ recado('No se pudo: '+motivo(err)); }
+    };
+    d.querySelector('.si').onclick=()=>mover('aprobado','Ya está en la pantalla');
+    /* descartar era irreversible y de un toque: ahora se puede volver atrás */
+    d.querySelector('.no').onclick=()=>mover('rechazado','Descartado',{
+      texto:'Deshacer',
+      hacer:()=>mover('pendiente','Recuperado')
+    });
     cola.appendChild(d);
   }
 }
@@ -841,6 +1054,7 @@ async function vSubir(codigo){
       zona.innerHTML = medio?`
         <div class="previa">${medio.kind==='video'?`<video src="${medio.previa}" controls playsinline></video>`:`<img src="${medio.previa}" alt="">`}
           <button class="x" aria-label="Quitar">✕</button></div>
+        ${medio.pesado?`<p class="aviso-peso">Pesa ${Math.round(medio.blob.size/1048576)} MB. Con poca señal puede tardar un rato: no cierres la pantalla.</p>`:''}
         <div class="campo"><label for="pie">Epígrafe</label><input id="pie" type="text" placeholder="Opcional" maxlength="90"></div>`
       :`<label class="lente" for="file"><span class="aro">${ESTRELLA}</span>
           <b>Elegí una foto o un video</b><span>Se proyecta apenas la mandes</span>
@@ -851,15 +1065,25 @@ async function vSubir(codigo){
         recado('Preparando…');
         const esVideo=a.type.startsWith('video');
         const blob=esVideo? a : await comprimirBlob(a);
-        medio={kind:esVideo?'video':'foto', blob, previa:URL.createObjectURL(blob)};
+        if(blob.size>MAX_MB*1024*1024){
+          e.target.value='';
+          return recado(`Pesa ${Math.round(blob.size/1048576)} MB y el límite es ${MAX_MB}. Probá con algo más corto.`);
+        }
+        if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
+        medio={kind:esVideo?'video':'foto', blob, previa:URL.createObjectURL(blob), pesado:blob.size>8*1024*1024};
         pintarZona();
       };
-      const x=zona.querySelector('.x'); if(x) x.onclick=()=>{medio=null;pintarZona();};
+      const x=zona.querySelector('.x'); if(x) x.onclick=()=>{
+        if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
+        medio=null;pintarZona();
+      };
+      contador('#pie');
     }
     if(modo==='texto'){
       medio=null;
       zona.innerHTML=`<div class="campo"><label for="msg">Tu dedicatoria</label>
         <textarea id="msg" placeholder="Se proyecta en grande, así que decí algo lindo." maxlength="180"></textarea></div>`;
+      contador('#msg');
     }
     if(modo==='voz'){
       zona.innerHTML=`<div class="lente" style="padding:38px 22px">
@@ -870,11 +1094,15 @@ async function vSubir(codigo){
     }
   }
   app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{
+    if(modo===b.dataset.m) return;
+    if(mr&&mr.state==='recording'){ try{ mr.stop(); }catch(_){} }
     modo=b.dataset.m;
-    app.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    medio=null;            // lo elegido en la otra solapa no se manda por error
+    app.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     pintarZona();
   });
   pintarZona();
+  contador('#autor');
 
   let mr=null,trozos=[],tt=null;
   async function grabar(){
@@ -904,11 +1132,13 @@ async function vSubir(codigo){
     if(!medio&&!texto) return recado('Subí algo o escribí una dedicatoria');
     if(medio && !medio.blob) return recado('La foto no quedó lista, elegila de nuevo');
     const btn=app.querySelector('#enviar');
-    btn.disabled=true; btn.textContent='Revelando…';
+    btn.disabled=true; btn.textContent=medio?'Subiendo…':'Revelando…';
     try{
       await sumar(codigo,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
         kind:medio?medio.kind:'mensaje', blob:medio?medio.blob:null, data:'', autor, texto, ts:Date.now(),
-        estado:m.moderar?'pendiente':'aprobado'});
+        estado:m.moderar?'pendiente':'aprobado'},
+        f=>{ btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`; });
+      if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
       vMomento(m,autor);
     }catch(e){
       console.error('subir',e);
@@ -996,28 +1226,32 @@ async function vPantalla(codigo){
     ${it.texto?`<div class="dice">${esc(it.texto)}</div>`:''}</div>`;
 
   async function mostrar(id,nuevo){
-    const it=await item(codigo,id); if(!it) return;
+    const it=await item(codigo,id);
+    if(!it||!tela.isConnected) return;        // salimos de la sala mientras cargaba
     const a=tela.querySelector('.aguarda'); if(a) a.remove();
     if(nuevo){destello.classList.remove('va');void destello.offsetWidth;destello.classList.add('va');}
-    if(it.kind==='foto') marco(`<img src="${it.data}" alt="">${epigrafe(it,nuevo)}`, nuevo?'revelar':'kb');
-    else if(it.kind==='video') marco(`<video src="${it.data}" autoplay muted loop playsinline></video>${epigrafe(it,nuevo)}`, nuevo?'revelar':'');
+    if((it.kind==='foto'||it.kind==='video')&&!urlSegura(it.data)) return;  // sin archivo
+    if(it.kind==='foto') marco(`<img src="${src(it.data)}" alt="">${epigrafe(it,nuevo)}`, nuevo?'revelar':'kb');
+    else if(it.kind==='video') marco(`<video src="${src(it.data)}" autoplay muted loop playsinline></video>${epigrafe(it,nuevo)}`, nuevo?'revelar':'');
     else if(it.kind==='audio') marco(`<div class="placa"><div class="cita">Un saludo de voz</div>
-      <div class="quien">${esc(it.autor)}</div><audio src="${it.data}" autoplay controls style="margin-top:30px"></audio></div>`,'encaja');
+      <div class="quien">${esc(it.autor)}</div><audio src="${src(it.data)}" autoplay controls style="margin-top:30px"></audio></div>`,'encaja');
     else marco(`<div class="placa"><div class="cita">“${esc(it.texto)}”</div>
       <div class="quien">${esc(it.autor)}</div></div>`,'encaja');
   }
   async function mosaico(){
     const fotos=[];
-    for(const id of ids.slice(-9)){const it=await item(codigo,id); if(it&&it.kind==='foto') fotos.push(it);}
+    for(const id of ids.slice(-9)){const it=await item(codigo,id); if(it&&it.kind==='foto'&&urlSegura(it.data)) fotos.push(it);}
     if(fotos.length<4) return false;
-    marco(`<div class="mosaico">${fotos.map((f,i)=>`<img src="${f.data}" style="animation-delay:${i*.1}s">`).join('')}</div>`,'encaja');
+    marco(`<div class="mosaico">${fotos.map((f,i)=>`<img src="${src(f.data)}" style="animation-delay:${i*.1}s">`).join('')}</div>`,'encaja');
     return true;
   }
   async function revisar(){
     const idx=(await indice(codigo)).filter(i=>i.estado==='aprobado');
+    const cuenta=app.querySelector('#cuenta');
+    if(!cuenta||!tela.isConnected) return false;   // la vista ya no está
     const nuevos=idx.filter(i=>!ids.includes(i.id));
     ids=idx.map(i=>i.id);
-    app.querySelector('#cuenta').innerHTML=ids.length+'<small>En el muro</small>';
+    cuenta.innerHTML=ids.length+'<small>En el muro</small>';
     if(nuevos.length){
       const ultimo=nuevos[nuevos.length-1].id;
       cursor=ids.indexOf(ultimo);
@@ -1027,14 +1261,17 @@ async function vPantalla(codigo){
     return false;
   }
   async function pasar(){
-    if(!ids.length) return;
+    if(!ids.length||!tela.isConnected) return;
     vueltas++;
     if(vueltas%6===0 && await mosaico()) return;
     cursor=(cursor+1)%ids.length;
     await mostrar(ids[cursor],false);
   }
   await revisar();
-  timerSala=setInterval(async()=>{ const hubo=await revisar(); if(!hubo) await pasar(); },7000);
+  timerSala=setInterval(async()=>{
+    try{ const hubo=await revisar(); if(!hubo) await pasar(); }
+    catch(e){ console.error('sala',e); }       // una noche entera sin cortarse
+  },7000);
 }
 
 function vFinal(m){
@@ -1061,15 +1298,16 @@ async function vAlbum(codigo){
   const items=[];
   for(const i of idx){const it=await item(codigo,i.id); if(it) items.push(it);}
   const n=k=>items.filter(i=>i.kind===k).length;
-  const visuales=items.filter(i=>i.kind==='foto'||i.kind==='video');
+  /* si un item quedó sin archivo (subida cortada) no lo mostramos roto */
+  const visuales=items.filter(i=>(i.kind==='foto'||i.kind==='video')&&urlSegura(i.data));
   const portada=m.portada||(visuales.find(i=>i.kind==='foto')||{}).data||'';
   const cifra=(t,v)=>`<div class="cifra ${v?'':'cero'}"><span>${t}</span><b>${v}</b></div>`;
 
   app.innerHTML=`
   ${barra('Álbum digital',esc(m.codigo))}
   <div class="album">
-    <div class="tapa"><div class="fondo" style="background-image:url('${portada}')"></div>
-      <div class="medallon">${portada?`<img src="${portada}" alt="">`:''}</div></div>
+    <div class="tapa"><div class="fondo" style="background-image:url('${encodeURI(urlSegura(portada))}')"></div>
+      <div class="medallon">${urlSegura(portada)?`<img src="${src(portada)}" alt="">`:''}</div></div>
     <div class="wrap">
       <h1 class="sube">${esc(m.nombre)}</h1>
       <div class="fecha sube" style="animation-delay:.1s">${bonito(m.fecha)}</div>
@@ -1078,12 +1316,12 @@ async function vAlbum(codigo){
       <div class="filete" style="max-width:240px;margin:26px auto">${ESTRELLA}</div>
       <div class="cifras">${cifra('Fotos',n('foto'))}${cifra('Videos',n('video'))}${cifra('Mensajes',n('mensaje'))}${cifra('Audios',n('audio'))}</div>
       ${visuales.length?`<div class="rejilla">${visuales.map(i=>
-        `<a href="${i.data}" download="${esc(m.nombre)}-${i.id}.${i.kind==='foto'?'jpg':'mp4'}">
-          ${i.kind==='foto'?`<img src="${i.data}" alt="Foto de ${esc(i.autor)}" loading="lazy">`:`<video src="${i.data}" muted></video>`}</a>`).join('')}</div>`:''}
+        `<a href="${src(i.data)}" target="_blank" rel="noopener" title="Abrir en grande">
+          ${i.kind==='foto'?`<img src="${src(i.data)}" alt="Foto de ${esc(i.autor)}" loading="lazy">`:`<video src="${src(i.data)}" muted preload="metadata"></video>`}</a>`).join('')}</div>`:''}
       ${items.filter(i=>i.kind==='mensaje').map(i=>
         `<div class="dedicatoria"><p>“${esc(i.texto)}”</p><b>${esc(i.autor)}</b></div>`).join('')}
       ${items.filter(i=>i.kind==='audio').map(i=>
-        `<div class="dedicatoria"><b>${esc(i.autor)}</b><audio src="${i.data}" controls style="width:100%;margin-top:12px"></audio></div>`).join('')}
+        `<div class="dedicatoria"><b>${esc(i.autor)}</b><audio src="${src(i.data)}" controls style="width:100%;margin-top:12px"></audio></div>`).join('')}
       ${items.length?`<div class="acciones"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
         <p class="pie-nota">${items.length} recuerdos de ${new Set(items.map(i=>i.autor)).size} personas.</p>`
       :`<div class="vacio">El álbum está vacío por ahora.<br>Todo lo que suban los invitados aparece acá.</div>`}
@@ -1093,34 +1331,61 @@ async function vAlbum(codigo){
   app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);
   const dl=app.querySelector('#dl');
   if(dl){
+    const base=nombreSeguro(m.nombre);
     dl.onclick=async()=>{
-      if(!window.JSZip){
-        visuales.forEach((i,k)=>setTimeout(()=>{
-          const a=document.createElement('a'); a.href=i.data;
-          a.download=`${m.nombre}-${k+1}.${i.kind==='foto'?'jpg':'mp4'}`; a.click();
-        },k*400));
-        return recado('Descargando de a una');
-      }
-      dl.disabled=true; dl.textContent='Armando el archivo…';
+      if(dl.disabled) return;
+      dl.disabled=true;
+      const total=visuales.length;
+      let hechos=0, fallados=0;
+      const paso=()=>{ dl.textContent=`Bajando ${hechos}/${total}…`; };
+      paso();
       try{
-        const zip=new JSZip();
-        visuales.forEach((i,k)=>zip.file(
-          `${m.nombre}-${String(k+1).padStart(3,'0')}.${i.kind==='foto'?'jpg':'mp4'}`,
-          i.data.split(',')[1], {base64:true}));
+        /* Hay que traerse el contenido real: antes se guardaba la dirección
+           del archivo como si fuera el archivo, y el ZIP salía vacío. */
+        const archivos=[];
+        for(const [k,i] of visuales.entries()){
+          try{
+            const b=await aBlob(i.data);
+            if(b&&b.size) archivos.push({
+              nombre:`${base}-${String(k+1).padStart(3,'0')}.${EXT[b.type]||(i.kind==='foto'?'jpg':'mp4')}`,
+              blob:b});
+            else fallados++;
+          }catch(err){ fallados++; console.warn('no pude bajar',i.id,err); }
+          hechos++; paso();
+        }
+        if(!archivos.length) throw new Error('no se pudo bajar ningún archivo');
+
         const dedis=items.filter(i=>i.kind==='mensaje');
-        if(dedis.length) zip.file('dedicatorias.txt',
-          `${m.nombre} · ${bonito(m.fecha)}\n\n`+
-          dedis.map(i=>`"${i.texto}"\n   — ${i.autor}\n`).join('\n'));
-        const blob=await zip.generateAsync({type:'blob'});
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download=`${m.nombre} - Click Eterno.zip`; a.click();
-        setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-        recado('Listo · '+visuales.length+' archivos en un ZIP');
-      }catch(e){ recado('No pude armar el ZIP'); }
+        const texto=dedis.length?`${m.nombre} · ${bonito(m.fecha)}\n\n`+
+          dedis.map(i=>`"${i.texto}"\n   — ${i.autor}\n`).join('\n'):'';
+
+        if(window.JSZip){
+          dl.textContent='Armando el archivo…';
+          const zip=new JSZip();
+          archivos.forEach(a=>zip.file(a.nombre,a.blob));
+          if(texto) zip.file('dedicatorias.txt',texto);
+          bajarBlob(await zip.generateAsync({type:'blob'}),`${base} - Click Eterno.zip`);
+          recado(`Listo · ${archivos.length} archivos`+(fallados?` (${fallados} no se pudieron bajar)`:''));
+        }else{
+          /* Sin la librería (CDN caído): de a uno, pero como blob propio,
+             así el navegador descarga en vez de irse de la página. */
+          archivos.forEach((a,k)=>setTimeout(()=>bajarBlob(a.blob,a.nombre),k*500));
+          if(texto) setTimeout(()=>bajarBlob(new Blob([texto],{type:'text/plain'}),'dedicatorias.txt'),archivos.length*500);
+          recado('Descargando de a una');
+        }
+      }catch(e){
+        console.error('descargar album',e);
+        recado('No pude preparar la descarga: '+motivo(e));
+      }
       dl.disabled=false; dl.textContent='Descargar todo';
     };
-    app.querySelector('#pdf').onclick=()=>window.print();
+    app.querySelector('#pdf').onclick=()=>{
+      document.body.classList.add('imp-album');
+      const limpiar=()=>document.body.classList.remove('imp-album');
+      addEventListener('afterprint',limpiar,{once:true});
+      setTimeout(limpiar,4000);
+      window.print();
+    };
   }
 }
 
@@ -1147,6 +1412,7 @@ async function vCartel(codigo){
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);
   pintarQR(app.querySelector('#qrc'),enlaceDe(codigo),186);
+  hojaPostal(true);
   app.querySelector('#imprimir').onclick=()=>window.print();
 }
 
@@ -1186,24 +1452,70 @@ async function vDiagnostico(){
 }
 
 /* ══════════ router ══════════ */
-function ir(ruta){ location.hash='#'+ruta; pintar(ruta); }
+/* Antes ir() cambiaba el hash Y pintaba: el evento hashchange volvía a
+   pintar, así que cada navegación cargaba todo dos veces. */
+function ir(ruta){
+  const destino='#'+ruta;
+  if(location.hash===destino) pintar(ruta);   // mismo hash: no hay evento
+  else location.hash=destino;                 // hashchange pinta
+}
+
+/* Última red: si una vista falla, el usuario ve una salida, no una pantalla muerta. */
+function pantallaError(e){
+  console.error('vista',e);
+  try{ parar(); }catch(_){}
+  app.innerHTML=`
+  <div class="final"><div>
+    <img src="${LOGO_MARK}" style="width:150px;opacity:.6" alt="Click Eterno">
+    <div class="filete" style="max-width:240px;margin:24px auto">${ESTRELLA}</div>
+    <p class="espaciado">Algo se cortó</p>
+    <h1 class="ital" style="font-size:clamp(30px,8vw,42px);margin:14px 0 14px">Probá de nuevo</h1>
+    <p style="color:#B5AC9E;line-height:1.8;max-width:32ch;margin:0 auto;font-size:14.5px">${esc(motivo(e))}</p>
+    <div style="max-width:320px;margin:32px auto 0">
+      <button class="oro-btn" id="recargar">Recargar</button>
+      <button class="hilo-btn" id="alInicio">Volver al inicio</button>
+    </div>
+  </div></div>`;
+  app.querySelector('#recargar').onclick=()=>location.reload();
+  app.querySelector('#alInicio').onclick=()=>ir('portada');
+}
+
+const PIDE_CODIGO=['evento','subir','pantalla','album','cartel'];
 function pintar(ruta){
-  const [v,arg]=ruta.split('/');
+  const [v,arg]=String(ruta||'').split('/');
   window.scrollTo(0,0);
-  if(v==='panel') return vAcceso();
-  if(v==='diagnostico') return vDiagnostico();
-  if(v==='evento') return vEvento(arg);
-  if(v==='invitado') return vElegir('subir','Invitado');
-  if(v==='proyector') return vElegir('pantalla','Pantalla');
-  if(v==='subir') return vSubir(arg);
-  if(v==='pantalla') return vPantalla(arg);
-  if(v==='album') return vAlbum(arg);
-  if(v==='cartel') return vCartel(arg);
-  return vPortada();
+  if(PIDE_CODIGO.includes(v)&&!arg){        // enlace cortado o mal pegado
+    recado('Ese enlace está incompleto');
+    return vPortada().catch(pantallaError);
+  }
+  let p;
+  try{
+    if(v==='panel') p=vAcceso();
+    else if(v==='diagnostico') p=vDiagnostico();
+    else if(v==='evento') p=vEvento(arg);
+    else if(v==='invitado') p=vElegir('subir','Invitado');
+    else if(v==='proyector') p=vElegir('pantalla','Pantalla');
+    else if(v==='subir') p=vSubir(arg);
+    else if(v==='pantalla') p=vPantalla(arg);
+    else if(v==='album') p=vAlbum(arg);
+    else if(v==='cartel') p=vCartel(arg);
+    else p=vPortada();
+  }catch(e){ return pantallaError(e); }
+  if(p&&typeof p.catch==='function') p.catch(pantallaError);
+  return p;
 }
 addEventListener('hashchange',()=>pintar(location.hash.slice(1)||'portada'));
+
+/* Nada de fallos mudos: si una promesa queda sin capturar, se avisa. */
+addEventListener('unhandledrejection',e=>{
+  console.error('promesa sin capturar',e.reason);
+  recado('Algo falló: '+motivo(e.reason));
+  e.preventDefault();
+});
 
 (function(){
   pintar(location.hash.slice(1)||'portada');
 })();
 </script>
+</body>
+</html>
