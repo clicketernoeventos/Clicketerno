@@ -271,7 +271,16 @@ option{background:#0B0A08}
 .acciones{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:38px 0 18px}
 .acciones button{border:1px solid var(--hilo);padding:17px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champan);transition:.3s}
 .acciones button:hover{border-color:var(--oro);color:var(--oro)}
-.pie-marca{text-align:center;padding:50px 0 20px;opacity:.4}
+.sumate{border-top:1px solid var(--gris);margin-top:44px;padding:34px 0 10px;text-align:center}
+.sumate p{font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;line-height:1.45;margin-bottom:20px}
+.sumate a{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--hilo);
+  padding:14px 24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--champan);
+  transition:border-color .3s,color .3s;text-decoration:none}
+.sumate a:hover{border-color:var(--oro);color:var(--oro)}
+.sumate a svg{width:17px;height:17px;fill:#2AA84A}
+.sumate small{display:block;margin-top:16px;font-size:10px;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--mute)}
+.pie-marca{text-align:center;padding:40px 0 20px;opacity:.4}
 .pie-marca img{width:120px}
 
 .final{min-height:100svh;display:grid;place-items:center;text-align:center;padding:34px}
@@ -321,21 +330,81 @@ option{background:#0B0A08}
 .pulso-ev b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;line-height:1}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
-.barra-abajo{position:fixed;left:0;right:0;bottom:0;z-index:45;display:grid;grid-template-columns:repeat(3,1fr);
-  background:rgba(0,0,0,.94);backdrop-filter:blur(18px);border-top:1px solid var(--gris);
-  padding-bottom:env(safe-area-inset-bottom);max-width:620px;margin:0 auto}
-.barra-abajo button{position:relative;padding:13px 6px 15px;display:flex;flex-direction:column;
-  align-items:center;gap:7px;color:var(--mute);transition:color .3s}
-.barra-abajo button:before{content:'';position:absolute;top:0;left:50%;width:34px;height:2px;
-  background:var(--oro);transform:translateX(-50%) scaleX(0);transition:transform .4s var(--e)}
-.barra-abajo button[aria-selected=true]{color:var(--oro)}
-.barra-abajo button[aria-selected=true]:before{transform:translateX(-50%) scaleX(1)}
-.barra-abajo svg{width:21px;height:21px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.barra-abajo em{font-style:normal;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
-.barra-abajo .globo-n{position:absolute;top:8px;left:calc(50% + 8px);min-width:17px;height:17px;padding:0 5px;
+.barra-abajo{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(15px + env(safe-area-inset-bottom));z-index:45;
+  width:min(348px,calc(100% - 36px));display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
+  background:rgba(13,11,9,.9);backdrop-filter:blur(22px) saturate(1.3);
+  border:1px solid var(--hilo);border-radius:999px;padding:6px;
+  box-shadow:0 22px 46px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.05)}
+.barra-abajo button{position:relative;border-radius:999px;padding:11px 6px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mute);
+  transition:color .35s var(--e),background .35s var(--e)}
+.barra-abajo button[aria-selected=true]{color:#0A0806;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
+.barra-abajo svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.barra-abajo em{font-style:normal;font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+.barra-abajo .globo-n{position:absolute;top:5px;left:calc(50% + 7px);min-width:17px;height:17px;padding:0 5px;
   background:var(--oro);color:#0A0806;border-radius:999px;display:grid;place-items:center;
-  font-size:10px;font-weight:600;letter-spacing:0}
+  font-size:10px;font-weight:600;letter-spacing:0;border:1.5px solid #0D0B09}
+.barra-abajo button[aria-selected=true] .globo-n{background:#0A0806;color:var(--oro);border-color:transparent}
+
+/* accesos rápidos: circulitos en fila */
+.accesos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 8px}
+.accesos button{display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--mute);
+  transition:color .3s}
+.accesos .aro-a{width:54px;height:54px;border-radius:50%;border:1px solid var(--gris);
+  display:grid;place-items:center;color:var(--champan);background:rgba(255,255,255,.02);
+  transition:border-color .35s var(--e),transform .3s var(--e),background .35s}
+.accesos button:active .aro-a{transform:scale(.94)}
+.accesos button:hover .aro-a{border-color:var(--hilo2);background:rgba(217,174,114,.06)}
+.accesos .destacado .aro-a{background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
+  border-color:transparent;color:#0A0806}
+.accesos em{font-style:normal;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  text-align:center;line-height:1.4}
+.accesos svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ═══ álbum: portada a sangre y mosaico ═══ */
+.tapa-g{position:relative;height:min(52vh,430px);overflow:hidden;display:flex;
+  align-items:flex-end;isolation:isolate}
+.tapa-g .foto{position:absolute;inset:0;background-size:cover;background-position:center;
+  transform:scale(1.06);animation:kbtapa 26s var(--e) forwards}
+.tapa-g:after{content:'';position:absolute;inset:0;
+  background:linear-gradient(transparent 18%,rgba(0,0,0,.5) 58%,#000 96%)}
+.tapa-g .texto{position:relative;z-index:2;padding:0 26px 30px;width:100%;max-width:620px;margin:0 auto}
+.tapa-g .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
+.tapa-g h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(38px,12vw,54px);line-height:1}
+.tapa-g .cuando{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#B5AC9E;margin-top:14px}
+.pastillas{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pastilla{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hilo);
+  border-radius:999px;padding:7px 14px;font-size:11px;letter-spacing:.12em;color:var(--champan);
+  background:rgba(0,0,0,.4);backdrop-filter:blur(8px)}
+.pastilla b{font-weight:600;font-size:12.5px;letter-spacing:0}
+.seccion-a{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  margin:34px 0 14px;padding-top:6px}
+.seccion-a h2{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.seccion-a span{font-size:10.5px;letter-spacing:.2em;color:var(--oro)}
+.mosaico-a{columns:2;column-gap:7px}
+@media(min-width:560px){.mosaico-a{columns:3}}
+.mosaico-a a{display:block;break-inside:avoid;margin-bottom:7px;border-radius:12px;overflow:hidden;
+  position:relative;background:var(--humo);line-height:0}
+.mosaico-a img,.mosaico-a video{width:100%;height:auto;display:block;
+  transition:transform .7s var(--e),filter .5s}
+.mosaico-a a:hover img{transform:scale(1.04);filter:brightness(1.06)}
+.mosaico-a .quien-f{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;
+  font-size:10.5px;letter-spacing:.12em;color:#F3EDE0;line-height:1.3;
+  background:linear-gradient(transparent,rgba(0,0,0,.78));opacity:0;transition:opacity .4s var(--e)}
+.mosaico-a a:hover .quien-f{opacity:1}
+.mosaico-a .marca-video{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#F3EDE0;
+  font-size:9px;border:1px solid rgba(255,255,255,.16)}
+.wrap-a{max-width:620px;margin:0 auto;padding:0 26px 130px}
+.volver-flota{position:fixed;top:calc(15px + env(safe-area-inset-top));left:16px;z-index:30;
+  width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.14);color:var(--champan);display:grid;place-items:center;
+  font-size:18px;line-height:1;transition:background .3s}
+.volver-flota:active{background:rgba(0,0,0,.7)}
 .wrap-ev{max-width:620px;margin:0 auto;padding:24px 26px 124px}
 .panel-ev[hidden]{display:none}
 .panel-ev{animation:entraBloque .42s var(--e) both}
@@ -471,6 +540,10 @@ const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;',
 const urlSegura=u=>{const t=String(u==null?'':u).trim();
   return /^(https?:\/\/|data:(image|video|audio)\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif|mp4|webm)$/i.test(t)?t:'';};
 const src=u=>esc(urlSegura(u));
+/* Para meter una dirección dentro de url(...) de CSS solo hay que escapar
+   lo que rompe el paréntesis o las comillas. encodeURI() no sirve: vuelve a
+   codificar lo ya codificado (%20 pasa a %2520) y rompe la imagen. */
+const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
 /* nombre de archivo que no rompa en Windows/Mac */
 const nombreSeguro=s=>(String(s==null?'':s).replace(/[\\/:*?"<>|\n\r]+/g,'-').trim().slice(0,40)||'album');
 const hoy=()=>new Date().toISOString().slice(0,10);
@@ -691,6 +764,39 @@ const parar=()=>{
   hojaPostal(false);
 };
 
+/* iconos de la interfaz */
+const IC={
+  compartir:`<svg viewBox="0 0 24 24"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.2"/></svg>`,
+  moderar:`<svg viewBox="0 0 24 24"><path d="M20 6.8 9.6 17.2 4 11.7"/></svg>`,
+  ajustes:`<svg viewBox="0 0 24 24"><path d="M4 8.5h8.5M17 8.5h3M4 15.5h3.5M12 15.5h8"/><circle cx="14.8" cy="8.5" r="2.3"/><circle cx="9.8" cy="15.5" r="2.3"/></svg>`,
+  fotos:`<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="8.6" cy="9.8" r="1.5"/><path d="M4 16.5 9 12l3.4 3 2.6-2.2 5 4.2"/></svg>`,
+  recuerdos:`<svg viewBox="0 0 24 24"><path d="M20 13.5a3 3 0 0 1-3 3H9.5L5 20v-3.5a3 3 0 0 1-1-2.2V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"/></svg>`,
+  guardar:`<svg viewBox="0 0 24 24"><path d="M12 4v10.5M7.8 10.6 12 15l4.2-4.4M4.5 18.5h15"/></svg>`,
+  pantalla:`<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12.5" rx="2"/><path d="M9 20.5h6M12 17v3.5"/></svg>`,
+  invitado:`<svg viewBox="0 0 24 24"><rect x="7" y="2.8" width="10" height="18.4" rx="2.5"/><path d="M10.8 5.6h2.4"/></svg>`,
+  cartel:`<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17.5H5.5a1.5 1.5 0 0 1-1.5-1.5v-4A2.5 2.5 0 0 1 6.5 9.5h11A2.5 2.5 0 0 1 20 12v4a1.5 1.5 0 0 1-1.5 1.5H17"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>`
+};
+
+/* solapas con barra inferior: las usan el panel y el álbum */
+function activarSolapas(inicial){
+  const botones=[...app.querySelectorAll('[data-sol]')];
+  if(!botones.length) return;
+  const paneles=botones.map(b=>document.getElementById(b.dataset.sol)).filter(Boolean);
+  const mostrar=id=>{
+    botones.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sol===id)));
+    paneles.forEach(s=>{
+      const activo=s.id===id;
+      s.hidden=!activo;
+      if(activo){ s.style.animation='none'; void s.offsetWidth; s.style.animation=''; }
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  botones.forEach(b=>b.onclick=()=>mostrar(b.dataset.sol));
+  mostrar(inicial&&paneles.some(s=>s.id===inicial)?inicial:botones[0].dataset.sol);
+}
+const solapa=(id,icono,texto,globo)=>
+  `<button role="tab" data-sol="${id}" aria-selected="false">${icono}<em>${texto}</em>${globo||''}</button>`;
+
 /* los números suben en vez de aparecer de golpe */
 function contarHasta(el,fin,ms){
   if(!el) return;
@@ -730,6 +836,18 @@ const guarda={
   leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
   escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
 };
+/* Bloque de referencia: lo ve el invitado después de subir y al final del
+   álbum. Es de dónde salen las consultas de las fiestas siguientes. */
+const WSP='5493412506451';
+const wsp=t=>`https://wa.me/${WSP}?text=${encodeURIComponent(t)}`;
+const ICONO_WSP=`<svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>`;
+const sumate=(frase,mensaje)=>`
+  <div class="sumate">
+    <p>${frase}</p>
+    <a href="${wsp(mensaje)}" target="_blank" rel="noopener">${ICONO_WSP} Escribinos</a>
+    <small>Click Eterno · Invitaciones y experiencias · Rosario</small>
+  </div>`;
+
 const PIN_KEY='ce:pin';
 let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 
@@ -841,12 +959,14 @@ async function vPortada(){
       color:var(--mute);border:1px dashed var(--hilo);padding:14px 16px">
       <b style="color:var(--oro);font-weight:400">Modo demostración.</b> Todavía no está conectada la base de datos,
       así que cada celular ve solo sus propias fotos. Sirve para probar, no para un evento real.</p>`}
-    <p class="pie-nota sube" style="animation-delay:.5s;opacity:.5;font-size:11px;letter-spacing:.2em">
-      VERSIÓN v11 · <a href="#diagnostico" style="color:var(--oro)">Diagnóstico</a></p>
+    <p class="pie-nota sube" id="marcaVer" style="animation-delay:.5s;opacity:.28;font-size:10px;letter-spacing:.24em">v12</p>
     <p class="pie-nota sube" style="animation-delay:.55s">${evs.length? evs.length+' evento'+(evs.length>1?'s':'')+' guardado'+(evs.length>1?'s':'') : 'Se guarda compartido: abrilo en otro celular y vas a ver lo mismo.'}</p>
   </div>`;
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
   const d=app.querySelector('#demo'); if(d) d.onclick=sembrar;
+  /* diagnóstico escondido: tres toques en el número de versión */
+  const mv=app.querySelector('#marcaVer');
+  if(mv){ let t=0; mv.onclick=()=>{ if(++t>=3) ir('diagnostico'); }; }
 }
 
 const dataABlob=async d=>{ try{ return await (await fetch(d)).blob(); }catch(e){ return null; } };
@@ -1007,11 +1127,6 @@ async function vEvento(codigo){
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
   const n=k=>apro.filter(i=>i.kind===k).length;
 
-  const ICONO={
-    compartir:`<svg viewBox="0 0 24 24"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1.2"/></svg>`,
-    moderar:`<svg viewBox="0 0 24 24"><path d="M20 6.8 9.6 17.2 4 11.7"/></svg>`,
-    ajustes:`<svg viewBox="0 0 24 24"><path d="M4 8.5h8.5M17 8.5h3M4 15.5h3.5M12 15.5h8"/><circle cx="14.8" cy="8.5" r="2.3"/><circle cx="9.8" cy="15.5" r="2.3"/></svg>`
-  };
   const cifra=(k,t)=>`<div><b data-cifra="${n(k)}" data-kind="${k}">0</b><span>${t}</span></div>`;
 
   app.innerHTML=`
@@ -1034,13 +1149,14 @@ async function vEvento(codigo){
         <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin:20px auto 0;max-width:30ch">
           Escanean con la cámara del celular y suben. No hay que instalar nada.</p>
         <button class="hilo-btn" id="copiar">Copiar enlace</button>
-        <button class="hilo-btn" data-ir="cartel/${codigo}">Cartel para las mesas</button>
       </div>
-      <button class="oro-btn" data-ir="pantalla/${codigo}">Abrir pantalla del salón</button>
-      <p class="pie-nota">Dejala abierta en la notebook conectada al proyector. Se actualiza sola.</p>
-      <div class="filete">${ESTRELLA}</div>
-      <button class="hilo-btn" data-ir="subir/${codigo}" style="margin-top:0">Ver la vista del invitado</button>
-      <button class="hilo-btn" data-ir="album/${codigo}">Ver el álbum digital</button>
+      <div class="accesos">
+        <button class="destacado" data-ir="pantalla/${codigo}"><span class="aro-a">${IC.pantalla}</span><em>Pantalla<br>del salón</em></button>
+        <button data-ir="subir/${codigo}"><span class="aro-a">${IC.invitado}</span><em>Vista del<br>invitado</em></button>
+        <button data-ir="album/${codigo}"><span class="aro-a">${IC.fotos}</span><em>Álbum<br>digital</em></button>
+        <button data-ir="cartel/${codigo}"><span class="aro-a">${IC.cartel}</span><em>Cartel<br>de mesa</em></button>
+      </div>
+      <p class="pie-nota">Dejá la pantalla abierta en la notebook conectada al proyector. Se actualiza sola.</p>
     </section>
 
     <section class="panel-ev" id="pModerar" hidden>
@@ -1071,10 +1187,9 @@ async function vEvento(codigo){
   </div>
 
   <nav class="barra-abajo" role="tablist">
-    <button role="tab" data-sol="pCompartir" aria-selected="true">${ICONO.compartir}<em>Compartir</em></button>
-    <button role="tab" data-sol="pModerar" aria-selected="false">${ICONO.moderar}<em>Moderar</em>
-      ${pend.length?`<span class="globo-n" id="globoPend">${pend.length}</span>`:''}</button>
-    <button role="tab" data-sol="pAjustes" aria-selected="false">${ICONO.ajustes}<em>Ajustes</em></button>
+    ${solapa('pCompartir',IC.compartir,'Compartir')}
+    ${solapa('pModerar',IC.moderar,'Moderar',pend.length?`<span class="globo-n" id="globoPend">${pend.length}</span>`:'')}
+    ${solapa('pAjustes',IC.ajustes,'Ajustes')}
   </nav>`;
 
   app.querySelector('.atras').onclick=()=>ir('panel');
@@ -1082,20 +1197,8 @@ async function vEvento(codigo){
   app.querySelectorAll('.estrella').forEach(e=>{ if(!e.innerHTML) e.innerHTML=ESTRELLA; });
   animarCifras();
 
-  /* pestañas */
-  const solapas=[...app.querySelectorAll('[data-sol]')];
-  const mostrar=id=>{
-    solapas.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sol===id)));
-    app.querySelectorAll('.panel-ev').forEach(s=>{
-      const activo=s.id===id;
-      s.hidden=!activo;
-      if(activo){ s.style.animation='none'; void s.offsetWidth; s.style.animation=''; }
-    });
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-  solapas.forEach(b=>b.onclick=()=>mostrar(b.dataset.sol));
-  /* si hay cosas esperando, abrimos ahí: es lo urgente */
-  if(pend.length) mostrar('pModerar');
+  /* si hay cosas esperando, abrimos ahí: es lo urgente durante la fiesta */
+  activarSolapas(pend.length?'pModerar':'pCompartir');
   pintarQR(app.querySelector('#qr'),enlaceDe(codigo),106);
 
   const porta=app.querySelector('#porta');
@@ -1372,6 +1475,9 @@ function vMomento(m,autor){
       <button class="oro-btn" id="otra">Subir otra</button>
       <button class="hilo-btn" id="ver">Mirar la pantalla</button>
     </div>
+    <div class="sube" style="animation-delay:.45s;max-width:420px;margin:0 auto">
+      ${sumate('¿Querés esto en tu fiesta?','Hola! Estuve en un evento con el muro de Click Eterno y quiero info para el mío 🎉')}
+    </div>
   </div></div>`;
   app.querySelector('#otra').onclick=()=>ir('subir/'+m.codigo);
   app.querySelector('#ver').onclick=()=>ir('pantalla/'+m.codigo);
@@ -1496,6 +1602,9 @@ function vFinal(m){
     <p class="sube" style="animation-delay:.22s;color:#B5AC9E;line-height:1.8">${bonito(m.fecha)}<br>El álbum ya está listo.</p>
     <div class="sube" style="animation-delay:.34s;max-width:330px;margin:38px auto 0">
       <button class="oro-btn" id="ver">Ver el álbum digital</button></div>
+    <div class="sube" style="animation-delay:.5s;max-width:420px;margin:22px auto 0">
+      ${sumate('¿Querés esto en tu evento?','Hola! Quiero info del muro de fotos en vivo para mi evento 🎉')}
+    </div>
   </div></div>`;
   app.querySelector('#ver').onclick=()=>ir('album/'+m.codigo);
 }
@@ -1522,33 +1631,70 @@ async function vAlbum(codigo){
   const portada=m.portada||(visuales.find(i=>i.kind==='foto')||{}).data||'';
   const cifra=(t,v)=>`<div class="cifra ${v?'':'cero'}"><span>${t}</span><b data-cifra="${v}">0</b></div>`;
 
+  const dedis=items.filter(i=>i.kind==='mensaje'), audios=items.filter(i=>i.kind==='audio');
+  const gente=new Set(items.map(i=>i.autor)).size;
+  const past=(v,t)=>v?`<span class="pastilla"><b>${v}</b> ${t}</span>`:'';
+
   app.innerHTML=`
-  ${barra('Álbum digital',esc(m.codigo))}
+  <button class="volver-flota" aria-label="Volver">←</button>
   <div class="album">
-    <div class="tapa"><div class="fondo" style="background-image:url('${encodeURI(urlSegura(portada))}')"></div>
-      <div class="medallon">${urlSegura(portada)?`<img src="${src(portada)}" alt="">`:''}</div></div>
-    <div class="wrap">
-      <h1 class="sube">${esc(m.nombre)}</h1>
-      <div class="fecha sube" style="animation-delay:.1s">${bonito(m.fecha)}</div>
-      ${m.vence?`<div class="sube" style="animation-delay:.16s;text-align:center;font-size:11.5px;
-        color:var(--mute);margin-top:14px;letter-spacing:.08em">Disponible para descargar hasta el ${bonito(m.vence)}</div>`:''}
-      <div class="filete" style="max-width:240px;margin:26px auto">${ESTRELLA}</div>
-      <div class="cifras">${cifra('Fotos',n('foto'))}${cifra('Videos',n('video'))}${cifra('Mensajes',n('mensaje'))}${cifra('Audios',n('audio'))}</div>
-      ${visuales.length?`<div class="rejilla">${visuales.map(i=>
-        `<a href="${src(i.data)}" target="_blank" rel="noopener" title="Abrir en grande">
-          ${i.kind==='foto'?`<img src="${src(i.data)}" alt="Foto de ${esc(i.autor)}" loading="lazy">`:`<video src="${src(i.data)}" muted preload="metadata"></video>`}</a>`).join('')}</div>`:''}
-      ${items.filter(i=>i.kind==='mensaje').map(i=>
-        `<div class="dedicatoria"><p>“${esc(i.texto)}”</p><b>${esc(i.autor)}</b></div>`).join('')}
-      ${items.filter(i=>i.kind==='audio').map(i=>
-        `<div class="dedicatoria"><b>${esc(i.autor)}</b><audio src="${src(i.data)}" controls style="width:100%;margin-top:12px"></audio></div>`).join('')}
-      ${items.length?`<div class="acciones"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
-        <p class="pie-nota">${items.length} recuerdos de ${new Set(items.map(i=>i.autor)).size} personas.</p>`
-      :`<div class="vacio">El álbum está vacío por ahora.<br>Todo lo que suban los invitados aparece acá.</div>`}
-      <div class="pie-marca"><img src="${LOGO_MARK}" alt="Click Eterno"></div>
+    <header class="tapa-g">
+      ${urlSegura(portada)?`<div class="foto" style="background-image:url('${cssUrl(portada)}')"></div>`:''}
+      <div class="texto">
+        <p class="arriba">Álbum digital</p>
+        <h1>${esc(m.nombre)}</h1>
+        <p class="cuando">${bonito(m.fecha)}</p>
+        <div class="pastillas">
+          ${past(n('foto'),'fotos')}${past(n('video'),'videos')}
+          ${past(dedis.length,'dedicatorias')}${past(audios.length,'audios')}
+          ${past(gente,gente===1?'persona':'personas')}
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap-a">
+      <section id="aFotos" hidden>
+        ${visuales.length?`
+          <div class="seccion-a"><h2>Lo que sacaron</h2><span>${visuales.length}</span></div>
+          <div class="mosaico-a">${visuales.map(i=>
+            `<a href="${src(i.data)}" target="_blank" rel="noopener" title="Abrir en grande">
+              ${i.kind==='foto'
+                ? `<img src="${src(i.data)}" alt="Foto de ${esc(i.autor)}" loading="lazy">`
+                : `<video src="${src(i.data)}" muted preload="metadata"></video><span class="marca-video">▶</span>`}
+              <span class="quien-f">${esc(i.autor)}</span></a>`).join('')}</div>`
+        :`<div class="vacio">Todavía no hay fotos.<br>Las que suban tus invitados aparecen acá.</div>`}
+      </section>
+
+      <section id="aRecuerdos" hidden>
+        ${dedis.length?`<div class="seccion-a"><h2>Dedicatorias</h2><span>${dedis.length}</span></div>
+          ${dedis.map(i=>`<div class="dedicatoria"><p>“${esc(i.texto)}”</p><b>${esc(i.autor)}</b></div>`).join('')}`:''}
+        ${audios.length?`<div class="seccion-a"><h2>Saludos de voz</h2><span>${audios.length}</span></div>
+          ${audios.map(i=>`<div class="dedicatoria"><b>${esc(i.autor)}</b>
+            <audio src="${src(i.data)}" controls style="width:100%;margin-top:12px"></audio></div>`).join('')}`:''}
+        ${dedis.length||audios.length?'':`<div class="vacio">Todavía nadie dejó un mensaje.</div>`}
+      </section>
+
+      <section id="aGuardar" hidden>
+        <div class="seccion-a"><h2>Llevate el álbum</h2></div>
+        ${items.length?`
+          <p style="color:#B5AC9E;font-size:14.5px;line-height:1.8;margin-bottom:24px">
+            ${items.length} recuerdos de ${gente} ${gente===1?'persona':'personas'}.
+            Se descargan en calidad original.</p>
+          <div class="acciones" style="margin-top:0"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
+          ${m.vence?`<p class="pie-nota">Disponible para descargar hasta el ${bonito(m.vence)}.</p>`:''}`
+        :`<div class="vacio">El álbum está vacío por ahora.</div>`}
+        ${sumate('Las fotos de tu fiesta,<br>en la pantalla y para siempre.','Hola! Vi un álbum de Click Eterno y quiero info para mi evento ✨')}
+        <div class="pie-marca"><img src="${LOGO_MARK}" alt="Click Eterno"></div>
+      </section>
     </div>
-  </div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);
-  animarCifras();
+  </div>
+  <nav class="barra-abajo" role="tablist">
+    ${solapa('aFotos',IC.fotos,'Fotos')}
+    ${solapa('aRecuerdos',IC.recuerdos,'Recuerdos')}
+    ${solapa('aGuardar',IC.guardar,'Guardar')}
+  </nav>`;
+  app.querySelector('.volver-flota').onclick=()=>ir('evento/'+codigo);
+  activarSolapas('aFotos');
   const dl=app.querySelector('#dl');
   if(dl){
     const base=nombreSeguro(m.nombre);
@@ -1638,7 +1784,7 @@ async function vCartel(codigo){
 
 async function vDiagnostico(){
   parar(); tono();
-  app.innerHTML=`${barra('Diagnóstico','Versión v11')}
+  app.innerHTML=`${barra('Diagnóstico','Versión v12')}
   <div class="wrap" style="padding-top:24px">
     <div id="res" style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.9;
       white-space:pre-wrap;word-break:break-word;color:#B5AC9E"></div>
@@ -1647,7 +1793,7 @@ async function vDiagnostico(){
   const out=app.querySelector('#res');
   const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
 
-  linea('Versión de la app: v11');
+  linea('Versión de la app: v12');
   linea('Nube configurada: '+(HAY_NUBE?'sí':'NO'), HAY_NUBE);
   linea('URL: '+NUBE.url);
   linea('Clave: '+(NUBE.clave? NUBE.clave.slice(0,18)+'…' : 'vacía'), !!NUBE.clave);
