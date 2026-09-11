@@ -169,17 +169,59 @@ nav .links a:hover:after{width:100%}
 .btn:active{transform:scale(.975)}
 .trabajo:active .cuerpo-t{transform:translateY(-6px) scale(.99)}
 
-/* ═══ celular ═══ */
+/* ═══════════ marco de iPhone ═══════════
+   Piezas compartidas por el hero, la galería de trabajos y el visor.
+   Los radios van anidados: el de afuera es el de la pantalla más el bisel,
+   que es lo que hace que se lea como un aparato de verdad. */
+.chasis{position:relative;border-radius:var(--r-fuera,44px);padding:var(--bisel,7px);
+  background:linear-gradient(148deg,#9A9184 0%,#2B2721 14%,#6A6256 33%,#1B1815 54%,#7A7265 76%,#221F1A 92%,#4A443B 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.35),
+    inset 0 -1px 1px rgba(255,255,255,.18),
+    0 0 0 .5px rgba(0,0,0,.9),
+    0 50px 76px -46px rgba(0,0,0,.92)}
+.visor-p{position:relative;overflow:hidden;background:#000;
+  border-radius:calc(var(--r-fuera,44px) - var(--bisel,7px));
+  aspect-ratio:9/19.5;container-type:inline-size}
+/* isla dinámica */
+.isla{position:absolute;top:2.4%;left:50%;transform:translateX(-50%);z-index:7;
+  width:30%;aspect-ratio:125/36;background:#000;border-radius:99px;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.05)}
+/* barra de estado: es el detalle que hace que parezca una captura real */
+.barra-ios{position:absolute;top:0;left:0;right:0;z-index:6;height:8.6%;
+  display:flex;align-items:center;justify-content:space-between;padding:0 8% 0 8.5%;
+  color:var(--tinta-p,#F3EDE0);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Jost,system-ui,sans-serif}
+.barra-ios .hora{font-size:4.1cqw;font-weight:600;letter-spacing:-.02em;line-height:1}
+.barra-ios svg{width:16.5cqw;height:auto;display:block}
+/* indicador de inicio */
+.indicador{position:absolute;left:50%;bottom:1.2%;transform:translateX(-50%);z-index:7;
+  width:33%;height:.5%;min-height:2px;border-radius:99px;
+  background:var(--tinta-p,#F3EDE0);opacity:.45}
+/* reflejo del vidrio */
+.reflejo{position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(114deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,.06) 15%,
+    transparent 34%,transparent 72%,rgba(255,255,255,.04) 100%)}
+/* botones laterales */
+.lateral{position:absolute;z-index:0;border-radius:1.5px;
+  background:linear-gradient(90deg,#22201B,#7D7568 45%,#332E27)}
+.lateral.izq{left:calc(var(--bisel,7px) * -.42);width:2.5px}
+.lateral.der{right:calc(var(--bisel,7px) * -.42);width:2.5px}
+.lateral.silencio{top:15.5%;height:3.4%}
+.lateral.vol1{top:22%;height:7%}
+.lateral.vol2{top:31%;height:7%}
+.lateral.power{top:24%;height:10.5%}
+
+/* ═══ celular del hero ═══ */
 .telefono{width:min(300px,76vw);margin-inline:auto;position:relative;perspective:1200px;max-width:100%}
-.telefono .cuerpo{position:relative;border-radius:42px;padding:11px;
-  background:linear-gradient(155deg,#4A4238,#151310 40%,#2C271F);
-  box-shadow:0 60px 90px -50px #000,0 0 90px -60px var(--oro);
-  transition:transform .5s var(--e);transform-style:preserve-3d}
-.telefono .pantalla{border-radius:32px;overflow:hidden;aspect-ratio:9/19;position:relative;background:#0B0A08}
-.telefono .muesca{position:absolute;top:0;left:50%;transform:translateX(-50%);width:38%;height:22px;
-  background:#151310;border-radius:0 0 14px 14px;z-index:5}
-.telefono .brillo-p{position:absolute;inset:0;z-index:4;pointer-events:none;
-  background:linear-gradient(120deg,rgba(255,255,255,.13),transparent 42%)}
+.telefono .cuerpo{--r-fuera:46px;--bisel:8px;
+  transition:transform .5s var(--e);transform-style:preserve-3d;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.35),
+    inset 0 -1px 1px rgba(255,255,255,.18),
+    0 0 0 .5px rgba(0,0,0,.9),
+    0 60px 90px -50px #000,
+    0 0 90px -58px var(--oro)}
 
 /* invitación de muestra */
 .invi{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -298,25 +340,26 @@ nav .links a:hover:after{width:100%}
 .trabajos{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
   gap:clamp(30px,4vw,52px);margin-top:64px;width:100%}
 .trabajo{flex:0 1 258px;width:100%;max-width:258px;margin-inline:auto;text-align:center;cursor:pointer}
-.trabajo .cuerpo-t{position:relative;border-radius:40px;padding:9px;
-  background:linear-gradient(155deg,#5C5245,#181511 42%,#3A332A);
-  box-shadow:0 44px 70px -46px rgba(0,0,0,.75);
+.trabajo .cuerpo-t{--r-fuera:42px;--bisel:7px;
   transition:transform .6s var(--e),box-shadow .6s var(--e)}
 .trabajo:hover .cuerpo-t{transform:translateY(-12px);
-  box-shadow:0 60px 90px -44px rgba(0,0,0,.85),0 0 70px -34px var(--oro-hondo)}
-.trabajo .pantalla-t{position:relative;border-radius:31px;overflow:hidden;aspect-ratio:9/18.5;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:34px 20px}
-.trabajo .muesca-t{position:absolute;top:0;left:50%;transform:translateX(-50%);width:42%;height:19px;
-  background:#181511;border-radius:0 0 13px 13px;z-index:5}
-.trabajo .gloss{position:absolute;inset:0;z-index:4;pointer-events:none;
-  background:linear-gradient(118deg,rgba(255,255,255,.16),transparent 44%)}
-.trabajo .ad{font-size:13px;letter-spacing:.42em;opacity:.85}
-.trabajo .sb{font-size:8.5px;letter-spacing:.36em;text-transform:uppercase;opacity:.85}
-.trabajo .nm{font-family:'Bodoni Moda',serif;font-style:italic;font-size:34px;line-height:1}
-.trabajo .ln{width:36px;height:1px;opacity:.45}
-.trabajo .bt{font-size:8px;letter-spacing:.22em;text-transform:uppercase;border:1px solid currentColor;
-  padding:10px 17px;margin-top:4px;opacity:.9}
-.trabajo .lupa{position:absolute;inset:0;border-radius:31px;background:rgba(10,8,6,.62);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.35),
+    inset 0 -1px 1px rgba(255,255,255,.18),
+    0 0 0 .5px rgba(0,0,0,.9),
+    0 64px 92px -44px rgba(0,0,0,.92),
+    0 0 70px -32px var(--oro-hondo)}
+.trabajo .pantalla-t{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:11px;padding:13% 8% 11%}
+/* cuando hay captura real, ocupa toda la pantalla */
+.trabajo .captura{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.trabajo .ad{font-size:5.6cqw;letter-spacing:.42em;opacity:.85}
+.trabajo .sb{font-size:3.7cqw;letter-spacing:.36em;text-transform:uppercase;opacity:.85}
+.trabajo .nm{font-family:'Bodoni Moda',serif;font-style:italic;font-size:14.5cqw;line-height:1}
+.trabajo .ln{width:15%;height:1px;opacity:.45}
+.trabajo .bt{font-size:3.4cqw;letter-spacing:.22em;text-transform:uppercase;border:1px solid currentColor;
+  padding:4.2% 7%;margin-top:2%;opacity:.9}
+.trabajo .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(10,8,6,.62);z-index:8;
   display:grid;place-items:center;opacity:0;transition:opacity .45s var(--e);z-index:6}
 .trabajo:hover .lupa{opacity:1}
 .trabajo .lupa span{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);
@@ -335,9 +378,14 @@ nav .links a:hover:after{width:100%}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;
   opacity:0;pointer-events:none;transition:opacity .45s var(--e)}
 .visor.abierto{opacity:1;pointer-events:auto}
-.visor .caja{width:min(360px,92vw);height:min(720px,74vh);border-radius:30px;overflow:hidden;
-  border:1px solid var(--hilo);background:#0B0A08;position:relative;
-  box-shadow:0 40px 90px -40px #000,0 0 100px -60px var(--oro)}
+.visor .chasis{--r-fuera:44px;--bisel:8px;width:min(372px,93vw);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.35),
+    inset 0 -1px 1px rgba(255,255,255,.18),
+    0 0 0 .5px rgba(0,0,0,.9),
+    0 44px 94px -40px #000,
+    0 0 100px -58px var(--oro)}
+.visor .caja{height:min(722px,72vh);border-radius:36px;overflow:hidden;background:#0B0A08;position:relative}
 .visor iframe{width:100%;height:100%;border:0;background:#0B0A08}
 .visor .cargando{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
   font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);pointer-events:none}
@@ -445,10 +493,24 @@ footer .datos a:hover{color:var(--oro)}
     </div>
 
     <div class="telefono" id="telefono">
-      <div class="cuerpo" id="cuerpoTel">
-        <div class="pantalla">
-          <div class="muesca"></div>
-          <div class="brillo-p"></div>
+      <div class="cuerpo chasis" id="cuerpoTel">
+        <span class="lateral izq silencio"></span><span class="lateral izq vol1"></span>
+        <span class="lateral izq vol2"></span><span class="lateral der power"></span>
+        <div class="pantalla visor-p" id="pantallaHero">
+          <div class="isla"></div>
+          <div class="barra-ios"><span class="hora">9:41</span>
+            <svg viewBox="0 0 80 24" fill="currentColor" aria-hidden="true">
+              <rect x="0" y="13" width="3.4" height="6" rx="1"/><rect x="5.6" y="10" width="3.4" height="9" rx="1"/>
+              <rect x="11.2" y="7" width="3.4" height="12" rx="1"/><rect x="16.8" y="4" width="3.4" height="15" rx="1"/>
+              <path d="M27.6 9.4a12 12 0 0 1 14.4 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M30.8 13.2a7.5 7.5 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="34.8" cy="17.5" r="1.9"/>
+              <rect x="56" y="5.4" width="19.5" height="11.4" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".45"/>
+              <rect x="57.9" y="7.3" width="13.5" height="7.6" rx="1.9"/>
+              <path d="M77.4 9.4v3.6a2.4 2.4 0 0 0 0-3.6z" opacity=".45"/>
+            </svg></div>
+          <div class="indicador"></div>
+          <div class="reflejo"></div>
           <div class="invi">
             <span class="hada" style="left:14%;top:16%">🍄</span>
             <span class="hada" style="right:16%;top:26%;animation-delay:-2s">🧚</span>
@@ -642,9 +704,14 @@ footer .datos a:hover{color:var(--oro)}
 
 <!-- visor de invitaciones -->
 <div class="visor" id="visor">
-  <div class="caja">
-    <div class="cargando" id="cargandoV">Abriendo la invitación…</div>
-    <iframe id="marcoV" title="Invitación" src="" allow="autoplay"></iframe>
+  <div class="chasis">
+    <span class="lateral izq silencio"></span><span class="lateral izq vol1"></span>
+    <span class="lateral izq vol2"></span><span class="lateral der power"></span>
+    <div class="caja">
+      <div class="reflejo"></div>
+      <div class="cargando" id="cargandoV">Abriendo la invitación…</div>
+      <iframe id="marcoV" title="Invitación" src="" allow="autoplay"></iframe>
+    </div>
   </div>
   <div class="barra-v">
     <button class="cerrar" id="cerrarV">Cerrar</button>
@@ -769,8 +836,10 @@ addEventListener('load',()=>setTimeout(()=>{
   ];
   const adorno=invi.querySelector('.adorno'), que=invi.querySelector('.que'),
         quien=invi.querySelector('.quien'), hadas=[...invi.querySelectorAll('.hada')];
+  const pantalla=document.getElementById('pantallaHero');
   const poner=e=>{
     invi.style.background=e.fondo;
+    if(pantalla) pantalla.style.setProperty('--tinta-p',e.tinta);
     invi.style.setProperty('--tinta',e.tinta);
     invi.style.setProperty('--suave',e.suave);
     invi.style.setProperty('--borde',e.borde);
@@ -795,25 +864,47 @@ addEventListener('load',()=>setTimeout(()=>{
 })();
 
 /* ═══ galería de trabajos ═══ */
+/* Para mostrar la captura real de una invitación, poné el archivo al lado
+   de este index.html y escribí su nombre en "captura" (ej: 'key.webp').
+   Mientras esté vacío se dibuja la recreación. */
 const TRABAJOS=[
-  {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app',
+  {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'',
    fondo:'radial-gradient(120% 80% at 50% 0,#25382B,#0F1613 60%,#080B09)', tinta:'#F2EDE1', suave:'#9FC6AC', ad:'🍄 ✦ 🧚'},
-  {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/',
+  {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/', captura:'',
    fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)', tinta:'#5A2E3E', suave:'#B9738D', ad:'✦ 💌 ✦'},
-  {nombre:'Pia', tipo:'XV años · Clásica', url:'https://muestraxv.netlify.app',
+  {nombre:'Pia', tipo:'XV años · Clásica', url:'https://muestraxv.netlify.app', captura:'',
    fondo:'radial-gradient(120% 80% at 50% 0,#241C14,#100E0B 60%,#080706)', tinta:'#EFDCBC', suave:'#C9A063', ad:'✦ ✦ ✦'}
 ];
+const BARRA_IOS=`<div class="barra-ios"><span class="hora">9:41</span>
+  <svg viewBox="0 0 80 24" fill="currentColor" aria-hidden="true">
+    <rect x="0" y="13" width="3.4" height="6" rx="1"/><rect x="5.6" y="10" width="3.4" height="9" rx="1"/>
+    <rect x="11.2" y="7" width="3.4" height="12" rx="1"/><rect x="16.8" y="4" width="3.4" height="15" rx="1"/>
+    <path d="M27.6 9.4a12 12 0 0 1 14.4 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M30.8 13.2a7.5 7.5 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="34.8" cy="17.5" r="1.9"/>
+    <rect x="56" y="5.4" width="19.5" height="11.4" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".45"/>
+    <rect x="57.9" y="7.3" width="13.5" height="7.6" rx="1.9"/>
+    <path d="M77.4 9.4v3.6a2.4 2.4 0 0 0 0-3.6z" opacity=".45"/>
+  </svg></div>`;
+const LATERALES=`<span class="lateral izq silencio"></span><span class="lateral izq vol1"></span>`+
+  `<span class="lateral izq vol2"></span><span class="lateral der power"></span>`;
 document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
   <div class="trabajo ap" data-url="${t.url}" data-nombre="${t.nombre}" style="transition-delay:${i*.12}s">
-    <div class="cuerpo-t">
-      <div class="pantalla-t" style="background:${t.fondo};color:${t.tinta}">
-        <div class="muesca-t"></div><div class="gloss"></div>
-        <div class="ad" style="color:${t.suave}">${t.ad}</div>
+    <div class="cuerpo-t chasis">
+      ${LATERALES}
+      <div class="pantalla-t visor-p" style="background:${t.fondo};color:${t.tinta};--tinta-p:${t.tinta}">
+        ${t.captura
+          ? `<img class="captura" src="${t.captura}" alt="Invitación de ${t.nombre}" loading="lazy">`
+          : `<div class="ad" style="color:${t.suave}">${t.ad}</div>
         <div class="sb" style="color:${t.suave}">Mis quince años</div>
         <div class="nm">${t.nombre}</div>
         <div class="ln" style="background:${t.suave}"></div>
         <div class="sb" style="color:${t.suave}">Te espero</div>
-        <div class="bt" style="color:${t.suave}">Abrir invitación</div>
+        <div class="bt" style="color:${t.suave}">Abrir invitación</div>`}
+        <div class="isla"></div>
+        ${BARRA_IOS}
+        <div class="indicador"></div>
+        <div class="reflejo"></div>
         <div class="lupa"><span>Ver invitación</span></div>
       </div>
     </div>
