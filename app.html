@@ -500,10 +500,18 @@ async function item(c,id){
 }
 async function sumar(c,it,alAvanzar){
   if(!HAY_NUBE){
-    await local.set(kItem(c,it.id),it);
+    /* Sin nube se guarda en el propio navegador, y ahí un Blob no sobrevive
+       a JSON.stringify (quedaba {} y la foto se perdía). Lo pasamos a texto. */
+    const g={...it};
+    if(g.blob){
+      g.data=await leerArchivo(g.blob);
+      if(alAvanzar) alAvanzar(1);
+    }
+    delete g.blob;
+    await local.set(kItem(c,g.id),g);
     const idx=await leerLocal(kIndex(c),[]);
-    idx.push({id:it.id,kind:it.kind,autor:it.autor,ts:it.ts,estado:it.estado});
-    await local.set(kIndex(c),idx); cacheItem[c+it.id]=it;
+    idx.push({id:g.id,kind:g.kind,autor:g.autor,ts:g.ts,estado:g.estado});
+    await local.set(kIndex(c),idx); cacheItem[c+g.id]=g;
     return;
   }
   let url='';
