@@ -498,7 +498,7 @@ footer .datos a:hover{color:var(--oro)}
       <p>Estas son invitaciones reales que hicimos. Se abren acá mismo: confirmá asistencia, mirá la cuenta regresiva, tocá el alias. Son las que recibieron los invitados.</p>
     </div>
 
-    <div class="trabajos" id="trabajos"></div>
+    <div class="trabajos" id="galeriaTrabajos"></div>
     <p class="pista-toque">Tocá cualquiera para abrirla y probarla</p>
   </div>
 </section>
@@ -700,7 +700,7 @@ const TRABAJOS=[
   {nombre:'Pia', tipo:'XV años · Clásica', url:'https://muestraxv.netlify.app',
    fondo:'radial-gradient(120% 80% at 50% 0,#241C14,#100E0B 60%,#080706)', tinta:'#EFDCBC', suave:'#C9A063', ad:'✦ ✦ ✦'}
 ];
-document.getElementById('trabajos').innerHTML=TRABAJOS.map((t,i)=>`
+document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
   <div class="trabajo ap" data-url="${t.url}" data-nombre="${t.nombre}" style="transition-delay:${i*.12}s">
     <div class="cuerpo-t">
       <div class="pantalla-t" style="background:${t.fondo};color:${t.tinta}">
@@ -716,7 +716,7 @@ document.getElementById('trabajos').innerHTML=TRABAJOS.map((t,i)=>`
     </div>
     <div class="pie-t"><b>${t.nombre}</b><span>${t.tipo}</span></div>
   </div>`).join('');
-document.querySelectorAll('#trabajos .trabajo').forEach(el=>{
+document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   io.observe(el);
   el.onclick=()=>abrirVisor(el.dataset.url,el.dataset.nombre);
 });

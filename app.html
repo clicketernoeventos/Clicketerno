@@ -695,7 +695,9 @@ async function vPanel(){
       window.scrollTo({top:0,behavior:'smooth'});
       setTimeout(()=>{ location.hash='evento/'+codigo; vEvento(codigo); }, 900);
     }catch(e){
+      console.error('crear evento',e);
       btn.disabled=false; btn.textContent='Crear evento';
+      recado('No se pudo crear el evento: '+motivo(e));
     }
   };
 }
