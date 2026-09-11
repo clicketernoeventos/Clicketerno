@@ -331,10 +331,11 @@ const SB = {
     }, extra||{});
   },
   async pedir(ruta, opciones){
-    const op = Object.assign({cache:'no-store'}, opciones);
-    const r = await fetch(NUBE.url+ruta, op);
-    if(!r.ok) throw new Error(await r.text());
-    return r.status===204 ? null : r.json();
+    const r = await fetch(NUBE.url+ruta, opciones);
+    const txt = await r.text();                 // siempre texto, nunca falla
+    if(!r.ok) throw new Error(txt || ('HTTP '+r.status));
+    if(!txt) return null;                        // guardado correcto, sin contenido
+    try{ return JSON.parse(txt); }catch(e){ return null; }
   },
   ver(tabla, consulta){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()});
@@ -358,7 +359,7 @@ const SB = {
                'Content-Type':blob.type||'application/octet-stream', 'x-upsert':'true'},
       body:blob
     });
-    if(!r.ok) throw new Error(await r.text());
+    if(!r.ok) throw new Error((await r.text()) || ('HTTP '+r.status));
     return `${NUBE.url}/storage/v1/object/public/ce-medios/${ruta}`;
   }
 };
@@ -566,7 +567,7 @@ async function vPortada(){
       <b style="color:var(--oro);font-weight:400">Modo demostración.</b> Todavía no está conectada la base de datos,
       así que cada celular ve solo sus propias fotos. Sirve para probar, no para un evento real.</p>`}
     <p class="pie-nota sube" style="animation-delay:.5s;opacity:.5;font-size:11px;letter-spacing:.2em">
-      VERSIÓN v10 · <a href="#diagnostico" style="color:var(--oro)">Diagnóstico</a></p>
+      VERSIÓN v11 · <a href="#diagnostico" style="color:var(--oro)">Diagnóstico</a></p>
     <p class="pie-nota sube" style="animation-delay:.55s">${evs.length? evs.length+' evento'+(evs.length>1?'s':'')+' guardado'+(evs.length>1?'s':'') : 'Se guarda compartido: abrilo en otro celular y vas a ver lo mismo.'}</p>
   </div>`;
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
@@ -1149,7 +1150,7 @@ async function vCartel(codigo){
 
 async function vDiagnostico(){
   parar(); tono();
-  app.innerHTML=`${barra('Diagnóstico','Versión v10')}
+  app.innerHTML=`${barra('Diagnóstico','Versión v11')}
   <div class="wrap" style="padding-top:24px">
     <div id="res" style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.9;
       white-space:pre-wrap;word-break:break-word;color:#B5AC9E"></div>
@@ -1158,7 +1159,7 @@ async function vDiagnostico(){
   const out=app.querySelector('#res');
   const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
 
-  linea('Versión de la app: v10');
+  linea('Versión de la app: v11');
   linea('Nube configurada: '+(HAY_NUBE?'sí':'NO'), HAY_NUBE);
   linea('URL: '+NUBE.url);
   linea('Clave: '+(NUBE.clave? NUBE.clave.slice(0,18)+'…' : 'vacía'), !!NUBE.clave);
