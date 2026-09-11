@@ -353,6 +353,14 @@ nav .links a:hover:after{width:100%}
   gap:11px;padding:13% 8% 11%}
 /* cuando hay captura real, ocupa toda la pantalla */
 .trabajo .captura{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+/* la invitación de verdad, corriendo adentro del celular.
+   Se dibuja al ancho de un teléfono y después se achica, así se ve
+   igual que en la mano de un invitado. */
+.vivo{position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:inherit;
+  opacity:0;transition:opacity .8s var(--e)}
+.vivo.listo{opacity:1}
+.vivo iframe{position:absolute;top:0;left:0;width:var(--ancho-real,390px);border:0;
+  transform-origin:top left;pointer-events:none;background:transparent;color-scheme:normal}
 .trabajo .ad{font-size:5.6cqw;letter-spacing:.42em;opacity:.85}
 .trabajo .sb{font-size:3.7cqw;letter-spacing:.36em;text-transform:uppercase;opacity:.85}
 .trabajo .nm{font-family:'Bodoni Moda',serif;font-style:italic;font-size:14.5cqw;line-height:1}
@@ -864,15 +872,17 @@ addEventListener('load',()=>setTimeout(()=>{
 })();
 
 /* ═══ galería de trabajos ═══ */
-/* Para mostrar la captura real de una invitación, poné el archivo al lado
-   de este index.html y escribí su nombre en "captura" (ej: 'key.webp').
-   Mientras esté vacío se dibuja la recreación. */
+/* vivo:true  → se muestra la invitación real corriendo adentro del celular.
+   vivo:false → se muestra la portada dibujada (por si un sitio no se deja
+                incrustar, o para que la página pese menos).
+   captura    → si le ponés el nombre de una imagen que esté al lado de este
+                index.html (ej: 'key.webp'), se usa esa y se ignora lo demás. */
 const TRABAJOS=[
-  {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'',
+  {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#25382B,#0F1613 60%,#080B09)', tinta:'#F2EDE1', suave:'#9FC6AC', ad:'🍄 ✦ 🧚'},
-  {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/', captura:'',
+  {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)', tinta:'#5A2E3E', suave:'#B9738D', ad:'✦ 💌 ✦'},
-  {nombre:'Pia', tipo:'XV años · Clásica', url:'https://muestraxv.netlify.app', captura:'',
+  {nombre:'Pia', tipo:'XV años · Clásica', url:'https://muestraxv.netlify.app', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#241C14,#100E0B 60%,#080706)', tinta:'#EFDCBC', suave:'#C9A063', ad:'✦ ✦ ✦'}
 ];
 const BARRA_IOS=`<div class="barra-ios"><span class="hora">9:41</span>
@@ -895,7 +905,8 @@ document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
       <div class="pantalla-t visor-p" style="background:${t.fondo};color:${t.tinta};--tinta-p:${t.tinta}">
         ${t.captura
           ? `<img class="captura" src="${t.captura}" alt="Invitación de ${t.nombre}" loading="lazy">`
-          : `<div class="ad" style="color:${t.suave}">${t.ad}</div>
+          : `${t.vivo===false?'':`<div class="vivo" data-vivo="${t.url}" data-nombre="${t.nombre}"></div>`}
+        <div class="ad" style="color:${t.suave}">${t.ad}</div>
         <div class="sb" style="color:${t.suave}">Mis quince años</div>
         <div class="nm">${t.nombre}</div>
         <div class="ln" style="background:${t.suave}"></div>
@@ -914,6 +925,66 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   io.observe(el);
   el.onclick=()=>abrirVisor(el.dataset.url,el.dataset.nombre);
 });
+
+/* ═══ las invitaciones reales, en vivo dentro de cada celular ═══
+   Debajo queda siempre la portada dibujada: si un sitio no se deja
+   incrustar o tarda, no se ve un hueco en blanco, se ve la portada. */
+(function(){
+  const capas=[...document.querySelectorAll('.vivo')];
+  if(!capas.length) return;
+
+  const encajar=(capa,marco)=>{
+    const ancho=capa.clientWidth, alto=capa.clientHeight;
+    if(!ancho||!alto) return;
+    // dibujamos a 390px (ancho de celular) y achicamos hasta el marco
+    const escala=ancho/390;
+    marco.style.setProperty('--ancho-real','390px');
+    marco.style.height=Math.ceil(alto/escala)+'px';
+    marco.style.transform=`scale(${escala})`;
+  };
+
+  /* Desde el navegador no hay forma de saber si un marco de otro dominio
+     se dibujó: cargado, bloqueado y caído se ven exactamente igual.
+     Lo que sí podemos preguntar es si el sitio responde; si no responde,
+     ni lo intentamos y queda la portada dibujada. */
+  const responde=async u=>{
+    try{ await fetch(u,{mode:'no-cors',cache:'no-store'}); return true; }
+    catch(e){ return false; }
+  };
+
+  const encender=async capa=>{
+    if(capa.dataset.encendida) return;
+    capa.dataset.encendida='1';
+    if(!(await responde(capa.dataset.vivo))) return capa.remove();
+    if(!capa.isConnected) return;
+    const marco=document.createElement('iframe');
+    marco.title='Invitación de '+capa.dataset.nombre;
+    marco.loading='lazy';
+    marco.setAttribute('scrolling','no');
+    marco.setAttribute('tabindex','-1');
+    marco.setAttribute('aria-hidden','true');
+    marco.referrerPolicy='no-referrer-when-downgrade';
+    capa.appendChild(marco);
+    encajar(capa,marco);
+    /* si tarda demasiado, se saca y queda la portada dibujada */
+    const rendirse=()=>capa.remove();
+    const plazo=setTimeout(rendirse,9000);
+    marco.addEventListener('error',()=>{ clearTimeout(plazo); rendirse(); },{once:true});
+    marco.addEventListener('load',()=>{
+      clearTimeout(plazo);
+      encajar(capa,marco);
+      capa.classList.add('listo');
+    },{once:true});
+    marco.src=capa.dataset.vivo;
+    if('ResizeObserver' in window) new ResizeObserver(()=>encajar(capa,marco)).observe(capa);
+  };
+
+  if(!('IntersectionObserver' in window)) return capas.forEach(encender);
+  const vigia=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ encender(e.target); vigia.unobserve(e.target); }
+  }),{rootMargin:'400px'});
+  capas.forEach(c=>vigia.observe(c));
+})();
 
 /* ═══ visor ═══ */
 const visor=document.getElementById('visor'), marcoV=document.getElementById('marcoV'),
