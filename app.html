@@ -595,6 +595,20 @@ option{background:#0B0A08}
   line-height:1.05;margin:16px 0 10px}
 .espera-lanza .cuenta-lanza{margin:30px 0 22px}
 
+/* zona de peligro: rojo apagado, separado del oro de la marca */
+.peligro{border-color:rgba(196,86,78,.4)}
+.peligro .titu-s{color:#C4564E}
+.peligro p{font-size:13.5px;color:#B5AC9E;line-height:1.7}
+.peligro ul{list-style:none;margin:14px 0 18px;font-size:13.5px;color:#B5AC9E;line-height:1.9}
+.peligro ul b{color:var(--champan);font-weight:400}
+.btn-peligro{width:100%;border:1px solid rgba(196,86,78,.55);border-radius:2px;padding:15px;
+  font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#E08A82;margin-top:10px;
+  transition:background .3s,border-color .3s,color .3s}
+.btn-peligro:hover{background:rgba(196,86,78,.12);border-color:#C4564E;color:#F3A9A2}
+.btn-peligro:disabled{opacity:.4;cursor:not-allowed}
+.btn-peligro.firme{background:#C4564E;border-color:#C4564E;color:#fff;font-weight:600}
+.btn-peligro.firme:disabled{background:rgba(196,86,78,.25);color:rgba(255,255,255,.5)}
+
 /* marcas */
 .sello-admin{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--hilo2);
   border-radius:999px;padding:6px 13px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
@@ -787,6 +801,24 @@ const SB = {
       method:'PATCH', headers:this.cab({Prefer:'return=minimal'}), body:JSON.stringify(obj)
     });
   },
+  borrar(tabla, consulta){
+    return this.pedir(`/rest/v1/${tabla}?${consulta}`, {
+      method:'DELETE', headers:this.cab({Prefer:'return=minimal'})
+    });
+  },
+  /* lista los archivos guardados bajo una carpeta del depósito */
+  listarArchivos(prefijo){
+    return this.pedir('/storage/v1/object/list/ce-medios', {
+      method:'POST', headers:this.cab(),
+      body:JSON.stringify({prefix:prefijo,limit:1000,offset:0})
+    });
+  },
+  borrarArchivos(rutas){
+    if(!rutas.length) return Promise.resolve(null);
+    return this.pedir('/storage/v1/object/ce-medios', {
+      method:'DELETE', headers:this.cab(), body:JSON.stringify({prefixes:rutas})
+    });
+  },
   /* XHR en vez de fetch para poder mostrar el avance y cortar si se cuelga:
      en un salón con mala señal, "Revelando…" quedaba girando sin fin. */
   archivo(ruta, blob, alAvanzar){
@@ -870,7 +902,7 @@ function motivo(e){
   const t=(e&&e.message)||'';
   if(/Failed to fetch|NetworkError/i.test(t)) return 'sin conexión con la base';
   if(/relation .* does not exist|PGRST205|42P01/i.test(t)) return 'faltan las tablas (correr el SQL)';
-  if(/row-level security|42501|PGRST301/i.test(t)) return 'permisos de la base';
+  if(/row-level security|42501|PGRST301/i.test(t)) return 'la base no permite esa operación (revisar políticas)';
   if(/duplicate key|23505/i.test(t)) return 'ese código ya existe';
   if(/'lanza' column|column .*lanza|PGRST204/i.test(t))
     return 'falta la columna "lanza" en la base (correr el SQL de programación)';
@@ -924,6 +956,46 @@ async function sumar(c,it,alAvanzar){
   }catch(e){ e.paso='guardar en la base'; throw e; }
   cacheItem[c+it.id] = {...it, url, data:url||''};
 }
+/* Borra un evento completo: primero los archivos del depósito, después las
+   filas. En ese orden, porque si falla el depósito todavía tenemos de dónde
+   sacar la lista; al revés quedarían archivos huérfanos ocupando lugar. */
+async function borrarEvento(codigo,avisar){
+  const paso=t=>{ if(avisar) avisar(t); };
+  if(!HAY_NUBE){
+    paso('Borrando…');
+    const idx=await leerLocal(kIndex(codigo),[]);
+    for(const i of idx){ delete memoria[kItem(codigo,i.id)]; delete cacheItem[codigo+i.id]; }
+    delete memoria[kIndex(codigo)]; delete memoria[kMeta(codigo)];
+    const lista=await leerLocal(LISTA,[]);
+    await local.set(LISTA,lista.filter(e=>e.codigo!==codigo));
+    return {archivos:idx.length,items:idx.length};
+  }
+  paso('Buscando los archivos…');
+  let rutas=[];
+  try{
+    const guardados=await SB.listarArchivos(codigo+'/');
+    rutas=(guardados||[]).filter(a=>a&&a.name).map(a=>`${codigo}/${a.name}`);
+  }catch(e){
+    console.warn('no pude listar el depósito, uso las direcciones guardadas',e);
+    const idx=await indice(codigo);
+    for(const i of idx){
+      const it=await item(codigo,i.id);
+      const u=it&&urlSegura(it.data);
+      if(u&&u.includes('/ce-medios/')) rutas.push(u.split('/ce-medios/')[1].split('?')[0]);
+    }
+  }
+  if(rutas.length){
+    paso(`Borrando ${rutas.length} archivo${rutas.length>1?'s':''}…`);
+    await SB.borrarArchivos(rutas);
+  }
+  paso('Borrando los recuerdos…');
+  await SB.borrar('ce_items',`codigo=eq.${encodeURIComponent(codigo)}`);
+  paso('Borrando el evento…');
+  await SB.borrar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`);
+  for(const k of Object.keys(cacheItem)) if(k.startsWith(codigo)) delete cacheItem[k];
+  return {archivos:rutas.length};
+}
+
 async function cambiarEstado(c,id,estado){
   if(!HAY_NUBE){
     const idx=await leerLocal(kIndex(c),[]); const f=idx.find(i=>i.id===id); if(f) f.estado=estado;
@@ -1491,6 +1563,22 @@ async function vEvento(codigo){
       <div class="llave" style="border-bottom:0">
         <p>Muro cerrado<small>Corta las subidas y publica el álbum final.</small></p>
         <button class="palanca" id="cerr" aria-pressed="${!!m.cerrado}"></button></div>
+
+      ${esAdmin?`<div class="tarjeta peligro" style="margin-top:26px">
+        <p class="titu-s">Zona de peligro</p>
+        <p>Se borra el evento y todo lo que subieron los invitados. Los archivos
+          se eliminan del depósito y no se pueden recuperar.</p>
+        <ul>
+          <li><b>${idx.length}</b> recuerdo${idx.length===1?'':'s'} en total</li>
+          <li><b>${apro.filter(i=>i.kind==='foto').length}</b> fotos ·
+              <b>${apro.filter(i=>i.kind==='video').length}</b> videos ·
+              <b>${apro.filter(i=>i.kind==='audio').length}</b> audios</li>
+          <li>El álbum digital deja de existir</li>
+        </ul>
+        <div id="zonaBorrar">
+          <button class="btn-peligro" id="pedirBorrar">Eliminar este evento</button>
+        </div>
+      </div>`:''}
     </section>
   </div>
 
@@ -1551,6 +1639,40 @@ async function vEvento(codigo){
   };
   const bQ=app.querySelector('#borrarL');
   if(bQ) bQ.onclick=()=>guardarLanza('','Muro abierto desde ahora');
+
+  /* Borrar es para siempre: en vez de un aviso que se toca sin querer,
+     hay que escribir el código del evento. */
+  const pedir=app.querySelector('#pedirBorrar');
+  if(pedir) pedir.onclick=()=>{
+    const zona=app.querySelector('#zonaBorrar');
+    zona.innerHTML=`
+      <div class="campo" style="margin-bottom:14px">
+        <label for="confirmaCod">Escribí <b style="color:#E08A82">${esc(m.codigo)}</b> para confirmar</label>
+        <input id="confirmaCod" type="text" autocomplete="off" autocapitalize="characters"
+          placeholder="${esc(m.codigo)}"></div>
+      <button class="btn-peligro firme" id="borrarYa" disabled>Eliminar definitivamente</button>
+      <button class="hilo-btn" id="dejarlo">Mejor no</button>`;
+    const campo=zona.querySelector('#confirmaCod');
+    const ok=zona.querySelector('#borrarYa');
+    campo.focus();
+    campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!==m.codigo.toUpperCase(); };
+    zona.querySelector('#dejarlo').onclick=()=>vEvento(codigo);
+    ok.onclick=async()=>{
+      if(ok.disabled) return;
+      ok.disabled=true;
+      campo.disabled=true;
+      try{
+        const r=await borrarEvento(codigo,t=>{ ok.textContent=t; });
+        recado(`Evento eliminado${r&&r.archivos?` · ${r.archivos} archivos borrados`:''}`);
+        ir('panel');
+      }catch(err){
+        console.error('borrar evento',err);
+        ok.disabled=false; campo.disabled=false;
+        ok.textContent='Eliminar definitivamente';
+        recado('No se pudo eliminar: '+motivo(err));
+      }
+    };
+  };
 
   app.querySelector('#guardarC').onclick=async e=>{
     const b=e.currentTarget, antes=m.consignas;
