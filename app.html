@@ -1599,6 +1599,26 @@ async function copiarTexto(texto,aviso){
   }
 }
 
+/* ¿La base ya tiene las claves instaladas? Mientras no se corra el SQL, la
+   función no existe: en ese rato no le pedimos clave a nadie, porque nadie
+   la tendría y quedarían todos afuera de sus propios eventos. */
+let baseConClaves=guarda.leerSesion('ce:conClaves');
+async function laBaseSabeDeClaves(){
+  if(baseConClaves==='si') return true;
+  if(baseConClaves==='no') return false;
+  try{
+    await SB.quienSoy(null,'');
+    baseConClaves='si';
+  }catch(e){
+    const t=String((e&&e.message)||'');
+    /* solo damos por vieja a la base si la función no existe; si el problema
+       es la red, no abrimos la puerta por las dudas */
+    baseConClaves=/PGRST202|does not exist|not find the function|404/i.test(t)?'no':'si';
+  }
+  guarda.escribirSesion('ce:conClaves',baseConClaves);
+  return baseConClaves==='si';
+}
+
 /* Sin la clave de este evento no se entra al panel. La valida la base. */
 function vPedirClave(codigo,m){
   parar(); tono(m&&m.tono);
@@ -1655,7 +1675,8 @@ async function vEvento(codigo){
   const m=await meta(codigo);
   if(!m){recado('No encontré ese evento'); return ir('panel');}
   /* sin nube no hay base que valide: el panel queda abierto como antes */
-  if(HAY_NUBE && !puedoEditar(codigo)) return vPedirClave(codigo,m);
+  if(HAY_NUBE && !puedoEditar(codigo) && await laBaseSabeDeClaves())
+    return vPedirClave(codigo,m);
   tono(m.tono);
   const idx=await indice(codigo);
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
