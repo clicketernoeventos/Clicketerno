@@ -73,7 +73,7 @@ button{border:0;background:none;cursor:pointer}
 @keyframes sube{to{opacity:1;transform:none}}
 
 .puertas{display:grid;gap:0;margin-top:14px;text-align:left;border-top:1px solid var(--gris)}
-.puerta{display:flex;align-items:center;gap:18px;width:100%;padding:22px 4px;border-bottom:1px solid var(--gris);transition:padding-left .35s var(--e),color .35s}
+.puerta{display:flex;align-items:center;gap:18px;width:100%;text-align:left;padding:22px 4px;border-bottom:1px solid var(--gris);transition:padding-left .35s var(--e),color .35s}
 .puerta:hover,.puerta:focus-visible{padding-left:12px}
 .puerta .rom{font-family:'Bodoni Moda',serif;font-style:italic;font-size:22px;color:var(--oro);width:28px;flex:none}
 .puerta b{display:block;font-weight:400;font-size:17px;letter-spacing:.02em}
@@ -92,9 +92,12 @@ button{border:0;background:none;cursor:pointer}
 /* ── formularios ── */
 .campo{margin-bottom:22px}
 .campo label{display:block;font-size:10.5px;letter-spacing:.3em;color:var(--mute);margin-bottom:10px;text-transform:uppercase}
-input[type=text],input[type=date],textarea,select{
-  width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
-  border-radius:0;padding:12px 2px;font-size:16.5px;font-weight:300;transition:border-color .3s}
+input[type=text],input[type=date],input[type=password],input[type=number],
+input[type=tel],input[type=email],input[type=time],textarea,select{
+  width:100%;max-width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
+  border-radius:0;padding:12px 2px;font-size:16.5px;font-weight:300;color:var(--texto);
+  transition:border-color .3s;-webkit-appearance:none;appearance:none}
+input::placeholder,textarea::placeholder{color:var(--mute);opacity:.75}
 textarea{min-height:88px;resize:vertical;line-height:1.6;border:1px solid var(--gris);border-radius:2px;padding:14px}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--oro)}
 select{appearance:none;background:transparent}
@@ -400,6 +403,60 @@ option{background:#0B0A08}
   background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#F3EDE0;
   font-size:9px;border:1px solid rgba(255,255,255,.16)}
 .wrap-a{max-width:620px;margin:0 auto;padding:0 26px 130px}
+/* chips de modo, como las filas de filtros de las apps */
+.chips{display:flex;gap:9px;overflow-x:auto;padding:2px 0 4px;margin:0 -26px 24px;
+  padding-inline:26px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;display:inline-flex;align-items:center;gap:9px;border:1px solid var(--gris);
+  border-radius:999px;padding:11px 18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);transition:.32s var(--e);white-space:nowrap}
+.chips button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.chips button[aria-pressed=true]{color:#0A0806;border-color:transparent;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
+.chips button:active{transform:scale(.97)}
+
+/* barra de acción fija: el botón principal siempre al alcance del pulgar */
+.accion-abajo{position:fixed;left:0;right:0;bottom:0;z-index:44;
+  padding:14px 26px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent,rgba(0,0,0,.82) 24%,#000 62%)}
+.accion-abajo .dentro{max-width:620px;margin:0 auto}
+.accion-abajo .pie-nota{margin-top:11px}
+
+/* cabecera del invitado */
+.cab-inv{position:relative;padding:26px 26px 22px;border-bottom:1px solid var(--gris);
+  max-width:620px;margin:0 auto}
+.cab-inv .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:10px}
+.cab-inv h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(28px,8.5vw,38px);line-height:1}
+.cab-inv .volver{position:absolute;right:22px;top:24px;font-size:10px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--mute);padding:8px}
+.wrap-inv{max-width:620px;margin:0 auto;padding:26px 26px 150px}
+
+/* tarjeta de evento en la lista */
+.ev-card{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:14px;
+  border:1px solid var(--gris);margin-bottom:11px;transition:border-color .35s,transform .3s var(--e);
+  background:linear-gradient(180deg,rgba(255,255,255,.022),transparent)}
+.ev-card:hover{border-color:var(--hilo)}
+.ev-card:active{transform:scale(.99)}
+.ev-card .tapa-ev{width:62px;height:62px;flex:none;border-radius:10px;overflow:hidden;
+  background:var(--humo);display:grid;place-items:center;color:var(--oro)}
+.ev-card .tapa-ev img{width:100%;height:100%;object-fit:cover}
+.ev-card .tapa-ev .estrella{width:19px;height:19px;opacity:.5}
+.ev-card .datos-ev{flex:1;min-width:0}
+.ev-card .datos-ev b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;
+  font-weight:400;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-card .datos-ev span{display:block;font-size:10.5px;letter-spacing:.22em;color:var(--mute);
+  text-transform:uppercase;margin-top:6px}
+.ev-card .codigo-ev{font-size:10px;letter-spacing:.18em;color:var(--oro);flex:none;
+  border:1px solid var(--hilo);border-radius:999px;padding:6px 11px}
+
+/* puertas de la portada, con icono */
+.puerta .ico-p{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--gris);
+  display:grid;place-items:center;color:var(--oro);transition:border-color .35s,background .35s}
+.puerta:hover .ico-p{border-color:var(--hilo2);background:rgba(217,174,114,.06)}
+.puerta .ico-p svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+
 .volver-flota{position:fixed;top:calc(15px + env(safe-area-inset-top));left:16px;z-index:30;
   width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);
   border:1px solid rgba(255,255,255,.14);color:var(--champan);display:grid;place-items:center;
@@ -774,6 +831,10 @@ const IC={
   guardar:`<svg viewBox="0 0 24 24"><path d="M12 4v10.5M7.8 10.6 12 15l4.2-4.4M4.5 18.5h15"/></svg>`,
   pantalla:`<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12.5" rx="2"/><path d="M9 20.5h6M12 17v3.5"/></svg>`,
   invitado:`<svg viewBox="0 0 24 24"><rect x="7" y="2.8" width="10" height="18.4" rx="2.5"/><path d="M10.8 5.6h2.4"/></svg>`,
+  foto:`<svg viewBox="0 0 24 24"><path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 20 18.5H4A1.5 1.5 0 0 1 2.5 17v-7A1.5 1.5 0 0 1 4 8.5z"/><circle cx="12" cy="13" r="3.2"/></svg>`,
+  texto:`<svg viewBox="0 0 24 24"><path d="M20 13.5a3 3 0 0 1-3 3H9.5L5 20v-3.5a3 3 0 0 1-1-2.2V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"/></svg>`,
+  voz:`<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="10.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>`,
+  organizador:`<svg viewBox="0 0 24 24"><path d="M4 8.5h8.5M17 8.5h3M4 15.5h3.5M12 15.5h8"/><circle cx="14.8" cy="8.5" r="2.3"/><circle cx="9.8" cy="15.5" r="2.3"/></svg>`,
   cartel:`<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17.5H5.5a1.5 1.5 0 0 1-1.5-1.5v-4A2.5 2.5 0 0 1 6.5 9.5h11A2.5 2.5 0 0 1 20 12v4a1.5 1.5 0 0 1-1.5 1.5H17"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>`
 };
 
@@ -947,11 +1008,11 @@ async function vPortada(){
     <p class="lema sube" style="animation-delay:.15s">El muro en vivo de tu fiesta.<br>Tus invitados sacan la foto y aparece en la pantalla del salón.</p>
     <div class="filete sube" style="animation-delay:.25s">${ESTRELLA}</div>
     <div class="puertas sube" style="animation-delay:.35s">
-      <button class="puerta" data-ir="panel"><span class="rom">I</span>
+      <button class="puerta" data-ir="panel"><span class="ico-p">${IC.organizador}</span>
         <span style="flex:1"><b>Panel del organizador</b><span>Crear evento, código y moderación</span></span><span class="fl">→</span></button>
-      <button class="puerta" data-ir="invitado"><span class="rom">II</span>
+      <button class="puerta" data-ir="invitado"><span class="ico-p">${IC.foto}</span>
         <span style="flex:1"><b>Soy invitado</b><span>Subir fotos, videos y dedicatorias</span></span><span class="fl">→</span></button>
-      <button class="puerta" data-ir="proyector"><span class="rom">III</span>
+      <button class="puerta" data-ir="proyector"><span class="ico-p">${IC.pantalla}</span>
         <span style="flex:1"><b>Pantalla del salón</b><span>Proyección en vivo</span></span><span class="fl">→</span></button>
     </div>
     ${evs.length?'':`<button class="hilo-btn sube" style="animation-delay:.5s;margin-top:34px" id="demo">Cargar una fiesta de ejemplo</button>`}
@@ -1004,6 +1065,13 @@ async function sembrar(){
   }
 }
 
+/* una sola tarjeta de evento para el panel y para los selectores */
+const tarjetaEvento=(e,extra)=>`
+  <button class="ev-card" data-cod="${esc(e.codigo)}" data-nom="${esc(e.nombre)}"${extra||''}>
+    <span class="tapa-ev">${urlSegura(e.portada)?`<img src="${src(e.portada)}" alt="">`:ESTRELLA}</span>
+    <span class="datos-ev"><b>${esc(e.nombre)}</b><span>${bonito(e.fecha)}</span></span>
+    <span class="codigo-ev">${esc(e.codigo)}</span></button>`;
+
 const barra=(titulo,sub)=>`<div class="top"><button class="vuelve">←</button>
   <h2>${titulo}<span class="sub">${sub}</span></h2>
   <img class="marca" src="${LOGO_MARK}" alt="Click Eterno"></div>`;
@@ -1014,12 +1082,15 @@ async function vAcceso(){
   const guardado=guarda.leer(PIN_KEY);
   const nuevo=!guardado;
   app.innerHTML=`
-  ${barra('Panel','Acceso del organizador')}
-  <div class="wrap" style="max-width:420px">
-    <div class="ficha" style="margin-top:36px;text-align:center">
+  <header class="cab-inv">
+    <p class="arriba">Panel del organizador</p>
+    <h1>${nuevo?'Creá tu clave':'Tu clave'}</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
+    <div class="tarjeta principal" style="margin-top:10px;text-align:center">
       <div style="width:56px;height:56px;border:1px solid var(--hilo);border-radius:50%;
         display:grid;place-items:center;margin:0 auto 22px;color:var(--oro)">${ESTRELLA}</div>
-      <p class="espaciado" style="margin-bottom:10px">${nuevo?'Creá tu clave':'Ingresá tu clave'}</p>
       <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:26px">
         ${nuevo?'Elegí una clave de 4 a 8 números. La vas a necesitar cada vez que entres al panel.'
                :'Solo vos entrás acá. Los invitados no necesitan clave.'}</p>
@@ -1029,7 +1100,7 @@ async function vAcceso(){
       ${nuevo?'':'<p class="pie-nota">Si la olvidaste, escribinos y la reiniciamos.</p>'}
     </div>
   </div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
   const campo=app.querySelector('#pin');
   campo.focus();
   const probar=async()=>{
@@ -1050,18 +1121,19 @@ async function vPanel(){
   parar(); tono();
   const evs=await eventos();
   app.innerHTML=`
-  ${barra('Panel','Tus eventos')}
-  <div class="wrap">
-    ${evs.length?`<div style="margin-top:14px">${evs.map(e=>`
-      <button class="fila" data-cod="${esc(e.codigo)}" data-nom="${esc(e.nombre)}">
-        <span class="sello">${urlSegura(e.portada)?`<img src="${src(e.portada)}" style="width:100%;height:100%;object-fit:cover">`:esc((e.nombre||'?')[0])}</span>
-        <span style="flex:1"><b>${esc(e.nombre)}</b><span>${bonito(e.fecha)}</span></span>
-        <span class="clave">${esc(e.codigo)}</span></button>`).join('')}</div>`
-    :`<div class="vacio">Todavía no creaste ningún evento.<br>Empezá por el nombre y la fecha.</div>`}
+  <header class="cab-inv">
+    <p class="arriba">Panel del organizador</p>
+    <h1>Tus eventos</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="padding-bottom:40px">
+    ${evs.length
+      ? `<div class="seccion-a" style="margin-top:0"><h2>Guardados</h2><span>${evs.length}</span></div>
+         ${evs.map(e=>tarjetaEvento(e)).join('')}`
+      : `<div class="vacio">Todavía no creaste ningún evento.<br>Empezá por el nombre y la fecha.</div>`}
 
-    <div class="filete">${ESTRELLA}</div>
-    <div class="ficha">
-      <p class="espaciado" style="margin-bottom:24px">Nuevo evento</p>
+    <div class="seccion-a"><h2>Nuevo evento</h2></div>
+    <div class="tarjeta">
       <div class="campo"><label for="n">Nombre</label><input id="n" type="text" placeholder="Sana · Flor y Juan · Los 40 de papá" maxlength="34"></div>
       <div class="campo"><label for="f">Fecha</label><input id="f" type="date" value="${hoy()}"></div>
       <div class="campo"><label for="t">Tipo de evento</label><select id="t">${Object.keys(TIPOS).map(t=>`<option>${t}</option>`).join('')}</select></div>
@@ -1070,7 +1142,7 @@ async function vPanel(){
       <button class="oro-btn" id="crear" style="margin-top:12px">Crear evento</button>
     </div>
   </div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
   contador('#n');
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
@@ -1315,13 +1387,17 @@ async function vEvento(codigo){
 async function vElegir(destino,titulo){
   parar(); tono();
   const evs=await eventos();
-  app.innerHTML=`${barra(titulo,'Elegí el evento')}
-  <div class="wrap">${evs.length? evs.map(e=>`<button class="fila" data-cod="${esc(e.codigo)}">
-      <span class="sello">${esc((e.nombre||'?')[0])}</span>
-      <span style="flex:1"><b>${esc(e.nombre)}</b><span>${bonito(e.fecha)}</span></span>
-      <span class="clave">${esc(e.codigo)}</span></button>`).join('')
-    :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}</div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('portada');
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">${esc(titulo)}</p>
+    <h1>Elegí el evento</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="padding-bottom:40px">
+    ${evs.length? evs.map(e=>tarjetaEvento(e)).join('')
+      :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
 }
 
@@ -1335,21 +1411,27 @@ async function vSubir(codigo){
   let modo='captura', medio=null;
 
   app.innerHTML=`
-  ${barra(esc(m.nombre),'Subí al muro')}
-  <div class="wrap" style="padding-top:28px">
+  <header class="cab-inv">
+    <p class="arriba">Subí al muro</p>
+    <h1>${esc(m.nombre)}</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv">
     <div class="consigna"><div class="et">${ESTRELLA} Consigna de la noche ${ESTRELLA}</div><p>${esc(consigna)}</p></div>
-    <div class="seg">
-      <button data-m="captura" aria-pressed="true">Foto</button>
-      <button data-m="texto" aria-pressed="false">Dedicatoria</button>
-      <button data-m="voz" aria-pressed="false">Voz</button>
+    <div class="chips" role="group" aria-label="Qué querés mandar">
+      <button data-m="captura" aria-pressed="true">${IC.foto}Foto o video</button>
+      <button data-m="texto" aria-pressed="false">${IC.texto}Dedicatoria</button>
+      <button data-m="voz" aria-pressed="false">${IC.voz}Voz</button>
     </div>
     <div id="zona"></div>
     <div class="campo"><label for="autor">Tu nombre</label>
       <input id="autor" type="text" placeholder="Como querés que salga en la pantalla" maxlength="26"></div>
+  </div>
+  <div class="accion-abajo"><div class="dentro">
     <button class="oro-btn" id="enviar">Enviar a la pantalla</button>
     <p class="pie-nota">${m.moderar?'Lo revisa el organizador antes de proyectarlo.':'Aparece en la pantalla del salón en segundos.'}</p>
-  </div>`;
-  app.querySelector('.vuelve').onclick=()=>ir('invitado');
+  </div></div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('invitado');
   const zona=app.querySelector('#zona');
 
   function pintarZona(){
