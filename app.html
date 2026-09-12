@@ -595,6 +595,20 @@ option{background:#0B0A08}
   line-height:1.05;margin:16px 0 10px}
 .espera-lanza .cuenta-lanza{margin:30px 0 22px}
 
+/* la clave del evento, para mostrarla y para dictarla */
+.clave-grande{font-family:'Bodoni Moda',serif;font-size:clamp(38px,13vw,58px);letter-spacing:.22em;
+  color:var(--champan);line-height:1;margin:6px 0 4px;word-break:break-all}
+.clave-caja{border:1px solid var(--hilo2);background:rgba(217,174,114,.06);border-radius:4px;
+  padding:26px 22px;text-align:center;margin:22px 0}
+.clave-caja .aviso{font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-top:16px}
+.clave-fila{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border:1px solid var(--gris);border-radius:3px;padding:14px 16px;margin-top:12px}
+/* el código no se puede partir al medio: es lo que la gente copia */
+.clave-fila b{white-space:nowrap}
+.clave-fila span{flex:1 1 auto;min-width:0}
+.clave-fila b{font-family:'Bodoni Moda',serif;font-size:21px;letter-spacing:.2em;color:var(--champan);font-weight:400}
+.clave-fila span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);display:block;margin-bottom:5px}
+
 /* zona de peligro: rojo apagado, separado del oro de la marca */
 .peligro{border-color:rgba(196,86,78,.4)}
 .peligro .titu-s{color:#C4564E}
@@ -771,13 +785,48 @@ const kMeta=c=>`ce:${c}:meta`, kIndex=c=>`ce:${c}:index`, kItem=(c,i)=>`ce:${c}:
 const leerLocal=async(k,def)=>{try{return await local.get(k);}catch(e){return def;}};
 
 /* ── cliente de Supabase (sin librerías, solo fetch) ──────── */
+/* En navegación privada (o con cookies bloqueadas) tocar localStorage tira
+   excepción y mataba la app entera al cargar. Ahora nunca propaga. */
+const guarda={
+  leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  escribir(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}},
+  borrar(k){try{localStorage.removeItem(k);}catch(e){}},
+  leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
+  escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
+};
+
+/* ══════════ claves de evento ══════════
+   Cada evento tiene su clave. Viaja en la cabecera x-clave y la valida la
+   base: el navegador solo la lleva, no decide nada. Las guardamos en este
+   aparato para no tener que escribirlas cada vez. */
+const CLAVES_KEY='ce:claves';
+const clavesGuardadas=()=>{ try{ return JSON.parse(guarda.leer(CLAVES_KEY)||'{}'); }catch(e){ return {}; } };
+const guardarClaveDe=(codigo,clave)=>{
+  const t=clavesGuardadas(); t[codigo]=clave; guarda.escribir(CLAVES_KEY,JSON.stringify(t));
+};
+const olvidarClaveDe=codigo=>{
+  const t=clavesGuardadas(); delete t[codigo]; guarda.escribir(CLAVES_KEY,JSON.stringify(t));
+};
+let claveMaestra=guarda.leerSesion('ce:maestra')||'';
+/* la que corresponde usar para este evento */
+const claveDe=codigo=>claveMaestra||clavesGuardadas()[codigo]||'';
+const puedoEditar=codigo=>!!claveDe(codigo);
+/* clave nueva, corta y sin letras que se confundan al dictarla */
+const nuevaClave=()=>{
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n=new Uint32Array(6); (crypto.getRandomValues?crypto.getRandomValues(n):n.fill(Date.now()));
+  return [...n].map(x=>abc[x%abc.length]).join('');
+};
+
 const SB = {
-  cab(extra){
-    return Object.assign({
+  cab(extra, clave){
+    const c=Object.assign({
       apikey: NUBE.clave,
       Authorization: 'Bearer '+NUBE.clave,
       'Content-Type': 'application/json'
     }, extra||{});
+    if(clave) c['x-clave']=clave;
+    return c;
   },
   async pedir(ruta, opciones){
     const r = await fetch(NUBE.url+ruta, opciones);
@@ -789,21 +838,34 @@ const SB = {
   ver(tabla, consulta){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()});
   },
-  guardar(tabla, obj){
+  guardar(tabla, obj, clave){
     return this.pedir(`/rest/v1/${tabla}`, {
       method:'POST',
-      headers:this.cab({Prefer:'resolution=merge-duplicates,return=minimal'}),
+      headers:this.cab({Prefer:'resolution=merge-duplicates,return=minimal'}, clave),
       body:JSON.stringify(obj)
     });
   },
-  editar(tabla, consulta, obj){
+  editar(tabla, consulta, obj, clave){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {
-      method:'PATCH', headers:this.cab({Prefer:'return=minimal'}), body:JSON.stringify(obj)
+      method:'PATCH', headers:this.cab({Prefer:'return=minimal'}, clave), body:JSON.stringify(obj)
     });
   },
-  borrar(tabla, consulta){
+  borrar(tabla, consulta, clave){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {
-      method:'DELETE', headers:this.cab({Prefer:'return=minimal'})
+      method:'DELETE', headers:this.cab({Prefer:'return=minimal'}, clave)
+    });
+  },
+  /* pregunta a la base qué permite esta clave (sirve de diagnóstico) */
+  quienSoy(codigo, clave){
+    return this.pedir('/rest/v1/rpc/ce_quien_soy', {
+      method:'POST', headers:this.cab({}, clave),
+      body:JSON.stringify({p_codigo:codigo||null})
+    });
+  },
+  cambiarClave(codigo, claveActual, claveNueva){
+    return this.pedir('/rest/v1/rpc/ce_cambiar_clave', {
+      method:'POST', headers:this.cab({}, claveActual),
+      body:JSON.stringify({p_codigo:codigo, p_nueva:claveNueva})
     });
   },
   /* lista los archivos guardados bajo una carpeta del depósito */
@@ -813,10 +875,10 @@ const SB = {
       body:JSON.stringify({prefix:prefijo,limit:1000,offset:0})
     });
   },
-  borrarArchivos(rutas){
+  borrarArchivos(rutas, clave){
     if(!rutas.length) return Promise.resolve(null);
     return this.pedir('/storage/v1/object/ce-medios', {
-      method:'DELETE', headers:this.cab(), body:JSON.stringify({prefixes:rutas})
+      method:'DELETE', headers:this.cab({}, clave), body:JSON.stringify({prefixes:rutas})
     });
   },
   /* XHR en vez de fetch para poder mostrar el avance y cortar si se cuelga:
@@ -877,15 +939,16 @@ async function guardarMeta(m){
     delete copia.portadaBlob;
   }
   if(sinColumnaLanza) delete copia.lanza;
+  delete copia.claveNueva;      // la clave va en la cabecera, nunca en la fila
   try{
-    await SB.guardar('ce_eventos',copia);
+    await SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
   }catch(e){
     const texto=String((e&&e.message)||'');
     if(!sinColumnaLanza && 'lanza' in copia && /lanza/i.test(texto)){
       sinColumnaLanza=true;
       delete copia.lanza;
       try{
-        await SB.guardar('ce_eventos',copia);
+        await SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
         m.portada=copia.portada;
         return;   // quien llamó mira sinColumnaLanza y avisa lo que corresponda
       }catch(e2){ e=e2; }
@@ -902,7 +965,8 @@ function motivo(e){
   const t=(e&&e.message)||'';
   if(/Failed to fetch|NetworkError/i.test(t)) return 'sin conexión con la base';
   if(/relation .* does not exist|PGRST205|42P01/i.test(t)) return 'faltan las tablas (correr el SQL)';
-  if(/row-level security|42501|PGRST301/i.test(t)) return 'la base no permite esa operación (revisar políticas)';
+  if(/Falta la clave del evento|28000/i.test(t)) return 'falta la clave del evento';
+  if(/row-level security|42501|PGRST301/i.test(t)) return 'la clave de este evento no es la correcta';
   if(/duplicate key|23505/i.test(t)) return 'ese código ya existe';
   if(/'lanza' column|column .*lanza|PGRST204/i.test(t))
     return 'falta la columna "lanza" en la base (correr el SQL de programación)';
@@ -952,13 +1016,13 @@ async function sumar(c,it,alAvanzar){
   }
   try{
     await SB.guardar('ce_items',{id:it.id, codigo:c, kind:it.kind, url,
-      autor:it.autor, texto:it.texto||null, estado:it.estado, ts:it.ts});
+      autor:it.autor, texto:it.texto||null, estado:it.estado, ts:it.ts}, claveDe(c));
   }catch(e){ e.paso='guardar en la base'; throw e; }
   cacheItem[c+it.id] = {...it, url, data:url||''};
 }
-/* Borra un evento completo: primero los archivos del depósito, después las
-   filas. En ese orden, porque si falla el depósito todavía tenemos de dónde
-   sacar la lista; al revés quedarían archivos huérfanos ocupando lugar. */
+/* Borra un evento completo. Primero anota la lista de archivos, después
+   borra las filas y recién ahí el depósito: la base solo deja borrar
+   archivos de eventos que ya no existen. */
 async function borrarEvento(codigo,avisar){
   const paso=t=>{ if(avisar) avisar(t); };
   if(!HAY_NUBE){
@@ -970,6 +1034,7 @@ async function borrarEvento(codigo,avisar){
     await local.set(LISTA,lista.filter(e=>e.codigo!==codigo));
     return {archivos:idx.length,items:idx.length};
   }
+  const clave=claveDe(codigo);
   paso('Buscando los archivos…');
   let rutas=[];
   try{
@@ -984,14 +1049,18 @@ async function borrarEvento(codigo,avisar){
       if(u&&u.includes('/ce-medios/')) rutas.push(u.split('/ce-medios/')[1].split('?')[0]);
     }
   }
+  /* Las filas primero: la base solo deja borrar archivos de eventos que ya
+     no existen, así nadie puede vaciarle el depósito a una fiesta en curso. */
+  paso('Borrando los recuerdos…');
+  await SB.borrar('ce_items',`codigo=eq.${encodeURIComponent(codigo)}`,clave);
+  paso('Borrando el evento…');
+  await SB.borrar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`,clave);
   if(rutas.length){
     paso(`Borrando ${rutas.length} archivo${rutas.length>1?'s':''}…`);
-    await SB.borrarArchivos(rutas);
+    try{ await SB.borrarArchivos(rutas,clave); }
+    catch(e){ console.warn('quedaron archivos sin borrar',e); }
   }
-  paso('Borrando los recuerdos…');
-  await SB.borrar('ce_items',`codigo=eq.${encodeURIComponent(codigo)}`);
-  paso('Borrando el evento…');
-  await SB.borrar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`);
+  olvidarClaveDe(codigo);
   for(const k of Object.keys(cacheItem)) if(k.startsWith(codigo)) delete cacheItem[k];
   return {archivos:rutas.length};
 }
@@ -1003,7 +1072,7 @@ async function cambiarEstado(c,id,estado){
     const it=await item(c,id); if(it){it.estado=estado; await local.set(kItem(c,id),it); cacheItem[c+id]=it;}
     return;
   }
-  await SB.editar('ce_items',`id=eq.${encodeURIComponent(id)}`,{estado});
+  await SB.editar('ce_items',`id=eq.${encodeURIComponent(id)}`,{estado},claveDe(c));
   const k=c+id; if(cacheItem[k]) cacheItem[k].estado=estado;
 }
 const leer=leerLocal;
@@ -1111,15 +1180,6 @@ function contador(sel){
 }
 const tono=t=>document.documentElement.style.setProperty('--acc',t||'#D9AE72');
 
-/* En navegación privada (o con cookies bloqueadas) tocar localStorage tira
-   excepción y mataba la app entera al cargar. Ahora nunca propaga. */
-const guarda={
-  leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
-  escribir(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}},
-  borrar(k){try{localStorage.removeItem(k);}catch(e){}},
-  leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
-  escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
-};
 /* Bloque de referencia: lo ve el invitado después de subir y al final del
    álbum. Es de dónde salen las consultas de las fiestas siguientes. */
 const WSP='5493412506451';
@@ -1318,12 +1378,16 @@ async function sembrar(){
   try{
     const codigo='QUI-7FCE64';
     const tapa=fotoDemo(3);
+    /* La base exige clave para dar de alta un evento. Si ya la tenemos
+       guardada de otra vez la reusamos; si no, una nueva. */
+    const claveEv=claveDe(codigo)||nuevaClave();
     const datos={codigo,nombre:'Sana',fecha:'2026-08-21',tipo:'XV',tono:'#D9AE72',
-      moderar:false,cerrado:false,portada:HAY_NUBE?null:tapa,creado:Date.now()};
+      moderar:false,cerrado:false,portada:HAY_NUBE?null:tapa,creado:Date.now(),claveNueva:claveEv};
     /* En la nube las fotos van al depósito de archivos: antes se guardaban
        los items sin archivo y el muro quedaba con fotos vacías. */
     if(HAY_NUBE) datos.portadaBlob=await dataABlob(tapa);
     await guardarMeta(datos);
+    guardarClaveDe(codigo,claveEv);
     if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
     const gente=['Delfina','Tomás','Mica y Juli','Abuela Nélida','Francisco','Lucía','Nacho','Las primas','Sofía'];
     const frases=['Bailá como si nadie te viera, que igual te estamos filmando.',
@@ -1392,6 +1456,7 @@ async function vAcceso(){
     /* la clave maestra entra siempre, haya o no clave en este teléfono */
     if(await esMaestra(v)){
       esAdmin=true; guarda.escribirSesion('ce:admin','1');
+      claveMaestra=v; guarda.escribirSesion('ce:maestra',v);
       pinOK=true; guarda.escribirSesion('ce:pinOK','1');
       recado('Entraste como administrador');
       return vPanel();
@@ -1406,6 +1471,7 @@ async function vAcceso(){
       campo.value=''; return recado('Clave incorrecta');
     }
     esAdmin=false; guarda.escribirSesion('ce:admin','0');
+    claveMaestra=''; guarda.escribirSesion('ce:maestra','');
     pinOK=true; guarda.escribirSesion('ce:pinOK','1');
     vPanel();
   };
@@ -1472,14 +1538,15 @@ async function vPanel(){
     const btn=app.querySelector('#crear');
     if(btn.disabled) return;               // evita crear dos veces con doble toque
     btn.disabled=true; btn.textContent='Creando…';
+    const claveEv=nuevaClave();
     try{
       await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:v.toISOString().slice(0,10),
-        moderar:false,cerrado:false,portada:null,creado:Date.now()});
+        moderar:false,cerrado:false,portada:null,creado:Date.now(),claveNueva:claveEv});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
+      guardarClaveDe(codigo,claveEv);
       btn.textContent='✓ Evento creado';
-      recado('✓ '+nombre+' · '+codigo);
       window.scrollTo({top:0,behavior:'smooth'});
-      setTimeout(()=>ir('evento/'+codigo), 900);
+      vClaveNueva({codigo,nombre},claveEv);
     }catch(e){
       console.error('crear evento',e);
       btn.disabled=false; btn.textContent='Crear evento';
@@ -1488,10 +1555,107 @@ async function vPanel(){
   };
 }
 
+/* Recién creado: la clave se muestra una vez, grande y para copiar. */
+function vClaveNueva(ev,clave){
+  parar(); tono();
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Evento creado</p>
+    <h1>${esc(ev.nombre)}</h1>
+  </header>
+  <div class="wrap-inv" style="padding-bottom:40px">
+    <div class="clave-caja">
+      <p class="espaciado">Clave de este evento</p>
+      <p class="clave-grande">${esc(clave)}</p>
+      <p class="aviso">Con esta clave se modifica <b style="color:var(--champan);font-weight:400">solo este
+        evento</b>: moderar fotos, cerrar el muro, cambiar los datos.<br>
+        Guardala o pasásela a quien organiza la fiesta.</p>
+    </div>
+    <button class="oro-btn" id="copiarClave">Copiar la clave</button>
+    <p class="pie-nota">Queda guardada en este celular, así que acá no te la va a pedir de nuevo.
+      Si entrás desde otro aparato, la vas a necesitar.</p>
+    <div class="filete">${ESTRELLA}</div>
+    <div class="clave-fila"><span>Código del evento</span><b>${esc(ev.codigo)}</b></div>
+    <button class="hilo-btn" id="alEvento" style="margin-top:22px">Ir al evento</button>
+  </div>`;
+  app.querySelector('#copiarClave').onclick=()=>copiarTexto(clave,'Clave copiada');
+  app.querySelector('#alEvento').onclick=()=>ir('evento/'+ev.codigo);
+}
+
+/* Copiar sin mentir: si el navegador no deja, se muestra el texto. */
+async function copiarTexto(texto,aviso){
+  try{
+    if(!navigator.clipboard) throw new Error('sin portapapeles');
+    await navigator.clipboard.writeText(texto);
+    return recado(aviso||'Copiado');
+  }catch(e){
+    const t=document.createElement('textarea');
+    t.value=texto; t.setAttribute('readonly','');
+    t.style.cssText='position:fixed;left:-9999px;top:0';
+    document.body.appendChild(t); t.select(); t.setSelectionRange(0,99999);
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+    t.remove();
+    recado(ok?(aviso||'Copiado'):'Copialo a mano: '+texto);
+  }
+}
+
+/* Sin la clave de este evento no se entra al panel. La valida la base. */
+function vPedirClave(codigo,m){
+  parar(); tono(m&&m.tono);
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Panel del evento</p>
+    <h1>${esc((m&&m.nombre)||codigo)}</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
+    <div class="tarjeta principal" style="text-align:center">
+      <div style="width:56px;height:56px;border:1px solid var(--hilo);border-radius:50%;
+        display:grid;place-items:center;margin:0 auto 22px;color:var(--oro)">${ESTRELLA}</div>
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:24px">
+        Para moderar o cambiar algo de este evento hace falta su clave.
+        Es la que se mostró al crearlo.</p>
+      <input id="claveEv" type="text" autocomplete="off" autocapitalize="characters"
+        placeholder="CLAVE" style="text-align:center;font-size:24px;letter-spacing:.3em;padding:15px 0">
+      <button class="oro-btn" id="entrarEv" style="margin-top:22px">Entrar</button>
+      <p class="pie-nota">También sirve la clave de administrador.</p>
+    </div>
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
+  const campo=app.querySelector('#claveEv');
+  campo.focus();
+  const probar=async()=>{
+    const v=campo.value.trim();
+    if(v.length<4) return recado('Clave muy corta');
+    const b=app.querySelector('#entrarEv');
+    b.disabled=true; b.textContent='Comprobando…';
+    try{
+      const r=await SB.quienSoy(codigo,v);
+      if(r&&r.puede_editar){
+        guardarClaveDe(codigo,v);
+        recado('Listo'); return vEvento(codigo);
+      }
+      if(r&&!r.llego_la_clave){
+        recado('La clave no llega a la base. Avisale a Click Eterno.');
+      }else{
+        campo.value=''; recado('Clave incorrecta');
+      }
+    }catch(e){
+      console.error('comprobar clave',e);
+      recado('No pude comprobar la clave: '+motivo(e));
+    }
+    b.disabled=false; b.textContent='Entrar';
+  };
+  app.querySelector('#entrarEv').onclick=probar;
+  campo.onkeydown=e=>{ if(e.key==='Enter') probar(); };
+}
+
 async function vEvento(codigo){
   parar();
   const m=await meta(codigo);
   if(!m){recado('No encontré ese evento'); return ir('panel');}
+  /* sin nube no hay base que valide: el panel queda abierto como antes */
+  if(HAY_NUBE && !puedoEditar(codigo)) return vPedirClave(codigo,m);
   tono(m.tono);
   const idx=await indice(codigo);
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
@@ -1544,6 +1708,17 @@ async function vEvento(codigo){
       <div class="tarjeta">
         <p class="titu-s">Portada del álbum</p>
         <div class="porta-fila" id="porta"></div>
+      </div>
+      <div class="tarjeta">
+        <p class="titu-s">Clave de este evento</p>
+        ${clavesGuardadas()[codigo]
+          ? `<div class="clave-fila"><span style="margin:0">Clave guardada</span>
+               <b>${esc(clavesGuardadas()[codigo])}</b></div>
+             <button class="hilo-btn" id="copiarClaveEv">Copiar la clave</button>`
+          : `<p style="font-size:13.5px;color:#B5AC9E;line-height:1.7">
+               En este aparato no está guardada${esAdmin?' (entraste con la clave de administrador)':''}.</p>`}
+        <button class="hilo-btn" id="cambiarClaveEv">${clavesGuardadas()[codigo]?'Cambiar la clave':'Ponerle una clave nueva'}</button>
+        <div id="zonaClave"></div>
       </div>
       <div class="tarjeta">
         <p class="titu-s">Cuándo se abre el muro</p>
@@ -1639,6 +1814,35 @@ async function vEvento(codigo){
   };
   const bQ=app.querySelector('#borrarL');
   if(bQ) bQ.onclick=()=>guardarLanza('','Muro abierto desde ahora');
+
+  const bCopiaC=app.querySelector('#copiarClaveEv');
+  if(bCopiaC) bCopiaC.onclick=()=>copiarTexto(clavesGuardadas()[codigo],'Clave copiada');
+  const bCambiaC=app.querySelector('#cambiarClaveEv');
+  if(bCambiaC) bCambiaC.onclick=()=>{
+    const zona=app.querySelector('#zonaClave');
+    const sugerida=nuevaClave();
+    zona.innerHTML=`
+      <div class="campo" style="margin:18px 0 12px">
+        <label for="claveNva">Clave nueva</label>
+        <input id="claveNva" type="text" autocapitalize="characters" value="${esc(sugerida)}"
+          style="font-size:20px;letter-spacing:.24em"></div>
+      <p class="pie-nota" style="text-align:left;margin:0 0 14px">La anterior deja de servir al instante.</p>
+      <button class="oro-btn" id="confirmarClave">Guardar la clave nueva</button>`;
+    zona.querySelector('#confirmarClave').onclick=async e=>{
+      const nva=zona.querySelector('#claveNva').value.trim().toUpperCase();
+      if(nva.length<4) return recado('Muy corta: mínimo 4');
+      const b=e.currentTarget; b.disabled=true; b.textContent='Guardando…';
+      try{
+        await SB.cambiarClave(codigo,claveDe(codigo),nva);
+        guardarClaveDe(codigo,nva);
+        recado('Clave cambiada · '+nva);
+        vEvento(codigo);
+      }catch(err){
+        b.disabled=false; b.textContent='Guardar la clave nueva';
+        recado('No se pudo cambiar: '+motivo(err));
+      }
+    };
+  };
 
   /* Borrar es para siempre: en vez de un aviso que se toca sin querer,
      hay que escribir el código del evento. */
@@ -2437,6 +2641,23 @@ async function vDiagnostico(){
     }
   }catch(e){
     linea('FALLÓ la conexión: '+e.message, false);
+  }
+
+  /* Lo único que no se puede probar sin la base de verdad: que la cabecera
+     con la clave llegue entera. Si no llega, nadie puede moderar nada. */
+  linea('———');
+  try{
+    const r=await SB.quienSoy(null,'PRUEBA-DE-CABECERA');
+    linea('La clave viaja hasta la base: '+(r&&r.llego_la_clave?'SÍ':'NO LLEGA'), !!(r&&r.llego_la_clave));
+    if(r&&!r.llego_la_clave) linea('  (sin esto no se puede moderar ni cambiar nada)', false);
+    const maestra=claveMaestra||'';
+    if(maestra){
+      const q=await SB.quienSoy(null,maestra);
+      linea('Clave de administrador reconocida: '+(q&&q.es_maestra?'sí':'no'), !!(q&&q.es_maestra));
+    }
+  }catch(e){
+    linea('No pude comprobar la cabecera: '+motivo(e), false);
+    linea('  (falta correr el SQL de claves en Supabase)');
   }
 }
 
