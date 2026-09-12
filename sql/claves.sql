@@ -118,14 +118,33 @@ create policy "ce items borrar" on ce_items for delete to anon, authenticated
   using (ce_permitido(codigo));
 
 -- ── 7. archivos: solo se borran los que ya no tienen evento ──
-alter table storage.objects enable row level security;
-drop policy if exists "ce medios borrar" on storage.objects;
-create policy "ce medios borrar" on storage.objects for delete to anon, authenticated
-  using (
-    bucket_id = 'ce-medios'
-    and not exists (select 1 from public.ce_eventos e
-                    where e.codigo = split_part(objects.name, '/', 1))
-  );
+-- La tabla storage.objects no es nuestra: es de Supabase. Ya viene con la
+-- seguridad activada, así que no hace falta (ni se puede) tocarla. Y si el
+-- proyecto tampoco nos deja crear la política desde acá, lo avisa y sigue:
+-- el resto del sistema de claves no depende de esto.
+do $ce$
+begin
+  -- por las dudas, que la seguridad esté prendida (en Supabase ya viene así)
+  begin
+    execute 'alter table storage.objects enable row level security';
+  exception when insufficient_privilege or undefined_table then
+    null;   -- no es nuestra la tabla: ya viene prendida de fábrica
+  end;
+  -- la regla en sí
+  begin
+    execute 'drop policy if exists "ce medios borrar" on storage.objects';
+    execute $ce_pol$
+      create policy "ce medios borrar" on storage.objects for delete to anon, authenticated
+        using (
+          bucket_id = 'ce-medios'
+          and not exists (select 1 from public.ce_eventos e
+                          where e.codigo = split_part(objects.name, '/', 1))
+        )$ce_pol$;
+    raise notice 'PASO 7 OK: la política de archivos quedó creada.';
+  exception when insufficient_privilege or undefined_table then
+    raise notice 'PASO 7 PENDIENTE: este proyecto no deja tocar storage.objects desde el editor. Hay que crear la política a mano desde Storage. Todo lo demás quedó instalado.';
+  end;
+end $ce$;
 
 -- ── 8. cambiar la clave de un evento (con la vieja o con la maestra) ──
 create or replace function ce_cambiar_clave(p_codigo text, p_nueva text)
