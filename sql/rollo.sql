@@ -228,48 +228,96 @@ grant execute on function
 -- ── 8. el depósito de las fotos ──
 -- Privado (a diferencia de ce-medios, que es público): antes del revelado
 -- nadie tiene que poder abrir ni adivinando la dirección.
-insert into storage.buckets(id, name, public)
-  values ('ce-rollos', 'ce-rollos', false)
-  on conflict (id) do nothing;
-
-alter table storage.objects enable row level security;  -- ya viene así en Supabase
-
-drop policy if exists "ce rollos subir" on storage.objects;
-drop policy if exists "ce rollos leer" on storage.objects;
-drop policy if exists "ce rollos borrar" on storage.objects;
-
--- Solo se puede subir a un camino que YA fue reservado por ce_tomar_foto.
--- Nadie puede subir basura al azar: primero tiene que pasar por la función,
--- que exige cupo disponible y evento abierto.
-create policy "ce rollos subir" on storage.objects for insert to anon, authenticated
-  with check (
-    bucket_id = 'ce-rollos'
-    and ce_ruta_reservada(objects.name)
-  );
-
--- Solo se puede leer (y por lo tanto, solo se puede firmar una URL) cuando
--- el evento al que pertenece la carpeta ya se reveló.
 --
--- El segundo caso (evento que ya no existe) no es un permiso de más: en un
--- "delete ... where name = ..." Postgres exige permiso de LECTURA sobre las
--- filas que filtra, así que sin esto la política de borrar de más abajo no
--- llega a aplicarse nunca y las fotos de un evento eliminado quedan para
--- siempre en el depósito, ocupando lugar. Son archivos de una fiesta que
--- ya no existe y que se están borrando en ese mismo momento.
-create policy "ce rollos leer" on storage.objects for select to anon, authenticated
-  using (
-    bucket_id = 'ce-rollos'
-    and (
-      ce_camara_revelada(split_part(objects.name, '/', 1))
-      or not exists (select 1 from public.ce_eventos e
-                      where e.codigo = split_part(objects.name, '/', 1))
-    )
-  );
+-- OJO: desde 2025 Supabase no deja tocar storage.objects desde el editor
+-- (la tabla es de supabase_storage_admin, no nuestra). Por eso TODO esto va
+-- adentro de un bloque que atrapa el error y sigue de largo, igual que el
+-- paso 7 de claves.sql. Si no, un solo error acá tira abajo el script
+-- entero: el editor corre todo en una transacción y se deshace hasta lo que
+-- ya se había creado bien.
+--
+-- Si sale "PENDIENTE", hay que crear el depósito y sus tres reglas a mano
+-- desde el panel (Storage). Está explicado en el README.
+do $ce$
+declare v_faltan text := '';
+begin
+  -- el depósito
+  begin
+    insert into storage.buckets(id, name, public)
+      values ('ce-rollos', 'ce-rollos', false)
+      on conflict (id) do nothing;
+    raise notice 'DEPÓSITO OK: ce-rollos existe y es privado.';
+  exception when insufficient_privilege or undefined_table then
+    v_faltan := v_faltan || ' el depósito ce-rollos;';
+  end;
 
--- Igual que en ce-medios: un archivo solo se borra cuando su evento ya no existe.
-create policy "ce rollos borrar" on storage.objects for delete to anon, authenticated
-  using (
-    bucket_id = 'ce-rollos'
-    and not exists (select 1 from public.ce_eventos e
-                     where e.codigo = split_part(objects.name, '/', 1))
-  );
+  -- por las dudas, que la seguridad esté prendida (en Supabase ya viene así)
+  begin
+    execute 'alter table storage.objects enable row level security';
+  exception when insufficient_privilege or undefined_table then
+    null;   -- no es nuestra la tabla: ya viene prendida de fábrica
+  end;
+
+  -- Solo se puede subir a un camino que YA fue reservado por ce_tomar_foto.
+  -- Nadie puede subir basura al azar: primero tiene que pasar por la
+  -- función, que exige cupo disponible y evento abierto.
+  begin
+    execute 'drop policy if exists "ce rollos subir" on storage.objects';
+    execute $pol$
+      create policy "ce rollos subir" on storage.objects for insert to anon, authenticated
+        with check (
+          bucket_id = 'ce-rollos'
+          and public.ce_ruta_reservada(name)
+        )$pol$;
+    raise notice 'REGLA OK: "ce rollos subir".';
+  exception when insufficient_privilege or undefined_table then
+    v_faltan := v_faltan || ' la regla de subir;';
+  end;
+
+  -- Solo se puede leer (y por lo tanto, solo se puede firmar una URL) cuando
+  -- el evento al que pertenece la carpeta ya se reveló.
+  --
+  -- El segundo caso (evento que ya no existe) no es un permiso de más: en un
+  -- "delete ... where name = ..." Postgres exige permiso de LECTURA sobre las
+  -- filas que filtra, así que sin esto la regla de borrar de más abajo no
+  -- llega a aplicarse nunca y las fotos de un evento eliminado quedan para
+  -- siempre en el depósito, ocupando lugar.
+  begin
+    execute 'drop policy if exists "ce rollos leer" on storage.objects';
+    execute $pol$
+      create policy "ce rollos leer" on storage.objects for select to anon, authenticated
+        using (
+          bucket_id = 'ce-rollos'
+          and (
+            public.ce_camara_revelada(split_part(name, '/', 1))
+            or not exists (select 1 from public.ce_eventos e
+                            where e.codigo = split_part(name, '/', 1))
+          )
+        )$pol$;
+    raise notice 'REGLA OK: "ce rollos leer".';
+  exception when insufficient_privilege or undefined_table then
+    v_faltan := v_faltan || ' la regla de leer;';
+  end;
+
+  -- Igual que en ce-medios: un archivo solo se borra cuando su evento ya no existe.
+  begin
+    execute 'drop policy if exists "ce rollos borrar" on storage.objects';
+    execute $pol$
+      create policy "ce rollos borrar" on storage.objects for delete to anon, authenticated
+        using (
+          bucket_id = 'ce-rollos'
+          and not exists (select 1 from public.ce_eventos e
+                           where e.codigo = split_part(name, '/', 1))
+        )$pol$;
+    raise notice 'REGLA OK: "ce rollos borrar".';
+  exception when insufficient_privilege or undefined_table then
+    v_faltan := v_faltan || ' la regla de borrar;';
+  end;
+
+  if v_faltan <> '' then
+    raise notice '── ATENCIÓN ──';
+    raise notice 'Todo lo demás quedó instalado, pero este proyecto no deja tocar el depósito desde el editor.';
+    raise notice 'Falta crear a mano, desde el panel de Storage:%', v_faltan;
+    raise notice 'Está paso a paso en el README, en "Si el depósito quedó pendiente".';
+  end if;
+end $ce$;
