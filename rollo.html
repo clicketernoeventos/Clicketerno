@@ -70,6 +70,10 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .visor{position:relative;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:#000;
   border:1px solid var(--hilo);box-shadow:0 0 0 6px rgba(255,255,255,.02) inset}
 .visor video,.visor img.cap{width:100%;height:100%;object-fit:cover;display:block}
+/* el mismo grano que la foto guardada, para que la vista previa no mienta */
+.visor .grano-visor{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  transition:opacity .25s}
 .visor .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
 .visor .flash.on{animation:flashea .32s ease-out}
 @keyframes flashea{0%{opacity:.9}100%{opacity:0}}
@@ -110,6 +114,30 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .grilla figure.mia{outline:2px solid var(--oro);outline-offset:-2px}
 .grilla figcaption{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;font-size:10px;
   background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#EFE7DA}
+.grilla figure{cursor:zoom-in}
+
+/* ── visor a pantalla completa ── */
+.visorf{position:fixed;inset:0;z-index:90;background:#000;display:flex;flex-direction:column;
+  animation:aparece .25s var(--e)}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+.visorf .barra{display:flex;align-items:center;gap:10px;padding:14px 16px;
+  padding-top:calc(14px + env(safe-area-inset-top))}
+.visorf .barra .sep{flex:1}
+.visorf .redondo{width:40px;height:40px;border-radius:50%;border:1px solid var(--gris);
+  display:flex;align-items:center;justify-content:center;color:var(--texto);background:rgba(255,255,255,.04)}
+.visorf .redondo svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.visorf .marco{flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding:0 8px}
+.visorf .marco img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px}
+.visorf .flecha{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;
+  border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:var(--texto);
+  display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1}
+.visorf .flecha.izq{left:10px} .visorf .flecha.der{right:10px}
+.visorf .pie{text-align:center;padding:14px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));
+  font-size:12.5px;color:var(--mute);letter-spacing:.12em}
+.visorf .pie b{display:block;color:var(--texto);font-family:'Bodoni Moda',serif;font-style:italic;
+  font-size:16px;letter-spacing:0;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -176,12 +204,14 @@ const SB = {
   }
 };
 
+/* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
+   es apenas un cambio de color; el grano es lo que hace que parezca film. */
 const FILTROS=[
-  {id:'natural', nombre:'Natural',        css:'none', muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
-  {id:'clasico', nombre:'Clásico',        css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
-  {id:'bn',      nombre:'Blanco y negro', css:'grayscale(1) contrast(1.15) brightness(1.05)', muestra:'linear-gradient(135deg,#111,#ccc)'},
-  {id:'flash',   nombre:'Flash',          css:'contrast(1.28) brightness(1.15) saturate(.85)', muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
-  {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
+  {id:'natural', nombre:'Natural',        css:'none', grano:0,  muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
+  {id:'clasico', nombre:'Clásico',        css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
+  {id:'bn',      nombre:'Blanco y negro', css:'grayscale(1) contrast(1.15) brightness(1.05)', grano:20, muestra:'linear-gradient(135deg,#111,#ccc)'},
+  {id:'flash',   nombre:'Flash',          css:'contrast(1.28) brightness(1.15) saturate(.85)', grano:8,  muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
+  {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
 ];
 
 /* ══════════ el filtro de la foto guardada ══════════
@@ -232,9 +262,10 @@ function matricesDe(css){
   return lista;
 }
 const lim=v=>v<0?0:v>255?255:v;
-function aplicarFiltro(ctx,w,h,css){
+function aplicarFiltro(ctx,w,h,css,grano){
   const ms=matricesDe(css);
-  if(!ms.length) return;                        // "natural": no tocar nada
+  const gr=grano||0;
+  if(!ms.length && !gr) return;                 // "natural": no tocar nada
   const d=ctx.getImageData(0,0,w,h), p=d.data;
   for(let i=0;i<p.length;i+=4){
     let r=p[i], g=p[i+1], b=p[i+2];
@@ -244,6 +275,12 @@ function aplicarFiltro(ctx,w,h,css){
       const ng=lim(m[4]*r+m[5]*g+m[6]*b+m[7]);
       const nb=lim(m[8]*r+m[9]*g+m[10]*b+m[11]);
       r=nr; g=ng; b=nb;
+    }
+    if(gr){
+      /* Un solo valor para los tres canales: así es el grano de película
+         (una partícula, no tres puntitos de color como el ruido digital). */
+      const n=(Math.random()-.5)*gr;
+      r=lim(r+n); g=lim(g+n); b=lim(b+n);
     }
     p[i]=r; p[i+1]=g; p[i+2]=b;
   }
@@ -405,6 +442,7 @@ async function vCamara(m,guardado,estado){
     <div class="contador"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>de ${esc(estado.cupo)} fotos</span></div>
     <div class="visor" id="visor">
       <video id="video" autoplay playsinline muted></video>
+      <div class="grano-visor" id="granoVisor"></div>
       <div class="flash" id="flash"></div>
       <button class="girar" id="girar" aria-label="Girar cámara" hidden>
         <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
@@ -422,11 +460,15 @@ async function vCamara(m,guardado,estado){
   filtrosEl.innerHTML=FILTROS.map((f,i)=>`
     <button class="filtro-op" data-f="${f.id}" aria-pressed="${i===0}">
       <i style="background:${f.muestra}"></i><span>${esc(f.nombre)}</span></button>`).join('');
+  const granoVisor=app.querySelector('#granoVisor');
+  const pintarGranoVisor=()=>{ if(granoVisor) granoVisor.style.opacity=String((filtroActual.grano||0)/26); };
   filtrosEl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
     filtroActual=FILTROS.find(f=>f.id===b.dataset.f);
     filtrosEl.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     if(video) video.style.filter=filtroActual.css;
+    pintarGranoVisor();
   });
+  pintarGranoVisor();
 
   const btnDisparo=app.querySelector('#disparo');
   const btnGirar=app.querySelector('#girar');
@@ -534,7 +576,7 @@ async function vCamara(m,guardado,estado){
       if(!usarTrasera){ ctx.translate(canvas.width,0); ctx.scale(-1,1); }
       ctx.drawImage(video,0,0,canvas.width,canvas.height);
       ctx.setTransform(1,0,0,1,0,0);
-      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css,filtroActual.grano);
       await subirDisparo(canvas);
     }catch(e){ avisar('No se pudo tomar la foto: '+(e.message||e)); }
     disparando=false; btnDisparo.disabled=false;
@@ -550,7 +592,7 @@ async function vCamara(m,guardado,estado){
       canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
       const ctx=canvas.getContext('2d');
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css,filtroActual.grano);
       await subirDisparo(canvas);
     }catch(err){ avisar('No se pudo usar esa foto: '+(err.message||err)); }
     e.target.value=''; disparando=false;
@@ -581,6 +623,73 @@ async function vAlbum(m,token){
   </div>`;
 
   const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
+
+  /* ── el visor: la grilla sola no alcanza, la gracia es mirar la foto ── */
+  function abrirVisor(fotos, mapa, desde){
+    let i=desde;
+    const cap=document.createElement('div');
+    cap.className='visorf';
+    cap.innerHTML=`
+      <div class="barra">
+        <button class="redondo" id="bajarF" aria-label="Descargar">
+          <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></button>
+        <span class="sep"></span>
+        <button class="redondo" id="cerrarF" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="marco">
+        <button class="flecha izq" aria-label="Anterior">‹</button>
+        <img id="fotoF" alt="">
+        <button class="flecha der" aria-label="Siguiente">›</button>
+      </div>
+      <div class="pie" id="pieF"></div>`;
+    document.body.appendChild(cap);
+    const img=cap.querySelector('#fotoF'), pie=cap.querySelector('#pieF');
+    const pintar=()=>{
+      const f=fotos[i];
+      img.src=mapa[f.ruta]||'';
+      pie.innerHTML=`${f.nombre?`<b>${esc(f.nombre)}</b>`:''}${i+1} / ${fotos.length}`;
+      cap.querySelector('.izq').style.visibility=i>0?'visible':'hidden';
+      cap.querySelector('.der').style.visibility=i<fotos.length-1?'visible':'hidden';
+    };
+    const mover=d=>{ const n=i+d; if(n>=0&&n<fotos.length){ i=n; pintar(); } };
+    const cerrar=()=>{ cap.remove(); document.removeEventListener('keydown',teclas); };
+    const teclas=e=>{
+      if(e.key==='Escape') cerrar();
+      if(e.key==='ArrowLeft') mover(-1);
+      if(e.key==='ArrowRight') mover(1);
+    };
+    cap.querySelector('.izq').onclick=()=>mover(-1);
+    cap.querySelector('.der').onclick=()=>mover(1);
+    cap.querySelector('#cerrarF').onclick=cerrar;
+    document.addEventListener('keydown',teclas);
+    /* deslizar con el dedo, que es como se mira un álbum en el celular */
+    let x0=null;
+    cap.addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; },{passive:true});
+    cap.addEventListener('touchend',e=>{
+      if(x0===null) return;
+      const d=e.changedTouches[0].clientX-x0; x0=null;
+      if(Math.abs(d)>50) mover(d<0?1:-1);
+    },{passive:true});
+    /* Descargar: el atributo "download" no sirve con una dirección de otro
+       dominio (la abre en otra pestaña en vez de bajarla), así que traemos
+       la foto y la bajamos desde acá. */
+    cap.querySelector('#bajarF').onclick=async e=>{
+      const b=e.currentTarget; b.disabled=true;
+      try{
+        const r=await fetch(mapa[fotos[i].ruta]);
+        const blob=await r.blob();
+        const u=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=u; a.download=`${(m.nombre||'foto').replace(/[^\w\s-]/g,'').trim().slice(0,30)||'foto'}-${i+1}.jpg`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=>URL.revokeObjectURL(u),4000);
+      }catch(err){ avisar('No pude descargarla'); }
+      b.disabled=false;
+    };
+    pintar();
+  }
+
   const pintarGrilla=async(el,fotos)=>{
     if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">Todavía no hay fotos acá.</p>`; return; }
     const mapa=await SB.firmar(fotos.map(f=>f.ruta));
@@ -589,6 +698,9 @@ async function vAlbum(m,token){
         <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
         ${f.nombre?`<figcaption>${esc(f.nombre)}</figcaption>`:''}
       </figure>`).join('');
+    [...el.querySelectorAll('figure')].forEach((fig,i)=>{
+      fig.onclick=()=>abrirVisor(fotos,mapa,i);
+    });
     requestAnimationFrame(()=>{
       [...el.querySelectorAll('figure')].forEach((fig,i)=>{
         setTimeout(()=>fig.classList.add('rev'), 90*Math.min(i,14));

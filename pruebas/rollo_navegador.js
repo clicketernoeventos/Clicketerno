@@ -239,6 +239,34 @@ async function montarRutas(page, cfg) {
     await ctx.close();
   }
 
+  // ── 10. el visor de fotos ──
+  {
+    const {page,ctx,errores} = await nuevaPagina(browser);
+    const fotos=[
+      {id:'1',ruta:'T/t/1.jpg',filtro:'clasico',ts:1,nombre:'Lucía',mia:true},
+      {id:'2',ruta:'T/t/2.jpg',filtro:'bn',ts:2,nombre:'Nico',mia:false},
+      {id:'3',ruta:'T/t/3.jpg',filtro:'dorado',ts:3,nombre:'Sofi',mia:false}];
+    const estado={...estadoBase(), revelado:true};
+    await montarRutas(page,{estado,llamadas:{},album:{revelado:true,mias:fotos.slice(0,1),todas:fotos,total_fotos:3,total_invitados:3}});
+    await page.goto('http://127.0.0.1:8890/rollo.html?e=TEST-1');
+    await page.evaluate(()=>localStorage.setItem('ce:rollo:TEST-1',JSON.stringify({token:'tok',nombre:'Ana'})));
+    await page.reload(); await page.waitForTimeout(1100);
+    await page.click('[data-t="todas"]'); await page.waitForTimeout(1000);
+    await page.click('#grillaTodas figure:nth-child(2)'); await page.waitForTimeout(500);
+    ok('tocar una foto la abre a pantalla completa', await page.locator('.visorf').isVisible().catch(()=>false));
+    const pie1 = await page.textContent('#pieF').catch(()=>'');
+    ok('el visor dice de quién es y en cuál va', /Nico/.test(pie1)&&/2 \/ 3/.test(pie1), 'pie="'+pie1+'"');
+    await page.click('.visorf .der'); await page.waitForTimeout(400);
+    const pie2 = await page.textContent('#pieF').catch(()=>'');
+    ok('la flecha pasa a la siguiente', /Sofi/.test(pie2)&&/3 \/ 3/.test(pie2), 'pie="'+pie2+'"');
+    ok('en la última no hay flecha para seguir',
+       await page.locator('.visorf .der').evaluate(e=>getComputedStyle(e).visibility==='hidden').catch(()=>false));
+    await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+    ok('se cierra con Escape', (await page.locator('.visorf').count())===0);
+    ok('sin errores en el visor', errores.length===0, errores[0]||'');
+    await ctx.close();
+  }
+
   console.log(R.join('\n'));
   await browser.close();
 })();
