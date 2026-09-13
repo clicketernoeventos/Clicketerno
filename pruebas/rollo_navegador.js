@@ -7,7 +7,12 @@ async function nuevaPagina(browser, opciones={}) {
   const page = await ctx.newPage();
   const errores=[]; const avisos=[];
   page.on('pageerror', e=>errores.push('PAGEERROR: '+e.message));
-  page.on('console', m=>{ if(m.type()==='error') errores.push('CONSOLE: '+m.text()); });
+  /* La librería del QR viene de un CDN. Si el entorno donde corren estas
+     pruebas no tiene salida a internet, el navegador avisa que no pudo
+     bajarla: eso no es un fallo del rollo, y si lo contáramos taparía los
+     errores de verdad. */
+  const deCDN=t=>/ERR_TUNNEL_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|cdnjs|fonts\.googleapis/i.test(t);
+  page.on('console', m=>{ if(m.type()==='error' && !deCDN(m.text())) errores.push('CONSOLE: '+m.text()); });
   return { page, ctx, errores, avisos };
 }
 
