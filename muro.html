@@ -247,6 +247,28 @@ option{background:#0B0A08}
 .espera .par button{flex:1;min-width:0;padding:13px 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .espera .par button+button{border-left:1px solid var(--gris)}
 .si{color:var(--oro)}.no{color:#8A8177}
+.publicados{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
+.publi{position:relative;border:1px solid var(--gris);overflow:hidden;aspect-ratio:1;
+  min-height:0;background:#141210;cursor:pointer}
+/* la imagen va fuera del flujo: si no, su alto real estira la miniatura y
+   las filas quedan de distinto tamaño */
+.publi img,.publi video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.publi .tx{padding:10px;font-size:11.5px;line-height:1.5;height:100%;overflow:hidden;
+  display:flex;align-items:center;font-family:'Bodoni Moda',serif;font-style:italic;color:#CFC7BA}
+.publi .quien{position:absolute;left:0;right:0;bottom:0;padding:14px 7px 5px;font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;color:#E8E2D8;pointer-events:none;
+  background:linear-gradient(transparent,rgba(0,0,0,.8));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ojo: .tapa ya existe en la app y tiene un :after que se come los clics */
+.publi .velo{position:absolute;inset:0;display:grid;grid-template-rows:1fr 1fr;
+  background:rgba(10,9,8,.93);animation:aparece .18s}
+.publi .velo button{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:0 3px;width:100%}
+.publi .velo .sacar{color:#FF7B94}
+.publi .velo .dejar-ahi{color:#8A8177;border-top:1px solid var(--gris)}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+.tag-g{margin-top:14px;font-size:clamp(13px,1.5vw,17px);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--oro);opacity:.85}
+.tag-a{margin-top:10px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.tag-c{margin-top:7px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8A7A5E}
 .cifras4{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--gris);border-bottom:1px solid var(--gris);margin:30px 0}
 .cifras4 div{padding:20px 6px;text-align:center;border-right:1px solid var(--gris)}
 .cifras4 div:last-child{border-right:0}
@@ -931,15 +953,16 @@ async function meta(c){
   try{ return (await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(c)}&select=*`))[0]||null; }
   catch(e){ console.error(e); return null; }
 }
-/* Si la base todavía no tiene la columna del horario, no se rompe nada:
-   se vuelve a guardar sin ese dato y se avisa una sola vez. Así el resto
-   del panel sigue funcionando aunque no se haya corrido el SQL. */
-let sinColumnaLanza=false;
-/* mismo truco que con "lanza": si todavía no se corrió sql/rollo.sql, estas
-   cuatro columnas no existen. Se sacan del guardado y se avisa una sola vez,
-   en vez de que se rompa todo el panel del evento. */
-let sinColumnasCamara=false;
+/* Columnas que se fueron agregando con el tiempo. Si la base todavía no
+   las tiene, no se rompe nada: se vuelve a guardar sin ese dato y se anota
+   cuál falta, para avisarlo una sola vez. Así el panel sigue andando
+   aunque no se haya corrido el SQL nuevo.
+   Antes había un mecanismo por tanda de columnas; ahora es uno solo. */
 const COLS_CAMARA=['camara','cupo_fotos','revela_en','revelado'];
+const COLUMNAS_NUEVAS=['lanza','hashtag','lugar',...COLS_CAMARA];
+const faltaColumna={};
+const sinColumna=c=>!!faltaColumna[c];
+const sinColumnasCamara=()=>COLS_CAMARA.some(sinColumna);
 async function guardarMeta(m){
   if(!HAY_NUBE) return local.set(kMeta(m.codigo),m);
   const copia={...m};
@@ -947,29 +970,25 @@ async function guardarMeta(m){
     copia.portada = await subirArchivo(copia.portadaBlob, `${copia.codigo}/portada`);
     delete copia.portadaBlob;
   }
-  if(sinColumnaLanza) delete copia.lanza;
-  if(sinColumnasCamara) for(const c of COLS_CAMARA) delete copia[c];
+  for(const c of COLUMNAS_NUEVAS) if(faltaColumna[c]) delete copia[c];
   delete copia.claveNueva;      // la clave va en la cabecera, nunca en la fila
+  const mandar=()=>SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
   try{
-    await SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
+    await mandar();
   }catch(e){
+    /* ¿la base se quejó justo de una de las columnas nuevas? */
     const texto=String((e&&e.message)||'');
-    if(!sinColumnaLanza && 'lanza' in copia && /lanza/i.test(texto)){
-      sinColumnaLanza=true;
-      delete copia.lanza;
+    const culpable=COLUMNAS_NUEVAS.find(c=>!faltaColumna[c] && c in copia
+      && new RegExp(`'${c}'|"${c}"|\\b${c}\\b`,'i').test(texto));
+    if(culpable){
+      /* si falta una de la cámara, faltan las cuatro: se corren juntas */
+      for(const c of (COLS_CAMARA.includes(culpable)?COLS_CAMARA:[culpable])){
+        faltaColumna[c]=true; delete copia[c];
+      }
       try{
-        await SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
+        await mandar();
         m.portada=copia.portada;
-        return;   // quien llamó mira sinColumnaLanza y avisa lo que corresponda
-      }catch(e2){ e=e2; }
-    }
-    if(!sinColumnasCamara && COLS_CAMARA.some(c=>c in copia) && /camara|cupo_fotos|revela_en|revelado/i.test(texto)){
-      sinColumnasCamara=true;
-      for(const c of COLS_CAMARA) delete copia[c];
-      try{
-        await SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
-        m.portada=copia.portada;
-        return;   // quien llamó mira sinColumnasCamara y avisa lo que corresponda
+        return;   // quien llamó mira sinColumna() y avisa lo que corresponda
       }catch(e2){ e=e2; }
     }
     console.error('guardarMeta',e);
@@ -997,6 +1016,24 @@ async function indice(c){
   try{ return await SB.ver('ce_items',
     `codigo=eq.${encodeURIComponent(c)}&select=id,kind,autor,ts,estado&order=ts.asc`); }
   catch(e){ console.error('indice',e); recado('No se pudo leer el muro: '+motivo(e)); return []; }
+}
+/* Traer los recuerdos de a uno era una llamada por foto: un álbum de 200
+   eran 200 idas y vueltas, una atrás de la otra. Con una sola alcanza. */
+async function cargarTodo(c){
+  if(!HAY_NUBE) return null;
+  try{
+    const filas=await SB.ver('ce_items',
+      `codigo=eq.${encodeURIComponent(c)}&select=*&order=ts.asc`);
+    for(const v of filas){
+      const k=c+v.id, antes=cacheItem[k];
+      v.data=v.url||'';
+      /* Si la fila que llega no trae un archivo utilizable pero acá ya
+         teníamos uno bueno (recién subido), nos quedamos con el bueno. */
+      if(!urlSegura(v.data) && antes && urlSegura(antes.data)) v.data=antes.data;
+      cacheItem[k]=v;
+    }
+    return filas;
+  }catch(e){ console.error('cargarTodo',e); return null; }
 }
 async function item(c,id){
   const k=c+id; if(cacheItem[k]) return cacheItem[k];
@@ -1281,6 +1318,9 @@ let esAdmin=guarda.leerSesion('ce:admin')==='1';
 const PIN_KEY='ce:pin';
 let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 
+/* Cuántas miniaturas dibujamos de una: en una fiesta grande hay cientos y
+   el celular del organizador no tiene por qué renderizarlas todas. */
+const TOPE_PUBLI=60;
 const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
 const CONSIGNAS=[
@@ -1709,6 +1749,7 @@ async function vEvento(codigo){
   if(HAY_NUBE && !puedoEditar(codigo) && await laBaseSabeDeClaves())
     return vPedirClave(codigo,m);
   tono(m.tono);
+  await cargarTodo(codigo);        // una sola llamada en vez de una por foto
   const idx=await indice(codigo);
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
   const n=k=>apro.filter(i=>i.kind===k).length;
@@ -1751,12 +1792,43 @@ async function vEvento(codigo){
         <button class="palanca" id="mod" aria-pressed="${!!m.moderar}"></button></div>
       ${pend.length
         ? `<p class="titu-s" style="margin-top:26px">Esperando tu aprobación</p><div class="cola" id="cola"></div>`
-        : `<div class="vacio-mod">${ESTRELLA}<br>
+        : apro.length ? ''   /* la grilla de abajo ya cuenta cómo viene la mano */
+          : `<div class="vacio-mod">${ESTRELLA}<br>
              ${m.moderar?'No hay nada esperando.<br>Lo que suban tus invitados aparece acá.'
                         :'La moderación está apagada:<br>lo que suben va directo a la pantalla.'}</div>`}
+      ${apro.length?`
+        <p class="titu-s" style="margin-top:34px">Ya está en la pantalla${apro.length>TOPE_PUBLI?` · últimos ${TOPE_PUBLI} de ${apro.length}`:` · ${apro.length}`}</p>
+        <p class="pie-nota" style="text-align:left;margin:0 0 2px">
+          Tocá cualquiera para bajarlo de la pantalla y del álbum. No se borra: se puede volver a subir.</p>
+        <div class="publicados" id="publi"></div>
+        ${apro.length>TOPE_PUBLI?`<button class="hilo-btn" id="verTodosPubli" style="margin-top:12px">Ver los ${apro.length}</button>`:''}`:''}
     </section>
 
     <section class="panel-ev" id="pAjustes" hidden>
+      <div class="tarjeta">
+        <p class="titu-s">Datos del evento</p>
+        <div class="campo"><label for="edNombre">Nombre</label>
+          <input id="edNombre" type="text" maxlength="60" value="${esc(m.nombre||'')}"></div>
+        <div class="campo"><label for="edFecha">Fecha</label>
+          <input id="edFecha" type="date" value="${esc(m.fecha||'')}"></div>
+        <div class="campo"><label>Tono</label>
+          <div class="tonos">${TONOS.map(t=>`<button class="tono" data-c="${t.c}" title="${esc(t.n)}"
+            aria-pressed="${(m.tono||TONOS[0].c)===t.c}" style="background:${t.c}"></button>`).join('')}</div></div>
+        <button class="hilo-btn" id="guardarDatos">Guardar los datos</button>
+      </div>
+      <div class="tarjeta">
+        <p class="titu-s">Hashtag y lugar</p>
+        <div class="campo"><label for="edTag">Hashtag</label>
+          <input id="edTag" type="text" maxlength="40" autocapitalize="none"
+            placeholder="#Delfina15" value="${esc(m.hashtag||'')}"></div>
+        <div class="campo"><label for="edLugar">Dónde es</label>
+          <input id="edLugar" type="text" maxlength="60"
+            placeholder="Salón Las Acacias · Rosario" value="${esc(m.lugar||'')}"></div>
+        <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+          Aparecen en el cartel de mesa, en la pantalla del salón y en el álbum.
+          Sirve para que lo que suban a Instagram quede todo junto.</p>
+        <button class="hilo-btn" id="guardarTag">Guardar</button>
+      </div>
       <div class="tarjeta">
         <p class="titu-s">Portada del álbum</p>
         <div class="porta-fila" id="porta"></div>
@@ -1888,12 +1960,69 @@ async function vEvento(codigo){
       recado('No pude guardar la portada: '+motivo(err));
     }
   };
+  /* Antes, un nombre mal escrito al crear el evento quedaba para siempre. */
+  let tonoEd=m.tono||TONOS[0].c;
+  app.querySelectorAll('#pAjustes .tono').forEach(b=>b.onclick=()=>{
+    app.querySelectorAll('#pAjustes .tono').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true'); tonoEd=b.dataset.c; tono(tonoEd);
+  });
+  const bDatos=app.querySelector('#guardarDatos');
+  if(bDatos) bDatos.onclick=async e=>{
+    const b=e.currentTarget;
+    if(b.dataset.ocupado) return;
+    const nombre=app.querySelector('#edNombre').value.trim();
+    if(!nombre) return recado('El nombre no puede quedar vacío');
+    const fecha=app.querySelector('#edFecha').value||m.fecha;
+    const antes={nombre:m.nombre,fecha:m.fecha,tono:m.tono,vence:m.vence};
+    m.nombre=nombre; m.tono=tonoEd;
+    if(fecha!==m.fecha){
+      m.fecha=fecha;
+      /* el álbum vive un año desde la fiesta: si se corrige la fecha, se corre */
+      const v=new Date(fecha);
+      if(!isNaN(v)){ v.setMonth(v.getMonth()+12); m.vence=v.toISOString().slice(0,10); }
+    }
+    b.dataset.ocupado='1'; b.disabled=true; b.textContent='Guardando…';
+    try{
+      await guardarMeta(m);
+      recado('Datos guardados');
+      vEvento(codigo);
+    }catch(err){
+      Object.assign(m,antes); tono(m.tono); tonoEd=m.tono;
+      delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar los datos';
+    }
+  };
+  const bTag=app.querySelector('#guardarTag');
+  if(bTag) bTag.onclick=async e=>{
+    const b=e.currentTarget;
+    if(b.dataset.ocupado) return;
+    let tag=app.querySelector('#edTag').value.trim().replace(/\s+/g,'');
+    if(tag && tag[0]!=='#') tag='#'+tag;
+    const lugar=app.querySelector('#edLugar').value.trim();
+    const antes={hashtag:m.hashtag,lugar:m.lugar};
+    m.hashtag=tag||null; m.lugar=lugar||null;
+    b.dataset.ocupado='1'; b.disabled=true; b.textContent='Guardando…';
+    try{
+      await guardarMeta(m);
+      /* si la base todavía no tiene las columnas, no mentimos */
+      const faltan=['hashtag','lugar'].filter(sinColumna);
+      if(faltan.length){
+        Object.assign(m,antes);
+        delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar';
+        return recado(`La base todavía no guarda esto: falta la columna "${faltan[0]}".`);
+      }
+      recado('Guardado');
+      vEvento(codigo);
+    }catch(err){
+      Object.assign(m,antes);
+      delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar';
+    }
+  };
   const guardarLanza=async(valor,aviso)=>{
     const antes=m.lanza;
     m.lanza=valor||null;
     try{
       await guardarMeta(m);
-      if(sinColumnaLanza && valor){
+      if(sinColumna('lanza') && valor){
         /* se guardó todo lo demás, pero el horario no entró: no mentir */
         m.lanza=antes;
         return recado('La base todavía no guarda horarios: falta agregar la columna "lanza".');
@@ -2034,7 +2163,7 @@ async function vEvento(codigo){
     bCamOn.setAttribute('aria-pressed',String(m.camara));
     try{
       await guardarMeta(m);
-      if(sinColumnasCamara){ m.camara=antes; bCamOn.setAttribute('aria-pressed',String(antes)); faltaSQLcamara(); }
+      if(sinColumnasCamara()){ m.camara=antes; bCamOn.setAttribute('aria-pressed',String(antes)); faltaSQLcamara(); }
       else{ recado(m.camara?'Cámara activada':'Cámara apagada'); vEvento(codigo); }
     }catch(err){ m.camara=antes; bCamOn.setAttribute('aria-pressed',String(antes)); }
     delete bCamOn.dataset.ocupado;
@@ -2056,7 +2185,7 @@ async function vEvento(codigo){
       const b=e.currentTarget; b.disabled=true;
       try{
         await guardarMeta(m);
-        if(sinColumnasCamara){ m.cupo_fotos=antes; faltaSQLcamara(); }
+        if(sinColumnasCamara()){ m.cupo_fotos=antes; faltaSQLcamara(); }
         else recado('Cantidad guardada · '+v+' fotos por invitado');
       }catch(err){ m.cupo_fotos=antes; }
       b.disabled=false;
@@ -2065,7 +2194,7 @@ async function vEvento(codigo){
       const antes=m.revela_en; m.revela_en=valor||null;
       try{
         await guardarMeta(m);
-        if(sinColumnasCamara){ m.revela_en=antes; faltaSQLcamara(); }
+        if(sinColumnasCamara()){ m.revela_en=antes; faltaSQLcamara(); }
         else{ recado(aviso); vEvento(codigo); }
       }catch(err){ m.revela_en=antes; }
     };
@@ -2083,7 +2212,7 @@ async function vEvento(codigo){
       m.revelado=true;
       try{
         await guardarMeta(m);
-        if(sinColumnasCamara){ m.revelado=false; faltaSQLcamara(); bRevYa.disabled=false; bRevYa.textContent='Revelar ahora'; }
+        if(sinColumnasCamara()){ m.revelado=false; faltaSQLcamara(); bRevYa.disabled=false; bRevYa.textContent='Revelar ahora'; }
         else{ recado('Revelado · ya lo puede ver todo el mundo'); vEvento(codigo); }
       }catch(err){ m.revelado=false; bRevYa.disabled=false; bRevYa.textContent='Revelar ahora'; }
     };
@@ -2134,6 +2263,68 @@ async function vEvento(codigo){
       hacer:()=>mover('pendiente','Recuperado')
     });
     cola.appendChild(d);
+  }
+
+  /* Lo que ya está proyectándose. Hasta ahora, una vez aprobado (o con la
+     moderación apagada, que es lo normal) no había forma de bajar nada:
+     si alguien subía cualquier cosa, quedaba en la pantalla toda la noche. */
+  const publi=app.querySelector('#publi');
+  if(publi){
+    const nuevos=apro.slice().reverse();          // lo último arriba
+    let mostrados=0;
+    const dibujar=async cuantos=>{
+      const tanda=nuevos.slice(mostrados,mostrados+cuantos);
+      mostrados+=tanda.length;
+      for(const p of tanda){
+        const it=await item(codigo,p.id); if(!it) continue;
+        const d=document.createElement('div'); d.className='publi';
+        const cara=it.kind==='foto'&&urlSegura(it.data)?`<img src="${src(it.data)}" alt="" loading="lazy">`
+          :it.kind==='video'&&urlSegura(it.data)?`<video src="${src(it.data)}" muted playsinline></video>`
+          :`<div class="tx">${esc(it.texto||(it.kind==='audio'?'Saludo de voz':'Sin texto'))}</div>`;
+        d.innerHTML=`${cara}<span class="quien">${esc(it.autor||'Alguien')}</span>`;
+        d.onclick=()=>{
+          if(d.querySelector('.velo')) return;
+          const velo=document.createElement('div'); velo.className='velo';
+          velo.innerHTML=`<button class="sacar">Bajar</button><button class="dejar-ahi">Dejarlo</button>`;
+          velo.querySelector('.dejar-ahi').onclick=e=>{ e.stopPropagation(); velo.remove(); };
+          velo.querySelector('.sacar').onclick=async e=>{
+            e.stopPropagation();
+            const b=e.currentTarget; b.disabled=true; b.textContent='…';
+            try{
+              await cambiarEstado(codigo,p.id,'rechazado');
+            }catch(err){
+              b.disabled=false; b.textContent='Bajar';
+              return recado('No se pudo bajar: '+motivo(err));
+            }
+            recado('Bajado de la pantalla',{
+              texto:'Deshacer',
+              hacer:async()=>{
+                try{ await cambiarEstado(codigo,p.id,'aprobado'); recado('Vuelve a la pantalla'); vEvento(codigo); }
+                catch(err){ recado('No se pudo recuperar: '+motivo(err)); }
+              }
+            });
+            d.classList.add('se-va');
+            d.addEventListener('animationend',()=>{
+              d.remove();
+              const cif=app.querySelector(`[data-kind="${p.kind}"]`);
+              if(cif){
+                const n=Math.max(0,(Number(cif.dataset.cifra)||0)-1);
+                contarHasta(cif,n,320); cif.dataset.cifra=n;
+              }
+            },{once:true});
+          };
+          d.appendChild(velo);
+        };
+        publi.appendChild(d);
+      }
+    };
+    await dibujar(TOPE_PUBLI);
+    const verTodos=app.querySelector('#verTodosPubli');
+    if(verTodos) verTodos.onclick=async()=>{
+      verTodos.disabled=true; verTodos.textContent='Cargando…';
+      await dibujar(nuevos.length);
+      verTodos.remove();
+    };
   }
 }
 
@@ -2341,6 +2532,7 @@ async function vPantalla(codigo){
   parar();
   const m=await meta(codigo); if(!m) return ir('proyector');
   tono(m.tono);
+  await cargarTodo(codigo);        // el muro arranca de una, no foto por foto
   /* Dos modos en la misma pantalla:
      "cartel" para que la gente escanee al llegar, y "muro" para proyectar
      lo que mandaron. Arranca en cartel, que es lo primero que hace falta. */
@@ -2365,6 +2557,7 @@ async function vPantalla(codigo){
       <div class="qr-g" id="qrGrande"></div>
       <p class="como">Escaneá con la cámara · No hace falta instalar nada</p>
       <p class="cod-g">${esc(m.codigo)}</p>
+      ${(m.hashtag||m.lugar)?`<p class="tag-g">${[m.hashtag,m.lugar].filter(Boolean).map(esc).join('  ·  ')}</p>`:''}
       <p class="ya" id="yaHay"></p>
     </section>
     <section class="tablero" id="salaTablero" hidden>
@@ -2617,6 +2810,7 @@ async function vAlbum(codigo){
         <div class="rejilla-hueso">${'<i class="hueso"></i>'.repeat(9)}</div>
       </div>
     </div>`;
+  await cargarTodo(codigo);        // una sola llamada en vez de una por foto
   const idx=(await indice(codigo)).filter(i=>i.estado==='aprobado').reverse();
   const items=[];
   for(const i of idx){const it=await item(codigo,i.id); if(it) items.push(it);}
@@ -2638,7 +2832,8 @@ async function vAlbum(codigo){
       <div class="texto">
         <p class="arriba">Álbum digital</p>
         <h1>${esc(m.nombre)}</h1>
-        <p class="cuando">${bonito(m.fecha)}</p>
+        <p class="cuando">${bonito(m.fecha)}${m.lugar?' · '+esc(m.lugar):''}</p>
+        ${m.hashtag?`<p class="tag-a">${esc(m.hashtag)}</p>`:''}
         <div class="pastillas">
           ${past(n('foto'),'fotos')}${past(n('video'),'videos')}
           ${past(dedis.length,'dedicatorias')}${past(audios.length,'audios')}
@@ -2765,6 +2960,7 @@ async function vCartel(codigo){
       <div class="qr-c" id="qrc"></div>
       <p class="instr">Escaneá con la cámara<br>No hace falta instalar nada</p>
       <div class="cod">${esc(m.codigo)}</div>
+      ${m.hashtag?`<div class="tag-c">${esc(m.hashtag)}</div>`:''}
     </div>
     <div class="no-imprime">
       <button class="oro-btn" id="imprimir">Imprimir</button>

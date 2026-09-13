@@ -38,7 +38,7 @@ const CARGAS=[
 
     for(const ruta of ['panel','evento/QUI-EVIL1','album/QUI-EVIL1','pantalla/QUI-EVIL1','subir/QUI-EVIL1','cartel/QUI-EVIL1']){
       await page.goto('about:blank');
-      await page.goto(`${BASE}/app.html#${ruta}`,{waitUntil:'domcontentloaded'});
+      await page.goto(`${BASE}/muro.html#${ruta}`,{waitUntil:'domcontentloaded'});
       await page.waitForTimeout(700);
       const r=await page.evaluate(()=>({
         ejecutado: !!window.__X,

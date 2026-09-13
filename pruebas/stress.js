@@ -44,9 +44,9 @@ async function nuevaPagina(browser, modo) {
     route.fulfill({ status: 200, contentType: 'application/javascript', body: js });
   });
 
-  // vigía: si la página se va sola de app.html, es un bug
+  // vigía: si la página se va sola de muro.html, es un bug
   page.on('framenavigated', (f) => {
-    if (f === page.mainFrame() && !f.url().includes('app.html')) {
+    if (f === page.mainFrame() && !f.url().includes('muro.html')) {
       errores.push('NAVEGACIÓN INESPERADA fuera de la app: ' + f.url().slice(0, 90));
     }
   });
@@ -61,7 +61,7 @@ async function irA(page, ruta) {
     await page.evaluate((r) => { location.hash = '#' + r; }, ruta);
   } catch (e) {
     // el contexto se destruyó => algo navegó la página
-    await page.goto(BASE + '/app.html#' + ruta, { waitUntil: 'domcontentloaded' });
+    await page.goto(BASE + '/muro.html#' + ruta, { waitUntil: 'domcontentloaded' });
   }
   await page.waitForTimeout(350);
 }
@@ -102,7 +102,7 @@ async function recorrer(browser, modo) {
   console.log(`\n─── modo: ${modo} ───`);
   const { ctx, page, errores, fake } = await nuevaPagina(browser, modo);
 
-  await page.goto(BASE + '/app.html', { waitUntil: 'domcontentloaded' });
+  await page.goto(BASE + '/muro.html', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(600);
   await chequearVivo(page, modo, 'portada');
 
@@ -377,7 +377,7 @@ async function recorrer(browser, modo) {
 
   // ── recarga directa en vista profunda ──
   if (codigo) {
-    await page.goto(BASE + '/app.html#evento/' + codigo, { waitUntil: 'domcontentloaded' });
+    await page.goto(BASE + '/muro.html#evento/' + codigo, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(900);
     await chequearVivo(page, modo, 'recarga-profunda');
   }

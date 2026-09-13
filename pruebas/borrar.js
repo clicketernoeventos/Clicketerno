@@ -48,7 +48,7 @@ function fake({niegaBorrado=false}={}){
 }
 
 async function entrarComoAdmin(p){
-  await p.goto(BASE+'/app.html#panel',{waitUntil:'domcontentloaded'});
+  await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
   await p.waitForTimeout(900);
   await p.fill('#pin','166774'); await p.click('#entrar'); await p.waitForTimeout(900);
 }
@@ -64,11 +64,11 @@ async function entrarComoAdmin(p){
     await p.route('**/cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,contentType:'application/javascript',
       body:'window.QRCode=function(n){n.innerHTML="";};window.QRCode.CorrectLevel={M:0};'}));
     const f=fake(); await f.instalar(p);
-    await p.goto(BASE+'/app.html#panel',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(800);
     await p.fill('#pin','4321'); await p.click('#entrar'); await p.waitForTimeout(800);
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     const r=await p.evaluate(()=>({
       pide:!!document.querySelector('#claveEv'),
@@ -91,11 +91,11 @@ async function entrarComoAdmin(p){
     await p.route('**/cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,contentType:'application/javascript',
       body:'window.QRCode=function(n){n.innerHTML="";};window.QRCode.CorrectLevel={M:0};'}));
     const f=fake(); await f.instalar(p);
-    await p.goto(BASE+'/app.html#panel',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(800);
     await p.fill('#pin','4321'); await p.click('#entrar'); await p.waitForTimeout(800);
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(400);
     if(!(await p.locator('#pAjustes').count())) mal('con la clave del evento no se puede entrar a ajustes');
@@ -116,7 +116,7 @@ async function entrarComoAdmin(p){
     const f=fake(); await f.instalar(p);
     await entrarComoAdmin(p);
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(500);
     if(!(await p.locator('#pedirBorrar').count())) return mal('el admin no ve el botón'), ctx.close();
@@ -171,7 +171,7 @@ async function entrarComoAdmin(p){
     const f=fake({niegaBorrado:true}); await f.instalar(p);
     await entrarComoAdmin(p);
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(400);
     await p.click('#pedirBorrar'); await p.waitForTimeout(350);

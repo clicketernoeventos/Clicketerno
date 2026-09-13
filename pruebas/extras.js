@@ -43,7 +43,7 @@ async function pagina(browser,{romper=null}={}){
   console.log('\n─── bajar un recuerdo ya publicado ───');
   {
     const {ctx,p,errs,fake}=await pagina(browser);
-    await p.goto(BASE+'/app.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('[data-sol="pModerar"]'); await p.waitForTimeout(600);
     const cuantos=await p.locator('.publi').count();
@@ -67,7 +67,7 @@ async function pagina(browser,{romper=null}={}){
 
     // el muro del salón ya no la muestra
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#album/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#album/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     const enAlbum=await p.evaluate(()=>document.querySelectorAll('#aFotos img,#aFotos .toma').length);
     if(enAlbum>2) mal(`el álbum sigue mostrando ${enAlbum}: la bajada no desapareció`);
@@ -75,7 +75,7 @@ async function pagina(browser,{romper=null}={}){
 
     // deshacer
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     await p.click('[data-sol="pModerar"]'); await p.waitForTimeout(500);
     const quedan=await p.locator('.publi').count();
@@ -89,7 +89,7 @@ async function pagina(browser,{romper=null}={}){
   console.log('\n─── corregir nombre, fecha y tono ───');
   {
     const {ctx,p,errs,fake}=await pagina(browser);
-    await p.goto(BASE+'/app.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(500);
 
@@ -122,7 +122,7 @@ async function pagina(browser,{romper=null}={}){
   console.log('\n─── hashtag y lugar ───');
   {
     const {ctx,p,errs,fake}=await pagina(browser);
-    await p.goto(BASE+'/app.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(500);
     await p.fill('#edTag','Delfina 15');          // sin # y con espacio
@@ -136,7 +136,7 @@ async function pagina(browser,{romper=null}={}){
 
     for(const [ruta,donde] of [['cartel','cartel de mesa'],['pantalla','pantalla del salón'],['album','álbum']]){
       await p.goto('about:blank');
-      await p.goto(`${BASE}/app.html#${ruta}/${COD}`,{waitUntil:'domcontentloaded'});
+      await p.goto(`${BASE}/muro.html#${ruta}/${COD}`,{waitUntil:'domcontentloaded'});
       await p.waitForTimeout(1300);
       /* el diseño lo muestra en mayúsculas, así que comparamos sin distinguir */
       const t=(await p.evaluate(()=>document.getElementById('app').innerText||'')).toLowerCase();
@@ -151,7 +151,7 @@ async function pagina(browser,{romper=null}={}){
   console.log('\n─── base sin las columnas nuevas ───');
   {
     const {ctx,p,errs,fake}=await pagina(browser,{romper:'hashtag'});
-    await p.goto(BASE+'/app.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(500);
     await p.fill('#edTag','#Prueba');

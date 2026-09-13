@@ -41,7 +41,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
   {
     const {ctx,p,errs,fake}=await pagina(browser);
     fake.db.ce_eventos.push(EVENTO());
-    await p.goto(BASE+'/app.html#panel',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(900);
     await p.fill('#pin','999999'); await p.click('#entrar'); await p.waitForTimeout(800);
     const conOtra=await p.evaluate(()=>!!document.querySelector('#crear'));
@@ -52,7 +52,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     // ahora ya hay clave guardada: una equivocada NO debe entrar, la maestra SÍ
     await p.evaluate(()=>{sessionStorage.clear();});
     await p.goto('about:blank');   // ir al mismo hash no recarga
-    await p.goto(BASE+'/app.html#panel',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(800);
     await p.fill('#pin','111111'); await p.click('#entrar'); await p.waitForTimeout(700);
     if(await p.evaluate(()=>!!document.querySelector('#crear'))) mal('una clave equivocada entró igual');
@@ -77,7 +77,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
     fake.db.ce_eventos.push(EVENTO({lanza:iso(enUnRato)}));
     // invitado: debe ver la cuenta, no el formulario
-    await p.goto(BASE+'/app.html#subir/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#subir/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1100);
     const r=await p.evaluate(()=>({
       espera:!!document.querySelector('.espera-lanza'),
@@ -92,7 +92,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     // ya pasada la hora: formulario normal
     fake.db.ce_eventos[0].lanza=iso(new Date(Date.now()-3600e3));
     await p.goto('about:blank');
-    await p.goto(BASE+'/app.html#subir/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#subir/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1000);
     if(!(await p.evaluate(()=>!!document.querySelector('#enviar'))))
       mal('pasada la hora sigue sin dejar subir');
@@ -106,7 +106,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
   {
     const {ctx,p,errs,fake}=await pagina(browser,{sinColumna:true,claves:{'QUI-7FCE64':'ABC123'}});
     fake.db.ce_eventos.push(EVENTO());
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
     await p.click('[data-sol="pAjustes"]'); await p.waitForTimeout(400);
     await p.fill('#lanza','2026-08-21T21:00');
@@ -146,7 +146,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
       .forEach((t,i)=>fake.db.ce_items.push({id:'m'+i,codigo:'QUI-7FCE64',kind:'mensaje',
         url:'',autor:['Tío Beto','Caro','Sofi'][i],texto:t,estado:'aprobado',ts:Date.now()-120000-i*4000}));
 
-    await p.goto(BASE+'/app.html#pantalla/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#pantalla/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1800);
 
     const modos=await p.evaluate(()=>[...document.querySelectorAll('[data-modo]')].map(b=>b.dataset.modo));
@@ -248,7 +248,7 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     await p.route('**/rest/v1/rpc/ce_quien_soy',r=>r.fulfill({status:404,
       contentType:'application/json',
       body:JSON.stringify({code:'PGRST202',message:'Could not find the function public.ce_quien_soy'})}));
-    await p.goto(BASE+'/app.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1500);
     const r=await p.evaluate(()=>({
       pide:!!document.querySelector('#claveEv'),
