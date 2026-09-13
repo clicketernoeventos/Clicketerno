@@ -62,40 +62,84 @@ input[type=text]{width:100%;background:transparent;border:0;border-bottom:1px so
   padding:12px 2px;font-size:17px;font-weight:300;color:var(--texto)}
 input[type=text]:focus{outline:none;border-color:var(--oro)}
 
-/* ── visor de la cámara ── */
-.visor-caja{max-width:420px;margin:0 auto;padding:12px 18px 0}
-.contador{display:flex;justify-content:center;align-items:baseline;gap:8px;margin-bottom:14px}
-.contador b{font-family:'Bodoni Moda',serif;font-size:26px;color:var(--oro)}
-.contador span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
-.visor{position:relative;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:#000;
-  border:1px solid var(--hilo);box-shadow:0 0 0 6px rgba(255,255,255,.02) inset}
-.visor video,.visor img.cap{width:100%;height:100%;object-fit:cover;display:block}
-/* el mismo grano que la foto guardada, para que la vista previa no mienta */
-.visor .grano-visor{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:overlay;
+/* ── entrada: la portada del evento a pantalla completa ── */
+.tapa{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end}
+.tapa .foto{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.tapa .foto:after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 30%,rgba(0,0,0,.88) 72%,#000 100%)}
+.tapa .foto.vacia{background:radial-gradient(120% 80% at 50% 0%,rgba(217,174,114,.16),transparent 60%),#0A0908}
+.tapa .arriba{position:relative;z-index:2;padding:34px 26px 0;text-align:center}
+.tapa .arriba img{width:88px;margin:0 auto;opacity:.75}
+.tapa .medio{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 26px 6px;text-align:center}
+.tapa h1{font-family:'Bodoni Moda',serif;font-size:clamp(32px,10vw,46px);line-height:1.05;margin-top:10px}
+.tapa .fechita{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--oro);margin-top:14px}
+.tapa .abajo{position:relative;z-index:2;padding:22px 26px calc(30px + env(safe-area-inset-bottom))}
+.promesa{border:1px solid var(--hilo);border-radius:6px;padding:18px 20px;margin-bottom:22px;
+  background:rgba(12,10,8,.5);backdrop-filter:blur(10px);text-align:center}
+.promesa b{display:block;font-size:15.5px;font-weight:400;line-height:1.5;margin-bottom:6px}
+.promesa b em{font-family:'Bodoni Moda',serif;font-style:italic;color:var(--oro);font-size:17px}
+.promesa span{font-size:13px;color:#B5AC9E;line-height:1.6}
+.tapa .campo{margin:0 0 14px;text-align:left}
+.sin-app{text-align:center;font-size:11.5px;color:var(--mute);margin-top:14px;letter-spacing:.04em}
+
+/* ── la cámara: pantalla completa, como una cámara y no como una web ── */
+.camara{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;z-index:5}
+.camara .lente{position:absolute;inset:0;overflow:hidden}
+.camara video{width:100%;height:100%;object-fit:cover;display:block}
+.camara .grano-visor{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
   transition:opacity .25s}
-.visor .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
-.visor .flash.on{animation:flashea .32s ease-out}
+.camara .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.camara .flash.on{animation:flashea .32s ease-out}
 @keyframes flashea{0%{opacity:.9}100%{opacity:0}}
-.girar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;
-  background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
-.girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6}
-.filtros{display:flex;gap:16px;overflow-x:auto;padding:20px 4px 6px;scrollbar-width:none}
-.filtros::-webkit-scrollbar{display:none}
-.filtro-op{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:58px}
-.filtro-op i{display:block;width:44px;height:44px;border-radius:50%;position:relative;border:2px solid transparent}
-.filtro-op[aria-pressed=true] i{border-color:var(--oro)}
-.filtro-op span{font-size:9.5px;letter-spacing:.06em;color:var(--mute);text-align:center;line-height:1.3}
+/* dos sombras suaves para que se lea lo de arriba y lo de abajo */
+.camara .velo-arr{position:absolute;top:0;left:0;right:0;height:150px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.7),transparent)}
+.camara .velo-aba{position:absolute;bottom:0;left:0;right:0;height:330px;pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.88) 30%,transparent)}
+
+.cam-arriba{position:relative;z-index:3;display:flex;align-items:center;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 0}
+.cam-arriba .nombre-ev{flex:1;text-align:center;font-size:11px;letter-spacing:.26em;
+  text-transform:uppercase;color:rgba(246,242,234,.82)}
+.girar{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6;stroke-linecap:round}
+
+.cam-abajo{position:relative;z-index:3;margin-top:auto;
+  padding:0 0 calc(20px + env(safe-area-inset-bottom))}
+/* la tira de filtros: cada uno muestra lo que estás apuntando ahora mismo */
+.tira-filtros{display:flex;gap:14px;overflow-x:auto;padding:0 22px 16px;scrollbar-width:none;
+  scroll-snap-type:x proximity}
+.tira-filtros::-webkit-scrollbar{display:none}
+.filtro-op{flex:none;width:62px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  scroll-snap-align:center}
+.filtro-op canvas{width:56px;height:56px;border-radius:10px;display:block;background:#141210;
+  border:2px solid transparent;transition:border-color .25s,transform .25s var(--e)}
+.filtro-op[aria-pressed=true] canvas{border-color:var(--oro);transform:scale(1.06)}
+.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(246,242,234,.6);text-align:center;line-height:1.25}
 .filtro-op[aria-pressed=true] span{color:var(--oro)}
-.disparar-fila{display:flex;justify-content:center;padding:22px 0 8px}
-.disparar{width:76px;height:76px;border-radius:50%;border:3px solid var(--oro);position:relative}
-.disparar:before{content:'';position:absolute;inset:6px;border-radius:50%;
-  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan))}
-.disparar:disabled{opacity:.5}
+
+.fila-disparo{display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+/* el contador, como la ventanita de una descartable */
+.contador-rollo{width:62px;text-align:center;flex:none}
+.contador-rollo b{display:block;font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;color:var(--texto)}
+.contador-rollo span{display:block;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(246,242,234,.5);margin-top:5px}
+.disparar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(246,242,234,.9);
+  position:relative;flex:none;transition:transform .12s}
+.disparar:before{content:'';position:absolute;inset:5px;border-radius:50%;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));transition:inset .12s}
+.disparar:disabled{opacity:.45}
+.disparar:not(:disabled):active{transform:scale(.94)}
 .disparar:not(:disabled):active:before{inset:9px}
-.pie-camara{text-align:center;font-size:12px;color:var(--mute);line-height:1.7;padding:6px 26px 30px}
-.native-alt{display:block;text-align:center;padding:14px;border:1px dashed var(--hilo2);
-  border-radius:4px;color:var(--oro);font-size:12.5px;letter-spacing:.08em;margin:0 22px 20px;cursor:pointer}
+.hueco{width:62px;flex:none}
+.pie-camara{position:relative;z-index:3;text-align:center;font-size:11.5px;
+  color:rgba(246,242,234,.45);padding:16px 30px 0;line-height:1.5}
+.native-alt{position:relative;z-index:3;display:block;text-align:center;margin:0 22px;padding:13px;
+  border:1px dashed var(--hilo2);border-radius:6px;color:var(--oro);font-size:12.5px;cursor:pointer;
+  background:rgba(0,0,0,.5)}
 
 /* ── espera / revelado ── */
 .rollo-icono{width:100%;max-width:150px;margin:0 auto}
@@ -161,6 +205,20 @@ const guarda={
   escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }}
 };
 const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
+/* Solo dejamos pasar lo que parezca un archivo real: si alguien mete texto
+   raro en la base, no llega a la pantalla. Mismo criterio que en el muro. */
+const urlSegura=u=>{const t=String(u==null?'':u).trim();
+  return /^(https?:\/\/|data:image\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif)$/i.test(t)?t:'';};
+const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
+const bonito=f=>{
+  if(!f) return '';
+  const p=String(f).slice(0,10).split('-');
+  if(p.length!==3) return '';
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+               'septiembre','octubre','noviembre','diciembre'];
+  const mes=meses[Number(p[1])-1];
+  return mes?`${Number(p[2])} de ${mes} de ${p[0]}`:'';
+};
 
 /* ── cliente mínimo de Supabase (sin librerías) ── */
 const SB = {
@@ -348,18 +406,29 @@ const cadaTanto=(fn,ms)=>{ relojes.push(setInterval(fn,ms)); };
 /* ── paso 1: nombre ── */
 function vPedirNombre(m){
   detenerPoll();
+  const cupo=m.cupo_fotos||24;
+  const tapa=urlSegura(m.portada);
   app.innerHTML=`
-  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Cámara descartable</p>
-    <h1>${esc(m.nombre)}</h1></div>
-  <div class="wrap" style="padding-top:10px">
-    <p style="color:#B5AC9E;line-height:1.8;font-size:14.5px;text-align:center;max-width:34ch;margin:0 auto">
-      Un rollo, pocas fotos, cero apuro. Nadie va a ver nada —ni vos— hasta que se revele.</p>
-    <div class="campo"><label for="nombreG">Tu nombre</label>
-      <input id="nombreG" type="text" maxlength="26" placeholder="Como querés que aparezca"></div>
-    <button class="oro-btn" id="entrar">Agarrar mi cámara</button>
+  <div class="tapa">
+    <div class="foto${tapa?'':' vacia'}"${tapa?` style="background-image:url('${cssUrl(m.portada)}')"`:''}></div>
+    <div class="arriba"><img src="marca.webp" alt="Click Eterno"></div>
+    <div class="medio">
+      <p class="espaciado">Estás invitado a</p>
+      <h1>${esc(m.nombre)}</h1>
+      ${m.fecha?`<p class="fechita">${esc(bonito(m.fecha))}</p>`:''}
+    </div>
+    <div class="abajo">
+      <div class="promesa">
+        <b>Es una cámara descartable: tenés <em>${cupo} fotos</em>, nada más.</b>
+        <span>No es para llenar el rollo. Nadie ve ninguna —ni vos— hasta que se revele.</span>
+      </div>
+      <div class="campo"><label for="nombreG">Tu nombre</label>
+        <input id="nombreG" type="text" maxlength="26" placeholder="Como querés que aparezca"></div>
+      <button class="oro-btn" id="entrar">Agarrar mi cámara</button>
+      <p class="sin-app">Sin instalar nada. Sin cuenta.</p>
+    </div>
   </div>`;
   const campo=app.querySelector('#nombreG');
-  campo.focus();
   const ir=async()=>{
     const nombre=campo.value.trim()||'Invitado';
     const b=app.querySelector('#entrar'); b.disabled=true; b.textContent='Preparando…';
@@ -437,29 +506,58 @@ async function vCamara(m,guardado,estado){
   detenerPoll();
   const {token}=guardado;
   app.innerHTML=`
-  <div class="cab" style="padding-bottom:0"><p class="espaciado">${esc(m.nombre)}</p></div>
-  <div class="visor-caja">
-    <div class="contador"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>de ${esc(estado.cupo)} fotos</span></div>
-    <div class="visor" id="visor">
+  <div class="camara">
+    <div class="lente">
       <video id="video" autoplay playsinline muted></video>
       <div class="grano-visor" id="granoVisor"></div>
       <div class="flash" id="flash"></div>
+      <div class="velo-arr"></div><div class="velo-aba"></div>
+    </div>
+    <div class="cam-arriba">
+      <span class="hueco" style="width:40px"></span>
+      <span class="nombre-ev">${esc(m.nombre)}</span>
       <button class="girar" id="girar" aria-label="Girar cámara" hidden>
         <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
       </button>
     </div>
-    <div class="filtros" id="filtros" role="group" aria-label="Filtro"></div>
-    <div class="disparar-fila"><button class="disparar" id="disparo" aria-label="Sacar foto"></button></div>
-  </div>
-  <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
-  <label class="native-alt" id="altNativa" hidden>Probar con la cámara del teléfono
-    <input type="file" accept="image/*" capture="environment" hidden></label>`;
+    <label class="native-alt" id="altNativa" hidden>Usar la cámara del teléfono
+      <input type="file" accept="image/*" capture="environment" hidden></label>
+    <div class="cam-abajo">
+      <div class="tira-filtros" id="filtros" role="group" aria-label="Filtro"></div>
+      <div class="fila-disparo">
+        <div class="contador-rollo"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>quedan</span></div>
+        <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
+        <div class="hueco"></div>
+      </div>
+      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
+    </div>
+  </div>`;
 
   video=app.querySelector('#video');
   const filtrosEl=app.querySelector('#filtros');
   filtrosEl.innerHTML=FILTROS.map((f,i)=>`
     <button class="filtro-op" data-f="${f.id}" aria-pressed="${i===0}">
-      <i style="background:${f.muestra}"></i><span>${esc(f.nombre)}</span></button>`).join('');
+      <canvas width="112" height="112"></canvas><span>${esc(f.nombre)}</span></button>`).join('');
+
+  /* Cada filtro se muestra aplicado a lo que la cámara está viendo AHORA,
+     no a un degradado ni a una foto de archivo. Es la diferencia entre
+     adivinar cómo va a salir y verlo. */
+  let relojMuestras=null;
+  function pintarMuestras(){
+    if(!video||!video.videoWidth) return;
+    const lado=Math.min(video.videoWidth,video.videoHeight);
+    const cx=(video.videoWidth-lado)/2, cy=(video.videoHeight-lado)/2;
+    filtrosEl.querySelectorAll('[data-f]').forEach(b=>{
+      const f=FILTROS.find(x=>x.id===b.dataset.f);
+      const c=b.querySelector('canvas'); if(!c||!f) return;
+      const x=c.getContext('2d');
+      x.save();
+      if(!usarTrasera){ x.translate(c.width,0); x.scale(-1,1); }
+      x.drawImage(video, cx,cy,lado,lado, 0,0,c.width,c.height);
+      x.restore();
+      aplicarFiltro(x,c.width,c.height,f.css,f.grano);
+    });
+  }
   const granoVisor=app.querySelector('#granoVisor');
   const pintarGranoVisor=()=>{ if(granoVisor) granoVisor.style.opacity=String((filtroActual.grano||0)/26); };
   filtrosEl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
@@ -516,6 +614,9 @@ async function vCamara(m,guardado,estado){
   addEventListener('pageshow',alVolver);
   btnGirar.onclick=()=>{ usarTrasera=!usarTrasera; prender(); };
   await prender();
+  pintarMuestras();
+  relojMuestras=setInterval(()=>{ if(!document.hidden && camaraViva()) pintarMuestras(); }, 1500);
+  relojes.push(relojMuestras);
 
   /* Una foto totalmente negra es la marca de la cámara congelada de iOS.
      Antes de gastarle una foto al invitado, la reabrimos. */
@@ -723,7 +824,7 @@ async function vAlbum(m,token){
   if(!codigo) return vPedirCodigo();
   let m;
   try{
-    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado`);
+    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha`);
     m=(r&&r[0])||null;
   }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
   if(!m) return vError('No encontré ese evento.');
