@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
-<title>Click Eterno · Cámara descartable</title>
+<title>Click Eterno · Rollo eterno</title>
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
@@ -160,13 +160,18 @@ const SB = {
       x.send(blob);
     });
   },
+  /* De a 100. Un álbum de casamiento puede tener cientos de fotos y mandar
+     todas las rutas en un solo pedido se cae (o lo corta el servidor). */
   async firmar(rutas){
     if(!rutas||!rutas.length) return {};
-    const r = await this.pedir('/storage/v1/object/sign/ce-rollos', {
-      method:'POST', headers:this.cab(), body:JSON.stringify({expiresIn:3600, paths:rutas})
-    });
     const mapa={};
-    (r||[]).forEach(x=>{ if(x&&x.signedURL&&x.path) mapa[x.path]=NUBE.url+'/storage/v1'+x.signedURL; });
+    for(let i=0;i<rutas.length;i+=100){
+      const tanda=rutas.slice(i,i+100);
+      const r = await this.pedir('/storage/v1/object/sign/ce-rollos', {
+        method:'POST', headers:this.cab(), body:JSON.stringify({expiresIn:3600, paths:tanda})
+      });
+      (r||[]).forEach(x=>{ if(x&&x.signedURL&&x.path) mapa[x.path]=NUBE.url+'/storage/v1'+x.signedURL; });
+    }
     return mapa;
   }
 };
@@ -183,6 +188,30 @@ const codigo=(new URLSearchParams(location.search).get('e')||'').trim().toUpperC
 const kRollo=c=>`ce:rollo:${c}`;
 const leerRollo=c=>{ try{ return JSON.parse(guarda.leer(kRollo(c))||'null'); }catch(e){ return null; } };
 const guardarRollo=(c,v)=>guarda.escribir(kRollo(c),JSON.stringify(v));
+
+/* /rollo a secas (sin ?e=CODIGO): en vez de un cartel de error, la puerta
+   de entrada. Alguien puede llegar acá desde la web, no solo desde el QR. */
+function vPedirCodigo(){
+  app.innerHTML=`
+  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Rollo eterno</p>
+    <h1>La cámara de la fiesta</h1></div>
+  <div class="wrap" style="padding-top:10px">
+    <p style="color:#B5AC9E;line-height:1.8;font-size:14.5px;text-align:center;max-width:34ch;margin:0 auto">
+      Escaneá el código que está en tu mesa, o escribilo acá abajo.</p>
+    <div class="campo"><label for="codigoEv">Código del evento</label>
+      <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
+        placeholder="Por ejemplo QUI-7FCE64" style="letter-spacing:.14em"></div>
+    <button class="oro-btn" id="irEvento">Entrar</button>
+  </div>`;
+  const campo=app.querySelector('#codigoEv');
+  const entrar=()=>{
+    const v=campo.value.trim().toUpperCase();
+    if(v.length<4) return avisar('Escribí el código completo');
+    location.search='?e='+encodeURIComponent(v);
+  };
+  app.querySelector('#irEvento').onclick=entrar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+}
 
 function vError(msg){
   app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
@@ -202,8 +231,9 @@ function avisar(msg){
   clearTimeout(n._t); n._t=setTimeout(()=>n.style.opacity='0',3200);
 }
 
-let pollTimer=null;
-const detenerPoll=()=>{ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } };
+let relojes=[];
+const detenerPoll=()=>{ relojes.forEach(clearInterval); relojes=[]; };
+const cadaTanto=(fn,ms)=>{ relojes.push(setInterval(fn,ms)); };
 
 /* ── paso 1: nombre ── */
 function vPedirNombre(m){
@@ -279,10 +309,13 @@ function vEsperando(m,guardado,estado){
       const h=Math.floor(f/3600000), mi=Math.floor(f%3600000/60000), s=Math.floor(f%60000/1000);
       cuenta.textContent=(h?h+'h ':'')+String(mi).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
     };
-    pintar(); const t=setInterval(pintar,1000);
-    pollTimer=t; // se limpia con detenerPoll() al cambiar de vista
+    pintar();
+    cadaTanto(pintar,1000);
+    /* Aunque haya hora puesta, el organizador puede apretar "Revelar ahora":
+       si solo miráramos el reloj, el invitado se quedaba esperando de gusto. */
+    cadaTanto(()=>consultarEstado(m,guardado),20000);
   } else {
-    pollTimer=setInterval(()=>consultarEstado(m,guardado),15000);
+    cadaTanto(()=>consultarEstado(m,guardado),15000);
   }
 }
 
@@ -357,8 +390,18 @@ async function vCamara(m,guardado,estado){
     if(!blob) throw new Error('No se pudo preparar la foto');
     const id=(crypto.randomUUID?crypto.randomUUID():'f'+Date.now()+Math.random().toString(16).slice(2));
     const ruta=`${m.codigo}/${token}/${id}.jpg`;
+    /* Primero se anota el disparo y después se sube el archivo: es el único
+       orden en que la base puede garantizar el cupo. Si la subida falla, hay
+       que devolver la foto, si no el invitado la pierde sin haber sacado nada
+       (en un salón con mala señal, pasa todo el tiempo). */
     const r=await SB.rpc('ce_tomar_foto',{p_codigo:m.codigo,p_token:token,p_filtro:filtroActual.id,p_ruta:ruta});
-    await SB.subir(ruta,blob);
+    try{
+      await SB.subir(ruta,blob);
+    }catch(e){
+      try{ await SB.rpc('ce_devolver_foto',{p_codigo:m.codigo,p_token:token,p_ruta:ruta}); }
+      catch(_){ /* si tampoco se puede devolver, al menos no mentimos con el contador */ }
+      throw new Error('no se pudo subir, la foto te la devolvimos');
+    }
     restantes=r.restantes; pintarContador(); flash();
     if(restantes<=0){
       detenerCamara();
@@ -449,7 +492,7 @@ async function vAlbum(m,token){
 
 /* ── arranque ── */
 (async function(){
-  if(!codigo) return vError('Este enlace no tiene evento. Pedile al organizador el link de la cámara.');
+  if(!codigo) return vPedirCodigo();
   let m;
   try{
     const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado`);

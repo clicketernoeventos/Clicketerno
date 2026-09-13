@@ -51,8 +51,10 @@ alter table ce_disparos enable row level security;  -- sin políticas = nadie en
 -- del celular de nadie.
 create or replace function ce_camara_revelada(p_codigo text) returns boolean
 language sql stable security definer set search_path = public as $$
-  select coalesce(revelado,false) or (revela_en is not null and now() >= revela_en)
-  from ce_eventos where codigo = p_codigo;
+  select coalesce(
+    (select coalesce(revelado,false) or (revela_en is not null and now() >= revela_en)
+       from ce_eventos where codigo = p_codigo),
+    false);   -- evento inexistente = no revelado (nunca NULL: NULL no es "false" en una política)
 $$;
 
 -- ── 4. entrar con el rollo (primera vez lo crea, después solo informa) ──
@@ -68,7 +70,7 @@ begin
   end if;
 
   insert into ce_rollos(token, codigo, nombre)
-    values (p_token, p_codigo, nullif(trim(coalesce(p_nombre,'')),''))
+    values (p_token, p_codigo, coalesce(nullif(trim(coalesce(p_nombre,'')),''), 'Invitado'))
   on conflict (token) do nothing;
 
   select disparos, nombre into v_disparos, v_nombre from ce_rollos
@@ -121,6 +123,34 @@ begin
   update ce_rollos set disparos = disparos + 1 where token = p_token;
 
   return json_build_object('restantes', v_cupo - v_disparos - 1);
+end $$;
+
+-- ── 5b. devolver una foto que nunca llegó a subirse ──
+-- El disparo se anota ANTES de subir el archivo (si no, el cupo no se puede
+-- garantizar). Pero en un salón con mala señal la subida falla seguido, y
+-- sin esto el invitado perdía la foto para siempre sin haber sacado nada.
+-- Solo se devuelve si el archivo NO está en el depósito: así nadie puede
+-- borrar una foto ya subida para ganarse un disparo extra.
+create or replace function ce_devolver_foto(p_codigo text, p_token text, p_ruta text)
+returns json language plpgsql security definer set search_path = public as $$
+declare v_borradas integer;
+begin
+  if exists (select 1 from storage.objects
+              where bucket_id = 'ce-rollos' and name = p_ruta) then
+    raise exception 'Esa foto ya está subida' using errcode = '28000';
+  end if;
+
+  delete from ce_disparos
+    where ruta = p_ruta and codigo = p_codigo and token = p_token;
+  get diagnostics v_borradas = row_count;
+
+  if v_borradas > 0 then
+    update ce_rollos set disparos = greatest(disparos - v_borradas, 0)
+      where token = p_token and codigo = p_codigo;
+  end if;
+
+  return json_build_object('devueltas', v_borradas,
+    'disparos', (select disparos from ce_rollos where token = p_token));
 end $$;
 
 -- ── 6. el álbum, pero solo si ya se reveló ──
@@ -191,7 +221,8 @@ $$;
 
 grant execute on function
   ce_camara_revelada(text), ce_mi_rollo(text,text,text), ce_tomar_foto(text,text,text,text),
-  ce_album_de(text,text), ce_camara_stats(text), ce_rutas_rollo(text), ce_ruta_reservada(text)
+  ce_album_de(text,text), ce_camara_stats(text), ce_rutas_rollo(text), ce_ruta_reservada(text),
+  ce_devolver_foto(text,text,text)
   to anon, authenticated;
 
 -- ── 8. el depósito de las fotos ──
@@ -218,10 +249,21 @@ create policy "ce rollos subir" on storage.objects for insert to anon, authentic
 
 -- Solo se puede leer (y por lo tanto, solo se puede firmar una URL) cuando
 -- el evento al que pertenece la carpeta ya se reveló.
+--
+-- El segundo caso (evento que ya no existe) no es un permiso de más: en un
+-- "delete ... where name = ..." Postgres exige permiso de LECTURA sobre las
+-- filas que filtra, así que sin esto la política de borrar de más abajo no
+-- llega a aplicarse nunca y las fotos de un evento eliminado quedan para
+-- siempre en el depósito, ocupando lugar. Son archivos de una fiesta que
+-- ya no existe y que se están borrando en ese mismo momento.
 create policy "ce rollos leer" on storage.objects for select to anon, authenticated
   using (
     bucket_id = 'ce-rollos'
-    and ce_camara_revelada(split_part(objects.name, '/', 1))
+    and (
+      ce_camara_revelada(split_part(objects.name, '/', 1))
+      or not exists (select 1 from public.ce_eventos e
+                      where e.codigo = split_part(objects.name, '/', 1))
+    )
   );
 
 -- Igual que en ce-medios: un archivo solo se borra cuando su evento ya no existe.
