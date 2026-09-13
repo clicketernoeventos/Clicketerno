@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Click Eterno · Cámara descartable</title>
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
+<style>
+:root{
+  --negro:#000; --carbon:#0A0908; --humo:#131110;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#9B9287;
+  --hilo:rgba(217,174,114,.24); --hilo2:rgba(217,174,114,.5); --gris:rgba(255,255,255,.09);
+  --e:cubic-bezier(.22,.7,.24,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html,body{margin:0;background:var(--negro);color:var(--texto)}
+body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh}
+h1,h2,h3{margin:0;font-weight:400}
+p{margin:0}
+button,input{font-family:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+img{max-width:100%;display:block}
+.serif{font-family:'Bodoni Moda',serif}
+.ital{font-family:'Bodoni Moda',serif;font-style:italic}
+.wrap{max-width:520px;margin:0 auto;padding:0 22px 60px}
+.espaciado{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
+.estrella{display:inline-block;width:13px;height:13px;vertical-align:middle;color:var(--oro)}
+.estrella svg{display:block;width:100%;height:100%}
+.filete{display:flex;align-items:center;gap:14px;margin:26px 0;color:var(--oro)}
+.filete:before,.filete:after{content:'';height:1px;background:linear-gradient(90deg,transparent,var(--hilo2),transparent);flex:1}
+
+#brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% -10%,rgba(217,174,114,.1),transparent 60%)}
+#grano{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.04;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+#app{position:relative;z-index:2;min-height:100svh}
+
+.cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
+.cab img{width:82px;opacity:.7;margin-bottom:16px}
+.cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
+.centro{min-height:80svh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 24px}
+.centro p.info{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:32ch;margin:14px auto 0}
+.oro-btn{width:100%;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
+  color:#0A0806;border-radius:2px;padding:16px;font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+  transition:transform .25s var(--e),filter .3s}
+.oro-btn:disabled{opacity:.55}
+.oro-btn:not(:disabled):active{transform:scale(.99)}
+.hilo-btn{width:100%;border:1px solid var(--hilo2);color:var(--oro);border-radius:2px;padding:14px;
+  font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;margin-top:12px}
+.campo{margin:22px 0;text-align:left}
+.campo label{display:block;font-size:10.5px;letter-spacing:.3em;color:var(--mute);margin-bottom:10px;text-transform:uppercase}
+input[type=text]{width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
+  padding:12px 2px;font-size:17px;font-weight:300;color:var(--texto)}
+input[type=text]:focus{outline:none;border-color:var(--oro)}
+
+/* ── visor de la cámara ── */
+.visor-caja{max-width:420px;margin:0 auto;padding:12px 18px 0}
+.contador{display:flex;justify-content:center;align-items:baseline;gap:8px;margin-bottom:14px}
+.contador b{font-family:'Bodoni Moda',serif;font-size:26px;color:var(--oro)}
+.contador span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.visor{position:relative;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:#000;
+  border:1px solid var(--hilo);box-shadow:0 0 0 6px rgba(255,255,255,.02) inset}
+.visor video,.visor img.cap{width:100%;height:100%;object-fit:cover;display:block}
+.visor .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.visor .flash.on{animation:flashea .32s ease-out}
+@keyframes flashea{0%{opacity:.9}100%{opacity:0}}
+.girar{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
+.girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6}
+.filtros{display:flex;gap:16px;overflow-x:auto;padding:20px 4px 6px;scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.filtro-op{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:58px}
+.filtro-op i{display:block;width:44px;height:44px;border-radius:50%;position:relative;border:2px solid transparent}
+.filtro-op[aria-pressed=true] i{border-color:var(--oro)}
+.filtro-op span{font-size:9.5px;letter-spacing:.06em;color:var(--mute);text-align:center;line-height:1.3}
+.filtro-op[aria-pressed=true] span{color:var(--oro)}
+.disparar-fila{display:flex;justify-content:center;padding:22px 0 8px}
+.disparar{width:76px;height:76px;border-radius:50%;border:3px solid var(--oro);position:relative}
+.disparar:before{content:'';position:absolute;inset:6px;border-radius:50%;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan))}
+.disparar:disabled{opacity:.5}
+.disparar:not(:disabled):active:before{inset:9px}
+.pie-camara{text-align:center;font-size:12px;color:var(--mute);line-height:1.7;padding:6px 26px 30px}
+.native-alt{display:block;text-align:center;padding:14px;border:1px dashed var(--hilo2);
+  border-radius:4px;color:var(--oro);font-size:12.5px;letter-spacing:.08em;margin:0 22px 20px;cursor:pointer}
+
+/* ── espera / revelado ── */
+.rollo-icono{width:100%;max-width:150px;margin:0 auto}
+.cuenta-rev{font-family:'Bodoni Moda',serif;font-size:clamp(30px,9vw,42px);margin:18px 0 4px;color:var(--oro)}
+
+/* ── galería ── */
+.tabs{display:flex;gap:10px;justify-content:center;margin:22px 0 6px}
+.tabs button{padding:9px 18px;border:1px solid var(--hilo2);border-radius:20px;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.tabs button[aria-pressed=true]{color:#0A0806;background:var(--oro);border-color:var(--oro)}
+.grilla{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 4px 30px}
+.grilla figure{margin:0;position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#111;
+  opacity:0;filter:blur(14px);transform:scale(.96);transition:opacity .9s var(--e),filter .9s var(--e),transform .9s var(--e)}
+.grilla figure.rev{opacity:1;filter:blur(0);transform:none}
+.grilla img{width:100%;height:100%;object-fit:cover}
+.grilla figure.mia{outline:2px solid var(--oro);outline-offset:-2px}
+.grilla figcaption{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;font-size:10px;
+  background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#EFE7DA}
+</style>
+</head>
+<body>
+<div id="brillo"></div><div id="grano"></div>
+<div id="app"><div class="centro"><p class="espaciado">Cargando…</p></div></div>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CÁMARA DESCARTABLE · comparte el mismo Supabase que app.html.
+   Nadie ve ninguna foto —ni siquiera quien la sacó— hasta que se
+   revela el rollo del evento. Ver sql/rollo.sql.
+   ═══════════════════════════════════════════════════════════ */
+const NUBE = {
+  url:  'https://kuqlqgrwsospwjexodqa.supabase.co',
+  clave:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1cWxxZ3J3c29zcHdqZXhvZHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NjMyMjAsImV4cCI6MjEwNDEzOTIyMH0.DyV3K6fcHcsD9wbNzkYn2vIwWSN9e2LWt_HyuSaUE9g'
+};
+const app=document.getElementById('app');
+const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
+const guarda={
+  leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  escribir(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+};
+const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
+
+/* ── cliente mínimo de Supabase (sin librerías) ── */
+const SB = {
+  cab(extra){ return Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{}); },
+  async pedir(ruta,opciones){
+    const r = await fetch(NUBE.url+ruta, opciones);
+    const txt = await r.text();
+    if(!r.ok){ let m=txt; try{ m=JSON.parse(txt).message||txt; }catch(e){} throw new Error(m||('HTTP '+r.status)); }
+    if(!txt) return null;
+    try{ return JSON.parse(txt); }catch(e){ return null; }
+  },
+  ver(tabla,consulta){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()}); },
+  rpc(fn,args){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab(), body:JSON.stringify(args||{})}); },
+  subir(ruta,blob){
+    return new Promise((res,rej)=>{
+      const x=new XMLHttpRequest();
+      x.open('POST', `${NUBE.url}/storage/v1/object/ce-rollos/${ruta}`);
+      x.setRequestHeader('apikey',NUBE.clave);
+      x.setRequestHeader('Authorization','Bearer '+NUBE.clave);
+      x.setRequestHeader('Content-Type', blob.type||'image/jpeg');
+      x.timeout=60000;
+      x.onload=()=> (x.status>=200&&x.status<300) ? res(true) : rej(new Error(x.responseText||('HTTP '+x.status)));
+      x.onerror=()=>rej(new Error('Failed to fetch'));
+      x.ontimeout=()=>rej(new Error('La subida tardó demasiado'));
+      x.send(blob);
+    });
+  },
+  async firmar(rutas){
+    if(!rutas||!rutas.length) return {};
+    const r = await this.pedir('/storage/v1/object/sign/ce-rollos', {
+      method:'POST', headers:this.cab(), body:JSON.stringify({expiresIn:3600, paths:rutas})
+    });
+    const mapa={};
+    (r||[]).forEach(x=>{ if(x&&x.signedURL&&x.path) mapa[x.path]=NUBE.url+'/storage/v1'+x.signedURL; });
+    return mapa;
+  }
+};
+
+const FILTROS=[
+  {id:'natural', nombre:'Natural',        css:'none', muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
+  {id:'clasico', nombre:'Clásico',        css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
+  {id:'bn',      nombre:'Blanco y negro', css:'grayscale(1) contrast(1.15) brightness(1.05)', muestra:'linear-gradient(135deg,#111,#ccc)'},
+  {id:'flash',   nombre:'Flash',          css:'contrast(1.28) brightness(1.15) saturate(.85)', muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
+  {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
+];
+
+const codigo=(new URLSearchParams(location.search).get('e')||'').trim().toUpperCase();
+const kRollo=c=>`ce:rollo:${c}`;
+const leerRollo=c=>{ try{ return JSON.parse(guarda.leer(kRollo(c))||'null'); }catch(e){ return null; } };
+const guardarRollo=(c,v)=>guarda.escribir(kRollo(c),JSON.stringify(v));
+
+function vError(msg){
+  app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p><h1 class="ital" style="font-size:26px;margin-top:12px">${esc(msg)}</h1>
+    <p class="info">Si te parece que es un error, avisale al organizador de la fiesta.</p></div>`;
+}
+
+function avisar(msg){
+  let n=document.getElementById('aviso-toast');
+  if(!n){ n=document.createElement('div'); n.id='aviso-toast';
+    n.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#171310;'
+      +'color:#F6F2EA;border:1px solid var(--hilo2);padding:12px 20px;border-radius:30px;font-size:12.5px;'
+      +'z-index:80;max-width:86vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)';
+    document.body.appendChild(n);
+  }
+  n.textContent=msg; n.style.opacity='1';
+  clearTimeout(n._t); n._t=setTimeout(()=>n.style.opacity='0',3200);
+}
+
+let pollTimer=null;
+const detenerPoll=()=>{ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } };
+
+/* ── paso 1: nombre ── */
+function vPedirNombre(m){
+  detenerPoll();
+  app.innerHTML=`
+  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Cámara descartable</p>
+    <h1>${esc(m.nombre)}</h1></div>
+  <div class="wrap" style="padding-top:10px">
+    <p style="color:#B5AC9E;line-height:1.8;font-size:14.5px;text-align:center;max-width:34ch;margin:0 auto">
+      Un rollo, pocas fotos, cero apuro. Nadie va a ver nada —ni vos— hasta que se revele.</p>
+    <div class="campo"><label for="nombreG">Tu nombre</label>
+      <input id="nombreG" type="text" maxlength="26" placeholder="Como querés que aparezca"></div>
+    <button class="oro-btn" id="entrar">Agarrar mi cámara</button>
+  </div>`;
+  const campo=app.querySelector('#nombreG');
+  campo.focus();
+  const ir=async()=>{
+    const nombre=campo.value.trim()||'Invitado';
+    const b=app.querySelector('#entrar'); b.disabled=true; b.textContent='Preparando…';
+    try{
+      const token=(crypto.randomUUID?crypto.randomUUID():'r'+Date.now()+Math.random().toString(16).slice(2));
+      const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:token,p_nombre:nombre});
+      guardarRollo(m.codigo,{token,nombre:estado.nombre});
+      rutear(m,{token,nombre:estado.nombre},estado);
+    }catch(e){
+      b.disabled=false; b.textContent='Agarrar mi cámara';
+      avisar('No pude conectar: '+(e.message||e));
+    }
+  };
+  app.querySelector('#entrar').onclick=ir;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') ir(); });
+}
+
+/* ── ruteo según el estado del rollo ── */
+async function consultarEstado(m,guardado){
+  try{
+    const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:guardado.token,p_nombre:guardado.nombre});
+    rutear(m,guardado,estado);
+  }catch(e){ /* sin señal: seguimos esperando, probamos de nuevo en el próximo tic */ }
+}
+function rutear(m,guardado,estado){
+  if(estado.revelado) return vAlbum(m,guardado.token);
+  if(estado.cerrado)  return vCerrado(m);
+  if(estado.disparos>=estado.cupo) return vEsperando(m,guardado,estado);
+  return vCamara(m,guardado,estado);
+}
+
+function vCerrado(m){
+  detenerPoll();
+  app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p>
+    <h1 class="ital" style="font-size:26px;margin-top:12px">La cámara ya cerró</h1>
+    <p class="info">Cuando el organizador revele el rollo, va a aparecer acá mismo.</p></div>`;
+}
+
+/* ── esperando el revelado ── */
+function vEsperando(m,guardado,estado){
+  detenerPoll();
+  app.innerHTML=`
+  <div class="centro">
+    ${ESTRELLA}
+    <p class="espaciado" style="margin-top:16px">Rollo completo</p>
+    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">Ya sacaste tus ${esc(estado.cupo)} fotos</h1>
+    <p class="info">${estado.revela_en?'Se revela solo cuando llegue la hora.':'El organizador todavía no reveló el rollo.'}</p>
+    ${estado.revela_en?`<div class="cuenta-rev" id="cuenta"></div>`:''}
+    <div class="filete" style="max-width:220px;margin:26px auto 0">${ESTRELLA}</div>
+  </div>`;
+  if(estado.revela_en){
+    const cuenta=app.querySelector('#cuenta');
+    const pintar=()=>{
+      const f=new Date(estado.revela_en).getTime()-Date.now();
+      if(f<=0){ cuenta.textContent='Revelando…'; return consultarEstado(m,guardado); }
+      const h=Math.floor(f/3600000), mi=Math.floor(f%3600000/60000), s=Math.floor(f%60000/1000);
+      cuenta.textContent=(h?h+'h ':'')+String(mi).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+    };
+    pintar(); const t=setInterval(pintar,1000);
+    pollTimer=t; // se limpia con detenerPoll() al cambiar de vista
+  } else {
+    pollTimer=setInterval(()=>consultarEstado(m,guardado),15000);
+  }
+}
+
+/* ── la cámara ── */
+let stream=null, video=null, filtroActual=FILTROS[0], usarTrasera=true, disparando=false;
+function detenerCamara(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+
+async function vCamara(m,guardado,estado){
+  detenerPoll();
+  const {token}=guardado;
+  app.innerHTML=`
+  <div class="cab" style="padding-bottom:0"><p class="espaciado">${esc(m.nombre)}</p></div>
+  <div class="visor-caja">
+    <div class="contador"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>de ${esc(estado.cupo)} fotos</span></div>
+    <div class="visor" id="visor">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="flash" id="flash"></div>
+      <button class="girar" id="girar" aria-label="Girar cámara" hidden>
+        <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
+      </button>
+    </div>
+    <div class="filtros" id="filtros" role="group" aria-label="Filtro"></div>
+    <div class="disparar-fila"><button class="disparar" id="disparo" aria-label="Sacar foto"></button></div>
+  </div>
+  <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
+  <label class="native-alt" id="altNativa" hidden>Probar con la cámara del teléfono
+    <input type="file" accept="image/*" capture="environment" hidden></label>`;
+
+  video=app.querySelector('#video');
+  const filtrosEl=app.querySelector('#filtros');
+  filtrosEl.innerHTML=FILTROS.map((f,i)=>`
+    <button class="filtro-op" data-f="${f.id}" aria-pressed="${i===0}">
+      <i style="background:${f.muestra}"></i><span>${esc(f.nombre)}</span></button>`).join('');
+  filtrosEl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
+    filtroActual=FILTROS.find(f=>f.id===b.dataset.f);
+    filtrosEl.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    if(video) video.style.filter=filtroActual.css;
+  });
+
+  const btnDisparo=app.querySelector('#disparo');
+  const btnGirar=app.querySelector('#girar');
+  const altNativa=app.querySelector('#altNativa');
+  let restantes=estado.cupo-estado.disparos;
+
+  async function prender(){
+    detenerCamara();
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:usarTrasera?'environment':'user'}, audio:false
+      });
+      video.srcObject=stream; video.style.filter=filtroActual.css;
+      video.style.transform=usarTrasera?'none':'scaleX(-1)';
+      btnGirar.hidden=false; altNativa.hidden=true;
+    }catch(e){
+      altNativa.hidden=false;
+      avisar('No pude prender la cámara. Usá la del teléfono.');
+    }
+  }
+  btnGirar.onclick=()=>{ usarTrasera=!usarTrasera; prender(); };
+  await prender();
+
+  function flash(){
+    const f=app.querySelector('#flash'); if(!f) return;
+    f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
+  }
+  function pintarContador(){
+    const c=app.querySelector('#cRestan'); if(c) c.textContent=restantes;
+  }
+
+  async function subirDisparo(canvas){
+    const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',.86));
+    if(!blob) throw new Error('No se pudo preparar la foto');
+    const id=(crypto.randomUUID?crypto.randomUUID():'f'+Date.now()+Math.random().toString(16).slice(2));
+    const ruta=`${m.codigo}/${token}/${id}.jpg`;
+    const r=await SB.rpc('ce_tomar_foto',{p_codigo:m.codigo,p_token:token,p_filtro:filtroActual.id,p_ruta:ruta});
+    await SB.subir(ruta,blob);
+    restantes=r.restantes; pintarContador(); flash();
+    if(restantes<=0){
+      detenerCamara();
+      rutear(m,guardado,{...estado, disparos:estado.cupo});
+    }
+  }
+
+  btnDisparo.onclick=async()=>{
+    if(disparando||!video.videoWidth) return;
+    disparando=true; btnDisparo.disabled=true;
+    try{
+      const canvas=document.createElement('canvas');
+      const ancho=Math.min(video.videoWidth,1280);
+      canvas.width=ancho; canvas.height=Math.round(ancho*video.videoHeight/video.videoWidth);
+      const ctx=canvas.getContext('2d');
+      ctx.filter=filtroActual.css;
+      if(!usarTrasera){ ctx.translate(canvas.width,0); ctx.scale(-1,1); }
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      await subirDisparo(canvas);
+    }catch(e){ avisar('No se pudo tomar la foto: '+(e.message||e)); }
+    disparando=false; btnDisparo.disabled=false;
+  };
+
+  altNativa.querySelector('input').onchange=async e=>{
+    const a=e.target.files[0]; if(!a) return;
+    if(disparando) return; disparando=true;
+    try{
+      const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(a); });
+      const canvas=document.createElement('canvas');
+      const ancho=Math.min(img.naturalWidth,1280);
+      canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
+      const ctx=canvas.getContext('2d'); ctx.filter=filtroActual.css;
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      await subirDisparo(canvas);
+    }catch(err){ avisar('No se pudo usar esa foto: '+(err.message||err)); }
+    e.target.value=''; disparando=false;
+  };
+}
+
+/* ── el álbum, una vez revelado ── */
+async function vAlbum(m,token){
+  detenerPoll();
+  app.innerHTML=`<div class="centro">${ESTRELLA}<p class="espaciado" style="margin-top:16px">Se reveló el rollo</p>
+    <h1 class="ital" style="font-size:clamp(26px,7vw,32px);margin-top:8px">${esc(m.nombre)}</h1></div>`;
+  let datos;
+  try{ datos=await SB.rpc('ce_album_de',{p_codigo:m.codigo,p_token:token}); }
+  catch(e){ return vError('No pude abrir el álbum. Recargá la página.'); }
+
+  app.innerHTML=`
+  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Se reveló el rollo</p>
+    <h1>${esc(m.nombre)}</h1></div>
+  <div class="wrap">
+    <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
+      ${esc(datos.total_fotos)} fotos de ${esc(datos.total_invitados)} invitados esta noche</p>
+    <div class="tabs" role="tablist">
+      <button data-t="mias" aria-pressed="true">Tus fotos</button>
+      <button data-t="todas" aria-pressed="false">Álbum completo</button>
+    </div>
+    <div class="grilla" id="grillaMias"></div>
+    <div class="grilla" id="grillaTodas" hidden></div>
+  </div>`;
+
+  const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
+  const pintarGrilla=async(el,fotos)=>{
+    if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">Todavía no hay fotos acá.</p>`; return; }
+    const mapa=await SB.firmar(fotos.map(f=>f.ruta));
+    el.innerHTML=fotos.map(f=>`
+      <figure class="${f.mia?'mia':''}" data-ruta="${esc(f.ruta)}">
+        <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
+        ${f.nombre?`<figcaption>${esc(f.nombre)}</figcaption>`:''}
+      </figure>`).join('');
+    requestAnimationFrame(()=>{
+      [...el.querySelectorAll('figure')].forEach((fig,i)=>{
+        setTimeout(()=>fig.classList.add('rev'), 90*Math.min(i,14));
+      });
+    });
+  };
+  await pintarGrilla(gMias, datos.mias);
+
+  let todasCargadas=false;
+  app.querySelectorAll('.tabs [data-t]').forEach(b=>b.onclick=async()=>{
+    app.querySelectorAll('.tabs [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    const esMias=b.dataset.t==='mias';
+    gMias.hidden=!esMias; gTodas.hidden=esMias;
+    if(!esMias&&!todasCargadas){ todasCargadas=true; await pintarGrilla(gTodas, datos.todas); }
+  });
+}
+
+/* ── arranque ── */
+(async function(){
+  if(!codigo) return vError('Este enlace no tiene evento. Pedile al organizador el link de la cámara.');
+  let m;
+  try{
+    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado`);
+    m=(r&&r[0])||null;
+  }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
+  if(!m) return vError('No encontré ese evento.');
+  tono(m.tono);
+  if(!m.camara) return vError('Esta fiesta todavía no tiene la cámara descartable activada.');
+  const guardado=leerRollo(codigo);
+  if(!guardado) return vPedirNombre(m);
+  await consultarEstado(m,guardado);
+})();
+addEventListener('pagehide',detenerCamara);
+addEventListener('unhandledrejection',e=>{ console.error(e.reason); avisar('Algo falló: probá de nuevo'); e.preventDefault(); });
+</script>
+</body>
+</html>
