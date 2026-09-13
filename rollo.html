@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -61,6 +62,60 @@ img{max-width:100%;display:block}
 input[type=text]{width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
   padding:12px 2px;font-size:17px;font-weight:300;color:var(--texto)}
 input[type=text]:focus{outline:none;border-color:var(--oro)}
+
+/* ── el panel del organizador ── */
+.cab-p{display:flex;align-items:center;gap:14px;padding:calc(16px + env(safe-area-inset-top)) 22px 18px;
+  border-bottom:1px solid var(--gris);position:sticky;top:0;z-index:20;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(14px)}
+.cab-p .atras{color:var(--oro);font-size:20px;line-height:1;padding:2px 6px 4px 0}
+.cab-p span{flex:1;font-size:14.5px;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cab-p img{width:70px;opacity:.5}
+.tarjeta{border:1px solid var(--gris);border-radius:6px;padding:22px;margin-top:20px}
+.rotulito{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin:22px 0 12px}
+.ayudita{font-size:12.5px;color:var(--mute);line-height:1.6;margin-top:10px}
+.qr{display:inline-block;background:#fff;padding:13px;line-height:0;border-radius:3px}
+.vacio{text-align:center;color:var(--mute);font-size:14px;line-height:1.8;padding:44px 20px;
+  border:1px dashed var(--gris);border-radius:6px;margin-top:20px}
+.fila-ev{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:18px 4px;
+  border-bottom:1px solid var(--gris)}
+.fila-ev .txt{flex:1;min-width:0}
+.fila-ev b{display:block;font-weight:400;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fila-ev small{display:block;font-size:12px;color:var(--mute);margin-top:4px}
+.fila-ev .cod{font-size:10px;letter-spacing:.16em;color:var(--oro);flex:none}
+.punto{width:8px;height:8px;border-radius:50%;flex:none;background:var(--mute)}
+.punto.vivo{background:#6FCF8B;box-shadow:0 0 0 4px rgba(111,207,139,.14)}
+.punto.oro{background:var(--oro);box-shadow:0 0 0 4px rgba(217,174,114,.14)}
+.punto.gris{background:#5b5550}
+.estado{display:inline-block;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  padding:7px 16px;border-radius:20px;border:1px solid var(--hilo2);color:var(--oro);margin-top:18px}
+.estado.vivo{color:#6FCF8B;border-color:rgba(111,207,139,.4)}
+.estado.gris{color:var(--mute);border-color:var(--gris)}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chips button{padding:10px 17px;border:1px solid var(--gris);border-radius:22px;font-size:13px;color:var(--mute)}
+.chips button[aria-pressed=true]{border-color:var(--oro);color:var(--oro)}
+.dos-cartas{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.dos-cartas button{border:1px solid var(--gris);border-radius:6px;padding:16px 14px;text-align:left}
+.dos-cartas button[aria-pressed=true]{border-color:var(--oro);background:rgba(217,174,114,.06)}
+.dos-cartas b{display:block;font-weight:400;font-size:14.5px;margin-bottom:5px}
+.dos-cartas span{font-size:11.5px;color:var(--mute);line-height:1.45}
+.stepper{display:flex;align-items:center;gap:20px}
+.stepper button{width:44px;height:44px;border:1px solid var(--gris);border-radius:50%;font-size:21px;color:var(--oro)}
+.stepper b{font-family:'Bodoni Moda',serif;font-size:30px;min-width:52px;text-align:center}
+.clave-gr{font-size:24px;letter-spacing:.24em;color:var(--oro);font-weight:400}
+.llave-fila{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px 0}
+.llave-fila p{font-size:15px}
+.llave-fila small{display:block;color:var(--mute);font-size:12.5px;margin-top:5px;line-height:1.6}
+.palanca{width:52px;height:30px;border-radius:16px;background:var(--gris);position:relative;flex:none;
+  transition:background .3s}
+.palanca:after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+  background:var(--texto);transition:transform .3s var(--e)}
+.palanca[aria-pressed=true]{background:var(--oro-hondo)}
+.palanca[aria-pressed=true]:after{transform:translateX(22px)}
+input[type=date],input[type=datetime-local],input[type=password]{
+  width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
+  padding:12px 2px;font-size:16.5px;font-weight:300;color:var(--texto)}
+input[type=date]:focus,input[type=datetime-local]:focus,input[type=password]:focus{
+  outline:none;border-color:var(--oro)}
 
 /* ── entrada: la portada del evento a pantalla completa ── */
 .tapa{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end}
@@ -144,6 +199,297 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 /* ── espera / revelado ── */
 .rollo-icono{width:100%;max-width:150px;margin:0 auto}
 .cuenta-rev{font-family:'Bodoni Moda',serif;font-size:clamp(30px,9vw,42px);margin:18px 0 4px;color:var(--oro)}
+
+/* ══════════════════════════════════════════════════════════
+   EL PANEL DEL ORGANIZADOR
+   /rollo se maneja solo: acá se crea el rollo, se saca el QR y se
+   revela. No hace falta pasar nunca por el muro.
+   ══════════════════════════════════════════════════════════ */
+function pintarQR(nodo,texto,tam){
+  if(!nodo) return;
+  nodo.innerHTML='';
+  try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e){ nodo.textContent=texto; }
+}
+async function copiar(texto,aviso){
+  try{
+    if(!navigator.clipboard) throw new Error('sin portapapeles');
+    await navigator.clipboard.writeText(texto);
+    return avisar(aviso||'Copiado');
+  }catch(e){
+    const t=document.createElement('textarea');
+    t.value=texto; t.style.cssText='position:fixed;left:-9999px';
+    document.body.appendChild(t); t.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+    t.remove();
+    avisar(ok?(aviso||'Copiado'):texto);
+  }
+}
+const cab=(titulo,volverA)=>`
+  <header class="cab-p">
+    <button class="atras" data-ir="${volverA||''}" aria-label="Volver">←</button>
+    <span>${esc(titulo)}</span>
+    <img src="marca.webp" alt="Click Eterno">
+  </header>`;
+
+/* ── entrar al panel ── */
+function vPanelAcceso(){
+  if(pinOK) return vMisRollos();
+  const guardado=guarda.leer(PIN_KEY), nuevo=!guardado;
+  app.innerHTML=`
+  ${cab('Organizador','')}
+  <div class="wrap" style="max-width:420px">
+    <div class="tarjeta" style="text-align:center">
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:24px">
+        ${nuevo?'Elegí una clave de 4 a 8 números. Te la vamos a pedir cada vez que entres.'
+               :'Solo vos entrás acá. Tus invitados no necesitan ninguna clave.'}</p>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••"
+        style="text-align:center;font-size:26px;letter-spacing:.5em">
+      <button class="oro-btn" id="entrar" style="margin-top:22px">${nuevo?'Crear y entrar':'Entrar'}</button>
+    </div>
+  </div>`;
+  const campo=app.querySelector('#pin');
+  const probar=()=>{
+    const v=campo.value.trim();
+    if(v.length<4) return avisar('Mínimo 4 números');
+    if(nuevo) guarda.escribir(PIN_KEY,v);
+    else if(v!==guardado) return avisar('Esa no es la clave');
+    pinOK=true; guarda.escribirSesion('ce:pinOK','1');
+    vMisRollos();
+  };
+  app.querySelector('#entrar').onclick=probar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') probar(); });
+}
+
+/* ── mis rollos ── */
+async function vMisRollos(){
+  const codigos=Object.keys(clavesGuardadas());
+  app.innerHTML=`${cab('Mis rollos','')}<div class="wrap" style="max-width:520px">
+    <p class="espaciado" style="text-align:center;padding:8px 0 18px">Cargando…</p></div>`;
+  let evs=[];
+  if(codigos.length){
+    try{
+      evs=await SB.ver('ce_eventos',
+        `codigo=in.(${codigos.map(encodeURIComponent).join(',')})`
+        +`&select=codigo,nombre,fecha,camara,revelado,cerrado&order=creado.desc.nullslast`)||[];
+    }catch(e){ /* sin señal: mostramos la lista vacía y el botón de crear */ }
+  }
+  app.innerHTML=`
+  ${cab('Mis rollos','')}
+  <div class="wrap" style="max-width:520px">
+    ${evs.length?evs.map(e=>`
+      <button class="fila-ev" data-cod="${esc(e.codigo)}">
+        <span class="punto ${e.cerrado?'gris':(e.revelado?'oro':'vivo')}"></span>
+        <span class="txt"><b>${esc(e.nombre||e.codigo)}</b>
+          <small>${e.camara?(e.cerrado?'Cerrado':(e.revelado?'Revelado':'Sacando fotos')):'Sin rollo todavía'}</small></span>
+        <span class="cod">${esc(e.codigo)}</span>
+      </button>`).join('')
+      :`<div class="vacio">Todavía no tenés ningún rollo.<br>Creá el primero acá abajo.</div>`}
+    <button class="oro-btn" id="nuevo" style="margin-top:24px">Crear un rollo</button>
+  </div>`;
+  app.querySelector('#nuevo').onclick=()=>location.hash='nuevo';
+  app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>location.hash='ev/'+b.dataset.cod);
+}
+
+/* ── crear un rollo: una sola pantalla ── */
+function vNuevo(){
+  let tipo='XV', cuando='mano', cupo=24;
+  app.innerHTML=`
+  ${cab('Nuevo rollo','panel')}
+  <div class="wrap" style="max-width:480px">
+    <div class="campo"><label for="nom">¿Cómo se llama la fiesta?</label>
+      <input id="nom" type="text" maxlength="40" placeholder="Los 15 de Delfina"></div>
+
+    <p class="rotulito">Qué es</p>
+    <div class="chips" id="tipos">
+      ${Object.keys(TIPOS).map((t,i)=>`<button data-t="${t}" aria-pressed="${i===0}">${t}</button>`).join('')}
+    </div>
+
+    <div class="campo"><label for="fec">¿Qué día?</label>
+      <input id="fec" type="date" value="${hoy()}"></div>
+
+    <p class="rotulito">¿Cuándo se revelan las fotos?</p>
+    <div class="dos-cartas" id="cuando">
+      <button data-c="mano" aria-pressed="true"><b>Cuando yo diga</b><span>Apretás un botón y se abren</span></button>
+      <button data-c="hora" aria-pressed="false"><b>A una hora</b><span>Se abren solas</span></button>
+    </div>
+    <div id="zonaHora" hidden>
+      <div class="campo" style="margin-top:16px"><label for="revela">Día y hora del revelado</label>
+        <input id="revela" type="datetime-local"></div>
+    </div>
+
+    <p class="rotulito">Fotos por invitado</p>
+    <div class="stepper">
+      <button id="menos" aria-label="Menos">−</button>
+      <b id="cupoTxt">24</b>
+      <button id="mas" aria-label="Más">+</button>
+    </div>
+    <p class="ayudita">Como un rollo de verdad. Cuando se le acaban, se le acaban.</p>
+
+    <button class="oro-btn" id="crear" style="margin-top:28px">Crear el rollo</button>
+  </div>`;
+
+  app.querySelectorAll('#tipos [data-t]').forEach(b=>b.onclick=()=>{
+    tipo=b.dataset.t;
+    app.querySelectorAll('#tipos [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  });
+  app.querySelectorAll('#cuando [data-c]').forEach(b=>b.onclick=()=>{
+    cuando=b.dataset.c;
+    app.querySelectorAll('#cuando [data-c]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    app.querySelector('#zonaHora').hidden = cuando!=='hora';
+  });
+  const pintarCupo=()=>{ app.querySelector('#cupoTxt').textContent=cupo; };
+  app.querySelector('#menos').onclick=()=>{ cupo=Math.max(6,cupo-6); pintarCupo(); };
+  app.querySelector('#mas').onclick=()=>{ cupo=Math.min(60,cupo+6); pintarCupo(); };
+
+  app.querySelector('#crear').onclick=async e=>{
+    const b=e.currentTarget;
+    const nombre=app.querySelector('#nom').value.trim();
+    if(!nombre) return avisar('Ponele un nombre a la fiesta');
+    const revela=app.querySelector('#revela');
+    if(cuando==='hora' && !revela.value) return avisar('Elegí el día y la hora del revelado');
+    if(b.disabled) return;
+    b.disabled=true; b.textContent='Creando…';
+    const fecha=app.querySelector('#fec').value||hoy();
+    const codigo=TIPOS[tipo]+'-'+Math.random().toString(16).slice(2,8).toUpperCase();
+    const claveEv=nuevaClave();
+    const vence=new Date(fecha); vence.setMonth(vence.getMonth()+12);
+    try{
+      await SB.guardar('ce_eventos',{
+        codigo, nombre, fecha, tipo, tono:'#D9AE72',
+        vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false,
+        creado:Date.now(),
+        camara:true, cupo_fotos:cupo, revelado:false,
+        revela_en: cuando==='hora' ? revela.value : null
+      }, claveEv);
+      guardarClaveDe(codigo,claveEv);
+      location.hash='ev/'+codigo;
+    }catch(err){
+      b.disabled=false; b.textContent='Crear el rollo';
+      avisar('No se pudo crear: '+(err.message||err));
+    }
+  };
+}
+
+/* ── un rollo: el QR, los números y el revelado ── */
+async function vEventoRollo(codigo){
+  app.innerHTML=`${cab('Rollo','panel')}<div class="wrap"><p class="espaciado"
+    style="text-align:center;padding:20px 0">Cargando…</p></div>`;
+  let m=null;
+  try{
+    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
+    m=(r&&r[0])||null;
+  }catch(e){}
+  if(!m) return vError('No encontré ese rollo.');
+  const clave=claveDe(codigo);
+  const enlace=enlaceDelRollo(codigo);
+  const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
+
+  app.innerHTML=`
+  ${cab(m.nombre||codigo,'panel')}
+  <div class="wrap" style="max-width:480px">
+    <div class="estado ${m.cerrado?'gris':(revelado?'oro':'vivo')}">
+      ${m.cerrado?'Cerrado':(revelado?'Revelado':'Sacando fotos')}</div>
+
+    ${m.camara?`
+    <div class="tarjeta" style="text-align:center">
+      <p class="rotulito" style="margin-top:0">El link de la cámara</p>
+      <div class="qr" id="qr"></div>
+      <p class="ayudita" style="margin:18px auto 0;max-width:30ch">
+        Escanean esto y ya están sacando fotos. No instalan nada.</p>
+      <button class="hilo-btn" id="compartir">Compartir</button>
+      <button class="hilo-btn" id="copiarLink">Copiar el link</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">Cómo va</p>
+      <p id="stats" style="font-size:14px;color:#B5AC9E;line-height:1.7">Consultando…</p>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">El revelado</p>
+      ${revelado
+        ? `<p class="ayudita" style="margin:0 0 16px">Ya está revelado: todos pueden ver el álbum.</p>
+           <button class="hilo-btn" id="ocultar">Volver a ocultarlo</button>`
+        : `<button class="oro-btn" id="revelar">Revelar ahora</button>
+           <div class="campo" style="margin:22px 0 0"><label for="revela">O a una hora fija</label>
+             <input id="revela" type="datetime-local" value="${esc(m.revela_en?String(m.revela_en).slice(0,16):'')}"></div>
+           <button class="hilo-btn" id="guardarHora">Guardar la hora</button>`}
+      <button class="hilo-btn" id="verAlbum">Ver el álbum como invitado</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">Fotos por invitado</p>
+      <div class="stepper"><button id="menos">−</button><b id="cupoTxt">${esc(m.cupo_fotos||24)}</b><button id="mas">+</button></div>
+      <button class="hilo-btn" id="guardarCupo">Guardar</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">La clave de este rollo</p>
+      ${clave?`<p class="clave-gr">${esc(clave)}</p>
+        <p class="ayudita">Guardala. Sin ella, desde otro teléfono no podés manejar este rollo.</p>
+        <button class="hilo-btn" id="copiarClave">Copiar la clave</button>`
+        :`<p class="ayudita">En este teléfono no está guardada.</p>`}
+    </div>
+
+    <div class="llave-fila">
+      <p>Cerrar el rollo<small>Corta las fotos. El álbum sigue disponible.</small></p>
+      <button class="palanca" id="cerrar" aria-pressed="${!!m.cerrado}"></button>
+    </div>
+    `:`
+    <div class="tarjeta" style="text-align:center">
+      <p style="font-size:14.5px;color:#B5AC9E;line-height:1.8;margin-bottom:22px">
+        Este evento todavía no tiene rollo. Al prenderlo, tus invitados van a poder
+        sacar fotos con la cámara.</p>
+      <button class="oro-btn" id="prender">Prender el rollo</button>
+    </div>`}
+  </div>`;
+
+  const guardar=async(campos,aviso)=>{
+    try{
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`,campos,clave);
+      avisar(aviso); vEventoRollo(codigo);
+    }catch(e){ avisar('No se pudo guardar: '+(e.message||e)); }
+  };
+  const $=sel=>app.querySelector(sel);
+
+  if(!m.camara){
+    $('#prender').onclick=()=>guardar({camara:true,cupo_fotos:24,revelado:false},'Rollo prendido');
+    return;
+  }
+
+  pintarQR($('#qr'), enlace, 196);
+  $('#copiarLink').onclick=()=>copiar(enlace,'Link copiado');
+  $('#compartir').onclick=async()=>{
+    if(navigator.share){ try{ await navigator.share({title:m.nombre||'Rollo',url:enlace}); return; }catch(e){ return; } }
+    copiar(enlace,'Link copiado');
+  };
+  $('#verAlbum').onclick=()=>{ location.href=enlace; };
+  const bc=$('#copiarClave'); if(bc) bc.onclick=()=>copiar(clave,'Clave copiada');
+
+  SB.rpc('ce_camara_stats',{p_codigo:codigo}).then(st=>{
+    const n=$('#stats'); if(!n||!st) return;
+    n.textContent=`${st.invitados} invitado${st.invitados===1?'':'s'} agarró la cámara · `
+      +`${st.fotos} foto${st.fotos===1?'':'s'} sacada${st.fotos===1?'':'s'}`;
+  }).catch(()=>{ const n=$('#stats'); if(n) n.textContent='No pude consultar los números.'; });
+
+  const bRev=$('#revelar');
+  if(bRev) bRev.onclick=()=>guardar({revelado:true},'Revelado · ya lo ven todos');
+  const bOc=$('#ocultar');
+  if(bOc) bOc.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
+  const bHora=$('#guardarHora');
+  if(bHora) bHora.onclick=()=>{
+    const v=$('#revela').value;
+    if(!v) return avisar('Elegí día y hora');
+    guardar({revela_en:v},'Listo · se revela solo');
+  };
+
+  let cupo=Number(m.cupo_fotos||24);
+  $('#menos').onclick=()=>{ cupo=Math.max(6,cupo-6); $('#cupoTxt').textContent=cupo; };
+  $('#mas').onclick=()=>{ cupo=Math.min(60,cupo+6); $('#cupoTxt').textContent=cupo; };
+  $('#guardarCupo').onclick=()=>guardar({cupo_fotos:cupo},'Listo · '+cupo+' fotos por invitado');
+  $('#cerrar').onclick=()=>guardar({cerrado:!m.cerrado}, m.cerrado?'Rollo abierto':'Rollo cerrado');
+}
 
 /* ── el cuarto de revelado ──
    Luz roja, las copias caen en la bandeja y la imagen sube desde el papel.
@@ -246,7 +592,9 @@ const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;',
 const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
 const guarda={
   leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
-  escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }}
+  escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }},
+  leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
+  escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
 };
 const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
 /* Solo dejamos pasar lo que parezca un archivo real: si alguien mete texto
@@ -264,9 +612,31 @@ const bonito=f=>{
   return mes?`${Number(p[2])} de ${mes} de ${p[0]}`:'';
 };
 
+/* ══════════ claves ══════════
+   Es el mismo sistema del muro y viven en el mismo navegador, así que las
+   claves guardadas sirven en los dos lados sin volver a escribirlas. */
+const PIN_KEY='ce:pin', CLAVES_KEY='ce:claves';
+let pinOK=guarda.leerSesion('ce:pinOK')==='1';
+const clavesGuardadas=()=>{ try{ return JSON.parse(guarda.leer(CLAVES_KEY)||'{}'); }catch(e){ return {}; } };
+const guardarClaveDe=(c,k)=>{ const t=clavesGuardadas(); t[c]=k; guarda.escribir(CLAVES_KEY,JSON.stringify(t)); };
+const claveDe=c=>clavesGuardadas()[c]||'';
+/* clave corta, sin letras que se confundan al dictarla por teléfono */
+const nuevaClave=()=>{
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n=new Uint32Array(6); (crypto.getRandomValues?crypto.getRandomValues(n):n.fill(Date.now()));
+  return [...n].map(x=>abc[x%abc.length]).join('');
+};
+const TIPOS={'XV':'QUI','Casamiento':'BOD','Cumpleaños':'CUM','Evento':'COR'};
+const hoy=()=>new Date().toISOString().slice(0,10);
+const enlaceDelRollo=c=>`https://clicketerno.com.ar/rollo?e=${c}`;
+
 /* ── cliente mínimo de Supabase (sin librerías) ── */
 const SB = {
-  cab(extra){ return Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{}); },
+  cab(extra, clave){
+    const c=Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{});
+    if(clave) c['x-clave']=clave;      // la valida la base, el navegador solo la lleva
+    return c;
+  },
   async pedir(ruta,opciones){
     const r = await fetch(NUBE.url+ruta, opciones);
     const txt = await r.text();
@@ -275,7 +645,15 @@ const SB = {
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
   ver(tabla,consulta){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()}); },
-  rpc(fn,args){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab(), body:JSON.stringify(args||{})}); },
+  rpc(fn,args,clave){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab({},clave), body:JSON.stringify(args||{})}); },
+  guardar(tabla,obj,clave){
+    return this.pedir(`/rest/v1/${tabla}`, {method:'POST',
+      headers:this.cab({Prefer:'resolution=merge-duplicates,return=minimal'},clave), body:JSON.stringify(obj)});
+  },
+  editar(tabla,consulta,obj,clave){
+    return this.pedir(`/rest/v1/${tabla}?${consulta}`, {method:'PATCH',
+      headers:this.cab({Prefer:'return=minimal'},clave), body:JSON.stringify(obj)});
+  },
   subir(ruta,blob){
     return new Promise((res,rej)=>{
       const x=new XMLHttpRequest();
@@ -414,7 +792,9 @@ function vPedirCodigo(){
       <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
         placeholder="Por ejemplo QUI-7FCE64" style="letter-spacing:.14em"></div>
     <button class="oro-btn" id="irEvento">Entrar</button>
+    <button class="hilo-btn" id="soyOrg" style="margin-top:22px">Soy el organizador</button>
   </div>`;
+  app.querySelector('#soyOrg').onclick=()=>location.hash='panel';
   const campo=app.querySelector('#codigoEv');
   const entrar=()=>{
     const v=campo.value.trim().toUpperCase();
@@ -744,6 +1124,297 @@ async function vCamara(m,guardado,estado){
   };
 }
 
+/* ══════════════════════════════════════════════════════════
+   EL PANEL DEL ORGANIZADOR
+   /rollo se maneja solo: acá se crea el rollo, se saca el QR y se
+   revela. No hace falta pasar nunca por el muro.
+   ══════════════════════════════════════════════════════════ */
+function pintarQR(nodo,texto,tam){
+  if(!nodo) return;
+  nodo.innerHTML='';
+  try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); }
+  catch(e){ nodo.textContent=texto; }
+}
+async function copiar(texto,aviso){
+  try{
+    if(!navigator.clipboard) throw new Error('sin portapapeles');
+    await navigator.clipboard.writeText(texto);
+    return avisar(aviso||'Copiado');
+  }catch(e){
+    const t=document.createElement('textarea');
+    t.value=texto; t.style.cssText='position:fixed;left:-9999px';
+    document.body.appendChild(t); t.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+    t.remove();
+    avisar(ok?(aviso||'Copiado'):texto);
+  }
+}
+const cab=(titulo,volverA)=>`
+  <header class="cab-p">
+    <button class="atras" data-ir="${volverA||''}" aria-label="Volver">←</button>
+    <span>${esc(titulo)}</span>
+    <img src="marca.webp" alt="Click Eterno">
+  </header>`;
+
+/* ── entrar al panel ── */
+function vPanelAcceso(){
+  if(pinOK) return vMisRollos();
+  const guardado=guarda.leer(PIN_KEY), nuevo=!guardado;
+  app.innerHTML=`
+  ${cab('Organizador','')}
+  <div class="wrap" style="max-width:420px">
+    <div class="tarjeta" style="text-align:center">
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:24px">
+        ${nuevo?'Elegí una clave de 4 a 8 números. Te la vamos a pedir cada vez que entres.'
+               :'Solo vos entrás acá. Tus invitados no necesitan ninguna clave.'}</p>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••"
+        style="text-align:center;font-size:26px;letter-spacing:.5em">
+      <button class="oro-btn" id="entrar" style="margin-top:22px">${nuevo?'Crear y entrar':'Entrar'}</button>
+    </div>
+  </div>`;
+  const campo=app.querySelector('#pin');
+  const probar=()=>{
+    const v=campo.value.trim();
+    if(v.length<4) return avisar('Mínimo 4 números');
+    if(nuevo) guarda.escribir(PIN_KEY,v);
+    else if(v!==guardado) return avisar('Esa no es la clave');
+    pinOK=true; guarda.escribirSesion('ce:pinOK','1');
+    vMisRollos();
+  };
+  app.querySelector('#entrar').onclick=probar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') probar(); });
+}
+
+/* ── mis rollos ── */
+async function vMisRollos(){
+  const codigos=Object.keys(clavesGuardadas());
+  app.innerHTML=`${cab('Mis rollos','')}<div class="wrap" style="max-width:520px">
+    <p class="espaciado" style="text-align:center;padding:8px 0 18px">Cargando…</p></div>`;
+  let evs=[];
+  if(codigos.length){
+    try{
+      evs=await SB.ver('ce_eventos',
+        `codigo=in.(${codigos.map(encodeURIComponent).join(',')})`
+        +`&select=codigo,nombre,fecha,camara,revelado,cerrado&order=creado.desc.nullslast`)||[];
+    }catch(e){ /* sin señal: mostramos la lista vacía y el botón de crear */ }
+  }
+  app.innerHTML=`
+  ${cab('Mis rollos','')}
+  <div class="wrap" style="max-width:520px">
+    ${evs.length?evs.map(e=>`
+      <button class="fila-ev" data-cod="${esc(e.codigo)}">
+        <span class="punto ${e.cerrado?'gris':(e.revelado?'oro':'vivo')}"></span>
+        <span class="txt"><b>${esc(e.nombre||e.codigo)}</b>
+          <small>${e.camara?(e.cerrado?'Cerrado':(e.revelado?'Revelado':'Sacando fotos')):'Sin rollo todavía'}</small></span>
+        <span class="cod">${esc(e.codigo)}</span>
+      </button>`).join('')
+      :`<div class="vacio">Todavía no tenés ningún rollo.<br>Creá el primero acá abajo.</div>`}
+    <button class="oro-btn" id="nuevo" style="margin-top:24px">Crear un rollo</button>
+  </div>`;
+  app.querySelector('#nuevo').onclick=()=>location.hash='nuevo';
+  app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>location.hash='ev/'+b.dataset.cod);
+}
+
+/* ── crear un rollo: una sola pantalla ── */
+function vNuevo(){
+  let tipo='XV', cuando='mano', cupo=24;
+  app.innerHTML=`
+  ${cab('Nuevo rollo','panel')}
+  <div class="wrap" style="max-width:480px">
+    <div class="campo"><label for="nom">¿Cómo se llama la fiesta?</label>
+      <input id="nom" type="text" maxlength="40" placeholder="Los 15 de Delfina"></div>
+
+    <p class="rotulito">Qué es</p>
+    <div class="chips" id="tipos">
+      ${Object.keys(TIPOS).map((t,i)=>`<button data-t="${t}" aria-pressed="${i===0}">${t}</button>`).join('')}
+    </div>
+
+    <div class="campo"><label for="fec">¿Qué día?</label>
+      <input id="fec" type="date" value="${hoy()}"></div>
+
+    <p class="rotulito">¿Cuándo se revelan las fotos?</p>
+    <div class="dos-cartas" id="cuando">
+      <button data-c="mano" aria-pressed="true"><b>Cuando yo diga</b><span>Apretás un botón y se abren</span></button>
+      <button data-c="hora" aria-pressed="false"><b>A una hora</b><span>Se abren solas</span></button>
+    </div>
+    <div id="zonaHora" hidden>
+      <div class="campo" style="margin-top:16px"><label for="revela">Día y hora del revelado</label>
+        <input id="revela" type="datetime-local"></div>
+    </div>
+
+    <p class="rotulito">Fotos por invitado</p>
+    <div class="stepper">
+      <button id="menos" aria-label="Menos">−</button>
+      <b id="cupoTxt">24</b>
+      <button id="mas" aria-label="Más">+</button>
+    </div>
+    <p class="ayudita">Como un rollo de verdad. Cuando se le acaban, se le acaban.</p>
+
+    <button class="oro-btn" id="crear" style="margin-top:28px">Crear el rollo</button>
+  </div>`;
+
+  app.querySelectorAll('#tipos [data-t]').forEach(b=>b.onclick=()=>{
+    tipo=b.dataset.t;
+    app.querySelectorAll('#tipos [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  });
+  app.querySelectorAll('#cuando [data-c]').forEach(b=>b.onclick=()=>{
+    cuando=b.dataset.c;
+    app.querySelectorAll('#cuando [data-c]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    app.querySelector('#zonaHora').hidden = cuando!=='hora';
+  });
+  const pintarCupo=()=>{ app.querySelector('#cupoTxt').textContent=cupo; };
+  app.querySelector('#menos').onclick=()=>{ cupo=Math.max(6,cupo-6); pintarCupo(); };
+  app.querySelector('#mas').onclick=()=>{ cupo=Math.min(60,cupo+6); pintarCupo(); };
+
+  app.querySelector('#crear').onclick=async e=>{
+    const b=e.currentTarget;
+    const nombre=app.querySelector('#nom').value.trim();
+    if(!nombre) return avisar('Ponele un nombre a la fiesta');
+    const revela=app.querySelector('#revela');
+    if(cuando==='hora' && !revela.value) return avisar('Elegí el día y la hora del revelado');
+    if(b.disabled) return;
+    b.disabled=true; b.textContent='Creando…';
+    const fecha=app.querySelector('#fec').value||hoy();
+    const codigo=TIPOS[tipo]+'-'+Math.random().toString(16).slice(2,8).toUpperCase();
+    const claveEv=nuevaClave();
+    const vence=new Date(fecha); vence.setMonth(vence.getMonth()+12);
+    try{
+      await SB.guardar('ce_eventos',{
+        codigo, nombre, fecha, tipo, tono:'#D9AE72',
+        vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false,
+        creado:Date.now(),
+        camara:true, cupo_fotos:cupo, revelado:false,
+        revela_en: cuando==='hora' ? revela.value : null
+      }, claveEv);
+      guardarClaveDe(codigo,claveEv);
+      location.hash='ev/'+codigo;
+    }catch(err){
+      b.disabled=false; b.textContent='Crear el rollo';
+      avisar('No se pudo crear: '+(err.message||err));
+    }
+  };
+}
+
+/* ── un rollo: el QR, los números y el revelado ── */
+async function vEventoRollo(codigo){
+  app.innerHTML=`${cab('Rollo','panel')}<div class="wrap"><p class="espaciado"
+    style="text-align:center;padding:20px 0">Cargando…</p></div>`;
+  let m=null;
+  try{
+    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
+    m=(r&&r[0])||null;
+  }catch(e){}
+  if(!m) return vError('No encontré ese rollo.');
+  const clave=claveDe(codigo);
+  const enlace=enlaceDelRollo(codigo);
+  const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
+
+  app.innerHTML=`
+  ${cab(m.nombre||codigo,'panel')}
+  <div class="wrap" style="max-width:480px">
+    <div class="estado ${m.cerrado?'gris':(revelado?'oro':'vivo')}">
+      ${m.cerrado?'Cerrado':(revelado?'Revelado':'Sacando fotos')}</div>
+
+    ${m.camara?`
+    <div class="tarjeta" style="text-align:center">
+      <p class="rotulito" style="margin-top:0">El link de la cámara</p>
+      <div class="qr" id="qr"></div>
+      <p class="ayudita" style="margin:18px auto 0;max-width:30ch">
+        Escanean esto y ya están sacando fotos. No instalan nada.</p>
+      <button class="hilo-btn" id="compartir">Compartir</button>
+      <button class="hilo-btn" id="copiarLink">Copiar el link</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">Cómo va</p>
+      <p id="stats" style="font-size:14px;color:#B5AC9E;line-height:1.7">Consultando…</p>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">El revelado</p>
+      ${revelado
+        ? `<p class="ayudita" style="margin:0 0 16px">Ya está revelado: todos pueden ver el álbum.</p>
+           <button class="hilo-btn" id="ocultar">Volver a ocultarlo</button>`
+        : `<button class="oro-btn" id="revelar">Revelar ahora</button>
+           <div class="campo" style="margin:22px 0 0"><label for="revela">O a una hora fija</label>
+             <input id="revela" type="datetime-local" value="${esc(m.revela_en?String(m.revela_en).slice(0,16):'')}"></div>
+           <button class="hilo-btn" id="guardarHora">Guardar la hora</button>`}
+      <button class="hilo-btn" id="verAlbum">Ver el álbum como invitado</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">Fotos por invitado</p>
+      <div class="stepper"><button id="menos">−</button><b id="cupoTxt">${esc(m.cupo_fotos||24)}</b><button id="mas">+</button></div>
+      <button class="hilo-btn" id="guardarCupo">Guardar</button>
+    </div>
+
+    <div class="tarjeta">
+      <p class="rotulito" style="margin-top:0">La clave de este rollo</p>
+      ${clave?`<p class="clave-gr">${esc(clave)}</p>
+        <p class="ayudita">Guardala. Sin ella, desde otro teléfono no podés manejar este rollo.</p>
+        <button class="hilo-btn" id="copiarClave">Copiar la clave</button>`
+        :`<p class="ayudita">En este teléfono no está guardada.</p>`}
+    </div>
+
+    <div class="llave-fila">
+      <p>Cerrar el rollo<small>Corta las fotos. El álbum sigue disponible.</small></p>
+      <button class="palanca" id="cerrar" aria-pressed="${!!m.cerrado}"></button>
+    </div>
+    `:`
+    <div class="tarjeta" style="text-align:center">
+      <p style="font-size:14.5px;color:#B5AC9E;line-height:1.8;margin-bottom:22px">
+        Este evento todavía no tiene rollo. Al prenderlo, tus invitados van a poder
+        sacar fotos con la cámara.</p>
+      <button class="oro-btn" id="prender">Prender el rollo</button>
+    </div>`}
+  </div>`;
+
+  const guardar=async(campos,aviso)=>{
+    try{
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`,campos,clave);
+      avisar(aviso); vEventoRollo(codigo);
+    }catch(e){ avisar('No se pudo guardar: '+(e.message||e)); }
+  };
+  const $=sel=>app.querySelector(sel);
+
+  if(!m.camara){
+    $('#prender').onclick=()=>guardar({camara:true,cupo_fotos:24,revelado:false},'Rollo prendido');
+    return;
+  }
+
+  pintarQR($('#qr'), enlace, 196);
+  $('#copiarLink').onclick=()=>copiar(enlace,'Link copiado');
+  $('#compartir').onclick=async()=>{
+    if(navigator.share){ try{ await navigator.share({title:m.nombre||'Rollo',url:enlace}); return; }catch(e){ return; } }
+    copiar(enlace,'Link copiado');
+  };
+  $('#verAlbum').onclick=()=>{ location.href=enlace; };
+  const bc=$('#copiarClave'); if(bc) bc.onclick=()=>copiar(clave,'Clave copiada');
+
+  SB.rpc('ce_camara_stats',{p_codigo:codigo}).then(st=>{
+    const n=$('#stats'); if(!n||!st) return;
+    n.textContent=`${st.invitados} invitado${st.invitados===1?'':'s'} agarró la cámara · `
+      +`${st.fotos} foto${st.fotos===1?'':'s'} sacada${st.fotos===1?'':'s'}`;
+  }).catch(()=>{ const n=$('#stats'); if(n) n.textContent='No pude consultar los números.'; });
+
+  const bRev=$('#revelar');
+  if(bRev) bRev.onclick=()=>guardar({revelado:true},'Revelado · ya lo ven todos');
+  const bOc=$('#ocultar');
+  if(bOc) bOc.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
+  const bHora=$('#guardarHora');
+  if(bHora) bHora.onclick=()=>{
+    const v=$('#revela').value;
+    if(!v) return avisar('Elegí día y hora');
+    guardar({revela_en:v},'Listo · se revela solo');
+  };
+
+  let cupo=Number(m.cupo_fotos||24);
+  $('#menos').onclick=()=>{ cupo=Math.max(6,cupo-6); $('#cupoTxt').textContent=cupo; };
+  $('#mas').onclick=()=>{ cupo=Math.min(60,cupo+6); $('#cupoTxt').textContent=cupo; };
+  $('#guardarCupo').onclick=()=>guardar({cupo_fotos:cupo},'Listo · '+cupo+' fotos por invitado');
+  $('#cerrar').onclick=()=>guardar({cerrado:!m.cerrado}, m.cerrado?'Rollo abierto':'Rollo cerrado');
+}
+
 /* ── el cuarto de revelado ──
    Se ve una sola vez por teléfono: la segunda vez que entrás al álbum ya
    no tiene gracia, y encima molesta. Se puede saltear tocando. */
@@ -940,9 +1611,10 @@ async function vAlbum(m,token){
   });
 }
 
-/* ── arranque ── */
-(async function(){
-  if(!codigo) return vPedirCodigo();
+/* ── arranque ──
+   Dos puertas en la misma dirección: el invitado llega con ?e=CODIGO
+   (del QR) y el organizador entra por #panel. */
+async function arranqueInvitado(){
   let m;
   try{
     const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha`);
@@ -950,11 +1622,32 @@ async function vAlbum(m,token){
   }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
   if(!m) return vError('No encontré ese evento.');
   tono(m.tono);
-  if(!m.camara) return vError('Esta fiesta todavía no tiene la cámara descartable activada.');
+  if(!m.camara) return vError('Esta fiesta todavía no tiene la cámara activada.');
   const guardado=leerRollo(codigo);
   if(!guardado) return vPedirNombre(m);
   await consultarEstado(m,guardado);
-})();
+}
+
+function pintar(){
+  detenerPoll(); detenerCamara();
+  const h=location.hash.slice(1);
+  window.scrollTo(0,0);
+  let p;
+  try{
+    if(h==='panel')            p=vPanelAcceso();
+    else if(h==='nuevo')       p=vNuevo();
+    else if(h.startsWith('ev/')) p=vEventoRollo(h.slice(3));
+    else if(codigo)            p=arranqueInvitado();
+    else                       p=vPedirCodigo();
+  }catch(e){ console.error(e); return vError('Algo se cortó. Recargá la página.'); }
+  if(p&&p.catch) p.catch(e=>{ console.error(e); vError('Algo se cortó. Recargá la página.'); });
+}
+addEventListener('hashchange',pintar);
+addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-ir]');
+  if(b) location.hash=b.dataset.ir;
+});
+pintar();
 addEventListener('pagehide',detenerCamara);
 addEventListener('unhandledrejection',e=>{ console.error(e.reason); avisar('Algo falló: probá de nuevo'); e.preventDefault(); });
 </script>

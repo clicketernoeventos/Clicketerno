@@ -6,8 +6,8 @@ pantalla es un HTML suelto que habla directo con Supabase.
 | Dirección | Archivo | Qué es |
 |---|---|---|
 | `/` | `index.html` | la página pública |
-| `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + el panel del organizador |
-| `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable de cada invitado |
+| `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + su panel |
+| `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro` (los QR viejos apuntan acá; no borrar) |
 
 ## Rollo eterno
@@ -17,7 +17,12 @@ de 5 filtros, y nadie ve ninguna —ni quien la sacó— hasta que se revela el
 rollo: a una hora que fija el organizador, o a mano con "Revelar ahora".
 Al revelarse, primero cada uno ve las suyas y después el álbum completo.
 
-Se activa desde el panel del evento en `/muro` (pestaña **Rollo**).
+**Son dos servicios aparte y cada uno se maneja solo.** En `/rollo#panel`
+el organizador crea el rollo, saca el QR, ve cómo va y lo revela, sin pasar
+nunca por el muro. Los dos comparten la misma tabla de eventos y el mismo
+sistema de clave, así que un evento puede tener los dos servicios, o uno
+solo: en la lista de `/rollo` aparecen también los eventos creados en el
+muro, con la opción de prenderles el rollo.
 
 ### Instalación en Supabase
 
