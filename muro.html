@@ -972,7 +972,6 @@ const COLS_CAMARA=['camara','cupo_fotos','revela_en','revelado'];
 const COLUMNAS_NUEVAS=['lanza','hashtag','lugar',...COLS_CAMARA];
 const faltaColumna={};
 const sinColumna=c=>!!faltaColumna[c];
-const sinColumnasCamara=()=>COLS_CAMARA.some(sinColumna);
 async function guardarMeta(m){
   if(!HAY_NUBE) return local.set(kMeta(m.codigo),m);
   const copia={...m};
@@ -1203,8 +1202,7 @@ const IC={
   texto:`<svg viewBox="0 0 24 24"><path d="M20 13.5a3 3 0 0 1-3 3H9.5L5 20v-3.5a3 3 0 0 1-1-2.2V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3z"/></svg>`,
   voz:`<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="10.5" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>`,
   organizador:`<svg viewBox="0 0 24 24"><path d="M4 8.5h8.5M17 8.5h3M4 15.5h3.5M12 15.5h8"/><circle cx="14.8" cy="8.5" r="2.3"/><circle cx="9.8" cy="15.5" r="2.3"/></svg>`,
-  cartel:`<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17.5H5.5a1.5 1.5 0 0 1-1.5-1.5v-4A2.5 2.5 0 0 1 6.5 9.5h11A2.5 2.5 0 0 1 20 12v4a1.5 1.5 0 0 1-1.5 1.5H17"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>`,
-  camara:`<svg viewBox="0 0 24 24"><path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 20 18.5H4A1.5 1.5 0 0 1 2.5 17v-7A1.5 1.5 0 0 1 4 8.5z"/><circle cx="12" cy="13" r="3.2"/><path d="M17.5 11h.01"/></svg>`
+  cartel:`<svg viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17.5H5.5a1.5 1.5 0 0 1-1.5-1.5v-4A2.5 2.5 0 0 1 6.5 9.5h11A2.5 2.5 0 0 1 20 12v4a1.5 1.5 0 0 1-1.5 1.5H17"/><rect x="7" y="14" width="10" height="6" rx="1"/></svg>`
 };
 
 /* solapas con barra inferior: las usan el panel y el álbum */
@@ -1405,7 +1403,6 @@ function pintarQR(nodo,texto,tam){
 }
 const enlaceDe=c=>`https://clicketerno.com.ar/muro#subir/${c}`;
 const enlaceAlbumDe=c=>`https://clicketerno.com.ar/muro#album/${c}`;
-const enlaceCamaraDe=c=>`https://clicketerno.com.ar/rollo?e=${c}`;
 
 /* polvo de estrellas */
 (function(){
@@ -1925,54 +1922,11 @@ async function vEvento(codigo){
       </div>`:''}
     </section>
 
-    <section class="panel-ev" id="pCamara" hidden>
-      <div class="llave" style="border-bottom:0;padding-top:0">
-        <p>Rollo eterno<small>Cada invitado saca ${esc(m.cupo_fotos||24)} fotos con filtro. Nadie ve nada hasta el revelado.</small></p>
-        <button class="palanca" id="camOn" aria-pressed="${!!m.camara}"></button></div>
-
-      <div id="zonaCamara" ${m.camara?'':'hidden'}>
-        <div class="tarjeta principal" style="text-align:center">
-          <p class="titu-s">Link del rollo</p>
-          <div class="qr" id="qrc" style="display:inline-block;background:#fff;padding:13px;line-height:0"></div>
-          <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin:20px auto 0;max-width:30ch">
-            Lo escanean, ponen su nombre y ya pueden sacar fotos. Es otro link (/rollo), distinto al del muro (/muro).</p>
-          <button class="hilo-btn" id="copiarCam">Copiar enlace</button>
-        </div>
-
-        <div class="tarjeta">
-          <p class="titu-s">Esta noche</p>
-          <p id="statsCamara" style="font-size:13.5px;color:#B5AC9E;line-height:1.7">Consultando…</p>
-        </div>
-
-        <div class="tarjeta">
-          <p class="titu-s">Fotos por invitado</p>
-          <div class="campo"><label for="cupo">Cantidad</label>
-            <input id="cupo" type="number" min="1" max="99" value="${esc(m.cupo_fotos||24)}"></div>
-          <button class="hilo-btn" id="guardarCupo">Guardar cantidad</button>
-        </div>
-
-        <div class="tarjeta">
-          <p class="titu-s">Cuándo se revela</p>
-          <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:16px">
-            Elegí una hora para que se abra solo, o revelalo vos con el botón cuando quieras.</p>
-          <div class="campo"><label for="revelaEn">Día y hora (opcional)</label>
-            <input id="revelaEn" type="datetime-local" value="${esc(m.revela_en?String(m.revela_en).slice(0,16):'')}"></div>
-          <button class="hilo-btn" id="guardarRevela">Guardar hora</button>
-          ${m.revela_en?`<button class="hilo-btn" id="borrarRevela">Quitar la hora</button>`:''}
-          <div class="filete" style="max-width:200px">${ESTRELLA}</div>
-          ${m.revelado
-            ? `<p style="font-size:13.5px;color:var(--oro);text-align:center;margin-bottom:14px">Ya está revelado: todos pueden ver el álbum.</p>
-               <button class="hilo-btn" id="ocultarRev">Ocultar de nuevo</button>`
-            : `<button class="oro-btn" id="revelarYa">Revelar ahora</button>`}
-        </div>
-      </div>
-    </section>
   </div>
 
   <nav class="barra-abajo" role="tablist">
     ${solapa('pCompartir',IC.compartir,'Compartir')}
     ${solapa('pModerar',IC.moderar,'Moderar',pend.length?`<span class="globo-n" id="globoPend">${pend.length}</span>`:'')}
-    ${solapa('pCamara',IC.camara,'Rollo')}
     ${solapa('pAjustes',IC.ajustes,'Ajustes')}
   </nav>`;
 
@@ -2218,77 +2172,6 @@ async function vEvento(codigo){
   switche('#mod','moderar','Ahora aprobás vos cada foto','Las fotos van directo a la pantalla');
   switche('#cerr','cerrado','Muro cerrado · álbum publicado','Muro abierto de nuevo');
 
-  /* ── cámara descartable ── */
-  const faltaSQLcamara=()=>recado('Todavía falta instalar la cámara: correr sql/rollo.sql en Supabase.');
-  const bCamOn=app.querySelector('#camOn');
-  if(bCamOn) bCamOn.onclick=async()=>{
-    if(bCamOn.dataset.ocupado) return;
-    bCamOn.dataset.ocupado='1';
-    const antes=!!m.camara;
-    m.camara=!antes;
-    bCamOn.setAttribute('aria-pressed',String(m.camara));
-    try{
-      await guardarMeta(m);
-      if(sinColumnasCamara()){ m.camara=antes; bCamOn.setAttribute('aria-pressed',String(antes)); faltaSQLcamara(); }
-      else{ recado(m.camara?'Cámara activada':'Cámara apagada'); vEvento(codigo); }
-    }catch(err){ m.camara=antes; bCamOn.setAttribute('aria-pressed',String(antes)); }
-    delete bCamOn.dataset.ocupado;
-  };
-  if(m.camara && HAY_NUBE){
-    pintarQR(app.querySelector('#qrc'),enlaceCamaraDe(codigo),186);
-    const st=app.querySelector('#statsCamara');
-    SB.rpc('ce_camara_stats',{p_codigo:codigo}).then(s=>{
-      if(!st||!s) return;
-      st.textContent=`${s.invitados} invitado${s.invitados===1?'':'s'} agarró la cámara · `
-        +`${s.fotos} foto${s.fotos===1?'':'s'} sacada${s.fotos===1?'':'s'} · `
-        +(s.revelado?'ya revelado':'todavía sin revelar');
-    }).catch(()=>{ if(st) st.textContent='No pude consultar (¿falta correr sql/rollo.sql?)'; });
-    const bCopiaCam=app.querySelector('#copiarCam');
-    if(bCopiaCam) bCopiaCam.onclick=()=>copiarTexto(enlaceCamaraDe(codigo),'Enlace copiado');
-    app.querySelector('#guardarCupo').onclick=async e=>{
-      const v=Math.max(1,Math.min(99,Number(app.querySelector('#cupo').value)||24));
-      const antes=m.cupo_fotos; m.cupo_fotos=v;
-      const b=e.currentTarget; b.disabled=true;
-      try{
-        await guardarMeta(m);
-        if(sinColumnasCamara()){ m.cupo_fotos=antes; faltaSQLcamara(); }
-        else recado('Cantidad guardada · '+v+' fotos por invitado');
-      }catch(err){ m.cupo_fotos=antes; }
-      b.disabled=false;
-    };
-    const guardarRevelaEn=async(valor,aviso)=>{
-      const antes=m.revela_en; m.revela_en=valor||null;
-      try{
-        await guardarMeta(m);
-        if(sinColumnasCamara()){ m.revela_en=antes; faltaSQLcamara(); }
-        else{ recado(aviso); vEvento(codigo); }
-      }catch(err){ m.revela_en=antes; }
-    };
-    const bGR=app.querySelector('#guardarRevela');
-    if(bGR) bGR.onclick=()=>{
-      const v=app.querySelector('#revelaEn').value;
-      if(!v) return recado('Elegí día y hora, o usá "Revelar ahora"');
-      guardarRevelaEn(v,'Listo · se revela el '+horaLinda(new Date(v)));
-    };
-    const bQR=app.querySelector('#borrarRevela');
-    if(bQR) bQR.onclick=()=>guardarRevelaEn('','Hora quitada');
-    const bRevYa=app.querySelector('#revelarYa');
-    if(bRevYa) bRevYa.onclick=async()=>{
-      bRevYa.disabled=true; bRevYa.textContent='Revelando…';
-      m.revelado=true;
-      try{
-        await guardarMeta(m);
-        if(sinColumnasCamara()){ m.revelado=false; faltaSQLcamara(); bRevYa.disabled=false; bRevYa.textContent='Revelar ahora'; }
-        else{ recado('Revelado · ya lo puede ver todo el mundo'); vEvento(codigo); }
-      }catch(err){ m.revelado=false; bRevYa.disabled=false; bRevYa.textContent='Revelar ahora'; }
-    };
-    const bOcultar=app.querySelector('#ocultarRev');
-    if(bOcultar) bOcultar.onclick=async()=>{
-      m.revelado=false;
-      try{ await guardarMeta(m); recado('Oculto de nuevo'); vEvento(codigo); }
-      catch(err){ m.revelado=true; }
-    };
-  }
   const cola=app.querySelector('#cola');
   if(cola) for(const p of pend){
     const it=await item(codigo,p.id); if(!it) continue;
