@@ -203,11 +203,21 @@ $$;
 -- la clave, con ce_permitido). Sin esto, no hay forma de saber qué archivos
 -- había en ce-rollos una vez que el evento (y en cascada, sus filas) ya no
 -- existen.
-create or replace function ce_rutas_rollo(p_codigo text)
-returns text[] language sql stable security definer set search_path = public as $$
-  select coalesce(array_agg(ruta), array[]::text[])
-  from ce_disparos where codigo = p_codigo and ce_permitido(p_codigo);
-$$;
+-- Va adentro de un bloque porque es la única de todo el archivo que depende
+-- de claves.sql (usa ce_permitido). Es una función de limpieza: si falta,
+-- no puede llevarse puesta la instalación entera.
+do $ce$
+begin
+  execute $fn$
+    create or replace function ce_rutas_rollo(p_codigo text)
+    returns text[] language sql stable security definer set search_path = public as $cuerpo$
+      select coalesce(array_agg(ruta), array[]::text[])
+      from ce_disparos where codigo = p_codigo and ce_permitido(p_codigo);
+    $cuerpo$$fn$;
+  execute 'grant execute on function ce_rutas_rollo(text) to anon, authenticated';
+exception when undefined_function then
+  raise notice 'FALTA claves.sql: sin ce_permitido no se pudo crear ce_rutas_rollo (solo se usa para limpiar los archivos al borrar un evento). Todo lo demás quedó instalado.';
+end $ce$;
 
 -- ── 7c. ¿este camino ya fue reservado por ce_tomar_foto? ──
 -- Hace falta como función aparte (y no una consulta directa a ce_disparos
@@ -221,7 +231,7 @@ $$;
 
 grant execute on function
   ce_camara_revelada(text), ce_mi_rollo(text,text,text), ce_tomar_foto(text,text,text,text),
-  ce_album_de(text,text), ce_camara_stats(text), ce_rutas_rollo(text), ce_ruta_reservada(text),
+  ce_album_de(text,text), ce_camara_stats(text), ce_ruta_reservada(text),
   ce_devolver_foto(text,text,text)
   to anon, authenticated;
 
