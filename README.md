@@ -84,6 +84,7 @@ Y del lado del navegador, con el sitio servido en el puerto 8890:
 npx http-server -p 8890 -c-1 &
 node pruebas/rollo_navegador.js    # 24 pruebas del invitado: cámara colgada, señal cortada…
 node pruebas/rollo_organizador.js  # el recorrido del organizador, de la puerta al revelado
+node pruebas/rollo_hora.js         # que la hora del revelado no se corra de zona
 ```
 
 Las del muro están en `pruebas/LEEME.md` y usan otro puerto. Si playwright

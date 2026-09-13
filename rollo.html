@@ -15,6 +15,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
 <style>
 :root{
+  color-scheme: dark;   /* si no, el calendario del teléfono sale blanco sobre negro */
   --negro:#000; --carbon:#0A0908; --humo:#131110;
   --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
   --texto:#F6F2EA; --mute:#9B9287;
@@ -365,6 +366,23 @@ const nuevaClave=()=>{
   return [...n].map(x=>abc[x%abc.length]).join('');
 };
 const TIPOS={'XV':'QUI','Casamiento':'BOD','Cumpleaños':'CUM','Evento':'COR'};
+
+/* ══════════ la hora ══════════
+   El input de fecha y hora devuelve la hora del reloj de la pared, sin
+   zona: "2026-09-14T02:00". Si eso viaja tal cual a una columna
+   timestamptz, Postgres la interpreta en UTC, y acá (UTC-3) se adelanta
+   tres horas. Un revelado puesto para las 2 de la mañana se disparaba a
+   las 11 de la noche; y uno puesto para hoy a la tarde YA HABÍA PASADO,
+   así que el rollo nacía revelado: el invitado entraba y en vez de la
+   cámara le aparecía el álbum vacío. */
+const aUTC=v=>{ if(!v) return null; const d=new Date(v); return isNaN(d)?null:d.toISOString(); };
+const aLocal=iso=>{
+  if(!iso) return '';
+  const d=new Date(iso); if(isNaN(d)) return '';
+  const c=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${c(d.getMonth()+1)}-${c(d.getDate())}T${c(d.getHours())}:${c(d.getMinutes())}`;
+};
+const yaPaso=v=>{ const d=new Date(v); return !isNaN(d) && d.getTime()<=Date.now(); };
 const hoy=()=>new Date().toISOString().slice(0,10);
 const enlaceDelRollo=c=>`https://clicketerno.com.ar/rollo?e=${c}`;
 
@@ -1014,7 +1032,11 @@ function vNuevo(n){
     if(paso===2) nuevo.fecha=app.querySelector('#fecha').value||hoy();
     if(paso===3){
       nuevo.revela=app.querySelector('#revela')?app.querySelector('#revela').value:'';
-      if(nuevo.cuando==='hora' && !nuevo.revela) return avisar('Elegí el día y la hora');
+      if(nuevo.cuando==='hora'){
+        if(!nuevo.revela) return avisar('Elegí el día y la hora');
+        /* un rollo no puede nacer revelado */
+        if(yaPaso(nuevo.revela)) return avisar('Esa hora ya pasó. Elegí una que venga.');
+      }
     }
     if(paso<PASOS) return irA('nuevo/'+(paso+1));
     crearRollo();
@@ -1034,7 +1056,7 @@ async function crearRollo(){
       codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
       vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
       camara:true, cupo_fotos:nuevo.cupo, revelado:false,
-      revela_en: nuevo.cuando==='hora' ? nuevo.revela : null
+      revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
     }, claveEv);
     guardarClaveDe(codigo,claveEv);
     irA('ev/'+codigo);
@@ -1220,7 +1242,7 @@ async function vAjustes(codigo){
 
     <p class="rotulito">Revelado automático</p>
     <p class="ayudita" style="margin:0 0 12px">Dejalo vacío si preferís revelarlo vos a mano.</p>
-    <input id="revela" type="datetime-local" value="${esc(m.revela_en?String(m.revela_en).slice(0,16):'')}">
+    <input id="revela" type="datetime-local" value="${esc(aLocal(m.revela_en))}">
     <button class="hilo-btn" id="guardarHora">Guardar la hora</button>
     ${revelado?`<button class="hilo-btn" id="ocultar">Volver a ocultar las fotos</button>`:''}
 
@@ -1248,7 +1270,8 @@ async function vAjustes(codigo){
   $('#guardarCupo').onclick=()=>guardar({cupo_fotos:cupo},'Listo · '+cupo+' fotos por invitado');
   $('#guardarHora').onclick=()=>{
     const v=$('#revela').value;
-    guardar({revela_en:v||null}, v?'Listo · se revela solo':'Lo revelás vos a mano');
+    if(v && yaPaso(v)) return avisar('Esa hora ya pasó. Si querés revelarlo ya, usá "Revelar el rollo".');
+    guardar({revela_en:aUTC(v)}, v?'Listo · se revela solo':'Lo revelás vos a mano');
   };
   const bO=$('#ocultar'); if(bO) bO.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
   const bC=$('#copiarClave'); if(bC) bC.onclick=()=>copiar(clave,'Clave copiada');
