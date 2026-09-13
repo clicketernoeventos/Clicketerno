@@ -247,6 +247,14 @@ option{background:#0B0A08}
 .espera .par button{flex:1;min-width:0;padding:13px 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .espera .par button+button{border-left:1px solid var(--gris)}
 .si{color:var(--oro)}.no{color:#8A8177}
+.cierre{text-align:center;padding-top:30px}
+.cierre .filete{max-width:190px;margin:0 auto 20px}
+.cierre-tit{font-family:'Bodoni Moda',serif;font-style:italic;font-weight:400;
+  font-size:clamp(30px,8.5vw,40px);margin:12px 0 8px;line-height:1.15}
+.cierre-sub{font-size:13.5px;color:#B5AC9E;line-height:1.7}
+.cierre-res{margin-top:20px;padding-top:18px;border-top:1px solid var(--gris);
+  font-size:14px;color:#B5AC9E;line-height:1.8}
+.cierre-res b{color:var(--champan);font-weight:400;font-family:'Bodoni Moda',serif;font-size:19px}
 .publicados{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
 .publi{position:relative;border:1px solid var(--gris);overflow:hidden;aspect-ratio:1;
   min-height:0;background:#141210;cursor:pointer}
@@ -381,6 +389,8 @@ option{background:#0B0A08}
 
 /* accesos rápidos: circulitos en fila */
 .accesos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 8px}
+/* con el muro cerrado quedan dos: que ocupen el ancho en vez de irse a un costado */
+.accesos.dos{grid-template-columns:repeat(2,1fr);max-width:300px;margin-inline:auto}
 .accesos button{display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--mute);
   transition:color .3s}
 .accesos .aro-a{width:54px;height:54px;border-radius:50%;border:1px solid var(--gris);
@@ -1392,6 +1402,7 @@ function pintarQR(nodo,texto,tam){
   nodo.innerHTML=`<div style="width:${tam}px;height:${tam}px;display:grid;place-items:center;color:#111;font:500 10px Jost;text-align:center;padding:6px">${esc(texto.split('/').pop())}</div>`;
 }
 const enlaceDe=c=>`https://clicketerno.com.ar/muro#subir/${c}`;
+const enlaceAlbumDe=c=>`https://clicketerno.com.ar/muro#album/${c}`;
 
 /* polvo de estrellas */
 (function(){
@@ -1749,6 +1760,7 @@ async function vEvento(codigo){
   await cargarTodo(codigo);        // una sola llamada en vez de una por foto
   const idx=await indice(codigo);
   const pend=idx.filter(i=>i.estado==='pendiente'), apro=idx.filter(i=>i.estado==='aprobado');
+  const gente=new Set(apro.map(i=>i.autor).filter(Boolean)).size;
   const n=k=>apro.filter(i=>i.kind===k).length;
 
   const cifra=(k,t)=>`<div><b data-cifra="${n(k)}" data-kind="${k}">0</b><span>${t}</span></div>`;
@@ -1767,6 +1779,38 @@ async function vEvento(codigo){
 
   <div class="wrap-ev">
     <section class="panel-ev" id="pCompartir">
+      ${m.cerrado?`
+      <!-- Terminada la fiesta, el QR y la vista del invitado ya no sirven:
+           lo que hace falta ahora es el álbum, pasárselo y llevárselo. -->
+      <div class="tarjeta principal cierre">
+        <div class="filete">${ESTRELLA}</div>
+        <p class="espaciado">La fiesta terminó</p>
+        <h2 class="cierre-tit">${esc(m.nombre)}</h2>
+        <p class="cierre-sub">${bonito(m.fecha)}${m.lugar?' · '+esc(m.lugar):''}</p>
+        <p class="cierre-res">${apro.length
+          ? `<b>${apro.length}</b> recuerdo${apro.length===1?'':'s'} de <b>${gente}</b> ${gente===1?'persona':'personas'}`
+          : 'No quedó nada guardado'}</p>
+      </div>
+      <div class="accesos dos">
+        <button class="destacado" data-ir="album/${codigo}"><span class="aro-a">${IC.fotos}</span><em>Ver el<br>álbum</em></button>
+        <button data-ir="album/${codigo}/guardar"><span class="aro-a">${IC.guardar}</span><em>Descargar<br>todo</em></button>
+      </div>
+      <div class="tarjeta">
+        <p class="titu-s">Pasarle el álbum</p>
+        <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+          Este enlace abre el álbum terminado. Es el que le mandás a quien organizó la fiesta.</p>
+        <button class="hilo-btn" id="copiarAlbum">Copiar el enlace del álbum</button>
+        <a class="hilo-btn" id="wspAlbum" href="${wsp(`Acá está el álbum de ${m.nombre}: ${enlaceAlbumDe(codigo)}`)}"
+           target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px">Mandarlo por WhatsApp</a>
+      </div>
+      ${m.vence?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(m.vence)}.</p>`:''}
+      <div class="tarjeta" style="margin-top:26px">
+        <p class="titu-s">¿Lo cerraste antes de tiempo?</p>
+        <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+          Al reabrirlo, los invitados vuelven a poder subir con el mismo código de siempre.</p>
+        <button class="hilo-btn" id="reabrir">Reabrir el muro</button>
+      </div>
+      `:`
       <div class="tarjeta principal" style="text-align:center">
         <p class="titu-s">Código del evento</p>
         <div class="qr" id="qr" style="display:inline-block;background:#fff;padding:13px;line-height:0"></div>
@@ -1781,6 +1825,7 @@ async function vEvento(codigo){
         <button data-ir="cartel/${codigo}"><span class="aro-a">${IC.cartel}</span><em>Cartel<br>de mesa</em></button>
       </div>
       <p class="pie-nota">Dejá la pantalla abierta en la notebook conectada al proyector. Se actualiza sola.</p>
+      `}
     </section>
 
     <section class="panel-ev" id="pModerar" hidden>
@@ -1892,7 +1937,9 @@ async function vEvento(codigo){
 
   /* si hay cosas esperando, abrimos ahí: es lo urgente durante la fiesta */
   activarSolapas(pend.length?'pModerar':'pCompartir');
-  pintarQR(app.querySelector('#qr'),enlaceDe(codigo),106);
+  /* con el muro cerrado no hay QR que dibujar: esta solapa es el cierre */
+  const cajaQR=app.querySelector('#qr');
+  if(cajaQR) pintarQR(cajaQR,enlaceDe(codigo),106);
 
   const porta=app.querySelector('#porta');
   const hayTapa=!!urlSegura(m.portada);
@@ -1914,6 +1961,24 @@ async function vEvento(codigo){
       recado('No pude guardar la portada: '+motivo(err));
     }
   };
+  const bCopiaAlb=app.querySelector('#copiarAlbum');
+  if(bCopiaAlb) bCopiaAlb.onclick=()=>copiarTexto(enlaceAlbumDe(codigo),'Enlace del álbum copiado');
+  const bReabrir=app.querySelector('#reabrir');
+  if(bReabrir) bReabrir.onclick=async e=>{
+    const b=e.currentTarget;
+    if(b.dataset.ocupado) return;
+    b.dataset.ocupado='1'; b.disabled=true; b.textContent='Reabriendo…';
+    m.cerrado=false;
+    try{
+      await guardarMeta(m);
+      recado('Muro abierto de nuevo');
+      vEvento(codigo);
+    }catch(err){
+      m.cerrado=true;
+      delete b.dataset.ocupado; b.disabled=false; b.textContent='Reabrir el muro';
+    }
+  };
+
   /* Antes, un nombre mal escrito al crear el evento quedaba para siempre. */
   let tonoEd=m.tono||TONOS[0].c;
   app.querySelectorAll('#pAjustes .tono').forEach(b=>b.onclick=()=>{
@@ -2067,7 +2132,8 @@ async function vEvento(codigo){
     }catch(err){ m.consignas=antes; }
     b.disabled=false;
   };
-  app.querySelector('#copiar').onclick=async()=>{
+  const bCopiar=app.querySelector('#copiar');
+  if(bCopiar) bCopiar.onclick=async()=>{
     const enlace=enlaceDe(codigo);
     try{
       if(!navigator.clipboard) throw new Error('sin portapapeles');
@@ -2680,7 +2746,9 @@ function vFinal(m){
   app.querySelector('#ver').onclick=()=>ir('album/'+m.codigo);
 }
 
-async function vAlbum(codigo){
+/* ojo con el nombre del parámetro: acá adentro ya vive la función solapa()
+   que dibuja los botones de abajo. */
+async function vAlbum(codigo,abrirEn){
   parar();
   const m=await meta(codigo); if(!m) return ir('portada');
   tono(m.tono);
@@ -2767,7 +2835,9 @@ async function vAlbum(codigo){
     ${solapa('aGuardar',IC.guardar,'Guardar')}
   </nav>`;
   app.querySelector('.volver-flota').onclick=()=>ir('evento/'+codigo);
-  activarSolapas('aFotos');
+  /* se puede entrar directo a una solapa: #album/CODIGO/guardar */
+  const pedida=abrirEn?'a'+abrirEn[0].toUpperCase()+abrirEn.slice(1):'';
+  activarSolapas(pedida && app.querySelector(`[data-sol="${pedida}"]`) ? pedida : 'aFotos');
   const dl=app.querySelector('#dl');
   if(dl){
     const base=nombreSeguro(m.nombre);
@@ -2939,7 +3009,7 @@ function pantallaError(e){
 
 const PIDE_CODIGO=['evento','subir','pantalla','album','cartel'];
 function pintar(ruta){
-  const [v,arg]=String(ruta||'').split('/');
+  const [v,arg,extra]=String(ruta||'').split('/');
   window.scrollTo(0,0);
   if(PIDE_CODIGO.includes(v)&&!arg){        // enlace cortado o mal pegado
     recado('Ese enlace está incompleto');
@@ -2954,7 +3024,7 @@ function pintar(ruta){
     else if(v==='proyector') p=vElegir('pantalla','Pantalla');
     else if(v==='subir') p=vSubir(arg);
     else if(v==='pantalla') p=vPantalla(arg);
-    else if(v==='album') p=vAlbum(arg);
+    else if(v==='album') p=vAlbum(arg,extra);
     else if(v==='cartel') p=vCartel(arg);
     else p=vPortada();
   }catch(e){ return pantallaError(e); }

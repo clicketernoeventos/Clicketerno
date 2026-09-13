@@ -172,6 +172,55 @@ async function pagina(browser,{romper=null}={}){
     await ctx.close();
   }
 
+  // ═══ 5. la fiesta terminó: el panel cambia de cara ═══
+  console.log('\n─── después de la fiesta ───');
+  {
+    const {ctx,p,errs,fake}=await pagina(browser);
+    fake.db.ce_eventos[0].cerrado=true;
+    fake.db.ce_eventos[0].vence='2027-08-21';
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1500);
+    const r=await p.evaluate(()=>({
+      qr:!!document.querySelector('#qr'),
+      subir:!!document.querySelector('[data-ir^="subir/"]'),
+      album:!!document.querySelector('[data-ir^="album/"]'),
+      bajar:!!document.querySelector('[data-ir$="/guardar"]'),
+      copiar:!!document.querySelector('#copiarAlbum'),
+      reabrir:!!document.querySelector('#reabrir'),
+      texto:(document.getElementById('app').innerText||'')}));
+    if(r.qr||r.subir) mal('con el muro cerrado sigue ofreciendo el QR o la vista del invitado');
+    else bien('deja de ofrecer lo que ya no sirve');
+    if(!r.album||!r.bajar) mal('no ofrece ver el álbum y descargarlo');
+    else bien('ofrece ver el álbum y descargar todo');
+    if(!r.copiar) mal('no hay forma de pasarle el álbum al cliente');
+    else bien('se puede copiar el enlace del álbum');
+    if(!/3 recuerdos de 3 personas/i.test(r.texto.replace(/\s+/g,' ')))
+      mal('no resume qué quedó de la noche: '+r.texto.replace(/\s+/g,' ').slice(0,120));
+    else bien('resume qué quedó de la noche');
+    if(!/hasta el/i.test(r.texto)) mal('no dice hasta cuándo se puede descargar');
+    else bien('dice hasta cuándo se puede descargar');
+
+    // el botón de descargar abre el álbum directo en la solapa de guardar
+    await p.click('[data-ir$="/guardar"]'); await p.waitForTimeout(1400);
+    const enGuardar=await p.evaluate(()=>{
+      const s=document.querySelector('#aGuardar');
+      return !!s && !s.hidden;});
+    if(!enGuardar) mal('descargar todo no abre el álbum en la solapa de guardar');
+    else bien('descargar todo abre el álbum ya en la solapa correcta');
+
+    // reabrir vuelve todo a la normalidad
+    await p.goto('about:blank');
+    await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1400);
+    await p.click('#reabrir'); await p.waitForTimeout(1500);
+    if(fake.db.ce_eventos[0].cerrado!==false) mal('reabrir no guardó nada en la base');
+    else bien('reabrir el muro queda guardado');
+    if(!(await p.locator('#qr').count())) mal('después de reabrir no vuelve el QR');
+    else bien('vuelve el panel de siempre, con el QR');
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
 })();
