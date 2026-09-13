@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Click Eterno · Rollo eterno</title>
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
+<style>
+:root{
+  --negro:#000; --carbon:#0A0908; --humo:#131110;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#9B9287;
+  --hilo:rgba(217,174,114,.24); --hilo2:rgba(217,174,114,.5); --gris:rgba(255,255,255,.09);
+  --e:cubic-bezier(.22,.7,.24,1);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html,body{margin:0;background:var(--negro);color:var(--texto)}
+body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh}
+h1,h2,h3{margin:0;font-weight:400}
+p{margin:0}
+button,input{font-family:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+img{max-width:100%;display:block}
+.serif{font-family:'Bodoni Moda',serif}
+.ital{font-family:'Bodoni Moda',serif;font-style:italic}
+.wrap{max-width:520px;margin:0 auto;padding:0 22px 60px}
+.espaciado{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
+.estrella{display:inline-block;width:13px;height:13px;vertical-align:middle;color:var(--oro)}
+.estrella svg{display:block;width:100%;height:100%}
+.filete{display:flex;align-items:center;gap:14px;margin:26px 0;color:var(--oro)}
+.filete:before,.filete:after{content:'';height:1px;background:linear-gradient(90deg,transparent,var(--hilo2),transparent);flex:1}
+
+#brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% -10%,rgba(217,174,114,.1),transparent 60%)}
+#grano{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.04;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+#app{position:relative;z-index:2;min-height:100svh}
+
+.cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
+.cab img{width:82px;opacity:.7;margin-bottom:16px}
+.cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
+.centro{min-height:80svh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 24px}
+.centro p.info{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:32ch;margin:14px auto 0}
+.oro-btn{width:100%;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
+  color:#0A0806;border-radius:2px;padding:16px;font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+  transition:transform .25s var(--e),filter .3s}
+.oro-btn:disabled{opacity:.55}
+.oro-btn:not(:disabled):active{transform:scale(.99)}
+.hilo-btn{width:100%;border:1px solid var(--hilo2);color:var(--oro);border-radius:2px;padding:14px;
+  font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;margin-top:12px}
+.campo{margin:22px 0;text-align:left}
+.campo label{display:block;font-size:10.5px;letter-spacing:.3em;color:var(--mute);margin-bottom:10px;text-transform:uppercase}
+input[type=text]{width:100%;background:transparent;border:0;border-bottom:1px solid var(--gris);
+  padding:12px 2px;font-size:17px;font-weight:300;color:var(--texto)}
+input[type=text]:focus{outline:none;border-color:var(--oro)}
+
+/* ── entrada: la portada del evento a pantalla completa ── */
+.tapa{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end}
+.tapa .foto{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.tapa .foto:after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 30%,rgba(0,0,0,.88) 72%,#000 100%)}
+.tapa .foto.vacia{background:radial-gradient(120% 80% at 50% 0%,rgba(217,174,114,.16),transparent 60%),#0A0908}
+.tapa .arriba{position:relative;z-index:2;padding:34px 26px 0;text-align:center}
+.tapa .arriba img{width:88px;margin:0 auto;opacity:.75}
+.tapa .medio{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 26px 6px;text-align:center}
+.tapa h1{font-family:'Bodoni Moda',serif;font-size:clamp(32px,10vw,46px);line-height:1.05;margin-top:10px}
+.tapa .fechita{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--oro);margin-top:14px}
+.tapa .abajo{position:relative;z-index:2;padding:22px 26px calc(30px + env(safe-area-inset-bottom))}
+.promesa{border:1px solid var(--hilo);border-radius:6px;padding:18px 20px;margin-bottom:22px;
+  background:rgba(12,10,8,.5);backdrop-filter:blur(10px);text-align:center}
+.promesa b{display:block;font-size:15.5px;font-weight:400;line-height:1.5;margin-bottom:6px}
+.promesa b em{font-family:'Bodoni Moda',serif;font-style:italic;color:var(--oro);font-size:17px}
+.promesa span{font-size:13px;color:#B5AC9E;line-height:1.6}
+.tapa .campo{margin:0 0 14px;text-align:left}
+.sin-app{text-align:center;font-size:11.5px;color:var(--mute);margin-top:14px;letter-spacing:.04em}
+
+/* ── la cámara: pantalla completa, como una cámara y no como una web ── */
+.camara{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;z-index:5}
+.camara .lente{position:absolute;inset:0;overflow:hidden}
+.camara video{width:100%;height:100%;object-fit:cover;display:block}
+.camara .grano-visor{position:absolute;inset:0;pointer-events:none;opacity:0;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  transition:opacity .25s}
+.camara .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.camara .flash.on{animation:flashea .32s ease-out}
+@keyframes flashea{0%{opacity:.9}100%{opacity:0}}
+/* dos sombras suaves para que se lea lo de arriba y lo de abajo */
+.camara .velo-arr{position:absolute;top:0;left:0;right:0;height:150px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.7),transparent)}
+.camara .velo-aba{position:absolute;bottom:0;left:0;right:0;height:330px;pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.88) 30%,transparent)}
+
+.cam-arriba{position:relative;z-index:3;display:flex;align-items:center;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 0}
+.cam-arriba .nombre-ev{flex:1;text-align:center;font-size:11px;letter-spacing:.26em;
+  text-transform:uppercase;color:rgba(246,242,234,.82)}
+.girar{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6;stroke-linecap:round}
+
+.cam-abajo{position:relative;z-index:3;margin-top:auto;
+  padding:0 0 calc(20px + env(safe-area-inset-bottom))}
+/* la tira de filtros: cada uno muestra lo que estás apuntando ahora mismo */
+.tira-filtros{display:flex;gap:14px;overflow-x:auto;padding:0 22px 16px;scrollbar-width:none;
+  scroll-snap-type:x proximity}
+.tira-filtros::-webkit-scrollbar{display:none}
+.filtro-op{flex:none;width:62px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  scroll-snap-align:center}
+.filtro-op canvas{width:56px;height:56px;border-radius:10px;display:block;background:#141210;
+  border:2px solid transparent;transition:border-color .25s,transform .25s var(--e)}
+.filtro-op[aria-pressed=true] canvas{border-color:var(--oro);transform:scale(1.06)}
+.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(246,242,234,.6);text-align:center;line-height:1.25}
+.filtro-op[aria-pressed=true] span{color:var(--oro)}
+
+.fila-disparo{display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+/* el contador, como la ventanita de una descartable */
+.contador-rollo{width:62px;text-align:center;flex:none}
+.contador-rollo b{display:block;font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;color:var(--texto)}
+.contador-rollo span{display:block;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(246,242,234,.5);margin-top:5px}
+.disparar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(246,242,234,.9);
+  position:relative;flex:none;transition:transform .12s}
+.disparar:before{content:'';position:absolute;inset:5px;border-radius:50%;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));transition:inset .12s}
+.disparar:disabled{opacity:.45}
+.disparar:not(:disabled):active{transform:scale(.94)}
+.disparar:not(:disabled):active:before{inset:9px}
+.hueco{width:62px;flex:none}
+.pie-camara{position:relative;z-index:3;text-align:center;font-size:11.5px;
+  color:rgba(246,242,234,.45);padding:16px 30px 0;line-height:1.5}
+.native-alt{position:relative;z-index:3;display:block;text-align:center;margin:0 22px;padding:13px;
+  border:1px dashed var(--hilo2);border-radius:6px;color:var(--oro);font-size:12.5px;cursor:pointer;
+  background:rgba(0,0,0,.5)}
+
+/* ── espera / revelado ── */
+.rollo-icono{width:100%;max-width:150px;margin:0 auto}
+.cuenta-rev{font-family:'Bodoni Moda',serif;font-size:clamp(30px,9vw,42px);margin:18px 0 4px;color:var(--oro)}
+
+/* ── el cuarto de revelado ──
+   Luz roja, las copias caen en la bandeja y la imagen sube desde el papel.
+   Al final se prenden las luces: recién ahí aparecen los colores. */
+.cuarto{position:fixed;inset:0;z-index:80;background:#0b0201;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:entraCuarto .8s var(--e)}
+@keyframes entraCuarto{from{opacity:0}to{opacity:1}}
+.cuarto.saliendo{opacity:0;transition:opacity .9s var(--e)}
+/* la lámpara de seguridad, que titila apenas como una de verdad */
+.cuarto .luz{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(78% 58% at 50% 28%,rgba(214,38,26,.5),rgba(74,7,5,.92) 52%,#0b0201 100%);
+  animation:lampara 7s ease-in-out infinite}
+@keyframes lampara{0%,100%{opacity:.93}40%{opacity:1}72%{opacity:.87}}
+.cuarto .polvillo{position:absolute;inset:0;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+/* el tinte rojo tapa TODO, copias incluidas: es la luz del cuarto */
+.cuarto .tinte{position:absolute;inset:0;pointer-events:none;z-index:6;
+  background:rgba(196,34,24,.34);mix-blend-mode:multiply;transition:opacity 1.4s var(--e)}
+.cuarto.luces .tinte{opacity:0}
+.cuarto .rotulo{position:relative;z-index:7;text-align:center;margin-bottom:26px;height:44px}
+.cuarto .rotulo p{font-size:10.5px;letter-spacing:.36em;text-transform:uppercase;
+  color:rgba(255,214,206,.75)}
+.cuarto .rotulo b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-weight:400;
+  font-size:23px;color:#FFEDE8;margin-top:8px}
+/* la bandeja donde se apilan las copias */
+.bandeja{position:relative;z-index:5;width:min(70vw,286px);aspect-ratio:3/4}
+.copia{position:absolute;inset:0;border-radius:2px;overflow:hidden;background:#EDE6DA;
+  padding:7px 7px 26px;box-shadow:0 22px 55px rgba(0,0,0,.65);
+  opacity:0;transform:translateY(-22px) scale(.96) rotate(var(--giro,0deg));
+  transition:opacity .55s var(--e),transform .85s var(--e)}
+.copia.puesta{opacity:1;transform:translateY(0) scale(1) rotate(var(--giro,0deg))}
+/* la imagen sube desde el papel: primero sombras lavadas, después los negros */
+.copia img{width:100%;height:100%;object-fit:cover;display:block;
+  opacity:.05;filter:brightness(2.3) contrast(.16) saturate(.2);
+  transition:opacity 2s ease-out,filter 2.2s ease-out}
+.copia.revelada img{opacity:1;filter:none}
+.cuarto .saltear{position:absolute;z-index:7;bottom:calc(26px + env(safe-area-inset-bottom));
+  left:0;right:0;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(255,214,206,.55);opacity:0;transition:opacity .6s}
+.cuarto .saltear.visible{opacity:1}
+/* al apagarse, el cartel y el "saltear" se van primero: si no, quedan
+   encima del título del álbum que ya está apareciendo detrás */
+.cuarto.saliendo .rotulo,.cuarto.saliendo .saltear{opacity:0;transition:opacity .3s}
+
+/* ── galería ── */
+.tabs{display:flex;gap:10px;justify-content:center;margin:22px 0 6px}
+.tabs button{padding:9px 18px;border:1px solid var(--hilo2);border-radius:20px;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.tabs button[aria-pressed=true]{color:#0A0806;background:var(--oro);border-color:var(--oro)}
+.grilla{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 4px 30px}
+.grilla figure{margin:0;position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#111;
+  opacity:0;filter:blur(14px);transform:scale(.96);transition:opacity .9s var(--e),filter .9s var(--e),transform .9s var(--e)}
+.grilla figure.rev{opacity:1;filter:blur(0);transform:none}
+.grilla img{width:100%;height:100%;object-fit:cover}
+.grilla figure.mia{outline:2px solid var(--oro);outline-offset:-2px}
+.grilla figcaption{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;font-size:10px;
+  background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#EFE7DA}
+.grilla figure{cursor:zoom-in}
+
+/* ── visor a pantalla completa ── */
+.visorf{position:fixed;inset:0;z-index:90;background:#000;display:flex;flex-direction:column;
+  animation:aparece .25s var(--e)}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+.visorf .barra{display:flex;align-items:center;gap:10px;padding:14px 16px;
+  padding-top:calc(14px + env(safe-area-inset-top))}
+.visorf .barra .sep{flex:1}
+.visorf .redondo{width:40px;height:40px;border-radius:50%;border:1px solid var(--gris);
+  display:flex;align-items:center;justify-content:center;color:var(--texto);background:rgba(255,255,255,.04)}
+.visorf .redondo svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.visorf .marco{flex:1;position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding:0 8px}
+.visorf .marco img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px}
+.visorf .flecha{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;
+  border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:var(--texto);
+  display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1}
+.visorf .flecha.izq{left:10px} .visorf .flecha.der{right:10px}
+.visorf .pie{text-align:center;padding:14px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));
+  font-size:12.5px;color:var(--mute);letter-spacing:.12em}
+.visorf .pie b{display:block;color:var(--texto);font-family:'Bodoni Moda',serif;font-style:italic;
+  font-size:16px;letter-spacing:0;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div id="brillo"></div><div id="grano"></div>
+<div id="app"><div class="centro"><p class="espaciado">Cargando…</p></div></div>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CÁMARA DESCARTABLE · comparte el mismo Supabase que app.html.
+   Nadie ve ninguna foto —ni siquiera quien la sacó— hasta que se
+   revela el rollo del evento. Ver sql/rollo.sql.
+   ═══════════════════════════════════════════════════════════ */
+const NUBE = {
+  url:  'https://kuqlqgrwsospwjexodqa.supabase.co',
+  clave:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1cWxxZ3J3c29zcHdqZXhvZHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NjMyMjAsImV4cCI6MjEwNDEzOTIyMH0.DyV3K6fcHcsD9wbNzkYn2vIwWSN9e2LWt_HyuSaUE9g'
+};
+const app=document.getElementById('app');
+const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
+const guarda={
+  leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }}
+};
+const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
+/* Solo dejamos pasar lo que parezca un archivo real: si alguien mete texto
+   raro en la base, no llega a la pantalla. Mismo criterio que en el muro. */
+const urlSegura=u=>{const t=String(u==null?'':u).trim();
+  return /^(https?:\/\/|data:image\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif)$/i.test(t)?t:'';};
+const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
+const bonito=f=>{
+  if(!f) return '';
+  const p=String(f).slice(0,10).split('-');
+  if(p.length!==3) return '';
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+               'septiembre','octubre','noviembre','diciembre'];
+  const mes=meses[Number(p[1])-1];
+  return mes?`${Number(p[2])} de ${mes} de ${p[0]}`:'';
+};
+
+/* ── cliente mínimo de Supabase (sin librerías) ── */
+const SB = {
+  cab(extra){ return Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{}); },
+  async pedir(ruta,opciones){
+    const r = await fetch(NUBE.url+ruta, opciones);
+    const txt = await r.text();
+    if(!r.ok){ let m=txt; try{ m=JSON.parse(txt).message||txt; }catch(e){} throw new Error(m||('HTTP '+r.status)); }
+    if(!txt) return null;
+    try{ return JSON.parse(txt); }catch(e){ return null; }
+  },
+  ver(tabla,consulta){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()}); },
+  rpc(fn,args){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab(), body:JSON.stringify(args||{})}); },
+  subir(ruta,blob){
+    return new Promise((res,rej)=>{
+      const x=new XMLHttpRequest();
+      x.open('POST', `${NUBE.url}/storage/v1/object/ce-rollos/${ruta}`);
+      x.setRequestHeader('apikey',NUBE.clave);
+      x.setRequestHeader('Authorization','Bearer '+NUBE.clave);
+      x.setRequestHeader('Content-Type', blob.type||'image/jpeg');
+      x.timeout=60000;
+      x.onload=()=> (x.status>=200&&x.status<300) ? res(true) : rej(new Error(x.responseText||('HTTP '+x.status)));
+      x.onerror=()=>rej(new Error('Failed to fetch'));
+      x.ontimeout=()=>rej(new Error('La subida tardó demasiado'));
+      x.send(blob);
+    });
+  },
+  /* De a 100. Un álbum de casamiento puede tener cientos de fotos y mandar
+     todas las rutas en un solo pedido se cae (o lo corta el servidor). */
+  async firmar(rutas){
+    if(!rutas||!rutas.length) return {};
+    const mapa={};
+    for(let i=0;i<rutas.length;i+=100){
+      const tanda=rutas.slice(i,i+100);
+      const r = await this.pedir('/storage/v1/object/sign/ce-rollos', {
+        method:'POST', headers:this.cab(), body:JSON.stringify({expiresIn:3600, paths:tanda})
+      });
+      (r||[]).forEach(x=>{ if(x&&x.signedURL&&x.path) mapa[x.path]=NUBE.url+'/storage/v1'+x.signedURL; });
+    }
+    return mapa;
+  }
+};
+
+/* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
+   es apenas un cambio de color; el grano es lo que hace que parezca film. */
+const FILTROS=[
+  {id:'natural', nombre:'Natural',        css:'none', grano:0,  muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
+  {id:'clasico', nombre:'Clásico',        css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
+  {id:'bn',      nombre:'Blanco y negro', css:'grayscale(1) contrast(1.15) brightness(1.05)', grano:20, muestra:'linear-gradient(135deg,#111,#ccc)'},
+  {id:'flash',   nombre:'Flash',          css:'contrast(1.28) brightness(1.15) saturate(.85)', grano:8,  muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
+  {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
+];
+
+/* ══════════ el filtro de la foto guardada ══════════
+   La vista previa usa filtros CSS sobre el video, que andan en todos lados.
+   Pero para la foto que QUEDA no se puede usar ctx.filter: Safari no lo
+   tiene (bug abierto de WebKit desde 2019). En iPhone la foto se guardaba
+   sin filtro y nadie se enteraba hasta el revelado.
+
+   Así que la cuenta la hacemos nosotros, igual en todos los teléfonos: cada
+   filtro CSS se convierte en una sola matriz de color y se aplica de una
+   pasada. Son las mismas fórmulas que usa el navegador (Filter Effects
+   Level 1), así que la foto sale igual a la vista previa. */
+const LUM=[0.2126,0.7152,0.0722];
+const mSaturacion=s=>[
+  LUM[0]+(1-LUM[0])*s, LUM[1]*(1-s),        LUM[2]*(1-s),        0,
+  LUM[0]*(1-s),        LUM[1]+(1-LUM[1])*s, LUM[2]*(1-s),        0,
+  LUM[0]*(1-s),        LUM[1]*(1-s),        LUM[2]+(1-LUM[2])*s, 0];
+const mGris=a=>mSaturacion(1-a);
+const mSepia=a=>{ const s=1-a; return [
+  0.393+0.607*s, 0.769-0.769*s, 0.189-0.189*s, 0,
+  0.349-0.349*s, 0.686+0.314*s, 0.168-0.168*s, 0,
+  0.272-0.272*s, 0.534-0.534*s, 0.131+0.869*s, 0]; };
+const mTono=deg=>{ const r=deg*Math.PI/180, c=Math.cos(r), n=Math.sin(r); return [
+  0.213+c*0.787-n*0.213, 0.715-c*0.715-n*0.715, 0.072-c*0.072+n*0.928, 0,
+  0.213-c*0.213+n*0.143, 0.715+c*0.285+n*0.140, 0.072-c*0.072-n*0.283, 0,
+  0.213-c*0.213-n*0.787, 0.715-c*0.715+n*0.715, 0.072+c*0.928+n*0.072, 0]; };
+const mBrillo=k=>[k,0,0,0, 0,k,0,0, 0,0,k,0];
+const mContraste=k=>{ const o=127.5*(1-k); return [k,0,0,o, 0,k,0,o, 0,0,k,o]; };
+
+/* Lee el mismo texto CSS de la vista previa: una sola fuente de verdad.
+   Devuelve una matriz POR filtro, no una sola combinada: el navegador
+   recorta el color (0-255) entre filtro y filtro, y si combinamos todo en
+   una cuenta sola las zonas quemadas o muy oscuras salen distintas. */
+function matricesDe(css){
+  const lista=[];
+  if(!css||css==='none') return lista;
+  const re=/([a-z-]+)\(([^)]+)\)/g; let x;
+  while((x=re.exec(css))){
+    const v=parseFloat(x[2]);
+    if(isNaN(v)) continue;
+    if(x[1]==='grayscale')       lista.push(mGris(v));
+    else if(x[1]==='sepia')      lista.push(mSepia(v));
+    else if(x[1]==='saturate')   lista.push(mSaturacion(v));
+    else if(x[1]==='hue-rotate') lista.push(mTono(v));
+    else if(x[1]==='brightness') lista.push(mBrillo(v));
+    else if(x[1]==='contrast')   lista.push(mContraste(v));
+  }
+  return lista;
+}
+const lim=v=>v<0?0:v>255?255:v;
+function aplicarFiltro(ctx,w,h,css,grano){
+  const ms=matricesDe(css);
+  const gr=grano||0;
+  if(!ms.length && !gr) return;                 // "natural": no tocar nada
+  const d=ctx.getImageData(0,0,w,h), p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    let r=p[i], g=p[i+1], b=p[i+2];
+    for(let k=0;k<ms.length;k++){
+      const m=ms[k];
+      const nr=lim(m[0]*r+m[1]*g+m[2]*b+m[3]);
+      const ng=lim(m[4]*r+m[5]*g+m[6]*b+m[7]);
+      const nb=lim(m[8]*r+m[9]*g+m[10]*b+m[11]);
+      r=nr; g=ng; b=nb;
+    }
+    if(gr){
+      /* Un solo valor para los tres canales: así es el grano de película
+         (una partícula, no tres puntitos de color como el ruido digital). */
+      const n=(Math.random()-.5)*gr;
+      r=lim(r+n); g=lim(g+n); b=lim(b+n);
+    }
+    p[i]=r; p[i+1]=g; p[i+2]=b;
+  }
+  ctx.putImageData(d,0,0);
+}
+
+const codigo=(new URLSearchParams(location.search).get('e')||'').trim().toUpperCase();
+const kRollo=c=>`ce:rollo:${c}`;
+const leerRollo=c=>{ try{ return JSON.parse(guarda.leer(kRollo(c))||'null'); }catch(e){ return null; } };
+/* Si el teléfono no deja guardar (modo privado, o el navegador de adentro
+   de WhatsApp), el invitado pierde su rollo al recargar y arranca uno nuevo.
+   Preferimos avisarle antes de que le pase. */
+const guardarRollo=(c,v)=>{
+  const ok=guarda.escribir(kRollo(c),JSON.stringify(v));
+  if(!ok) avisar('Tu navegador no deja guardar el rollo: abrí el link en Chrome o Safari para no perderlo.');
+  return ok;
+};
+
+/* /rollo a secas (sin ?e=CODIGO): en vez de un cartel de error, la puerta
+   de entrada. Alguien puede llegar acá desde la web, no solo desde el QR. */
+function vPedirCodigo(){
+  app.innerHTML=`
+  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Rollo eterno</p>
+    <h1>La cámara de la fiesta</h1></div>
+  <div class="wrap" style="padding-top:10px">
+    <p style="color:#B5AC9E;line-height:1.8;font-size:14.5px;text-align:center;max-width:34ch;margin:0 auto">
+      Escaneá el código que está en tu mesa, o escribilo acá abajo.</p>
+    <div class="campo"><label for="codigoEv">Código del evento</label>
+      <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
+        placeholder="Por ejemplo QUI-7FCE64" style="letter-spacing:.14em"></div>
+    <button class="oro-btn" id="irEvento">Entrar</button>
+  </div>`;
+  const campo=app.querySelector('#codigoEv');
+  const entrar=()=>{
+    const v=campo.value.trim().toUpperCase();
+    if(v.length<4) return avisar('Escribí el código completo');
+    location.search='?e='+encodeURIComponent(v);
+  };
+  app.querySelector('#irEvento').onclick=entrar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+}
+
+function vError(msg){
+  app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p><h1 class="ital" style="font-size:26px;margin-top:12px">${esc(msg)}</h1>
+    <p class="info">Si te parece que es un error, avisale al organizador de la fiesta.</p></div>`;
+}
+
+function avisar(msg){
+  let n=document.getElementById('aviso-toast');
+  if(!n){ n=document.createElement('div'); n.id='aviso-toast';
+    n.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#171310;'
+      +'color:#F6F2EA;border:1px solid var(--hilo2);padding:12px 20px;border-radius:30px;font-size:12.5px;'
+      +'z-index:80;max-width:86vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)';
+    document.body.appendChild(n);
+  }
+  n.textContent=msg; n.style.opacity='1';
+  clearTimeout(n._t); n._t=setTimeout(()=>n.style.opacity='0',3200);
+}
+
+let relojes=[];
+const detenerPoll=()=>{ relojes.forEach(clearInterval); relojes=[]; };
+const cadaTanto=(fn,ms)=>{ relojes.push(setInterval(fn,ms)); };
+
+/* ── paso 1: nombre ── */
+function vPedirNombre(m){
+  detenerPoll();
+  const cupo=m.cupo_fotos||24;
+  const tapa=urlSegura(m.portada);
+  app.innerHTML=`
+  <div class="tapa">
+    <div class="foto${tapa?'':' vacia'}"${tapa?` style="background-image:url('${cssUrl(m.portada)}')"`:''}></div>
+    <div class="arriba"><img src="marca.webp" alt="Click Eterno"></div>
+    <div class="medio">
+      <p class="espaciado">Estás invitado a</p>
+      <h1>${esc(m.nombre)}</h1>
+      ${m.fecha?`<p class="fechita">${esc(bonito(m.fecha))}</p>`:''}
+    </div>
+    <div class="abajo">
+      <div class="promesa">
+        <b>Es una cámara descartable: tenés <em>${cupo} fotos</em>, nada más.</b>
+        <span>No es para llenar el rollo. Nadie ve ninguna —ni vos— hasta que se revele.</span>
+      </div>
+      <div class="campo"><label for="nombreG">Tu nombre</label>
+        <input id="nombreG" type="text" maxlength="26" placeholder="Como querés que aparezca"></div>
+      <button class="oro-btn" id="entrar">Agarrar mi cámara</button>
+      <p class="sin-app">Sin instalar nada. Sin cuenta.</p>
+    </div>
+  </div>`;
+  const campo=app.querySelector('#nombreG');
+  const ir=async()=>{
+    const nombre=campo.value.trim()||'Invitado';
+    const b=app.querySelector('#entrar'); b.disabled=true; b.textContent='Preparando…';
+    try{
+      const token=(crypto.randomUUID?crypto.randomUUID():'r'+Date.now()+Math.random().toString(16).slice(2));
+      const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:token,p_nombre:nombre});
+      guardarRollo(m.codigo,{token,nombre:estado.nombre});
+      rutear(m,{token,nombre:estado.nombre},estado);
+    }catch(e){
+      b.disabled=false; b.textContent='Agarrar mi cámara';
+      avisar('No pude conectar: '+(e.message||e));
+    }
+  };
+  app.querySelector('#entrar').onclick=ir;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') ir(); });
+}
+
+/* ── ruteo según el estado del rollo ── */
+async function consultarEstado(m,guardado){
+  try{
+    const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:guardado.token,p_nombre:guardado.nombre});
+    rutear(m,guardado,estado);
+  }catch(e){ /* sin señal: seguimos esperando, probamos de nuevo en el próximo tic */ }
+}
+function rutear(m,guardado,estado){
+  if(estado.revelado) return vAlbum(m,guardado.token);
+  if(estado.cerrado)  return vCerrado(m);
+  if(estado.disparos>=estado.cupo) return vEsperando(m,guardado,estado);
+  return vCamara(m,guardado,estado);
+}
+
+function vCerrado(m){
+  detenerPoll();
+  app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p>
+    <h1 class="ital" style="font-size:26px;margin-top:12px">La cámara ya cerró</h1>
+    <p class="info">Cuando el organizador revele el rollo, va a aparecer acá mismo.</p></div>`;
+}
+
+/* ── esperando el revelado ── */
+function vEsperando(m,guardado,estado){
+  detenerPoll();
+  app.innerHTML=`
+  <div class="centro">
+    ${ESTRELLA}
+    <p class="espaciado" style="margin-top:16px">Rollo completo</p>
+    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">Ya sacaste tus ${esc(estado.cupo)} fotos</h1>
+    <p class="info">${estado.revela_en?'Se revela solo cuando llegue la hora.':'El organizador todavía no reveló el rollo.'}</p>
+    ${estado.revela_en?`<div class="cuenta-rev" id="cuenta"></div>`:''}
+    <div class="filete" style="max-width:220px;margin:26px auto 0">${ESTRELLA}</div>
+  </div>`;
+  if(estado.revela_en){
+    const cuenta=app.querySelector('#cuenta');
+    const pintar=()=>{
+      const f=new Date(estado.revela_en).getTime()-Date.now();
+      if(f<=0){ cuenta.textContent='Revelando…'; return consultarEstado(m,guardado); }
+      const h=Math.floor(f/3600000), mi=Math.floor(f%3600000/60000), s=Math.floor(f%60000/1000);
+      cuenta.textContent=(h?h+'h ':'')+String(mi).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+    };
+    pintar();
+    cadaTanto(pintar,1000);
+    /* Aunque haya hora puesta, el organizador puede apretar "Revelar ahora":
+       si solo miráramos el reloj, el invitado se quedaba esperando de gusto. */
+    cadaTanto(()=>consultarEstado(m,guardado),20000);
+  } else {
+    cadaTanto(()=>consultarEstado(m,guardado),15000);
+  }
+}
+
+/* ── la cámara ── */
+let stream=null, video=null, filtroActual=FILTROS[0], usarTrasera=true, disparando=false;
+function detenerCamara(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+
+async function vCamara(m,guardado,estado){
+  detenerPoll();
+  const {token}=guardado;
+  app.innerHTML=`
+  <div class="camara">
+    <div class="lente">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="grano-visor" id="granoVisor"></div>
+      <div class="flash" id="flash"></div>
+      <div class="velo-arr"></div><div class="velo-aba"></div>
+    </div>
+    <div class="cam-arriba">
+      <span class="hueco" style="width:40px"></span>
+      <span class="nombre-ev">${esc(m.nombre)}</span>
+      <button class="girar" id="girar" aria-label="Girar cámara" hidden>
+        <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
+      </button>
+    </div>
+    <label class="native-alt" id="altNativa" hidden>Usar la cámara del teléfono
+      <input type="file" accept="image/*" capture="environment" hidden></label>
+    <div class="cam-abajo">
+      <div class="tira-filtros" id="filtros" role="group" aria-label="Filtro"></div>
+      <div class="fila-disparo">
+        <div class="contador-rollo"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>quedan</span></div>
+        <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
+        <div class="hueco"></div>
+      </div>
+      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
+    </div>
+  </div>`;
+
+  video=app.querySelector('#video');
+  const filtrosEl=app.querySelector('#filtros');
+  filtrosEl.innerHTML=FILTROS.map((f,i)=>`
+    <button class="filtro-op" data-f="${f.id}" aria-pressed="${i===0}">
+      <canvas width="112" height="112"></canvas><span>${esc(f.nombre)}</span></button>`).join('');
+
+  /* Cada filtro se muestra aplicado a lo que la cámara está viendo AHORA,
+     no a un degradado ni a una foto de archivo. Es la diferencia entre
+     adivinar cómo va a salir y verlo. */
+  let relojMuestras=null;
+  function pintarMuestras(){
+    if(!video||!video.videoWidth) return;
+    const lado=Math.min(video.videoWidth,video.videoHeight);
+    const cx=(video.videoWidth-lado)/2, cy=(video.videoHeight-lado)/2;
+    filtrosEl.querySelectorAll('[data-f]').forEach(b=>{
+      const f=FILTROS.find(x=>x.id===b.dataset.f);
+      const c=b.querySelector('canvas'); if(!c||!f) return;
+      const x=c.getContext('2d');
+      x.save();
+      if(!usarTrasera){ x.translate(c.width,0); x.scale(-1,1); }
+      x.drawImage(video, cx,cy,lado,lado, 0,0,c.width,c.height);
+      x.restore();
+      aplicarFiltro(x,c.width,c.height,f.css,f.grano);
+    });
+  }
+  const granoVisor=app.querySelector('#granoVisor');
+  const pintarGranoVisor=()=>{ if(granoVisor) granoVisor.style.opacity=String((filtroActual.grano||0)/26); };
+  filtrosEl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
+    filtroActual=FILTROS.find(f=>f.id===b.dataset.f);
+    filtrosEl.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    if(video) video.style.filter=filtroActual.css;
+    pintarGranoVisor();
+  });
+  pintarGranoVisor();
+
+  const btnDisparo=app.querySelector('#disparo');
+  const btnGirar=app.querySelector('#girar');
+  const altNativa=app.querySelector('#altNativa');
+  let restantes=estado.cupo-estado.disparos;
+
+  async function prender(){
+    detenerCamara();
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:usarTrasera?'environment':'user'}, audio:false
+      });
+      video.srcObject=stream; video.style.filter=filtroActual.css;
+      video.style.transform=usarTrasera?'none':'scaleX(-1)';
+      try{ await video.play(); }catch(_){}
+      btnGirar.hidden=false; altNativa.hidden=true;
+      /* iOS corta la cámara solo (al bloquear el teléfono, al atender un
+         llamado, al cambiar de app). Cuando eso pasa la volvemos a prender
+         en vez de dejar al invitado disparando a una imagen congelada. */
+      const pista=stream.getVideoTracks()[0];
+      if(pista){
+        pista.onended = ()=>{ if(vivaLaVista()) prender(); };
+        pista.onmute  = ()=>{ setTimeout(()=>{ if(vivaLaVista()&&!camaraViva()) prender(); }, 600); };
+      }
+    }catch(e){
+      altNativa.hidden=false;
+      avisar('No pude prender la cámara. Usá la del teléfono.');
+    }
+  }
+  /* ¿seguimos en la pantalla de la cámara? (si no, no reabrir nada) */
+  const vivaLaVista=()=>!!document.getElementById('disparo');
+  /* ¿la cámara está realmente dando imagen? */
+  const camaraViva=()=>{
+    if(!stream||!video) return false;
+    const t=stream.getVideoTracks()[0];
+    return !!(t && t.readyState==='live' && !t.muted) && video.videoWidth>0;
+  };
+  /* Al volver a la pestaña: si quedó congelada, reabrirla. */
+  const alVolver=async()=>{
+    if(document.hidden||!vivaLaVista()) return;
+    try{ await video.play(); }catch(_){}
+    if(!camaraViva()) prender();
+  };
+  document.addEventListener('visibilitychange',alVolver);
+  addEventListener('pageshow',alVolver);
+  btnGirar.onclick=()=>{ usarTrasera=!usarTrasera; prender(); };
+  await prender();
+  pintarMuestras();
+  relojMuestras=setInterval(()=>{ if(!document.hidden && camaraViva()) pintarMuestras(); }, 1500);
+  relojes.push(relojMuestras);
+
+  /* Una foto totalmente negra es la marca de la cámara congelada de iOS.
+     Antes de gastarle una foto al invitado, la reabrimos. */
+  function fotoNegra(fuente){
+    try{
+      const c=document.createElement('canvas'); c.width=32; c.height=24;
+      const x=c.getContext('2d'); x.drawImage(fuente,0,0,32,24);
+      const d=x.getImageData(0,0,32,24).data;
+      for(let i=0;i<d.length;i+=4) if(d[i]>8||d[i+1]>8||d[i+2]>8) return false;
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function flash(){
+    const f=app.querySelector('#flash'); if(!f) return;
+    f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
+  }
+  function pintarContador(){
+    const c=app.querySelector('#cRestan'); if(c) c.textContent=restantes;
+  }
+
+  async function subirDisparo(canvas){
+    const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',.86));
+    if(!blob) throw new Error('No se pudo preparar la foto');
+    const id=(crypto.randomUUID?crypto.randomUUID():'f'+Date.now()+Math.random().toString(16).slice(2));
+    const ruta=`${m.codigo}/${token}/${id}.jpg`;
+    /* Primero se anota el disparo y después se sube el archivo: es el único
+       orden en que la base puede garantizar el cupo. Si la subida falla, hay
+       que devolver la foto, si no el invitado la pierde sin haber sacado nada
+       (en un salón con mala señal, pasa todo el tiempo). */
+    const r=await SB.rpc('ce_tomar_foto',{p_codigo:m.codigo,p_token:token,p_filtro:filtroActual.id,p_ruta:ruta});
+    try{
+      await SB.subir(ruta,blob);
+    }catch(e){
+      try{ await SB.rpc('ce_devolver_foto',{p_codigo:m.codigo,p_token:token,p_ruta:ruta}); }
+      catch(_){ /* si tampoco se puede devolver, al menos no mentimos con el contador */ }
+      throw new Error('no se pudo subir, la foto te la devolvimos');
+    }
+    restantes=r.restantes; pintarContador(); flash();
+    if(restantes<=0){
+      detenerCamara();
+      rutear(m,guardado,{...estado, disparos:estado.cupo});
+    }
+  }
+
+  btnDisparo.onclick=async()=>{
+    if(disparando||!video.videoWidth) return;
+    if(!camaraViva()||fotoNegra(video)){
+      avisar('La cámara se había colgado, ya la reinicié. Probá de nuevo.');
+      return prender();
+    }
+    disparando=true; btnDisparo.disabled=true;
+    try{
+      const canvas=document.createElement('canvas');
+      const ancho=Math.min(video.videoWidth,1280);
+      canvas.width=ancho; canvas.height=Math.round(ancho*video.videoHeight/video.videoWidth);
+      const ctx=canvas.getContext('2d');
+      if(!usarTrasera){ ctx.translate(canvas.width,0); ctx.scale(-1,1); }
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      ctx.setTransform(1,0,0,1,0,0);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css,filtroActual.grano);
+      await subirDisparo(canvas);
+    }catch(e){ avisar('No se pudo tomar la foto: '+(e.message||e)); }
+    disparando=false; btnDisparo.disabled=false;
+  };
+
+  altNativa.querySelector('input').onchange=async e=>{
+    const a=e.target.files[0]; if(!a) return;
+    if(disparando) return; disparando=true;
+    try{
+      const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(a); });
+      const canvas=document.createElement('canvas');
+      const ancho=Math.min(img.naturalWidth,1280);
+      canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css,filtroActual.grano);
+      await subirDisparo(canvas);
+    }catch(err){ avisar('No se pudo usar esa foto: '+(err.message||err)); }
+    e.target.value=''; disparando=false;
+  };
+}
+
+/* ── el cuarto de revelado ──
+   Se ve una sola vez por teléfono: la segunda vez que entrás al álbum ya
+   no tiene gracia, y encima molesta. Se puede saltear tocando. */
+function cuartoOscuro(m, fotos, mapa, alApagarse){
+  return new Promise(res=>{
+    const c=document.createElement('div');
+    c.className='cuarto';
+    c.innerHTML=`
+      <div class="luz"></div><div class="polvillo"></div>
+      <div class="rotulo"><p id="rotuloTope">Revelando</p><b>${esc(m.nombre)}</b></div>
+      <div class="bandeja" id="bandeja"></div>
+      <div class="tinte"></div>
+      <div class="saltear" id="saltear">Tocá para saltear</div>`;
+    document.body.appendChild(c);
+    const bandeja=c.querySelector('#bandeja');
+    const relojitos=[];
+    let listo=false;
+    const terminar=()=>{
+      if(listo) return; listo=true;
+      relojitos.forEach(clearTimeout);
+      /* el álbum se dibuja ANTES de que el cuarto se desvanezca: así uno
+         cruza con el otro en vez de pasar por una pantalla en negro */
+      try{ if(alApagarse) alApagarse(); }catch(e){}
+      c.classList.add('saliendo');
+      setTimeout(()=>{ c.remove(); res(); }, 900);
+    };
+    c.onclick=terminar;
+    const t=(fn,ms)=>relojitos.push(setTimeout(fn,ms));
+
+    fotos.forEach((f,i)=>{
+      t(()=>{
+        const cop=document.createElement('div');
+        cop.className='copia';
+        /* cada copia cae un poco torcida, como si la dejaran en la bandeja */
+        cop.style.setProperty('--giro', ((i%2?1:-1)*(1.2+Math.random()*2.4)).toFixed(2)+'deg');
+        cop.innerHTML=`<img src="${esc(mapa[f.ruta]||'')}" alt="">`;
+        bandeja.appendChild(cop);
+        requestAnimationFrame(()=>{
+          cop.classList.add('puesta');
+          t(()=>cop.classList.add('revelada'), 220);
+        });
+      }, 520 + i*680);
+    });
+
+    t(()=>c.querySelector('#saltear').classList.add('visible'), 1600);
+    const finCopias = 520 + (fotos.length-1)*680 + 2200;
+    /* se prenden las luces: el rojo se va y aparecen los colores */
+    t(()=>{
+      c.classList.add('luces');
+      const r=c.querySelector('#rotuloTope');
+      if(r) r.textContent='Se reveló';
+    }, finCopias);
+    t(terminar, finCopias + 1700);
+  });
+}
+
+/* ── el álbum, una vez revelado ── */
+async function vAlbum(m,token){
+  detenerPoll();
+  app.innerHTML=`<div class="centro">${ESTRELLA}<p class="espaciado" style="margin-top:16px">Se reveló el rollo</p>
+    <h1 class="ital" style="font-size:clamp(26px,7vw,32px);margin-top:8px">${esc(m.nombre)}</h1></div>`;
+  let datos;
+  try{ datos=await SB.rpc('ce_album_de',{p_codigo:m.codigo,p_token:token}); }
+  catch(e){ return vError('No pude abrir el álbum. Recargá la página.'); }
+
+  /* Las URLs firmadas se guardan acá para no pedirlas dos veces: las mismas
+     que usa el cuarto de revelado sirven después para la grilla. */
+  const firmadas={};
+  const kVisto=`ce:revelado:${m.codigo}`;
+  const enBandeja=(datos.mias.length?datos.mias:datos.todas).slice(0,5);
+  const quieteQuieto=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pintarAlbum=()=>{
+  app.innerHTML=`
+  <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Se reveló el rollo</p>
+    <h1>${esc(m.nombre)}</h1></div>
+  <div class="wrap">
+    <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
+      ${esc(datos.total_fotos)} fotos de ${esc(datos.total_invitados)} invitados esta noche</p>
+    <div class="tabs" role="tablist">
+      <button data-t="mias" aria-pressed="true">Tus fotos</button>
+      <button data-t="todas" aria-pressed="false">Álbum completo</button>
+    </div>
+    <div class="grilla" id="grillaMias"></div>
+    <div class="grilla" id="grillaTodas" hidden></div>
+  </div>`;
+  };
+
+  if(enBandeja.length && !guarda.leer(kVisto) && !quieteQuieto){
+    guarda.escribir(kVisto,'1');
+    try{
+      Object.assign(firmadas, await SB.firmar(enBandeja.map(f=>f.ruta)));
+      app.innerHTML='';                      // nada atrás que se transparente
+      await cuartoOscuro(m, enBandeja, firmadas, pintarAlbum);
+    }catch(e){ pintarAlbum(); }
+  } else {
+    pintarAlbum();
+  }
+
+  const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
+
+  /* ── el visor: la grilla sola no alcanza, la gracia es mirar la foto ── */
+  function abrirVisor(fotos, mapa, desde){
+    let i=desde;
+    const cap=document.createElement('div');
+    cap.className='visorf';
+    cap.innerHTML=`
+      <div class="barra">
+        <button class="redondo" id="bajarF" aria-label="Descargar">
+          <svg viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg></button>
+        <span class="sep"></span>
+        <button class="redondo" id="cerrarF" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="marco">
+        <button class="flecha izq" aria-label="Anterior">‹</button>
+        <img id="fotoF" alt="">
+        <button class="flecha der" aria-label="Siguiente">›</button>
+      </div>
+      <div class="pie" id="pieF"></div>`;
+    document.body.appendChild(cap);
+    const img=cap.querySelector('#fotoF'), pie=cap.querySelector('#pieF');
+    const pintar=()=>{
+      const f=fotos[i];
+      img.src=mapa[f.ruta]||'';
+      pie.innerHTML=`${f.nombre?`<b>${esc(f.nombre)}</b>`:''}${i+1} / ${fotos.length}`;
+      cap.querySelector('.izq').style.visibility=i>0?'visible':'hidden';
+      cap.querySelector('.der').style.visibility=i<fotos.length-1?'visible':'hidden';
+    };
+    const mover=d=>{ const n=i+d; if(n>=0&&n<fotos.length){ i=n; pintar(); } };
+    const cerrar=()=>{ cap.remove(); document.removeEventListener('keydown',teclas); };
+    const teclas=e=>{
+      if(e.key==='Escape') cerrar();
+      if(e.key==='ArrowLeft') mover(-1);
+      if(e.key==='ArrowRight') mover(1);
+    };
+    cap.querySelector('.izq').onclick=()=>mover(-1);
+    cap.querySelector('.der').onclick=()=>mover(1);
+    cap.querySelector('#cerrarF').onclick=cerrar;
+    document.addEventListener('keydown',teclas);
+    /* deslizar con el dedo, que es como se mira un álbum en el celular */
+    let x0=null;
+    cap.addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; },{passive:true});
+    cap.addEventListener('touchend',e=>{
+      if(x0===null) return;
+      const d=e.changedTouches[0].clientX-x0; x0=null;
+      if(Math.abs(d)>50) mover(d<0?1:-1);
+    },{passive:true});
+    /* Descargar: el atributo "download" no sirve con una dirección de otro
+       dominio (la abre en otra pestaña en vez de bajarla), así que traemos
+       la foto y la bajamos desde acá. */
+    cap.querySelector('#bajarF').onclick=async e=>{
+      const b=e.currentTarget; b.disabled=true;
+      try{
+        const r=await fetch(mapa[fotos[i].ruta]);
+        const blob=await r.blob();
+        const u=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=u; a.download=`${(m.nombre||'foto').replace(/[^\w\s-]/g,'').trim().slice(0,30)||'foto'}-${i+1}.jpg`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=>URL.revokeObjectURL(u),4000);
+      }catch(err){ avisar('No pude descargarla'); }
+      b.disabled=false;
+    };
+    pintar();
+  }
+
+  const pintarGrilla=async(el,fotos)=>{
+    if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">Todavía no hay fotos acá.</p>`; return; }
+    const faltan=fotos.map(f=>f.ruta).filter(r=>!firmadas[r]);
+    Object.assign(firmadas, await SB.firmar(faltan));
+    const mapa=firmadas;
+    el.innerHTML=fotos.map(f=>`
+      <figure class="${f.mia?'mia':''}" data-ruta="${esc(f.ruta)}">
+        <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
+        ${f.nombre?`<figcaption>${esc(f.nombre)}</figcaption>`:''}
+      </figure>`).join('');
+    [...el.querySelectorAll('figure')].forEach((fig,i)=>{
+      fig.onclick=()=>abrirVisor(fotos,mapa,i);
+    });
+    requestAnimationFrame(()=>{
+      [...el.querySelectorAll('figure')].forEach((fig,i)=>{
+        setTimeout(()=>fig.classList.add('rev'), 90*Math.min(i,14));
+      });
+    });
+  };
+  await pintarGrilla(gMias, datos.mias);
+
+  let todasCargadas=false;
+  app.querySelectorAll('.tabs [data-t]').forEach(b=>b.onclick=async()=>{
+    app.querySelectorAll('.tabs [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    const esMias=b.dataset.t==='mias';
+    gMias.hidden=!esMias; gTodas.hidden=esMias;
+    if(!esMias&&!todasCargadas){ todasCargadas=true; await pintarGrilla(gTodas, datos.todas); }
+  });
+}
+
+/* ── arranque ── */
+(async function(){
+  if(!codigo) return vPedirCodigo();
+  let m;
+  try{
+    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha`);
+    m=(r&&r[0])||null;
+  }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
+  if(!m) return vError('No encontré ese evento.');
+  tono(m.tono);
+  if(!m.camara) return vError('Esta fiesta todavía no tiene la cámara descartable activada.');
+  const guardado=leerRollo(codigo);
+  if(!guardado) return vPedirNombre(m);
+  await consultarEstado(m,guardado);
+})();
+addEventListener('pagehide',detenerCamara);
+addEventListener('unhandledrejection',e=>{ console.error(e.reason); avisar('Algo falló: probá de nuevo'); e.preventDefault(); });
+</script>
+</body>
+</html>

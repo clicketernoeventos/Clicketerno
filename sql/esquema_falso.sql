@@ -12,6 +12,8 @@ create table ce_items(
   autor text, texto text, estado text, ts bigint);
 create table storage.objects(id uuid default gen_random_uuid() primary key,
   bucket_id text, name text);
+-- los depósitos (los crea Supabase; rollo.sql inserta el suyo acá)
+create table if not exists storage.buckets(id text primary key, name text, public boolean default false);
 -- en Supabase esta tabla ya viene con la seguridad prendida, y el proyecto
 -- real ya tiene sus políticas de leer/subir (las que se ven en el panel)
 alter table storage.objects enable row level security;
@@ -21,9 +23,10 @@ do $$ begin
     create policy "falsa subir" on storage.objects for insert with check (bucket_id='ce-medios');
   end if;
 end $$;
--- rol anon como en Supabase
+-- roles anon y authenticated como en Supabase
 do $$ begin
   if not exists (select 1 from pg_roles where rolname='anon') then create role anon nologin; end if;
+  if not exists (select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
 end $$;
-grant usage on schema public, storage to anon;
-grant select, insert, update, delete on ce_eventos, ce_items, storage.objects to anon;
+grant usage on schema public, storage to anon, authenticated;
+grant select, insert, update, delete on ce_eventos, ce_items, storage.objects to anon, authenticated;
