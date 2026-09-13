@@ -85,3 +85,7 @@ npx http-server -p 8890 -c-1 &
 node pruebas/rollo_navegador.js    # 24 pruebas del invitado: cámara colgada, señal cortada…
 node pruebas/rollo_organizador.js  # el recorrido del organizador, de la puerta al revelado
 ```
+
+Las del muro están en `pruebas/LEEME.md` y usan otro puerto. Si playwright
+está instalado global en vez de en el proyecto:
+`export NODE_PATH=$(npm root -g)`.
