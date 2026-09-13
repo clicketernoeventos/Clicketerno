@@ -8,6 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -1115,8 +1116,13 @@ async function vRollo(codigo){
       <div class="filete" style="max-width:200px;margin:30px auto">${ESTRELLA}</div>
       <p class="bajada" style="margin-bottom:16px">${textos.pie}</p>
       <button class="hilo-btn" id="revelar">Revelar el rollo</button>`:''}
-    ${momento==='revelado'?`
-      <button class="hilo-btn" id="verAlbum" style="margin-top:18px">Ver el álbum</button>`:''}
+    ${momento!=='abierto'?`
+      <button class="hilo-btn" id="verAlbum" style="margin-top:18px">Ver el álbum</button>
+      <div class="filete" style="max-width:200px;margin:30px auto">${ESTRELLA}</div>
+      <p class="instruccion" style="font-size:20px">Llevate todas las fotos</p>
+      <p class="bajada">Se bajan en un solo archivo, con el nombre de quién sacó cada una.
+        Si son muchas puede tardar: no cierres la pantalla.</p>
+      <button class="hilo-btn" id="bajarTodas">Descargar todas las fotos</button>`:''}
 
     <button class="link-abajo" id="ajustes" style="margin-top:34px">Ajustes del rollo</button>
   </div>`;
@@ -1130,6 +1136,7 @@ async function vRollo(codigo){
   };
   $('#ajustes').onclick=()=>irA('ajustes/'+codigo);
   const bA=$('#verAlbum'); if(bA) bA.onclick=()=>{ location.href=enlace; };
+  const bT=$('#bajarTodas'); if(bT) bT.onclick=()=>bajarTodas(m,bT);
 
   SB.rpc('ce_camara_stats',{p_codigo:codigo}).then(st=>{
     const n=$('#stats'); if(!n||!st) return;
@@ -1146,6 +1153,50 @@ async function vRollo(codigo){
       vRollo(codigo);
     }catch(e){ bR.disabled=false; bR.textContent='Revelar el rollo'; avisar('No se pudo: '+(e.message||e)); }
   };
+}
+
+/* ── llevarse todas las fotos ──
+   Se arma el zip en el teléfono: se bajan las fotos de a una y se van
+   metiendo en el archivo. No hay servidor que lo haga por nosotros, así
+   que hay que avisar cuánto falta o parece colgado. */
+async function bajarTodas(m, boton){
+  if(!window.JSZip) return avisar('No pude cargar el armador de archivos. Probá desde una computadora.');
+  const original=boton.textContent;
+  const paso=t=>{ boton.textContent=t; };
+  boton.disabled=true;
+  try{
+    paso('Buscando las fotos…');
+    const datos=await SB.rpc('ce_album_de',{p_codigo:m.codigo,p_token:'organizador'});
+    const fotos=(datos&&datos.todas)||[];
+    if(!fotos.length){ boton.disabled=false; paso(original); return avisar('Todavía no hay fotos'); }
+
+    const mapa=await SB.firmar(fotos.map(f=>f.ruta));
+    const zip=new JSZip();
+    let listas=0, fallaron=0;
+    for(const f of fotos){
+      paso(`Bajando ${listas+1} de ${fotos.length}…`);
+      try{
+        const r=await fetch(mapa[f.ruta]);
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const quien=(f.nombre||'invitado').replace(/[^\wáéíóúñÁÉÍÓÚÑ .-]/g,'').trim().slice(0,24)||'invitado';
+        zip.file(`${String(listas+1).padStart(3,'0')} - ${quien}.jpg`, await r.blob());
+        listas++;
+      }catch(e){ fallaron++; }
+    }
+    if(!listas) throw new Error('no se pudo bajar ninguna');
+
+    paso('Armando el archivo…');
+    const blob=await zip.generateAsync({type:'blob'});
+    const u=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=u; a.download=`${(m.nombre||'rollo').replace(/[^\w\s-]/g,'').trim().slice(0,40)||'rollo'}.zip`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),8000);
+    avisar(fallaron?`Listo · ${listas} fotos (${fallaron} no se pudieron bajar)`:`Listo · ${listas} fotos`);
+  }catch(e){
+    avisar('No se pudo: '+(e.message||e));
+  }
+  boton.disabled=false; paso(original);
 }
 
 /* ── ajustes: lo que casi nunca se toca, fuera del camino ── */
