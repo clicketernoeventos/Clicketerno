@@ -130,7 +130,7 @@ const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;',
 const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
 const guarda={
   leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
-  escribir(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+  escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }}
 };
 const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
 
@@ -184,10 +184,83 @@ const FILTROS=[
   {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
 ];
 
+/* ══════════ el filtro de la foto guardada ══════════
+   La vista previa usa filtros CSS sobre el video, que andan en todos lados.
+   Pero para la foto que QUEDA no se puede usar ctx.filter: Safari no lo
+   tiene (bug abierto de WebKit desde 2019). En iPhone la foto se guardaba
+   sin filtro y nadie se enteraba hasta el revelado.
+
+   Así que la cuenta la hacemos nosotros, igual en todos los teléfonos: cada
+   filtro CSS se convierte en una sola matriz de color y se aplica de una
+   pasada. Son las mismas fórmulas que usa el navegador (Filter Effects
+   Level 1), así que la foto sale igual a la vista previa. */
+const LUM=[0.2126,0.7152,0.0722];
+const mSaturacion=s=>[
+  LUM[0]+(1-LUM[0])*s, LUM[1]*(1-s),        LUM[2]*(1-s),        0,
+  LUM[0]*(1-s),        LUM[1]+(1-LUM[1])*s, LUM[2]*(1-s),        0,
+  LUM[0]*(1-s),        LUM[1]*(1-s),        LUM[2]+(1-LUM[2])*s, 0];
+const mGris=a=>mSaturacion(1-a);
+const mSepia=a=>{ const s=1-a; return [
+  0.393+0.607*s, 0.769-0.769*s, 0.189-0.189*s, 0,
+  0.349-0.349*s, 0.686+0.314*s, 0.168-0.168*s, 0,
+  0.272-0.272*s, 0.534-0.534*s, 0.131+0.869*s, 0]; };
+const mTono=deg=>{ const r=deg*Math.PI/180, c=Math.cos(r), n=Math.sin(r); return [
+  0.213+c*0.787-n*0.213, 0.715-c*0.715-n*0.715, 0.072-c*0.072+n*0.928, 0,
+  0.213-c*0.213+n*0.143, 0.715+c*0.285+n*0.140, 0.072-c*0.072-n*0.283, 0,
+  0.213-c*0.213-n*0.787, 0.715-c*0.715+n*0.715, 0.072+c*0.928+n*0.072, 0]; };
+const mBrillo=k=>[k,0,0,0, 0,k,0,0, 0,0,k,0];
+const mContraste=k=>{ const o=127.5*(1-k); return [k,0,0,o, 0,k,0,o, 0,0,k,o]; };
+
+/* Lee el mismo texto CSS de la vista previa: una sola fuente de verdad.
+   Devuelve una matriz POR filtro, no una sola combinada: el navegador
+   recorta el color (0-255) entre filtro y filtro, y si combinamos todo en
+   una cuenta sola las zonas quemadas o muy oscuras salen distintas. */
+function matricesDe(css){
+  const lista=[];
+  if(!css||css==='none') return lista;
+  const re=/([a-z-]+)\(([^)]+)\)/g; let x;
+  while((x=re.exec(css))){
+    const v=parseFloat(x[2]);
+    if(isNaN(v)) continue;
+    if(x[1]==='grayscale')       lista.push(mGris(v));
+    else if(x[1]==='sepia')      lista.push(mSepia(v));
+    else if(x[1]==='saturate')   lista.push(mSaturacion(v));
+    else if(x[1]==='hue-rotate') lista.push(mTono(v));
+    else if(x[1]==='brightness') lista.push(mBrillo(v));
+    else if(x[1]==='contrast')   lista.push(mContraste(v));
+  }
+  return lista;
+}
+const lim=v=>v<0?0:v>255?255:v;
+function aplicarFiltro(ctx,w,h,css){
+  const ms=matricesDe(css);
+  if(!ms.length) return;                        // "natural": no tocar nada
+  const d=ctx.getImageData(0,0,w,h), p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    let r=p[i], g=p[i+1], b=p[i+2];
+    for(let k=0;k<ms.length;k++){
+      const m=ms[k];
+      const nr=lim(m[0]*r+m[1]*g+m[2]*b+m[3]);
+      const ng=lim(m[4]*r+m[5]*g+m[6]*b+m[7]);
+      const nb=lim(m[8]*r+m[9]*g+m[10]*b+m[11]);
+      r=nr; g=ng; b=nb;
+    }
+    p[i]=r; p[i+1]=g; p[i+2]=b;
+  }
+  ctx.putImageData(d,0,0);
+}
+
 const codigo=(new URLSearchParams(location.search).get('e')||'').trim().toUpperCase();
 const kRollo=c=>`ce:rollo:${c}`;
 const leerRollo=c=>{ try{ return JSON.parse(guarda.leer(kRollo(c))||'null'); }catch(e){ return null; } };
-const guardarRollo=(c,v)=>guarda.escribir(kRollo(c),JSON.stringify(v));
+/* Si el teléfono no deja guardar (modo privado, o el navegador de adentro
+   de WhatsApp), el invitado pierde su rollo al recargar y arranca uno nuevo.
+   Preferimos avisarle antes de que le pase. */
+const guardarRollo=(c,v)=>{
+  const ok=guarda.escribir(kRollo(c),JSON.stringify(v));
+  if(!ok) avisar('Tu navegador no deja guardar el rollo: abrí el link en Chrome o Safari para no perderlo.');
+  return ok;
+};
 
 /* /rollo a secas (sin ?e=CODIGO): en vez de un cartel de error, la puerta
    de entrada. Alguien puede llegar acá desde la web, no solo desde el QR. */
@@ -368,14 +441,51 @@ async function vCamara(m,guardado,estado){
       });
       video.srcObject=stream; video.style.filter=filtroActual.css;
       video.style.transform=usarTrasera?'none':'scaleX(-1)';
+      try{ await video.play(); }catch(_){}
       btnGirar.hidden=false; altNativa.hidden=true;
+      /* iOS corta la cámara solo (al bloquear el teléfono, al atender un
+         llamado, al cambiar de app). Cuando eso pasa la volvemos a prender
+         en vez de dejar al invitado disparando a una imagen congelada. */
+      const pista=stream.getVideoTracks()[0];
+      if(pista){
+        pista.onended = ()=>{ if(vivaLaVista()) prender(); };
+        pista.onmute  = ()=>{ setTimeout(()=>{ if(vivaLaVista()&&!camaraViva()) prender(); }, 600); };
+      }
     }catch(e){
       altNativa.hidden=false;
       avisar('No pude prender la cámara. Usá la del teléfono.');
     }
   }
+  /* ¿seguimos en la pantalla de la cámara? (si no, no reabrir nada) */
+  const vivaLaVista=()=>!!document.getElementById('disparo');
+  /* ¿la cámara está realmente dando imagen? */
+  const camaraViva=()=>{
+    if(!stream||!video) return false;
+    const t=stream.getVideoTracks()[0];
+    return !!(t && t.readyState==='live' && !t.muted) && video.videoWidth>0;
+  };
+  /* Al volver a la pestaña: si quedó congelada, reabrirla. */
+  const alVolver=async()=>{
+    if(document.hidden||!vivaLaVista()) return;
+    try{ await video.play(); }catch(_){}
+    if(!camaraViva()) prender();
+  };
+  document.addEventListener('visibilitychange',alVolver);
+  addEventListener('pageshow',alVolver);
   btnGirar.onclick=()=>{ usarTrasera=!usarTrasera; prender(); };
   await prender();
+
+  /* Una foto totalmente negra es la marca de la cámara congelada de iOS.
+     Antes de gastarle una foto al invitado, la reabrimos. */
+  function fotoNegra(fuente){
+    try{
+      const c=document.createElement('canvas'); c.width=32; c.height=24;
+      const x=c.getContext('2d'); x.drawImage(fuente,0,0,32,24);
+      const d=x.getImageData(0,0,32,24).data;
+      for(let i=0;i<d.length;i+=4) if(d[i]>8||d[i+1]>8||d[i+2]>8) return false;
+      return true;
+    }catch(e){ return false; }
+  }
 
   function flash(){
     const f=app.querySelector('#flash'); if(!f) return;
@@ -411,15 +521,20 @@ async function vCamara(m,guardado,estado){
 
   btnDisparo.onclick=async()=>{
     if(disparando||!video.videoWidth) return;
+    if(!camaraViva()||fotoNegra(video)){
+      avisar('La cámara se había colgado, ya la reinicié. Probá de nuevo.');
+      return prender();
+    }
     disparando=true; btnDisparo.disabled=true;
     try{
       const canvas=document.createElement('canvas');
       const ancho=Math.min(video.videoWidth,1280);
       canvas.width=ancho; canvas.height=Math.round(ancho*video.videoHeight/video.videoWidth);
       const ctx=canvas.getContext('2d');
-      ctx.filter=filtroActual.css;
       if(!usarTrasera){ ctx.translate(canvas.width,0); ctx.scale(-1,1); }
       ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      ctx.setTransform(1,0,0,1,0,0);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css);
       await subirDisparo(canvas);
     }catch(e){ avisar('No se pudo tomar la foto: '+(e.message||e)); }
     disparando=false; btnDisparo.disabled=false;
@@ -433,8 +548,9 @@ async function vCamara(m,guardado,estado){
       const canvas=document.createElement('canvas');
       const ancho=Math.min(img.naturalWidth,1280);
       canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
-      const ctx=canvas.getContext('2d'); ctx.filter=filtroActual.css;
+      const ctx=canvas.getContext('2d');
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      aplicarFiltro(ctx,canvas.width,canvas.height,filtroActual.css);
       await subirDisparo(canvas);
     }catch(err){ avisar('No se pudo usar esa foto: '+(err.message||err)); }
     e.target.value=''; disparando=false;

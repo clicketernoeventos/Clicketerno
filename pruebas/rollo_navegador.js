@@ -189,6 +189,56 @@ async function montarRutas(page, cfg) {
     await ctx.close();
   }
 
+  // ── 8. la cámara se cuelga: no gastar la foto ──
+  {
+    const {page,ctx,errores} = await nuevaPagina(browser);
+    const llamadas={}, estado=estadoBase();
+    await montarRutas(page,{estado,llamadas});
+    await page.goto('http://127.0.0.1:8890/rollo.html?e=TEST-1');
+    await page.evaluate(()=>localStorage.setItem('ce:rollo:TEST-1',JSON.stringify({token:'tok',nombre:'Ana'})));
+    await page.reload(); await page.waitForTimeout(900);
+    // simulamos lo que hace iOS al bloquear el teléfono: corta la pista
+    await page.evaluate(()=>{ document.querySelector('#video').srcObject.getVideoTracks().forEach(t=>t.stop()); });
+    await page.waitForTimeout(300);
+    await page.click('#disparo'); await page.waitForTimeout(1200);
+    ok('con la cámara colgada, el disparo NO gasta una foto', (llamadas.tomar||0)===0,
+       'ce_tomar_foto se llamó '+(llamadas.tomar||0)+' veces');
+    const aviso = await page.textContent('#aviso-toast').catch(()=>'');
+    ok('y le avisa que la reinició', /colgado|reinici/i.test(aviso||''), 'aviso="'+aviso+'"');
+    await ctx.close();
+  }
+
+  // ── 9. la foto QUE SE GUARDA sale filtrada (sin depender de ctx.filter) ──
+  {
+    const {page,ctx} = await nuevaPagina(browser);
+    const llamadas={}, estado={...estadoBase(), cupo:10};
+    const subidas=[];
+    await montarRutas(page,{estado,llamadas});
+    await page.route('**/storage/v1/object/ce-rollos/**', async r=>{
+      subidas.push((r.request().postDataBuffer()||Buffer.alloc(0)).length);
+      return r.fulfill({status:200,contentType:'application/json',body:'{}'});
+    });
+    await page.goto('http://127.0.0.1:8890/rollo.html?e=TEST-1');
+    await page.evaluate(()=>localStorage.setItem('ce:rollo:TEST-1',JSON.stringify({token:'tok',nombre:'Ana'})));
+    await page.reload(); await page.waitForTimeout(900);
+    // comparamos los píxeles que produce cada filtro, sin usar ctx.filter
+    const distintas = await page.evaluate(()=>{
+      const c=document.createElement('canvas'); c.width=64; c.height=48;
+      const x=c.getContext('2d');
+      x.fillStyle='#c04020'; x.fillRect(0,0,64,48);
+      const leer=css=>{ const k=document.createElement('canvas'); k.width=64;k.height=48;
+        const y=k.getContext('2d'); y.drawImage(c,0,0); aplicarFiltro(y,64,48,css);
+        return y.getImageData(30,20,1,1).data.join(','); };
+      const nat=leer('none'), bn=leer(FILTROS[2].css), oro=leer(FILTROS[4].css);
+      return {nat, bn, oro, bnEsGris: bn.split(',')[0]===bn.split(',')[1]};
+    });
+    ok('el filtro se aplica a la foto guardada, no solo a la vista previa',
+       distintas.nat!==distintas.bn && distintas.nat!==distintas.oro,
+       'natural='+distintas.nat+' bn='+distintas.bn);
+    ok('blanco y negro sale realmente gris', distintas.bnEsGris, 'bn='+distintas.bn);
+    await ctx.close();
+  }
+
   console.log(R.join('\n'));
   await browser.close();
 })();

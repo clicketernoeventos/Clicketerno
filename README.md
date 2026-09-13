@@ -44,5 +44,5 @@ Y del lado del navegador, con el sitio servido en el puerto 8890:
 
 ```bash
 npx http-server -p 8890 -c-1 &
-node pruebas/rollo_navegador.js  # cámara denegada, señal cortada, álbum gigante…
+node pruebas/rollo_navegador.js  # 18 pruebas: cámara colgada, señal cortada, álbum gigante…
 ```
