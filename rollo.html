@@ -15,6 +15,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
 <style>
 :root{
+  color-scheme: dark;   /* si no, el calendario del teléfono sale blanco sobre negro */
   --negro:#000; --carbon:#0A0908; --humo:#131110;
   --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
   --texto:#F6F2EA; --mute:#9B9287;
@@ -361,11 +362,42 @@ const claveDe=c=>clavesGuardadas()[c]||'';
 /* clave corta, sin letras que se confundan al dictarla por teléfono */
 const nuevaClave=()=>{
   const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const n=new Uint32Array(6); (crypto.getRandomValues?crypto.getRandomValues(n):n.fill(Date.now()));
+  const n=new Uint32Array(6);
+  /* Sin crypto, n.fill(Date.now()) ponía el MISMO número seis veces: la
+     clave salía "KKKKKK". Cada letra se sortea por su cuenta. */
+  try{ crypto.getRandomValues(n); }
+  catch(e){ for(let i=0;i<n.length;i++) n[i]=Math.floor(Math.random()*4294967296); }
   return [...n].map(x=>abc[x%abc.length]).join('');
 };
 const TIPOS={'XV':'QUI','Casamiento':'BOD','Cumpleaños':'CUM','Evento':'COR'};
-const hoy=()=>new Date().toISOString().slice(0,10);
+
+/* ══════════ la hora ══════════
+   El input de fecha y hora devuelve la hora del reloj de la pared, sin
+   zona: "2026-09-14T02:00". Si eso viaja tal cual a una columna
+   timestamptz, Postgres la interpreta en UTC, y acá (UTC-3) se adelanta
+   tres horas. Un revelado puesto para las 2 de la mañana se disparaba a
+   las 11 de la noche; y uno puesto para hoy a la tarde YA HABÍA PASADO,
+   así que el rollo nacía revelado: el invitado entraba y en vez de la
+   cámara le aparecía el álbum vacío. */
+const aUTC=v=>{ if(!v) return null; const d=new Date(v); return isNaN(d)?null:d.toISOString(); };
+const aLocal=iso=>{
+  if(!iso) return '';
+  const d=new Date(iso); if(isNaN(d)) return '';
+  const c=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${c(d.getMonth()+1)}-${c(d.getDate())}T${c(d.getHours())}:${c(d.getMinutes())}`;
+};
+const yaPaso=v=>{ const d=new Date(v); return !isNaN(d) && d.getTime()<=Date.now(); };
+/* Ojo: toISOString() da la fecha EN UTC. Acá (UTC-3) después de las 9 de
+   la noche eso ya es mañana, y el formulario proponía el día equivocado. */
+const hoy=()=>{ const d=new Date(), c=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${c(d.getMonth()+1)}-${c(d.getDate())}`; };
+/* cupo de fotos: si la columna quedó vacía, vale lo de una descartable */
+const cupoDe=e=>{ const k=Number(e&&e.cupo); return Number.isFinite(k)&&k>0?k:24; };
+/* un identificador al azar que no depende de que exista crypto */
+const nuevoId=()=>{
+  try{ if(crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
+  return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+};
 const enlaceDelRollo=c=>`https://clicketerno.com.ar/rollo?e=${c}`;
 
 /* ── cliente mínimo de Supabase (sin librerías) ── */
@@ -418,6 +450,10 @@ const SB = {
       });
       (r||[]).forEach(x=>{ if(x&&x.signedURL&&x.path) mapa[x.path]=NUBE.url+'/storage/v1'+x.signedURL; });
     }
+    /* Si una ruta no vuelve firmada (el archivo no se subió, o la regla del
+       depósito no deja), queda FUERA del mapa. Quien llame tiene que mirar
+       si está: antes se colaba un <img src=""> roto, y en el zip un archivo
+       de texto disfrazado de .jpg. */
     return mapa;
   }
 };
@@ -553,6 +589,11 @@ function avisar(msg){
       +'z-index:80;max-width:86vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)';
     document.body.appendChild(n);
   }
+  /* El aviso vive abajo de todo, que es justo donde está el botón grande
+     de las pantallas con pie fijo: le tapaba el "Crear el rollo" durante
+     tres segundos, y el organizador tocaba el cartel en vez del botón. */
+  const pie=document.querySelector('.pie-fijo');
+  n.style.bottom = pie ? (pie.offsetHeight+16)+'px' : '26px';
   n.textContent=msg; n.style.opacity='1';
   clearTimeout(n._t); n._t=setTimeout(()=>n.style.opacity='0',3200);
 }
@@ -591,7 +632,7 @@ function vPedirNombre(m){
     const nombre=campo.value.trim()||'Invitado';
     const b=app.querySelector('#entrar'); b.disabled=true; b.textContent='Preparando…';
     try{
-      const token=(crypto.randomUUID?crypto.randomUUID():'r'+Date.now()+Math.random().toString(16).slice(2));
+      const token=nuevoId();
       const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:token,p_nombre:nombre});
       guardarRollo(m.codigo,{token,nombre:estado.nombre});
       rutear(m,{token,nombre:estado.nombre},estado);
@@ -605,30 +646,70 @@ function vPedirNombre(m){
 }
 
 /* ── ruteo según el estado del rollo ── */
+/* ¿el invitado ya vio algo de verdad? La pantalla arranca con un "Cargando…"
+   que no cuenta: si la señal se cae en el primer pedido, sin esto se queda
+   mirando ese cartel para siempre, sin saber si esperar o recargar. */
+let vistaViva=false;
 async function consultarEstado(m,guardado){
   try{
     const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:guardado.token,p_nombre:guardado.nombre});
     rutear(m,guardado,estado);
-  }catch(e){ /* sin señal: seguimos esperando, probamos de nuevo en el próximo tic */ }
+  }catch(e){
+    /* Con algo ya dibujado seguimos como estábamos y probamos en el
+       próximo tic. Sin nada dibujado, se lo decimos. */
+    if(!vistaViva && !app.querySelector('#sinSenal')) vSinSenal(m,guardado);
+  }
 }
-function rutear(m,guardado,estado){
-  if(estado.revelado) return vAlbum(m,guardado.token);
-  if(estado.cerrado)  return vCerrado(m);
-  if(estado.disparos>=estado.cupo) return vEsperando(m,guardado,estado);
-  return vCamara(m,guardado,estado);
+function vSinSenal(m,guardado){
+  detenerPoll(); vistaViva=false;
+  app.innerHTML=`<div class="centro" id="sinSenal"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p>
+    <h1 class="ital" style="font-size:26px;margin-top:12px">No pude conectar</h1>
+    <p class="info">Puede ser la señal del salón. Seguimos probando solos.</p>
+    <button class="hilo-btn" id="reintentar" style="margin-top:20px">Probar de nuevo</button></div>`;
+  const b=app.querySelector('#reintentar');
+  b.onclick=()=>{ b.disabled=true; b.textContent='Probando…';
+    consultarEstado(m,guardado).then(()=>{ if(b.isConnected){ b.disabled=false; b.textContent='Probar de nuevo'; } }); };
+  cadaTanto(()=>consultarEstado(m,guardado),8000);
 }
 
-function vCerrado(m){
-  detenerPoll();
+function rutear(m,guardado,estado){
+  if(!estado) return vSinSenal(m,guardado);
+  if(estado.revelado) return vAlbum(m,guardado);
+  if(estado.cerrado)  return vCerrado(m,guardado);
+  /* Si cupo viniera vacío, "0 >= null" da verdadero en JavaScript y al
+     invitado le aparecía "ya sacaste tus  fotos" sin haber sacado ninguna:
+     la cámara no se abría nunca. */
+  const cupo=cupoDe(estado), hechos=Number(estado.disparos)||0;
+  const est={...estado, cupo, disparos:hechos};
+  if(hechos>=cupo) return vEsperando(m,guardado,est);
+  return vCamara(m,guardado,est);
+}
+
+function vCerrado(m,guardado){
+  detenerPoll(); vistaViva=true;
   app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
     <p class="espaciado">Cámara descartable</p>
     <h1 class="ital" style="font-size:26px;margin-top:12px">La cámara ya cerró</h1>
     <p class="info">Cuando el organizador revele el rollo, va a aparecer acá mismo.</p></div>`;
+  /* Sin esto el invitado se quedaba acá para siempre: el revelado llegaba
+     y él seguía mirando el cartel de cerrado. */
+  if(guardado) cadaTanto(()=>consultarEstado(m,guardado),15000);
+}
+
+/* el organizador puede volver a ocultar las fotos desde Ajustes */
+function vGuardado(m,guardado){
+  detenerPoll(); vistaViva=true;
+  app.innerHTML=`<div class="centro"><img src="marca.webp" style="width:110px;margin:0 auto 22px;opacity:.7" alt="">
+    <p class="espaciado">Cámara descartable</p>
+    <h1 class="ital" style="font-size:26px;margin-top:12px">El álbum se guardó de nuevo</h1>
+    <p class="info">El organizador lo ocultó. Cuando lo abra otra vez, aparece acá mismo.</p></div>`;
+  if(guardado) cadaTanto(()=>consultarEstado(m,guardado),15000);
 }
 
 /* ── esperando el revelado ── */
 function vEsperando(m,guardado,estado){
-  detenerPoll();
+  detenerPoll(); vistaViva=true;
   app.innerHTML=`
   <div class="centro">
     ${ESTRELLA}
@@ -640,9 +721,14 @@ function vEsperando(m,guardado,estado){
   </div>`;
   if(estado.revela_en){
     const cuenta=app.querySelector('#cuenta');
+    let pedido=false;
     const pintar=()=>{
       const f=new Date(estado.revela_en).getTime()-Date.now();
-      if(f<=0){ cuenta.textContent='Revelando…'; return consultarEstado(m,guardado); }
+      /* Al llegar a cero se pide UNA vez. Antes pedía cada segundo: si el
+         reloj del teléfono iba adelantado, eso era un pedido por segundo
+         para siempre, con la fiesta entera haciendo lo mismo. */
+      if(f<=0){ cuenta.textContent='Revelando…';
+        if(!pedido){ pedido=true; consultarEstado(m,guardado); } return; }
       const h=Math.floor(f/3600000), mi=Math.floor(f%3600000/60000), s=Math.floor(f%60000/1000);
       cuenta.textContent=(h?h+'h ':'')+String(mi).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
     };
@@ -659,9 +745,20 @@ function vEsperando(m,guardado,estado){
 /* ── la cámara ── */
 let stream=null, video=null, filtroActual=FILTROS[0], usarTrasera=true, disparando=false;
 function detenerCamara(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+/* El oído que vuelve a prender la cámara cuando iOS la corta. Vive fuera de
+   la vista porque hay que poder sacarlo: si se acumulaba uno por cada vez
+   que entrábamos a la cámara, el de la vista vieja le apagaba el stream a
+   la nueva. */
+let alVolverActual=null;
+function olvidarVigilia(){
+  if(!alVolverActual) return;
+  document.removeEventListener('visibilitychange',alVolverActual);
+  removeEventListener('pageshow',alVolverActual);
+  alVolverActual=null;
+}
 
 async function vCamara(m,guardado,estado){
-  detenerPoll();
+  detenerPoll(); olvidarVigilia(); vistaViva=true;
   const {token}=guardado;
   app.innerHTML=`
   <div class="camara">
@@ -683,7 +780,7 @@ async function vCamara(m,guardado,estado){
     <div class="cam-abajo">
       <div class="tira-filtros" id="filtros" role="group" aria-label="Filtro"></div>
       <div class="fila-disparo">
-        <div class="contador-rollo"><b id="cRestan">${estado.cupo-estado.disparos}</b><span>quedan</span></div>
+        <div class="contador-rollo"><b id="cRestan">${cupoDe(estado)-(Number(estado.disparos)||0)}</b><span>quedan</span></div>
         <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
         <div class="hueco"></div>
       </div>
@@ -693,8 +790,8 @@ async function vCamara(m,guardado,estado){
 
   video=app.querySelector('#video');
   const filtrosEl=app.querySelector('#filtros');
-  filtrosEl.innerHTML=FILTROS.map((f,i)=>`
-    <button class="filtro-op" data-f="${f.id}" aria-pressed="${i===0}">
+  filtrosEl.innerHTML=FILTROS.map(f=>`
+    <button class="filtro-op" data-f="${f.id}" aria-pressed="${f.id===filtroActual.id}">
       <canvas width="112" height="112"></canvas><span>${esc(f.nombre)}</span></button>`).join('');
 
   /* Cada filtro se muestra aplicado a lo que la cámara está viendo AHORA,
@@ -729,7 +826,11 @@ async function vCamara(m,guardado,estado){
   const btnDisparo=app.querySelector('#disparo');
   const btnGirar=app.querySelector('#girar');
   const altNativa=app.querySelector('#altNativa');
-  let restantes=estado.cupo-estado.disparos;
+  let restantes=cupoDe(estado)-(Number(estado.disparos)||0);
+  /* ¿el teléfono nos dejó prender la cámara? Si no, el botón grande abre la
+     cámara nativa: antes quedaba ahí sin hacer nada y el invitado no sabía
+     que tenía que tocar el renglón chiquito de abajo. */
+  let sinCamara=false;
 
   async function prender(){
     detenerCamara();
@@ -740,7 +841,9 @@ async function vCamara(m,guardado,estado){
       video.srcObject=stream; video.style.filter=filtroActual.css;
       video.style.transform=usarTrasera?'none':'scaleX(-1)';
       try{ await video.play(); }catch(_){}
+      sinCamara=false;
       btnGirar.hidden=false; altNativa.hidden=true;
+      btnDisparo.setAttribute('aria-label','Sacar foto');
       /* iOS corta la cámara solo (al bloquear el teléfono, al atender un
          llamado, al cambiar de app). Cuando eso pasa la volvemos a prender
          en vez de dejar al invitado disparando a una imagen congelada. */
@@ -750,8 +853,10 @@ async function vCamara(m,guardado,estado){
         pista.onmute  = ()=>{ setTimeout(()=>{ if(vivaLaVista()&&!camaraViva()) prender(); }, 600); };
       }
     }catch(e){
-      altNativa.hidden=false;
-      avisar('No pude prender la cámara. Usá la del teléfono.');
+      sinCamara=true;
+      altNativa.hidden=false; btnGirar.hidden=true;
+      btnDisparo.setAttribute('aria-label','Usar la cámara del teléfono');
+      avisar('No pude prender la cámara acá. Tocá el botón grande y usá la del teléfono.');
     }
   }
   /* ¿seguimos en la pantalla de la cámara? (si no, no reabrir nada) */
@@ -768,6 +873,7 @@ async function vCamara(m,guardado,estado){
     try{ await video.play(); }catch(_){}
     if(!camaraViva()) prender();
   };
+  alVolverActual=alVolver;
   document.addEventListener('visibilitychange',alVolver);
   addEventListener('pageshow',alVolver);
   btnGirar.onclick=()=>{ usarTrasera=!usarTrasera; prender(); };
@@ -799,8 +905,7 @@ async function vCamara(m,guardado,estado){
   async function subirDisparo(canvas){
     const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',.86));
     if(!blob) throw new Error('No se pudo preparar la foto');
-    const id=(crypto.randomUUID?crypto.randomUUID():'f'+Date.now()+Math.random().toString(16).slice(2));
-    const ruta=`${m.codigo}/${token}/${id}.jpg`;
+    const ruta=`${m.codigo}/${token}/${nuevoId()}.jpg`;
     /* Primero se anota el disparo y después se sube el archivo: es el único
        orden en que la base puede garantizar el cupo. Si la subida falla, hay
        que devolver la foto, si no el invitado la pierde sin haber sacado nada
@@ -813,15 +918,21 @@ async function vCamara(m,guardado,estado){
       catch(_){ /* si tampoco se puede devolver, al menos no mentimos con el contador */ }
       throw new Error('no se pudo subir, la foto te la devolvimos');
     }
-    restantes=r.restantes; pintarContador(); flash();
+    const quedan=Number(r&&r.restantes);
+    restantes=Number.isFinite(quedan)?quedan:Math.max(0,restantes-1);
+    pintarContador(); flash();
     if(restantes<=0){
-      detenerCamara();
-      rutear(m,guardado,{...estado, disparos:estado.cupo});
+      detenerCamara(); olvidarVigilia();
+      rutear(m,guardado,{...estado, disparos:cupoDe(estado)});
+      /* por si el rollo se reveló mientras sacaba la última */
+      consultarEstado(m,guardado);
     }
   }
 
   btnDisparo.onclick=async()=>{
-    if(disparando||!video.videoWidth) return;
+    if(disparando) return;
+    if(sinCamara||!stream) return altNativa.querySelector('input').click();
+    if(!video.videoWidth) return;
     if(!camaraViva()||fotoNegra(video)){
       avisar('La cámara se había colgado, ya la reinicié. Probá de nuevo.');
       return prender();
@@ -845,7 +956,10 @@ async function vCamara(m,guardado,estado){
     const a=e.target.files[0]; if(!a) return;
     if(disparando) return; disparando=true;
     try{
-      const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(a); });
+      const dir=URL.createObjectURL(a);
+      const img=await new Promise((res,rej)=>{ const im=new Image();
+        im.onload=()=>res(im); im.onerror=()=>rej(new Error('no pude abrir esa foto')); im.src=dir; })
+        .finally(()=>URL.revokeObjectURL(dir));
       const canvas=document.createElement('canvas');
       const ancho=Math.min(img.naturalWidth,1280);
       canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
@@ -892,6 +1006,49 @@ const cabP=(titulo,volver)=>`
     <img src="marca.webp" alt="Click Eterno">
   </header>`;
 
+/* ── entrar a un rollo ya creado, desde otro teléfono ──
+   La clave vive en el navegador que lo creó. Si el organizador cambia de
+   teléfono, o le borran los datos del navegador, sin esto perdía el panel
+   para siempre. */
+function vPedirClave(codigoPrevio){
+  app.innerHTML=`
+  ${cabP('Entrar con la clave','')}
+  <div class="wrap" style="padding-top:20px">
+    <p class="bajada">Es la clave que te dimos al crear el rollo. Está en
+      Ajustes, en el teléfono donde lo creaste.</p>
+    <div class="campo"><label for="codClave">Código del evento</label>
+      <input id="codClave" type="text" autocapitalize="characters" autocomplete="off"
+        value="${esc(codigoPrevio)}" placeholder="QUI-7FCE64" style="letter-spacing:.14em"></div>
+    <div class="campo"><label for="laClave">Clave</label>
+      <input id="laClave" type="text" autocapitalize="characters" autocomplete="off"
+        placeholder="ABC234" style="letter-spacing:.14em"></div>
+    <button class="oro-btn" id="entrarClave">Entrar</button>
+  </div>`;
+  const $=x=>app.querySelector(x);
+  const entrar=async()=>{
+    const cod=$('#codClave').value.trim().toUpperCase();
+    const cl=$('#laClave').value.trim().toUpperCase();
+    if(cod.length<4) return avisar('Escribí el código del evento');
+    if(cl.length<4)  return avisar('Escribí la clave');
+    const b=$('#entrarClave'); b.disabled=true; b.textContent='Entrando…';
+    try{
+      const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}&select=codigo,tono`);
+      if(!r||!r[0]) throw new Error('No encontré ese evento');
+      /* La única forma de saber si la clave sirve es usarla: escribimos algo
+         que no cambia nada. Si la clave está mal, la base rechaza. */
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#D9AE72'},cl);
+      guardarClaveDe(cod,cl);
+      irA('ev/'+cod);
+    }catch(e){
+      b.disabled=false; b.textContent='Entrar';
+      avisar(/clave|permis|denied|row-level/i.test(String(e.message||e))
+        ? 'Esa clave no es de este evento' : ('No se pudo: '+(e.message||e)));
+    }
+  };
+  $('#entrarClave').onclick=entrar;
+  app.querySelectorAll('.campo input').forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); }));
+}
+
 /* ── la puerta: acá cae el organizador que viene de la web ── */
 async function vInicio(){
   const codigos=Object.keys(clavesGuardadas());
@@ -906,9 +1063,11 @@ async function vInicio(){
     <p class="ayudita" style="text-align:center">Son 4 preguntas, un minuto.</p>
     <div id="mios"></div>
     <button class="link-abajo" id="soyInv">Soy invitado y tengo un código</button>
+    <button class="link-abajo" id="conClave">Ya tengo un rollo: entrar con la clave</button>
   </div>`;
   app.querySelector('#crear').onclick=()=>irA('nuevo');
   app.querySelector('#soyInv').onclick=()=>irA('codigo');
+  app.querySelector('#conClave').onclick=()=>irA('clave');
   if(!codigos.length) return;
 
   let evs=[];
@@ -929,11 +1088,11 @@ async function vInicio(){
             <small>${!e.camara?'Sin rollo':(e.cerrado?'Cerrado':(rev?'Revelado':'Sacando fotos'))}</small></span>
           <span class="fl">›</span></button>`;
       }).join('');
-  mios.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>irA('ev/'+b.dataset.cod));
+  mios.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>irA('ev/'+encodeURIComponent(b.dataset.cod)));
 }
 
 /* ── crear: una pregunta por pantalla ── */
-const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24};
+const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24,codigo:'',clave:''};
 const PASOS=4;
 function vNuevo(n){
   const paso=Math.min(Math.max(Number(n)||1,1),PASOS);
@@ -1014,7 +1173,11 @@ function vNuevo(n){
     if(paso===2) nuevo.fecha=app.querySelector('#fecha').value||hoy();
     if(paso===3){
       nuevo.revela=app.querySelector('#revela')?app.querySelector('#revela').value:'';
-      if(nuevo.cuando==='hora' && !nuevo.revela) return avisar('Elegí el día y la hora');
+      if(nuevo.cuando==='hora'){
+        if(!nuevo.revela) return avisar('Elegí el día y la hora');
+        /* un rollo no puede nacer revelado */
+        if(yaPaso(nuevo.revela)) return avisar('Esa hora ya pasó. Elegí una que venga.');
+      }
     }
     if(paso<PASOS) return irA('nuevo/'+(paso+1));
     crearRollo();
@@ -1022,21 +1185,56 @@ function vNuevo(n){
   app.querySelector('#sig').onclick=seguir;
 }
 
+/* Seis caracteres al azar de verdad. Math.random().toString(16) a veces
+   devuelve menos dígitos de los que uno espera (0.5 da "0.8"), y ahí salía
+   un código de una letra. Y como guardar un evento es un "upsert", dos
+   códigos iguales no dan error: uno pisa al otro. */
+const nuevoCodigo=tipo=>{
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n=new Uint32Array(6);
+  try{ crypto.getRandomValues(n); }
+  catch(e){ for(let i=0;i<n.length;i++) n[i]=Math.floor(Math.random()*4294967296); }
+  return TIPOS[tipo]+'-'+[...n].map(x=>abc[x%abc.length]).join('');
+};
+/* ¿ese código ya es de alguien? Preguntar es barato y pisarle la fiesta a
+   otro no tiene arreglo. Si no hay señal para preguntar, seguimos igual:
+   con seis caracteres al azar la chance es ínfima. */
+async function codigoLibre(codigo){
+  try{
+    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
+    return !(r&&r.length);
+  }catch(e){ return true; }
+}
+
 async function crearRollo(){
   const b=app.querySelector('#sig');
   if(b.disabled) return;
   b.disabled=true; b.textContent='Creando…';
-  const codigo=TIPOS[nuevo.tipo]+'-'+Math.random().toString(16).slice(2,8).toUpperCase();
-  const claveEv=nuevaClave();
+  /* El código y la clave se sortean UNA vez y quedan guardados en `nuevo`:
+     si el pedido se corta por la señal y el organizador vuelve a apretar,
+     tiene que reintentar el MISMO evento, no crear un segundo. */
+  if(!nuevo.codigo){
+    let intento=nuevoCodigo(nuevo.tipo), vueltas=0;
+    while(!(await codigoLibre(intento)) && ++vueltas<5) intento=nuevoCodigo(nuevo.tipo);
+    nuevo.codigo=intento;
+    nuevo.clave=nuevaClave();
+  }
+  const codigo=nuevo.codigo, claveEv=nuevo.clave;
+  /* La clave se guarda ANTES de crear. Si el pedido llega a la base pero la
+     respuesta se pierde en el camino, el evento queda creado y sin esto el
+     organizador no lo podría manejar nunca más. Una clave de un evento que
+     al final no se creó no molesta: la lista de la puerta solo muestra los
+     que la base confirma. */
+  guardarClaveDe(codigo,claveEv);
   const vence=new Date(nuevo.fecha); vence.setMonth(vence.getMonth()+12);
   try{
     await SB.guardar('ce_eventos',{
       codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
       vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
       camara:true, cupo_fotos:nuevo.cupo, revelado:false,
-      revela_en: nuevo.cuando==='hora' ? nuevo.revela : null
+      revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
     }, claveEv);
-    guardarClaveDe(codigo,claveEv);
+    nuevo.codigo=''; nuevo.clave='';      // el próximo rollo arranca limpio
     irA('ev/'+codigo);
   }catch(err){
     b.disabled=false; b.textContent='Crear el rollo';
@@ -1046,6 +1244,9 @@ async function crearRollo(){
 
 /* ── el rollo: una instrucción arriba y un botón grande ── */
 async function vRollo(codigo){
+  /* Sin la clave guardada no se puede manejar nada: mejor pedirla de una
+     que dejar que cada botón falle con un error de la base. */
+  if(!claveDe(codigo)) return irA('clave/'+encodeURIComponent(codigo));
   app.innerHTML=`${cabP('Tu rollo','')}<div class="wrap"><p class="espaciado"
     style="text-align:center;padding:26px 0">Cargando…</p></div>`;
   let m=null;
@@ -1170,14 +1371,36 @@ async function bajarTodas(m, boton){
     const fotos=(datos&&datos.todas)||[];
     if(!fotos.length){ boton.disabled=false; paso(original); return avisar('Todavía no hay fotos'); }
 
-    const mapa=await SB.firmar(fotos.map(f=>f.ruta));
+    /* Un casamiento de cien invitados son miles de fotos, y el zip se arma
+       entero en la memoria del teléfono. Antes de que se le muera a la
+       mitad, le decimos que lo haga desde una computadora. */
+    if(fotos.length>250 && !confirm(
+        `Son ${fotos.length} fotos. Armar el archivo acá puede colgar el teléfono: `
+        +`desde una computadora sale mucho mejor.\n\n¿Querés intentarlo igual?`)){
+      boton.disabled=false; paso(original); return;
+    }
+
     const zip=new JSZip();
     let listas=0, fallaron=0;
-    for(const f of fotos){
+    /* Las direcciones firmadas duran una hora. Con muchas fotos y mala
+       señal, las últimas se vencían antes de que les llegara el turno: se
+       firman de a cien, recién cuando toca bajarlas. */
+    let mapa={};
+    for(let i=0;i<fotos.length;i++){
+      const f=fotos[i];
+      if(i%100===0){
+        paso(`Preparando ${i+1} de ${fotos.length}…`);
+        mapa=await SB.firmar(fotos.slice(i,i+100).map(x=>x.ruta));
+      }
       paso(`Bajando ${listas+1} de ${fotos.length}…`);
       try{
+        /* Sin URL firmada, fetch(undefined) baja ESTA PÁGINA y la mete en
+           el zip como si fuera una foto. Mejor contarla como fallada. */
+        if(!mapa[f.ruta]) throw new Error('sin archivo');
         const r=await fetch(mapa[f.ruta]);
         if(!r.ok) throw new Error('HTTP '+r.status);
+        const tipo=(r.headers.get('content-type')||'');
+        if(tipo && !/^image\//i.test(tipo)) throw new Error('no es una foto');
         const quien=(f.nombre||'invitado').replace(/[^\wáéíóúñÁÉÍÓÚÑ .-]/g,'').trim().slice(0,24)||'invitado';
         zip.file(`${String(listas+1).padStart(3,'0')} - ${quien}.jpg`, await r.blob());
         listas++;
@@ -1201,6 +1424,7 @@ async function bajarTodas(m, boton){
 
 /* ── ajustes: lo que casi nunca se toca, fuera del camino ── */
 async function vAjustes(codigo){
+  if(!claveDe(codigo)) return irA('clave/'+encodeURIComponent(codigo));
   let m=null;
   try{
     const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
@@ -1220,7 +1444,7 @@ async function vAjustes(codigo){
 
     <p class="rotulito">Revelado automático</p>
     <p class="ayudita" style="margin:0 0 12px">Dejalo vacío si preferís revelarlo vos a mano.</p>
-    <input id="revela" type="datetime-local" value="${esc(m.revela_en?String(m.revela_en).slice(0,16):'')}">
+    <input id="revela" type="datetime-local" value="${esc(aLocal(m.revela_en))}">
     <button class="hilo-btn" id="guardarHora">Guardar la hora</button>
     ${revelado?`<button class="hilo-btn" id="ocultar">Volver a ocultar las fotos</button>`:''}
 
@@ -1248,7 +1472,8 @@ async function vAjustes(codigo){
   $('#guardarCupo').onclick=()=>guardar({cupo_fotos:cupo},'Listo · '+cupo+' fotos por invitado');
   $('#guardarHora').onclick=()=>{
     const v=$('#revela').value;
-    guardar({revela_en:v||null}, v?'Listo · se revela solo':'Lo revelás vos a mano');
+    if(v && yaPaso(v)) return avisar('Esa hora ya pasó. Si querés revelarlo ya, usá "Revelar el rollo".');
+    guardar({revela_en:aUTC(v)}, v?'Listo · se revela solo':'Lo revelás vos a mano');
   };
   const bO=$('#ocultar'); if(bO) bO.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
   const bC=$('#copiarClave'); if(bC) bC.onclick=()=>copiar(clave,'Clave copiada');
@@ -1275,6 +1500,10 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
     const terminar=()=>{
       if(listo) return; listo=true;
       relojitos.forEach(clearTimeout);
+      /* Si el cuarto ya no está en la pantalla, el invitado se fue a otro
+         lado mientras revelaba: nos vamos sin dibujar nada. Sin esto, ocho
+         segundos después el álbum le pisaba la pantalla en la que estuviera. */
+      if(!c.isConnected) return res();
       /* el álbum se dibuja ANTES de que el cuarto se desvanezca: así uno
          cruza con el otro en vez de pasar por una pantalla en negro */
       try{ if(alApagarse) alApagarse(); }catch(e){}
@@ -1282,10 +1511,13 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
       setTimeout(()=>{ c.remove(); res(); }, 900);
     };
     c.onclick=terminar;
+    /* para que cerrarCapas() pueda apagarlo sin dejar relojes dando vueltas */
+    c._cortar=()=>{ listo=true; relojitos.forEach(clearTimeout); res(); };
     const t=(fn,ms)=>relojitos.push(setTimeout(fn,ms));
 
     fotos.forEach((f,i)=>{
       t(()=>{
+        if(!c.isConnected) return;
         const cop=document.createElement('div');
         cop.className='copia';
         /* cada copia cae un poco torcida, como si la dejaran en la bandeja */
@@ -1312,27 +1544,34 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
 }
 
 /* ── el álbum, una vez revelado ── */
-async function vAlbum(m,token){
-  detenerPoll();
+async function vAlbum(m,guardado){
+  const token=(guardado&&guardado.token)||guardado;
+  detenerPoll(); olvidarVigilia(); detenerCamara();
   app.innerHTML=`<div class="centro">${ESTRELLA}<p class="espaciado" style="margin-top:16px">Se reveló el rollo</p>
     <h1 class="ital" style="font-size:clamp(26px,7vw,32px);margin-top:8px">${esc(m.nombre)}</h1></div>`;
   let datos;
   try{ datos=await SB.rpc('ce_album_de',{p_codigo:m.codigo,p_token:token}); }
-  catch(e){ return vError('No pude abrir el álbum. Recargá la página.'); }
+  catch(e){ return vSinSenal(m,{token,nombre:(guardado&&guardado.nombre)||''}); }
+  /* El organizador puede volver a ocultarlo justo entre que preguntamos el
+     estado y que pedimos el álbum. */
+  if(!datos||datos.revelado===false) return vGuardado(m,guardado&&guardado.token?guardado:null);
+  const mias=Array.isArray(datos.mias)?datos.mias:[];
+  const todas=Array.isArray(datos.todas)?datos.todas:[];
 
   /* Las URLs firmadas se guardan acá para no pedirlas dos veces: las mismas
      que usa el cuarto de revelado sirven después para la grilla. */
   const firmadas={};
   const kVisto=`ce:revelado:${m.codigo}`;
-  const enBandeja=(datos.mias.length?datos.mias:datos.todas).slice(0,5);
+  const enBandeja=(mias.length?mias:todas).slice(0,5);
   const quieteQuieto=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const pintarAlbum=()=>{
+  vistaViva=true;
   app.innerHTML=`
   <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Se reveló el rollo</p>
     <h1>${esc(m.nombre)}</h1></div>
   <div class="wrap">
     <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
-      ${esc(datos.total_fotos)} fotos de ${esc(datos.total_invitados)} invitados esta noche</p>
+      ${esc(datos.total_fotos!=null?datos.total_fotos:todas.length)} fotos de ${esc(datos.total_invitados!=null?datos.total_invitados:'?')} invitados esta noche</p>
     <div class="tabs" role="tablist">
       <button data-t="mias" aria-pressed="true">Tus fotos</button>
       <button data-t="todas" aria-pressed="false">Álbum completo</button>
@@ -1346,14 +1585,31 @@ async function vAlbum(m,token){
     guarda.escribir(kVisto,'1');
     try{
       Object.assign(firmadas, await SB.firmar(enBandeja.map(f=>f.ruta)));
+      /* Solo las que de verdad tienen imagen: una copia en blanco cayendo
+         en la bandeja del revelado es peor que una copia menos. */
+      const bandeja=enBandeja.filter(f=>firmadas[f.ruta]);
+      if(!bandeja.length) throw new Error('sin copias');
+      /* Y que lleguen con la foto adentro: si la bajada va lenta, la copia
+         caía en la bandeja vacía y la imagen aparecía de golpe después,
+         justo al revés de lo que tiene que pasar en un revelado. */
+      await Promise.race([
+        Promise.all(bandeja.map(f=>new Promise(ok=>{
+          const im=new Image(); im.onload=ok; im.onerror=ok; im.src=firmadas[f.ruta];
+        }))),
+        new Promise(ok=>setTimeout(ok,4000))   // nadie espera para siempre
+      ]);
       app.innerHTML='';                      // nada atrás que se transparente
-      await cuartoOscuro(m, enBandeja, firmadas, pintarAlbum);
-    }catch(e){ pintarAlbum(); }
+      await cuartoOscuro(m, bandeja, firmadas, pintarAlbum);
+    }catch(e){ if(!app.querySelector('.grilla')) pintarAlbum(); }
   } else {
     pintarAlbum();
   }
 
   const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
+  /* El cuarto de revelado se puede cortar a mitad de camino porque el
+     invitado se fue a otra pantalla. Si pasó eso, el álbum ya no es de
+     nadie: no hay dónde dibujarlo y seguir acá era reventar. */
+  if(!gMias||!gTodas) return;
 
   /* ── el visor: la grilla sola no alcanza, la gracia es mirar la foto ── */
   function abrirVisor(fotos, mapa, desde){
@@ -1386,6 +1642,8 @@ async function vAlbum(m,token){
     const mover=d=>{ const n=i+d; if(n>=0&&n<fotos.length){ i=n; pintar(); } };
     const cerrar=()=>{ cap.remove(); document.removeEventListener('keydown',teclas); };
     const teclas=e=>{
+      /* si el visor se cerró por un cambio de pantalla, nos vamos con él */
+      if(!cap.isConnected) return document.removeEventListener('keydown',teclas);
       if(e.key==='Escape') cerrar();
       if(e.key==='ArrowLeft') mover(-1);
       if(e.key==='ArrowRight') mover(1);
@@ -1408,7 +1666,10 @@ async function vAlbum(m,token){
     cap.querySelector('#bajarF').onclick=async e=>{
       const b=e.currentTarget; b.disabled=true;
       try{
-        const r=await fetch(mapa[fotos[i].ruta]);
+        const dir=mapa[fotos[i].ruta];
+        if(!dir) throw new Error('sin archivo');
+        const r=await fetch(dir);
+        if(!r.ok) throw new Error('HTTP '+r.status);
         const blob=await r.blob();
         const u=URL.createObjectURL(blob);
         const a=document.createElement('a');
@@ -1421,11 +1682,17 @@ async function vAlbum(m,token){
     pintar();
   }
 
-  const pintarGrilla=async(el,fotos)=>{
-    if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">Todavía no hay fotos acá.</p>`; return; }
-    const faltan=fotos.map(f=>f.ruta).filter(r=>!firmadas[r]);
-    Object.assign(firmadas, await SB.firmar(faltan));
+  const pintarGrilla=async(el,todasLasFotos)=>{
+    if(!todasLasFotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">Todavía no hay fotos acá.</p>`; return; }
+    const faltan=todasLasFotos.map(f=>f.ruta).filter(r=>!firmadas[r]);
+    try{ Object.assign(firmadas, await SB.firmar(faltan)); }
+    catch(e){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">No pude traer las fotos. Recargá la página.</p>`; return; }
     const mapa=firmadas;
+    /* Las que no volvieron firmadas no se dibujan: un cuadro roto en el
+       álbum parece una foto perdida. Y el visor tiene que recorrer esta
+       misma lista, o las flechas caen en el vacío. */
+    const fotos=todasLasFotos.filter(f=>mapa[f.ruta]);
+    if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">No pude traer las fotos. Recargá la página.</p>`; return; }
     el.innerHTML=fotos.map(f=>`
       <figure class="${f.mia?'mia':''}" data-ruta="${esc(f.ruta)}">
         <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
@@ -1440,16 +1707,25 @@ async function vAlbum(m,token){
       });
     });
   };
-  await pintarGrilla(gMias, datos.mias);
+  await pintarGrilla(gMias, mias);
 
   let todasCargadas=false;
   app.querySelectorAll('.tabs [data-t]').forEach(b=>b.onclick=async()=>{
     app.querySelectorAll('.tabs [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     const esMias=b.dataset.t==='mias';
     gMias.hidden=!esMias; gTodas.hidden=esMias;
-    if(!esMias&&!todasCargadas){ todasCargadas=true; await pintarGrilla(gTodas, datos.todas); }
+    if(!esMias&&!todasCargadas){ todasCargadas=true; await pintarGrilla(gTodas, todas); }
   });
 }
+
+/* Al cambiar de pantalla hay que barrer lo que vive colgado del body: el
+   visor y el cuarto de revelado no están adentro de #app, así que una
+   navegación (el botón atrás del teléfono, por ejemplo) los dejaba tapando
+   la pantalla nueva. */
+const cerrarCapas=()=>document.querySelectorAll('.visorf,.cuarto').forEach(c=>{
+  if(c._cortar) c._cortar();
+  c.remove();
+});
 
 /* ── arranque ──
    Dos puertas en la misma dirección: el invitado llega con ?e=CODIGO
@@ -1469,7 +1745,7 @@ async function arranqueInvitado(){
 }
 
 function pintar(){
-  detenerPoll(); detenerCamara();
+  detenerPoll(); detenerCamara(); olvidarVigilia(); cerrarCapas();
   const h=location.hash.slice(1);
   window.scrollTo(0,0);
   let p;
@@ -1478,6 +1754,7 @@ function pintar(){
     else if(h.startsWith('ev/'))     p=vRollo(h.slice(3));
     else if(h.startsWith('ajustes/'))p=vAjustes(h.slice(8));
     else if(h==='codigo')            p=vPedirCodigo();
+    else if(h.startsWith('clave'))   p=vPedirClave(h.split('/')[1]||'');
     /* el invitado llega del QR con ?e=CODIGO; el resto ve la puerta */
     else if(codigo)                  p=arranqueInvitado();
     else                             p=vInicio();

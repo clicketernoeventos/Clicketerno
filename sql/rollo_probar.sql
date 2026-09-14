@@ -198,3 +198,21 @@ select verificar('al borrar el evento caen sus rollos y disparos',
 select como(null,'delete from storage.objects where name=''QUI-111/tok-ana/1.jpg''');
 select verificar('recién ahí se puede limpiar el depósito',
   (select count(*) from storage.objects where name='QUI-111/tok-ana/1.jpg')=0);
+
+select '── la columna del cupo, vacía ──';
+/* Un evento creado antes de rollo.sql, o tocado a mano, puede tener
+   cupo_fotos en NULL. Del lado de la base "v_disparos >= null" nunca es
+   verdadero: no había cupo que valiera y se podía llenar el depósito
+   entero. Del lado del navegador es al revés, "0 >= null" da verdadero y
+   al invitado le aparecía el rollo lleno sin haber sacado una foto. */
+select como('clave-nul','insert into ce_eventos(codigo,nombre,camara,cupo_fotos) values (''QUI-NUL'',''Sin cupo'',true,null)');
+set role postgres;
+insert into ce_rollos(token,codigo,nombre) values ('tok-nul','QUI-NUL','Vale');
+select verificar('con la columna vacía el cupo que se informa son 24',
+  (select pido(null,'select (ce_mi_rollo(''QUI-NUL'',''tok-nul'',''Vale'')->>''cupo'')'))='24');
+update ce_rollos set disparos=24 where token='tok-nul';
+select verificar('con la columna vacía el cupo igual frena a las 24',
+  (select pido(null,'select ce_tomar_foto(''QUI-NUL'',''tok-nul'',''bn'',''QUI-NUL/tok-nul/25.jpg'')::text')) like 'error%');
+update ce_rollos set disparos=0 where token='tok-nul';
+select verificar('y antes de las 24 deja sacar, contando bien lo que queda',
+  (select pido(null,'select (ce_tomar_foto(''QUI-NUL'',''tok-nul'',''bn'',''QUI-NUL/tok-nul/1.jpg'')->>''restantes'')'))='23');
