@@ -216,3 +216,45 @@ select verificar('con la columna vacía el cupo igual frena a las 24',
 update ce_rollos set disparos=0 where token='tok-nul';
 select verificar('y antes de las 24 deja sacar, contando bien lo que queda',
   (select pido(null,'select (ce_tomar_foto(''QUI-NUL'',''tok-nul'',''bn'',''QUI-NUL/tok-nul/1.jpg'')->>''restantes'')'))='23');
+
+select '── el álbum de a tandas ──';
+/* ce_album_de corta en 400, que es lo que se puede dibujar en una pantalla.
+   El organizador que se lleva TODAS necesita las 1450 de un casamiento: sin
+   esto el zip se bajaba con 400 y decía "listo". */
+select como('clave-big','insert into ce_eventos(codigo,nombre,camara,cupo_fotos,revelado) values (''BOD-BIG'',''Casamiento'',true,24,true)');
+set role postgres;
+insert into ce_rollos(token,codigo,nombre)
+  select 'tk'||g,'BOD-BIG','Invitado '||g from generate_series(1,60) g;
+insert into ce_disparos(id,codigo,token,filtro,ruta,ts)
+  select 'd'||g,'BOD-BIG','tk'||((g%60)+1),'bn','BOD-BIG/f/'||g||'.jpg',g from generate_series(1,1450) g;
+select verificar('el álbum de pantalla corta en 400 pero dice cuántas hay',
+  (select pido(null,'select json_array_length(ce_album_de(''BOD-BIG'',''tk1'')->''todas'')::text'))='400'
+  and (select pido(null,'select ce_album_de(''BOD-BIG'',''tk1'')->>''total_fotos'''))='1450');
+select verificar('sin la clave del evento, las tandas no traen nada',
+  (select pido(null,'select json_array_length(ce_album_pagina(''BOD-BIG'',0,500))::text'))='0');
+select verificar('con la clave, las tandas traen las 1450 completas',
+  (select pido('clave-big','select (json_array_length(ce_album_pagina(''BOD-BIG'',0,500))
+      + json_array_length(ce_album_pagina(''BOD-BIG'',500,500))
+      + json_array_length(ce_album_pagina(''BOD-BIG'',1000,500)))::text'))='1450');
+select verificar('pasada la última, la tanda viene vacía (así corta el bucle)',
+  (select pido('clave-big','select json_array_length(ce_album_pagina(''BOD-BIG'',1500,500))::text'))='0');
+/* Las tres tandas juntas tienen que dar las 1450 exactas, sin repetir
+   ninguna ni saltear ninguna: es donde se esconden los errores de más uno
+   en la cuenta del offset.
+   Aclaración honesta: la función ordena por (ts, id) y no solo por ts,
+   porque dos fotos del mismo milisegundo tienen que salir siempre en el
+   mismo orden. Eso es una GARANTÍA, no algo que esta prueba demuestre:
+   probamos a romper el desempate —incluso con 300 fotos empatadas montadas
+   sobre el corte— y la base las devolvió igual igual. Así que esta prueba
+   agarra la cuenta del offset, no el desempate. */
+set role postgres;
+update ce_disparos set ts=7 where id in (select 'd'||g from generate_series(400,700) g);
+select verificar('las tandas dan 1450 exactas: ni repetidas ni salteadas',
+  (select pido('clave-big',$q$
+     with t as (
+       select value->>'ruta' as ruta from json_array_elements(ce_album_pagina('BOD-BIG',0,500))
+       union all
+       select value->>'ruta' from json_array_elements(ce_album_pagina('BOD-BIG',500,500))
+       union all
+       select value->>'ruta' from json_array_elements(ce_album_pagina('BOD-BIG',1000,500)))
+     select (count(*) || '/' || count(distinct ruta)) from t $q$))='1450/1450');

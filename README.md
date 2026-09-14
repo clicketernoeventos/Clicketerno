@@ -75,7 +75,7 @@ sacar más fotos que las del cupo?, ¿puede leer las fotos de otro?).
 ```bash
 psql -f sql/esquema_falso.sql -f sql/claves.sql -f sql/rollo.sql
 psql -f sql/probar.sql
-psql -f sql/rollo_probar.sql     # 44 comprobaciones
+psql -f sql/rollo_probar.sql     # 49 comprobaciones
 ```
 
 `esquema_falso.sql` tira las tablas del rollo antes que `ce_eventos`, y no
@@ -94,9 +94,11 @@ node pruebas/rollo_hora.js         # que la hora del revelado no se corra de zon
 node pruebas/rollo_hostil.js       # 69 comprobaciones con todo saliendo mal
 ```
 
-Las dos que arman el zip se bajan JSZip de un CDN. En un equipo sin
-salida a internet, dejá una copia en `pruebas/.cache/jszip.min.js` y las
-pruebas la usan de ahí (esa carpeta no se sube al repositorio).
+Las dos que arman el zip necesitan JSZip de verdad. `pruebas/jszip_local.js`
+lo busca en `pruebas/.cache/`, y si no está y hay internet lo baja una vez y
+lo deja ahí para la próxima. Si no lo consigue de ningún lado, esas pruebas
+dicen `salteada` en vez de dar error: una dependencia que falta no es un
+bug del rollo.
 
 `rollo_hostil.js` es la que mira lo feo: la base devuelve el cupo vacío, el
 salón se queda sin señal, una foto no se puede traer del depósito, el

@@ -844,10 +844,31 @@ let claveMaestra=guarda.leerSesion('ce:maestra')||'';
 const claveDe=codigo=>claveMaestra||clavesGuardadas()[codigo]||'';
 const puedoEditar=codigo=>!!claveDe(codigo);
 /* clave nueva, corta y sin letras que se confundan al dictarla */
+/* Dos invitados sacando la foto en el mismo instante podían generar el
+   mismo id, y como el guardado pisa duplicados, la foto de uno borraba la
+   del otro sin avisar. Con 10 caracteres al azar eso deja de pasar. */
+const idNuevo=()=>{
+  const abc='abcdefghijklmnopqrstuvwxyz0123456789';
+  let cola='';
+  try{
+    const n=new Uint32Array(10); crypto.getRandomValues(n);
+    cola=[...n].map(x=>abc[x%abc.length]).join('');
+  }catch(e){
+    for(let i=0;i<10;i++) cola+=abc[Math.floor(Math.random()*abc.length)];
+  }
+  return Date.now().toString(36)+cola;
+};
 const nuevaClave=()=>{
   const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const n=new Uint32Array(6); (crypto.getRandomValues?crypto.getRandomValues(n):n.fill(Date.now()));
-  return [...n].map(x=>abc[x%abc.length]).join('');
+  try{
+    const n=new Uint32Array(6); crypto.getRandomValues(n);
+    return [...n].map(x=>abc[x%abc.length]).join('');
+  }catch(e){
+    /* sin crypto (navegador viejo): igual tiene que salir una clave
+       distinta cada vez, no seis letras iguales */
+    let t=''; for(let i=0;i<6;i++) t+=abc[Math.floor(Math.random()*abc.length)];
+    return t;
+  }
 };
 
 const SB = {
@@ -905,17 +926,33 @@ const SB = {
     return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab({}, clave), body:JSON.stringify(args||{})});
   },
   /* lista los archivos guardados bajo una carpeta del depósito */
-  listarArchivos(prefijo, bucket){
-    return this.pedir(`/storage/v1/object/list/${bucket||'ce-medios'}`, {
-      method:'POST', headers:this.cab(),
-      body:JSON.stringify({prefix:prefijo,limit:1000,offset:0})
-    });
+  /* El depósito devuelve como mucho 1000 por pedido: con una fiesta grande
+     quedaban archivos sin listar, y por lo tanto sin borrar nunca. */
+  async listarArchivos(prefijo, bucket){
+    let desde=0, todo=[];
+    for(;;){
+      const tanda=await this.pedir(`/storage/v1/object/list/${bucket||'ce-medios'}`, {
+        method:'POST', headers:this.cab(),
+        body:JSON.stringify({prefix:prefijo,limit:1000,offset:desde})
+      });
+      if(!tanda||!tanda.length) break;
+      todo=todo.concat(tanda);
+      if(tanda.length<1000) break;
+      desde+=1000;
+      if(desde>20000) break;
+    }
+    return todo;
   },
-  borrarArchivos(rutas, clave, bucket){
-    if(!rutas.length) return Promise.resolve(null);
-    return this.pedir(`/storage/v1/object/${bucket||'ce-medios'}`, {
-      method:'DELETE', headers:this.cab({}, clave), body:JSON.stringify({prefixes:rutas})
-    });
+  /* Y mandarlos todos juntos en un solo pedido lo hacía rebotar entero. */
+  async borrarArchivos(rutas, clave, bucket){
+    if(!rutas.length) return null;
+    for(let i=0;i<rutas.length;i+=200){
+      await this.pedir(`/storage/v1/object/${bucket||'ce-medios'}`, {
+        method:'DELETE', headers:this.cab({}, clave),
+        body:JSON.stringify({prefixes:rutas.slice(i,i+200)})
+      });
+    }
+    return null;
   },
   /* XHR en vez de fetch para poder mostrar el avance y cortar si se cuelga:
      en un salón con mala señal, "Revelando…" quedaba girando sin fin. */
@@ -945,7 +982,8 @@ const SB = {
 const EXT={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif',
            'image/heic':'heic','image/heif':'heif',
            'video/mp4':'mp4','video/quicktime':'mov','video/webm':'webm',
-           'audio/webm':'webm','audio/mp4':'m4a','audio/mpeg':'mp3'};
+           'audio/webm':'webm','audio/mp4':'m4a','audio/mpeg':'mp3',
+           'audio/aac':'aac','audio/ogg':'ogg','audio/wav':'wav','audio/x-m4a':'m4a'};
 const MAX_MB=60;
 async function subirArchivo(blob, base, alAvanzar){
   return SB.archivo(`${base}.${EXT[blob.type]||'jpg'}`, blob, alAvanzar);
@@ -1020,10 +1058,27 @@ function motivo(e){
   if(/JWT|apikey|401|Invalid/i.test(t)) return 'clave de la base inválida';
   return t.slice(0,110) || 'error desconocido';
 }
+/* La base devuelve como mucho 1000 filas por pedido. Una fiesta larga pasa
+   ese número y las que faltaban no aparecían nunca: ni en el álbum, ni en
+   la pantalla, y sin un solo error. Ahora se pide de a tandas. */
+const POR_TANDA=1000;
+async function porTandas(c, campos){
+  let desde=0, todo=[];
+  for(;;){
+    const tanda=await SB.ver('ce_items',
+      `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
+      + `&offset=${desde}&limit=${POR_TANDA}`);
+    if(!tanda||!tanda.length) break;
+    todo=todo.concat(tanda);
+    if(tanda.length<POR_TANDA) break;
+    desde+=POR_TANDA;
+    if(desde>20000) break;          // tope de seguridad: nadie sube tanto
+  }
+  return todo;
+}
 async function indice(c){
   if(!HAY_NUBE) return (await leerLocal(kIndex(c),[])).sort((a,b)=>a.ts-b.ts);
-  try{ return await SB.ver('ce_items',
-    `codigo=eq.${encodeURIComponent(c)}&select=id,kind,autor,ts,estado&order=ts.asc`); }
+  try{ return await porTandas(c,'id,kind,autor,ts,estado'); }
   catch(e){ console.error('indice',e); recado('No se pudo leer el muro: '+motivo(e)); return []; }
 }
 /* Traer los recuerdos de a uno era una llamada por foto: un álbum de 200
@@ -1031,8 +1086,7 @@ async function indice(c){
 async function cargarTodo(c){
   if(!HAY_NUBE) return null;
   try{
-    const filas=await SB.ver('ce_items',
-      `codigo=eq.${encodeURIComponent(c)}&select=*&order=ts.asc`);
+    const filas=await porTandas(c,'*');
     for(const v of filas){
       const k=c+v.id, antes=cacheItem[k];
       v.data=v.url||'';
@@ -1185,6 +1239,7 @@ const parar=()=>{
   relojes.forEach(clearInterval); relojes=[];
   if(timerSala){clearInterval(timerSala);timerSala=null;}
   if(window._limpiarSala){window._limpiarSala();window._limpiarSala=null;}
+  if(window._soltarMicro){window._soltarMicro();window._soltarMicro=null;}
   hojaPostal(false);
 };
 
@@ -2376,6 +2431,9 @@ async function vSubir(codigo){
     if(modo===b.dataset.m) return;
     if(mr&&mr.state==='recording'){ try{ mr.stop(); }catch(_){} }
     modo=b.dataset.m;
+    /* soltar la foto sin liberar su memoria dejaba el video entero colgado
+       del navegador: en un celular, probando de a una, se nota */
+    if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
     medio=null;            // lo elegido en la otra solapa no se manda por error
     app.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     pintarZona();
@@ -2389,11 +2447,23 @@ async function vSubir(codigo){
     if(mr&&mr.state==='recording'){mr.stop();return;}
     try{
       const s=await navigator.mediaDevices.getUserMedia({audio:true});
+      /* si el invitado se va de la pantalla mientras graba, el micrófono
+         quedaba abierto (con el punto rojo del teléfono prendido) hasta
+         que saltaba el corte de los 15 segundos */
+      window._soltarMicro=()=>{
+        try{ if(mr&&mr.state==='recording') mr.stop(); }catch(_){}
+        s.getTracks().forEach(t=>t.stop());
+        clearTimeout(tt);
+      };
+      /* el formato lo elige el navegador: en iPhone no es webm, y guardarlo
+         con esa etiqueta dejaba el saludo con la extensión equivocada */
       mr=new MediaRecorder(s); trozos=[];
       mr.ondataavailable=e=>trozos.push(e.data);
       mr.onstop=async()=>{
         clearTimeout(tt); s.getTracks().forEach(t=>t.stop());
-        const blob=new Blob(trozos,{type:'audio/webm'});
+        window._soltarMicro=null;
+        const tipo=(mr&&mr.mimeType)||(trozos[0]&&trozos[0].type)||'audio/webm';
+        const blob=new Blob(trozos,{type:tipo.split(';')[0]});
         medio={kind:'audio', blob, previa:URL.createObjectURL(blob)};
         btn.textContent='Grabar de nuevo';
         zona.querySelector('#repro').innerHTML=`<audio src="${medio.previa}" controls style="width:100%"></audio>`;
@@ -2418,7 +2488,7 @@ async function vSubir(codigo){
       btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`;
     };
     try{
-      await sumar(codigo,{id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      await sumar(codigo,{id:idNuevo(),
         kind:medio?medio.kind:'mensaje', blob:medio?medio.blob:null, data:'', autor, texto, ts:Date.now(),
         estado:m.moderar?'pendiente':'aprobado'},
         avance);
@@ -2845,6 +2915,16 @@ async function vAlbum(codigo,abrirEn){
       if(dl.disabled) return;
       dl.disabled=true;
       const total=visuales.length;
+      /* El archivo se arma entero en la memoria del aparato. En una compu
+         no molesta; en un celular, con cientos de fotos, la pestaña se
+         cierra sola a mitad de camino. Mejor avisar antes que perderlo. */
+      const pesaMucho=total>150;
+      if(pesaMucho && !/compu|escritorio/i.test('') &&
+         !confirm(`Son ${total} archivos. Armarlos en un solo ZIP puede ser demasiado `+
+                  `para un celular: si podés, hacelo desde una computadora.\n\n¿Seguimos igual?`)){
+        dl.disabled=false;
+        return;
+      }
       let hechos=0, fallados=0;
       const paso=()=>{ dl.textContent=`Bajando ${hechos}/${total}…`; };
       paso();
@@ -2932,49 +3012,188 @@ async function vDiagnostico(){
   <div class="wrap" style="padding-top:24px">
     <div id="res" style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.9;
       white-space:pre-wrap;word-break:break-word;color:#B5AC9E"></div>
+    <div id="zonaPrueba" style="margin-top:30px"></div>
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('portada');
   const out=app.querySelector('#res');
   const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
+  const titulo=t=>{ out.innerHTML += `<div style="color:var(--oro);margin:18px 0 6px;letter-spacing:.16em;text-transform:uppercase;font-size:10.5px">${esc(t)}</div>`; };
+  /* deja anotado si algo salió mal, para el resumen del final */
+  const problemas=[];
+  const revisar=(t,ok,nota)=>{ linea((ok?'✓ ':'✗ ')+t, ok); if(!ok) problemas.push(nota||t); return ok; };
 
+  titulo('Configuración');
   linea('Versión de la app: v12');
-  linea('Nube configurada: '+(HAY_NUBE?'sí':'NO'), HAY_NUBE);
+  revisar('La nube está configurada', HAY_NUBE, 'faltan la URL y la clave de Supabase');
   linea('URL: '+NUBE.url);
-  linea('Clave: '+(NUBE.clave? NUBE.clave.slice(0,18)+'…' : 'vacía'), !!NUBE.clave);
-  linea('Navegador en línea: '+(navigator.onLine?'sí':'no'), navigator.onLine);
-  linea('———');
+  linea('Navegador en línea: '+(navigator.onLine?'sí':'no'));
 
+  /* La clave pública trae adentro qué permisos tiene. Si alguna vez se pega
+     por error la clave de servicio, cualquiera que abra la página tiene
+     permiso total sobre la base: hay que verlo de inmediato. */
+  let rol='';
   try{
-    const r = await fetch(NUBE.url+'/rest/v1/ce_eventos?select=codigo,nombre&limit=5', {
-      cache:'no-store',
-      headers:{apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave}
-    });
-    linea('Respuesta HTTP: '+r.status+' '+r.statusText, r.ok);
-    const txt = await r.text();
-    linea('Contenido: '+txt.slice(0,400));
-    if(r.ok){
-      const filas=JSON.parse(txt);
-      linea('Eventos encontrados: '+filas.length, filas.length>0);
+    const cuerpo=JSON.parse(atob(NUBE.clave.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    rol=cuerpo.role||'';
+    if(rol==='service_role'){
+      revisar('La clave de la página es la PÚBLICA', false,
+        'PELIGRO: está pegada la clave de servicio. Cambiala ya por la anon.');
+      linea('  Cualquiera que abra la página tiene permiso TOTAL sobre la base.', false);
+    }else revisar('La clave de la página es la pública ('+rol+')', rol==='anon',
+      'la clave no parece la anon: revisá cuál pegaste');
+    if(cuerpo.exp){
+      const vence=new Date(cuerpo.exp*1000);
+      const dias=Math.round((vence-Date.now())/86400000);
+      revisar('La clave no está vencida (vence en '+dias+' días)', dias>0,
+        'la clave de la base está vencida: hay que generar una nueva');
     }
+  }catch(e){ linea('No pude leer la clave para revisarla'); }
+
+  titulo('Conexión');
+  let hayTablas=false;
+  try{
+    const r=await fetch(NUBE.url+'/rest/v1/ce_eventos?select=codigo&limit=1',
+      {cache:'no-store',headers:{apikey:NUBE.clave,Authorization:'Bearer '+NUBE.clave}});
+    const txt=await r.text();
+    hayTablas=r.ok;
+    revisar('La base contesta ('+r.status+')', r.ok, 'la base no contesta: '+txt.slice(0,80));
+    if(!r.ok) linea('  '+txt.slice(0,200), false);
   }catch(e){
-    linea('FALLÓ la conexión: '+e.message, false);
+    revisar('La base contesta', false, 'no hay conexión con la base: '+e.message);
   }
 
-  /* Lo único que no se puede probar sin la base de verdad: que la cabecera
-     con la clave llegue entera. Si no llega, nadie puede moderar nada. */
-  linea('———');
-  try{
-    const r=await SB.quienSoy(null,'PRUEBA-DE-CABECERA');
-    linea('La clave viaja hasta la base: '+(r&&r.llego_la_clave?'SÍ':'NO LLEGA'), !!(r&&r.llego_la_clave));
-    if(r&&!r.llego_la_clave) linea('  (sin esto no se puede moderar ni cambiar nada)', false);
-    const maestra=claveMaestra||'';
-    if(maestra){
-      const q=await SB.quienSoy(null,maestra);
-      linea('Clave de administrador reconocida: '+(q&&q.es_maestra?'sí':'no'), !!(q&&q.es_maestra));
+  titulo('Qué tiene instalado');
+  if(hayTablas){
+    /* pedir una columna que no existe da error: así sabemos si falta */
+    const tieneColumna=async col=>{
+      try{ await SB.ver('ce_eventos',`select=${col}&limit=1`); return true; }catch(e){ return false; }
+    };
+    for(const [col,para] of [['lanza','programar la apertura'],
+                             ['hashtag','el hashtag del evento'],
+                             ['lugar','el lugar del evento'],
+                             ['camara','la cámara descartable']]){
+      const hay=await tieneColumna(col);
+      revisar(`Columna "${col}" (${para})`, hay, `falta la columna "${col}": correr el SQL que la agrega`);
     }
+    const tieneFuncion=async fn=>{
+      try{ await SB.rpc(fn,{p_codigo:null}); return true; }
+      catch(e){ return !/PGRST202|does not exist|not find the function|404/i.test(String(e.message||'')); }
+    };
+    const hayClaves=await tieneFuncion('ce_quien_soy');
+    revisar('El sistema de claves está instalado', hayClaves,
+      'falta correr sql/claves.sql: sin eso cualquiera puede modificar cualquier evento');
+
+    titulo('La clave llega hasta la base');
+    try{
+      const r=await SB.quienSoy(null,'PRUEBA-DE-CABECERA');
+      revisar('La clave viaja entera hasta la base', !!(r&&r.llego_la_clave),
+        'la clave no llega: nadie va a poder moderar ni cambiar nada');
+      if(claveMaestra){
+        const q=await SB.quienSoy(null,claveMaestra);
+        revisar('La clave de administrador está reconocida', !!(q&&q.es_maestra),
+          'la clave de administrador no la reconoce la base');
+      }else linea('  (entrá con la clave de administrador para probarla también)');
+    }catch(e){ revisar('La clave viaja hasta la base', false, 'no pude comprobarlo: '+motivo(e)); }
+  }else{
+    linea('  Sin conexión no se puede revisar el resto.');
+  }
+
+  titulo('Resumen');
+  if(problemas.length){
+    linea(problemas.length+' cosa'+(problemas.length>1?'s':'')+' para arreglar:', false);
+    problemas.forEach(p=>linea('  · '+p, false));
+  }else linea('Todo en orden.', true);
+
+  /* ── la prueba de fondo: escribe de verdad y después se limpia sola ── */
+  const zona=app.querySelector('#zonaPrueba');
+  zona.innerHTML=`
+    <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:16px">
+      La prueba de fondo crea un evento de mentira, comprueba que los permisos
+      funcionen de verdad y después lo borra. No toca ninguna fiesta tuya.</p>
+    <button class="hilo-btn" id="probarTodo">Probar los permisos de verdad</button>
+    <div id="salidaPrueba" style="font-family:ui-monospace,monospace;font-size:12.5px;
+      line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-top:18px"></div>`;
+  zona.querySelector('#probarTodo').onclick=e=>pruebaDeFondo(e.currentTarget, zona.querySelector('#salidaPrueba'));
+}
+
+/* Prueba de fondo contra la base de verdad. Crea un evento propio con un
+   código que no se puede confundir con uno real, lo maltrata, y lo borra
+   pase lo que pase. Es la única forma de saber que los permisos funcionan
+   en tu Supabase y no solo en las pruebas. */
+async function pruebaDeFondo(boton, salida){
+  if(boton.dataset.ocupado) return;
+  boton.dataset.ocupado='1'; boton.disabled=true; boton.textContent='Probando…';
+  salida.innerHTML='';
+  const fallas=[];
+  const di=(t,ok)=>{ salida.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
+  const probar=(t,ok)=>{ di((ok?'✓ ':'✗ ')+t, ok); if(!ok) fallas.push(t); };
+  /* el código lleva PRUEBA adelante: si algo queda colgado, se ve enseguida */
+  const cod='PRUEBA-'+nuevaClave();
+  const clave=nuevaClave(), otraClave=nuevaClave();
+  di('Evento de prueba: '+cod);
+  try{
+    // 1. crear: la base tiene que exigir clave
+    try{
+      await SB.guardar('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
+        fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()});
+      probar('Sin clave NO se puede crear un evento', false);
+    }catch(e){ probar('Sin clave NO se puede crear un evento', true); }
+
+    await SB.guardar('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
+      fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()}, clave);
+    probar('Con clave sí se crea', !!(await meta(cod)));
+
+    // 2. un invitado sube: la base decide el estado, no el celular
+    await SB.guardar('ce_items',{id:'p-'+idNuevo(),codigo:cod,kind:'mensaje',url:'',
+      autor:'Invitado de prueba',texto:'hola',estado:'aprobado',ts:Date.now()});
+    const subidos=await SB.ver('ce_items',`codigo=eq.${encodeURIComponent(cod)}&select=estado`);
+    probar('Un invitado no puede autoaprobarse (moderación encendida)',
+      subidos.length===1 && subidos[0].estado==='pendiente');
+
+    // 3. sin la clave no se toca nada
+    await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{nombre:'HACKEADO'}).catch(()=>{});
+    probar('Sin clave NO se puede renombrar el evento', (await meta(cod)).nombre!=='HACKEADO');
+    await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{cerrado:true}).catch(()=>{});
+    probar('Sin clave NO se puede cerrar el muro', !(await meta(cod)).cerrado);
+    await SB.borrar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`).catch(()=>{});
+    probar('Sin clave NO se puede borrar el evento', !!(await meta(cod)));
+
+    // 4. con la clave sí
+    await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{nombre:'Renombrada'},clave);
+    probar('Con la clave sí se renombra', (await meta(cod)).nombre==='Renombrada');
+
+    // 5. cambiar la clave deja la vieja sin efecto
+    await SB.cambiarClave(cod,clave,otraClave);
+    await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{nombre:'Con la vieja'},clave).catch(()=>{});
+    probar('La clave vieja deja de servir', (await meta(cod)).nombre!=='Con la vieja');
+    await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{nombre:'Con la nueva'},otraClave);
+    probar('La clave nueva sirve', (await meta(cod)).nombre==='Con la nueva');
+
+    // 6. la clave de otro evento no abre este
+    if(claveMaestra){
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:'#111111'},claveMaestra);
+      probar('La clave de administrador abre cualquier evento', (await meta(cod)).tono==='#111111');
+    }else di('  (entrá como administrador para probar también la clave maestra)');
   }catch(e){
-    linea('No pude comprobar la cabecera: '+motivo(e), false);
-    linea('  (falta correr el SQL de claves en Supabase)');
+    di('La prueba se cortó: '+motivo(e), false);
+    fallas.push('se cortó a la mitad');
+  }finally{
+    /* pase lo que pase, el evento de prueba no queda dando vueltas */
+    di('Limpiando…');
+    let limpio=false;
+    for(const c of [otraClave, clave, claveMaestra].filter(Boolean)){
+      try{
+        await SB.borrar('ce_items',`codigo=eq.${encodeURIComponent(cod)}`,c);
+        await SB.borrar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,c);
+        if(!(await meta(cod))){ limpio=true; break; }
+      }catch(e){}
+    }
+    probar('El evento de prueba quedó borrado', limpio);
+    if(!limpio) di('  Borralo a mano: '+cod, false);
+    di('———');
+    if(fallas.length) di(fallas.length+' prueba'+(fallas.length>1?'s':'')+' fallaron. Mandale esta pantalla a Click Eterno.', false);
+    else di('Los permisos funcionan como corresponde.', true);
+    boton.disabled=false; boton.textContent='Probar de nuevo'; delete boton.dataset.ocupado;
   }
 }
 
@@ -3038,6 +3257,13 @@ addEventListener('unhandledrejection',e=>{
   console.error('promesa sin capturar',e.reason);
   recado('Algo falló: '+motivo(e.reason));
   e.preventDefault();
+});
+/* Y lo mismo con lo que revienta sin promesa de por medio: un toque que
+   fallaba dentro de su propio manejador no mostraba nada en pantalla. */
+addEventListener('error',e=>{
+  if(e&&e.target&&e.target!==window) return;   // una imagen rota no es esto
+  console.error('error suelto',e.error||e.message);
+  try{ recado('Algo falló: '+motivo(e.error||{message:e.message})); }catch(_){}
 });
 
 (function(){

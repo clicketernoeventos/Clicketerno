@@ -956,10 +956,18 @@ async function vCamara(m,guardado,estado){
     const a=e.target.files[0]; if(!a) return;
     if(disparando) return; disparando=true;
     try{
+      /* la dirección temporal hay que soltarla: una por foto importada
+         se iba acumulando en la memoria del celular */
       const dir=URL.createObjectURL(a);
-      const img=await new Promise((res,rej)=>{ const im=new Image();
-        im.onload=()=>res(im); im.onerror=()=>rej(new Error('no pude abrir esa foto')); im.src=dir; })
-        .finally(()=>URL.revokeObjectURL(dir));
+      let img;
+      try{
+        img=await new Promise((res,rej)=>{ const im=new Image();
+          im.onload=()=>res(im);
+          /* onerror trae un Event, no un Error: sin esto el aviso al
+             invitado terminaba en "[object Event]" */
+          im.onerror=()=>rej(new Error('no pude abrir esa foto'));
+          im.src=dir; });
+      }finally{ URL.revokeObjectURL(dir); }
       const canvas=document.createElement('canvas');
       const ancho=Math.min(img.naturalWidth,1280);
       canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);
@@ -1367,8 +1375,19 @@ async function bajarTodas(m, boton){
   boton.disabled=true;
   try{
     paso('Buscando las fotos…');
-    const datos=await SB.rpc('ce_album_de',{p_codigo:m.codigo,p_token:'organizador'});
-    const fotos=(datos&&datos.todas)||[];
+    /* ce_album_de corta en 400: es lo que se puede dibujar en una pantalla.
+       Acá hay que traerlas TODAS, de a tandas, o el casamiento de 1450
+       fotos se bajaba con 400 y decía "listo". */
+    const fotos=[];
+    for(let desde=0; ; desde+=500){
+      paso(`Buscando las fotos… ${fotos.length||''}`);
+      const tanda=await SB.rpc('ce_album_pagina',
+        {p_codigo:m.codigo, p_desde:desde, p_cuanto:500}, claveDe(m.codigo));
+      if(!Array.isArray(tanda)||!tanda.length) break;
+      fotos.push(...tanda);
+      if(tanda.length<500) break;
+      if(fotos.length>20000) break;          // freno de mano, por las dudas
+    }
     if(!fotos.length){ boton.disabled=false; paso(original); return avisar('Todavía no hay fotos'); }
 
     /* Un casamiento de cien invitados son miles de fotos, y el zip se arma
@@ -1415,7 +1434,10 @@ async function bajarTodas(m, boton){
     a.href=u; a.download=`${(m.nombre||'rollo').replace(/[^\w\s-]/g,'').trim().slice(0,40)||'rollo'}.zip`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(u),8000);
-    avisar(fallaron?`Listo · ${listas} fotos (${fallaron} no se pudieron bajar)`:`Listo · ${listas} fotos`);
+    /* "Listo" a secas solo si están TODAS. Si faltó alguna hay que decirlo:
+       el organizador guarda el zip y no vuelve a mirar hasta dentro de un
+       año, cuando ya no se puede arreglar. */
+    avisar(fallaron?`Bajé ${listas} de ${fotos.length} · ${fallaron} no se pudieron`:`Listo · ${listas} fotos`);
   }catch(e){
     avisar('No se pudo: '+(e.message||e));
   }
@@ -1557,6 +1579,10 @@ async function vAlbum(m,guardado){
   if(!datos||datos.revelado===false) return vGuardado(m,guardado&&guardado.token?guardado:null);
   const mias=Array.isArray(datos.mias)?datos.mias:[];
   const todas=Array.isArray(datos.todas)?datos.todas:[];
+  /* El álbum trae hasta 400 fotos: más que eso no entra en una pantalla de
+     teléfono. Si la fiesta tuvo más, se dice, porque si no el invitado
+     cuenta las que ve, le da distinto del número de arriba y no entiende. */
+  const hayMas = datos.total_fotos!=null && datos.total_fotos>todas.length;
 
   /* Las URLs firmadas se guardan acá para no pedirlas dos veces: las mismas
      que usa el cuarto de revelado sirven después para la grilla. */
@@ -1572,6 +1598,8 @@ async function vAlbum(m,guardado){
   <div class="wrap">
     <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
       ${esc(datos.total_fotos!=null?datos.total_fotos:todas.length)} fotos de ${esc(datos.total_invitados!=null?datos.total_invitados:'?')} invitados esta noche</p>
+    ${hayMas?`<p style="text-align:center;color:var(--mute);font-size:12.5px;margin:-4px 0 4px">
+      En el álbum completo se ven las ${esc(todas.length)} últimas.</p>`:''}
     <div class="tabs" role="tablist">
       <button data-t="mias" aria-pressed="true">Tus fotos</button>
       <button data-t="todas" aria-pressed="false">Álbum completo</button>

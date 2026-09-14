@@ -1,0 +1,105 @@
+# Cómo trabajar en este repo
+
+Hay **dos sesiones de Claude trabajando en paralelo** sobre el mismo
+repositorio, cada una en su rama, y las dos mergean a `main`. Este archivo
+es el acuerdo entre las dos. Leelo antes de tocar nada.
+
+## Quién es dueño de qué
+
+| Archivo | Dueño | Rama |
+|---|---|---|
+| `muro.html`, `app.html` | sesión **Muro** | `claude/code-review-0wp0ht` |
+| `rollo.html` | sesión **Rollo** | `claude/clicketerno-event-photos-yvyyfs` |
+| `index.html` | Muro | |
+| `sql/claves.sql`, `sql/columnas.sql`, `sql/probar.sql`, `sql/esquema_falso.sql`, `sql/revisar.sql` | Muro | |
+| `sql/rollo*.sql` | Rollo | |
+| `pruebas/rollo_*.js` | Rollo | |
+| el resto de `pruebas/` | Muro | |
+| `README.md`, `CLAUDE.md` | las dos (secciones separadas) | |
+
+**Dueño** no significa permiso exclusivo: significa que si vas a tocar un
+archivo que no es tuyo, lo decís en el mensaje del commit y avisás a la otra
+sesión. Los archivos compartidos de verdad (`fakesb.js`, `README.md`) se
+tocan con cuidado y sin reescribir lo ajeno.
+
+## Antes de empezar a trabajar
+
+    git fetch origin main && git merge origin/main
+
+La otra sesión mergea a `main` sin avisar. Si arrancás sin traer sus cambios
+vas a estar editando un archivo viejo — ya pasó: el muro se mudó de
+`app.html` a `muro.html` mientras la otra sesión escribía sobre el archivo
+anterior, y hubo que portar todo a mano.
+
+## Antes de mergear a main
+
+Correr **todas** las pruebas, no solo las tuyas. Las dos sesiones comparten
+`pruebas/fakesb.js` y la misma base de datos, así que un cambio en el rollo
+puede romper el muro y al revés.
+
+    python3 -m http.server 8099 --bind 127.0.0.1 &
+    for t in stress extras nuevas borrar xss hostil diagnostico; do node pruebas/$t.js; done
+    node pruebas/rollo_navegador.js && node pruebas/rollo_organizador.js
+
+Si una prueba que no es tuya falla, **no la ignores y no la arregles a
+ciegas**: fijate primero si ya fallaba antes de tus cambios
+
+    git worktree add --detach /tmp/limpio origin/main
+
+y avisá a quien corresponda. Una prueba ajena en rojo es información, no
+ruido.
+
+## Reglas que ya nos costaron caro
+
+- **`innerText` devuelve el texto YA transformado por el CSS.** Media app
+  está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
+  pantalla diga exactamente eso. Comparar siempre en minúsculas.
+- **Nombres de clase CSS repetidos.** `.tapa` y la función `solapa()` ya
+  existían y fueron pisadas por código nuevo: una capa se comía los clics,
+  la otra tiraba "Algo se cortó". Antes de inventar un nombre, `grep`.
+- **Una prueba que pasa siempre no prueba nada.** Cuando escribas una
+  prueba nueva, corrigela contra el código *anterior* al arreglo y
+  comprobá que falla. Si pasa en los dos, no estás midiendo lo que creés.
+- **La base corta en 1000 filas por pedido.** Cualquier lectura que pueda
+  traer más (recuerdos, fotos del rollo, archivos del depósito) se pide de
+  a tandas. Sin eso se pierden datos en silencio, que es la peor manera.
+  Y el corte no siempre es de la base: en el rollo el que cortaba era un
+  `limit 400` propio, adentro de `ce_album_de`. El álbum decía "1450 fotos"
+  y entregaba 400, y el zip del organizador se bajaba con esas 400
+  diciendo **"Listo"**. Buscar los dos: los límites de la base y los
+  nuestros.
+- **No mentirle al usuario.** Si algo no se guardó, el mensaje no puede
+  decir "listo". Hay pruebas que verifican exactamente esto.
+
+## Deuda conocida
+
+*(por ahora, ninguna)*
+
+### Resuelto — `ZIP → NO bajó` en `rollo_organizador.js`
+
+Era de la sesión Rollo y ya está arreglado. La causa: la prueba tenía
+`/tmp/qa/jszip.min.js` escrito a mano — la carpeta de borradores de quien
+la escribió. En esa máquina JSZip aparecía y el zip se armaba; en cualquier
+otra el respaldo se iba al CDN, sin internet no cargaba nada, y el zip
+avisaba "no pude cargar el armador". La prueba decía `NO bajó`, que suena a
+producto roto y no lo era.
+
+Ahora `pruebas/jszip_local.js` lo consigue de `pruebas/.cache/`, o lo baja
+una vez si hay internet y lo deja ahí para la próxima. Y si no lo consigue
+de ningún lado, la prueba dice **`salteada`** en vez de `✗`: una
+dependencia que falta no es un error del producto, y anotarla como tal
+manda a la otra sesión a buscar un bug que no existe.
+
+**Cuidado al verificar contra `main` limpio con un worktree:** el worktree
+te da los *archivos* de main, pero las pruebas apuntan a un puerto fijo
+(`127.0.0.1:8890`). Si el servidor que está levantado sirve tu copia de
+trabajo, estás probando las pruebas de main contra el HTML tuyo. Hay que
+levantar un servidor sobre el worktree, en otro puerto, y apuntar la prueba
+ahí. Nos pasó a las dos sesiones con este mismo caso.
+
+## Lo que no se toca sin permiso del dueño del proyecto
+
+- La clave maestra de administrador.
+- Las políticas de Supabase ya instaladas (`sql/claves.sql` está corrido en
+  producción; cualquier cambio hay que dárselo a él para que lo corra).
+- El número de WhatsApp: **341 250-6451**.

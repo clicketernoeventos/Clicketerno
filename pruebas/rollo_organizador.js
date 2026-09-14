@@ -8,10 +8,7 @@ const err=[]; p.on('pageerror',e=>err.push(e.message));
 /* La librería del zip viene de un CDN. Si este entorno no tiene salida a
    internet, servimos una copia local; si la tiene, la deja pasar. Va antes
    de la primera carga, porque después el <script> ya se pidió una sola vez. */
-await p.route('**/jszip.min.js', r=>{
-  try{ r.fulfill({status:200,contentType:'application/javascript',
-    body:fs.readFileSync(__dirname+'/.cache/jszip.min.js','utf8')}); }catch(e){ r.continue(); }
-});
+const hayZip=await require('./jszip_local.js').servir(p);
 const FOTO_ZIP=Buffer.from('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==','base64');
 const FOTOS_ZIP=Array.from({length:7},(_,i)=>({id:''+i,ruta:'T/t/'+i+'.jpg',nombre:'Invitado '+(i%3),ts:i}));
 const base={codigo:'BOD-X1',nombre:'',camara:true,cerrado:false,cupo_fotos:24,revelado:false,revela_en:null};
@@ -26,6 +23,9 @@ await p.route('**/kuqlqgrwsospwjexodqa.supabase.co/**', async r=>{
     body:JSON.stringify({invitados:12,fotos:83,revelado:false})});
   if(u.includes('/rpc/ce_album_de')) return r.fulfill({status:200,contentType:'application/json',
     body:JSON.stringify({revelado:true,mias:[],todas:FOTOS_ZIP,total_fotos:7,total_invitados:3})});
+  /* bajar todas pide de a tandas: una tanda con las siete y después vacío */
+  if(u.includes('/rpc/ce_album_pagina')) return r.fulfill({status:200,contentType:'application/json',
+    body:JSON.stringify((body().p_desde||0)===0?FOTOS_ZIP:[])});
   if(u.includes('/object/sign/ce-rollos')&&met==='POST') return r.fulfill({status:200,contentType:'application/json',
     body:JSON.stringify((body().paths||[]).map(x=>({path:x,signedURL:'/object/sign/ce-rollos/'+x+'?t=1'})))});
   if(u.includes('/object/sign/ce-rollos/')) return r.fulfill({status:200,contentType:'image/jpeg',body:FOTO_ZIP});
@@ -72,7 +72,9 @@ console.log('LA PUERTA ahora lista:', (await p.textContent('.fila-ev')).replace(
 await p.goto('http://127.0.0.1:8890/rollo.html#ev/'+creado.codigo);
 await p.reload();
 await p.waitForTimeout(1400);
-if(await p.locator('#bajarTodas').count()){
+if(!hayZip){
+  console.log('ZIP     → salteada: no conseguí JSZip (ni en pruebas/.cache ni por internet)');
+} else if(await p.locator('#bajarTodas').count()){
   const [dl]=await Promise.all([p.waitForEvent('download',{timeout:25000}).catch(()=>null), p.click('#bajarTodas')]);
   console.log('ZIP     →', dl? 'bajó '+dl.suggestedFilename()+' ('+fs.statSync(await dl.path()).size+' bytes)' : 'NO bajó ✗');
 } else console.log('ZIP     → no aparece el botón ✗');

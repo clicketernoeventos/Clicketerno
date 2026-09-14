@@ -80,6 +80,12 @@ function montar(page, cfg){
       return json(typeof c.album==='function'?c.album(c.cuenta.album):c.album);
     }
     if(url.includes('/rpc/ce_camara_stats')) return json({fotos:0, invitados:0});
+    /* bajar TODAS pide de a tandas: acá servimos la tanda que toque */
+    if(url.includes('/rpc/ce_album_pagina')){
+      const b=cuerpo(), lista=(typeof c.album==='function'?c.album(1):c.album).todas||[];
+      c.cuenta.tandas=(c.cuenta.tandas||[]); c.cuenta.tandas.push(b.p_desde);
+      return json(lista.slice(b.p_desde||0, (b.p_desde||0)+(b.p_cuanto||500)));
+    }
     if(url.includes('/storage/v1/object/sign/ce-rollos') && met==='POST' && !url.includes('.jpg')){
       const b=cuerpo();
       return json((b.paths||[]).filter(p=>!c.sinFirmar.includes(p))
@@ -96,15 +102,7 @@ function montar(page, cfg){
   return c;
 }
 
-const fs=require('fs');
-/* JSZip viene de un CDN. Si este equipo no tiene salida, servimos la copia
-   que quedó en pruebas/.cache (la baja cualquier corrida con internet). */
-const CACHE='/home/user/Clicketerno/pruebas/.cache/jszip.min.js';
-const hayZip=fs.existsSync(CACHE);
-const servirZip=page=>page.route('**/jszip.min.js', r=>{
-  if(!hayZip) return r.continue();
-  r.fulfill({status:200, contentType:'application/javascript', body:fs.readFileSync(CACHE,'utf8')});
-});
+const servirZip=require('./jszip_local.js').servir;
 
 const conRollo=(page,cod='TEST-1',v={token:'tok',nombre:'Ana'})=>
   page.addInitScript(([k,val])=>localStorage.setItem(k,val), ['ce:rollo:'+cod, JSON.stringify(v)]);
@@ -433,7 +431,10 @@ await corrida('descargar todas, con una rota', async()=>{
       album:{revelado:true, mias:fotos, todas:fotos, total_fotos:3, total_invitados:1},
       sinFirmar:['TEST-1/tok/2.jpg']
     });
-    await servirZip(page);
+if(!await servirZip(page)){
+      R.push('  · salteada: no conseguí JSZip (ni en pruebas/.cache ni por internet)');
+      return await page.context().close();
+    }
     await page.addInitScript(()=>localStorage.setItem('ce:claves', JSON.stringify({'TEST-1':'ABC234'})));
     await page.goto('http://127.0.0.1:8890/rollo.html#ev/TEST-1');
     await page.waitForTimeout(1200);
@@ -574,7 +575,10 @@ await corrida('bajar un álbum grande', async()=>{
     r.fulfill({status:200, contentType:'application/json',
       body:JSON.stringify((b.paths||[]).map(p=>({path:p, signedURL:'/object/sign/ce-rollos/'+p+'?token=x'})))});
   });
-  await servirZip(page);
+if(!await servirZip(page)){
+    R.push('  · salteada: no conseguí JSZip (ni en pruebas/.cache ni por internet)');
+    return await page.context().close();
+  }
   await page.addInitScript(()=>localStorage.setItem('ce:claves', JSON.stringify({'TEST-1':'ABC234'})));
   await page.goto('http://127.0.0.1:8890/rollo.html#ev/TEST-1');
   await page.waitForTimeout(1200);

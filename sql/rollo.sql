@@ -225,6 +225,37 @@ exception when undefined_function then
   raise notice 'FALTA claves.sql: sin ce_permitido no se pudo crear ce_rutas_rollo (solo se usa para limpiar los archivos al borrar un evento). Todo lo demás quedó instalado.';
 end $ce$;
 
+-- ── 7b bis. el álbum de a tandas, para el organizador ──
+-- ce_album_de devuelve como mucho 400 fotos: es lo que se puede dibujar en
+-- una pantalla sin colgar el teléfono. Pero el organizador que se quiere
+-- llevar TODAS necesita las 1450 de un casamiento, y con el tope de 400 el
+-- zip se bajaba incompleto diciendo "listo": la peor manera de perder las
+-- fotos de una fiesta.
+-- Pide la clave del evento, como ce_rutas_rollo: nadie más tiene por qué
+-- poder listarle el álbum entero a nadie.
+do $ce$
+begin
+  execute $fn$
+    create or replace function ce_album_pagina(p_codigo text, p_desde integer, p_cuanto integer)
+    returns json language sql stable security definer set search_path = public as $cuerpo$
+      select coalesce(json_agg(json_build_object(
+               'id', t.id, 'ruta', t.ruta, 'filtro', t.filtro, 'ts', t.ts, 'nombre', t.nombre
+             ) order by t.ts, t.id), '[]'::json)
+      from (select d.id, d.ruta, d.filtro, d.ts, r.nombre
+            from ce_disparos d join ce_rollos r on r.token = d.token
+            where d.codigo = p_codigo and ce_permitido(p_codigo)
+            -- ts, id: dos fotos del mismo milisegundo tienen que salir
+            -- siempre en el mismo orden, o al pasar de tanda se repite una
+            -- y se saltea otra.
+            order by d.ts, d.id
+            offset greatest(coalesce(p_desde,0),0)
+            limit least(greatest(coalesce(p_cuanto,500),1),500)) t;
+    $cuerpo$$fn$;
+  execute 'grant execute on function ce_album_pagina(text,integer,integer) to anon, authenticated';
+exception when undefined_function then
+  raise notice 'FALTA claves.sql: sin ce_permitido no se pudo crear ce_album_pagina (es la que deja bajar TODAS las fotos de un evento grande). Todo lo demás quedó instalado.';
+end $ce$;
+
 -- ── 7c. ¿este camino ya fue reservado por ce_tomar_foto? ──
 -- Hace falta como función aparte (y no una consulta directa a ce_disparos
 -- dentro de la política de Storage) porque ce_disparos no tiene ninguna
