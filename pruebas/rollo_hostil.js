@@ -118,6 +118,15 @@ const corrida=async(nombre,fn)=>{
 };
 
 (async()=>{
+/* Sin el sitio servido en el 8890 no hay prueba que valga, y el error que
+   tira Playwright (CONNECTION_REFUSED, una vez por prueba) no lo dice. */
+try{ await fetch('http://127.0.0.1:8890/rollo.html'); }
+catch(e){
+  console.log('\nNo hay nada sirviendo el sitio en el puerto 8890.');
+  console.log('Levantalo primero:  npx http-server -p 8890 -c-1 &\n');
+  process.exit(2);
+}
+
 const browser = await chromium.launch({
   executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']
@@ -457,6 +466,126 @@ await corrida('un invitado con mala intención en el nombre', async()=>{
     ok('el nombre se ve como texto', (await texto(page)).includes('<img src=x'));
     ok('sin errores de JS', errores.length===0, errores[0]||'');
     await page.context().close();
+});
+
+
+/* ══ 16. el código del evento ══
+   Es un "upsert": dos códigos iguales no dan error, uno pisa al otro. */
+await corrida('el código que se le da a cada fiesta', async()=>{
+  const {page,errores}=await nuevaPagina(browser);
+  montar(page);
+  await page.goto('http://127.0.0.1:8890/rollo.html');
+  await page.waitForTimeout(500);
+  const cods=await page.evaluate(()=>Array.from({length:500},()=>nuevoCodigo('XV')));
+  ok('todos tienen el largo de siempre', cods.every(c=>/^QUI-[A-Z2-9]{6}$/.test(c)),
+     'el más corto: '+cods.slice().sort((a,b)=>a.length-b.length)[0]);
+  ok('no se repite ninguno entre 500', new Set(cods).size===500, (500-new Set(cods).size)+' repetidos');
+  ok('sin errores de JS', errores.length===0, errores[0]||'');
+  await page.context().close();
+});
+
+/* ══ 17. se corta la señal justo al crear ══
+   Si el pedido llega pero la respuesta se pierde, el evento queda creado.
+   Sin la clave guardada de antes, el organizador lo perdía para siempre. */
+await corrida('se corta la señal justo al crear el rollo', async()=>{
+  const {page,errores}=await nuevaPagina(browser);
+  let corte=true;
+  await page.route(SUPA, async route=>{
+    const url=route.request().url(), met=route.request().method();
+    if(url.includes('/rest/v1/ce_eventos') && met==='POST'){
+      if(corte){ corte=false; return route.abort('failed'); }   // llegó, no volvió
+      return route.fulfill({status:201, body:''});
+    }
+    if(url.includes('/rest/v1/ce_eventos'))
+      return route.fulfill({status:200, contentType:'application/json',
+        body:JSON.stringify(met==='GET'?[]:[])});
+    if(url.includes('/rpc/ce_camara_stats'))
+      return route.fulfill({status:200, contentType:'application/json', body:'{"fotos":0,"invitados":0}'});
+    return route.fulfill({status:404, body:'no mockeado'});
+  });
+  await page.goto('http://127.0.0.1:8890/rollo.html#nuevo/1');
+  await page.waitForTimeout(500);
+  await page.locator('#dato').fill('Los 15 de Delfina');
+  for(const _ of [1,2,3]){ await page.locator('#sig').click(); await page.waitForTimeout(350); }
+  await page.locator('#sig').click();     // crear, y se corta
+  await page.waitForTimeout(900);
+  const guardadas=await page.evaluate(()=>JSON.parse(localStorage.getItem('ce:claves')||'{}'));
+  const cods=Object.keys(guardadas);
+  ok('la clave quedó guardada igual', cods.length===1, cods.length+' claves');
+  ok('le avisa que no se pudo', /No se pudo crear/i.test(await texto(page)), (await texto(page)).slice(-70));
+  /* el aviso no puede quedar encima del botón grande */
+  const tapa=await page.evaluate(()=>{
+    const b=document.querySelector('#sig'), n=document.querySelector('#aviso-toast');
+    if(!b||!n) return 'falta uno';
+    const rb=b.getBoundingClientRect(), rn=n.getBoundingClientRect();
+    return !(rn.bottom<rb.top||rn.top>rb.bottom||rn.right<rb.left||rn.left>rb.right);
+  });
+  ok('el aviso no le tapa el botón de crear', tapa===false, 'se superponen');
+  await page.locator('#sig').click();     // reintenta
+  await page.waitForTimeout(1200);
+  const despues=Object.keys(await page.evaluate(()=>JSON.parse(localStorage.getItem('ce:claves')||'{}')));
+  ok('al reintentar NO crea un segundo evento', despues.length===1, despues.length+' claves');
+  ok('y es el mismo código de antes', despues[0]===cods[0], cods[0]+' → '+despues[0]);
+  ok('sin errores de JS', errores.length===0, errores[0]||'');
+  await page.context().close();
+});
+
+/* ══ 18. irse a otro lado mientras revela ══
+   El cuarto oscuro cuelga del body y tenía relojes propios: ocho segundos
+   después le pisaba la pantalla al invitado, estuviera donde estuviera. */
+await corrida('irse de la pantalla mientras se revela', async()=>{
+  const {page,errores}=await nuevaPagina(browser);
+  const fotos=[1,2,3].map(i=>({id:''+i, ruta:`TEST-1/tok/${i}.jpg`, filtro:'bn', ts:i, nombre:'Ana', mia:true}));
+  montar(page,{
+    estado:{token:'tok',nombre:'Ana',disparos:3,cupo:3,camara:true,cerrado:false,revelado:true,revela_en:null},
+    album:{revelado:true, mias:fotos, todas:fotos, total_fotos:3, total_invitados:1}
+  });
+  await conRollo(page);
+  await page.goto('http://127.0.0.1:8890/rollo.html?e=TEST-1');
+  await page.waitForTimeout(1800);
+  ok('el cuarto de revelado arrancó', await page.locator('.cuarto').count()===1);
+  ok('las copias llegan con la foto puesta',
+     await page.evaluate(()=>[...document.querySelectorAll('.cuarto .copia img')].every(i=>i.complete && i.naturalWidth>0)));
+  await page.evaluate(()=>{ location.hash='codigo'; });
+  await page.waitForTimeout(600);
+  ok('al cambiar de pantalla el cuarto se va', await page.locator('.cuarto').count()===0);
+  const antes=await texto(page);
+  await page.waitForTimeout(9000);        // más de lo que dura toda la animación
+  const ahora=await texto(page);
+  ok('y no vuelve a pisar la pantalla después', ahora===antes, '"'+ahora.slice(0,60)+'"');
+  ok('sin errores de JS', errores.length===0, errores[0]||'');
+  await page.context().close();
+});
+
+/* ══ 19. un álbum grande ══
+   Las direcciones firmadas duran una hora: con miles de fotos, las últimas
+   se vencían antes de que les llegara el turno. */
+await corrida('bajar un álbum grande', async()=>{
+  const {page,errores}=await nuevaPagina(browser);
+  const fotos=Array.from({length:220},(_,i)=>({id:''+i, ruta:`TEST-1/tok/${i}.jpg`, filtro:'bn', ts:i, nombre:'Ana', mia:true}));
+  const c=montar(page,{
+    evento:{codigo:'TEST-1', nombre:'Fiesta', tono:'#D9AE72', camara:true, cerrado:false, cupo_fotos:3, revelado:true},
+    album:{revelado:true, mias:[], todas:fotos, total_fotos:220, total_invitados:1}
+  });
+  const tandas=[];
+  await page.route('**/storage/v1/object/sign/ce-rollos', async r=>{
+    const b=JSON.parse(r.request().postData()||'{}');
+    tandas.push((b.paths||[]).length);
+    r.fulfill({status:200, contentType:'application/json',
+      body:JSON.stringify((b.paths||[]).map(p=>({path:p, signedURL:'/object/sign/ce-rollos/'+p+'?token=x'})))});
+  });
+  await servirZip(page);
+  await page.addInitScript(()=>localStorage.setItem('ce:claves', JSON.stringify({'TEST-1':'ABC234'})));
+  await page.goto('http://127.0.0.1:8890/rollo.html#ev/TEST-1');
+  await page.waitForTimeout(1200);
+  const bajada=page.waitForEvent('download',{timeout:90000}).catch(()=>null);
+  await page.locator('#bajarTodas').click();
+  const d=await bajada;
+  ok('el zip se baja', !!d, 'no bajó nada');
+  ok('firma de a tandas, no todo de una', tandas.length>=3 && Math.max(...tandas)<=100, 'tandas: '+tandas.join('+'));
+  ok('y firma las 220', tandas.reduce((a,b)=>a+b,0)===220, 'firmó '+tandas.reduce((a,b)=>a+b,0));
+  ok('sin errores de JS', errores.length===0, errores[0]||'');
+  await page.context().close();
 });
 
 await browser.close();

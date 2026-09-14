@@ -589,6 +589,11 @@ function avisar(msg){
       +'z-index:80;max-width:86vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)';
     document.body.appendChild(n);
   }
+  /* El aviso vive abajo de todo, que es justo donde está el botón grande
+     de las pantallas con pie fijo: le tapaba el "Crear el rollo" durante
+     tres segundos, y el organizador tocaba el cartel en vez del botón. */
+  const pie=document.querySelector('.pie-fijo');
+  n.style.bottom = pie ? (pie.offsetHeight+16)+'px' : '26px';
   n.textContent=msg; n.style.opacity='1';
   clearTimeout(n._t); n._t=setTimeout(()=>n.style.opacity='0',3200);
 }
@@ -1087,7 +1092,7 @@ async function vInicio(){
 }
 
 /* ── crear: una pregunta por pantalla ── */
-const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24};
+const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24,codigo:'',clave:''};
 const PASOS=4;
 function vNuevo(n){
   const paso=Math.min(Math.max(Number(n)||1,1),PASOS);
@@ -1180,12 +1185,47 @@ function vNuevo(n){
   app.querySelector('#sig').onclick=seguir;
 }
 
+/* Seis caracteres al azar de verdad. Math.random().toString(16) a veces
+   devuelve menos dígitos de los que uno espera (0.5 da "0.8"), y ahí salía
+   un código de una letra. Y como guardar un evento es un "upsert", dos
+   códigos iguales no dan error: uno pisa al otro. */
+const nuevoCodigo=tipo=>{
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n=new Uint32Array(6);
+  try{ crypto.getRandomValues(n); }
+  catch(e){ for(let i=0;i<n.length;i++) n[i]=Math.floor(Math.random()*4294967296); }
+  return TIPOS[tipo]+'-'+[...n].map(x=>abc[x%abc.length]).join('');
+};
+/* ¿ese código ya es de alguien? Preguntar es barato y pisarle la fiesta a
+   otro no tiene arreglo. Si no hay señal para preguntar, seguimos igual:
+   con seis caracteres al azar la chance es ínfima. */
+async function codigoLibre(codigo){
+  try{
+    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
+    return !(r&&r.length);
+  }catch(e){ return true; }
+}
+
 async function crearRollo(){
   const b=app.querySelector('#sig');
   if(b.disabled) return;
   b.disabled=true; b.textContent='Creando…';
-  const codigo=TIPOS[nuevo.tipo]+'-'+Math.random().toString(16).slice(2,8).toUpperCase();
-  const claveEv=nuevaClave();
+  /* El código y la clave se sortean UNA vez y quedan guardados en `nuevo`:
+     si el pedido se corta por la señal y el organizador vuelve a apretar,
+     tiene que reintentar el MISMO evento, no crear un segundo. */
+  if(!nuevo.codigo){
+    let intento=nuevoCodigo(nuevo.tipo), vueltas=0;
+    while(!(await codigoLibre(intento)) && ++vueltas<5) intento=nuevoCodigo(nuevo.tipo);
+    nuevo.codigo=intento;
+    nuevo.clave=nuevaClave();
+  }
+  const codigo=nuevo.codigo, claveEv=nuevo.clave;
+  /* La clave se guarda ANTES de crear. Si el pedido llega a la base pero la
+     respuesta se pierde en el camino, el evento queda creado y sin esto el
+     organizador no lo podría manejar nunca más. Una clave de un evento que
+     al final no se creó no molesta: la lista de la puerta solo muestra los
+     que la base confirma. */
+  guardarClaveDe(codigo,claveEv);
   const vence=new Date(nuevo.fecha); vence.setMonth(vence.getMonth()+12);
   try{
     await SB.guardar('ce_eventos',{
@@ -1194,7 +1234,7 @@ async function crearRollo(){
       camara:true, cupo_fotos:nuevo.cupo, revelado:false,
       revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
     }, claveEv);
-    guardarClaveDe(codigo,claveEv);
+    nuevo.codigo=''; nuevo.clave='';      // el próximo rollo arranca limpio
     irA('ev/'+codigo);
   }catch(err){
     b.disabled=false; b.textContent='Crear el rollo';
@@ -1331,10 +1371,27 @@ async function bajarTodas(m, boton){
     const fotos=(datos&&datos.todas)||[];
     if(!fotos.length){ boton.disabled=false; paso(original); return avisar('Todavía no hay fotos'); }
 
-    const mapa=await SB.firmar(fotos.map(f=>f.ruta));
+    /* Un casamiento de cien invitados son miles de fotos, y el zip se arma
+       entero en la memoria del teléfono. Antes de que se le muera a la
+       mitad, le decimos que lo haga desde una computadora. */
+    if(fotos.length>250 && !confirm(
+        `Son ${fotos.length} fotos. Armar el archivo acá puede colgar el teléfono: `
+        +`desde una computadora sale mucho mejor.\n\n¿Querés intentarlo igual?`)){
+      boton.disabled=false; paso(original); return;
+    }
+
     const zip=new JSZip();
     let listas=0, fallaron=0;
-    for(const f of fotos){
+    /* Las direcciones firmadas duran una hora. Con muchas fotos y mala
+       señal, las últimas se vencían antes de que les llegara el turno: se
+       firman de a cien, recién cuando toca bajarlas. */
+    let mapa={};
+    for(let i=0;i<fotos.length;i++){
+      const f=fotos[i];
+      if(i%100===0){
+        paso(`Preparando ${i+1} de ${fotos.length}…`);
+        mapa=await SB.firmar(fotos.slice(i,i+100).map(x=>x.ruta));
+      }
       paso(`Bajando ${listas+1} de ${fotos.length}…`);
       try{
         /* Sin URL firmada, fetch(undefined) baja ESTA PÁGINA y la mete en
@@ -1443,6 +1500,10 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
     const terminar=()=>{
       if(listo) return; listo=true;
       relojitos.forEach(clearTimeout);
+      /* Si el cuarto ya no está en la pantalla, el invitado se fue a otro
+         lado mientras revelaba: nos vamos sin dibujar nada. Sin esto, ocho
+         segundos después el álbum le pisaba la pantalla en la que estuviera. */
+      if(!c.isConnected) return res();
       /* el álbum se dibuja ANTES de que el cuarto se desvanezca: así uno
          cruza con el otro en vez de pasar por una pantalla en negro */
       try{ if(alApagarse) alApagarse(); }catch(e){}
@@ -1450,10 +1511,13 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
       setTimeout(()=>{ c.remove(); res(); }, 900);
     };
     c.onclick=terminar;
+    /* para que cerrarCapas() pueda apagarlo sin dejar relojes dando vueltas */
+    c._cortar=()=>{ listo=true; relojitos.forEach(clearTimeout); res(); };
     const t=(fn,ms)=>relojitos.push(setTimeout(fn,ms));
 
     fotos.forEach((f,i)=>{
       t(()=>{
+        if(!c.isConnected) return;
         const cop=document.createElement('div');
         cop.className='copia';
         /* cada copia cae un poco torcida, como si la dejaran en la bandeja */
@@ -1525,6 +1589,15 @@ async function vAlbum(m,guardado){
          en la bandeja del revelado es peor que una copia menos. */
       const bandeja=enBandeja.filter(f=>firmadas[f.ruta]);
       if(!bandeja.length) throw new Error('sin copias');
+      /* Y que lleguen con la foto adentro: si la bajada va lenta, la copia
+         caía en la bandeja vacía y la imagen aparecía de golpe después,
+         justo al revés de lo que tiene que pasar en un revelado. */
+      await Promise.race([
+        Promise.all(bandeja.map(f=>new Promise(ok=>{
+          const im=new Image(); im.onload=ok; im.onerror=ok; im.src=firmadas[f.ruta];
+        }))),
+        new Promise(ok=>setTimeout(ok,4000))   // nadie espera para siempre
+      ]);
       app.innerHTML='';                      // nada atrás que se transparente
       await cuartoOscuro(m, bandeja, firmadas, pintarAlbum);
     }catch(e){ if(!app.querySelector('.grilla')) pintarAlbum(); }
@@ -1533,6 +1606,10 @@ async function vAlbum(m,guardado){
   }
 
   const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
+  /* El cuarto de revelado se puede cortar a mitad de camino porque el
+     invitado se fue a otra pantalla. Si pasó eso, el álbum ya no es de
+     nadie: no hay dónde dibujarlo y seguir acá era reventar. */
+  if(!gMias||!gTodas) return;
 
   /* ── el visor: la grilla sola no alcanza, la gracia es mirar la foto ── */
   function abrirVisor(fotos, mapa, desde){
@@ -1645,7 +1722,10 @@ async function vAlbum(m,guardado){
    visor y el cuarto de revelado no están adentro de #app, así que una
    navegación (el botón atrás del teléfono, por ejemplo) los dejaba tapando
    la pantalla nueva. */
-const cerrarCapas=()=>document.querySelectorAll('.visorf,.cuarto').forEach(c=>c.remove());
+const cerrarCapas=()=>document.querySelectorAll('.visorf,.cuarto').forEach(c=>{
+  if(c._cortar) c._cortar();
+  c.remove();
+});
 
 /* ── arranque ──
    Dos puertas en la misma dirección: el invitado llega con ?e=CODIGO

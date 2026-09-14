@@ -91,7 +91,7 @@ npx http-server -p 8890 -c-1 &
 node pruebas/rollo_navegador.js    # 24 pruebas del invitado: cámara colgada, señal cortada…
 node pruebas/rollo_organizador.js  # el recorrido del organizador, de la puerta al revelado
 node pruebas/rollo_hora.js         # que la hora del revelado no se corra de zona
-node pruebas/rollo_hostil.js       # 51 comprobaciones con todo saliendo mal
+node pruebas/rollo_hostil.js       # 69 comprobaciones con todo saliendo mal
 ```
 
 Las dos que arman el zip se bajan JSZip de un CDN. En un equipo sin
@@ -101,8 +101,9 @@ pruebas la usan de ahí (esa carpeta no se sube al repositorio).
 `rollo_hostil.js` es la que mira lo feo: la base devuelve el cupo vacío, el
 salón se queda sin señal, una foto no se puede traer del depósito, el
 organizador vuelve a esconder el álbum, el teléfono no deja prender la
-cámara, el organizador entra desde otro teléfono con la clave. Corre todo
-con el reloj en Argentina, que es donde se usa.
+cámara, la señal se corta justo al crear el rollo, el invitado se va de la
+pantalla mientras se revela, hay que bajar doscientas fotos de una. Corre
+todo con el reloj en Argentina, que es donde se usa.
 
 Las del muro están en `pruebas/LEEME.md` y usan otro puerto. Si playwright
 está instalado global en vez de en el proyecto:
