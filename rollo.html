@@ -845,7 +845,13 @@ async function vCamara(m,guardado,estado){
     const a=e.target.files[0]; if(!a) return;
     if(disparando) return; disparando=true;
     try{
-      const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(a); });
+      /* la dirección temporal hay que soltarla: una por foto importada
+         se iba acumulando en la memoria del celular */
+      const dir=URL.createObjectURL(a);
+      let img;
+      try{
+        img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=dir; });
+      }finally{ URL.revokeObjectURL(dir); }
       const canvas=document.createElement('canvas');
       const ancho=Math.min(img.naturalWidth,1280);
       canvas.width=ancho; canvas.height=Math.round(ancho*img.naturalHeight/img.naturalWidth);

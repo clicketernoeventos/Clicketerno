@@ -1,10 +1,15 @@
 /* Supabase falso en memoria, controlable por modo.
    modos: ok | fail (500) | net (aborta) | evil (datos maliciosos/rotos) */
+/* La base de verdad nunca devuelve más de mil filas de una: sin esto, las
+   pruebas pasaban con álbumes que en producción salen cortados. */
+const TOPE = 1000;
 function crearFake(modo = 'ok') {
   const db = { ce_eventos: [], ce_items: [] };
   const claves = {};                 // codigo -> clave, como la tabla ce_claves
+  const archivosFalsos = [];         // lo que hay en el depósito
   const MAESTRA = '166774';
   let subidas = 0;
+  const pedidos = { items: 0, tandasBorrado: 0, archivosBorrados: 0 };
   // imita lo que hace la base: solo pasa si la clave es la del evento o la maestra
   const permitido = (codigo, clave) =>
     !!clave && (clave === MAESTRA || (codigo && claves[codigo] === clave));
@@ -34,6 +39,20 @@ function crearFake(modo = 'ok') {
       });
     }
 
+    // ── borrado de archivos del depósito ──
+    if (url.includes('/storage/v1/object/ce-medios') && metodo === 'DELETE') {
+      const cuerpo = JSON.parse(request.postData() || '{}');
+      pedidos.tandasBorrado++;
+      pedidos.archivosBorrados += (cuerpo.prefixes || []).length;
+      return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+    }
+    // ── listado del depósito, con su tope y su offset ──
+    if (url.includes('/storage/v1/object/list/')) {
+      const cuerpo = JSON.parse(request.postData() || '{}');
+      const desde = cuerpo.offset || 0;
+      return route.fulfill({ status: 200, contentType: 'application/json',
+        body: JSON.stringify(archivosFalsos.slice(desde, desde + Math.min(cuerpo.limit || TOPE, TOPE))) });
+    }
     // ── storage ──
     if (url.includes('/storage/v1/object/')) {
       subidas++;
@@ -67,12 +86,16 @@ function crearFake(modo = 'ok') {
     const filas = db[tabla];
 
     if (metodo === 'GET') {
+      if (tabla === 'ce_items') pedidos.items++;
       let out = filas.slice();
       if (q.codigo) { const v = eqVal(q.codigo); out = out.filter((f) => f.codigo === v); }
       if (q.id) { const v = eqVal(q.id); out = out.filter((f) => String(f.id) === v); }
       if (q.order && q.order.startsWith('ts.asc')) out.sort((a, b) => a.ts - b.ts);
       if (q.order && q.order.startsWith('creado.desc')) out.sort((a, b) => (b.creado || 0) - (a.creado || 0));
-      if (q.limit) out = out.slice(0, +q.limit);
+      // como la base de verdad: nunca más de TOPE filas, y respeta offset
+      const desde = +(q.offset || 0);
+      const pedido = q.limit ? +q.limit : TOPE;
+      out = out.slice(desde, desde + Math.min(pedido, TOPE));
       if (modo === 'evil' && tabla === 'ce_eventos') {
         out = out.map((f) => ({
           ...f,
@@ -105,6 +128,11 @@ function crearFake(modo = 'ok') {
             return route.fulfill({ status: 400, contentType: 'application/json',
               body: JSON.stringify({ message: 'Falta la clave del evento' }) });
           claves[obj.codigo] = clave;
+        }
+        if (tabla === 'ce_items' && i < 0 && !permitido(obj.codigo, clave)) {
+          // como el disparador ce_forzar_estado: el invitado no elige su estado
+          const ev = db.ce_eventos.find((f) => f.codigo === obj.codigo);
+          obj.estado = (ev && ev.moderar) ? 'pendiente' : 'aprobado';
         }
         if (tabla === 'ce_eventos' && i >= 0 && !permitido(obj.codigo, clave))
           return route.fulfill({ status: 403, contentType: 'application/json',
@@ -142,7 +170,8 @@ function crearFake(modo = 'ok') {
   }
 
   return {
-    db, claves,
+    db, claves, pedidos,
+    archivos: archivosFalsos,
     get subidas() { return subidas; },
     instalar: async (page) => {
       await page.route('**/rest/v1/**', (r) => manejar(r, r.request()));
