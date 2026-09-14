@@ -1,6 +1,13 @@
 -- Copia aproximada del esquema real, solo para probar
 create extension if not exists pgcrypto;
 create schema if not exists storage;
+/* También las del rollo, y ANTES que ce_eventos: si solo se tiraba
+   ce_eventos "cascade", se llevaba puestas las claves foráneas de
+   ce_rollos y ce_disparos, y como esas dos tablas seguían en pie el
+   "create table if not exists" de rollo.sql no las volvía a poner. La
+   copia de prueba quedaba sin el borrado en cascada, y la prueba que
+   justamente cuida eso pasaba de casualidad en la segunda corrida. */
+drop table if exists ce_disparos, ce_rollos cascade;
 drop table if exists ce_items, ce_eventos, ce_claves, ce_ajustes cascade;
 drop table if exists storage.objects cascade;
 create table ce_eventos(

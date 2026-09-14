@@ -10,7 +10,7 @@ const err=[]; p.on('pageerror',e=>err.push(e.message));
    de la primera carga, porque después el <script> ya se pidió una sola vez. */
 await p.route('**/jszip.min.js', r=>{
   try{ r.fulfill({status:200,contentType:'application/javascript',
-    body:fs.readFileSync('/tmp/qa/jszip.min.js','utf8')}); }catch(e){ r.continue(); }
+    body:fs.readFileSync(__dirname+'/.cache/jszip.min.js','utf8')}); }catch(e){ r.continue(); }
 });
 const FOTO_ZIP=Buffer.from('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==','base64');
 const FOTOS_ZIP=Array.from({length:7},(_,i)=>({id:''+i,ruta:'T/t/'+i+'.jpg',nombre:'Invitado '+(i%3),ts:i}));

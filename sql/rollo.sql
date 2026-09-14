@@ -82,7 +82,10 @@ begin
 
   return json_build_object(
     'token', p_token, 'nombre', v_nombre,
-    'disparos', v_disparos, 'cupo', v_cupo,
+    -- cupo_fotos nunca puede viajar vacío: del otro lado, en JavaScript,
+    -- "0 >= null" da verdadero y el invitado quedaba con el rollo lleno
+    -- sin haber sacado una sola foto.
+    'disparos', v_disparos, 'cupo', coalesce(v_cupo, 24),
     'camara', coalesce(v_camara,false), 'cerrado', coalesce(v_cerrado,false),
     'revelado', ce_camara_revelada(p_codigo), 'revela_en', v_revela_en
   );
@@ -113,7 +116,10 @@ begin
   if not found then
     raise exception 'Ese rollo no existe' using errcode = '28000';
   end if;
-  if v_disparos >= v_cupo then
+  -- y acá al revés: "v_disparos >= null" no es verdadero NUNCA, así que
+  -- con la columna vacía no había cupo que valiera y se podía llenar el
+  -- depósito sin límite.
+  if v_disparos >= coalesce(v_cupo, 24) then
     raise exception 'Ya usaste todas tus fotos' using errcode = '28000';
   end if;
 
@@ -122,7 +128,7 @@ begin
             (extract(epoch from now())*1000)::bigint);
   update ce_rollos set disparos = disparos + 1 where token = p_token;
 
-  return json_build_object('restantes', v_cupo - v_disparos - 1);
+  return json_build_object('restantes', coalesce(v_cupo, 24) - v_disparos - 1);
 end $$;
 
 -- ── 5b. devolver una foto que nunca llegó a subirse ──
