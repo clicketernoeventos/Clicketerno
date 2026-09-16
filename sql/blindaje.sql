@@ -137,7 +137,13 @@ grant execute on function ce_evento_existe(text), ce_evento_abierto(text)
 -- mundo, y estándolo cualquiera podía ir probando claves hasta acertar:
 -- el que acierta, la cambia, y el dueño se queda afuera.
 --     select ce_cambiar_maestra('la de ahora','la nueva');   ← desde el editor
-revoke execute on function ce_cambiar_maestra(text,text) from anon, authenticated, public;
+do $ce$
+begin
+  execute 'revoke execute on function ce_cambiar_maestra(text,text) from anon, authenticated, public';
+  raise notice 'CLAVE MAESTRA OK: ya no se puede cambiar desde internet.';
+exception when undefined_function then
+  raise notice 'No encontré ce_cambiar_maestra: ¿se corrió sql/claves.sql antes que esto?';
+end $ce$;
 
 -- ══════════════════════════════════════════════════════════════
 -- 3 · UNA FOTO DEL ROLLO SOLO PUEDE IR A SU PROPIA CARPETA
