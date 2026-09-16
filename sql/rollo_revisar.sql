@@ -1,7 +1,9 @@
 -- Corré esto en el SQL Editor de Supabase después de rollo.sql y pegame el
--- resultado. Las filas 1 a 11 las instala el script solo. Las 12 a 14 son
+-- resultado. Las filas 1 a 12 las instala el script solo. Las 13 a 16 son
 -- las del depósito: si este proyecto no deja tocarlas desde el editor
 -- (pasa desde 2025), hay que crearlas a mano desde el panel de Storage.
+-- Tienen que dar TODAS true. Si alguna de las primeras 12 da false, alcanza
+-- con volver a correr sql/rollo.sql: está hecho para poder repetirse.
 select 1 as n, 'BASE · Columnas de cámara en ce_eventos' as parte,
   (select count(*) from information_schema.columns
    where table_name='ce_eventos' and column_name in ('camara','cupo_fotos','revela_en','revelado'))=4 as listo
@@ -15,12 +17,17 @@ union all select  8, 'BASE · Función ce_album_de',        exists(select 1 from
 union all select  9, 'BASE · Función ce_camara_stats',    exists(select 1 from pg_proc where proname='ce_camara_stats')
 union all select 10, 'BASE · Función ce_rutas_rollo',     exists(select 1 from pg_proc where proname='ce_rutas_rollo')
 union all select 11, 'BASE · Función ce_ruta_reservada',  exists(select 1 from pg_proc where proname='ce_ruta_reservada')
-union all select 12, 'DEPÓSITO · ce-rollos existe y es privado',
+-- Esta llegó después de la primera instalación: si da false, "Descargar
+-- todas las fotos" se baja solo las primeras 400 y le dice "Listo" al
+-- organizador. Se arregla corriendo sql/rollo.sql otra vez (es repetible).
+union all select 12, 'BASE · Función ce_album_pagina (bajar TODAS)',
+  exists(select 1 from pg_proc where proname='ce_album_pagina')
+union all select 13, 'DEPÓSITO · ce-rollos existe y es privado',
   exists(select 1 from storage.buckets where id='ce-rollos' and public=false)
-union all select 13, 'DEPÓSITO · Regla de subir',
+union all select 14, 'DEPÓSITO · Regla de subir',
   exists(select 1 from pg_policies where schemaname='storage' and tablename='objects' and policyname='ce rollos subir')
-union all select 14, 'DEPÓSITO · Regla de leer',
+union all select 15, 'DEPÓSITO · Regla de leer',
   exists(select 1 from pg_policies where schemaname='storage' and tablename='objects' and policyname='ce rollos leer')
-union all select 15, 'DEPÓSITO · Regla de borrar',
+union all select 16, 'DEPÓSITO · Regla de borrar',
   exists(select 1 from pg_policies where schemaname='storage' and tablename='objects' and policyname='ce rollos borrar')
 order by n;
