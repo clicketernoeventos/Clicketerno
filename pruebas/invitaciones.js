@@ -9,7 +9,11 @@ const bien=m=>console.log('  ✓ '+m);
 /* Lo que ya usa la app. Una carpeta con uno de estos nombres la tapa. */
 const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   'logo','marca','og','index','_redirects','_headers'];
-const TOPE_FOTO=300*1024, TOPE_AUDIO=3*1024*1024, TOPE_TOTAL=12*1024*1024;
+const TOPE_FOTO=300*1024, TOPE_TOTAL=12*1024*1024;
+/* La música es aparte: con preload="none" recién se baja si el invitado
+   toca el botón, así que no frena la primera carga. Igual hay un tope:
+   son megas de datos del celular de otra persona. */
+const TOPE_AUDIO=8*1024*1024;
 /* Una invitación puede traer las fotos pegadas adentro del HTML en base64.
    El tope por foto no las ve —el archivo es .html— así que el HTML tiene
    el suyo: todo eso se baja de una antes de que se vea nada. */

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pia · Quince años</title>
+<meta name="description" content="Pia cumple quince. 10 de febrero de 2027, Salón La Mansión del Rey, Rosario.">
+<meta name="theme-color" content="#2A0B16">
+<meta property="og:title" content="Pia · Quince años">
+<meta property="og:description" content="10 de febrero de 2027 · Salón La Mansión del Rey">
+<meta property="og:type" content="website">
+<meta property="og:image" content="fotos/1.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vino:#6B1F36; --vino-hondo:#2A0B16; --vino-noche:#1A060E;
+  --rosa:#B8677A; --rubor:#F3DDE3; --rubor-claro:#FBF1EE; --crema:#FFFAF6;
+  --oro:#B8935A; --oro-claro:#E4C89A; --tinta:#3A2A2F;
+  --e:cubic-bezier(.22,.7,.24,1);
+  --gutter:clamp(22px,6vw,44px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:Jost,system-ui,sans-serif;font-weight:300;color:var(--tinta);
+  background:var(--vino-noche);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+
+/* ── el grano: lo que separa un fondo plano de uno con cuerpo ── */
+.grano{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E")}
+
+/* ── marca de agua tipográfica ── */
+.filete{display:flex;align-items:center;justify-content:center;gap:16px;color:var(--oro)}
+.filete:before,.filete:after{content:'';height:1px;width:min(72px,18vw);
+  background:linear-gradient(90deg,transparent,currentColor)}
+.filete:after{background:linear-gradient(270deg,transparent,currentColor)}
+.rombo{width:7px;height:7px;transform:rotate(45deg);border:1px solid currentColor;flex:none}
+.arriba{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.42em;text-transform:uppercase;
+  color:var(--oro);font-weight:400}
+
+/* ══════════ 1 · el sobre ══════════ */
+#sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;
+  background:radial-gradient(120% 90% at 50% 15%,#7C2540,var(--vino-hondo) 58%,var(--vino-noche));
+  transition:opacity 1.1s var(--e),visibility 1.1s}
+#sobre.abierto{opacity:0;visibility:hidden}
+.sobre-centro{text-align:center;padding:0 var(--gutter);display:grid;gap:clamp(26px,5vh,44px);justify-items:center}
+.sobre-centro .arriba{animation:entra 1.2s var(--e) both .2s}
+.tapa{width:min(74vw,290px);aspect-ratio:1.45;position:relative;cursor:pointer;
+  animation:entra 1.2s var(--e) both .4s,flota 5.5s ease-in-out infinite 1.6s}
+.tapa-cuerpo{position:absolute;inset:0;border-radius:4px;overflow:hidden;
+  background:linear-gradient(160deg,#8E2C4B,#5C1A2E 62%,#42111F);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.14)}
+.tapa-v{position:absolute;inset:0;overflow:hidden}
+.tapa-v:before{content:'';position:absolute;left:50%;top:0;width:141%;aspect-ratio:1;
+  transform:translateX(-50%) rotate(45deg);transform-origin:top center;
+  background:linear-gradient(135deg,#9C3352,#6B1F36);
+  box-shadow:0 8px 22px -10px rgba(0,0,0,.6)}
+.lacre{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+  width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 34% 30%,var(--oro-claro),var(--oro) 52%,#8A6B39);
+  box-shadow:0 10px 24px -8px rgba(0,0,0,.7),inset 0 1px 2px rgba(255,255,255,.5);
+  color:#4A2B10;transition:transform .5s var(--e)}
+.tapa:hover .lacre,.tapa:active .lacre{transform:translate(-50%,-50%) scale(1.07)}
+.lacre svg{width:22px;height:22px}
+.sobre-pie{font-size:13.5px;letter-spacing:.2em;text-transform:uppercase;color:#E9CBD5;
+  animation:entra 1.2s var(--e) both .6s}
+.sobre-pie b{color:var(--oro-claro);font-weight:400}
+@keyframes entra{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* ══════════ el lienzo ══════════ */
+#papel{position:relative;z-index:1;opacity:0;transition:opacity 1.4s var(--e) .25s}
+#papel.visible{opacity:1}
+section{position:relative;padding:clamp(62px,9.5vh,104px) var(--gutter)}
+.centro{max-width:560px;margin:0 auto;text-align:center}
+h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.08;
+  font-size:clamp(34px,10vw,54px)}
+.bajada{font-size:clamp(14.5px,3.9vw,16.5px);line-height:1.9;margin-top:18px}
+
+/* fondos por sección */
+.claro{background:var(--rubor-claro);color:var(--tinta)}
+.claro h2{color:var(--vino)}
+.oscuro{background:radial-gradient(120% 80% at 50% 0,#4A1527,var(--vino-hondo) 62%,var(--vino-noche));
+  color:#F0DEE4}
+.oscuro h2{color:#FBEFF3}
+.oscuro .bajada{color:#D8BFC8}
+
+/* ── 2 · el nombre ── */
+#nombre{min-height:100svh;display:grid;align-content:center;overflow:hidden;
+  background:var(--vino-noche)}
+.retrato{position:absolute;inset:0;z-index:0}
+.retrato img{width:100%;height:118%;object-fit:cover;object-position:50% 28%;
+  filter:saturate(.8) brightness(.66)}
+.retrato:after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(26,6,14,.62) 0%,rgba(26,6,14,.12) 34%,rgba(26,6,14,.55) 62%,rgba(26,6,14,.94) 96%)}
+.nombre-caja{position:relative;z-index:1;text-align:center}
+#letras{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  font-size:clamp(66px,26vw,150px);line-height:.9;color:#FFF7F2;
+  display:flex;justify-content:center;flex-wrap:wrap}
+#letras .l{display:inline-block;opacity:0;transform:translateY(34px) rotate(4deg);
+  transition:opacity 1s var(--e),transform 1.1s var(--e)}
+#papel.visible #letras .l{opacity:1;transform:none}
+.quince{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;
+  font-size:clamp(20px,5.6vw,28px);color:var(--oro-claro);letter-spacing:.1em;margin-top:6px}
+.nombre-fecha{margin-top:clamp(26px,5vh,40px);color:#EBD6DD;font-size:clamp(13px,3.6vw,15px);
+  letter-spacing:.3em;text-transform:uppercase}
+.baja{position:absolute;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);z-index:2;color:var(--oro-claro);opacity:.75;
+  animation:rebote 2.4s ease-in-out infinite}
+@keyframes rebote{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,9px)}}
+
+/* ── 3 · cuenta regresiva ── */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,14px);
+  margin-top:clamp(30px,6vh,46px)}
+.casilla{background:rgba(255,255,255,.055);border:1px solid rgba(232,200,154,.24);
+  border-radius:3px;padding:clamp(14px,3.6vw,22px) 4px;backdrop-filter:blur(6px)}
+.casilla b{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+  font-size:clamp(28px,8.4vw,44px);line-height:1;color:#FFF7F2;font-variant-numeric:tabular-nums}
+.casilla span{display:block;font-size:clamp(8.5px,2.3vw,10px);letter-spacing:.24em;
+  text-transform:uppercase;color:var(--oro);margin-top:9px}
+
+/* ── 4 · cronograma ── */
+.linea{position:relative;margin-top:clamp(34px,7vh,52px);text-align:left;
+  padding-left:30px}
+.linea:before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;
+  background:linear-gradient(180deg,transparent,var(--oro),transparent);opacity:.5}
+.hito{position:relative;padding:0 0 clamp(26px,5vh,38px) 4px}
+.hito:last-child{padding-bottom:0}
+.hito:before{content:'';position:absolute;left:-27px;top:7px;width:9px;height:9px;
+  transform:rotate(45deg);background:var(--oro);box-shadow:0 0 0 4px rgba(184,147,90,.16)}
+.hito .hora{font-size:12px;letter-spacing:.24em;color:var(--oro);text-transform:uppercase}
+.hito .que{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(21px,5.6vw,26px);
+  margin-top:5px;line-height:1.25}
+.hito .detalle{font-size:14px;line-height:1.75;margin-top:6px;opacity:.8}
+
+/* ── 5 · tarjetas ── */
+.tarjeta{background:var(--crema);border-radius:5px;padding:clamp(28px,7vw,42px) clamp(22px,6vw,34px);
+  box-shadow:0 30px 60px -34px rgba(107,31,54,.4);text-align:center;
+  border:1px solid rgba(184,147,90,.18)}
+.tarjeta + .tarjeta{margin-top:18px}
+.tarjeta .arriba{margin-bottom:12px}
+.tarjeta h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+  font-size:clamp(26px,7vw,34px);color:var(--vino);line-height:1.15}
+.tarjeta p{font-size:15px;line-height:1.85;margin-top:14px;color:#6B5A5F}
+.boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:22px;padding:15px 30px;border-radius:999px;
+  background:linear-gradient(100deg,#8A6B39,var(--oro) 46%,var(--oro-claro));
+  color:#3A2410;font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;
+  transition:transform .3s var(--e),filter .3s;text-decoration:none}
+.boton:hover{filter:brightness(1.07)}
+.boton:active{transform:scale(.975)}
+.boton.hueco{background:none;border:1px solid rgba(184,147,90,.5);color:var(--oro)}
+.oscuro .boton.hueco{color:var(--oro-claro)}
+
+/* ── 6 · galería ── */
+.galeria{display:grid;gap:clamp(10px,3vw,16px);margin-top:clamp(30px,6vh,46px)}
+.marco{position:relative;overflow:hidden;border-radius:4px;background:#2A0B16;
+  box-shadow:0 26px 54px -30px rgba(0,0,0,.7)}
+.marco img{width:100%;height:100%;object-fit:cover;transform:scale(1.14)}
+.marco.alta{aspect-ratio:3/4}
+.marco.ancha{aspect-ratio:3/2}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,3vw,16px)}
+
+/* ── 7 · confirmar ── */
+.campo{text-align:left;margin-bottom:20px}
+.campo label{display:block;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:9px}
+.campo input,.campo select,.campo textarea{width:100%;background:rgba(255,255,255,.06);
+  border:1px solid rgba(232,200,154,.24);border-radius:3px;padding:14px 15px;
+  font-size:16px;font-weight:300;color:#FFF7F2;transition:border-color .3s}
+.campo textarea{min-height:92px;resize:vertical;line-height:1.7}
+.campo input::placeholder,.campo textarea::placeholder{color:rgba(240,222,228,.45)}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--oro)}
+.campo select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23B8935A' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center}
+.campo select option{background:#2A0B16;color:#FFF7F2}
+.persona{border-top:1px solid rgba(232,200,154,.18);padding-top:20px;margin-top:20px}
+.persona:first-child{border-top:0;padding-top:0;margin-top:0}
+.persona .quien{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--oro);
+  margin-bottom:16px}
+.sino{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sino label{display:block;position:relative;cursor:pointer}
+.sino input{position:absolute;opacity:0;pointer-events:none}
+.sino span{display:block;text-align:center;padding:15px 8px;border-radius:3px;
+  border:1px solid rgba(232,200,154,.24);font-size:13px;letter-spacing:.06em;
+  transition:.3s var(--e);color:#E8D2D9}
+.sino input:checked + span{background:linear-gradient(100deg,#8A6B39,var(--oro) 46%,var(--oro-claro));
+  border-color:transparent;color:#3A2410;font-weight:500}
+#enviar{width:100%;margin-top:8px}
+#estado{font-size:13.5px;line-height:1.7;margin-top:16px;min-height:20px;color:var(--oro-claro)}
+#estado.mal{color:#FFAEBE}
+#gracias{display:none;text-align:center}
+#gracias.ver{display:block;animation:entra .9s var(--e) both}
+
+/* ── 8 · cierre ── */
+#cierre{padding-bottom:calc(clamp(62px,9.5vh,104px) + env(safe-area-inset-bottom))}
+.firma{margin-top:34px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(240,222,228,.4)}
+.firma a{color:rgba(240,222,228,.62);text-decoration:none}
+
+/* ── música ── */
+#musica{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:50;
+  width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(42,11,22,.82);border:1px solid rgba(232,200,154,.32);color:var(--oro-claro);
+  backdrop-filter:blur(10px);opacity:0;transform:scale(.7);
+  transition:opacity .6s var(--e),transform .6s var(--e),border-color .3s}
+#musica.ver{opacity:1;transform:none}
+#musica svg{width:19px;height:19px}
+#musica .pausa{display:none}
+#musica.sonando .play{display:none}
+#musica.sonando .pausa{display:block}
+#musica.sonando{border-color:var(--oro)}
+.ondita{position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--oro);opacity:0}
+#musica.sonando .ondita{animation:onda 2.6s ease-out infinite}
+@keyframes onda{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+
+/* ── barra de avance ── */
+#avance{position:fixed;top:0;left:0;height:2px;z-index:55;width:0;
+  background:linear-gradient(90deg,var(--oro),var(--oro-claro))}
+
+/* ══════════ movimiento ══════════ */
+.sube{opacity:0;transform:translateY(30px);
+  transition:opacity 1s var(--e),transform 1.1s var(--e)}
+.sube.entro{opacity:1;transform:none}
+.sube.d1{transition-delay:.12s} .sube.d2{transition-delay:.24s} .sube.d3{transition-delay:.36s}
+
+/* Mejora, no base: donde el navegador lo soporta, las fotos se mueven con
+   el dedo en vez de con un temporizador. Donde no, quedan quietas y bien. */
+@supports (animation-timeline: view()){
+  @keyframes deriva{from{transform:scale(1.14) translateY(-3.2%)}
+                    to{transform:scale(1.14) translateY(3.2%)}}
+  .marco img{animation:deriva linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+  @keyframes hondo{from{transform:scale(1.1) translateY(-2%)}to{transform:scale(1.12) translateY(4%)}}
+  .retrato img{animation:hondo linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+}
+
+/* Quien pidió menos movimiento, menos movimiento. */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  .sube{opacity:1;transform:none}
+  #letras .l{opacity:1;transform:none}
+  .marco img,.retrato img{animation:none;transform:scale(1.02)}
+}
+
+@media (min-width:620px){
+  .galeria{grid-template-columns:1fr 1fr}
+  .marco.destacada{grid-column:1 / -1}
+}
+</style>
+</head>
+<body>
+
+<div class="grano"></div>
+<div id="avance"></div>
+
+<!-- ══════════ 1 · el sobre ══════════ -->
+<section id="sobre">
+  <div class="sobre-centro">
+    <p class="arriba">Estás invitada</p>
+    <div class="tapa" id="tapa" role="button" tabindex="0" aria-label="Abrir la invitación">
+      <div class="tapa-cuerpo"><div class="tapa-v"></div></div>
+      <div class="lacre">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0c.9 8.2 2.9 11.1 12 12-9.1.9-11.1 3.8-12 12-.9-8.2-2.9-11.1-12-12C9.1 11.1 11.1 8.2 12 0z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="sobre-pie">Tocá el sobre <b>para abrir</b></p>
+  </div>
+</section>
+
+<main id="papel">
+
+  <!-- ══════════ 2 · el nombre ══════════ -->
+  <section id="nombre">
+    <div class="retrato">
+      <picture>
+        <source srcset="fotos/1.webp" type="image/webp">
+        <img src="fotos/1.jpg" alt="" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="nombre-caja">
+      <div id="letras" aria-label="Pia"></div>
+      <p class="quince">quince años</p>
+      <p class="nombre-fecha" id="fecha-arriba"></p>
+    </div>
+    <div class="baja" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · cuenta regresiva ══════════ -->
+  <section class="oscuro">
+    <div class="centro">
+      <p class="arriba sube">Falta poco</p>
+      <h2 class="sube d1">Ya casi<br><em class="serif" style="font-style:italic">llega la noche</em></h2>
+      <div class="reloj sube d2" id="reloj">
+        <div class="casilla"><b id="c-dias">–</b><span>días</span></div>
+        <div class="casilla"><b id="c-horas">–</b><span>horas</span></div>
+        <div class="casilla"><b id="c-min">–</b><span>minutos</span></div>
+        <div class="casilla"><b id="c-seg">–</b><span>segundos</span></div>
+      </div>
+      <p class="bajada sube d3" id="cuando"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · la noche ══════════ -->
+  <section class="claro">
+    <div class="centro">
+      <p class="arriba sube">Cómo va a ser</p>
+      <h2 class="sube d1">La noche</h2>
+      <div class="linea sube d2" id="cronograma"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · dónde ══════════ -->
+  <section class="oscuro">
+    <div class="centro">
+      <p class="arriba sube">Dónde nos vemos</p>
+      <h2 class="sube d1" id="lugar"></h2>
+      <p class="bajada sube d2" id="direccion"></p>
+      <a class="boton hueco sube d3" id="ir" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+        </svg>Cómo llegar</a>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · galería ══════════ -->
+  <section class="claro">
+    <div class="centro">
+      <p class="arriba sube">Un poco de ella</p>
+      <h2 class="sube d1">Pia</h2>
+      <div class="galeria">
+        <div class="marco ancha destacada sube">
+          <picture><source srcset="fotos/2.webp" type="image/webp">
+            <img src="fotos/2.jpg" alt="Pia" loading="lazy"></picture>
+        </div>
+        <div class="marco alta sube d1">
+          <picture><source srcset="fotos/4.webp" type="image/webp">
+            <img src="fotos/4.jpg" alt="Pia" loading="lazy"></picture>
+        </div>
+        <div class="marco alta sube d2">
+          <picture><source srcset="fotos/3.webp" type="image/webp">
+            <img src="fotos/3.jpg" alt="Pia" loading="lazy"></picture>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 · detalles ══════════ -->
+  <section class="claro" style="padding-top:0">
+    <div class="centro">
+      <div class="tarjeta sube">
+        <p class="arriba">Cómo vestirse</p>
+        <h3>Dress code</h3>
+        <p id="dress"></p>
+      </div>
+      <div class="tarjeta sube d1">
+        <p class="arriba">Un gesto</p>
+        <h3>Regalo</h3>
+        <p>El mejor regalo es que vengas. Si querés hacerme un presente,
+           podés colaborar con mis sueños y anhelos.</p>
+        <button class="boton hueco" id="ver-alias">Ver alias</button>
+        <p id="alias-caja" style="display:none;margin-top:16px">
+          <b class="serif" id="alias" style="font-size:24px;color:var(--vino);letter-spacing:.06em"></b><br>
+          <button class="boton hueco" id="copiar-alias" style="margin-top:12px">Copiar</button>
+        </p>
+      </div>
+      <div class="tarjeta sube d2">
+        <p class="arriba">Para la pista</p>
+        <h3>La playlist</h3>
+        <p>Sumá el tema que no puede faltar. Lo vamos a poner.</p>
+        <a class="boton hueco" id="playlist" target="_blank" rel="noopener">Abrir en Spotify</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · confirmar ══════════ -->
+  <section class="oscuro" id="rsvp">
+    <div class="centro">
+      <p class="arriba sube">Cuento con vos</p>
+      <h2 class="sube d1">Confirmá<br><em class="serif" style="font-style:italic">tu asistencia</em></h2>
+      <p class="bajada sube d2" id="limite"></p>
+
+      <form id="form" class="sube d3" style="margin-top:34px;text-align:left" novalidate>
+        <div class="campo">
+          <label for="personas">Cuántas personas</label>
+          <select name="personas" id="personas" required>
+            <option value="1">1 persona</option>
+            <option value="2">2 personas</option>
+            <option value="3">3 personas</option>
+            <option value="4">4 personas</option>
+            <option value="5+">5 o más</option>
+          </select>
+        </div>
+
+        <div id="gente"></div>
+
+        <div class="campo" style="margin-top:24px">
+          <label>¿Vas a venir?</label>
+          <div class="sino">
+            <label><input type="radio" name="confirma" value="Confirmo" checked><span>Sí, voy</span></label>
+            <label><input type="radio" name="confirma" value="No podré asistir"><span>No podré</span></label>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="cancion">Un tema para la fiesta</label>
+          <input type="text" name="cancion" id="cancion" placeholder="Opcional">
+        </div>
+
+        <div class="campo">
+          <label for="mensaje">Un mensaje para Pia</label>
+          <textarea name="mensaje" id="mensaje" placeholder="Opcional"></textarea>
+        </div>
+
+        <button type="submit" class="boton" id="enviar">Confirmar</button>
+        <p id="estado" role="status" aria-live="polite"></p>
+      </form>
+
+      <div id="gracias">
+        <div class="filete" style="margin:0 auto 24px"><i class="rombo"></i></div>
+        <h2>¡Gracias por<br><em class="serif" style="font-style:italic">confirmar!</em></h2>
+        <p class="bajada">Ya te tenemos anotada. Nos vemos el 10 de febrero.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 9 · cierre ══════════ -->
+  <section class="oscuro" id="cierre">
+    <div class="centro">
+      <div class="filete" style="margin-bottom:26px"><i class="rombo"></i></div>
+      <h2 class="sube"><em class="serif" style="font-style:italic">Te espero</em></h2>
+      <p class="bajada sube d1">Va a ser una noche para acordarse toda la vida.</p>
+      <p class="firma sube d2">
+        Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<button id="musica" aria-label="Poner o sacar la música">
+  <i class="ondita"></i>
+  <svg class="play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+    <path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+  <svg class="pausa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+    <path d="M9 5v14M15 5v14"/></svg>
+</button>
+<audio id="audio" loop preload="none"></audio>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   Lo único que se toca para otra clienta.
+   ══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  nombre: "Pia",
+  fechaFiesta: "2027-02-10T21:00:00",       // hora de Rosario, sin zona: se lee local
+  fechaLimiteConfirmar: "20 de enero 2027",
+  lugar: "Salón La Mansión del Rey",
+  direccion: "Vera Mujica 68 · Rosario",
+  linkComoLlegar: "https://maps.app.goo.gl/CWMwmorTuRBi9kjr7",
+  playlistLink: "https://open.spotify.com/playlist/37i9dQZEVXbMMy2roB9myp?si=jcA7KQt0R2CpzIjfln4LHA",
+  dressCode: "Elegante. Los colores rosa y blanco están reservados para la cumpleañera.",
+  aliasRegalo: "pia.15",
+  cancionFondoUrl: "../cancion.mp3",   // el mismo archivo que la versión actual, sin duplicarlo
+  cronograma: [
+    {hora:"21:00", que:"Recepción",     detalle:"Te esperamos con algo fresco para arrancar."},
+    {hora:"22:00", que:"La entrada",    detalle:"El momento de Pia. No te lo pierdas."},
+    {hora:"22:30", que:"La cena",       detalle:"A la mesa."},
+    {hora:"00:00", que:"El brindis",    detalle:"Las velas, el vals y la foto de todos."},
+    {hora:"00:30", que:"Que empiece",   detalle:"Baile hasta que se apaguen las luces."}
+  ],
+  endpoint: "https://script.google.com/macros/s/AKfycbyYAQY0rbpCUeLFpKQq4S5O1uWIwt7vDp43g1Hl8kRm6RsTgnBc-Hi3OEflcs5_0V6eZw/exec"
+};
+
+const $ = s => document.querySelector(s);
+const esc = t => String(t==null?'':t).replace(/[<>&"']/g,c=>
+  ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── el sobre ── */
+const papel = $('#papel');
+function abrir(){
+  if (papel.classList.contains('visible')) return;
+  $('#sobre').classList.add('abierto');
+  papel.classList.add('visible');
+  setTimeout(()=>{ $('#sobre').remove(); $('#musica').classList.add('ver'); }, 1200);
+  /* el primer toque del invitado es el permiso que pide el navegador para
+     sonar: si no lo aprovechamos acá, después hay que pedírselo de nuevo */
+  if (CONFIG.cancionFondoUrl) sonar(true);
+}
+$('#tapa').addEventListener('click', abrir);
+$('#tapa').addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); abrir(); }});
+
+/* ── el nombre, letra por letra ── */
+$('#letras').innerHTML = [...CONFIG.nombre].map((ch,i)=>
+  `<span class="l" style="transition-delay:${.5 + i*.13}s">${esc(ch)}</span>`).join('');
+
+/* ── fechas ── */
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio",
+               "agosto","septiembre","octubre","noviembre","diciembre"];
+const fiesta = new Date(CONFIG.fechaFiesta);
+const dosD = n => String(n).padStart(2,'0');
+$('#fecha-arriba').textContent =
+  `${fiesta.getDate()} de ${MESES[fiesta.getMonth()]} · ${fiesta.getFullYear()}`;
+$('#cuando').textContent =
+  `${fiesta.getDate()} de ${MESES[fiesta.getMonth()]} de ${fiesta.getFullYear()}, ` +
+  `a las ${dosD(fiesta.getHours())}:${dosD(fiesta.getMinutes())}.`;
+$('#limite').textContent = `Confirmá antes del ${CONFIG.fechaLimiteConfirmar}.`;
+$('#lugar').textContent = CONFIG.lugar;
+$('#direccion').textContent = CONFIG.direccion;
+$('#ir').href = CONFIG.linkComoLlegar;
+$('#playlist').href = CONFIG.playlistLink;
+$('#dress').textContent = CONFIG.dressCode;
+$('#alias').textContent = CONFIG.aliasRegalo;
+
+/* ── cuenta regresiva ── */
+function reloj(){
+  const falta = fiesta - Date.now();
+  if (falta <= 0){
+    $('#reloj').innerHTML =
+      '<p class="bajada" style="grid-column:1/-1;margin:0">Hoy es la noche.</p>';
+    return true;
+  }
+  const s = Math.floor(falta/1000);
+  $('#c-dias').textContent  = Math.floor(s/86400);
+  $('#c-horas').textContent = dosD(Math.floor(s%86400/3600));
+  $('#c-min').textContent   = dosD(Math.floor(s%3600/60));
+  $('#c-seg').textContent   = dosD(s%60);
+}
+if (!reloj()) setInterval(reloj, 1000);
+
+/* ── cronograma ── */
+$('#cronograma').innerHTML = CONFIG.cronograma.map(h=>`
+  <div class="hito">
+    <div class="hora">${esc(h.hora)}</div>
+    <div class="que">${esc(h.que)}</div>
+    ${h.detalle?`<div class="detalle">${esc(h.detalle)}</div>`:''}
+  </div>`).join('');
+
+/* ── que las cosas aparezcan al llegar ── */
+const mirador = new IntersectionObserver(entradas=>{
+  for (const e of entradas) if (e.isIntersecting){
+    e.target.classList.add('entro');
+    mirador.unobserve(e.target);
+  }
+}, {threshold:.16, rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.sube').forEach(e=>mirador.observe(e));
+
+/* ── barra de avance ── */
+const barra = $('#avance');
+addEventListener('scroll', ()=>{
+  const alto = document.body.scrollHeight - innerHeight;
+  barra.style.width = (alto>0 ? (scrollY/alto)*100 : 0) + '%';
+}, {passive:true});
+
+/* ── música ── */
+const audio = $('#audio'), botonM = $('#musica');
+if (CONFIG.cancionFondoUrl) audio.src = CONFIG.cancionFondoUrl;
+else botonM.style.display = 'none';
+function sonar(auto){
+  if (!CONFIG.cancionFondoUrl) return;
+  audio.play().then(()=>botonM.classList.add('sonando'))
+    .catch(()=>{ if(!auto) botonM.classList.remove('sonando'); });
+}
+botonM.addEventListener('click', ()=>{
+  if (audio.paused) sonar(false);
+  else { audio.pause(); botonM.classList.remove('sonando'); }
+});
+
+/* ── alias ── */
+$('#ver-alias').addEventListener('click', e=>{
+  $('#alias-caja').style.display='block'; e.currentTarget.style.display='none';
+});
+$('#copiar-alias').addEventListener('click', async e=>{
+  const b = e.currentTarget;
+  try{ await navigator.clipboard.writeText(CONFIG.aliasRegalo); b.textContent='Copiado'; }
+  catch(_){ b.textContent = CONFIG.aliasRegalo; }
+  setTimeout(()=>b.textContent='Copiar', 2200);
+});
+
+/* ── los bloques de cada persona ── */
+const ALIMENTACION = ["Ninguno","Vegetariano","Celíaco","Diabético","Hipertenso",
+                      "No tolerante a la lactosa","Otro"];
+const selPersonas = $('#personas'), gente = $('#gente');
+function bloque(i){
+  return `
+  <div class="persona">
+    <div class="quien">Persona ${i}</div>
+    <div class="campo"><label for="p${i}n">Nombre</label>
+      <input type="text" id="p${i}n" name="persona${i}_nombre" placeholder="Nombre" required></div>
+    <div class="campo"><label for="p${i}a">Apellido</label>
+      <input type="text" id="p${i}a" name="persona${i}_apellido" placeholder="Apellido" required></div>
+    <div class="campo"><label for="p${i}c">¿Algún requerimiento en la comida?</label>
+      <select id="p${i}c" name="persona${i}_alimentacion" data-persona="${i}">
+        ${ALIMENTACION.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+      </select>
+      <input type="text" name="persona${i}_alimentacion_otro" data-otro="${i}"
+             placeholder="Contanos cuál" style="margin-top:10px;display:none"></div>
+  </div>`;
+}
+function pintarGente(){
+  const v = selPersonas.value;
+  const n = v === '5+' ? 5 : parseInt(v,10);
+  gente.innerHTML = Array.from({length:n},(_,k)=>bloque(k+1)).join('');
+}
+selPersonas.addEventListener('change', pintarGente);
+pintarGente();
+gente.addEventListener('change', e=>{
+  const i = e.target.dataset.persona;
+  if (!i) return;
+  const otro = gente.querySelector(`[data-otro="${i}"]`);
+  otro.style.display = e.target.value === 'Otro' ? 'block' : 'none';
+  if (e.target.value !== 'Otro') otro.value = '';
+});
+
+/* ── enviar ──
+   Google Apps Script no deja leer la respuesta desde otro dominio, así que
+   el envío va "a ciegas". Por eso después preguntamos si de verdad llegó,
+   en vez de dar por hecho que sí: una confirmación perdida es una silla
+   vacía que nadie ve venir. */
+const form = $('#form'), estado = $('#estado'), enviar = $('#enviar');
+const primerNombre = () => (gente.querySelector('[name="persona1_nombre"]')||{}).value || '';
+
+async function llegó(nombre){
+  try{
+    const r = await fetch(CONFIG.endpoint, {cache:'no-store'});
+    const d = await r.json();
+    const lista = d.invitados || [];
+    return lista.some(i => String(i['Persona 1 - Nombre']||'').trim().toLowerCase()
+                            === nombre.trim().toLowerCase());
+  }catch(_){ return null; }        // no pudimos comprobar: no afirmamos nada
+}
+
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if (enviar.disabled) return;
+  if (!form.reportValidity()) return;
+  enviar.disabled = true; enviar.textContent = 'Enviando…';
+  estado.className = ''; estado.textContent = '';
+  const datos = new FormData(form);
+  const nombre = primerNombre();
+  try{
+    await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:datos});
+    const ok = await llegó(nombre);
+    if (ok === false){
+      estado.className = 'mal';
+      estado.textContent = 'No nos llegó tu confirmación. Probá de nuevo en un momento, '+
+                           'o escribinos y te anotamos a mano.';
+      enviar.disabled = false; enviar.textContent = 'Confirmar';
+      return;
+    }
+    form.style.display = 'none';
+    $('#gracias').classList.add('ver');
+    if (ok === null)
+      $('#gracias').insertAdjacentHTML('beforeend',
+        '<p class="bajada" style="opacity:.7;font-size:13.5px">'+
+        'No pudimos verificarlo del todo. Si no ves tu nombre en la lista, escribinos.</p>');
+  }catch(err){
+    estado.className = 'mal';
+    estado.textContent = 'No se pudo enviar. Fijate la conexión y probá de nuevo.';
+    enviar.disabled = false; enviar.textContent = 'Confirmar';
+  }
+});
+</script>
+</body>
+</html>
