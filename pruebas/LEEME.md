@@ -10,6 +10,7 @@ Se corren con el sitio servido en `http://127.0.0.1:8099`:
     node pruebas/xss.js         # inyección de código
     node pruebas/hostil.js      # fiestas enormes, nombres imposibles, red rota
     node pruebas/diagnostico.js # el autodiagnóstico de la app
+    node pruebas/invitaciones.js # las invitaciones alojadas (no necesita servidor)
 
 `fakesb.js` es una base falsa en memoria que imita a Supabase, claves
 incluidas, y sabe fallar a propósito (500, sin red, datos envenenados).
