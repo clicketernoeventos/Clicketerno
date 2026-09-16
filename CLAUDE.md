@@ -70,10 +70,20 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 
 ### Lo que está corrido en producción
 
-`sql/claves.sql` y `sql/rollo.sql` están instalados y confirmados, con el
+`sql/claves.sql` y `sql/rollo.sql` se corrieron y se confirmaron, con el
 depósito `ce-rollos` y sus tres reglas. De `sql/columnas.sql` (del muro) no
-hay confirmación de primera mano: antes de darlo por puesto, correr
-`sql/revisar.sql` y mirar.
+hay confirmación de primera mano.
+
+**Pero `rollo.sql` creció después de esa confirmación**, así que el archivo
+del repo tiene más cosas que la base. Falta al menos `ce_album_pagina`, que
+es la que deja bajar TODAS las fotos: sin ella el zip del organizador se
+lleva las primeras 400 y le dice **"Listo"**. `sql/rollo.sql` está hecho
+para poder correrse de nuevo encima de lo que ya hay, así que la forma de
+poner la base al día es volver a correrlo entero.
+
+**Nunca dar por puesto lo que dice este archivo: mirarlo.**
+`sql/rollo_revisar.sql` y `sql/revisar.sql` dicen qué está y qué falta, fila
+por fila. Tienen que dar todas `true`.
 
 **Desde acá no se llega a la base de producción.** Cualquier cambio de SQL
 va pegado en el chat, en un bloque listo para copiar, y lo corre una
@@ -188,6 +198,20 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
 
 ## Pendiente, decidido y no hecho
 
+- **Correr `sql/rollo.sql` de nuevo en Supabase.** Es lo primero de la lista
+  y lo único que hoy hace que el producto mienta: sin `ce_album_pagina`,
+  "Descargar todas las fotos" le baja al organizador las primeras 400 y le
+  dice "Listo". Comprobar después con `sql/rollo_revisar.sql`: las dieciséis
+  filas tienen que dar `true`.
+- **El rollo nunca se probó en un teléfono de verdad.** Está repasado línea
+  por línea y tiene 69 comprobaciones de casos feos, pero todo eso corre en
+  un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
+  en hardware real: la cámara de un iPhone (Safari es donde más se rompió
+  esto), el revelado en una pantalla chica, y el wifi de un salón lleno.
+- **Darle forma a la interfaz del rollo.** Es el paso que sigue y está
+  pedido: que la app guíe sola, una cosa para tocar por pantalla, y
+  personalizarla. La referencia que gustó es instante.camera, pero con
+  interfaz propia y más moderna: copiar el funcionamiento, no el aspecto.
 - ~~**Video recap** del álbum~~. **Descartado por el dueño** (16/09), con
   la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que
