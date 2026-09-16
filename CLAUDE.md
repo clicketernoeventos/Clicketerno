@@ -71,6 +71,17 @@ ruido.
 - `pruebas/rollo_organizador.js` falla en `ZIP → NO bajó`. Ya fallaba en
   `main` antes del repaso del 14/09 (verificado con un worktree limpio).
   Es de la sesión Rollo.
+- `pruebas/rollo_navegador.js` puede dar 4 fallas de
+  `ERR_CERT_AUTHORITY_INVALID`: es el contenedor, no el código (pasa igual
+  con `main` limpio). No lo persigas.
+
+## Lo que se publica en clicketerno.com.ar
+
+`wrangler.json` sube **toda** la carpeta. Lo que no tiene que estar en la
+web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
+`clicketerno.com.ar/sql/claves.sql` se bajaba desde el navegador — y ese
+archivo llevaba la clave maestra de producción escrita en texto plano.
+Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
 ## Lo que no se toca sin permiso del dueño del proyecto
 

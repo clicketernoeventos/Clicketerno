@@ -7,7 +7,7 @@ function crearFake(modo = 'ok') {
   const db = { ce_eventos: [], ce_items: [] };
   const claves = {};                 // codigo -> clave, como la tabla ce_claves
   const archivosFalsos = [];         // lo que hay en el depósito
-  const MAESTRA = '166774';
+  const MAESTRA = 'CLAVE-MAESTRA-DE-PRUEBA';
   let subidas = 0;
   const pedidos = { items: 0, tandasBorrado: 0, archivosBorrados: 0 };
   // imita lo que hace la base: solo pasa si la clave es la del evento o la maestra

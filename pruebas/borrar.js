@@ -29,6 +29,15 @@ function fake({niegaBorrado=false}={}){
     });
     await p.route('**/rest/v1/**',r=>{
       const req=r.request(), u=req.url();
+      /* la app ya no decide sola si una clave es la maestra: se lo pregunta
+         a la base, así que la base falsa tiene que saber contestar */
+      if(u.includes('/rpc/ce_quien_soy')){
+        const clave=req.headers()['x-clave']||'';
+        return r.fulfill({status:200,contentType:'application/json',
+          body:JSON.stringify({llego_la_clave:!!clave,
+                               es_maestra:clave==='CLAVE-MAESTRA-DE-PRUEBA',
+                               puede_editar:!!clave})});
+      }
       const tabla=u.includes('ce_items')?'ce_items':'ce_eventos';
       const cod=(u.match(/codigo=eq\.([^&]+)/)||[])[1];
       if(req.method()==='DELETE'){
@@ -50,7 +59,8 @@ function fake({niegaBorrado=false}={}){
 async function entrarComoAdmin(p){
   await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
   await p.waitForTimeout(900);
-  await p.fill('#pin','166774'); await p.click('#entrar'); await p.waitForTimeout(900);
+  await p.click('#modoAdmin'); await p.waitForTimeout(200);
+    await p.fill('#pin','CLAVE-MAESTRA-DE-PRUEBA'); await p.click('#entrar'); await p.waitForTimeout(900);
 }
 
 (async()=>{
