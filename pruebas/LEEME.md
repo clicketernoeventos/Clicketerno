@@ -11,6 +11,12 @@ las de la base, y apaga solo lo que haya levantado. También `todo.sh muro`,
 Existe porque ponerlo a mano son seis pasos, y olvidarse de uno no da un
 error: da una prueba que falla por el motivo equivocado.
 
+`linea-base` guarda las observaciones conocidas de `stress`, anotadas por
+modo. Esa suite cuenta como falla cada `console.error`, y en los modos
+`fail` y `net` la base y la red se rompen a propósito: que la app registre
+el error es lo correcto. El corredor avisa solo cuando ese número
+**cambia**. Los modos `ok` y `evil` tienen que dar cero siempre.
+
 ## Una por una
 
 Las del muro, con el sitio servido en `http://127.0.0.1:8099`:

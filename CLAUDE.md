@@ -128,6 +128,17 @@ las del cupo?, ¿puede ver las de otro?
   cualquier otra decía `ZIP → NO bajó`, que suena a producto roto y no lo
   era. Lo que falte se busca con `pruebas/jszip_local.js` o se saltea
   **diciéndolo**: una dependencia ausente no es un bug.
+- **No editar un script mientras se está ejecutando.** Bash lee el archivo
+  por posición, no de una: si se le insertan líneas en el medio, retoma a
+  mitad de una palabra y tira un error de sintaxis en una línea que en
+  disco está perfecta. Media hora buscando un bug que no existía.
+- **Una prueba que falla siempre deja de ser información.** `stress`
+  informa 15 observaciones de sus modos que rompen a propósito (cuenta cada
+  `console.error`, y en los modos `fail` y `net` el error es justamente lo
+  que se busca). Están anotadas por modo en `pruebas/linea-base` y el
+  corredor avisa solo cuando **cambian**. No subir ese número para que deje
+  de molestar: mirar qué apareció. Los modos `ok` y `evil` tienen que dar
+  cero, siempre.
 - **Cuidado al comparar contra `main`.** `git worktree` te da los archivos
   de main, pero las pruebas apuntan a un puerto fijo: si el servidor
   levantado sirve tu copia de trabajo, estás corriendo las pruebas de main

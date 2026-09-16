@@ -54,10 +54,13 @@ servidor(){
   return 1
 }
 
-# Algunas suites cuentan como "falla" cosas que rompen a propósito (stress
-# corre modos evil/fail/net). Ese número conocido vive en pruebas/linea-base
-# y solo avisamos cuando CAMBIA: una prueba permanentemente en rojo deja de
-# ser información y pasa a ser ruido que uno aprende a ignorar.
+# Algunas suites cuentan como "falla" cosas que rompen a propósito: stress
+# recorre la app en cuatro modos y suma cada console.error, y en los modos
+# "fail" (la base no responde) y "net" (la red cortada) que la app registre
+# el error ES lo correcto. Esas observaciones conocidas viven en
+# pruebas/linea-base y solo avisamos cuando CAMBIAN: una prueba
+# permanentemente en rojo deja de ser información y pasa a ser ruido que uno
+# aprende a ignorar, que es por donde después se cuela un bug de verdad.
 base_de(){ grep -E "^$1=" "$RAIZ/pruebas/linea-base" 2>/dev/null | head -1 | cut -d= -f2; }
 
 correr(){                      # correr <archivo.js>
@@ -66,12 +69,17 @@ correr(){                      # correr <archivo.js>
   local salida; salida=$(cd "$RAIZ" && timeout 600 node "pruebas/$t.js" 2>&1)
   local esperadas; esperadas=$(base_de "$t")
   if [ -n "$esperadas" ]; then
-    local vistas; vistas=$(echo "$salida" | grep -c '✗')
-    if [ "$vistas" -eq "$esperadas" ]; then
-      echo "ok  ($vistas observaciones conocidas, sin cambios)"
+    # Las observaciones se comparan POR MODO. Con un total suelto, una falla
+    # nueva en "ok" y una que desaparece en "net" se cancelan y nadie se
+    # entera; por modo, eso salta.
+    local visto_modos; visto_modos=$(echo "$salida" | grep -oE '✗ \[[a-z]+/' | sed 's/✗ \[//;s|/||' | sort | uniq -c | awk '{print $2":"$1}' | paste -sd, -)
+    if [ "$visto_modos" = "$esperadas" ]; then
+      echo "ok  (${esperadas//,/ · }, las conocidas de siempre)"
       return 0
     fi
-    falla "CAMBIÓ: esperaba $esperadas observaciones y vinieron $vistas"
+    falla "CAMBIARON las observaciones"
+    echo "      esperaba: ${esperadas:-ninguna}"
+    echo "      vinieron: ${visto_modos:-ninguna}"
     echo "$salida" | grep '✗' | head -8 | sed 's/^/      /'
     FALLARON+=("$t")
     return 0
