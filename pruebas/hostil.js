@@ -207,7 +207,8 @@ const evento=extra=>Object.assign({codigo:COD,nombre:'Delfina',fecha:'2026-08-21
       url:'https://x/ce-medios/'+COD+'/f'+i+'.jpg',autor:'A',texto:'',estado:'aprobado',ts:i});
     await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(900);
-    await p.fill('#pin','166774'); await p.click('#entrar'); await p.waitForTimeout(900);
+    await p.click('#modoAdmin'); await p.waitForTimeout(200);
+    await p.fill('#pin','CLAVE-MAESTRA-DE-PRUEBA'); await p.click('#entrar'); await p.waitForTimeout(900);
     await p.goto('about:blank');
     await p.goto(BASE+'/muro.html#evento/'+COD,{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(3000);

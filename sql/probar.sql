@@ -1,6 +1,11 @@
 \pset tuples_only on
 \pset format unaligned
 
+/* La clave maestra de las pruebas se fija acá y no vive en claves.sql:
+   ese archivo llevaba la de producción escrita, y el sitio lo publicaba. */
+update ce_ajustes set valor = crypt('CLAVE-MAESTRA-DE-PRUEBA', gen_salt('bf'))
+where nombre = 'maestra';
+
 /* Un UPDATE o DELETE bloqueado por RLS no da error: simplemente no toca
    ninguna fila. Así que cada prueba mira el ESTADO de la base después,
    no si hubo excepción. */
@@ -80,12 +85,12 @@ select verificar('con clave equivocada NO entra',
   (select nombre from ce_eventos where codigo='QUI-111')='Delfina');
 
 select '── la clave maestra ──';
-select como('166774','update ce_eventos set nombre=''Delfina ok'' where codigo=''QUI-111''');
+select como('CLAVE-MAESTRA-DE-PRUEBA','update ce_eventos set nombre=''Delfina ok'' where codigo=''QUI-111''');
 select verificar('edita cualquier evento', (select nombre from ce_eventos where codigo='QUI-111')='Delfina ok');
-select como('166774','update ce_items set estado=''aprobado'' where id=''i2''');
+select como('CLAVE-MAESTRA-DE-PRUEBA','update ce_items set estado=''aprobado'' where id=''i2''');
 select verificar('modera en cualquier evento', (select estado from ce_items where id='i2')='aprobado');
-select como('166774','delete from ce_items where codigo=''BOD-222''');
-select como('166774','delete from ce_eventos where codigo=''BOD-222''');
+select como('CLAVE-MAESTRA-DE-PRUEBA','delete from ce_items where codigo=''BOD-222''');
+select como('CLAVE-MAESTRA-DE-PRUEBA','delete from ce_eventos where codigo=''BOD-222''');
 select verificar('borra fotos y eventos',
   (select count(*) from ce_eventos where codigo='BOD-222')=0
   and (select count(*) from ce_items where codigo='BOD-222')=0);
@@ -93,7 +98,7 @@ select verificar('borra fotos y eventos',
 select '── archivos del depósito ──';
 set role postgres;
 insert into storage.objects(bucket_id,name) values ('ce-medios','QUI-111/f1.jpg'),('ce-medios','BOD-222/f9.jpg');
-select como('166774','delete from storage.objects where name=''QUI-111/f1.jpg''');
+select como('CLAVE-MAESTRA-DE-PRUEBA','delete from storage.objects where name=''QUI-111/f1.jpg''');
 select verificar('NO se borra el archivo de un evento que existe',
   (select count(*) from storage.objects where name='QUI-111/f1.jpg')=1);
 select como(null,'delete from storage.objects where name=''BOD-222/f9.jpg''');
@@ -117,4 +122,4 @@ select '  · sin clave        → '||(select ce_quien_soy('QUI-111')::text
 select '  · clave del evento → '||(select ce_quien_soy('QUI-111')::text
   from (select set_config('request.headers','{"x-clave":"clave-nueva"}',true)) _);
 select '  · clave maestra    → '||(select ce_quien_soy('QUI-111')::text
-  from (select set_config('request.headers','{"x-clave":"166774"}',true)) _);
+  from (select set_config('request.headers','{"x-clave":"CLAVE-MAESTRA-DE-PRUEBA"}',true)) _);

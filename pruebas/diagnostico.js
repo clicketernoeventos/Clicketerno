@@ -17,7 +17,7 @@ async function abrir(browser,{sinClaves=false,admin=false}={}){
     contentType:'application/json',
     body:JSON.stringify({code:'PGRST202',message:'Could not find the function public.ce_quien_soy'})}));
   if(admin) await ctx.addInitScript(()=>{ try{
-    sessionStorage.setItem('ce:admin','1'); sessionStorage.setItem('ce:maestra','166774');
+    sessionStorage.setItem('ce:admin','1'); sessionStorage.setItem('ce:maestra','CLAVE-MAESTRA-DE-PRUEBA');
     sessionStorage.setItem('ce:pinOK','1'); }catch(e){} });
   return {ctx,p,errs,fake};
 }

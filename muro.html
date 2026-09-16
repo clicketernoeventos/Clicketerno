@@ -1360,21 +1360,28 @@ function contarHacia(nodo,m,alAbrir){
   tic(); reloj(tic,1000);
 }
 
-/* ══════════ clave maestra ══════════
-   Entra a cualquier evento sin la clave del dispositivo. Se guarda la
-   huella (SHA-256), no el número, para que no se lea de un vistazo en el
-   código de la página. Aun así, esto es comodidad, NO seguridad: es un
-   número de seis cifras y cualquiera con la página abierta puede probarlas
-   todas en segundos. Lo que de verdad protege los datos son las políticas
-   de la base. */
-const HUELLA_MAESTRA='0a224a9fea4f973ae5cf10bfab5cf5693722fd529741f790178875ec56e06037';
+/* La clave maestra la valida LA BASE, no esta página.
+   Antes acá vivía la huella SHA-256 de la clave: publicada en el código de
+   una página que cualquiera abre, y siendo un número de seis cifras, se
+   sacaba probando el millón de combinaciones en un segundo. Ahora la página
+   no sabe cuál es: le pregunta a la base, que la guarda cifrada con bcrypt.
+   Así además la clave puede ser todo lo larga que haga falta. */
 async function esMaestra(texto){
+  if(!texto) return false;
+  if(!HAY_NUBE){
+    /* En modo demostración no hay base a la que preguntarle. No hay datos
+       reales que proteger, pero tampoco regalamos el modo administrador. */
+    return false;
+  }
   try{
-    if(!(window.crypto&&crypto.subtle)) return false;
-    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(texto));
-    const h=[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
-    return h===HUELLA_MAESTRA;
-  }catch(e){ return false; }
+    const r=await SB.quienSoy(null,texto);
+    return !!(r&&r.es_maestra);
+  }catch(e){
+    /* la base caída no es un error de la app: el organizador tipeó algo y
+       no hay con qué comprobarlo. Se avisa bajito y se sigue. */
+    console.warn('no pude comprobar la clave maestra',e);
+    return false;
+  }
 }
 let esAdmin=guarda.leerSesion('ce:admin')==='1';
 
@@ -1579,6 +1586,12 @@ async function vAcceso(){
         style="text-align:center;font-size:26px;letter-spacing:.5em;padding:16px 0">
       <button class="oro-btn" id="entrar" style="margin-top:22px">${nuevo?'Crear y entrar':'Entrar'}</button>
       ${nuevo?'':'<p class="pie-nota">Si la olvidaste, escribinos y la reiniciamos.</p>'}
+      <!-- La clave del panel es un número corto: sirve de traba en este
+           aparato y nada más. La de administrador abre todos los eventos de
+           todos los clientes, así que tiene que poder ser larga, y para eso
+           necesita su propio campo. -->
+      <button id="modoAdmin" style="margin-top:18px;font-size:11.5px;letter-spacing:.16em;
+        text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>
     </div>
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
@@ -1611,6 +1624,19 @@ async function vAcceso(){
   };
   app.querySelector('#entrar').onclick=probar;
   campo.onkeydown=e=>{ if(e.key==='Enter') probar(); };
+  const bAdmin=app.querySelector('#modoAdmin');
+  if(bAdmin) bAdmin.onclick=()=>{
+    campo.value='';
+    campo.maxLength=64;
+    campo.removeAttribute('inputmode');
+    campo.placeholder='Clave de administrador';
+    campo.style.fontSize='17px';
+    campo.style.letterSpacing='.1em';
+    campo.dataset.admin='1';
+    bAdmin.remove();
+    campo.focus();
+    recado('Entrá con la clave que abre todos los eventos');
+  };
 }
 
 async function vPanel(){

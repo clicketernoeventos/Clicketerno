@@ -1,0 +1,8 @@
+# Lo que NO se publica en clicketerno.com.ar.
+# Cloudflare sube TODO lo que está en la carpeta del repo: sin este archivo,
+# cualquiera podía bajarse sql/claves.sql desde la web.
+sql/
+pruebas/
+*.md
+wrangler.json
+.assetsignore
