@@ -10,6 +10,10 @@ const bien=m=>console.log('  ✓ '+m);
 const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   'logo','marca','og','index','_redirects','_headers'];
 const TOPE_FOTO=300*1024, TOPE_AUDIO=3*1024*1024, TOPE_TOTAL=12*1024*1024;
+/* Una invitación puede traer las fotos pegadas adentro del HTML en base64.
+   El tope por foto no las ve —el archivo es .html— así que el HTML tiene
+   el suyo: todo eso se baja de una antes de que se vea nada. */
+const TOPE_HTML=2*1024*1024;
 
 const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
@@ -57,8 +61,28 @@ for(const c of carpetas){
           `van a buscar el archivo en la raíz del sitio, no en la carpeta`); problemas++;
     }
   }
+  /* Archivos que el HTML nombra y no están: la música es el caso típico,
+     porque viaja aparte y es fácil olvidarla. */
+  for(const f of html){
+    const t=fs.readFileSync(f,'utf8');
+    const nombrados=new Set();
+    for(const m of t.matchAll(/(?:src|href)\s*=\s*["']([^"':#?][^"':]*\.(?:mp3|m4a|ogg|wav|jpg|jpeg|png|webp|gif|mp4|webm|css|js))["']/gi))
+      nombrados.add(m[1]);
+    for(const m of t.matchAll(/["']([\w./-]+\.(?:mp3|m4a|ogg|wav|mp4|webm))["']/gi))
+      nombrados.add(m[1]);
+    for(const n of nombrados){
+      if(n.startsWith('http')||n.startsWith('data:')) continue;
+      if(!fs.existsSync(path.resolve(path.dirname(f),n))){
+        mal(`"${c}" nombra "${n}" y ese archivo no está en la carpeta`); problemas++;
+      }
+    }
+  }
   for(const f of todos){
     const tam=fs.statSync(f).size;
+    if(/\.html$/i.test(f) && tam>TOPE_HTML){
+      mal(`"${c}": ${path.basename(f)} pesa ${Math.round(tam/1048576*10)/10} MB `+
+          `(tope 2 MB; si trae fotos pegadas adentro, sacalas a archivos)`); problemas++;
+    }
     if(/\.(jpg|jpeg|png|webp|gif)$/i.test(f) && tam>TOPE_FOTO){
       mal(`"${c}": ${path.basename(f)} pesa ${Math.round(tam/1024)} KB (tope 300 KB)`); problemas++;
     }

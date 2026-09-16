@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listado de invitados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{ --wine:#6b1f36; --rose:#b8677a; --blush:#f3dde3; --blush-light:#fbf1ee; --cream:#fffaf6; --gold:#b8935a; --ink:#3a2a2f; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:'Jost', sans-serif; background:var(--blush-light); color:var(--ink); min-height:100vh; }
+  h1{ font-family:'Cormorant Garamond', serif; font-weight:600; }
+  .wrap{ max-width:720px; margin:0 auto; padding:32px 20px 60px; }
+
+  /* ---------- Portón de acceso ---------- */
+  #gate{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center; padding:20px; }
+  #gate h1{ font-size:28px; color:var(--wine); margin-bottom:8px; }
+  #gate p{ color:#8a7377; font-size:14px; margin-bottom:24px; max-width:280px; }
+  #gate input{ width:100%; max-width:300px; padding:13px 16px; border-radius:10px; border:1px solid #e0cdd2; font-family:'Jost',sans-serif; font-size:15px; margin-bottom:14px; }
+  #gate button{ background:var(--wine); color:#fff; border:none; padding:13px 32px; border-radius:30px; font-size:14px; cursor:pointer; }
+  #gate-error{ color:#c0392b; font-size:13px; margin-top:12px; min-height:18px; }
+
+  /* ---------- Panel ---------- */
+  #panel{ display:none; }
+  #panel.show{ display:block; }
+  header{ text-align:center; margin-bottom:28px; }
+  header h1{ font-size:30px; color:var(--wine); }
+  header p{ color:#8a7377; font-size:14px; margin-top:4px; }
+
+  .stats{ display:flex; gap:12px; margin-bottom:24px; }
+  .stat{ flex:1; background:#fff; border-radius:14px; padding:18px 10px; text-align:center; box-shadow:0 8px 20px -8px rgba(107,31,54,0.15); }
+  .stat .n{ font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--wine); font-weight:600; }
+  .stat.confirmados .n{ color:#2e8b57; }
+  .stat.no-asisten .n{ color:#c0392b; }
+  .stat .lbl{ font-size:11px; letter-spacing:0.05em; color:#8a7377; margin-top:4px; text-transform:uppercase; }
+
+  .columnas{ background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:20px; box-shadow:0 8px 20px -8px rgba(107,31,54,0.1); }
+  .columnas p{ font-size:12px; color:#8a7377; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; }
+  .col-check{ display:inline-flex; align-items:center; gap:6px; margin:0 12px 8px 0; font-size:13px; }
+
+  .acciones{ display:flex; gap:10px; margin-bottom:24px; }
+  .acciones button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--wine); background:#fff; color:var(--wine); font-size:13px; cursor:pointer; }
+  .acciones button.filled{ background:var(--wine); color:#fff; }
+
+  .tabla-wrap{ background:#fff; border-radius:14px; overflow-x:auto; box-shadow:0 8px 20px -8px rgba(107,31,54,0.1); }
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th, td{ padding:12px 14px; text-align:left; white-space:nowrap; }
+  th{ background:var(--blush); color:var(--wine); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; }
+  tr:not(:last-child) td{ border-bottom:1px solid #f2e5e8; }
+  td.confirma-si{ color:#2e8b57; font-weight:600; }
+  td.confirma-no{ color:#c0392b; font-weight:600; }
+
+  #empty{ text-align:center; padding:40px 20px; color:#8a7377; font-size:14px; }
+  #loading{ text-align:center; padding:40px; color:#8a7377; font-size:14px; }
+
+  @media print{
+    #gate, .acciones, .columnas{ display:none !important; }
+    body{ background:#fff; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Listado de invitados</h1>
+  <p>Ingresá tu correo para ver quiénes confirmaron su asistencia.</p>
+  <input type="email" id="email-input" placeholder="tu@correo.com">
+  <button id="gate-btn">Ver listado</button>
+  <div id="gate-error"></div>
+</div>
+
+<div id="panel">
+  <div class="wrap">
+    <header>
+      <h1 id="panel-title">Listado de invitados</h1>
+      <p id="panel-subtitle"></p>
+    </header>
+
+    <div class="stats">
+      <div class="stat"><div class="n" id="stat-total">–</div><div class="lbl">En total</div></div>
+      <div class="stat confirmados"><div class="n" id="stat-confirmados">–</div><div class="lbl">Confirmados</div></div>
+      <div class="stat no-asisten"><div class="n" id="stat-no">–</div><div class="lbl">No asisten</div></div>
+    </div>
+
+    <div class="columnas">
+      <p>Columnas visibles</p>
+      <div id="col-checks"></div>
+    </div>
+
+    <div class="acciones">
+      <button id="btn-excel" class="filled">Descargar Excel</button>
+      <button id="btn-print">Imprimir listado</button>
+    </div>
+
+    <div id="loading">Cargando confirmaciones...</div>
+    <div id="empty" style="display:none;">Todavía no hay confirmaciones cargadas.</div>
+    <div class="tabla-wrap" id="tabla-wrap" style="display:none;">
+      <table id="tabla">
+        <thead><tr id="tabla-head"></tr></thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================================================
+   CONFIGURACIÓN — cargar por cada clienta
+   ====================================================== */
+const CONFIG = {
+  nombreEvento: "Fiesta de 15 de Pia",
+  clienteEmail: "jeremias.arone@gmail.com",   // el mail que la clienta va a usar para entrar
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbyYAQY0rbpCUeLFpKQq4S5O1uWIwt7vDp43g1Hl8kRm6RsTgnBc-Hi3OEflcs5_0V6eZw/exec"
+};
+
+const TODAS_LAS_COLUMNAS = (() => {
+  const cols = ["Fecha y hora de la confirmación", "Personas"];
+  for (let i = 1; i <= 5; i++) {
+    cols.push(`Persona ${i} - Nombre`, `Persona ${i} - Apellido`, `Persona ${i} - Alimentación`, `Persona ${i} - Alimentación (otro)`);
+  }
+  cols.push("¿Confirma?", "Canción pedida", "Mensaje");
+  return cols;
+})();
+const COLUMNAS_POR_DEFECTO = ["Personas", "Persona 1 - Nombre", "Persona 1 - Apellido", "¿Confirma?", "Persona 1 - Alimentación"];
+
+document.getElementById('panel-title').textContent = CONFIG.nombreEvento;
+document.getElementById('panel-subtitle').textContent = "Listado en tiempo real";
+
+let invitados = [];
+let columnasActivas = new Set(COLUMNAS_POR_DEFECTO);
+
+/* ---------- Portón de acceso ---------- */
+document.getElementById('gate-btn').addEventListener('click', () => {
+  const val = document.getElementById('email-input').value.trim().toLowerCase();
+  const esperado = CONFIG.clienteEmail.trim().toLowerCase();
+  if (val === esperado) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('panel').classList.add('show');
+    cargarDatos();
+  } else {
+    document.getElementById('gate-error').textContent = 'Ese correo no coincide. Probá de nuevo.';
+  }
+});
+
+/* ---------- Checkboxes de columnas ---------- */
+const colChecksEl = document.getElementById('col-checks');
+TODAS_LAS_COLUMNAS.forEach(col => {
+  const label = document.createElement('label');
+  label.className = 'col-check';
+  const checked = columnasActivas.has(col);
+  label.innerHTML = `<input type="checkbox" data-col="${col}" ${checked ? 'checked' : ''}> ${col}`;
+  colChecksEl.appendChild(label);
+});
+colChecksEl.addEventListener('change', (e) => {
+  if (e.target.matches('input[type="checkbox"]')) {
+    const col = e.target.dataset.col;
+    if (e.target.checked) columnasActivas.add(col); else columnasActivas.delete(col);
+    renderTabla();
+  }
+});
+
+/* ---------- Carga de datos desde Google Apps Script ---------- */
+async function cargarDatos(){
+  if (!CONFIG.appsScriptUrl) {
+    document.getElementById('loading').textContent = 'Falta configurar CONFIG.appsScriptUrl.';
+    return;
+  }
+  try {
+    const res = await fetch(CONFIG.appsScriptUrl);
+    const data = await res.json();
+    invitados = data.invitados || [];
+    document.getElementById('loading').style.display = 'none';
+    if (invitados.length === 0) {
+      document.getElementById('empty').style.display = 'block';
+    } else {
+      document.getElementById('tabla-wrap').style.display = 'block';
+      actualizarStats();
+      renderTabla();
+    }
+  } catch (err) {
+    document.getElementById('loading').textContent = 'No se pudo cargar el listado. Probá de nuevo en un momento.';
+  }
+}
+
+function actualizarStats(){
+  const total = invitados.length;
+  const confirmados = invitados.filter(i => (i['¿Confirma?'] || '').toLowerCase().includes('confirmo')).length;
+  const noAsisten = total - confirmados;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-confirmados').textContent = confirmados;
+  document.getElementById('stat-no').textContent = noAsisten;
+}
+
+function renderTabla(){
+  const cols = TODAS_LAS_COLUMNAS.filter(c => columnasActivas.has(c));
+  const head = document.getElementById('tabla-head');
+  head.innerHTML = cols.map(c => `<th>${c}</th>`).join('');
+
+  const body = document.getElementById('tabla-body');
+  body.innerHTML = invitados.map(inv => {
+    return '<tr>' + cols.map(c => {
+      let val = inv[c] || '';
+      let cls = '';
+      if (c === '¿Confirma?') cls = val.toLowerCase().includes('confirmo') ? 'confirma-si' : 'confirma-no';
+      return `<td class="${cls}">${val}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+}
+
+/* ---------- Descargar Excel ---------- */
+document.getElementById('btn-excel').addEventListener('click', () => {
+  const cols = TODAS_LAS_COLUMNAS.filter(c => columnasActivas.has(c));
+  const filas = invitados.map(inv => {
+    const fila = {};
+    cols.forEach(c => { fila[c] = inv[c] || ''; });
+    return fila;
+  });
+  const ws = XLSX.utils.json_to_sheet(filas);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Invitados");
+  XLSX.writeFile(wb, `listado-${CONFIG.nombreEvento.replace(/\s+/g, '-')}.xlsx`);
+});
+
+/* ---------- Imprimir ---------- */
+document.getElementById('btn-print').addEventListener('click', () => window.print());
+</script>
+
+</body>
+</html>
