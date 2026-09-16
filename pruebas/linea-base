@@ -16,4 +16,11 @@
 #
 # Si este número cambia, el corredor lo marca en rojo. No lo subas para que
 # deje de molestar: mirá qué apareció.
-stress=fail:6,net:9
+# BAJÓ de fail:6,net:9 a fail:3,net:3 el 16/09, y el motivo está mirado:
+# el panel ya no le pide TODOS los eventos a la base, solo aquellos cuya
+# clave tiene guardada este aparato. Sin claves guardadas —que es como
+# arranca el recorrido— no sale ningún pedido, así que en los modos que
+# rompen la base a propósito ya no hay nada que falle ahí. Son menos
+# errores porque hay menos pedidos al pedo, no porque nos los estemos
+# tragando: los modos ok y evil siguen en cero.
+stress=fail:3,net:3

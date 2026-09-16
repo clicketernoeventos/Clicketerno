@@ -24,6 +24,13 @@ function crearFake(modo = 'ok') {
     return q;
   };
   const eqVal = (v) => (v && v.startsWith('eq.') ? v.slice(3) : null);
+  /* PostgREST también entiende codigo=in.(A,B,C), que es como el panel pide
+     SOLO los eventos cuya clave tiene guardada este aparato. Sin esto el
+     falso devolvía la lista vacía y la prueba pasaba por el motivo
+     equivocado. */
+  const inVals = (v) => (v && v.startsWith('in.(') && v.endsWith(')')
+    ? v.slice(4, -1).split(',').map((x) => x.replace(/^"|"$/g, '')).filter(Boolean)
+    : null);
 
   async function manejar(route, request) {
     const url = request.url();
@@ -88,7 +95,11 @@ function crearFake(modo = 'ok') {
     if (metodo === 'GET') {
       if (tabla === 'ce_items') pedidos.items++;
       let out = filas.slice();
-      if (q.codigo) { const v = eqVal(q.codigo); out = out.filter((f) => f.codigo === v); }
+      if (q.codigo) {
+        const lista = inVals(q.codigo);
+        if (lista) out = out.filter((f) => lista.includes(f.codigo));
+        else { const v = eqVal(q.codigo); out = out.filter((f) => f.codigo === v); }
+      }
       if (q.id) { const v = eqVal(q.id); out = out.filter((f) => String(f.id) === v); }
       if (q.order && q.order.startsWith('ts.asc')) out.sort((a, b) => a.ts - b.ts);
       if (q.order && q.order.startsWith('creado.desc')) out.sort((a, b) => (b.creado || 0) - (a.creado || 0));

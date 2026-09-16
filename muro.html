@@ -368,6 +368,20 @@ option{background:#0B0A08}
 .pulso-ev b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;line-height:1}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
+/* ── cinta de la demostración ── */
+#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;height:38px;display:flex;
+  align-items:center;justify-content:center;gap:14px;padding:0 14px;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
+  color:#2A1B08;font-size:11.5px;letter-spacing:.1em;text-align:center}
+#cinta-demo b{font-weight:500}
+#cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
+body.en-demo{padding-top:38px}
+body.en-demo .cabecera{top:38px}
+@media (max-width:420px){
+  #cinta-demo{font-size:10.5px;gap:9px}
+  #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+
 .barra-abajo{position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(15px + env(safe-area-inset-bottom));z-index:45;
   width:min(348px,calc(100% - 36px));display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
@@ -777,7 +791,14 @@ const NUBE = {
   url:  'https://kuqlqgrwsospwjexodqa.supabase.co',
   clave:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1cWxxZ3J3c29zcHdqZXhvZHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NjMyMjAsImV4cCI6MjEwNDEzOTIyMH0.DyV3K6fcHcsD9wbNzkYn2vIwWSN9e2LWt_HyuSaUE9g'
 };
-const HAY_NUBE = !!(NUBE.url && NUBE.clave);
+/* ══════════ modo demostración ══════════
+   Con ?demo=1 la app NO habla con la base: corre entera en la memoria de
+   este navegador, con una fiesta inventada. Es lo que abre el botón de
+   "probar" de la web pública. Antes ese botón llevaba a la app de verdad,
+   donde se veían los eventos de los clientes y el botón de "cargar una
+   fiesta de ejemplo" escribía en la base de producción. */
+const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+const HAY_NUBE = !HAY_DEMO && !!(NUBE.url && NUBE.clave);
 
 const LISTA='ce:eventos', cacheItem={}, memoria={};
 let timerSala=null;
@@ -793,7 +814,14 @@ const src=u=>esc(urlSegura(u));
 const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
 /* nombre de archivo que no rompa en Windows/Mac */
 const nombreSeguro=s=>(String(s==null?'':s).replace(/[\\/:*?"<>|\n\r]+/g,'-').trim().slice(0,40)||'album');
-const hoy=()=>new Date().toISOString().slice(0,10);
+/* La fecha de HOY, la del calendario de la pared. toISOString() da la de
+   UTC: pasadas las nueve de la noche en Rosario ya devolvía mañana, y el
+   evento nacía fechado un día después. */
+const hoy=()=>{ const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+/* Una fecha de acá a n días, también en hora local. */
+const enDias=n=>{ const d=new Date(); d.setDate(d.getDate()+n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 /* Nunca devuelve el dato crudo: si no es una fecha válida, texto fijo.
    (Devolverlo tal cual permitía inyectar HTML desde la base.) */
 const bonito=f=>{
@@ -819,7 +847,19 @@ const leerLocal=async(k,def)=>{try{return await local.get(k);}catch(e){return de
 /* ── cliente de Supabase (sin librerías, solo fetch) ──────── */
 /* En navegación privada (o con cookies bloqueadas) tocar localStorage tira
    excepción y mataba la app entera al cargar. Ahora nunca propaga. */
-const guarda={
+const guarda = HAY_DEMO ? (()=>{
+  /* La demostración no deja rastro en el navegador. Sin esto, la clave de
+     la fiesta inventada quedaba guardada en el mismo aparato que usa el
+     organizador de verdad y DEMO-FIESTA le aparecía entre sus eventos. */
+  const m={}, s={};
+  return {
+    leer:k=>(k in m)?m[k]:null,
+    escribir(k,v){ m[k]=String(v); return true; },
+    borrar(k){ delete m[k]; },
+    leerSesion:k=>(k in s)?s[k]:null,
+    escribirSesion(k,v){ s[k]=String(v); }
+  };
+})() : {
   leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
   escribir(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}},
   borrar(k){try{localStorage.removeItem(k);}catch(e){}},
@@ -990,11 +1030,22 @@ async function subirArchivo(blob, base, alAvanzar){
 }
 
 /* ── funciones que usa toda la app (misma firma, con o sin nube) ── */
+/* SOLO los eventos de este aparato.
+   Antes se pedían todos, sin filtro: el panel decía "Tus eventos" y le
+   listaba a cualquiera que entrara las fiestas de todos los clientes, con
+   nombre y fecha. Desde la web pública había un botón que llevaba derecho
+   ahí. Cuáles son "los míos" lo dicen las claves guardadas en este
+   navegador, que es lo mismo que ya hacía el rollo. */
+const CAMPOS_LISTA='codigo,nombre,fecha,portada&order=creado.desc.nullslast';
 async function eventos(){
   if(!HAY_NUBE) return leerLocal(LISTA,[]);
-  try{ return await SB.ver('ce_eventos',
-    'select=codigo,nombre,fecha,portada&order=creado.desc.nullslast'); }
-  catch(e){ console.error('eventos',e); recado('No se pudo leer: '+motivo(e)); return []; }
+  try{
+    if(esAdmin) return await SB.ver('ce_eventos','select='+CAMPOS_LISTA);
+    const mios=Object.keys(clavesGuardadas());
+    if(!mios.length) return [];
+    return await SB.ver('ce_eventos',
+      `codigo=in.(${mios.map(encodeURIComponent).join(',')})&select=${CAMPOS_LISTA}`);
+  }catch(e){ console.error('eventos',e); recado('No se pudo leer: '+motivo(e)); return []; }
 }
 async function meta(c){
   if(!HAY_NUBE) return leerLocal(kMeta(c),null);
@@ -1495,7 +1546,7 @@ async function vPortada(){
       <button class="puerta" data-ir="proyector"><span class="ico-p">${IC.pantalla}</span>
         <span style="flex:1"><b>Pantalla del salón</b><span>Proyección en vivo</span></span><span class="fl">→</span></button>
     </div>
-    ${evs.length?'':`<button class="hilo-btn sube" style="animation-delay:.5s;margin-top:34px" id="demo">Cargar una fiesta de ejemplo</button>`}
+    ${evs.length?'':`<button class="hilo-btn sube" style="animation-delay:.5s;margin-top:34px" id="demo">Ver una fiesta de ejemplo</button>`}
     ${HAY_NUBE?'':`<p class="sube" style="animation-delay:.6s;margin-top:26px;font-size:12px;line-height:1.8;
       color:var(--mute);border:1px dashed var(--hilo);padding:14px 16px">
       <b style="color:var(--oro);font-weight:400">Modo demostración.</b> Todavía no está conectada la base de datos,
@@ -1504,7 +1555,10 @@ async function vPortada(){
     <p class="pie-nota sube" style="animation-delay:.55s">${evs.length? evs.length+' evento'+(evs.length>1?'s':'')+' guardado'+(evs.length>1?'s':'') : 'Se guarda compartido: abrilo en otro celular y vas a ver lo mismo.'}</p>
   </div>`;
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
-  const d=app.querySelector('#demo'); if(d) d.onclick=sembrar;
+  /* Antes esto sembraba la fiesta de ejemplo EN LA BASE DE VERDAD: quedaba
+     un evento inventado conviviendo con los de los clientes. Ahora manda al
+     modo demostración, que no toca la nube ni por asomo. */
+  const d=app.querySelector('#demo'); if(d) d.onclick=()=>{ location.search='?demo=1'; };
   /* diagnóstico escondido: tres toques en el número de versión */
   const mv=app.querySelector('#marcaVer');
   if(mv){ let t=0; mv.onclick=()=>{ if(++t>=3) ir('diagnostico'); }; }
@@ -1512,34 +1566,52 @@ async function vPortada(){
 
 const dataABlob=async d=>{ try{ return await (await fetch(d)).blob(); }catch(e){ return null; } };
 
+/* Gente y frases de una fiesta que no existe. Ni un dato real acá. */
+const DEMO_GENTE=['Delfina','Tomás','Mica y Juli','Abuela Nélida','Francisco',
+                  'Lucía','Nacho','Las primas','Sofía','Tío Beto','Caro','Juampi'];
+const DEMO_FRASES=[
+  'Bailá como si nadie te viera, que igual te estamos filmando.',
+  'Quince años y ya nos hacés llorar a todos.',
+  'La mejor noche del año, sin discusión.',
+  'Gracias por dejarnos ser parte de esto.',
+  'Que no se termine más.'];
+const DEMO_PIES=['Qué noche','La entrada','El brindis','Todos juntos','No puedo más'];
+
 async function sembrar(){
   const b=document.getElementById('demo');
   if(b){ if(b.disabled) return; b.disabled=true; b.textContent='Preparando…'; }
   recado('Preparando la fiesta de ejemplo…');
   try{
-    const codigo='QUI-7FCE64';
+    /* En demostración el código lleva la palabra adelante: si alguna vez
+       esto llegara a la base de verdad, se ve de lejos que es de mentira. */
+    const codigo = 'DEMO-FIESTA';
     const tapa=fotoDemo(3);
     /* La base exige clave para dar de alta un evento. Si ya la tenemos
        guardada de otra vez la reusamos; si no, una nueva. */
     const claveEv=claveDe(codigo)||nuevaClave();
-    const datos={codigo,nombre:'Sana',fecha:'2026-08-21',tipo:'XV',tono:'#D9AE72',
-      moderar:false,cerrado:false,portada:HAY_NUBE?null:tapa,creado:Date.now(),claveNueva:claveEv};
+    const datos={codigo,nombre:'Los 15 de Delfina',fecha:enDias(12),tipo:'XV',tono:'#D9AE72',
+      hashtag:'#Delfina15',lugar:'Salón Las Acacias · Rosario',
+      moderar:true,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
     /* En la nube las fotos van al depósito de archivos: antes se guardaban
        los items sin archivo y el muro quedaba con fotos vacías. */
     if(HAY_NUBE) datos.portadaBlob=await dataABlob(tapa);
     await guardarMeta(datos);
     guardarClaveDe(codigo,claveEv);
     if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
-    const gente=['Delfina','Tomás','Mica y Juli','Abuela Nélida','Francisco','Lucía','Nacho','Las primas','Sofía'];
-    const frases=['Bailá como si nadie te viera, que igual te estamos filmando.',
-      'Quince años y ya nos hacés llorar a todos.','La mejor noche del año, sin discusión.'];
+    const gente=DEMO_GENTE, frases=DEMO_FRASES;
     for(let i=0;i<9;i++){
       const d=fotoDemo(i+1);
       await sumar(codigo,{id:'d'+i,kind:'foto',data:d,blob:HAY_NUBE?await dataABlob(d):null,
-        autor:gente[i],texto:i%3===0?'Qué noche':'',ts:Date.now()-(9-i)*60000,estado:'aprobado'});
+        autor:gente[i],texto:i%3===0?DEMO_PIES[i%DEMO_PIES.length]:'',
+        ts:Date.now()-(9-i)*60000,estado:'aprobado'});
     }
-    for(let i=0;i<3;i++) await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
-      ts:Date.now()-(3-i)*30000,estado:'aprobado'});
+    for(let i=0;i<frases.length;i++)
+      await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
+        ts:Date.now()-(frases.length-i)*30000,estado:'aprobado'});
+    /* dos esperando aprobación, para que se vea moderar con algo adentro */
+    if(HAY_DEMO) for(let i=0;i<2;i++)
+      await sumar(codigo,{id:'p'+i,kind:'foto',data:fotoDemo(20+i),blob:null,
+        autor:gente[9+i],texto:'',ts:Date.now()-i*9000,estado:'pendiente'});
     recado('Listo · fiesta "Sana" cargada');
     ir('evento/'+codigo);
   }catch(e){
@@ -1590,8 +1662,8 @@ async function vAcceso(){
            aparato y nada más. La de administrador abre todos los eventos de
            todos los clientes, así que tiene que poder ser larga, y para eso
            necesita su propio campo. -->
-      <button id="modoAdmin" style="margin-top:18px;font-size:11.5px;letter-spacing:.16em;
-        text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>
+      ${HAY_DEMO?'':`<button id="modoAdmin" style="margin-top:18px;font-size:11.5px;letter-spacing:.16em;
+        text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>`}
     </div>
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
@@ -2011,13 +2083,16 @@ async function vEvento(codigo){
     ${solapa('pAjustes',IC.ajustes,'Ajustes')}
   </nav>`;
 
-  app.querySelector('.atras').onclick=()=>ir('panel');
+  app.querySelector('.atras').onclick=()=>ir(HAY_DEMO?'portada':'panel');
   app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
   app.querySelectorAll('.estrella').forEach(e=>{ if(!e.innerHTML) e.innerHTML=ESTRELLA; });
   animarCifras();
 
   /* si hay cosas esperando, abrimos ahí: es lo urgente durante la fiesta */
-  activarSolapas(pend.length?'pModerar':'pCompartir');
+  /* Con cosas esperando abrimos en Moderar: durante la fiesta es lo urgente.
+     En la demostración no: el que entra a mirar tiene que caer en el QR y la
+     pantalla del salón, que es lo que explica el producto. */
+  activarSolapas(pend.length&&!HAY_DEMO?'pModerar':'pCompartir');
   /* con el muro cerrado no hay QR que dibujar: esta solapa es el cierre */
   const cajaQR=app.querySelector('#qr');
   if(cajaQR) pintarQR(cajaQR,enlaceDe(codigo),106);
@@ -3262,7 +3337,9 @@ function pintar(ruta){
   }
   let p;
   try{
-    if(v==='panel') p=vAcceso();
+    /* En demostración no hay panel del organizador: el que entra a mirar
+       vuelve a la fiesta de ejemplo en vez de toparse con un pedido de clave. */
+    if(v==='panel'){ if(HAY_DEMO) return ir('evento/DEMO-FIESTA'); p=vAcceso(); }
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
     else if(v==='invitado') p=vElegir('subir','Invitado');
@@ -3292,7 +3369,27 @@ addEventListener('error',e=>{
   try{ recado('Algo falló: '+motivo(e.error||{message:e.message})); }catch(_){}
 });
 
-(function(){
+(async function(){
+  if(HAY_DEMO){
+    /* Que el visitante caiga adentro de una fiesta andando, no en una
+       pantalla de bienvenida. Si ya la sembró en esta pestaña, se entra
+       directo. */
+    document.body.classList.add('en-demo');
+    document.body.insertAdjacentHTML('afterbegin', `
+      <div id="cinta-demo">
+        <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
+        <a href="/">Volver a Click Eterno</a>
+      </div>`);
+    const ya = await leerLocal(kMeta('DEMO-FIESTA'), null);
+    if(!ya){
+      app.innerHTML = `<div class="final"><div>
+        <img src="${LOGO_MARK}" style="width:120px;opacity:.6" alt="">
+        <p class="espaciado" style="margin-top:24px">Preparando la fiesta de ejemplo…</p>
+      </div></div>`;
+      try{ await sembrar(); }catch(e){ console.error('demo',e); }
+    }
+    if(!location.hash || location.hash==='#portada') return ir('evento/DEMO-FIESTA');
+  }
   pintar(location.hash.slice(1)||'portada');
 })();
 </script>

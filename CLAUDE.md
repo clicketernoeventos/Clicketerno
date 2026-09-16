@@ -18,6 +18,14 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
+`/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
+almacenamiento del navegador**. Es a donde apuntan los botones "Probar la
+demostración" de `index.html`. Antes esos botones abrían la app de verdad:
+desde ahí se veían los eventos de todos los clientes en "Tus eventos" y el
+botón "cargar una fiesta de ejemplo" escribía un evento inventado **en la
+base de producción**. `pruebas/demo.js` cuida que no vuelva a pasar.
+
 **Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
 clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
 pasando por el muro. Un evento puede tener los dos, o uno solo.
@@ -117,6 +125,12 @@ las del cupo?, ¿puede ver las de otro?
   y `disparos >= null` **nunca** es verdadero en SQL. Con `cupo_fotos`
   vacío, al invitado le decía "ya sacaste tus fotos" sin haber sacado
   ninguna, y del lado de la base no había tope. `coalesce` de los dos lados.
+- **Una demostración que escribe en producción no es una demostración.**
+  Todo lo del modo demostración vive en memoria: `guarda` pasa a ser un
+  objeto suelto y en el rollo los métodos de `SB` se reemplazan por una
+  base inventada, con `SB.pedir` tapiado para que cualquier camino que se
+  haya olvidado reviente acá y lo vean las pruebas, en vez de irse callado
+  a la base de verdad.
 - **Postgres aplica las políticas de SELECT al `DELETE ... WHERE`.** Por eso
   las fotos de un evento borrado quedaban inalcanzables para siempre: la
   regla de lectura miraba el revelado, que ya no existía.
@@ -129,6 +143,12 @@ las del cupo?, ¿puede ver las de otro?
 - **`innerText` devuelve el texto ya transformado por el CSS.** Medio muro
   está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
   pantalla diga eso. Comparar siempre en minúsculas.
+- **El panel mostraba los eventos de todo el mundo.** `eventos()` le pedía
+  a la base la tabla entera y los pintaba bajo "Tus eventos": cualquiera
+  que entrara al panel veía el casamiento del cliente de al lado. Ahora
+  pide solo los códigos cuya clave está guardada en ese aparato
+  (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
+  rollo ya lo hacía bien.
 - **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
   pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
   Antes de inventar un nombre, `grep`.
