@@ -7,8 +7,9 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- En el repo, no en un CDN: ver el comentario de muro.html. -->
+<script src="lib/qrcode.min.js"></script>
+<script src="lib/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -450,7 +451,9 @@ const SB = {
     if(!txt) return null;
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
-  ver(tabla,consulta){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()}); },
+  /* La clave también en las lecturas: desde que ce_eventos dejó de ser de
+     lectura libre, el organizador la necesita para ver su propio rollo. */
+  ver(tabla,consulta,clave){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab({},clave)}); },
   rpc(fn,args,clave){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab({},clave), body:JSON.stringify(args||{})}); },
   guardar(tabla,obj,clave){
     return this.pedir(`/rest/v1/${tabla}`, {method:'POST',
@@ -493,6 +496,46 @@ const SB = {
     return mapa;
   }
 };
+
+/* ── leer un evento sin tener su clave ──
+   El invitado llega por el QR y no tiene clave: tiene que poder leer SU
+   evento. Antes eso andaba porque la tabla era de lectura libre para todo
+   el mundo, que es lo mismo que decir que cualquiera se bajaba la lista de
+   las fiestas de todos los clientes con un solo pedido. Ahora la base la
+   abre de a un código por vez, por función. Si la función todavía no está
+   (blindaje.sql sin correr), se lee como antes: así la página anda igual
+   antes y después, sin tener que sincronizar la subida con el SQL. */
+let hayFuncionesNuevas = null;
+async function eventoPorCodigo(cod, campos){
+  if(hayFuncionesNuevas!==false){
+    try{
+      const v=await SB.rpc('ce_evento_publico',{p_codigo:cod});
+      /* null = la función existe y ese código no. Un objeto con codigo = el
+         evento. Cualquier otra cosa quiere decir que del otro lado no está
+         la función que creemos. */
+      if(v===null||(v&&typeof v==='object'&&!Array.isArray(v)&&v.codigo)){
+        hayFuncionesNuevas=true; return v;
+      }
+      hayFuncionesNuevas=false;
+    }catch(e){
+      /* Pase lo que pase, se lee como se leía antes. Si la base ya está
+         cerrada, ese camino devuelve vacío y el que decide es ella, no
+         nosotros: lo que no puede pasar es que la pantalla muera acá. */
+      if(/PGRST202|does not exist|not found|404/i.test(e&&e.message||'')) hayFuncionesNuevas=false;
+    }
+  }
+  const r=await SB.ver('ce_eventos',
+    `codigo=eq.${encodeURIComponent(cod)}&select=${campos||'*'}`);
+  return (r&&r[0])||null;
+}
+/* Con la clave en la mano se lee derecho de la tabla, que es lo que la base
+   deja hacer al organizador. */
+async function eventoConClave(cod){
+  const r=await SB.ver('ce_eventos',
+    `codigo=eq.${encodeURIComponent(cod)}&select=*`, claveDe(cod));
+  if(r&&r[0]) return r[0];
+  return await eventoPorCodigo(cod);
+}
 
 /* ══════════ la fiesta que no existe ══════════
    Todo lo que sigue reemplaza a Supabase cuando entra ?demo=1. Ni un dato
@@ -586,6 +629,9 @@ if(HAY_DEMO){
     async rpc(fn,args){
       await dormir(200);
       const a=args||{};
+      /* la lectura del evento pasa por acá desde que la tabla se cerró */
+      if(fn==='ce_evento_publico')
+        return a.p_codigo===DEMO_COD ? Object.assign({},ev) : null;
       if(fn==='ce_mi_rollo')
         return {nombre:a.p_nombre||'Invitado', revelado:revelado(), cerrado:!!ev.cerrado,
                 cupo:ev.cupo_fotos, disparos:misDisparos, revela_en:ev.revela_en};
@@ -1230,8 +1276,9 @@ function vPedirClave(codigoPrevio){
     if(cl.length<4)  return avisar('Escribí la clave');
     const b=$('#entrarClave'); b.disabled=true; b.textContent='Entrando…';
     try{
-      const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}&select=codigo,tono`);
-      if(!r||!r[0]) throw new Error('No encontré ese evento');
+      const ev=await eventoPorCodigo(cod,'codigo,tono');
+      if(!ev) throw new Error('No encontré ese evento');
+      const r=[ev];
       /* La única forma de saber si la clave sirve es usarla: escribimos algo
          que no cambia nada. Si la clave está mal, la base rechaza. */
       await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#D9AE72'},cl);
@@ -1270,9 +1317,18 @@ async function vInicio(){
 
   let evs=[];
   try{
-    evs=await SB.ver('ce_eventos',
-      `codigo=in.(${codigos.map(encodeURIComponent).join(',')})`
-      +`&select=codigo,nombre,camara,revelado,revela_en,cerrado&order=creado.desc.nullslast`)||[];
+    /* Uno por uno, cada cual con SU clave. En un pedido va una sola clave en
+       la cabecera y la base mira fila por fila: pidiéndolos todos juntos
+       volvía uno solo. Son los rollos de UN organizador: unos pocos. */
+    const filas=await Promise.all(codigos.map(async c=>{
+      try{
+        const r=await SB.ver('ce_eventos',
+          `codigo=eq.${encodeURIComponent(c)}`
+          +`&select=codigo,nombre,camara,revelado,revela_en,cerrado,creado`, claveDe(c));
+        return (r&&r[0])||null;
+      }catch(e){ return null; }
+    }));
+    evs=filas.filter(Boolean).sort((a,b)=>(b.creado||0)-(a.creado||0));
   }catch(e){ return; }
   if(!evs.length) return;
   const mios=app.querySelector('#mios');
@@ -1398,10 +1454,8 @@ const nuevoCodigo=tipo=>{
    otro no tiene arreglo. Si no hay señal para preguntar, seguimos igual:
    con seis caracteres al azar la chance es ínfima. */
 async function codigoLibre(codigo){
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
-    return !(r&&r.length);
-  }catch(e){ return true; }
+  try{ return !(await eventoPorCodigo(codigo,'codigo')); }
+  catch(e){ return true; }
 }
 
 async function crearRollo(){
@@ -1448,10 +1502,7 @@ async function vRollo(codigo){
   app.innerHTML=`${cabP('Tu rollo','')}<div class="wrap"><p class="espaciado"
     style="text-align:center;padding:26px 0">Cargando…</p></div>`;
   let m=null;
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
-    m=(r&&r[0])||null;
-  }catch(e){}
+  try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
   const enlace=enlaceDelRollo(codigo,revelado);
@@ -1642,10 +1693,7 @@ async function bajarTodas(m, boton){
 async function vAjustes(codigo){
   if(!claveDe(codigo)) return irA('clave/'+encodeURIComponent(codigo));
   let m=null;
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
-    m=(r&&r[0])||null;
-  }catch(e){}
+  try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
   const clave=claveDe(codigo);
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
@@ -1955,8 +2003,7 @@ const cerrarCapas=()=>document.querySelectorAll('.visorf,.cuarto').forEach(c=>{
 async function arranqueInvitado(){
   let m;
   try{
-    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha`);
-    m=(r&&r[0])||null;
+    m=await eventoPorCodigo(codigo,'codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha');
   }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
   if(!m) return vError('No encontré ese evento.');
   tono(m.tono);

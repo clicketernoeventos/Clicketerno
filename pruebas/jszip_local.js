@@ -8,9 +8,15 @@
    daba "NO bajó", como si el zip estuviera roto. No lo estaba. */
 const fs=require('fs'), path=require('path');
 const CACHE=path.join(__dirname,'.cache','jszip.min.js');
+/* Desde que las librerías viven en el repo, lo primero es mirar ahí: es la
+   MISMA copia que sirve el sitio, así que la prueba mide lo que se publica
+   y encima anda sin internet. El CDN queda solo por si alguien corre esto
+   en una copia vieja. */
+const LOCAL=path.join(__dirname,'..','lib','jszip.min.js');
 const CDN='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
 
 async function conseguir(){
+  if(fs.existsSync(LOCAL)) return fs.readFileSync(LOCAL,'utf8');
   if(fs.existsSync(CACHE)) return fs.readFileSync(CACHE,'utf8');
   try{
     const r=await fetch(CDN);

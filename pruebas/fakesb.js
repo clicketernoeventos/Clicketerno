@@ -78,6 +78,60 @@ function crearFake(modo = 'ok') {
         body: JSON.stringify({ llego_la_clave: !!clave, es_maestra: clave === MAESTRA,
                                puede_editar: permitido(cod, clave) }) });
     }
+    // ── las funciones que puso blindaje.sql ──
+    // Sin esto, el camino nuevo de la app (leer un evento o sus recuerdos
+    // sin tener la clave) no lo probaba nadie: el falso contestaba 200 con
+    // una lista vacía y la app se caía para atrás al camino viejo, que acá
+    // sigue abierto. O sea: pasaba todo, y lo nuevo sin medir.
+    const envenenar = (filas, tabla) => {
+      if (modo !== 'evil') return filas;
+      if (tabla === 'ce_eventos') return filas.map((f) => ({
+        ...f, fecha: null,
+        nombre: '"><img src=x onerror="window.__XSS=1">',
+        portada: "x' onerror='window.__XSS2=1",
+      }));
+      return filas.map((f) => ({
+        ...f,
+        url: '" onerror="window.__XSS3=1" data-x="',
+        autor: '<script>window.__XSS4=1</script>',
+        texto: '"><svg onload="window.__XSS5=1">',
+      }));
+    };
+    if (url.includes('/rest/v1/rpc/ce_evento_publico')) {
+      const cod = (JSON.parse(request.postData() || '{}')).p_codigo;
+      const f = db.ce_eventos.find((e) => e.codigo === cod);
+      return route.fulfill({ status: 200, contentType: 'application/json',
+        body: JSON.stringify(f ? envenenar([f], 'ce_eventos')[0] : null) });
+    }
+    if (url.includes('/rest/v1/rpc/ce_items_de')) {
+      const b = JSON.parse(request.postData() || '{}');
+      pedidos.items++;
+      let out = db.ce_items.filter((i) => i.codigo === b.p_codigo);
+      // como la función de verdad: sin la clave del evento, lo que está
+      // esperando aprobación no sale
+      if (!permitido(b.p_codigo, clave)) out = out.filter((i) => i.estado === 'aprobado');
+      out.sort((x, y) => (x.ts - y.ts) || String(x.id).localeCompare(String(y.id)));
+      const desde = b.p_desde || 0;
+      out = out.slice(desde, desde + Math.min(b.p_cuanto || TOPE, TOPE));
+      return route.fulfill({ status: 200, contentType: 'application/json',
+        body: JSON.stringify(envenenar(out, 'ce_items')) });
+    }
+    if (/\/rest\/v1\/rpc\/ce_item(\?|$)/.test(url)) {
+      const b = JSON.parse(request.postData() || '{}');
+      const f = db.ce_items.find((i) => i.codigo === b.p_codigo && i.id === b.p_id
+        && (permitido(b.p_codigo, clave) || i.estado === 'aprobado'));
+      return route.fulfill({ status: 200, contentType: 'application/json',
+        body: JSON.stringify(f ? envenenar([f], 'ce_items')[0] : null) });
+    }
+    // Como PostgREST: una función que no existe da 404, no una lista vacía.
+    // De eso depende que la app sepa volver al camino viejo.
+    if (url.includes('/rest/v1/rpc/')) {
+      const conocidas = ['ce_quien_soy','ce_cambiar_clave','ce_evento_publico','ce_items_de','ce_item'];
+      if (!conocidas.some((n) => url.includes('/rpc/' + n))) {
+        return route.fulfill({ status: 404, contentType: 'application/json',
+          body: JSON.stringify({ code: 'PGRST202', message: 'Could not find the function' }) });
+      }
+    }
     if (url.includes('/rest/v1/rpc/ce_cambiar_clave')) {
       const b = JSON.parse(request.postData() || '{}');
       if (!permitido(b.p_codigo, clave))

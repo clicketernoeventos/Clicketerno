@@ -718,7 +718,15 @@ footer .datos a:hover{color:var(--oro)}
     <div class="caja">
       <div class="reflejo"></div>
       <div class="cargando" id="cargandoV">Abriendo la invitación…</div>
-      <iframe id="marcoV" title="Invitación" src="" allow="autoplay"></iframe>
+      <!-- sandbox sin allow-top-navigation: acá adentro se abren invitaciones
+         que viven en otro lado. Sin esto, cualquiera de ellas puede
+         mandar a clicketerno.com.ar entero a donde quiera, y el
+         visitante ve el cambio de página como si lo hubiéramos hecho
+         nosotros. Lo demás (guiones, su propio origen, abrir pestañas y
+         mandar formularios) es lo que una invitación necesita. -->
+      <iframe id="marcoV" title="Invitación" src="" allow="autoplay"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
   </div>
   <div class="barra-v">

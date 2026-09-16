@@ -6,7 +6,8 @@
 <title>Listado de invitados</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- En el repo, no en un CDN: este panel muestra la lista de invitados. -->
+<script src="../../lib/xlsx.full.min.js"></script>
 <style>
   :root{ --wine:#6b1f36; --rose:#b8677a; --blush:#f3dde3; --blush-light:#fbf1ee; --cream:#fffaf6; --gold:#b8935a; --ink:#3a2a2f; }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -115,6 +116,13 @@ const CONFIG = {
   appsScriptUrl: "https://script.google.com/macros/s/AKfycbyYAQY0rbpCUeLFpKQq4S5O1uWIwt7vDp43g1Hl8kRm6RsTgnBc-Hi3OEflcs5_0V6eZw/exec"
 };
 
+/* Lo que escribe un invitado en la confirmación llega tal cual desde la
+   planilla y se dibuja en esta tabla. Sin esto, alguien que se anota con el
+   nombre <img src=x onerror="..."> ejecuta lo que quiera en la pantalla de
+   quien organiza la fiesta, que es justo la que ve la lista entera. */
+const esc = v => String(v == null ? '' : v)
+  .replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+
 const TODAS_LAS_COLUMNAS = (() => {
   const cols = ["Fecha y hora de la confirmación", "Personas"];
   for (let i = 1; i <= 5; i++) {
@@ -150,7 +158,7 @@ TODAS_LAS_COLUMNAS.forEach(col => {
   const label = document.createElement('label');
   label.className = 'col-check';
   const checked = columnasActivas.has(col);
-  label.innerHTML = `<input type="checkbox" data-col="${col}" ${checked ? 'checked' : ''}> ${col}`;
+  label.innerHTML = `<input type="checkbox" data-col="${esc(col)}" ${checked ? 'checked' : ''}> ${esc(col)}`;
   colChecksEl.appendChild(label);
 });
 colChecksEl.addEventListener('change', (e) => {
@@ -196,15 +204,15 @@ function actualizarStats(){
 function renderTabla(){
   const cols = TODAS_LAS_COLUMNAS.filter(c => columnasActivas.has(c));
   const head = document.getElementById('tabla-head');
-  head.innerHTML = cols.map(c => `<th>${c}</th>`).join('');
+  head.innerHTML = cols.map(c => `<th>${esc(c)}</th>`).join('');
 
   const body = document.getElementById('tabla-body');
   body.innerHTML = invitados.map(inv => {
     return '<tr>' + cols.map(c => {
-      let val = inv[c] || '';
+      let val = String(inv[c] == null ? '' : inv[c]);
       let cls = '';
       if (c === '¿Confirma?') cls = val.toLowerCase().includes('confirmo') ? 'confirma-si' : 'confirma-no';
-      return `<td class="${cls}">${val}</td>`;
+      return `<td class="${cls}">${esc(val)}</td>`;
     }).join('') + '</tr>';
   }).join('');
 }

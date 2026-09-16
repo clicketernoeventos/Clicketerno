@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap"></noscript>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- Las dos librerías viven en el repo, no en un CDN. Traerlas de afuera
+     era darle a un tercero permiso para correr código en la página que
+     tiene a mano la clave del evento (y la maestra): si cdnjs sirviera
+     otra cosa, un día cualquiera, nos enteraríamos tarde. Y de paso el
+     QR y el zip andan aunque el wifi del salón no deje salir. -->
+<script src="lib/qrcode.min.js"></script>
+<script src="lib/jszip.min.js"></script>
 
 <style>
 :root{
@@ -928,8 +933,10 @@ const SB = {
     if(!txt) return null;                        // guardado correcto, sin contenido
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
-  ver(tabla, consulta){
-    return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()});
+  /* La clave también en las lecturas: desde que la tabla dejó de ser de
+     lectura libre, el organizador necesita mandarla para ver su evento. */
+  ver(tabla, consulta, clave){
+    return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab({}, clave)});
   },
   guardar(tabla, obj, clave){
     return this.pedir(`/rest/v1/${tabla}`, {
@@ -1003,7 +1010,13 @@ const SB = {
       x.setRequestHeader('apikey',NUBE.clave);
       x.setRequestHeader('Authorization','Bearer '+NUBE.clave);
       x.setRequestHeader('Content-Type',blob.type||'application/octet-stream');
-      x.setRequestHeader('x-upsert','true');
+      /* Sin x-upsert. Con el depósito abierto para que suban los invitados
+         —que es lo que tiene que pasar—, "upsert" quiere decir que
+         cualquiera puede PISAR un archivo que ya está: mandando a
+         .../ce-medios/QUI-XXXXXX/portada.jpg se cambia la portada de una
+         fiesta ajena, que es la que se proyecta en el salón. Los caminos
+         llevan un id al azar, así que nunca necesitamos pisar nada: si el
+         camino ya existe, que falle. */
       x.timeout=180000;
       if(x.upload&&alAvanzar) x.upload.onprogress=e=>{
         if(e.lengthComputable) alAvanzar(e.loaded/e.total);
@@ -1036,20 +1049,70 @@ async function subirArchivo(blob, base, alAvanzar){
    nombre y fecha. Desde la web pública había un botón que llevaba derecho
    ahí. Cuáles son "los míos" lo dicen las claves guardadas en este
    navegador, que es lo mismo que ya hacía el rollo. */
-const CAMPOS_LISTA='codigo,nombre,fecha,portada&order=creado.desc.nullslast';
+const CAMPOS_LISTA='codigo,nombre,fecha,portada,creado&order=creado.desc.nullslast';
 async function eventos(){
   if(!HAY_NUBE) return leerLocal(LISTA,[]);
   try{
-    if(esAdmin) return await SB.ver('ce_eventos','select='+CAMPOS_LISTA);
+    if(esAdmin) return await SB.ver('ce_eventos','select='+CAMPOS_LISTA, claveMaestra);
     const mios=Object.keys(clavesGuardadas());
     if(!mios.length) return [];
-    return await SB.ver('ce_eventos',
-      `codigo=in.(${mios.map(encodeURIComponent).join(',')})&select=${CAMPOS_LISTA}`);
+    /* Uno por uno, cada cual con SU clave. En un pedido solo va una clave
+       en la cabecera, y la base mira fila por fila: pidiéndolos todos
+       juntos volvía uno solo. Son los eventos de UN organizador, así que
+       son unos pocos y van en paralelo. */
+    const filas=await Promise.all(mios.map(async c=>{
+      try{
+        const r=await SB.ver('ce_eventos',
+          `codigo=eq.${encodeURIComponent(c)}&select=${CAMPOS_LISTA}`, claveDe(c));
+        return (r&&r[0])||null;
+      }catch(e){ return null; }
+    }));
+    return filas.filter(Boolean)
+      .sort((a,b)=>(b.creado||0)-(a.creado||0));
   }catch(e){ console.error('eventos',e); recado('No se pudo leer: '+motivo(e)); return []; }
+}
+/* ── leer un evento sin tener su clave ──
+   El invitado que llega por el QR, la pantalla del salón y el álbum que se
+   comparte no tienen clave, y tienen que poder leer SU evento. Antes eso
+   funcionaba porque la tabla era de lectura libre para todo el mundo, que
+   es lo mismo que decir que cualquiera se bajaba la lista completa de las
+   fiestas de todos los clientes con un solo pedido.
+   Ahora la base solo la abre por función y de a un código por vez. Si la
+   función todavía no está instalada (blindaje.sql no corrido), se lee como
+   antes: así la página anda igual el día de antes y el día después, sin
+   que haya que sincronizar la subida con el SQL. */
+let hayFuncionesNuevas = null;      // null = todavía no sabemos
+async function eventoPorCodigo(c){
+  if(hayFuncionesNuevas!==false){
+    try{
+      const v=await SB.rpc('ce_evento_publico',{p_codigo:c});
+      /* null = la función existe y ese código no. Un objeto con codigo = el
+         evento. Cualquier otra cosa quiere decir que del otro lado no está
+         la función que creemos. */
+      if(v===null||(v&&typeof v==='object'&&!Array.isArray(v)&&v.codigo)){
+        hayFuncionesNuevas=true; return v;
+      }
+      hayFuncionesNuevas=false;
+    }catch(e){
+      /* Pase lo que pase, se lee como se leía antes. Si la base ya está
+         cerrada, ese camino devuelve vacío y el que decide es ella, no
+         nosotros: lo que no puede pasar es que la pantalla muera acá. */
+      if(/PGRST202|does not exist|not found|404/i.test(e&&e.message||'')) hayFuncionesNuevas=false;
+    }
+  }
+  return (await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(c)}&select=*`))[0]||null;
 }
 async function meta(c){
   if(!HAY_NUBE) return leerLocal(kMeta(c),null);
-  try{ return (await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(c)}&select=*`))[0]||null; }
+  try{
+    /* Con la clave guardada leemos derecho de la tabla: es el organizador,
+       la base lo deja, y así ve también lo que está esperando aprobación. */
+    if(puedoEditar(c)){
+      const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(c)}&select=*`, claveDe(c));
+      if(r&&r[0]) return r[0];
+    }
+    return await eventoPorCodigo(c);
+  }
   catch(e){ console.error(e); return null; }
 }
 /* Columnas que se fueron agregando con el tiempo. Si la base todavía no
@@ -1065,7 +1128,12 @@ async function guardarMeta(m){
   if(!HAY_NUBE) return local.set(kMeta(m.codigo),m);
   const copia={...m};
   if(copia.portadaBlob){
-    copia.portada = await subirArchivo(copia.portadaBlob, `${copia.codigo}/portada`);
+    /* Camino nuevo cada vez. Antes era siempre ".../CODIGO/portada", y
+       como hacía falta poder cambiarla se subía con "upsert", que es lo
+       mismo que dejar que cualquiera pise la portada de cualquier fiesta.
+       Con un nombre al azar nunca hay nada que pisar; la anterior queda en
+       el depósito y se borra junto con el evento, que lista por prefijo. */
+    copia.portada = await subirArchivo(copia.portadaBlob, `${copia.codigo}/portada-${idNuevo()}`);
     delete copia.portadaBlob;
   }
   for(const c of COLUMNAS_NUEVAS) if(faltaColumna[c]) delete copia[c];
@@ -1113,12 +1181,33 @@ function motivo(e){
    ese número y las que faltaban no aparecían nunca: ni en el álbum, ni en
    la pantalla, y sin un solo error. Ahora se pide de a tandas. */
 const POR_TANDA=1000;
+/* Igual que con los eventos: sin clave se pide por función, y esa función
+   NO devuelve lo que está esperando aprobación. Antes cualquiera leía la
+   tabla entera, incluidas las fotos pendientes: "nada llega a la pantalla
+   sin que alguien lo mire primero" se cumplía solo del lado del dibujo, y
+   un invitado con la consola abierta las veía igual. */
+async function itemsDe(c, campos, desde, cuanto){
+  if(puedoEditar(c))
+    return await SB.ver('ce_items',
+      `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
+      +`&offset=${desde}&limit=${cuanto}`, claveDe(c));
+  if(hayFuncionesNuevas!==false){
+    try{
+      const v=await SB.rpc('ce_items_de',{p_codigo:c, p_desde:desde, p_cuanto:cuanto});
+      if(Array.isArray(v)){ hayFuncionesNuevas=true; return v; }
+      hayFuncionesNuevas=false;
+    }catch(e){
+      if(/PGRST202|does not exist|not found|404/i.test(e&&e.message||'')) hayFuncionesNuevas=false;
+    }
+  }
+  return await SB.ver('ce_items',
+    `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
+    +`&offset=${desde}&limit=${cuanto}`);
+}
 async function porTandas(c, campos){
   let desde=0, todo=[];
   for(;;){
-    const tanda=await SB.ver('ce_items',
-      `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
-      + `&offset=${desde}&limit=${POR_TANDA}`);
+    const tanda=await itemsDe(c, campos, desde, POR_TANDA);
     if(!tanda||!tanda.length) break;
     todo=todo.concat(tanda);
     if(tanda.length<POR_TANDA) break;
@@ -1155,7 +1244,12 @@ async function item(c,id){
   if(!HAY_NUBE) v = await leerLocal(kItem(c,id),null);
   else{
     try{
-      v = (await SB.ver('ce_items',`id=eq.${encodeURIComponent(id)}&select=*`))[0]||null;
+      if(puedoEditar(c))
+        v = (await SB.ver('ce_items',`id=eq.${encodeURIComponent(id)}&select=*`, claveDe(c)))[0]||null;
+      else{
+        try{ v = await SB.rpc('ce_item',{p_codigo:c, p_id:id}); }
+        catch(err){ v = (await SB.ver('ce_items',`id=eq.${encodeURIComponent(id)}&select=*`))[0]||null; }
+      }
       if(v) v.data = v.url || '';
     }catch(e){ console.error(e); return null; }
   }
@@ -1444,6 +1538,30 @@ let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 const TOPE_PUBLI=60;
 const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
+/* El código del evento ES la llave: con él se sube al muro y se abre el
+   álbum. Estaba saliendo de Math.random().toString(16).slice(2,8), que
+   tiene tres problemas: no es azar de verdad (se puede predecir viendo
+   unos pocos), a veces devuelve MENOS de seis dígitos (0.5 da "0.8", y
+   ahí el código quedaba de una sola letra), y como guardar un evento es un
+   "upsert" dos códigos iguales no dan error: uno pisa al otro y se lleva
+   puesta la fiesta de otro cliente. El rollo ya lo tenía así; el muro no. */
+const nuevoCodigo=tipo=>{
+  const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const n=new Uint32Array(6);
+  try{ crypto.getRandomValues(n); }
+  catch(e){ for(let i=0;i<n.length;i++) n[i]=Math.floor(Math.random()*4294967296); }
+  return (TIPOS[tipo]||'EVE')+'-'+[...n].map(x=>abc[x%abc.length]).join('');
+};
+/* ¿ese código ya es de alguien? Preguntar es barato; pisarle la fiesta a
+   otro no tiene arreglo. Sin señal para preguntar seguimos igual: con seis
+   caracteres al azar la chance es ínfima. */
+async function codigoLibre(codigo){
+  if(!HAY_NUBE) return !(await leerLocal(kMeta(codigo), null));
+  try{
+    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
+    return !(r&&r.length);
+  }catch(e){ return true; }
+}
 const CONSIGNAS=[
   'Una foto con quien menos conocés de la fiesta',
   'El brindis, justo en el choque de copas',
@@ -1764,7 +1882,6 @@ async function vPanel(){
     const nombre=app.querySelector('#n').value.trim();
     if(!nombre) return recado('Falta el nombre del evento');
     const tipo=app.querySelector('#t').value;
-    const codigo=TIPOS[tipo]+'-'+Math.random().toString(16).slice(2,8).toUpperCase();
     const fEv=app.querySelector('#f').value||hoy();
     const v=new Date(fEv); v.setMonth(v.getMonth()+12);
     const btn=app.querySelector('#crear');
@@ -1772,6 +1889,8 @@ async function vPanel(){
     btn.disabled=true; btn.textContent='Creando…';
     const claveEv=nuevaClave();
     try{
+      let codigo=nuevoCodigo(tipo);
+      for(let i=0;i<5&&!(await codigoLibre(codigo));i++) codigo=nuevoCodigo(tipo);
       await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:v.toISOString().slice(0,10),
         moderar:false,cerrado:false,portada:null,creado:Date.now(),claveNueva:claveEv});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
@@ -2969,7 +3088,10 @@ async function vAlbum(codigo,abrirEn){
         ${visuales.length?`
           <div class="seccion-a"><h2>Lo que sacaron</h2><span>${visuales.length}</span></div>
           <div class="mosaico-a">${visuales.map(i=>
-            `<a href="${src(i.data)}" target="_blank" rel="noopener" title="Abrir en grande">
+            /* href solo con direcciones http(s): urlSegura deja pasar
+               data:image/... , que sirve para un <img> pero en un enlace es
+               abrir un archivo con contenido ajeno desde nuestro sitio. */
+            `<a href="${esc(/^https?:\/\//i.test(urlSegura(i.data))?urlSegura(i.data):'')}" target="_blank" rel="noopener noreferrer" title="Abrir en grande">
               ${i.kind==='foto'
                 ? `<img src="${src(i.data)}" alt="Foto de ${esc(i.autor)}" loading="lazy">`
                 : `<video src="${src(i.data)}" muted preload="metadata"></video><span class="marca-video">▶</span>`}

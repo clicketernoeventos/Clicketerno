@@ -76,6 +76,19 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
   privacidad **es** el producto: antes del revelado no se puede ni firmar
   una URL. Se leen con URLs firmadas, de a 100, y duran una hora.
 
+### El orden en que se corre el SQL
+
+    sql/claves.sql  →  sql/rollo.sql  →  sql/blindaje.sql
+
+`blindaje.sql` va **último siempre**: reemplaza políticas y funciones que
+crean los otros dos. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
+`sql/blindaje_revisar.sql` tienen que dar todas `true`.
+
+`blindaje.sql` cierra la lectura libre de `ce_eventos` y `ce_items`. La app
+está preparada para las dos situaciones —prueba la función nueva y, si no
+está, lee como antes— así que se puede subir la web antes o después de
+correrlo, en cualquier orden, sin ventana rota en el medio.
+
 ### Lo que está corrido en producción
 
 `sql/claves.sql` y `sql/rollo.sql` se corrieron y se confirmaron, con el
@@ -143,6 +156,43 @@ las del cupo?, ¿puede ver las de otro?
 - **`innerText` devuelve el texto ya transformado por el CSS.** Medio muro
   está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
   pantalla diga eso. Comparar siempre en minúsculas.
+- **Una regla de la base no ve más de lo que ve quien la dispara.** Las del
+  depósito preguntaban "¿existe el evento de esta carpeta?" con un `select`
+  a `ce_eventos`. Ese `select` corre como `anon`. El día que `ce_eventos`
+  dejó de ser de lectura libre, la respuesta pasó a ser siempre "no existe",
+  y la rama "el evento ya no existe" —la que sirve para limpiar archivos
+  sueltos— se puso a valer para **todas** las fotos: cualquiera podía mirar
+  un rollo sin revelar. Se arregla preguntándole a una función
+  `security definer` (`ce_evento_existe`, `ce_evento_abierto`), igual que
+  `ce_ruta_reservada`. Es la misma trampa que el `delete ... where`.
+- **Lo que decide el navegador no es una regla, es una decoración.** El muro
+  pedía `ce_items` entero y filtraba lo pendiente al dibujar: "nada llega a
+  la pantalla sin que alguien lo mire primero" se cumplía en la pantalla y
+  no en la base. Con la consola abierta, un invitado veía las fotos que
+  esperaban aprobación. Lo mismo el panel: filtrar la lista de eventos en
+  el cliente no esconde nada, porque el que mira no usa la app, usa `curl`.
+  Toda promesa del producto tiene que estar escrita en una política o en
+  una función de la base.
+- **Un camino de archivo que manda el teléfono no es un dato, es una
+  orden.** `ce_tomar_foto` aceptaba cualquier `p_ruta`: con eso se reservaba
+  —y se subía— dentro de la carpeta de otro evento, o de una carpeta de
+  ningún evento, que queda legible para siempre. El depósito del negocio
+  servía de hosting gratis. Ahora la base exige `CODIGO/TOKEN/algo.jpg`, con
+  el código y el token de quien está sacando la foto.
+- **Si el navegador lo genera, el navegador lo puede repetir.** El token del
+  rollo lo inventa el teléfono: inventando tokens se creaban rollos sin
+  tope, de 24 fotos cada uno, y el almacenamiento lo paga el negocio.
+  Cualquier cosa que el cliente cree sin límite necesita un tope del lado de
+  la base (`cupo_invitados`).
+- **`Math.random()` no sirve para nada que sea una llave.** El código del
+  evento salía de `Math.random().toString(16).slice(2,8)`: se puede predecir
+  y **a veces devuelve menos de seis dígitos** (`0.5` da `"0.8"`). Y como
+  guardar un evento es un *upsert*, dos códigos iguales no dan error: uno
+  pisa al otro. `crypto.getRandomValues`, siempre.
+- **`upsert` en un depósito abierto es "pisá lo que quieras".** Las subidas
+  del muro iban con `x-upsert: true` a un camino fijo (`CODIGO/portada`):
+  cualquiera podía cambiar la portada que se proyecta en el salón. Camino al
+  azar y sin `upsert`: si ya existe, que falle.
 - **El panel mostraba los eventos de todo el mundo.** `eventos()` le pedía
   a la base la tabla entera y los pintaba bajo "Tus eventos": cualquiera
   que entrara al panel veía el casamiento del cliente de al lado. Ahora
@@ -190,6 +240,19 @@ las del cupo?, ¿puede ver las de otro?
   que firma los certificados hace que el navegador rechace el CDN y la
   prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
   archivo" es ruido: lo que no se perdona es un error de JavaScript.
+
+## Las cabeceras y las librerías
+
+`_headers` lleva la CSP y las demás cabeceras; las lee Cloudflare. Las
+pruebas **se sirven con esas cabeceras puestas** (`pruebas/servidor.py`), así
+que si la CSP bloquea algo que la app necesita, salta acá y no en la fiesta
+de un cliente.
+
+Las librerías (QR, zip, excel) viven en `lib/`, en el repo. Antes venían de
+cdnjs: eso es darle a un tercero permiso para correr código en la página que
+tiene a mano la clave del evento y la maestra. De paso, el QR y el zip ahora
+andan aunque el wifi del salón no deje salir — y las pruebas del zip, que se
+salteaban por no poder bajarlo, ahora corren.
 
 ## Lo que se publica en clicketerno.com.ar
 
@@ -244,3 +307,17 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
   generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son
   provisorios.
+- **Correr `sql/blindaje.sql`.** Hasta que no se corra, la tabla de eventos
+  sigue siendo de lectura libre para cualquiera con `curl`. Comprobar
+  después con `sql/blindaje_revisar.sql`: las dieciséis filas en `true`.
+- **El portón del listado de invitados no es un portón.** `pia/listado`
+  pide el correo de la clienta, pero el correo está escrito en la página y
+  la dirección del Apps Script también: cualquiera con el link se baja la
+  lista entera de invitados, con nombres y datos. Y la propia invitación la
+  descarga para comprobar si llegó una confirmación, así que la tiene a mano
+  todo el que abre el link. **Eso se arregla en el Apps Script, no acá**:
+  que el GET pida un secreto y que el POST sea lo único abierto.
+- **La clave maestra vive en `sessionStorage` mientras el administrador está
+  adentro.** Se borra al cerrar la pestaña y la CSP le cierra la puerta de
+  salida a un script inyectado, pero sigue siendo la joya: conviene entrar
+  como administrador solo cuando hace falta y cerrar la pestaña después.
