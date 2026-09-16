@@ -67,10 +67,24 @@ un evento que ya no existe.
 
 ### Probar sin tocar producción
 
-`sql/esquema_falso.sql` arma una copia del esquema en un Postgres local y
-después `sql/probar.sql` y `sql/rollo_probar.sql` atacan la base como si
-fueran un invitado curioso (¿puede revelar el rollo antes de hora?, ¿puede
-sacar más fotos que las del cupo?, ¿puede leer las fotos de otro?).
+Todo junto, que es como conviene correrlo:
+
+```bash
+bash pruebas/todo.sh
+```
+
+Levanta los dos servidores que hacen falta (puertos 8099 y 8890), busca un
+Postgres para las pruebas de la base, corre las once suites y apaga solo lo
+que haya levantado. También `todo.sh muro`, `todo.sh rollo`, `todo.sh sql`.
+
+Existe porque ponerlo a mano son seis pasos y olvidarse de uno no da un
+error: da una prueba que falla por el motivo equivocado.
+
+Por si hace falta a mano: `sql/esquema_falso.sql` arma una copia del
+esquema en un Postgres local y después `sql/probar.sql` y
+`sql/rollo_probar.sql` la atacan como lo haría un invitado curioso (¿puede
+revelar el rollo antes de hora?, ¿puede sacar más fotos que las del cupo?,
+¿puede leer las fotos de otro?).
 
 ```bash
 psql -f sql/esquema_falso.sql -f sql/claves.sql -f sql/rollo.sql
@@ -87,7 +101,7 @@ cuida eso pasaba sola en la segunda corrida.
 Y del lado del navegador, con el sitio servido en el puerto 8890:
 
 ```bash
-npx http-server -p 8890 -c-1 &
+python3 -m http.server 8890 --bind 127.0.0.1 &
 node pruebas/rollo_navegador.js    # 24 pruebas del invitado: cámara colgada, señal cortada…
 node pruebas/rollo_organizador.js  # el recorrido del organizador, de la puerta al revelado
 node pruebas/rollo_hora.js         # que la hora del revelado no se corra de zona
