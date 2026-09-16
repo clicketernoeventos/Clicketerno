@@ -18,9 +18,13 @@ create table if not exists ce_ajustes(
 );
 alter table ce_ajustes enable row level security;  -- sin políticas = nadie entra
 
--- clave maestra (se puede cambiar después con ce_cambiar_maestra)
+-- Clave maestra (la que abre todos los eventos).
+-- PONÉ LA TUYA ACÁ ABAJO antes de correr esto por primera vez. Que sea larga
+-- y no un número corto: una de seis cifras se adivina probando todas.
+-- Si ya está instalada, esta línea no la pisa. Para cambiarla después:
+--     select ce_cambiar_maestra('la de ahora', 'la nueva');
 insert into ce_ajustes(nombre, valor)
-values ('maestra', crypt('166774', gen_salt('bf')))
+values ('maestra', crypt('PONE-TU-CLAVE-MAESTRA-ACA', gen_salt('bf')))
 on conflict (nombre) do nothing;
 
 -- ── 2. la clave que mandó el navegador en esta llamada ──

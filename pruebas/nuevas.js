@@ -58,7 +58,8 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     if(await p.evaluate(()=>!!document.querySelector('#crear'))) mal('una clave equivocada entró igual');
     else bien('una clave equivocada no entra');
 
-    await p.fill('#pin','166774'); await p.click('#entrar'); await p.waitForTimeout(900);
+    await p.click('#modoAdmin'); await p.waitForTimeout(200);
+    await p.fill('#pin','CLAVE-MAESTRA-DE-PRUEBA'); await p.click('#entrar'); await p.waitForTimeout(900);
     const entroAdmin=await p.evaluate(()=>!!document.querySelector('#crear'));
     const sello=await p.evaluate(()=>!!document.querySelector('.sello-admin'));
     if(!entroAdmin) mal('la clave maestra NO entra');

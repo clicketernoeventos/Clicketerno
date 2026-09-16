@@ -150,6 +150,18 @@ las del cupo?, ¿puede ver las de otro?
   claves foráneas y el `create table if not exists` no las repone. La copia
   quedaba sin borrado en cascada y la prueba que justo cuida eso pasaba
   sola en la segunda corrida, sobre datos sucios.
+- **Lo que falla por el entorno no es una falla del producto.** Un proxy
+  que firma los certificados hace que el navegador rechace el CDN y la
+  prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
+  archivo" es ruido: lo que no se perdona es un error de JavaScript.
+
+## Lo que se publica en clicketerno.com.ar
+
+`wrangler.json` sube **toda** la carpeta. Lo que no tiene que estar en la
+web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
+`clicketerno.com.ar/sql/claves.sql` se bajaba desde el navegador — y ese
+archivo llevaba la clave maestra de producción escrita en texto plano.
+Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
 ## Lo que no se toca sin permiso
 
