@@ -82,7 +82,10 @@ begin
 
   return json_build_object(
     'token', p_token, 'nombre', v_nombre,
-    'disparos', v_disparos, 'cupo', v_cupo,
+    -- cupo_fotos nunca puede viajar vacío: del otro lado, en JavaScript,
+    -- "0 >= null" da verdadero y el invitado quedaba con el rollo lleno
+    -- sin haber sacado una sola foto.
+    'disparos', v_disparos, 'cupo', coalesce(v_cupo, 24),
     'camara', coalesce(v_camara,false), 'cerrado', coalesce(v_cerrado,false),
     'revelado', ce_camara_revelada(p_codigo), 'revela_en', v_revela_en
   );
@@ -113,7 +116,10 @@ begin
   if not found then
     raise exception 'Ese rollo no existe' using errcode = '28000';
   end if;
-  if v_disparos >= v_cupo then
+  -- y acá al revés: "v_disparos >= null" no es verdadero NUNCA, así que
+  -- con la columna vacía no había cupo que valiera y se podía llenar el
+  -- depósito sin límite.
+  if v_disparos >= coalesce(v_cupo, 24) then
     raise exception 'Ya usaste todas tus fotos' using errcode = '28000';
   end if;
 
@@ -122,7 +128,7 @@ begin
             (extract(epoch from now())*1000)::bigint);
   update ce_rollos set disparos = disparos + 1 where token = p_token;
 
-  return json_build_object('restantes', v_cupo - v_disparos - 1);
+  return json_build_object('restantes', coalesce(v_cupo, 24) - v_disparos - 1);
 end $$;
 
 -- ── 5b. devolver una foto que nunca llegó a subirse ──
@@ -217,6 +223,37 @@ begin
   execute 'grant execute on function ce_rutas_rollo(text) to anon, authenticated';
 exception when undefined_function then
   raise notice 'FALTA claves.sql: sin ce_permitido no se pudo crear ce_rutas_rollo (solo se usa para limpiar los archivos al borrar un evento). Todo lo demás quedó instalado.';
+end $ce$;
+
+-- ── 7b bis. el álbum de a tandas, para el organizador ──
+-- ce_album_de devuelve como mucho 400 fotos: es lo que se puede dibujar en
+-- una pantalla sin colgar el teléfono. Pero el organizador que se quiere
+-- llevar TODAS necesita las 1450 de un casamiento, y con el tope de 400 el
+-- zip se bajaba incompleto diciendo "listo": la peor manera de perder las
+-- fotos de una fiesta.
+-- Pide la clave del evento, como ce_rutas_rollo: nadie más tiene por qué
+-- poder listarle el álbum entero a nadie.
+do $ce$
+begin
+  execute $fn$
+    create or replace function ce_album_pagina(p_codigo text, p_desde integer, p_cuanto integer)
+    returns json language sql stable security definer set search_path = public as $cuerpo$
+      select coalesce(json_agg(json_build_object(
+               'id', t.id, 'ruta', t.ruta, 'filtro', t.filtro, 'ts', t.ts, 'nombre', t.nombre
+             ) order by t.ts, t.id), '[]'::json)
+      from (select d.id, d.ruta, d.filtro, d.ts, r.nombre
+            from ce_disparos d join ce_rollos r on r.token = d.token
+            where d.codigo = p_codigo and ce_permitido(p_codigo)
+            -- ts, id: dos fotos del mismo milisegundo tienen que salir
+            -- siempre en el mismo orden, o al pasar de tanda se repite una
+            -- y se saltea otra.
+            order by d.ts, d.id
+            offset greatest(coalesce(p_desde,0),0)
+            limit least(greatest(coalesce(p_cuanto,500),1),500)) t;
+    $cuerpo$$fn$;
+  execute 'grant execute on function ce_album_pagina(text,integer,integer) to anon, authenticated';
+exception when undefined_function then
+  raise notice 'FALTA claves.sql: sin ce_permitido no se pudo crear ce_album_pagina (es la que deja bajar TODAS las fotos de un evento grande). Todo lo demás quedó instalado.';
 end $ce$;
 
 -- ── 7c. ¿este camino ya fue reservado por ce_tomar_foto? ──

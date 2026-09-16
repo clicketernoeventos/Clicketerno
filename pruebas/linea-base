@@ -1,0 +1,19 @@
+# Observaciones conocidas y esperadas, por suite y por modo.
+#
+# stress recorre la app en cuatro modos y cuenta como "falla" cada
+# console.error que aparezca. En los modos que rompen la base a propósito,
+# que la app registre el error ES el comportamiento correcto: tragárselo en
+# silencio sería peor. Así que esas observaciones se esperan.
+#
+#   fail  la base contesta PGRST205 "relation ce_eventos does not exist"
+#   net   la red cortada: TypeError: Failed to fetch
+#   ok    el recorrido normal, tiene que estar limpio
+#   evil  datos envenenados, tiene que estar limpio
+#
+# Se anota POR MODO y no como un total, a propósito: con un total, una
+# falla nueva en "ok" y una que desaparece en "net" se cancelan y nadie se
+# entera. Los modos que no figuran acá tienen que dar cero.
+#
+# Si este número cambia, el corredor lo marca en rojo. No lo subas para que
+# deje de molestar: mirá qué apareció.
+stress=fail:6,net:9
