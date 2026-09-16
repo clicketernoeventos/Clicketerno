@@ -7,11 +7,13 @@ async function nuevaPagina(browser, opciones={}) {
   const page = await ctx.newPage();
   const errores=[]; const avisos=[];
   page.on('pageerror', e=>errores.push('PAGEERROR: '+e.message));
-  /* La librería del QR viene de un CDN. Si el entorno donde corren estas
-     pruebas no tiene salida a internet, el navegador avisa que no pudo
-     bajarla: eso no es un fallo del rollo, y si lo contáramos taparía los
-     errores de verdad. */
-  const deCDN=t=>/ERR_TUNNEL_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|cdnjs|fonts\.googleapis/i.test(t);
+  /* Todo lo que sea "no pude bajar un archivo" es ruido del entorno, no un
+     fallo del rollo: la librería del QR y las tipografías vienen de un CDN,
+     y el entorno donde corren estas pruebas puede no tener salida, o tener
+     un proxy que firma los certificados con una autoridad que el navegador
+     no conoce. Si lo contáramos como error taparía los de verdad, que son
+     los de JavaScript. */
+  const deCDN=t=>/Failed to load resource|ERR_TUNNEL_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|ERR_CERT_|ERR_ABORTED|cdnjs|fonts\.googleapis/i.test(t);
   page.on('console', m=>{ if(m.type()==='error' && !deCDN(m.text())) errores.push('CONSOLE: '+m.text()); });
   return { page, ctx, errores, avisos };
 }

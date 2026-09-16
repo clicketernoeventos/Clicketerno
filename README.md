@@ -67,24 +67,59 @@ un evento que ya no existe.
 
 ### Probar sin tocar producción
 
-`sql/esquema_falso.sql` arma una copia del esquema en un Postgres local y
-después `sql/probar.sql` y `sql/rollo_probar.sql` atacan la base como si
-fueran un invitado curioso (¿puede revelar el rollo antes de hora?, ¿puede
-sacar más fotos que las del cupo?, ¿puede leer las fotos de otro?).
+Todo junto, que es como conviene correrlo:
+
+```bash
+bash pruebas/todo.sh
+```
+
+Levanta los dos servidores que hacen falta (puertos 8099 y 8890), busca un
+Postgres para las pruebas de la base, corre las once suites y apaga solo lo
+que haya levantado. También `todo.sh muro`, `todo.sh rollo`, `todo.sh sql`.
+
+Existe porque ponerlo a mano son seis pasos y olvidarse de uno no da un
+error: da una prueba que falla por el motivo equivocado.
+
+Por si hace falta a mano: `sql/esquema_falso.sql` arma una copia del
+esquema en un Postgres local y después `sql/probar.sql` y
+`sql/rollo_probar.sql` la atacan como lo haría un invitado curioso (¿puede
+revelar el rollo antes de hora?, ¿puede sacar más fotos que las del cupo?,
+¿puede leer las fotos de otro?).
 
 ```bash
 psql -f sql/esquema_falso.sql -f sql/claves.sql -f sql/rollo.sql
 psql -f sql/probar.sql
-psql -f sql/rollo_probar.sql     # 41 comprobaciones
+psql -f sql/rollo_probar.sql     # 49 comprobaciones
 ```
+
+`esquema_falso.sql` tira las tablas del rollo antes que `ce_eventos`, y no
+al revés: si se tira `ce_eventos` "cascade" con las otras en pie, se lleva
+puestas sus claves foráneas y el `create table if not exists` no las vuelve
+a poner. La copia quedaba sin borrado en cascada y la prueba que justo
+cuida eso pasaba sola en la segunda corrida.
 
 Y del lado del navegador, con el sitio servido en el puerto 8890:
 
 ```bash
-npx http-server -p 8890 -c-1 &
+python3 -m http.server 8890 --bind 127.0.0.1 &
 node pruebas/rollo_navegador.js    # 24 pruebas del invitado: cámara colgada, señal cortada…
 node pruebas/rollo_organizador.js  # el recorrido del organizador, de la puerta al revelado
+node pruebas/rollo_hora.js         # que la hora del revelado no se corra de zona
+node pruebas/rollo_hostil.js       # 69 comprobaciones con todo saliendo mal
 ```
+
+Las dos que arman el zip necesitan JSZip de verdad. `pruebas/jszip_local.js`
+lo busca en `pruebas/.cache/`, y si no está y hay internet lo baja una vez y
+lo deja ahí para la próxima. Si no lo consigue de ningún lado, esas pruebas
+dicen `salteada` en vez de dar error: una dependencia que falta no es un
+bug del rollo.
+
+`rollo_hostil.js` es la que mira lo feo: la base devuelve el cupo vacío, el
+salón se queda sin señal, una foto no se puede traer del depósito, el
+organizador vuelve a esconder el álbum, el teléfono no deja prender la
+cámara, la señal se corta justo al crear el rollo, el invitado se va de la
+pantalla mientras se revela, hay que bajar doscientas fotos de una. Corre
+todo con el reloj en Argentina, que es donde se usa.
 
 Las del muro están en `pruebas/LEEME.md` y usan otro puerto. Si playwright
 está instalado global en vez de en el proyecto:
