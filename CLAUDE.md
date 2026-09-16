@@ -163,6 +163,15 @@ web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
 archivo llevaba la clave maestra de producción escrita en texto plano.
 Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
+## Invitaciones alojadas en el repo
+
+Cada invitación es una carpeta con su `index.html` en la **raíz** del repo:
+`delfina15/index.html` se sirve en `clicketerno.com.ar/delfina15`. Las
+reglas y los nombres prohibidos están en `invitaciones/LEEME.md`, y
+`pruebas/invitaciones.js` las verifica (que no tapen una ruta de la app,
+que no apunten a Netlify, que no usen caminos absolutos, que no pesen de
+más). Correla cuando entre una invitación nueva.
+
 ## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.
