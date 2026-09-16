@@ -21,7 +21,7 @@ cd "$(dirname "$0")/.."
 RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
-MURO=(stress extras nuevas borrar xss hostil diagnostico)
+MURO=(stress extras nuevas borrar xss hostil diagnostico invitaciones)
 ROLLO=(rollo_navegador rollo_organizador rollo_hora rollo_hostil)
 
 azul(){ printf '\n\033[1m%s\033[0m\n' "$*"; }
@@ -155,11 +155,10 @@ case "$QUE" in
   muro)  azul "── el muro (puerto 8099) ──";  servidor 8099 && for t in "${MURO[@]}";  do correr "$t"; done ;;
   rollo) azul "── el rollo (puerto 8890) ──"; servidor 8890 && for t in "${ROLLO[@]}"; do correr "$t"; done ;;
   sql)   sql ;;
-  inv)   azul "── las invitaciones ──"; correr invitaciones ;;
+  inv)   azul "── las invitaciones ──"; correr invitaciones ;;   # suelta: no necesita servidor
   todo)
     azul "── el muro (puerto 8099) ──";  servidor 8099 && for t in "${MURO[@]}";  do correr "$t"; done
     azul "── el rollo (puerto 8890) ──"; servidor 8890 && for t in "${ROLLO[@]}"; do correr "$t"; done
-    azul "── las invitaciones ──"; correr invitaciones
     sql ;;
   *) echo "uso: bash pruebas/todo.sh [todo|muro|rollo|sql|inv]"; exit 2 ;;
 esac
