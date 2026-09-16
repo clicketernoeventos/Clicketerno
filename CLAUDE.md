@@ -1,79 +1,165 @@
-# Cómo trabajar en este repo
+# Clicketerno
 
-Hay **dos sesiones de Claude trabajando en paralelo** sobre el mismo
-repositorio, cada una en su rama, y las dos mergean a `main`. Este archivo
-es el acuerdo entre las dos. Leelo antes de tocar nada.
+**Todo el proyecto se lleva desde un solo chat.** Antes eran dos sesiones en
+paralelo, cada una con sus archivos, y se pisaron: el muro se mudó de
+`app.html` a `muro.html` mientras la otra escribía sobre el archivo viejo.
+Si alguna vez vuelven a ser dos, lo primero es repartir los archivos por
+escrito y traer `main` antes de cada tanda.
 
-## Quién es dueño de qué
+Dos servicios para fiestas, un sitio estático y una base. No hay build, no
+hay dependencias, no hay framework: cada pantalla es un HTML suelto que
+habla directo con Supabase. Si algo parece que necesita `npm install`, está
+mal pensado.
 
-| Archivo | Dueño | Rama |
+| Dirección | Archivo | Qué es |
 |---|---|---|
-| `muro.html`, `app.html` | sesión **Muro** | `claude/code-review-0wp0ht` |
-| `rollo.html` | sesión **Rollo** | `claude/clicketerno-event-photos-yvyyfs` |
-| `index.html` | Muro | |
-| `sql/claves.sql`, `sql/columnas.sql`, `sql/probar.sql`, `sql/esquema_falso.sql`, `sql/revisar.sql` | Muro | |
-| `sql/rollo*.sql` | Rollo | |
-| `pruebas/rollo_*.js` | Rollo | |
-| el resto de `pruebas/` | Muro | |
-| `README.md`, `CLAUDE.md` | las dos (secciones separadas) | |
+| `/` | `index.html` | la página pública |
+| `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + su panel |
+| `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
+| `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
-**Dueño** no significa permiso exclusivo: significa que si vas a tocar un
-archivo que no es tuyo, lo decís en el mensaje del commit y avisás a la otra
-sesión. Los archivos compartidos de verdad (`fakesb.js`, `README.md`) se
-tocan con cuidado y sin reescribir lo ajeno.
+**Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
+clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
+pasando por el muro. Un evento puede tener los dos, o uno solo.
 
-## Antes de empezar a trabajar
+## Cómo trabajar con quien lleva el proyecto
 
-    git fetch origin main && git merge origin/main
+Esto no es un detalle de estilo: es la diferencia entre que algo sirva y que
+quede a medio hacer.
 
-La otra sesión mergea a `main` sin avisar. Si arrancás sin traer sus cambios
-vas a estar editando un archivo viejo — ya pasó: el muro se mudó de
-`app.html` a `muro.html` mientras la otra sesión escribía sobre el archivo
-anterior, y hubo que portar todo a mano.
+- **El SQL va pegado en el chat, listo para copiar.** De ahí se copia al
+  SQL Editor de Supabase y el resultado vuelve pegado al chat. Nunca como
+  archivo adjunto, nunca "corré esto" sin el bloque a mano.
+- **Cuando hay opciones, dar la más simple.** Lo dijo con todas las letras:
+  *"no quiero renegar"*. Una recomendación, no un menú.
+- **Del otro lado no se depura.** Si algo falla en el teléfono, lo que
+  llega es "no anda" o una captura. La prueba tiene que existir antes de
+  que la pruebe una persona.
+- **El negocio está en Rosario (UTC−3).** Todo lo de fechas y horas se
+  piensa desde ahí, no desde UTC. Ya costó un bug fatal.
+- El teléfono del negocio es **341 250-6451** y no se cambia.
 
-## Antes de mergear a main
+## Arrancar
 
-Correr **todas** las pruebas, no solo las tuyas. Las dos sesiones comparten
-`pruebas/fakesb.js` y la misma base de datos, así que un cambio en el rollo
-puede romper el muro y al revés.
+    bash pruebas/todo.sh
 
-    python3 -m http.server 8099 --bind 127.0.0.1 &
-    for t in stress extras nuevas borrar xss hostil diagnostico; do node pruebas/$t.js; done
-    node pruebas/rollo_navegador.js && node pruebas/rollo_organizador.js
+Levanta los servidores que hagan falta, corre las pruebas del muro, las del
+rollo y las de la base, y apaga solo lo que haya levantado. También
+`todo.sh muro`, `todo.sh rollo`, `todo.sh sql`.
 
-Si una prueba que no es tuya falla, **no la ignores y no la arregles a
-ciegas**: fijate primero si ya fallaba antes de tus cambios
+Correr **todo** antes de mergear, no solo lo que tocaste: los dos servicios
+comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 
-    git worktree add --detach /tmp/limpio origin/main
+## Cómo está armado
 
-y avisá a quien corresponda. Una prueba ajena en rojo es información, no
-ruido.
+- **Estático en Cloudflare** (`wrangler.json`, directorio `.`). Las
+  direcciones limpias sirven `muro.html` en `/muro` y `rollo.html` en
+  `/rollo`.
+- **Supabase**: PostgREST + Storage. La clave `anon` está escrita en el
+  HTML, a propósito: es pública por diseño, lo que protege de verdad son
+  las políticas de la base.
+- **Nadie entra directo a las tablas.** RLS prendido y **sin políticas**,
+  que en Postgres quiere decir "nadie". Todo pasa por funciones
+  `security definer` (`ce_mi_rollo`, `ce_tomar_foto`, `ce_album_de`…).
+- **Clave por evento**: viaja en la cabecera `x-clave`, la valida
+  `ce_permitido()` leyendo `current_setting('request.headers')`. Se guarda
+  en el navegador del organizador; desde otro teléfono se la pide.
+- **Las fotos del rollo viven en un depósito privado** (`ce-rollos`). Esa
+  privacidad **es** el producto: antes del revelado no se puede ni firmar
+  una URL. Se leen con URLs firmadas, de a 100, y duran una hora.
+
+### Lo que está corrido en producción
+
+`sql/claves.sql` y `sql/rollo.sql` están instalados y confirmados, con el
+depósito `ce-rollos` y sus tres reglas. De `sql/columnas.sql` (del muro) no
+hay confirmación de primera mano: antes de darlo por puesto, correr
+`sql/revisar.sql` y mirar.
+
+**Desde acá no se llega a la base de producción.** Cualquier cambio de SQL
+va pegado en el chat, en un bloque listo para copiar, y lo corre una
+persona en el SQL Editor. Para ver qué está puesto y qué falta:
+`sql/revisar.sql` y `sql/rollo_revisar.sql`.
+
+### Probar sin tocar producción
+
+`sql/esquema_falso.sql` arma una copia del esquema en un Postgres local y
+`sql/probar.sql` y `sql/rollo_probar.sql` la atacan como lo haría un
+invitado curioso: ¿puede revelar antes de hora?, ¿puede sacar más fotos que
+las del cupo?, ¿puede ver las de otro?
 
 ## Reglas que ya nos costaron caro
 
-- **`innerText` devuelve el texto YA transformado por el CSS.** Media app
-  está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
-  pantalla diga exactamente eso. Comparar siempre en minúsculas.
-- **Nombres de clase CSS repetidos.** `.tapa` y la función `solapa()` ya
-  existían y fueron pisadas por código nuevo: una capa se comía los clics,
-  la otra tiraba "Algo se cortó". Antes de inventar un nombre, `grep`.
-- **Una prueba que pasa siempre no prueba nada.** Cuando escribas una
-  prueba nueva, corrigela contra el código *anterior* al arreglo y
-  comprobá que falla. Si pasa en los dos, no estás midiendo lo que creés.
-- **La base corta en 1000 filas por pedido.** Cualquier lectura que pueda
-  traer más (recuerdos, fotos del rollo, archivos del depósito) se pide de
-  a tandas. Sin eso se pierden datos en silencio, que es la peor manera.
+- **Las horas.** `datetime-local` devuelve la hora de la pared, sin zona.
+  Mandarla tal cual a una columna `timestamptz` la corre tres horas: un
+  revelado puesto para hoy a la tarde **ya había pasado**, así que el rollo
+  nacía revelado y al invitado no se le abría nunca la cámara. Usar `aUTC()`
+  al guardar y `aLocal()` al mostrar. Y `toISOString().slice(0,10)` da la
+  fecha **en UTC**: después de las nueve de la noche acá, ya es mañana.
+- **Los cortes silenciosos.** La base corta en 1000 filas por pedido, y hay
+  cortes nuestros además: en el rollo era un `limit 400` adentro de
+  `ce_album_de`. El álbum decía "1450 fotos" y entregaba 400, y el zip del
+  organizador se bajaba con esas 400 diciendo **"Listo"**. Toda lectura que
+  pueda traer de más se pide de a tandas. Buscar los dos límites: los de la
+  base y los nuestros.
 - **No mentirle al usuario.** Si algo no se guardó, el mensaje no puede
-  decir "listo". Hay pruebas que verifican exactamente esto.
+  decir "listo". Hay pruebas que verifican exactamente eso.
+- **`null` en una comparación.** `0 >= null` da **verdadero** en JavaScript
+  y `disparos >= null` **nunca** es verdadero en SQL. Con `cupo_fotos`
+  vacío, al invitado le decía "ya sacaste tus fotos" sin haber sacado
+  ninguna, y del lado de la base no había tope. `coalesce` de los dos lados.
+- **Postgres aplica las políticas de SELECT al `DELETE ... WHERE`.** Por eso
+  las fotos de un evento borrado quedaban inalcanzables para siempre: la
+  regla de lectura miraba el revelado, que ya no existía.
+- **Safari no tiene `ctx.filter`.** En iPhone la foto se guardaba sin filtro
+  y nadie se enteraba hasta el revelado. Las matrices de color se calculan a
+  mano, recortando entre filtro y filtro.
+- **iOS corta la cámara solo** al bloquear el teléfono o cambiar de app.
+  Hay que escuchar `onended`/`onmute` y `visibilitychange` y volver a
+  prenderla, y no gastarle una foto al invitado si el cuadro viene negro.
+- **`innerText` devuelve el texto ya transformado por el CSS.** Medio muro
+  está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
+  pantalla diga eso. Comparar siempre en minúsculas.
+- **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
+  pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
+  Antes de inventar un nombre, `grep`.
 
-## Deuda conocida
+## Reglas para las pruebas
 
-- `pruebas/rollo_organizador.js` falla en `ZIP → NO bajó`. Ya fallaba en
-  `main` antes del repaso del 14/09 (verificado con un worktree limpio).
-  Es de la sesión Rollo.
-- `pruebas/rollo_navegador.js` puede dar 4 fallas de
-  `ERR_CERT_AUTHORITY_INVALID`: es el contenedor, no el código (pasa igual
-  con `main` limpio). No lo persigas.
+- **Una prueba que pasa siempre no prueba nada.** Escrita la prueba,
+  corrigela contra el código *anterior* al arreglo y comprobá que falla. Si
+  pasa en los dos, no estás midiendo lo que creés. Pasó con la del orden de
+  las tandas: creía que probaba el desempate por `id` y no lo probaba.
+- **Nunca una ruta de tu carpeta de borradores.** Una prueba tenía
+  `/tmp/qa/jszip.min.js` escrito a mano. En esa máquina pasaba; en
+  cualquier otra decía `ZIP → NO bajó`, que suena a producto roto y no lo
+  era. Lo que falte se busca con `pruebas/jszip_local.js` o se saltea
+  **diciéndolo**: una dependencia ausente no es un bug.
+- **No editar un script mientras se está ejecutando.** Bash lee el archivo
+  por posición, no de una: si se le insertan líneas en el medio, retoma a
+  mitad de una palabra y tira un error de sintaxis en una línea que en
+  disco está perfecta. Media hora buscando un bug que no existía.
+- **Una prueba que falla siempre deja de ser información.** `stress`
+  informa 15 observaciones de sus modos que rompen a propósito (cuenta cada
+  `console.error`, y en los modos `fail` y `net` el error es justamente lo
+  que se busca). Están anotadas por modo en `pruebas/linea-base` y el
+  corredor avisa solo cuando **cambian**. No subir ese número para que deje
+  de molestar: mirar qué apareció. Los modos `ok` y `evil` tienen que dar
+  cero, siempre.
+- **Cuidado al comparar contra `main`.** `git worktree` te da los archivos
+  de main, pero las pruebas apuntan a un puerto fijo: si el servidor
+  levantado sirve tu copia de trabajo, estás corriendo las pruebas de main
+  contra tu propio HTML. Hay que servir el worktree en otro puerto y
+  apuntar ahí. Nos mandó a una conclusión falsa.
+- **Las suites no son repetibles por arte de magia.**
+  `esquema_falso.sql` tira las tablas del rollo *antes* que `ce_eventos`: si
+  se tira `ce_eventos` "cascade" con las otras en pie, se lleva puestas sus
+  claves foráneas y el `create table if not exists` no las repone. La copia
+  quedaba sin borrado en cascada y la prueba que justo cuida eso pasaba
+  sola en la segunda corrida, sobre datos sucios.
+- **Lo que falla por el entorno no es una falla del producto.** Un proxy
+  que firma los certificados hace que el navegador rechace el CDN y la
+  prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
+  archivo" es ruido: lo que no se perdona es un error de JavaScript.
 
 ## Lo que se publica en clicketerno.com.ar
 
@@ -85,16 +171,32 @@ Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
 ## Invitaciones alojadas en el repo
 
-Cada invitación es una carpeta con su `index.html` en la **raíz** del repo:
-`delfina15/index.html` se sirve en `clicketerno.com.ar/delfina15`. Las
-reglas y los nombres prohibidos están en `invitaciones/LEEME.md`, y
-`pruebas/invitaciones.js` las verifica (que no tapen una ruta de la app,
-que no apunten a Netlify, que no usen caminos absolutos, que no pesen de
-más). Correla cuando entre una invitación nueva.
+Cada invitación es una carpeta con su `index.html` en la **raíz**:
+`delfina15/index.html` se sirve en `clicketerno.com.ar/delfina15`. Antes
+vivían en Netlify. Las reglas y los nombres prohibidos (`muro`, `rollo`,
+`app`…) están en `invitaciones/LEEME.md`; `pruebas/invitaciones.js` las
+verifica: que no tapen una ruta de la app, que no queden apuntando a
+netlify.app, que no usen caminos absolutos —que en Netlify funcionaban
+porque cada una era un sitio aparte y acá no— y que no pesen de más.
 
-## Lo que no se toca sin permiso del dueño del proyecto
+## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.
-- Las políticas de Supabase ya instaladas (`sql/claves.sql` está corrido en
-  producción; cualquier cambio hay que dárselo a él para que lo corra).
-- El número de WhatsApp: **341 250-6451**.
+- Las políticas de Supabase ya instaladas.
+- `app.html`: hay QR impresos apuntando ahí.
+- El número de WhatsApp.
+
+## Pendiente, decidido y no hecho
+
+- ~~**Video recap** del álbum~~. **Descartado por el dueño** (16/09), con
+  la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
+  da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que
+  lo pida él.
+- **Dónde viven las fotos a la larga.** Una foto pesa ~441 KB: un evento de
+  100 invitados con 24 fotos son ~1 GB. **El plan gratis de Supabase no
+  aguanta un solo casamiento.** Hay que decidir entre Supabase Pro y
+  Cloudflare R2, y fijar hasta cuándo se guardan.
+- **Miniaturas.** El álbum baja las fotos enteras para mostrarlas chiquitas;
+  generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
+- **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son
+  provisorios.
