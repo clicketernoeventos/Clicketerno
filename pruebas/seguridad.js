@@ -177,7 +177,10 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
        antes, ese rato sería la web caída para todos los clientes. */
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const pg = await ctx.newPage();
-    const fake = crearFake('ok');
+    /* La base vieja es la ABIERTA: sin blindaje.sql las tablas se leían sin
+       clave. Con el falso cerrado esto simulaba una base que nunca existió
+       (sin funciones Y cerrada) y la prueba se contradecía sola. */
+    const fake = crearFake('ok', false);
     await fake.instalar(pg);
     /* la base vieja: esas funciones todavía no existen */
     await pg.route('**/rest/v1/rpc/ce_evento_publico', r => r.fulfill({

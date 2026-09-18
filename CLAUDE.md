@@ -225,7 +225,37 @@ las del cupo?, ¿puede ver las de otro?
   capa fija necesita su propio `top` en `body.en-demo`.
 - **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
   pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
-  Antes de inventar un nombre, `grep`.
+  Antes de inventar un nombre, `grep`. **Volvió a pasar**: un parámetro
+  `solapa` en `vEvento` tapó la función `solapa()` y el panel entero moría
+  con "solapa is not a function". El parámetro se llama `abrirEn`. No alcanza
+  con tener la regla escrita: hay que hacer el `grep`.
+- **Guardar no puede moverle el piso al organizador.** Cada botón de Ajustes
+  redibujaba con `vEvento(codigo)`, que vuelve a la solapa Compartir y arriba
+  de todo: guardabas el hashtag y tenías que volver a bajar hasta las
+  consignas. Seis botones hacían lo mismo. Ahora se redibuja con
+  `redibujar(codigo)`, que conserva la solapa y el punto de la página.
+- **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
+  pantalla del salón se refresca cada siete segundos; el panel del
+  organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
+  las fotos se apilaban sin aparecer, y con la moderación encendida eso
+  quiere decir que no se proyecta nada: había que salir y volver a entrar, y
+  nadie lo sabe. Ahora el panel se entera solo.
+
+## Los dos recorridos
+
+`pruebas/recorrido.js` y `pruebas/rollo_recorrido.js` hacen lo que hace una
+persona en una noche, de punta a punta: crear el evento, configurarlo, que
+un invitado mande algo desde otro teléfono, que la pantalla del salón no lo
+proyecte porque espera aprobación, que el organizador se entere solo,
+apruebe, y recién ahí aparezca. Las demás suites miran pantallas sueltas y
+casos feos; estas miran si el producto funciona.
+
+**El Supabase falso está BLINDADO por defecto** (`crearFake(modo, cerrada)`),
+igual que producción: sin la clave del evento no devuelve ni una fila. Antes
+estaba abierto y las suites corrían contra una base que ya no existe —
+cualquier pantalla que dependiera de leer sin clave pasaba en las pruebas y
+fallaba en la fiesta. Para probar el camino viejo a propósito:
+`crearFake('ok', false)`.
 
 ## Reglas para las pruebas
 

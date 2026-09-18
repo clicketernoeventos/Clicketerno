@@ -1418,10 +1418,11 @@ const IC={
 };
 
 /* solapas con barra inferior: las usan el panel y el álbum */
-function activarSolapas(inicial){
+function activarSolapas(inicial, saltarArriba){
   const botones=[...app.querySelectorAll('[data-sol]')];
   if(!botones.length) return;
   const paneles=botones.map(b=>document.getElementById(b.dataset.sol)).filter(Boolean);
+  let primera=true;
   const mostrar=id=>{
     botones.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sol===id)));
     paneles.forEach(s=>{
@@ -1429,7 +1430,10 @@ function activarSolapas(inicial){
       s.hidden=!activo;
       if(activo){ s.style.animation='none'; void s.offsetWidth; s.style.animation=''; }
     });
-    window.scrollTo({top:0,behavior:'smooth'});
+    /* Al cambiar de solapa sí se sube; al REDIBUJAR la misma (después de
+       guardar), no: el organizador estaba a mitad de una pantalla larga. */
+    if(!(primera && saltarArriba===false)) window.scrollTo({top:0,behavior:'smooth'});
+    primera=false;
   };
   botones.forEach(b=>b.onclick=()=>mostrar(b.dataset.sol));
   mostrar(inicial&&paneles.some(s=>s.id===inicial)?inicial:botones[0].dataset.sol);
@@ -1569,10 +1573,11 @@ const nuevoCodigo=tipo=>{
    caracteres al azar la chance es ínfima. */
 async function codigoLibre(codigo){
   if(!HAY_NUBE) return !(await leerLocal(kMeta(codigo), null));
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
-    return !(r&&r.length);
-  }catch(e){ return true; }
+  /* Por función, no por la tabla: desde blindaje.sql un select sin clave
+     devuelve cero filas SIEMPRE, así que esto contestaba "libre" aunque el
+     código fuera de otro. La comprobación existía y no comprobaba nada. */
+  try{ return !(await eventoPorCodigo(codigo)); }
+  catch(e){ return true; }
 }
 const CONSIGNAS=[
   'Una foto con quien menos conocés de la fiesta',
@@ -1920,6 +1925,17 @@ async function vPanel(){
   };
 }
 
+/* Volver a dibujar el evento SIN moverle el piso al organizador: misma
+   solapa y mismo punto de la página. Antes, cada "Guardar" de Ajustes lo
+   devolvía a Compartir y arriba de todo: guardabas el hashtag y tenías que
+   volver a bajar hasta las consignas. Seis botones hacían lo mismo. */
+async function redibujar(codigo){
+  const act=app.querySelector('[data-sol][aria-selected="true"]');
+  const y=window.scrollY;
+  await vEvento(codigo, act?act.dataset.sol:null);
+  window.scrollTo({top:y, behavior:'auto'});
+}
+
 /* Recién creado: la clave se muestra una vez, grande y para copiar. */
 function vClaveNueva(ev,clave){
   parar(); tono();
@@ -2018,7 +2034,7 @@ function vPedirClave(codigo,m){
       const r=await SB.quienSoy(codigo,v);
       if(r&&r.puede_editar){
         guardarClaveDe(codigo,v);
-        recado('Listo'); return vEvento(codigo);
+        recado('Listo'); return redibujar(codigo);
       }
       if(r&&!r.llego_la_clave){
         recado('La clave no llega a la base. Avisale a Click Eterno.');
@@ -2035,7 +2051,10 @@ function vPedirClave(codigo,m){
   campo.onkeydown=e=>{ if(e.key==='Enter') probar(); };
 }
 
-async function vEvento(codigo){
+/* "abrirEn", no "solapa": solapa() es la función que dibuja los botones de
+   las solapas y un parámetro con ese nombre la tapa adentro de vEvento.
+   Está anotado en CLAUDE.md desde la vez anterior y lo volví a hacer. */
+async function vEvento(codigo, abrirEn){
   parar();
   const m=await meta(codigo);
   if(!m){recado('No encontré ese evento'); return ir('panel');}
@@ -2225,7 +2244,41 @@ async function vEvento(codigo){
   /* Con cosas esperando abrimos en Moderar: durante la fiesta es lo urgente.
      En la demostración no: el que entra a mirar tiene que caer en el QR y la
      pantalla del salón, que es lo que explica el producto. */
-  activarSolapas(pend.length&&!HAY_DEMO?'pModerar':'pCompartir');
+  /* Y si venimos de guardar algo, en la solapa donde estaba. */
+  activarSolapas(abrirEn || (pend.length&&!HAY_DEMO?'pModerar':'pCompartir'),
+                 abrirEn ? false : undefined);
+
+  /* ── el panel se entera solo de lo que va llegando ──
+     La pantalla del salón se refresca cada siete segundos, pero esta no lo
+     hacía: durante la fiesta el organizador se quedaba mirando "Moderar"
+     mientras las fotos se apilaban sin aparecer, y con la moderación
+     encendida eso quiere decir que no se proyecta nada. Había que salir y
+     volver a entrar para verlas, y nadie lo sabe.
+     El globo con el número se actualiza siempre; la lista se vuelve a
+     dibujar solo si el organizador está mirando Moderar, para no moverle la
+     pantalla de abajo del dedo mientras toca otra cosa. */
+  if(HAY_NUBE && !m.cerrado){
+    let ultimaCola = pend.map(i=>i.id).join(',');
+    reloj(async()=>{
+      /* si hay una foto abierta en grande o una confirmación a medias, no es
+         momento de redibujar nada */
+      if(document.querySelector('.visorf, .capa, #zonaBorrar button[data-confirma]')) return;
+      let idx2;
+      try{ idx2 = await indice(codigo); }catch(e){ return; }
+      const pend2 = idx2.filter(i=>i.estado==='pendiente');
+      const firma = pend2.map(i=>i.id).join(',');
+      if(firma === ultimaCola) return;
+      ultimaCola = firma;
+      const globo = app.querySelector('#globoPend');
+      const enModerar = (app.querySelector('[data-sol="pModerar"]')||{}).getAttribute
+        && app.querySelector('[data-sol="pModerar"]').getAttribute('aria-selected')==='true';
+      if(enModerar) return redibujar(codigo);
+      if(globo) globo.textContent = pend2.length;
+      else if(pend2.length) redibujar(codigo);   // no había globo: hay que dibujarlo
+      if(pend2.length) recado(pend2.length===1?'Llegó algo nuevo para aprobar'
+                                              :`Llegaron ${pend2.length} para aprobar`);
+    }, 8000);
+  }
   /* con el muro cerrado no hay QR que dibujar: esta solapa es el cierre */
   const cajaQR=app.querySelector('#qr');
   if(cajaQR) pintarQR(cajaQR,enlaceDe(codigo),106);
@@ -2244,7 +2297,7 @@ async function vEvento(codigo){
       await guardarMeta(m);
       delete m.portadaBlob;
       recado('Portada actualizada');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       delete m.portadaBlob;
       recado('No pude guardar la portada: '+motivo(err));
@@ -2261,7 +2314,7 @@ async function vEvento(codigo){
     try{
       await guardarMeta(m);
       recado('Muro abierto de nuevo');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       m.cerrado=true;
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Reabrir el muro';
@@ -2293,7 +2346,7 @@ async function vEvento(codigo){
     try{
       await guardarMeta(m);
       recado('Datos guardados');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       Object.assign(m,antes); tono(m.tono); tonoEd=m.tono;
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar los datos';
@@ -2319,7 +2372,7 @@ async function vEvento(codigo){
         return recado(`La base todavía no guarda esto: falta la columna "${faltan[0]}".`);
       }
       recado('Guardado');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       Object.assign(m,antes);
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar';
@@ -2336,7 +2389,7 @@ async function vEvento(codigo){
         return recado('La base todavía no guarda horarios: falta agregar la columna "lanza".');
       }
       recado(aviso);
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){ m.lanza=antes; }
   };
   const bL=app.querySelector('#guardarL');
@@ -2369,7 +2422,7 @@ async function vEvento(codigo){
         await SB.cambiarClave(codigo,claveDe(codigo),nva);
         guardarClaveDe(codigo,nva);
         recado('Clave cambiada · '+nva);
-        vEvento(codigo);
+        redibujar(codigo);
       }catch(err){
         b.disabled=false; b.textContent='Guardar la clave nueva';
         recado('No se pudo cambiar: '+motivo(err));
@@ -2393,7 +2446,7 @@ async function vEvento(codigo){
     const ok=zona.querySelector('#borrarYa');
     campo.focus();
     campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!==m.codigo.toUpperCase(); };
-    zona.querySelector('#dejarlo').onclick=()=>vEvento(codigo);
+    zona.querySelector('#dejarlo').onclick=()=>redibujar(codigo);
     ok.onclick=async()=>{
       if(ok.disabled) return;
       ok.disabled=true;
@@ -2472,7 +2525,7 @@ async function vEvento(codigo){
       try{
         await cambiarEstado(codigo,p.id,estado);
         recado(aviso,accion);
-        if(estado==='pendiente') return vEvento(codigo);   // al recuperar, redibujamos
+        if(estado==='pendiente') return redibujar(codigo);   // al recuperar, redibujamos
         /* La ficha se va sola: redibujar todo hacía saltar la pantalla
            justo cuando estás aprobando una atrás de otra. */
         d.classList.add(estado==='aprobado'?'vuela':'se-va');
@@ -2537,7 +2590,7 @@ async function vEvento(codigo){
             recado('Bajado de la pantalla',{
               texto:'Deshacer',
               hacer:async()=>{
-                try{ await cambiarEstado(codigo,p.id,'aprobado'); recado('Vuelve a la pantalla'); vEvento(codigo); }
+                try{ await cambiarEstado(codigo,p.id,'aprobado'); recado('Vuelve a la pantalla'); redibujar(codigo); }
                 catch(err){ recado('No se pudo recuperar: '+motivo(err)); }
               }
             });
@@ -3383,7 +3436,13 @@ async function pruebaDeFondo(boton, salida){
     // 2. un invitado sube: la base decide el estado, no el celular
     await SB.guardar('ce_items',{id:'p-'+idNuevo(),codigo:cod,kind:'mensaje',url:'',
       autor:'Invitado de prueba',texto:'hola',estado:'aprobado',ts:Date.now()});
-    const subidos=await SB.ver('ce_items',`codigo=eq.${encodeURIComponent(cod)}&select=estado`);
+    /* CON la clave: desde blindaje.sql, sin ella la base no devuelve ni una
+       fila. Sin esto el diagnóstico veía una lista vacía y le informaba al
+       dueño "✗ un invitado puede autoaprobarse", que es falso y es justo lo
+       contrario de lo que pasa. Un diagnóstico que miente es peor que no
+       tenerlo. */
+    const subidos=await SB.ver('ce_items',
+      `codigo=eq.${encodeURIComponent(cod)}&select=estado`, clave);
     probar('Un invitado no puede autoaprobarse (moderación encendida)',
       subidos.length===1 && subidos[0].estado==='pendiente');
 

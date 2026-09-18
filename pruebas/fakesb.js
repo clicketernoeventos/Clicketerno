@@ -3,7 +3,10 @@
 /* La base de verdad nunca devuelve más de mil filas de una: sin esto, las
    pruebas pasaban con álbumes que en producción salen cortados. */
 const TOPE = 1000;
-function crearFake(modo = 'ok') {
+/* modo: ok | fail | net | evil
+   cerrada: si la base tiene corrido blindaje.sql (que es lo que hay en
+   producción). Se puede apagar para probar el camino viejo. */
+function crearFake(modo = 'ok', cerrada = true) {
   const db = { ce_eventos: [], ce_items: [] };
   const claves = {};                 // codigo -> clave, como la tabla ce_claves
   const archivosFalsos = [];         // lo que hay en el depósito
@@ -149,6 +152,13 @@ function crearFake(modo = 'ok') {
     if (metodo === 'GET') {
       if (tabla === 'ce_items') pedidos.items++;
       let out = filas.slice();
+      /* Como la base DE VERDAD desde blindaje.sql: la regla de SELECT es
+         ce_permitido(codigo). Sin la clave del evento (o la maestra) no se
+         ve ninguna fila, se pida lo que se pida.
+         Antes el falso devolvía todo a cualquiera, así que las pruebas
+         corrían contra una base que ya no existe: cualquier pantalla que
+         dependiera de leer sin clave pasaba acá y fallaba en producción. */
+      if (cerrada) out = out.filter((f) => permitido(f.codigo, clave));
       if (q.codigo) {
         const lista = inVals(q.codigo);
         if (lista) out = out.filter((f) => lista.includes(f.codigo));
@@ -235,7 +245,7 @@ function crearFake(modo = 'ok') {
   }
 
   return {
-    db, claves, pedidos,
+    db, claves, pedidos, cerrada,
     archivos: archivosFalsos,
     get subidas() { return subidas; },
     instalar: async (page) => {
