@@ -234,6 +234,15 @@ las del cupo?, ¿puede ver las de otro?
   de todo: guardabas el hashtag y tenías que volver a bajar hasta las
   consignas. Seis botones hacían lo mismo. Ahora se redibuja con
   `redibujar(codigo)`, que conserva la solapa y el punto de la página.
+- **Un refresco automático se paga por hora.** El primer sondeo del panel se
+  bajaba el índice ENTERO cada ocho segundos: con 1500 recuerdos son unos
+  130 MB por hora, en el teléfono del organizador y con el wifi del salón.
+  Ahora pregunta solo por los que esperan y solo su `id`. Medido, no
+  estimado: `pruebas/recorrido.js` falla si se vuelve al sondeo caro.
+  **La pantalla del salón sigue haciendo lo mismo**: 1131 pedidos y 132 MB
+  por hora con 1500 recuerdos. No tiene fugas (DOM y memoria quedan planos
+  toda la noche) pero es plata. Está sin resolver a propósito: tocar el
+  refresco de la proyección en plena fiesta es lo más delicado que hay.
 - **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
   pantalla del salón se refresca cada siete segundos; el panel del
   organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
@@ -249,6 +258,12 @@ un invitado mande algo desde otro teléfono, que la pantalla del salón no lo
 proyecte porque espera aprobación, que el organizador se entere solo,
 apruebe, y recién ahí aparezca. Las demás suites miran pantallas sueltas y
 casos feos; estas miran si el producto funciona.
+
+**El falso tiene que contestar como PostgREST, no "más o menos".** Ignoraba
+`select` y los filtros `campo=eq.valor`: devolvía la fila entera siempre. Con
+eso, una consulta angosta parecía diez veces más cara de lo que es y una
+comparación entre lo dibujado y lo consultado no coincidía nunca. Medir
+contra un falso mentiroso es peor que no medir.
 
 **El Supabase falso está BLINDADO por defecto** (`crearFake(modo, cerrada)`),
 igual que producción: sin la clave del evento no devuelve ni una fila. Antes

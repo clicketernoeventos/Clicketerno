@@ -165,6 +165,16 @@ function crearFake(modo = 'ok', cerrada = true) {
         else { const v = eqVal(q.codigo); out = out.filter((f) => f.codigo === v); }
       }
       if (q.id) { const v = eqVal(q.id); out = out.filter((f) => String(f.id) === v); }
+      /* filtros simples de PostgREST, como los usa la app. Sin esto el falso
+         devolvía TODO y una consulta angosta parecía cara: la medición de
+         cuánto baja el panel daba diez veces de más. */
+      for (const [campo, val] of Object.entries(q)) {
+        if (['select', 'order', 'limit', 'offset', 'codigo', 'id'].includes(campo)) continue;
+        if (typeof val === 'string' && val.startsWith('eq.')) {
+          const v = val.slice(3);
+          out = out.filter((f) => String(f[campo]) === v);
+        }
+      }
       if (q.order && q.order.startsWith('ts.asc')) out.sort((a, b) => a.ts - b.ts);
       if (q.order && q.order.startsWith('creado.desc')) out.sort((a, b) => (b.creado || 0) - (a.creado || 0));
       // como la base de verdad: nunca más de TOPE filas, y respeta offset
@@ -187,6 +197,11 @@ function crearFake(modo = 'ok', cerrada = true) {
           autor: '<script>window.__XSS4=1</script>',
           texto: '"><svg onload="window.__XSS5=1">',
         }));
+      }
+      /* y devolver solo las columnas pedidas, como hace PostgREST */
+      if (q.select && q.select !== '*') {
+        const cols = q.select.split(',').map((c) => c.trim()).filter(Boolean);
+        out = out.map((f) => Object.fromEntries(cols.filter((c) => c in f).map((c) => [c, f[c]])));
       }
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(out) });
     }

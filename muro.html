@@ -2258,15 +2258,28 @@ async function vEvento(codigo, abrirEn){
      dibujar solo si el organizador está mirando Moderar, para no moverle la
      pantalla de abajo del dedo mientras toca otra cosa. */
   if(HAY_NUBE && !m.cerrado){
-    let ultimaCola = pend.map(i=>i.id).join(',');
+    /* null = todavía no miramos. La primera vuelta solo anota lo que hay; no
+       redibuja. Si se inicializara con lo que se acaba de dibujar, cualquier
+       diferencia de forma entre ese dato y el que devuelve esta consulta
+       hace que "cambió" sea verdadero para siempre: el panel se redibujaba
+       solo, en bucle, bajándose la lista entera cada vez. */
+    let ultimaCola = null;
     reloj(async()=>{
       /* si hay una foto abierta en grande o una confirmación a medias, no es
          momento de redibujar nada */
       if(document.querySelector('.visorf, .capa, #zonaBorrar button[data-confirma]')) return;
-      let idx2;
-      try{ idx2 = await indice(codigo); }catch(e){ return; }
-      const pend2 = idx2.filter(i=>i.estado==='pendiente');
+      /* Solo los que esperan, y solo su id: es lo único que hace falta para
+         el globo. Pedir el índice entero cada ocho segundos son 130 MB por
+         hora en una fiesta de 1500 recuerdos, y los paga el teléfono del
+         organizador con el wifi del salón. */
+      let pend2;
+      try{
+        pend2 = await SB.ver('ce_items',
+          `codigo=eq.${encodeURIComponent(codigo)}&estado=eq.pendiente`
+          +`&select=id&order=ts.asc&limit=200`, claveDe(codigo)) || [];
+      }catch(e){ return; }
       const firma = pend2.map(i=>i.id).join(',');
+      if(ultimaCola === null){ ultimaCola = firma; return; }
       if(firma === ultimaCola) return;
       ultimaCola = firma;
       const globo = app.querySelector('#globoPend');

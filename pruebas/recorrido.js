@@ -128,6 +128,26 @@ const PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAA
    af((await T(otro)).includes('Casamiento Flor y Juan'),'con la clave correcta sí entra',await T(otro));
  } else no('hay campo para escribir la clave', pide);
 
+ console.log('\n═══ EL PANEL QUIETO NO GASTA DATOS ═══');
+ /* El panel se refresca solo. La primera versión de ese refresco se bajaba
+    el índice ENTERO cada ocho segundos: con 1500 recuerdos son unos 130 MB
+    por hora, en el teléfono del organizador y con el wifi del salón. Ahora
+    pregunta solo por los que esperan aprobación y solo su id.
+    Comprobado: volviendo al sondeo caro, esta prueba falla (3 pedidos en
+    22 segundos). */
+ let gordos=0;
+ org.on('response', r=>{
+   const u=r.url();
+   if(/\/rest\/v1\/ce_items\?/.test(u) && !/estado=eq\.pendiente/.test(u)) gordos++;
+ });
+ await org.evaluate(c=>location.hash='#album/'+c,cod); await org.waitForTimeout(500);
+ await org.evaluate(c=>location.hash='#evento/'+c,cod); await org.waitForTimeout(3000);
+ const base0=gordos;
+ await org.waitForTimeout(22000);            // casi tres vueltas del reloj
+ af(gordos-base0===0,
+    'quieto 22 segundos, el panel no vuelve a bajarse la lista de recuerdos',
+    `la pidió ${gordos-base0} veces`);
+
  console.log('\n═══ ÁLBUM Y CIERRE ═══');
  await org.evaluate(c=>location.hash='#album/'+c,cod); await org.waitForTimeout(2200);
  af((await T(org)).includes('Casamiento Flor y Juan'),'el álbum abre');
