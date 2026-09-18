@@ -305,6 +305,30 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
       pedidosInv.join(' · '));
     afirmar(!/fetch\(CONFIG\.endpoint,\s*\{cache/.test(leer('pia/nueva/index.html')),
       'ya no queda el pedido que se traía la planilla entera');
+
+    /* El Apps Script lo pega una persona a mano, más tarde. Entre que sube
+       la web y eso pasa, las dos pantallas hablan con el script viejo: que
+       no se rompan. */
+    const viejo = r => r.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ invitados: [{ 'Persona 1 - Nombre': 'Delfina',
+                                           'Persona 1 - Apellido': 'Pérez',
+                                           '¿Confirma?': 'Confirmo' }] }) });
+    const vp = await ctx.newPage();
+    await vp.route('**/script.google.com/**', viejo);
+    await vp.goto(`${BASE}/pia/listado/index.html`, { waitUntil: 'domcontentloaded' });
+    await vp.waitForTimeout(500);
+    await escribir(vp, '#clave-input', 'loquesea');
+    await tocar(vp, '#gate-btn');
+    await vp.waitForTimeout(1500);
+    afirmar(await vp.locator('#tabla-body tr').count() > 0,
+      'con el Apps Script todavía viejo, el panel sigue andando',
+      'no se rompe nada en el rato entre subir la web y pegar el script');
+    const vi = await ctx.newPage();
+    await vi.route('**/script.google.com/**', viejo);
+    await vi.goto(`${BASE}/pia/nueva/index.html`, { waitUntil: 'domcontentloaded' });
+    await vi.waitForTimeout(1200);
+    afirmar(await vi.evaluate(() => (typeof llegó === 'function') ? llegó('Delfina') : 'no existe') === null,
+      'y la invitación dice que no pudo comprobar, en vez de usar la lista vieja');
     await ctx.close();
   }
 
