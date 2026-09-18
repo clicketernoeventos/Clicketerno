@@ -67,7 +67,7 @@ async function abrir(ctx) {
       'se ve la cinta que avisa que es una demostración');
     afirmar(/inventad/i.test(await leer(pg, '#cinta-demo')),
       'la cinta dice que la fiesta y las fotos son inventadas');
-    afirmar(await pg.locator('#dedeNuevo').count() === 1,
+    afirmar(await pg.locator('#deNuevo').count() === 1,
       'y tiene el botón para empezar de nuevo');
     afirmar(espia.nube.length === 0,
       'el muro en demostración no toca Supabase ni una vez',
@@ -112,7 +112,7 @@ async function abrir(ctx) {
 
     /* Empezar de nuevo: es un modo prueba, el que entra después no tiene
        que encontrarse con lo que dejó el anterior. */
-    await pg.locator('#dedeNuevo').click();
+    await pg.locator('#deNuevo').click();
     await pg.waitForTimeout(3500);
     afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
       'empezar de nuevo devuelve a la primera pantalla');

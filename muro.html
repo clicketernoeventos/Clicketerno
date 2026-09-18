@@ -3524,10 +3524,10 @@ addEventListener('error',e=>{
     document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
-        <button id="dedeNuevo">Empezar de nuevo</button>
+        <button id="deNuevo">Empezar de nuevo</button>
         <a href="/">Salir</a>
       </div>`);
-    document.getElementById('dedeNuevo').onclick=reiniciarDemo;
+    document.getElementById('deNuevo').onclick=reiniciarDemo;
     /* Se siembra SIEMPRE, sin preguntar si ya estaba: es un modo prueba, y
        cada vez que alguien entra tiene que encontrarlo igual que el primero.
        Lo que dejó el anterior no es parte de la muestra. */
