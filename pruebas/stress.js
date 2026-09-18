@@ -106,11 +106,18 @@ async function recorrer(browser, modo) {
   await page.waitForTimeout(600);
   await chequearVivo(page, modo, 'portada');
 
-  // ── sembrar demo si está el botón ──
+  // ── la fiesta de ejemplo ──
+  // El botón ya no escribe un evento inventado EN LA BASE DE VERDAD: se va
+  // al modo demostración (?demo=1), que no toca la nube. Adentro se
+  // comprueba lo mismo que antes —pantalla viva, sin XSS, sin imágenes
+  // rotas— y después se vuelve a la app de verdad, que es la que recorre
+  // todo lo que sigue.
   const demo = page.locator('#demo');
   if (await demo.count()) {
     await demo.click();
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(3000);
+    if (!(await page.evaluate(() => /(?:^|[?&])demo=1(?:&|$)/.test(location.search))))
+      anota(modo, 'sembrar-demo', 'el botón de la fiesta de ejemplo no lleva a la demostración');
     await chequearVivo(page, modo, 'sembrar-demo');
     await chequearXSS(page, modo, 'sembrar-demo');
     // ¿se ven las fotos de ejemplo?
@@ -120,6 +127,8 @@ async function recorrer(browser, modo) {
       ).length
     );
     if (rotas) anota(modo, 'sembrar-demo', `${rotas} <img> con src vacío tras cargar la fiesta de ejemplo`);
+    await page.goto(BASE + '/muro.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(600);
   }
 
   // ── panel: crear PIN ──

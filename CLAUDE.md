@@ -18,6 +18,14 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
+`/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
+almacenamiento del navegador**. Es a donde apuntan los botones "Probar la
+demostración" de `index.html`. Antes esos botones abrían la app de verdad:
+desde ahí se veían los eventos de todos los clientes en "Tus eventos" y el
+botón "cargar una fiesta de ejemplo" escribía un evento inventado **en la
+base de producción**. `pruebas/demo.js` cuida que no vuelva a pasar.
+
 **Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
 clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
 pasando por el muro. Un evento puede tener los dos, o uno solo.
@@ -68,6 +76,24 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
   privacidad **es** el producto: antes del revelado no se puede ni firmar
   una URL. Se leen con URLs firmadas, de a 100, y duran una hora.
 
+### El orden en que se corre el SQL
+
+    sql/claves.sql  →  sql/rollo.sql  →  sql/blindaje.sql
+
+`blindaje.sql` va **último siempre**: reemplaza políticas y funciones que
+crean los otros dos. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
+`sql/blindaje_revisar.sql` tienen que dar todas `true`.
+
+**El orden entre la web y el SQL NO es libre: primero la web, después el
+SQL.** La app nueva aguanta la base vieja (prueba la función y, si no está,
+lee como antes), pero la app vieja **no** aguanta la base nueva: con
+`ce_eventos` cerrada, el que llega por el QR no tiene clave y el select
+directo le devuelve cero filas. Comprobado contra `main`: el invitado no
+puede subir, la pantalla del salón no proyecta y la cámara del rollo no
+abre. Correr `blindaje.sql` antes de publicar la web rompe la fiesta
+entera. Las dos mitades están medidas en `pruebas/seguridad.js` ("el día
+antes" y "el día después").
+
 ### Lo que está corrido en producción
 
 `sql/claves.sql` y `sql/rollo.sql` se corrieron y se confirmaron, con el
@@ -117,6 +143,12 @@ las del cupo?, ¿puede ver las de otro?
   y `disparos >= null` **nunca** es verdadero en SQL. Con `cupo_fotos`
   vacío, al invitado le decía "ya sacaste tus fotos" sin haber sacado
   ninguna, y del lado de la base no había tope. `coalesce` de los dos lados.
+- **Una demostración que escribe en producción no es una demostración.**
+  Todo lo del modo demostración vive en memoria: `guarda` pasa a ser un
+  objeto suelto y en el rollo los métodos de `SB` se reemplazan por una
+  base inventada, con `SB.pedir` tapiado para que cualquier camino que se
+  haya olvidado reviente acá y lo vean las pruebas, en vez de irse callado
+  a la base de verdad.
 - **Postgres aplica las políticas de SELECT al `DELETE ... WHERE`.** Por eso
   las fotos de un evento borrado quedaban inalcanzables para siempre: la
   regla de lectura miraba el revelado, que ya no existía.
@@ -129,6 +161,49 @@ las del cupo?, ¿puede ver las de otro?
 - **`innerText` devuelve el texto ya transformado por el CSS.** Medio muro
   está en mayúsculas: comparar contra `'Probar de nuevo'` falla aunque en
   pantalla diga eso. Comparar siempre en minúsculas.
+- **Una regla de la base no ve más de lo que ve quien la dispara.** Las del
+  depósito preguntaban "¿existe el evento de esta carpeta?" con un `select`
+  a `ce_eventos`. Ese `select` corre como `anon`. El día que `ce_eventos`
+  dejó de ser de lectura libre, la respuesta pasó a ser siempre "no existe",
+  y la rama "el evento ya no existe" —la que sirve para limpiar archivos
+  sueltos— se puso a valer para **todas** las fotos: cualquiera podía mirar
+  un rollo sin revelar. Se arregla preguntándole a una función
+  `security definer` (`ce_evento_existe`, `ce_evento_abierto`), igual que
+  `ce_ruta_reservada`. Es la misma trampa que el `delete ... where`.
+- **Lo que decide el navegador no es una regla, es una decoración.** El muro
+  pedía `ce_items` entero y filtraba lo pendiente al dibujar: "nada llega a
+  la pantalla sin que alguien lo mire primero" se cumplía en la pantalla y
+  no en la base. Con la consola abierta, un invitado veía las fotos que
+  esperaban aprobación. Lo mismo el panel: filtrar la lista de eventos en
+  el cliente no esconde nada, porque el que mira no usa la app, usa `curl`.
+  Toda promesa del producto tiene que estar escrita en una política o en
+  una función de la base.
+- **Un camino de archivo que manda el teléfono no es un dato, es una
+  orden.** `ce_tomar_foto` aceptaba cualquier `p_ruta`: con eso se reservaba
+  —y se subía— dentro de la carpeta de otro evento, o de una carpeta de
+  ningún evento, que queda legible para siempre. El depósito del negocio
+  servía de hosting gratis. Ahora la base exige `CODIGO/TOKEN/algo.jpg`, con
+  el código y el token de quien está sacando la foto.
+- **Si el navegador lo genera, el navegador lo puede repetir.** El token del
+  rollo lo inventa el teléfono: inventando tokens se creaban rollos sin
+  tope, de 24 fotos cada uno, y el almacenamiento lo paga el negocio.
+  Cualquier cosa que el cliente cree sin límite necesita un tope del lado de
+  la base (`cupo_invitados`).
+- **`Math.random()` no sirve para nada que sea una llave.** El código del
+  evento salía de `Math.random().toString(16).slice(2,8)`: se puede predecir
+  y **a veces devuelve menos de seis dígitos** (`0.5` da `"0.8"`). Y como
+  guardar un evento es un *upsert*, dos códigos iguales no dan error: uno
+  pisa al otro. `crypto.getRandomValues`, siempre.
+- **`upsert` en un depósito abierto es "pisá lo que quieras".** Las subidas
+  del muro iban con `x-upsert: true` a un camino fijo (`CODIGO/portada`):
+  cualquiera podía cambiar la portada que se proyecta en el salón. Camino al
+  azar y sin `upsert`: si ya existe, que falle.
+- **El panel mostraba los eventos de todo el mundo.** `eventos()` le pedía
+  a la base la tabla entera y los pintaba bajo "Tus eventos": cualquiera
+  que entrara al panel veía el casamiento del cliente de al lado. Ahora
+  pide solo los códigos cuya clave está guardada en ese aparato
+  (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
+  rollo ya lo hacía bien.
 - **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
   pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
   Antes de inventar un nombre, `grep`.
@@ -171,6 +246,19 @@ las del cupo?, ¿puede ver las de otro?
   prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
   archivo" es ruido: lo que no se perdona es un error de JavaScript.
 
+## Las cabeceras y las librerías
+
+`_headers` lleva la CSP y las demás cabeceras; las lee Cloudflare. Las
+pruebas **se sirven con esas cabeceras puestas** (`pruebas/servidor.py`), así
+que si la CSP bloquea algo que la app necesita, salta acá y no en la fiesta
+de un cliente.
+
+Las librerías (QR, zip, excel) viven en `lib/`, en el repo. Antes venían de
+cdnjs: eso es darle a un tercero permiso para correr código en la página que
+tiene a mano la clave del evento y la maestra. De paso, el QR y el zip ahora
+andan aunque el wifi del salón no deje salir — y las pruebas del zip, que se
+salteaban por no poder bajarlo, ahora corren.
+
 ## Lo que se publica en clicketerno.com.ar
 
 `wrangler.json` sube **toda** la carpeta. Lo que no tiene que estar en la
@@ -178,6 +266,18 @@ web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
 `clicketerno.com.ar/sql/claves.sql` se bajaba desde el navegador — y ese
 archivo llevaba la clave maestra de producción escrita en texto plano.
 Antes de agregar un archivo al repo, preguntate si querés que sea público.
+
+## El Apps Script de las invitaciones
+
+La planilla de confirmaciones vive en Google, no acá. El `doGet` está en
+`apps-script/listado.gs.txt` y se pega a mano en el editor de Apps Script:
+el repo no puede tocarlo. Dos puertas, ninguna abre de más: `?clave=` (la
+lista, para el panel) y `?confirmado=NOMBRE` (sí o no, para la invitación).
+La clave vive en las propiedades del proyecto, no en el código ni en
+ninguna página: **una página pública no puede guardar un secreto.** El
+portón anterior comparaba contra un correo escrito en el propio HTML.
+
+`apps-script/` va en `.assetsignore`: no se publica.
 
 ## Invitaciones alojadas en el repo
 
@@ -224,3 +324,17 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
   generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son
   provisorios.
+- **Correr `sql/blindaje.sql`.** Hasta que no se corra, la tabla de eventos
+  sigue siendo de lectura libre para cualquiera con `curl`. Comprobar
+  después con `sql/blindaje_revisar.sql`: las dieciséis filas en `true`.
+- **Pegar `apps-script/listado.gs.txt` en el Apps Script de Pía.** Es el
+  `doGet` nuevo; el `doPost` no se toca. Antes de pegarlo hay que poner
+  `CLAVE_LISTADO` en las propiedades del proyecto (está explicado adentro
+  del archivo). Hasta que no se pegue, cualquiera con el link de la
+  invitación se baja la lista entera de invitados. Las dos pantallas ya
+  están del lado nuevo: el panel pide la clave y la invitación pregunta
+  `?confirmado=NOMBRE`, que contesta sí o no.
+- **La clave maestra vive en `sessionStorage` mientras el administrador está
+  adentro.** Se borra al cerrar la pestaña y la CSP le cierra la puerta de
+  salida a un script inyectado, pero sigue siendo la joya: conviene entrar
+  como administrador solo cuando hace falta y cerrar la pestaña después.

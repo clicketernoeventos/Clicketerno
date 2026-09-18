@@ -1,0 +1,40 @@
+# Cabeceras de seguridad para clicketerno.com.ar (Cloudflare las lee de acá).
+#
+# Por qué existe esto: la página del muro tiene a mano la clave del evento y,
+# si el organizador entró como administrador, la maestra. Cualquier código
+# ajeno que llegue a correr en esa página se las lleva. Estas reglas hacen
+# dos cosas: que no pueda entrar código de afuera, y que si llegara a entrar,
+# no tenga a dónde mandar lo que encuentre.
+#
+# Si alguna vez algo deja de andar después de tocar esto, mirá la consola del
+# navegador: un bloqueo de CSP se ve con nombre y apellido, dice qué
+# directiva lo frenó. Y corré `bash pruebas/todo.sh`, que las prueba.
+
+/*
+  # De dónde puede venir cada cosa. No hay ningún servidor de scripts de
+  # terceros: las librerías (QR y zip) viven en /lib dentro del repo.
+  #
+  # 'unsafe-inline' en script-src no se puede sacar sin partir los HTML en
+  # archivos aparte, y la regla del proyecto es que cada pantalla sea un
+  # archivo suelto. Igual sirve: sin hosts externos no se puede cargar un
+  # script de afuera, y connect-src e img-src cierran la puerta de salida,
+  # que es por donde se iría una clave robada.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; media-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; connect-src 'self' https://kuqlqgrwsospwjexodqa.supabase.co https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://*.netlify.app; frame-ancestors 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
+  # Que nadie meta el muro adentro de un marco para hacerle tocar botones al
+  # organizador sin que se dé cuenta.
+  X-Frame-Options: SAMEORIGIN
+  # Que el navegador no adivine el tipo de un archivo: una foto subida por un
+  # invitado no se puede convertir sola en una página.
+  X-Content-Type-Options: nosniff
+  # El código del evento va en la dirección. Sin esto viaja en el "Referer" a
+  # cualquier sitio que se abra desde acá.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Solo pedimos cámara y micrófono, y solo nosotros.
+  Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Lo de /lib no cambia nunca (son versiones fijas): que el navegador se lo
+# guarde y no lo vuelva a pedir en cada pantalla.
+/lib/*
+  Cache-Control: public, max-age=31536000, immutable

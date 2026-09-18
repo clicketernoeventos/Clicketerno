@@ -633,13 +633,22 @@ gente.addEventListener('change', e=>{
 const form = $('#form'), estado = $('#estado'), enviar = $('#enviar');
 const primerNombre = () => (gente.querySelector('[name="persona1_nombre"]')||{}).value || '';
 
+/* ¿Llegó mi confirmación?
+   Antes esto se bajaba la lista ENTERA de invitados —nombres, teléfonos,
+   todo— y buscaba adentro. Como esta página la abre cada invitado, eso
+   quería decir que cualquiera con el link se llevaba la lista completa de
+   la fiesta. Ahora se le pregunta por el nombre y la planilla contesta
+   solamente sí o no. */
 async function llegó(nombre){
   try{
-    const r = await fetch(CONFIG.endpoint, {cache:'no-store'});
+    const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre),
+                          {cache:'no-store'});
     const d = await r.json();
-    const lista = d.invitados || [];
-    return lista.some(i => String(i['Persona 1 - Nombre']||'').trim().toLowerCase()
-                            === nombre.trim().toLowerCase());
+    if (d && typeof d.ok === 'boolean') return d.ok;
+    /* El Apps Script todavía es el viejo: contesta la lista entera. No la
+       usamos —es justo lo que estamos sacando de circulación— y decimos que
+       no pudimos comprobar, que es la verdad. */
+    return null;
   }catch(_){ return null; }        // no pudimos comprobar: no afirmamos nada
 }
 

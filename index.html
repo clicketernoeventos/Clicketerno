@@ -638,7 +638,7 @@ footer .datos a:hover{color:var(--oro)}
       <div class="paso ap"><div class="n">III</div><h3 class="serif">Se proyecta y queda</h3><p>La pantalla se actualiza sola toda la noche y después todo se convierte en un álbum digital.</p></div>
     </div>
     <div style="margin-top:44px" class="ap">
-      <a class="btn btn-hilo" href="muro#portada" target="_blank">Probar la demostración →</a>
+      <a class="btn btn-hilo" href="muro?demo=1" target="_blank">Probar la demostración →</a>
     </div>
   </div>
 </section>
@@ -650,7 +650,7 @@ footer .datos a:hover{color:var(--oro)}
       <p class="eyebrow">Rollo eterno</p>
       <h2 class="serif">La cámara descartable,<em>versión digital</em></h2>
       <p>Cada invitado recibe una cantidad limitada de fotos, como en un rollo de verdad, y elige entre 5 filtros antes de sacarla. No puede ver lo que sacó ni borrarlo. Al día siguiente, o a la hora que vos elijas, el rollo se revela: primero ve las suyas y después las de toda la fiesta. Sin poses, sin repetir la toma diez veces.</p>
-      <div style="margin-top:32px"><a class="btn btn-hilo" href="muro#panel" target="_blank">Probar la demostración →</a></div>
+      <div style="margin-top:32px"><a class="btn btn-hilo" href="rollo?demo=1" target="_blank">Probar la demostración →</a></div>
     </div>
   </div>
 </section>
@@ -718,7 +718,15 @@ footer .datos a:hover{color:var(--oro)}
     <div class="caja">
       <div class="reflejo"></div>
       <div class="cargando" id="cargandoV">Abriendo la invitación…</div>
-      <iframe id="marcoV" title="Invitación" src="" allow="autoplay"></iframe>
+      <!-- sandbox sin allow-top-navigation: acá adentro se abren invitaciones
+         que viven en otro lado. Sin esto, cualquiera de ellas puede
+         mandar a clicketerno.com.ar entero a donde quiera, y el
+         visitante ve el cambio de página como si lo hubiéramos hecho
+         nosotros. Lo demás (guiones, su propio origen, abrir pestañas y
+         mandar formularios) es lo que una invitación necesita. -->
+      <iframe id="marcoV" title="Invitación" src="" allow="autoplay"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
     </div>
   </div>
   <div class="barra-v">

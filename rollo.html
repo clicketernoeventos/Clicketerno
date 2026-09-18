@@ -7,8 +7,9 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- En el repo, no en un CDN: ver el comentario de muro.html. -->
+<script src="lib/qrcode.min.js"></script>
+<script src="lib/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -47,6 +48,19 @@ img{max-width:100%;display:block}
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
 #app{position:relative;z-index:2;min-height:100svh}
 
+/* ── cinta de la demostración ── */
+#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:90;height:38px;display:flex;
+  align-items:center;justify-content:center;gap:14px;padding:0 14px;
+  background:linear-gradient(90deg,#D9AE72,#EFDCBC);color:#2A1B08;
+  font:500 11.5px/1 Jost,system-ui,sans-serif;letter-spacing:.06em}
+#cinta-demo b{font-weight:600}
+#cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
+body.en-demo{padding-top:38px}
+body.en-demo .pie-fijo{bottom:0}
+@media(max-width:400px){
+  #cinta-demo{font-size:10.5px;gap:9px}
+  #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 .cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
 .cab img{width:82px;opacity:.7;margin-bottom:16px}
 .cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
@@ -326,10 +340,28 @@ const NUBE = {
   url:  'https://kuqlqgrwsospwjexodqa.supabase.co',
   clave:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1cWxxZ3J3c29zcHdqZXhvZHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1NjMyMjAsImV4cCI6MjEwNDEzOTIyMH0.DyV3K6fcHcsD9wbNzkYn2vIwWSN9e2LWt_HyuSaUE9g'
 };
+/* ══════════ modo demostración ══════════
+   Con ?demo=1 la app no toca Supabase ni el almacenamiento del navegador:
+   se contesta sola con una fiesta que no existe. Está para el botón "ver
+   una demostración" de la web: antes ese botón abría la app de verdad, y
+   desde ahí se llegaba a los eventos de los clientes. */
+const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+const DEMO_COD = 'DEMO-ROLLO';
 const app=document.getElementById('app');
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
 const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
-const guarda={
+const guarda = HAY_DEMO ? (()=>{
+  /* La demostración no deja rastro: sin esto, la clave del rollo inventado
+     quedaba guardada en el mismo teléfono que usa el organizador de verdad
+     y DEMO-ROLLO le aparecía en "Tus rollos". */
+  const m={}, s={};
+  return {
+    leer:k=>(k in m)?m[k]:null,
+    escribir(k,v){ m[k]=String(v); return true; },
+    leerSesion:k=>(k in s)?s[k]:null,
+    escribirSesion(k,v){ s[k]=String(v); }
+  };
+})() : {
   leer(k){try{return localStorage.getItem(k);}catch(e){return null;}},
   escribir(k,v){try{ localStorage.setItem(k,v); return localStorage.getItem(k)===v; }catch(e){ return false; }},
   leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
@@ -398,7 +430,12 @@ const nuevoId=()=>{
   try{ if(crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
   return 'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
 };
-const enlaceDelRollo=c=>`https://clicketerno.com.ar/rollo?e=${c}`;
+/* En demostración el link tiene que quedarse acá: si mandara al dominio de
+   verdad, "Ver el álbum" te sacaba de la demostración a un evento que en la
+   base no existe. */
+const enlaceDelRollo=(c,rev)=>HAY_DEMO
+  ? `${location.origin}${location.pathname}?e=${encodeURIComponent(c)}&demo=1${rev?'&rev=1':''}`
+  : `https://clicketerno.com.ar/rollo?e=${c}`;
 
 /* ── cliente mínimo de Supabase (sin librerías) ── */
 const SB = {
@@ -414,7 +451,9 @@ const SB = {
     if(!txt) return null;
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
-  ver(tabla,consulta){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab()}); },
+  /* La clave también en las lecturas: desde que ce_eventos dejó de ser de
+     lectura libre, el organizador la necesita para ver su propio rollo. */
+  ver(tabla,consulta,clave){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab({},clave)}); },
   rpc(fn,args,clave){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab({},clave), body:JSON.stringify(args||{})}); },
   guardar(tabla,obj,clave){
     return this.pedir(`/rest/v1/${tabla}`, {method:'POST',
@@ -457,6 +496,194 @@ const SB = {
     return mapa;
   }
 };
+
+/* ── leer un evento sin tener su clave ──
+   El invitado llega por el QR y no tiene clave: tiene que poder leer SU
+   evento. Antes eso andaba porque la tabla era de lectura libre para todo
+   el mundo, que es lo mismo que decir que cualquiera se bajaba la lista de
+   las fiestas de todos los clientes con un solo pedido. Ahora la base la
+   abre de a un código por vez, por función. Si la función todavía no está
+   (blindaje.sql sin correr), se lee como antes: así la página anda igual
+   antes y después, sin tener que sincronizar la subida con el SQL. */
+let hayFuncionesNuevas = null;
+async function eventoPorCodigo(cod, campos){
+  if(hayFuncionesNuevas!==false){
+    try{
+      const v=await SB.rpc('ce_evento_publico',{p_codigo:cod});
+      /* null = la función existe y ese código no. Un objeto con codigo = el
+         evento. Cualquier otra cosa quiere decir que del otro lado no está
+         la función que creemos. */
+      if(v===null||(v&&typeof v==='object'&&!Array.isArray(v)&&v.codigo)){
+        hayFuncionesNuevas=true; return v;
+      }
+      hayFuncionesNuevas=false;
+    }catch(e){
+      /* Pase lo que pase, se lee como se leía antes. Si la base ya está
+         cerrada, ese camino devuelve vacío y el que decide es ella, no
+         nosotros: lo que no puede pasar es que la pantalla muera acá. */
+      if(/PGRST202|does not exist|not found|404/i.test(e&&e.message||'')) hayFuncionesNuevas=false;
+    }
+  }
+  const r=await SB.ver('ce_eventos',
+    `codigo=eq.${encodeURIComponent(cod)}&select=${campos||'*'}`);
+  return (r&&r[0])||null;
+}
+/* Con la clave en la mano se lee derecho de la tabla, que es lo que la base
+   deja hacer al organizador. */
+async function eventoConClave(cod){
+  const r=await SB.ver('ce_eventos',
+    `codigo=eq.${encodeURIComponent(cod)}&select=*`, claveDe(cod));
+  if(r&&r[0]) return r[0];
+  return await eventoPorCodigo(cod);
+}
+
+/* ══════════ la fiesta que no existe ══════════
+   Todo lo que sigue reemplaza a Supabase cuando entra ?demo=1. Ni un dato
+   real, ni un pedido a la red: el que toca "ver una demostración" en la web
+   recorre la app entera sin poder llegar a un evento de nadie.
+
+   El rollo arranca ABIERTO y con fotos ya sacadas, para que se vean las dos
+   mitades del producto: el organizador revela y ahí mismo aparece el álbum. */
+if(HAY_DEMO){
+  const NOMBRES=['Delfina','Tomás','Mica','Abuela Nélida','Francisco','Lucía',
+                 'Nacho','Sofía','Tío Beto','Caro','Juampi','Las primas'];
+  const ev={
+    codigo:DEMO_COD, nombre:'Los 15 de Delfina', tipo:'XV', tono:'#D9AE72',
+    fecha:hoy(), camara:true, cerrado:false,
+    /* La demostración no guarda nada, así que lo único que sobrevive a una
+       recarga es la dirección: el link del álbum lleva rev=1 y el rollo
+       vuelve a nacer revelado. */
+    revelado:/(?:^|[?&])rev=1(?:&|$)/.test(location.search), revela_en:null,
+    portada:null, cupo_fotos:24, creado:new Date().toISOString()
+  };
+  /* Las fotos de los invitados de mentira: ruta, quién la sacó y con qué
+     filtro. La imagen recién se dibuja cuando alguien la pide. */
+  const fotos=[];
+  for(let i=0;i<14;i++)
+    fotos.push({ruta:`${DEMO_COD}/demo${i%6}/${i}.jpg`, nombre:NOMBRES[i%6],
+                filtro:['clasico','bn','flash','dorado','natural'][i%5], mia:false});
+  /* Tres son "del que mira", para que la solapa "Tus fotos" del álbum tenga
+     algo adentro y se entienda de qué se trata. Le quedan 21 en la cámara. */
+  const MIAS=3;
+  for(let i=0;i<MIAS;i++){ fotos[i].mia=true; fotos[i].nombre='Vos'; }
+  let misDisparos=MIAS;
+
+  const urls={};                       // ruta -> blob: de este navegador
+  const dormir=ms=>new Promise(r=>setTimeout(r,ms));   // que se note que viaja
+
+  /* Una foto de fiesta dibujada a mano: luces desenfocadas sobre un fondo
+     oscuro. Es lo mismo que hace el muro para su ejemplo. */
+  function fotoInventada(semilla){
+    let x=semilla*9301+49297;
+    const rnd=()=>((x=(x*9301+49297)%233280)/233280);
+    const vert=rnd()>.45;
+    const c=document.createElement('canvas');
+    c.width=vert?720:960; c.height=vert?960:720;
+    const g=c.getContext('2d');
+    const pares=[['#120E0A','#3B2A18'],['#0C0D14','#26313F'],['#160D10','#452028'],
+                 ['#0E1210','#22332B'],['#141014','#3A2438']];
+    const t=pares[semilla%pares.length];
+    const f=g.createLinearGradient(0,0,c.width,c.height);
+    f.addColorStop(0,t[0]); f.addColorStop(1,t[1]);
+    g.fillStyle=f; g.fillRect(0,0,c.width,c.height);
+    const luces=['#F3D9A6','#FFE9C4','#E8C79A','#FFF4DF','#D9AE72'];
+    for(let i=0;i<30;i++){
+      g.globalAlpha=.07+rnd()*.44;
+      g.fillStyle=luces[Math.floor(rnd()*luces.length)];
+      g.beginPath(); g.arc(rnd()*c.width,rnd()*c.height,6+rnd()*70,0,7); g.fill();
+    }
+    g.globalAlpha=1;
+    const v=g.createRadialGradient(c.width/2,c.height/2,c.height*.2,
+                                   c.width/2,c.height/2,c.height*.82);
+    v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.74)');
+    g.fillStyle=v; g.fillRect(0,0,c.width,c.height);
+    return c;
+  }
+  /* El álbum pide URLs firmadas y las mete en un <img> y en un fetch(): un
+     blob: de este mismo navegador sirve para las dos cosas. */
+  function urlDe(ruta,i){
+    if(urls[ruta]) return urls[ruta];
+    const c=fotoInventada(i+3);
+    /* toDataURL es síncrono y no necesita esperar al toBlob: acá no importa
+       el peso, son cinco imágenes en pantalla. */
+    urls[ruta]=c.toDataURL('image/jpeg',.72);
+    return urls[ruta];
+  }
+  const revelado=()=>!!ev.revelado || (ev.revela_en && new Date(ev.revela_en)<=new Date());
+  const listado=()=>fotos.map(f=>({ruta:f.ruta,nombre:f.nombre,filtro:f.filtro}));
+
+  Object.assign(SB,{
+    /* La puerta a la red queda tapiada: si algo se olvidó de pasar por los
+       métodos de acá abajo, revienta acá y se ve en las pruebas, en vez de
+       irse callado a la base de verdad. */
+    async pedir(){ throw new Error('demostración: no se sale a la red'); },
+    async ver(tabla,consulta){
+      await dormir(180);
+      if(tabla!=='ce_eventos') return [];
+      const q=String(consulta||'');
+      /* Cualquier otro código no existe en la demostración: es justamente lo
+         que no queremos que se pueda mirar desde acá. */
+      if(/codigo=(eq|in)\./.test(q) && q.indexOf(DEMO_COD)<0) return [];
+      return [Object.assign({},ev)];
+    },
+    async rpc(fn,args){
+      await dormir(200);
+      const a=args||{};
+      /* la lectura del evento pasa por acá desde que la tabla se cerró */
+      if(fn==='ce_evento_publico')
+        return a.p_codigo===DEMO_COD ? Object.assign({},ev) : null;
+      if(fn==='ce_mi_rollo')
+        return {nombre:a.p_nombre||'Invitado', revelado:revelado(), cerrado:!!ev.cerrado,
+                cupo:ev.cupo_fotos, disparos:misDisparos, revela_en:ev.revela_en};
+      if(fn==='ce_tomar_foto'){
+        if(misDisparos>=ev.cupo_fotos) throw new Error('Ya usaste todas tus fotos');
+        misDisparos++;
+        fotos.push({ruta:a.p_ruta,nombre:'Vos',filtro:a.p_filtro,mia:true});
+        return {restantes:ev.cupo_fotos-misDisparos};
+      }
+      if(fn==='ce_devolver_foto'){
+        const i=fotos.findIndex(f=>f.ruta===a.p_ruta);
+        if(i>=0){ fotos.splice(i,1); misDisparos=Math.max(0,misDisparos-1); }
+        return {restantes:ev.cupo_fotos-misDisparos};
+      }
+      if(fn==='ce_camara_stats')
+        return {fotos:fotos.length, invitados:new Set(fotos.map(f=>f.nombre)).size};
+      if(fn==='ce_album_de'){
+        if(!revelado()) return {revelado:false};
+        return {revelado:true, mias:listado().filter((f,i)=>fotos[i].mia),
+                todas:listado(), total_fotos:fotos.length,
+                total_invitados:new Set(fotos.map(f=>f.nombre)).size};
+      }
+      if(fn==='ce_album_pagina')
+        return listado().slice(Number(a.p_desde)||0, (Number(a.p_desde)||0)+(Number(a.p_cuanto)||500));
+      if(fn==='ce_revelar'||fn==='ce_revelar_rollo'){ ev.revelado=true; ev.revela_en=null; return {revelado:true}; }
+      return null;
+    },
+    async guardar(){ await dormir(150); return null; },
+    async editar(tabla,consulta,obj){
+      await dormir(180);
+      if(tabla==='ce_eventos') Object.assign(ev,obj||{});
+      return null;
+    },
+    async subir(ruta,blob){
+      await dormir(260);
+      urls[ruta]=URL.createObjectURL(blob);
+      return true;
+    },
+    async firmar(rutas){
+      await dormir(160);
+      const mapa={};
+      (rutas||[]).forEach(r=>{
+        const i=fotos.findIndex(f=>f.ruta===r);
+        if(i>=0) mapa[r]=urlDe(r,i);
+      });
+      return mapa;
+    }
+  });
+  /* El que entra a mirar es "el organizador" de esta fiesta inventada: le
+     damos la clave en memoria para que el panel se abra sin pedirla. */
+  guardarClaveDe(DEMO_COD,'DEMO');
+}
 
 /* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
    es apenas un cambio de color; el grano es lo que hace que parezca film. */
@@ -569,7 +796,7 @@ function vPedirCodigo(){
   const entrar=()=>{
     const v=campo.value.trim().toUpperCase();
     if(v.length<4) return avisar('Escribí el código completo');
-    location.search='?e='+encodeURIComponent(v);
+    location.search='?e='+encodeURIComponent(v)+(HAY_DEMO?'&demo=1':'');
   };
   app.querySelector('#irEvento').onclick=entrar;
   campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
@@ -989,8 +1216,17 @@ async function vCamara(m,guardado,estado){
 function pintarQR(nodo,texto,tam){
   if(!nodo) return;
   nodo.innerHTML='';
-  try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); }
-  catch(e){ nodo.textContent=texto; }
+  try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){}
+  /* Sin el dibujante de códigos (el wifi del salón, o el CDN caído) quedaba
+     la dirección entera escrita adentro del cuadrito del QR, encimada sobre
+     sí misma y sin poder leerse. Mejor decir qué pasó y dejar el link a
+     mano, que para eso está el botón de copiar justo abajo. */
+  nodo.innerHTML=`<div style="width:${tam}px;height:${tam}px;box-sizing:border-box;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px;
+    color:#2A1B08;font:400 12px/1.5 Jost,system-ui,sans-serif;text-align:center">
+    <b style="font-weight:500">No pude dibujar el código</b>
+    <span style="word-break:break-all;opacity:.75;font-size:10.5px">${esc(texto)}</span>
+    </div>`;
 }
 async function copiar(texto,aviso){
   try{
@@ -1040,8 +1276,9 @@ function vPedirClave(codigoPrevio){
     if(cl.length<4)  return avisar('Escribí la clave');
     const b=$('#entrarClave'); b.disabled=true; b.textContent='Entrando…';
     try{
-      const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}&select=codigo,tono`);
-      if(!r||!r[0]) throw new Error('No encontré ese evento');
+      const ev=await eventoPorCodigo(cod,'codigo,tono');
+      if(!ev) throw new Error('No encontré ese evento');
+      const r=[ev];
       /* La única forma de saber si la clave sirve es usarla: escribimos algo
          que no cambia nada. Si la clave está mal, la base rechaza. */
       await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#D9AE72'},cl);
@@ -1080,9 +1317,18 @@ async function vInicio(){
 
   let evs=[];
   try{
-    evs=await SB.ver('ce_eventos',
-      `codigo=in.(${codigos.map(encodeURIComponent).join(',')})`
-      +`&select=codigo,nombre,camara,revelado,revela_en,cerrado&order=creado.desc.nullslast`)||[];
+    /* Uno por uno, cada cual con SU clave. En un pedido va una sola clave en
+       la cabecera y la base mira fila por fila: pidiéndolos todos juntos
+       volvía uno solo. Son los rollos de UN organizador: unos pocos. */
+    const filas=await Promise.all(codigos.map(async c=>{
+      try{
+        const r=await SB.ver('ce_eventos',
+          `codigo=eq.${encodeURIComponent(c)}`
+          +`&select=codigo,nombre,camara,revelado,revela_en,cerrado,creado`, claveDe(c));
+        return (r&&r[0])||null;
+      }catch(e){ return null; }
+    }));
+    evs=filas.filter(Boolean).sort((a,b)=>(b.creado||0)-(a.creado||0));
   }catch(e){ return; }
   if(!evs.length) return;
   const mios=app.querySelector('#mios');
@@ -1208,10 +1454,8 @@ const nuevoCodigo=tipo=>{
    otro no tiene arreglo. Si no hay señal para preguntar, seguimos igual:
    con seis caracteres al azar la chance es ínfima. */
 async function codigoLibre(codigo){
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
-    return !(r&&r.length);
-  }catch(e){ return true; }
+  try{ return !(await eventoPorCodigo(codigo,'codigo')); }
+  catch(e){ return true; }
 }
 
 async function crearRollo(){
@@ -1258,13 +1502,10 @@ async function vRollo(codigo){
   app.innerHTML=`${cabP('Tu rollo','')}<div class="wrap"><p class="espaciado"
     style="text-align:center;padding:26px 0">Cargando…</p></div>`;
   let m=null;
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
-    m=(r&&r[0])||null;
-  }catch(e){}
+  try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
-  const enlace=enlaceDelRollo(codigo);
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
+  const enlace=enlaceDelRollo(codigo,revelado);
 
   if(!m.camara){
     app.innerHTML=`
@@ -1344,7 +1585,11 @@ async function vRollo(codigo){
     copiar(enlace,'Link copiado');
   };
   $('#ajustes').onclick=()=>irA('ajustes/'+codigo);
-  const bA=$('#verAlbum'); if(bA) bA.onclick=()=>{ location.href=enlace; };
+  /* Recargar la página en demostración sería empezar de cero (no hay nada
+     guardado): el álbum se abre en el mismo sitio donde estamos. */
+  const bA=$('#verAlbum');
+  if(bA) bA.onclick=()=>{ if(HAY_DEMO) return vAlbum(m,{token:'demo',nombre:'Vos'});
+                          location.href=enlace; };
   const bT=$('#bajarTodas'); if(bT) bT.onclick=()=>bajarTodas(m,bT);
 
   SB.rpc('ce_camara_stats',{p_codigo:codigo}).then(st=>{
@@ -1448,10 +1693,7 @@ async function bajarTodas(m, boton){
 async function vAjustes(codigo){
   if(!claveDe(codigo)) return irA('clave/'+encodeURIComponent(codigo));
   let m=null;
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=*`);
-    m=(r&&r[0])||null;
-  }catch(e){}
+  try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
   const clave=claveDe(codigo);
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
@@ -1761,8 +2003,7 @@ const cerrarCapas=()=>document.querySelectorAll('.visorf,.cuarto').forEach(c=>{
 async function arranqueInvitado(){
   let m;
   try{
-    const r=await SB.ver('ce_eventos', `codigo=eq.${encodeURIComponent(codigo)}&select=codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha`);
-    m=(r&&r[0])||null;
+    m=await eventoPorCodigo(codigo,'codigo,nombre,tono,camara,cerrado,portada,cupo_fotos,fecha');
   }catch(e){ return vError('No pude conectar. Probá de nuevo en un rato.'); }
   if(!m) return vError('No encontré ese evento.');
   tono(m.tono);
@@ -1794,6 +2035,16 @@ addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-ir]');
   if(b) location.hash=b.dataset.ir;
 });
+if(HAY_DEMO){
+  document.body.classList.add('en-demo');
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
+    +'<a href="/">Volver a Click Eterno</a></div>');
+  /* Que caiga adentro del rollo andando, no en la puerta. replaceState en
+     vez de tocar location.hash: así no dispara un segundo dibujado. */
+  if(!location.hash && !codigo)
+    history.replaceState(null,'','#ev/'+DEMO_COD);
+}
 pintar();
 addEventListener('pagehide',detenerCamara);
 addEventListener('unhandledrejection',e=>{ console.error(e.reason); avisar('Algo falló: probá de nuevo'); e.preventDefault(); });

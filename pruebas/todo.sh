@@ -21,7 +21,7 @@ cd "$(dirname "$0")/.."
 RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
-MURO=(stress extras nuevas borrar xss hostil diagnostico invitaciones)
+MURO=(stress extras nuevas borrar xss hostil diagnostico demo seguridad invitaciones)
 ROLLO=(rollo_navegador rollo_organizador rollo_hora rollo_hostil)
 
 azul(){ printf '\n\033[1m%s\033[0m\n' "$*"; }
@@ -44,7 +44,9 @@ servidor(){
     echo "  puerto $puerto: ya había algo sirviendo (no lo toco)"
     return 0
   fi
-  python3 -m http.server "$puerto" --bind 127.0.0.1 >/dev/null 2>&1 &
+  # Con las cabeceras de _headers puestas: si la CSP bloquea algo que la app
+  # necesita, tiene que saltar acá y no en la fiesta de un cliente.
+  python3 "$RAIZ/pruebas/servidor.py" "$puerto" >/dev/null 2>&1 &
   MIOS+=($!)
   for _ in $(seq 20); do
     curl -sf -o /dev/null "http://127.0.0.1:$puerto/" 2>/dev/null && { echo "  puerto $puerto: levantado"; return 0; }
@@ -134,7 +136,10 @@ sql(){
     echo "  (no es un error del producto; en Supabase no se puede probar sin tocar producción)"
     return 0
   fi
-  for par in "esquema_falso claves rollo:probar" "esquema_falso claves rollo:rollo_probar"; do
+  # blindaje.sql va SIEMPRE al final: reemplaza políticas y funciones que
+  # crearon los dos anteriores, así que el orden importa. Es el mismo orden
+  # en el que hay que correrlos en Supabase.
+  for par in "esquema_falso claves rollo blindaje:probar" "esquema_falso claves rollo blindaje:rollo_probar"; do
     local instalar="${par%%:*}" prueba="${par##*:}"
     local args=(); for f in $instalar; do args+=(-f "sql/$f.sql"); done
     printf '  %-22s' "$prueba"

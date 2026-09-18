@@ -22,7 +22,8 @@ const TOPE_HTML=2*1024*1024;
 const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')
-    && !['sql','pruebas','invitaciones','node_modules'].includes(d);
+    /* lib/ son las librerías del sitio (QR, zip, excel), no una invitación */
+    && !['sql','pruebas','invitaciones','node_modules','lib','apps-script'].includes(d);
 };
 const pesar=d=>fs.readdirSync(d,{withFileTypes:true}).reduce((t,e)=>{
   const p=path.join(d,e.name);
