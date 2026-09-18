@@ -380,8 +380,20 @@ option{background:#0B0A08}
   color:#2A1B08;font-size:11.5px;letter-spacing:.1em;text-align:center}
 #cinta-demo b{font-weight:500}
 #cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
+#cinta-demo button{font:500 11px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:#2A1B08;background:rgba(42,27,8,.12);border:1px solid rgba(42,27,8,.3);
+  border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:none}
+#cinta-demo button:hover{background:rgba(42,27,8,.2)}
 body.en-demo{padding-top:38px}
 body.en-demo .cabecera{top:38px}
+/* La pantalla del salón y el álbum a pantalla completa se dibujan con
+   position:fixed, así que el padding del body no los corre: la cinta les
+   tapaba los botones de modo y el de salir, y no se podía llegar al muro. */
+body.en-demo .sala,
+body.en-demo .visor,
+body.en-demo .capa{top:38px}
+body.en-demo .modos-sala{top:54px}
+body.en-demo .dejar{top:56px}
 @media (max-width:420px){
   #cinta-demo{font-size:10.5px;gap:9px}
   #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1707,9 +1719,12 @@ async function sembrar(){
     /* La base exige clave para dar de alta un evento. Si ya la tenemos
        guardada de otra vez la reusamos; si no, una nueva. */
     const claveEv=claveDe(codigo)||nuevaClave();
+    /* Sin moderación: en la demostración lo que manda el visitante tiene que
+       aparecer EN LA PANTALLA, que es todo el punto. Con moderar en true le
+       decía "Enviado, el organizador lo aprueba" y no se veía nunca. */
     const datos={codigo,nombre:'Los 15 de Delfina',fecha:enDias(12),tipo:'XV',tono:'#D9AE72',
       hashtag:'#Delfina15',lugar:'Salón Las Acacias · Rosario',
-      moderar:true,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
+      moderar:false,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
     /* En la nube las fotos van al depósito de archivos: antes se guardaban
        los items sin archivo y el muro quedaba con fotos vacías. */
     if(HAY_NUBE) datos.portadaBlob=await dataABlob(tapa);
@@ -1726,12 +1741,11 @@ async function sembrar(){
     for(let i=0;i<frases.length;i++)
       await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
         ts:Date.now()-(frases.length-i)*30000,estado:'aprobado'});
-    /* dos esperando aprobación, para que se vea moderar con algo adentro */
-    if(HAY_DEMO) for(let i=0;i<2;i++)
-      await sumar(codigo,{id:'p'+i,kind:'foto',data:fotoDemo(20+i),blob:null,
-        autor:gente[9+i],texto:'',ts:Date.now()-i*9000,estado:'pendiente'});
-    recado('Listo · fiesta "Sana" cargada');
-    ir('evento/'+codigo);
+    recado(HAY_DEMO?'Ejemplo listo':'Listo · fiesta cargada');
+    /* En demostración se entra por donde entra un invitado, no por el panel
+       del organizador: lo que se quiere mostrar es cómo se deja una foto o
+       un saludo y aparece en la pantalla del salón. */
+    ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
   }catch(e){
     console.error('sembrar',e);
     recado('No pude cargar la fiesta de ejemplo: '+motivo(e));
@@ -1784,7 +1798,7 @@ async function vAcceso(){
         text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>`}
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
   const campo=app.querySelector('#pin');
   campo.focus();
   const probar=async()=>{
@@ -1856,7 +1870,7 @@ async function vPanel(){
       <button class="oro-btn" id="crear" style="margin-top:12px">Crear evento</button>
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
   contador('#n');
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
@@ -2565,7 +2579,7 @@ async function vElegir(destino,titulo){
     ${evs.length? evs.map(e=>tarjetaEvento(e)).join('')
       :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
 }
 
@@ -3423,6 +3437,11 @@ async function pruebaDeFondo(boton, salida){
 /* ══════════ router ══════════ */
 /* Antes ir() cambiaba el hash Y pintaba: el evento hashchange volvía a
    pintar, así que cada navegación cargaba todo dos veces. */
+/* Empezar de nuevo es recargar: todo lo de la demostración vive en memoria,
+   así que la recarga lo limpia entero y vuelve a sembrar la misma fiesta.
+   Sin hash, para caer donde cae el que entra por primera vez. */
+function reiniciarDemo(){ location.replace(location.pathname+'?demo=1'); }
+
 function ir(ruta){
   const destino='#'+ruta;
   if(location.hash===destino) pintar(ruta);   // mismo hash: no hay evento
@@ -3459,9 +3478,14 @@ function pintar(ruta){
   }
   let p;
   try{
-    /* En demostración no hay panel del organizador: el que entra a mirar
-       vuelve a la fiesta de ejemplo en vez de toparse con un pedido de clave. */
-    if(v==='panel'){ if(HAY_DEMO) return ir('evento/DEMO-FIESTA'); p=vAcceso(); }
+    /* En demostración solo existe lo que ve un invitado: subir algo, la
+       pantalla del salón y el álbum. El panel del organizador, el cartel y
+       el diagnóstico son herramientas de quien vende el servicio, no parte
+       de la muestra. Todo lo demás cae en la pantalla de subir. */
+    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','portada',''].includes(v))
+      return ir(v==='proyector'?'pantalla/DEMO-FIESTA':'subir/DEMO-FIESTA');
+    if(HAY_DEMO && v==='proyector') return ir('pantalla/DEMO-FIESTA');
+    if(v==='panel') p=vAcceso();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
     else if(v==='invitado') p=vElegir('subir','Invitado');
@@ -3500,17 +3524,19 @@ addEventListener('error',e=>{
     document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
-        <a href="/">Volver a Click Eterno</a>
+        <button id="dedeNuevo">Empezar de nuevo</button>
+        <a href="/">Salir</a>
       </div>`);
-    const ya = await leerLocal(kMeta('DEMO-FIESTA'), null);
-    if(!ya){
-      app.innerHTML = `<div class="final"><div>
-        <img src="${LOGO_MARK}" style="width:120px;opacity:.6" alt="">
-        <p class="espaciado" style="margin-top:24px">Preparando la fiesta de ejemplo…</p>
-      </div></div>`;
-      try{ await sembrar(); }catch(e){ console.error('demo',e); }
-    }
-    if(!location.hash || location.hash==='#portada') return ir('evento/DEMO-FIESTA');
+    document.getElementById('dedeNuevo').onclick=reiniciarDemo;
+    /* Se siembra SIEMPRE, sin preguntar si ya estaba: es un modo prueba, y
+       cada vez que alguien entra tiene que encontrarlo igual que el primero.
+       Lo que dejó el anterior no es parte de la muestra. */
+    app.innerHTML = `<div class="final"><div>
+      <img src="${LOGO_MARK}" style="width:120px;opacity:.6" alt="">
+      <p class="espaciado" style="margin-top:24px">Preparando la fiesta de ejemplo…</p>
+    </div></div>`;
+    try{ await sembrar(); }catch(e){ console.error('demo',e); }
+    return;   // sembrar() deja al visitante en la pantalla de subir
   }
   pintar(location.hash.slice(1)||'portada');
 })();

@@ -26,6 +26,20 @@ desde ahí se veían los eventos de todos los clientes en "Tus eventos" y el
 botón "cargar una fiesta de ejemplo" escribía un evento inventado **en la
 base de producción**. `pruebas/demo.js` cuida que no vuelva a pasar.
 
+**La demostración del muro es SOLO lo que ve un invitado**: se entra en la
+pantalla de subir, se deja una foto o un saludo y se lo ve proyectado en la
+pantalla del salón. El panel del organizador, el cartel y el diagnóstico no
+son parte de la muestra: `panel`, `evento`, `cartel`, `portada` e
+`invitado` caen todos en `subir/DEMO-FIESTA`. Y la fiesta de ejemplo va
+**sin moderación**: con `moderar` en true, lo que mandaba el visitante decía
+"Enviado, el organizador lo aprueba" y no se veía nunca, o sea que el
+ejemplo no mostraba nada.
+
+**Se siembra en cada carga, sin preguntar si ya estaba, y la cinta tiene
+"Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
+prueba: el que entra después no tiene que encontrarse con lo que dejó el
+anterior.
+
 **Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
 clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
 pasando por el muro. Un evento puede tener los dos, o uno solo.
@@ -204,6 +218,11 @@ las del cupo?, ¿puede ver las de otro?
   pide solo los códigos cuya clave está guardada en ese aparato
   (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
   rollo ya lo hacía bien.
+- **`position:fixed` no lo corre el padding del body.** La cinta de la
+  demostración empuja la página con `padding-top`, pero la pantalla del
+  salón y el visor del álbum están fijos: la cinta les tapaba los botones de
+  modo y el de salir, y desde la demostración no se llegaba al muro. Cada
+  capa fija necesita su propio `top` en `body.en-demo`.
 - **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
   pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
   Antes de inventar un nombre, `grep`.

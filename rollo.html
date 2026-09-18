@@ -55,6 +55,11 @@ img{max-width:100%;display:block}
   font:500 11.5px/1 Jost,system-ui,sans-serif;letter-spacing:.06em}
 #cinta-demo b{font-weight:600}
 #cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
+#cinta-demo button{font:500 11px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;
+  text-transform:uppercase;color:#2A1B08;background:rgba(42,27,8,.12);
+  border:1px solid rgba(42,27,8,.3);border-radius:20px;padding:5px 12px;cursor:pointer;
+  white-space:nowrap;flex:none}
+#cinta-demo button:hover{background:rgba(42,27,8,.2)}
 body.en-demo{padding-top:38px}
 body.en-demo .pie-fijo{bottom:0}
 @media(max-width:400px){
@@ -2039,7 +2044,10 @@ if(HAY_DEMO){
   document.body.classList.add('en-demo');
   document.body.insertAdjacentHTML('afterbegin',
     '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
-    +'<a href="/">Volver a Click Eterno</a></div>');
+    +'<button id="deNuevo">Empezar de nuevo</button><a href="/">Salir</a></div>');
+  /* Es un modo prueba: volver a empezar es recargar. Todo lo de la
+     demostración vive en memoria, así que la recarga lo limpia entero. */
+  document.getElementById('deNuevo').onclick=()=>location.replace(location.pathname+'?demo=1');
   /* Que caiga adentro del rollo andando, no en la puerta. replaceState en
      vez de tocar location.hash: así no dispara un segundo dibujado. */
   if(!location.hash && !codigo)

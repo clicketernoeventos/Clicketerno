@@ -53,35 +53,76 @@ async function abrir(ctx) {
 (async () => {
   const browser = await chromium.launch();
 
-  /* ── 1 · el muro en demostración ── */
+  /* ── 1 · el muro en demostración: SOLO lo que ve un invitado ── */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const { pg, espia } = await abrir(ctx);
     await pg.goto(`${BASE}/muro.html?demo=1`);
     await pg.waitForTimeout(3500);
 
-    afirmar(await pg.evaluate(() => location.hash) === '#evento/DEMO-FIESTA',
-      'el muro cae adentro de la fiesta de ejemplo, no en la portada',
+    afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
+      'el muro cae en la pantalla de subir, que es la del invitado',
       await pg.evaluate(() => location.hash));
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'se ve la cinta que avisa que es una demostración');
     afirmar(/inventad/i.test(await leer(pg, '#cinta-demo')),
       'la cinta dice que la fiesta y las fotos son inventadas');
+    afirmar(await pg.locator('#dedeNuevo').count() === 1,
+      'y tiene el botón para empezar de nuevo');
     afirmar(espia.nube.length === 0,
       'el muro en demostración no toca Supabase ni una vez',
       espia.nube.slice(0, 3).join(' · '));
 
-    /* el panel del organizador no existe en la demostración */
-    await pg.evaluate(() => { location.hash = '#panel'; });
-    await pg.waitForTimeout(1500);
-    const enPanel = (await leer(pg, 'body')).toLowerCase();
-    afirmar(!/cre[aá] tu clave|entrar como administrador/.test(enPanel),
-      'desde la demostración no se llega a la clave del panel ni al modo administrador',
-      enPanel.slice(0, 80));
+    /* Nada de lo del organizador: es una muestra de cómo se deja una foto o
+       un saludo, no el panel de quien vende el servicio. */
+    for (const ruta of ['panel', 'evento/DEMO-FIESTA', 'cartel/DEMO-FIESTA', 'portada', 'invitado']) {
+      await pg.evaluate(r => { location.hash = '#' + r; }, ruta);
+      await pg.waitForTimeout(900);
+      afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
+        `#${ruta} no lleva a ningún lado del organizador`,
+        await pg.evaluate(() => location.hash));
+    }
     afirmar(await pg.locator('#modoAdmin').count() === 0,
       'el botón de administrador no está en la demostración');
+    const enPantalla = (await leer(pg, 'body')).toLowerCase();
+    afirmar(!/cre[aá] tu clave|entrar como administrador|panel del organizador/.test(enPantalla),
+      'y en pantalla no aparece ninguna puerta del organizador',
+      enPantalla.slice(0, 90));
 
-    /* y no deja nada guardado en el aparato de quien miró */
+    /* El ejemplo completo: dejo una dedicatoria y la veo proyectada. */
+    await pg.evaluate(() => { location.hash = '#subir/DEMO-FIESTA'; });
+    await pg.waitForTimeout(1200);
+    const MIO = 'QUE-NO-SE-TERMINE-MAS';
+    await pg.locator('.chips button').filter({ hasText: /dedicatoria/i }).click();
+    await pg.waitForTimeout(500);
+    await pg.locator('#zona textarea, #zona input[type=text]').first().fill(MIO);
+    await pg.fill('#autor', 'Jere');
+    await pg.click('#enviar');
+    await pg.waitForTimeout(2500);
+    afirmar(/ya est[aá] en la pantalla/i.test(await leer(pg, 'body')),
+      'lo que manda el visitante va derecho a la pantalla, sin esperar aprobación',
+      'con moderación puesta decía "Enviado" y no se veía nunca: se pierde el ejemplo');
+    await pg.locator('#ver').click();
+    await pg.waitForTimeout(2200);
+    await pg.locator('[data-modo="muro"]').click({ timeout: 4000 }).catch(() => {});
+    await pg.waitForTimeout(2000);
+    afirmar((await leer(pg, 'body')).includes(MIO),
+      'y aparece proyectado en la pantalla del salón, que es todo el punto',
+      'si la cinta tapa los botones de modo, acá no se llega');
+
+    /* Empezar de nuevo: es un modo prueba, el que entra después no tiene
+       que encontrarse con lo que dejó el anterior. */
+    await pg.locator('#dedeNuevo').click();
+    await pg.waitForTimeout(3500);
+    afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
+      'empezar de nuevo devuelve a la primera pantalla');
+    await pg.evaluate(() => { location.hash = '#pantalla/DEMO-FIESTA'; });
+    await pg.waitForTimeout(1800);
+    await pg.locator('[data-modo="muro"]').click({ timeout: 4000 }).catch(() => {});
+    await pg.waitForTimeout(1800);
+    afirmar(!(await leer(pg, 'body')).includes(MIO),
+      'y no queda nada de lo que dejó el anterior');
+
     const rastro = await pg.evaluate(() => JSON.stringify(Object.keys(localStorage)));
     afirmar(rastro === '[]', 'la demostración del muro no deja nada en el navegador', rastro);
     afirmar(espia.errores.length === 0, 'el muro en demostración no tira errores de JavaScript',
@@ -101,6 +142,8 @@ async function abrir(ctx) {
       await pg.evaluate(() => location.hash));
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'el rollo también avisa que es una demostración');
+    afirmar(await pg.locator('#deNuevo').count() === 1,
+      'y también se puede empezar de nuevo');
     afirmar(await pg.locator('#revelar').count() === 1,
       'el rollo de ejemplo arranca abierto, para poder revelarlo');
 
