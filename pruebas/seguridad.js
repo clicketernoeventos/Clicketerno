@@ -22,6 +22,10 @@ const RAIZ = path.join(__dirname, '..');
    y las demás siguen corriendo. */
 const leer = f => { try { return fs.readFileSync(path.join(RAIZ, f), 'utf8'); }
                     catch (e) { return ''; } };
+/* Escribir y tocar sin que la suite entera se caiga si el elemento no está:
+   la comprobación que corresponda lo dice con nombre, y las demás siguen. */
+const escribir = async (pg, sel, v) => { try { await pg.fill(sel, v, { timeout: 2500 }); } catch (e) {} };
+const tocar = async (pg, sel) => { try { await pg.click(sel, { timeout: 2500 }); } catch (e) {} };
 /* Sin los comentarios. Tres de estas comprobaciones fallaban por lo que los
    comentarios del código EXPLICAN: el comentario que cuenta por qué sacamos
    x-upsert contiene la palabra "x-upsert". Lo que se mide es el código. */
@@ -221,35 +225,86 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
   /* ── 5 · la lista de invitados de una invitación ── */
   {
     console.log('\n── el panel de invitados de una invitación ──');
+    const CLAVE = 'clave-de-prueba-larga';
+    const FILA = {
+      'Persona 1 - Nombre': '<img src=x onerror="window.__XSS_LISTADO=1">',
+      'Persona 1 - Apellido': 'Colado',
+      '¿Confirma?': 'Confirmo',
+    };
+    /* La planilla de mentira se porta como el Apps Script nuevo: sin la
+       clave no entrega nada. */
+    const montar = async pg => {
+      const pedidos = [];
+      pg.on('request', r => { if (/script\.google\.com/.test(r.url())) pedidos.push(r.url()); });
+      await pg.route('**/script.google.com/**', r => {
+        const u = new URL(r.request().url());
+        if (u.searchParams.get('confirmado') !== null)
+          return r.fulfill({ status: 200, contentType: 'application/json',
+            body: JSON.stringify({ ok: true }) });
+        if (u.searchParams.get('clave') !== CLAVE)
+          return r.fulfill({ status: 200, contentType: 'application/json',
+            body: JSON.stringify({ error: 'clave', mensaje: 'Clave incorrecta.' }) });
+        return r.fulfill({ status: 200, contentType: 'application/json',
+          body: JSON.stringify({ invitados: [FILA] }) });
+      });
+      return pedidos;
+    };
+
+    afirmar(!leer('pia/listado/index.html').includes('clienteEmail'),
+      'la clave del listado NO está escrita en la página',
+      'el portón de antes comparaba contra un correo que estaba ahí a la vista');
+
     const ctx = await browser.newContext();
+
+    /* con la clave mal: ni una fila */
+    const malo = await ctx.newPage();
+    await montar(malo);
+    await malo.goto(`${BASE}/pia/listado/index.html`, { waitUntil: 'domcontentloaded' });
+    await malo.waitForTimeout(500);
+    await escribir(malo, '#clave-input', 'la-que-no-es');
+    await tocar(malo, '#gate-btn');
+    await malo.waitForTimeout(1200);
+    afirmar(await malo.locator('#tabla-body tr').count() === 0,
+      'con la clave equivocada no se ve ni una fila');
+    afirmar(!(await malo.locator('body').innerText()).includes('Colado'),
+      'ni un apellido suelto');
+    await malo.close();
+
+    /* con la clave bien: entra, y el texto raro es texto */
     const pg = await ctx.newPage();
-    await pg.route('**/script.google.com/**', r => r.fulfill({
-      status: 200, contentType: 'application/json',
-      body: JSON.stringify({ invitados: [{
-        'Persona 1 - Nombre': '<img src=x onerror="window.__XSS_LISTADO=1">',
-        'Persona 1 - Apellido': 'Colado',
-        '¿Confirma?': 'Confirmo',
-      }] }),
-    }));
+    const pedidos = await montar(pg);
     await pg.goto(`${BASE}/pia/listado/index.html`, { waitUntil: 'domcontentloaded' });
-    await pg.waitForTimeout(600);
-    /* El portón pide el correo de la clienta. No es una traba de verdad —el
-       correo está escrito en la página y cualquiera lo lee— pero hay que
-       pasarlo para llegar a la tabla, que es lo que se está midiendo. Sin
-       esto la prueba pasaba sin dibujar una sola fila: pasaba siempre, que
-       es lo mismo que no probar nada. */
-    const correo = await pg.evaluate(() => (window.CONFIG || {}).clienteEmail
-      || (document.documentElement.innerHTML.match(/clienteEmail:\s*"([^"]+)"/) || [])[1] || '');
-    await pg.fill('#email-input', correo);
-    await pg.click('#gate-btn');
-    await pg.waitForTimeout(2000);
+    await pg.waitForTimeout(500);
+    await escribir(pg, '#clave-input', CLAVE);
+    await tocar(pg, '#gate-btn');
+    await pg.waitForTimeout(1600);
     afirmar(await pg.locator('#tabla-body tr').count() > 0,
-      'la tabla de invitados llegó a dibujarse (si no, lo de abajo no mide nada)');
+      'con la clave correcta sí entra (si no, lo de abajo no mide nada)');
+    /* pedidos.length > 0: sin eso, un .every() sobre una lista vacía da
+       true y la comprobación pasaba aunque no hubiera habido un solo
+       pedido. Pasaba siempre, o sea que no probaba nada. */
+    afirmar(pedidos.length > 0 && pedidos.every(u => u.includes('clave=')),
+      'y cada pedido a la planilla lleva la clave',
+      pedidos.join(' · ') || 'no hubo ningún pedido');
     afirmar(!(await pg.evaluate(() => !!window.__XSS_LISTADO)),
       'un invitado que se anota con código adentro del nombre NO lo ejecuta',
       'la organizadora abre esta pantalla: era su navegador el que corría eso');
     afirmar((await pg.locator('body').innerText()).includes('onerror'),
       'el texto raro se ve como texto, que es lo que corresponde');
+    await pg.close();
+
+    /* la invitación pregunta sí o no, no se lleva la lista */
+    const inv = await ctx.newPage();
+    const pedidosInv = await montar(inv);
+    await inv.goto(`${BASE}/pia/nueva/index.html`, { waitUntil: 'domcontentloaded' });
+    await inv.waitForTimeout(1200);
+    const respuesta = await inv.evaluate(() => (typeof llegó === 'function') ? llegó('Delfina') : null);
+    afirmar(respuesta === true, 'la invitación puede comprobar si llegó la confirmación');
+    afirmar(pedidosInv.length > 0 && pedidosInv.every(u => u.includes('confirmado=')),
+      'y lo pregunta por nombre, sin bajarse la lista de invitados',
+      pedidosInv.join(' · '));
+    afirmar(!/fetch\(CONFIG\.endpoint,\s*\{cache/.test(leer('pia/nueva/index.html')),
+      'ya no queda el pedido que se traía la planilla entera');
     await ctx.close();
   }
 

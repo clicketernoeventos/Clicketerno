@@ -64,10 +64,15 @@
 </head>
 <body>
 
+<!-- El portón de antes comparaba el correo contra uno escrito en esta
+     misma página: cualquiera lo leía en el código y entraba. Y aunque no
+     entrara, la dirección de la planilla también estaba acá y devolvía la
+     lista entera a quien la pidiera. Ahora la clave no está en ninguna
+     página: la comprueba el Apps Script (ver apps-script/listado.gs.txt). -->
 <div id="gate">
   <h1>Listado de invitados</h1>
-  <p>Ingresá tu correo para ver quiénes confirmaron su asistencia.</p>
-  <input type="email" id="email-input" placeholder="tu@correo.com">
+  <p>Ingresá la clave del listado para ver quiénes confirmaron.</p>
+  <input type="password" id="clave-input" placeholder="clave" autocomplete="current-password">
   <button id="gate-btn">Ver listado</button>
   <div id="gate-error"></div>
 </div>
@@ -112,9 +117,17 @@
    ====================================================== */
 const CONFIG = {
   nombreEvento: "Fiesta de 15 de Pia",
-  clienteEmail: "jeremias.arone@gmail.com",   // el mail que la clienta va a usar para entrar
+  // La clave NO va acá: esta página es pública. La guarda el Apps Script en
+  // las propiedades del proyecto y la comprueba él.
   appsScriptUrl: "https://script.google.com/macros/s/AKfycbyYAQY0rbpCUeLFpKQq4S5O1uWIwt7vDp43g1Hl8kRm6RsTgnBc-Hi3OEflcs5_0V6eZw/exec"
 };
+/* La clave que escribió quien organiza, guardada en ESTE aparato para no
+   tener que escribirla cada vez. Nunca viaja a ningún lado que no sea la
+   planilla, y no queda en el código. */
+const K_CLAVE = 'ce:listado:clave';
+const claveGuardada = () => { try { return localStorage.getItem(K_CLAVE) || ''; } catch (e) { return ''; } };
+const guardarClave = v => { try { localStorage.setItem(K_CLAVE, v); } catch (e) {} };
+const olvidarClave = () => { try { localStorage.removeItem(K_CLAVE); } catch (e) {} };
 
 /* Lo que escribe un invitado en la confirmación llega tal cual desde la
    planilla y se dibuja en esta tabla. Sin esto, alguien que se anota con el
@@ -140,17 +153,37 @@ let invitados = [];
 let columnasActivas = new Set(COLUMNAS_POR_DEFECTO);
 
 /* ---------- Portón de acceso ---------- */
-document.getElementById('gate-btn').addEventListener('click', () => {
-  const val = document.getElementById('email-input').value.trim().toLowerCase();
-  const esperado = CONFIG.clienteEmail.trim().toLowerCase();
-  if (val === esperado) {
+const campoClave = document.getElementById('clave-input');
+const errorGate = document.getElementById('gate-error');
+
+async function entrar(clave) {
+  errorGate.textContent = '';
+  const btn = document.getElementById('gate-btn');
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  const r = await cargarDatos(clave);
+  btn.disabled = false; btn.textContent = 'Ver listado';
+  if (r === true) {
+    guardarClave(clave);
     document.getElementById('gate').style.display = 'none';
     document.getElementById('panel').classList.add('show');
-    cargarDatos();
-  } else {
-    document.getElementById('gate-error').textContent = 'Ese correo no coincide. Probá de nuevo.';
+    return;
   }
+  olvidarClave();
+  errorGate.textContent = r === 'clave'
+    ? 'Esa clave no es. Probá de nuevo.'
+    : (r === 'viejo'
+        ? 'La planilla todavía no tiene puesta la clave. Hay que actualizar el Apps Script.'
+        : 'No se pudo conectar con la planilla. Probá de nuevo en un momento.');
+}
+
+document.getElementById('gate-btn').addEventListener('click', () => {
+  const v = campoClave.value.trim();
+  if (!v) return (errorGate.textContent = 'Escribí la clave.');
+  entrar(v);
 });
+campoClave.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('gate-btn').click(); });
+/* si ya entró antes en este aparato, no se la volvemos a pedir */
+if (claveGuardada()) entrar(claveGuardada());
 
 /* ---------- Checkboxes de columnas ---------- */
 const colChecksEl = document.getElementById('col-checks');
@@ -169,27 +202,37 @@ colChecksEl.addEventListener('change', (e) => {
   }
 });
 
-/* ---------- Carga de datos desde Google Apps Script ---------- */
-async function cargarDatos(){
+/* ---------- Carga de datos desde Google Apps Script ----------
+   Devuelve true si entró, o el motivo por el que no: 'clave' (la clave está
+   mal), 'viejo' (el Apps Script todavía es el de antes, el que contestaba
+   sin pedir nada) o 'red'. */
+async function cargarDatos(clave){
   if (!CONFIG.appsScriptUrl) {
     document.getElementById('loading').textContent = 'Falta configurar CONFIG.appsScriptUrl.';
-    return;
+    return 'red';
   }
+  let data;
   try {
-    const res = await fetch(CONFIG.appsScriptUrl);
-    const data = await res.json();
-    invitados = data.invitados || [];
-    document.getElementById('loading').style.display = 'none';
-    if (invitados.length === 0) {
-      document.getElementById('empty').style.display = 'block';
-    } else {
-      document.getElementById('tabla-wrap').style.display = 'block';
-      actualizarStats();
-      renderTabla();
-    }
+    const res = await fetch(CONFIG.appsScriptUrl + '?clave=' + encodeURIComponent(clave),
+                            { cache: 'no-store' });
+    data = await res.json();
   } catch (err) {
-    document.getElementById('loading').textContent = 'No se pudo cargar el listado. Probá de nuevo en un momento.';
+    return 'red';
   }
+  if (data && data.error === 'sin_clave_configurada') return 'viejo';
+  if (data && data.error) return 'clave';
+  if (!data || !Array.isArray(data.invitados)) return 'red';
+
+  invitados = data.invitados;
+  document.getElementById('loading').style.display = 'none';
+  if (invitados.length === 0) {
+    document.getElementById('empty').style.display = 'block';
+  } else {
+    document.getElementById('tabla-wrap').style.display = 'block';
+    actualizarStats();
+    renderTabla();
+  }
+  return true;
 }
 
 function actualizarStats(){

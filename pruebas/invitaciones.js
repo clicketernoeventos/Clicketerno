@@ -23,7 +23,7 @@ const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')
     /* lib/ son las librerías del sitio (QR, zip, excel), no una invitación */
-    && !['sql','pruebas','invitaciones','node_modules','lib'].includes(d);
+    && !['sql','pruebas','invitaciones','node_modules','lib','apps-script'].includes(d);
 };
 const pesar=d=>fs.readdirSync(d,{withFileTypes:true}).reduce((t,e)=>{
   const p=path.join(d,e.name);

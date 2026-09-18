@@ -1,0 +1,115 @@
+/* ═══════════════════════════════════════════════════════════════
+   CLICK ETERNO · el doGet del listado de invitados
+   Pegar en el editor de Apps Script (Extensiones → Apps Script),
+   REEMPLAZANDO la función doGet que ya está.
+
+   NO TOCAR doPost. La escritura en la planilla queda exactamente
+   como está: lo único que cambia es quién puede LEER.
+
+   Por qué: el doGet anterior devolvía la lista completa de
+   invitados a cualquiera que abriera la dirección. Y la propia
+   invitación la pedía entera para comprobar si había llegado una
+   confirmación, así que esa dirección la tiene a mano todo el que
+   abre el link de la invitación. Con eso se bajaban los nombres, los
+   teléfonos y todo lo que se pregunte en el formulario.
+
+   Ahora hay dos puertas y ninguna abre de más:
+
+     ?clave=LA-CLAVE        → la lista entera. La usa el panel.
+     ?confirmado=NOMBRE     → solamente {"ok":true} o {"ok":false}.
+                              La usa la invitación para avisarle al
+                              invitado si su confirmación llegó.
+
+   Cualquier otra cosa no devuelve datos.
+
+   ── ANTES DE PEGAR ESTO, PONER LA CLAVE ──
+   La clave NO va escrita acá: va en las propiedades del proyecto,
+   así no queda en ningún archivo ni en ninguna página.
+
+     1. En el editor, engranaje (Configuración del proyecto).
+     2. Abajo de todo: "Propiedades de la secuencia de comandos".
+     3. Agregar propiedad:
+          nombre:  CLAVE_LISTADO
+          valor:   la clave que quieras (larga, no un número corto)
+     4. Guardar.
+
+   Y después de pegar: Implementar → Administrar implementaciones →
+   editar la que ya existe → Versión: nueva → Implementar. Si se
+   crea una implementación NUEVA cambia la dirección y hay que
+   cambiarla en las invitaciones también.
+   ═══════════════════════════════════════════════════════════════ */
+
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+
+  /* ── puerta 1: ¿llegó mi confirmación? ──
+     Contesta sí o no y nada más. Es lo único que necesita saber el
+     invitado, y es lo único que puede averiguar desde acá. */
+  if (p.confirmado) {
+    return json({ ok: estaConfirmado_(p.confirmado) });
+  }
+
+  /* ── puerta 2: la lista, con la clave ── */
+  var esperada = PropertiesService.getScriptProperties().getProperty('CLAVE_LISTADO');
+  if (!esperada) {
+    return json({ error: 'sin_clave_configurada',
+                  mensaje: 'Falta poner CLAVE_LISTADO en las propiedades del proyecto.' });
+  }
+  if (!p.clave || !igualesSinApuro_(String(p.clave), String(esperada))) {
+    return json({ error: 'clave', mensaje: 'Clave incorrecta.' });
+  }
+  return json({ invitados: filas_() });
+}
+
+/* ── lo de abajo no hace falta tocarlo ── */
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* Lee la planilla y arma la lista, usando la primera fila como
+   nombres de columna. Así sirve igual aunque se agreguen o se muevan
+   columnas: no hay ninguna posición escrita a mano. */
+function filas_() {
+  var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var datos = hoja.getDataRange().getDisplayValues();
+  if (datos.length < 2) return [];
+  var titulos = datos[0];
+  var salida = [];
+  for (var i = 1; i < datos.length; i++) {
+    var fila = {}, vacia = true;
+    for (var j = 0; j < titulos.length; j++) {
+      var t = String(titulos[j] || '').trim();
+      if (!t) continue;
+      fila[t] = datos[i][j];
+      if (String(datos[i][j] || '').trim() !== '') vacia = false;
+    }
+    if (!vacia) salida.push(fila);
+  }
+  return salida;
+}
+
+/* ¿Hay alguna fila donde el nombre de la primera persona sea este?
+   Se mira solo esa columna: no se devuelve nada de la fila. */
+function estaConfirmado_(nombre) {
+  var buscado = String(nombre || '').trim().toLowerCase();
+  if (!buscado) return false;
+  var lista = filas_();
+  for (var i = 0; i < lista.length; i++) {
+    var v = lista[i]['Persona 1 - Nombre'];
+    if (String(v || '').trim().toLowerCase() === buscado) return true;
+  }
+  return false;
+}
+
+/* Compara sin apurarse: siempre recorre todo, gane o pierda. Si
+   cortara en la primera letra distinta, el tiempo que tarda en
+   contestar iría contando cuántas letras acertó quien prueba. */
+function igualesSinApuro_(a, b) {
+  if (a.length !== b.length) return false;
+  var dif = 0;
+  for (var i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return dif === 0;
+}

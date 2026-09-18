@@ -3,6 +3,7 @@
 # cualquiera podía bajarse sql/claves.sql desde la web.
 sql/
 pruebas/
+apps-script/
 *.md
 wrangler.json
 .assetsignore

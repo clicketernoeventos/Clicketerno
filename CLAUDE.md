@@ -262,6 +262,18 @@ web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
 archivo llevaba la clave maestra de producción escrita en texto plano.
 Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
+## El Apps Script de las invitaciones
+
+La planilla de confirmaciones vive en Google, no acá. El `doGet` está en
+`apps-script/listado.gs.txt` y se pega a mano en el editor de Apps Script:
+el repo no puede tocarlo. Dos puertas, ninguna abre de más: `?clave=` (la
+lista, para el panel) y `?confirmado=NOMBRE` (sí o no, para la invitación).
+La clave vive en las propiedades del proyecto, no en el código ni en
+ninguna página: **una página pública no puede guardar un secreto.** El
+portón anterior comparaba contra un correo escrito en el propio HTML.
+
+`apps-script/` va en `.assetsignore`: no se publica.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:
@@ -310,13 +322,13 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
 - **Correr `sql/blindaje.sql`.** Hasta que no se corra, la tabla de eventos
   sigue siendo de lectura libre para cualquiera con `curl`. Comprobar
   después con `sql/blindaje_revisar.sql`: las dieciséis filas en `true`.
-- **El portón del listado de invitados no es un portón.** `pia/listado`
-  pide el correo de la clienta, pero el correo está escrito en la página y
-  la dirección del Apps Script también: cualquiera con el link se baja la
-  lista entera de invitados, con nombres y datos. Y la propia invitación la
-  descarga para comprobar si llegó una confirmación, así que la tiene a mano
-  todo el que abre el link. **Eso se arregla en el Apps Script, no acá**:
-  que el GET pida un secreto y que el POST sea lo único abierto.
+- **Pegar `apps-script/listado.gs.txt` en el Apps Script de Pía.** Es el
+  `doGet` nuevo; el `doPost` no se toca. Antes de pegarlo hay que poner
+  `CLAVE_LISTADO` en las propiedades del proyecto (está explicado adentro
+  del archivo). Hasta que no se pegue, cualquiera con el link de la
+  invitación se baja la lista entera de invitados. Las dos pantallas ya
+  están del lado nuevo: el panel pide la clave y la invitación pregunta
+  `?confirmado=NOMBRE`, que contesta sí o no.
 - **La clave maestra vive en `sessionStorage` mientras el administrador está
   adentro.** Se borra al cerrar la pestaña y la CSP le cierra la puerta de
   salida a un script inyectado, pero sigue siendo la joya: conviene entrar
