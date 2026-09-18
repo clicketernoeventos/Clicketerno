@@ -84,10 +84,15 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 crean los otros dos. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
 `sql/blindaje_revisar.sql` tienen que dar todas `true`.
 
-`blindaje.sql` cierra la lectura libre de `ce_eventos` y `ce_items`. La app
-está preparada para las dos situaciones —prueba la función nueva y, si no
-está, lee como antes— así que se puede subir la web antes o después de
-correrlo, en cualquier orden, sin ventana rota en el medio.
+**El orden entre la web y el SQL NO es libre: primero la web, después el
+SQL.** La app nueva aguanta la base vieja (prueba la función y, si no está,
+lee como antes), pero la app vieja **no** aguanta la base nueva: con
+`ce_eventos` cerrada, el que llega por el QR no tiene clave y el select
+directo le devuelve cero filas. Comprobado contra `main`: el invitado no
+puede subir, la pantalla del salón no proyecta y la cámara del rollo no
+abre. Correr `blindaje.sql` antes de publicar la web rompe la fiesta
+entera. Las dos mitades están medidas en `pruebas/seguridad.js` ("el día
+antes" y "el día después").
 
 ### Lo que está corrido en producción
 

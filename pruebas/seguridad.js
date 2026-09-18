@@ -222,6 +222,55 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
     await ctx.close();
   }
 
+  /* ── 4 bis · y DESPUÉS de correr blindaje.sql ── */
+  {
+    console.log('\n── el día después de cerrar la base ──');
+    /* El otro lado del mismo asunto, y el que importa para el orden: con la
+       base ya cerrada, el que llega por el QR no tiene clave y el select
+       directo a las tablas le devuelve CERO filas. Si la app no supiera
+       pedir por función, el invitado no podría subir, la pantalla del salón
+       no proyectaría y la cámara no abriría: la fiesta entera.
+       Por eso el orden no es libre. Primero la web, después el SQL. */
+    const EV = { codigo: 'QUI-DESP01', nombre: 'Los 15 de Delfina', fecha: '2026-08-21',
+                 tono: '#D9AE72', moderar: false, cerrado: false, camara: true,
+                 cupo_fotos: 24, revelado: false, creado: 1 };
+    const IT = [{ id: 'a1', codigo: 'QUI-DESP01', kind: 'mensaje', url: '', autor: 'Tomás',
+                  texto: 'SALUDO-DE-PRUEBA', estado: 'aprobado', ts: 1 }];
+    /* Playwright le da prioridad a la ruta registrada ÚLTIMA: el comodín va
+       primero y lo específico después. Al revés, el comodín se come todo y
+       la prueba mide cualquier cosa (me pasó escribiéndola). */
+    const cerrada = async pg => {
+      await pg.route('**/storage/v1/**', r => r.fulfill({ status: 200,
+        contentType: 'application/json', body: '[]' }));
+      await pg.route('**/rest/v1/**', r => {
+        if (/\/rpc\//.test(r.request().url()))
+          return r.fulfill({ status: 404, contentType: 'application/json',
+            body: JSON.stringify({ code: 'PGRST202', message: 'Could not find the function' }) });
+        return r.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+      });
+      await pg.route('**/rest/v1/rpc/ce_evento_publico', r => r.fulfill({ status: 200,
+        contentType: 'application/json', body: JSON.stringify(EV) }));
+      await pg.route('**/rest/v1/rpc/ce_items_de', r => r.fulfill({ status: 200,
+        contentType: 'application/json', body: JSON.stringify(IT) }));
+    };
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    for (const [que, ruta, espero] of [
+      ['el invitado puede subir',        'muro.html#subir/QUI-DESP01',    /sub[ií] al muro/i],
+      ['el álbum abre',                  'muro.html#album/QUI-DESP01',    /álbum digital/i],
+      ['la pantalla del salón proyecta', 'muro.html#pantalla/QUI-DESP01', /los 15 de delfina/i],
+      ['la cámara del rollo abre',       'rollo.html?e=QUI-DESP01',       /est[aá]s invitado/i],
+    ]) {
+      const pg = await ctx.newPage();
+      await cerrada(pg);
+      await pg.goto(`${BASE}/${ruta}`, { waitUntil: 'domcontentloaded' });
+      await pg.waitForTimeout(2200);
+      const t = await pg.locator('body').innerText();
+      afirmar(espero.test(t), 'con la base ya cerrada, ' + que, t.replace(/\s+/g, ' ').slice(0, 90));
+      await pg.close();
+    }
+    await ctx.close();
+  }
+
   /* ── 5 · la lista de invitados de una invitación ── */
   {
     console.log('\n── el panel de invitados de una invitación ──');
