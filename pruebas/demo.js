@@ -266,17 +266,43 @@ async function abrir(ctx) {
       return { src: f.getAttribute('src'), listo: v.classList.contains('listo'), dentro, cinta,
                alto: Math.round(f.getBoundingClientRect().height) };
     }));
-    afirmar(marcos.length === 2 && marcos.every(m => !m.falta && m.listo),
-      'los dos marcos de la vitrina se encienden', JSON.stringify(marcos).slice(0, 120));
+    afirmar(marcos.length === 3 && marcos.every(m => !m.falta && m.listo),
+      'los tres marcos de la vitrina se encienden (muro, rollo e invitación)',
+      JSON.stringify(marcos.map(m => m.src)));
     afirmar(marcos.every(m => !/404|File not found|Error code/i.test(m.dentro)),
       'y traen la app, no un 404',
       'ojo: /muro y /rollo son direcciones limpias; el servidor de pruebas tiene que resolverlas como Cloudflare');
     afirmar((marcos[0] || {}).dentro && /delfina/i.test(marcos[0].dentro),
       'en la notebook se ve el muro proyectado', (marcos[0] || {}).dentro);
     afirmar((marcos[1] || {}).dentro && /revel/i.test(marcos[1].dentro),
-      'en el celular se ve el álbum del rollo', (marcos[1] || {}).dentro);
+      'en el primer celular se ve el álbum del rollo', (marcos[1] || {}).dentro);
+    afirmar((marcos[2] || {}).dentro && /invitad/i.test(marcos[2].dentro),
+      'y en el segundo, una invitación', (marcos[2] || {}).dentro);
     afirmar(marcos.every(m => m.cinta === 0),
       'adentro del marco no va la cinta de demostración: es una vidriera, no algo para tocar');
+
+    /* Al tocar se agranda ACÁ, no en otra pestaña: el visitante prueba y
+       vuelve con la X sin perderse del sitio. */
+    await pg.locator('.pieza.sala').click();
+    await pg.waitForTimeout(4000);
+    const visor = await pg.evaluate(() => {
+      const v = document.getElementById('visor');
+      const f = document.getElementById('marcoV');
+      let dentro = '';
+      try { dentro = (f.contentDocument.body.innerText || '').replace(/\s+/g, ' '); } catch (e) {}
+      let salir = -1;
+      try { salir = f.contentDocument.querySelectorAll('#cinta-demo a').length; } catch (e) {}
+      return { clases: v.className, src: f.getAttribute('src'), dentro, salir };
+    });
+    afirmar(/abierto/.test(visor.clases) && /ancho/.test(visor.clases),
+      'la pantalla del salón se agranda en el visor apaisado, sin salir de la web', visor.clases);
+    afirmar(/delfina/i.test(visor.dentro), 'y adentro corre la demostración de verdad',
+      visor.dentro.slice(0, 80));
+    afirmar(visor.salir === 0,
+      'sin el "Salir" de la cinta, que metería el sitio adentro de sí mismo',
+      String(visor.salir));
+    await pg.locator('#cerrarV').click();
+    await pg.waitForTimeout(600);
     afirmar(marcos.every(m => m.alto > 200), 'y tienen alto de verdad, no cero',
       JSON.stringify(marcos.map(m => m.alto)));
     afirmar(espia.errores.length === 0, 'la página de inicio no tira errores de JavaScript',

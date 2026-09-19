@@ -825,6 +825,9 @@ const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
    como una vidriera. Sin cinta y sin botones: es una muestra de cómo se ve
    proyectado, no algo para tocar. Se toca en la demostración de verdad. */
 const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
+   sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
+const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
 const HAY_NUBE = !HAY_DEMO && !!(NUBE.url && NUBE.clave);
 
 const LISTA='ce:eventos', cacheItem={}, memoria={};
@@ -3618,7 +3621,7 @@ addEventListener('error',e=>{
       <div id="cinta-demo">
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
         <button id="deNuevo">Empezar de nuevo</button>
-        <a href="/">Salir</a>
+        ${ENMARCADO?'':'<a href="/">Salir</a>'}
       </div>`);
     const bn=document.getElementById('deNuevo');
     if(bn) bn.onclick=reiniciarDemo;

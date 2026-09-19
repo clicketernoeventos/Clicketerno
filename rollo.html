@@ -353,6 +353,9 @@ const NUBE = {
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
 /* ?marco=1: adentro de un marco en la página pública. Sin cinta. */
 const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
+   sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
+const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
 const DEMO_COD = 'DEMO-ROLLO';
 const app=document.getElementById('app');
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2061,7 +2064,8 @@ if(HAY_DEMO){
     document.body.classList.add('en-demo');
     document.body.insertAdjacentHTML('afterbegin',
       '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
-      +'<button id="deNuevo">Empezar de nuevo</button><a href="/">Salir</a></div>');
+      +'<button id="deNuevo">Empezar de nuevo</button>'
+      +(ENMARCADO?'':'<a href="/">Salir</a>')+'</div>');
   }
   /* Es un modo prueba: volver a empezar es recargar. Todo lo de la
      demostración vive en memoria, así que la recarga lo limpia entero. */
