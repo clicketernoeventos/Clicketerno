@@ -153,10 +153,14 @@ hay confirmación de primera mano.
 
 **Pero `rollo.sql` creció después de esa confirmación**, así que el archivo
 del repo tiene más cosas que la base. Falta al menos `ce_album_pagina`, que
-es la que deja bajar TODAS las fotos: sin ella el zip del organizador se
-lleva las primeras 400 y le dice **"Listo"**. `sql/rollo.sql` está hecho
-para poder correrse de nuevo encima de lo que ya hay, así que la forma de
-poner la base al día es volver a correrlo entero.
+es la que deja bajar TODAS las fotos. **Corregido (medido, no supuesto):**
+hoy, sin esa función, el zip **no miente** —no baja nada y dice "No se
+pudo: Could not find the function public.ce_album_pagina"—, porque el
+camino viejo que se llevaba 400 y decía "Listo" ya no existe: `bajarTodas`
+pide solo por `ce_album_pagina`. O sea que **"Descargar todas las fotos"
+directamente no anda** hasta correrla. `sql/rollo.sql` está hecho para
+poder correrse de nuevo encima de lo que ya hay, así que la forma de poner
+la base al día es volver a correrlo entero.
 
 **Nunca dar por puesto lo que dice este archivo: mirarlo.**
 `sql/rollo_revisar.sql` y `sql/revisar.sql` dicen qué está y qué falta, fila
@@ -164,8 +168,12 @@ por fila. Tienen que dar todas `true`.
 
 **Desde acá no se llega a la base de producción.** Cualquier cambio de SQL
 va pegado en el chat, en un bloque listo para copiar, y lo corre una
-persona en el SQL Editor. Para ver qué está puesto y qué falta:
-`sql/revisar.sql` y `sql/rollo_revisar.sql`.
+persona en el SQL Editor.
+
+Para la pregunta de todos los días —"¿puedo hacer un evento de verdad?"—
+está **`sql/estado.sql`**: una sola consulta, trece filas, dice qué está y
+qué falta y de qué archivo viene cada cosa. Los tres `*_revisar.sql` dicen
+lo mismo con mucho más detalle.
 
 ### Probar sin tocar producción
 
@@ -527,11 +535,11 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
 
 ## Pendiente, decidido y no hecho
 
-- **Correr `sql/rollo.sql` de nuevo en Supabase.** Es lo primero de la lista
-  y lo único que hoy hace que el producto mienta: sin `ce_album_pagina`,
-  "Descargar todas las fotos" le baja al organizador las primeras 400 y le
-  dice "Listo". Comprobar después con `sql/rollo_revisar.sql`: las dieciséis
-  filas tienen que dar `true`.
+- **Correr `sql/rollo.sql` de nuevo en Supabase.** Es lo primero de la
+  lista: sin `ce_album_pagina`, **"Descargar todas las fotos" no anda** —el
+  organizador aprieta y le dice "No se pudo"—, y esa es la única copia que
+  se lleva de la fiesta. No miente (eso se arregló), pero no funciona.
+  Comprobar antes y después con `sql/estado.sql`.
 - **El rollo nunca se probó en un teléfono de verdad.** Está repasado línea
   por línea y tiene 69 comprobaciones de casos feos, pero todo eso corre en
   un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
