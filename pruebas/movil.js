@@ -1,0 +1,143 @@
+/* ══════════════════════════════════════════════════════════════════
+   Que desde un teléfono se llegue a todo.
+
+   Tres cosas que no se ven desde una pantalla de escritorio y que en un
+   celular rompían el producto:
+
+     1. La cinta de la demostración es una capa fija de arriba. Las otras
+        capas fijas —la pantalla del salón, sus botones— se corrían 38px
+        a mano, un número escrito en el CSS. En cuanto la cinta envuelve
+        en dos líneas ese número miente y vuelve a taparlos. Ahora se mide.
+     2. Los mandos del salón son dos grupos fijos, uno a cada lado,
+        pensados para una pantalla ancha. En 390px se montan y "Completa"
+        se sale del borde: desde el celular no se podía cambiar de modo.
+     3. El que ya contrató no tenía por dónde entrar a crear su evento.
+        Había un enlace al panel del muro escondido en el pie, a media
+        opacidad, y del rollo no había nada.
+
+   Se mide con las cajas de verdad (getBoundingClientRect), no mirando el
+   CSS: lo que importa es si en la pantalla se pisan, no lo que dice la
+   hoja de estilos.
+   ══════════════════════════════════════════════════════════════════ */
+const { chromium } = require('playwright');
+const BASE='http://127.0.0.1:8099';
+const TELEFONO={width:390,height:844};
+const fallas=[]; const mal=m=>{fallas.push(m);console.log('  ✗ '+m);};
+const bien=m=>console.log('  ✓ '+m);
+
+/* La caja de un elemento, en píxeles de pantalla. null si no está. */
+const caja=(p,sel)=>p.evaluate(s=>{
+  const n=document.querySelector(s); if(!n) return null;
+  const r=n.getBoundingClientRect();
+  return {x:Math.round(r.left),y:Math.round(r.top),
+          x2:Math.round(r.right),y2:Math.round(r.bottom),
+          alto:Math.round(r.height),ancho:Math.round(r.width)};
+},sel);
+const seMontan=(a,b)=>!!(a&&b&&a.x<b.x2&&b.x<a.x2&&a.y<b.y2&&b.y<a.y2);
+const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
+
+(async()=>{
+  const browser=await chromium.launch();
+
+  // ═══ 1. la pantalla del salón en un teléfono ═══
+  console.log('\n─── la pantalla del salón en un celular ───');
+  {
+    const ctx=await browser.newContext({viewport:TELEFONO});
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.goto(BASE+'/muro.html?demo=1',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(3000);
+
+    const cinta=await caja(p,'#cinta-demo');
+    const modos=await caja(p,'.modos-sala');
+    const btns =await caja(p,'.botones-sala');
+    const equis=await caja(p,'#plegarCinta');
+    /* Sin esto, una pantalla que no se dibujó cortaba la suite con un
+       "return" y el proceso quedaba colgado con el navegador abierto: la
+       prueba no fallaba, se moría. Que falte es una falla más. */
+    const haySala = !!(cinta&&modos&&btns);
+    if(!haySala) mal('no se dibujó la pantalla del salón: la demostración no cae ahí');
+    if(haySala){
+    /* Lo primero: que nada de esto quede fuera de la pantalla. El ✕ de la
+       cinta se salía por el costado y no había forma de tocarlo. */
+    for(const [q,c] of [['la cinta',cinta],['el ✕ de la cinta',equis],
+                        ['las solapas de modo',modos],['los botones del salón',btns]]){
+      if(!dentro(c,TELEFONO)) mal(`${q}: se sale de la pantalla ${JSON.stringify(c)}`);
+      else bien(`${q}: entra en la pantalla`);
+    }
+    /* Y que no se pisen entre ellos. */
+    if(seMontan(cinta,modos)) mal('la cinta le tapa las solapas de modo');
+    else bien('la cinta no tapa las solapas de modo');
+    if(seMontan(cinta,btns)) mal('la cinta le tapa los botones del salón');
+    else bien('la cinta no tapa los botones del salón');
+    if(seMontan(modos,btns)) mal('las solapas de modo y los botones se montan');
+    else bien('las solapas y los botones no se montan');
+
+    /* Que se pueda cambiar de modo de verdad, no solo que se vea. */
+    await p.click('.modos-sala button[data-modo="tablero"]');
+    await p.waitForTimeout(700);
+    const enTablero=await p.evaluate(()=>!document.querySelector('#salaTablero').hidden);
+    if(!enTablero) mal('desde el celular no se puede cambiar de modo');
+    else bien('desde el celular se cambia de modo');
+
+    // ── plegar y desplegar ──
+    await p.click('#plegarCinta'); await p.waitForTimeout(500);
+    const chica=await caja(p,'#cinta-demo');
+    const modos2=await caja(p,'.modos-sala');
+    if(!chica||chica.alto>=cinta.alto) mal(`el ✕ no achica la cinta (${chica&&chica.alto}px)`);
+    else bien(`el ✕ la achica de ${cinta.alto} a ${chica.alto}px`);
+    if(!(modos2.y<modos.y)) mal('al achicar la cinta los controles no suben');
+    else bien(`los controles suben de ${modos.y} a ${modos2.y}px`);
+    /* Plegada no puede desaparecer: es la única salida al sitio. */
+    if(!chica||chica.alto<10) mal('plegada queda invisible y no hay forma de volver');
+    else bien('plegada sigue estando, para poder volver a abrirla');
+
+    await p.click('#cinta-demo'); await p.waitForTimeout(500);
+    const otra=await caja(p,'#cinta-demo');
+    if(!otra||otra.alto!==cinta.alto) mal('tocando la cinta plegada no se vuelve a abrir');
+    else bien('tocándola vuelve a abrirse');
+    if(!(await p.locator('#cinta-demo a[href="/"]').count()))
+      mal('no queda forma de salir de la demostración');
+    else bien('vuelve con el enlace de salir');
+
+    }
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
+  // ═══ 2. por dónde entra el que ya contrató ═══
+  console.log('\n─── el que ya contrató ───');
+  {
+    const ctx=await browser.newContext({viewport:TELEFONO});
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.goto(BASE+'/',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1200);
+    const hayEntrar = !!(await p.locator('#entrar').count());
+    if(!hayEntrar) mal('la página no tiene apartado para el que ya contrató');
+    else bien('la página tiene el apartado "Ya contrataste"');
+    if(hayEntrar){
+    const destinos=await p.$$eval('#entrar a[href]',ns=>ns.map(n=>n.getAttribute('href')));
+    if(!destinos.some(h=>/^muro/.test(h))) mal('no lleva al panel del muro: '+destinos.join(', '));
+    else bien('lleva al panel del muro');
+    if(!destinos.some(h=>/^rollo/.test(h))) mal('no lleva al rollo: '+destinos.join(', '));
+    else bien('lleva al rollo');
+    /* Un enlace que da 404 es peor que no tenerlo. */
+    for(const h of destinos){
+      const u=BASE+'/'+h.split('#')[0];
+      const r=await p.request.get(u);
+      if(!r.ok()) mal(`${h} da ${r.status()}`);
+      else bien(`${h} abre (${r.status()})`);
+    }
+    if(!(await p.locator('#nav .links a[href="#entrar"]').count()))
+      mal('no se llega desde el menú');
+    else bien('está en el menú de arriba');
+    }
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
+  await browser.close();
+  console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
+  process.exit(fallas.length?1:0);
+})();

@@ -3,7 +3,10 @@
 /* La base de verdad nunca devuelve más de mil filas de una: sin esto, las
    pruebas pasaban con álbumes que en producción salen cortados. */
 const TOPE = 1000;
-function crearFake(modo = 'ok') {
+/* modo: ok | fail | net | evil
+   cerrada: si la base tiene corrido blindaje.sql (que es lo que hay en
+   producción). Se puede apagar para probar el camino viejo. */
+function crearFake(modo = 'ok', cerrada = true) {
   const db = { ce_eventos: [], ce_items: [] };
   const claves = {};                 // codigo -> clave, como la tabla ce_claves
   const archivosFalsos = [];         // lo que hay en el depósito
@@ -149,12 +152,29 @@ function crearFake(modo = 'ok') {
     if (metodo === 'GET') {
       if (tabla === 'ce_items') pedidos.items++;
       let out = filas.slice();
+      /* Como la base DE VERDAD desde blindaje.sql: la regla de SELECT es
+         ce_permitido(codigo). Sin la clave del evento (o la maestra) no se
+         ve ninguna fila, se pida lo que se pida.
+         Antes el falso devolvía todo a cualquiera, así que las pruebas
+         corrían contra una base que ya no existe: cualquier pantalla que
+         dependiera de leer sin clave pasaba acá y fallaba en producción. */
+      if (cerrada) out = out.filter((f) => permitido(f.codigo, clave));
       if (q.codigo) {
         const lista = inVals(q.codigo);
         if (lista) out = out.filter((f) => lista.includes(f.codigo));
         else { const v = eqVal(q.codigo); out = out.filter((f) => f.codigo === v); }
       }
       if (q.id) { const v = eqVal(q.id); out = out.filter((f) => String(f.id) === v); }
+      /* filtros simples de PostgREST, como los usa la app. Sin esto el falso
+         devolvía TODO y una consulta angosta parecía cara: la medición de
+         cuánto baja el panel daba diez veces de más. */
+      for (const [campo, val] of Object.entries(q)) {
+        if (['select', 'order', 'limit', 'offset', 'codigo', 'id'].includes(campo)) continue;
+        if (typeof val === 'string' && val.startsWith('eq.')) {
+          const v = val.slice(3);
+          out = out.filter((f) => String(f[campo]) === v);
+        }
+      }
       if (q.order && q.order.startsWith('ts.asc')) out.sort((a, b) => a.ts - b.ts);
       if (q.order && q.order.startsWith('creado.desc')) out.sort((a, b) => (b.creado || 0) - (a.creado || 0));
       // como la base de verdad: nunca más de TOPE filas, y respeta offset
@@ -177,6 +197,11 @@ function crearFake(modo = 'ok') {
           autor: '<script>window.__XSS4=1</script>',
           texto: '"><svg onload="window.__XSS5=1">',
         }));
+      }
+      /* y devolver solo las columnas pedidas, como hace PostgREST */
+      if (q.select && q.select !== '*') {
+        const cols = q.select.split(',').map((c) => c.trim()).filter(Boolean);
+        out = out.map((f) => Object.fromEntries(cols.filter((c) => c in f).map((c) => [c, f[c]])));
       }
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(out) });
     }
@@ -235,7 +260,7 @@ function crearFake(modo = 'ok') {
   }
 
   return {
-    db, claves, pedidos,
+    db, claves, pedidos, cerrada,
     archivos: archivosFalsos,
     get subidas() { return subidas; },
     instalar: async (page) => {

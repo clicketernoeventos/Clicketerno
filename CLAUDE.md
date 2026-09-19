@@ -18,6 +18,10 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+Al que ya contrató se entra por **`/#entrar`** de la página pública: dos
+puertas, `muro#panel` y `rollo`. Es lo primero que pregunta un cliente
+cuando paga.
+
 Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
 `/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
 almacenamiento del navegador**. Es a donde apuntan los botones "Probar la
@@ -25,6 +29,53 @@ demostración" de `index.html`. Antes esos botones abrían la app de verdad:
 desde ahí se veían los eventos de todos los clientes en "Tus eventos" y el
 botón "cargar una fiesta de ejemplo" escribía un evento inventado **en la
 base de producción**. `pruebas/demo.js` cuida que no vuelva a pasar.
+
+**Cada demostración entra directo a su momento.** No al alta, no al panel:
+a lo que hay que vender.
+
+- **`/muro?demo=1` → la pantalla del salón**, ya proyectando el muro (no el
+  QR). Un botón dorado, "Probá mandar una foto", lleva al otro lado; lo que
+  mandes vuelve proyectado. Todo lo del organizador (`panel`, `evento`,
+  `cartel`, `portada`, `invitado`, `proyector`) cae en `pantalla/DEMO-FIESTA`.
+- **`/rollo?demo=1` → el álbum revelado.** El rollo de ejemplo nace
+  `revelado` y el visitante ya tiene su token con tres fotos, así que cae
+  derecho ahí sin que le preguntemos el nombre. Con **`?camara=1`** nace sin
+  revelar y se ve el otro lado: cómo el invitado gasta sus fotos sin ver
+  ninguna. `nuevo`, `ev/`, `ajustes/`, `codigo` y `clave` no existen en
+  demostración: "Crear el rollo de mi fiesta" es el formulario de alta, no
+  una prueba.
+
+La fiesta del muro va **sin moderación**: con `moderar` en true, lo que
+mandaba el visitante decía "Enviado, el organizador lo aprueba" y no se veía
+nunca, o sea que el ejemplo no mostraba nada.
+
+**Se siembra en cada carga, sin preguntar si ya estaba, y la cinta tiene
+"Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
+prueba: el que entra después no tiene que encontrarse con lo que dejó el
+anterior.
+
+**Lo que manda el visitante se borra solo a los dos minutos**
+(`VIDA_DEMO`, en `muro.html` y en `rollo.html`). La demostración ya vivía
+entera en memoria y se iba con la recarga, pero MIENTRAS la pestaña sigue
+abierta lo que dejó uno se queda: la demostración pasa de mano en mano en
+el teléfono del negocio, y el segundo cliente se encontraba proyectada la
+foto del primero. Dos minutos alcanzan para verla pasar por la pantalla
+del salón —la proyección cambia cada siete segundos— y son poco para que
+quede colgada. **Se le avisa al visitante**: que una foto desaparezca sin
+haberlo dicho parece un producto roto. En el rollo es lo mismo pero al
+revés: la foto se devuelve (`ce_devolver_foto`, el camino que ya existía
+para cuando falla la subida), así el cupo se repone y al tercer cliente la
+cámara le abre igual. **Lo sembrado no se toca**: las nueve fotos y los
+saludos del ejemplo son la fiesta.
+
+**La cinta se pliega.** Un ✕ la deja en una tira de 18px que se toca y
+vuelve. No se esconde del todo a propósito: es la única salida al sitio y
+el único "Empezar de nuevo". Su alto real vive en `--cinta` y lo mide el
+JS (ver la regla del alto escrito a mano).
+
+**Desde el álbum del rollo se pasa a la cámara y se vuelve**, con un botón
+en la cinta. Antes al otro lado solo se llegaba escribiendo `?camara=1` a
+mano, así que la mitad del producto no se mostraba nunca.
 
 **Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
 clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
@@ -204,9 +255,155 @@ las del cupo?, ¿puede ver las de otro?
   pide solo los códigos cuya clave está guardada en ese aparato
   (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
   rollo ya lo hacía bien.
+- **El servidor de pruebas tiene que parecerse al de verdad.** No servía las
+  direcciones limpias (`/muro` → `muro.html`), así que la vitrina de la
+  página de inicio daba 404 **solo en las pruebas** y se veía negra, cuando
+  en producción anda. Y antes, sin las cabeceras, la CSP no la probaba
+  nadie. Cada diferencia entre los dos esconde justo lo que hay que ver.
+- **Una CSP apaga cosas sin decir nada.** `connect-src` no tenía
+  `netlify.app` y la galería de Trabajos le pregunta a cada invitación si
+  responde ANTES de meterla en un marco: la pregunta se bloqueaba, la
+  galería las daba por muertas y no se veía **ninguna** invitación en vivo.
+  Sin un solo error a la vista. Lo que la CSP bloquea hay que ir a mirarlo.
+- **Dos botones fijos, cada uno con su `right` a ojo, se montan.** En la
+  pantalla del salón "Pantalla completa" y el de al lado se pisaban apenas
+  el segundo cambiaba de texto. Van en una fila (`.botones-sala`) con `gap`,
+  no con posiciones calculadas a mano.
+- **El cuerpo del archivo no es una función.** Un `return` suelto en el
+  bloque de arranque de `rollo.html` es un error de sintaxis y la app no
+  arranca. Y llamar ahí a algo declarado más abajo con `const` tira "Cannot
+  access before initialization": ese bloque corre antes.
+- **`position:fixed` no lo corre el padding del body.** La cinta de la
+  demostración empuja la página con `padding-top`, pero la pantalla del
+  salón y el visor del álbum están fijos: la cinta les tapaba los botones de
+  modo y el de salir, y desde la demostración no se llegaba al muro. Cada
+  capa fija necesita su propio `top` en `body.en-demo`.
 - **Nombres de clase repetidos.** `.tapa` y `solapa()` ya existían y fueron
   pisados: una capa se comía los clics, la otra tiraba "Algo se cortó".
-  Antes de inventar un nombre, `grep`.
+  Antes de inventar un nombre, `grep`. **Volvió a pasar**: un parámetro
+  `solapa` en `vEvento` tapó la función `solapa()` y el panel entero moría
+  con "solapa is not a function". El parámetro se llama `abrirEn`. No alcanza
+  con tener la regla escrita: hay que hacer el `grep`.
+- **Guardar no puede moverle el piso al organizador.** Cada botón de Ajustes
+  redibujaba con `vEvento(codigo)`, que vuelve a la solapa Compartir y arriba
+  de todo: guardabas el hashtag y tenías que volver a bajar hasta las
+  consignas. Seis botones hacían lo mismo. Ahora se redibuja con
+  `redibujar(codigo)`, que conserva la solapa y el punto de la página.
+- **Un refresco automático se paga por hora.** El primer sondeo del panel se
+  bajaba el índice ENTERO cada ocho segundos: con 1500 recuerdos son unos
+  130 MB por hora, en el teléfono del organizador y con el wifi del salón.
+  Ahora pregunta solo por los que esperan y solo su `id`. Medido, no
+  estimado: `pruebas/recorrido.js` falla si se vuelve al sondeo caro.
+  **La pantalla del salón sigue haciendo lo mismo**: 1131 pedidos y 132 MB
+  por hora con 1500 recuerdos. No tiene fugas (DOM y memoria quedan planos
+  toda la noche) pero es plata. Está sin resolver a propósito: tocar el
+  refresco de la proyección en plena fiesta es lo más delicado que hay.
+- **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
+  pantalla del salón se refresca cada siete segundos; el panel del
+  organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
+  las fotos se apilaban sin aparecer, y con la moderación encendida eso
+  quiere decir que no se proyecta nada: había que salir y volver a entrar, y
+  nadie lo sabe. Ahora el panel se entera solo.
+
+- **Un alto escrito a mano en el CSS miente en cuanto el contenido
+  envuelve.** Las capas fijas se corrían `38px` —lo que mide la cinta de
+  la demostración— con el número puesto a mano en seis reglas. En un
+  teléfono la cinta no entra en una línea, envuelve, mide 60 u 88, y
+  volvió a tapar exactamente lo que ese número venía a destapar: el ✕ y
+  "Salir" quedaban **fuera de la pantalla**, sin forma de cerrarla ni de
+  volver al sitio. Ahora el JS mide la cinta y la pone en `--cinta`, y
+  todo lo fijo se corre con `calc(var(--cinta) + …)`. Lo mismo la fila de
+  modos de la sala, en `--modos`. Si un número de esos aparece dos veces
+  en el CSS, es un número que va a mentir.
+- **Dos grupos fijos, uno a cada lado, no entran en un celular.** La
+  pantalla del salón tiene las solapas de modo a la izquierda y los
+  botones a la derecha, las dos capas `position:fixed` y pensadas para un
+  proyector. En 390px se montan y "Completa" se sale del borde: **desde el
+  teléfono no se podía cambiar de modo**. Abajo de 640px van uno sobre el
+  otro y en todo el ancho. Y pasa con demostración y sin ella: el
+  organizador abre la pantalla del salón desde su celular para probarla.
+- **La demostración también se mira desde un teléfono.** Todo lo de
+  arriba se ve perfecto en un escritorio. `pruebas/movil.js` y
+  `pruebas/rollo_cinta.js` miden las cajas de verdad
+  (`getBoundingClientRect`) en 390×844: que nada se salga de la pantalla y
+  que nada se monte con nada. Mirar el CSS no alcanza.
+- **Al que ya contrató hay que decirle por dónde entra.** La página
+  pública tenía tres botones de "Probar la demostración" y un enlace al
+  panel del muro escondido en el pie a media opacidad; del rollo, nada. El
+  cliente que ya pagó no tenía a dónde ir a crear su evento. Ahora está el
+  apartado **`#entrar`** ("Ya contrataste"), con su entrada en el menú.
+
+## Los 90 días
+
+Un álbum que vive para siempre es un depósito que crece para siempre, y lo
+paga el negocio todos los meses. Cada evento nace con `vence` a **90 días
+de la fecha de la fiesta** (`DIAS_QUE_VIVE`, escrito en `muro.html` y en
+`rollo.html`: si cambia, cambia en los dos).
+
+Son tres piezas y las tres hacen falta:
+
+- **El aviso**, 15 días antes (`AVISAR_DESDE`). Le aparece al organizador
+  arriba de todo en Compartir (muro) y en el panel del rollo, con el botón
+  de bajarse el álbum al lado. Cuando ya venció cambia de tono y lo dice.
+  Avisar sin dar la salida no sirve; borrar sin avisar antes es perderle
+  las fotos a un cliente.
+- **La limpieza**, `/muro#limpieza`, **solo con la clave de
+  administrador**: lista TODOS los eventos ordenados por lo que les queda
+  —vencidos, por vencer, el resto— y borra los vencidos con sus archivos.
+  Un organizador común no la ve ni llega escribiendo la dirección.
+- **El borrado**, que es `borrarEvento()`, el mismo de la zona de peligro:
+  filas, archivos de `ce-medios` y fotos de `ce-rollos`. En tanda va de a
+  uno y **no corta si uno falla**: al final dice cuántos pudo y cuáles no.
+  Decir "Listo" cuando quedó algo sin borrar es la mentira de siempre.
+
+**Los días se cuentan en días de calendario de acá, no en horas ni en
+UTC.** Restando milisegundos, "vence hoy" daba "queda un día" y "faltan
+nueve" daba diez; y con `toISOString` de por medio, pasadas las nueve de la
+noche en Rosario ya era mañana.
+
+**Los eventos de antes no tienen `vence` guardado**, así que las dos
+puntas lo calculan igual desde la fecha (`m.vence||venceDe(m.fecha)`). Si
+el aviso usara solo la columna y la limpieza la calculara, esas fiestas se
+borrarían a los 90 días sin que el organizador hubiera visto un solo
+aviso.
+
+**La lista del administrador se pide de a tandas.** PostgREST corta en 1000
+filas sin avisar: con la tabla pedida de un saque, el evento 1001 no existe
+para el administrador —ni en el panel ni en la limpieza— y sus fotos se
+quedan en el depósito para siempre. El orden lleva desempate por `codigo`:
+sin él, dos eventos con el mismo `creado` pueden salir en distinto orden en
+cada tanda, y con `offset` eso es una fila repetida y otra que no aparece
+nunca.
+
+**No hay nada automático del lado del servidor.** La limpieza es a mano,
+una vez por mes. Si algún día se automatiza, va como tarea programada en la
+base, no en el navegador de nadie.
+
+Lo miden `pruebas/vencimiento.js` (el aviso, quién entra a la limpieza, que
+borre los vencidos y solo esos, que no diga "Listo" si la base se negó, y
+el corte de las mil filas) y `pruebas/rollo_vence.js` (el aviso del rollo).
+
+## Los dos recorridos
+
+`pruebas/recorrido.js` y `pruebas/rollo_recorrido.js` hacen lo que hace una
+persona en una noche, de punta a punta: crear el evento, configurarlo, que
+un invitado mande algo desde otro teléfono, que la pantalla del salón no lo
+proyecte porque espera aprobación, que el organizador se entere solo,
+apruebe, y recién ahí aparezca. Las demás suites miran pantallas sueltas y
+casos feos; estas miran si el producto funciona.
+
+**El falso tiene que contestar como PostgREST, no "más o menos".** Ignoraba
+`select` y los filtros `campo=eq.valor`: devolvía la fila entera siempre. Con
+eso, una consulta angosta parecía diez veces más cara de lo que es y una
+comparación entre lo dibujado y lo consultado no coincidía nunca. Medir
+contra un falso mentiroso es peor que no medir.
+
+**El Supabase falso está BLINDADO por defecto** (`crearFake(modo, cerrada)`),
+igual que producción: sin la clave del evento no devuelve ni una fila. Antes
+estaba abierto y las suites corrían contra una base que ya no existe —
+cualquier pantalla que dependiera de leer sin clave pasaba en las pruebas y
+fallaba en la fiesta. Para probar el camino viejo a propósito:
+`crearFake('ok', false)`.
 
 ## Reglas para las pruebas
 
@@ -230,6 +427,20 @@ las del cupo?, ¿puede ver las de otro?
   corredor avisa solo cuando **cambian**. No subir ese número para que deje
   de molestar: mirar qué apareció. Los modos `ok` y `evil` tienen que dar
   cero, siempre.
+- **Recargar la página borra la evidencia.** La prueba del rollo que se
+  vuelve a llenar sacaba una foto, adelantaba el reloj y **recargaba**
+  para leer el contador. Pero la demostración se resiembra en cada carga,
+  así que el cupo volvía entero con arreglo y sin arreglo: pasaba de los
+  dos lados. Se mide sacando una SEGUNDA foto sin recargar: si la primera
+  se devolvió, el contador vuelve a marcar lo mismo; si no, uno menos.
+- **Una pestaña que queda abierta le arruina la siguiente.** La primera
+  página de `rollo_cinta.js` se dejaba abierta hasta el final, con la
+  cámara y los sondeos andando. La segunda —que usa el reloj falso de
+  Playwright— no terminaba de cargar nunca: tres corridas colgadas en el
+  mismo punto. Cerrar el contexto cuando se termina de usar.
+- **Con el reloj falso puesto, `goto` con `waitUntil:'domcontentloaded'`
+  se cuelga**; `waitUntil:'commit'` y después `waitForLoadState` vuelve en
+  60 ms. Medido, no supuesto.
 - **Cuidado al comparar contra `main`.** `git worktree` te da los archivos
   de main, pero las pruebas apuntan a un puerto fijo: si el servidor
   levantado sirve tu copia de trabajo, estás corriendo las pruebas de main
@@ -279,6 +490,24 @@ portón anterior comparaba contra un correo escrito en el propio HTML.
 
 `apps-script/` va en `.assetsignore`: no se publica.
 
+## La app andando adentro de la web
+
+`index.html` tiene el apartado **`#app`**: una notebook con el muro
+proyectándose y un celular con el álbum del rollo, los dos corriendo de
+verdad en un marco, no capturas. Reusa la misma maquinaria que la galería
+de Trabajos (`.vivo`, con `IntersectionObserver` y un dibujo de reserva
+debajo por si el marco no carga); ahora `data-ancho` dice a qué ancho se
+dibuja adentro (1200 la pantalla del salón, 390 el celular) en vez de estar
+clavado en 390.
+
+Las apps entienden **`?marco=1`**: sin cinta de demostración y sin los
+botones de la pantalla del salón. Es una vidriera, no algo para tocar: se
+toca y se abre la demostración de verdad en otra pestaña.
+
+El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
+igual que las invitaciones. **Sin precios**, por decisión del dueño: el
+presupuesto se cierra hablando.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:
@@ -316,10 +545,15 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
   la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que
   lo pida él.
-- **Dónde viven las fotos a la larga.** Una foto pesa ~441 KB: un evento de
-  100 invitados con 24 fotos son ~1 GB. **El plan gratis de Supabase no
-  aguanta un solo casamiento.** Hay que decidir entre Supabase Pro y
-  Cloudflare R2, y fijar hasta cuándo se guardan.
+- **Contratar Supabase Pro.** Decidido por el dueño: las fotos se quedan
+  donde están, no se mudan a R2. Una foto pesa ~441 KB y un evento de 100
+  invitados con 24 fotos son ~1 GB: **el plan gratis (1 GB) no aguanta un
+  solo casamiento.** Pro son USD 25 al mes con 100 GB, y con los 90 días
+  puestos el depósito deja de crecer para siempre. Hasta que no se
+  contrate, el segundo casamiento del mes falla al subir.
+- **Pasar la limpieza a mano, una vez por mes.** `/muro#limpieza`, con la
+  clave de administrador. Es lo que ejecuta los 90 días: hoy no hay nada
+  automático del lado del servidor.
 - **Miniaturas.** El álbum baja las fotos enteras para mostrarlas chiquitas;
   generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son

@@ -219,6 +219,11 @@ option{background:#0B0A08}
 .cuenta small{font-family:Jost;font-size:9.5px;letter-spacing:.28em;color:var(--mute);margin-left:10px;text-transform:uppercase}
 .qr-sala{background:#fff;padding:6px;line-height:0}
 .qr-sala img,.qr-sala canvas{width:56px;height:56px;display:block}
+.botones-sala{position:fixed;top:18px;right:18px;z-index:60;display:flex;gap:8px;flex-wrap:wrap;
+  justify-content:flex-end;max-width:min(60vw,520px)}
+.botones-sala .dejar{position:static;top:auto;right:auto}
+.dejar.llamada{background:linear-gradient(135deg,var(--oro),var(--champan));color:#2A1B08;
+  border-color:transparent;font-weight:500}
 .dejar{position:fixed;top:18px;right:18px;z-index:60;border:1px solid var(--hilo);border-radius:2px;
   padding:9px 18px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
 .aguarda{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:34px}
@@ -236,6 +241,12 @@ option{background:#0B0A08}
 .qr-caja{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
 .qr-caja .qr{background:#fff;padding:11px;line-height:0}
 .qr-caja .qr img,.qr-caja .qr canvas{width:106px;height:106px;display:block}
+/* el aviso de que el álbum se borra pronto */
+.aviso-vence{border-color:var(--hilo2);
+  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+.aviso-vence.tarde{border-color:rgba(255,123,148,.5);
+  background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
+.aviso-vence.tarde .titu-s{color:#FF7B94}
 .llave{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 0;border-bottom:1px solid var(--gris)}
 .llave p{font-size:15px}
 .llave small{display:block;color:var(--mute);font-size:12.5px;margin-top:5px;line-height:1.6}
@@ -374,14 +385,49 @@ option{background:#0B0A08}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
 /* ── cinta de la demostración ── */
-#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;height:38px;display:flex;
-  align-items:center;justify-content:center;gap:14px;padding:0 14px;
+/* Alto AUTOMÁTICO y medido, no clavado en 38px: en un teléfono los
+   botones no entran en una línea, y con alto fijo lo que sobra se sale de
+   la pantalla —el ✕ y "Salir" quedaban afuera, sin forma de llegar—.
+   Envuelve, y el JS pone el alto real en --cinta para que las capas fijas
+   se corran lo que haga falta. */
+#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;min-height:38px;display:flex;
+  flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:6px 12px;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
   color:#2A1B08;font-size:11.5px;letter-spacing:.1em;text-align:center}
 #cinta-demo b{font-weight:500}
 #cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
-body.en-demo{padding-top:38px}
-body.en-demo .cabecera{top:38px}
+#cinta-demo button{font:500 11px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:#2A1B08;background:rgba(42,27,8,.12);border:1px solid rgba(42,27,8,.3);
+  border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:none}
+#cinta-demo button:hover{background:rgba(42,27,8,.2)}
+body.en-demo{--cinta:38px;padding-top:var(--cinta)}
+body.en-demo .cabecera{top:var(--cinta)}
+/* La pantalla del salón y el álbum a pantalla completa se dibujan con
+   position:fixed, así que el padding del body no los corre: la cinta les
+   tapaba los botones de modo y el de salir, y no se podía llegar al muro. */
+body.en-demo .sala,
+body.en-demo .visor,
+body.en-demo .capa{top:var(--cinta)}
+body.en-demo .modos-sala{top:calc(var(--cinta) + 16px)}
+body.en-demo .botones-sala,
+body.en-demo .dejar{top:calc(var(--cinta) + 18px)}
+@media (max-width:640px){
+  body.en-demo .botones-sala{top:calc(var(--cinta) + 16px + var(--modos, 38px) + 8px)}
+}
+/* ── la cinta se pliega ──
+   En un teléfono, 38px fijos arriba le comen la pantalla a la proyección:
+   los botones de modo y el de salir quedan apretados contra el borde. Con
+   el ✕ la cinta queda en una tira de 18px que se toca y vuelve, así el que
+   está mirando la demostración no pierde "Salir" ni "Empezar de nuevo"
+   (que es lo que pasaría si la escondiéramos del todo). */
+#cinta-demo .plegar{padding:5px 9px;border-radius:50%;line-height:1;font-size:12px;
+  letter-spacing:0;border-color:transparent;background:transparent}
+#cinta-demo .mini{display:none;font-size:9px;letter-spacing:.26em;
+  text-transform:uppercase;opacity:.9}
+body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
+  flex-wrap:nowrap;cursor:pointer}
+body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
+body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 @media (max-width:420px){
   #cinta-demo{font-size:10.5px;gap:9px}
   #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -629,6 +675,21 @@ body.en-demo .cabecera{top:38px}
   text-transform:uppercase;color:var(--mute);transition:.3s var(--e)}
 .modos-sala button[aria-pressed=true]{color:#0A0806;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
+/* ── los mandos del salón en un teléfono ──
+   Son cuatro solapas a la izquierda y dos botones a la derecha, los dos
+   grupos fijos y calculados para una pantalla ancha. En un celular no
+   entran: "Completa" se salía del borde y el botón dorado se le montaba
+   encima, así que desde el teléfono no se podía cambiar de modo. Uno
+   arriba del otro y en todo el ancho, que es lo que hay. Pasa con
+   demostración y sin ella: la pantalla del salón se abre igual desde un
+   celular cuando el organizador la está probando. */
+@media (max-width:640px){
+  .modos-sala{left:8px;right:8px;justify-content:center}
+  .modos-sala button{padding:7px 10px;font-size:9px;letter-spacing:.14em}
+  .botones-sala{left:8px;right:8px;justify-content:center;max-width:none;
+    top:calc(16px + var(--modos, 38px) + 8px)}
+  .botones-sala .dejar,.dejar{padding:8px 13px;font-size:9.5px;letter-spacing:.16em}
+}
 
 /* cuenta regresiva hasta que se abre el muro */
 .cuenta-lanza{display:flex;gap:clamp(8px,1vw,16px);justify-content:center;flex-wrap:wrap}
@@ -675,6 +736,20 @@ body.en-demo .cabecera{top:38px}
 .btn-peligro.firme:disabled{background:rgba(196,86,78,.25);color:rgba(255,255,255,.5)}
 
 /* marcas */
+/* la pantalla de limpieza: qué está por vencer y qué ya venció */
+.fila-vence{display:flex;align-items:center;gap:13px;padding:15px 0;border-bottom:1px solid var(--gris)}
+.fila-vence:last-child{border-bottom:0}
+.fila-vence .quien{flex:1;min-width:0}
+.fila-vence .quien b{display:block;font-weight:400;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fila-vence .quien span{display:block;font-size:10.5px;letter-spacing:.18em;color:var(--mute);margin-top:5px;text-transform:uppercase}
+.pastilla-d{flex:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--gris);color:var(--mute);white-space:nowrap}
+.pastilla-d.pronto{border-color:var(--hilo2);color:var(--oro)}
+.pastilla-d.ya{border-color:rgba(196,86,78,.55);color:#F3A9A2}
+.btn-fila{flex:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 11px;
+  border:1px solid rgba(196,86,78,.5);color:#F3A9A2;border-radius:2px;transition:.25s var(--e)}
+.btn-fila:hover{background:rgba(196,86,78,.12)}
+.btn-fila:disabled{opacity:.4;cursor:not-allowed}
+.btn-fila.firme{background:#C4564E;border-color:#C4564E;color:#fff}
 .sello-admin{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--hilo2);
   border-radius:999px;padding:6px 13px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--oro);background:rgba(217,174,114,.08)}
@@ -803,6 +878,13 @@ const NUBE = {
    donde se veían los eventos de los clientes y el botón de "cargar una
    fiesta de ejemplo" escribía en la base de producción. */
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+/* ?marco=1: la demostración va adentro de un marco en la página pública,
+   como una vidriera. Sin cinta y sin botones: es una muestra de cómo se ve
+   proyectado, no algo para tocar. Se toca en la demostración de verdad. */
+const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
+   sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
+const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
 const HAY_NUBE = !HAY_DEMO && !!(NUBE.url && NUBE.clave);
 
 const LISTA='ce:eventos', cacheItem={}, memoria={};
@@ -1042,6 +1124,34 @@ async function subirArchivo(blob, base, alAvanzar){
   return SB.archivo(`${base}.${EXT[blob.type]||'jpg'}`, blob, alAvanzar);
 }
 
+/* ══════════ lo que manda el visitante en la demostración se borra solo ══════════
+   La demostración ya vive entera en memoria: se recarga y no queda nada,
+   ni en la base ni en el navegador. Pero MIENTRAS la pestaña está abierta
+   lo que mandó uno se queda, y la demostración se muestra en el teléfono
+   del negocio, de cliente en cliente: el segundo se encontraba la foto que
+   dejó el primero proyectada entre las de ejemplo.
+   Dos minutos alcanzan para verla pasar por la pantalla del salón —la
+   proyección cambia cada siete segundos— y son poco para que quede
+   colgada. Solo se le pone plazo a lo que manda el visitante: las nueve
+   fotos y los saludos del ejemplo son la fiesta y no se tocan. */
+const VIDA_DEMO = 2*60*1000;
+async function borrarDeLaDemo(codigo, id){
+  try{
+    const idx = await leerLocal(kIndex(codigo), []);
+    const quedan = idx.filter(i=>i.id!==id);
+    if(quedan.length===idx.length) return;      // ya no estaba
+    await local.set(kIndex(codigo), quedan);
+    delete memoria[kItem(codigo,id)];
+    delete cacheItem[codigo+id];
+  }catch(e){ console.warn('no pude limpiar la demostración',e); }
+}
+/* El reloj arranca cuando se manda, no cuando se mira: si el visitante se
+   queda en la pantalla del salón, igual desaparece a los dos minutos. */
+function borrarseSolo(codigo, id){
+  if(!HAY_DEMO) return;
+  setTimeout(()=>borrarDeLaDemo(codigo,id), VIDA_DEMO);
+}
+
 /* ── funciones que usa toda la app (misma firma, con o sin nube) ── */
 /* SOLO los eventos de este aparato.
    Antes se pedían todos, sin filtro: el panel decía "Tus eventos" y le
@@ -1049,11 +1159,30 @@ async function subirArchivo(blob, base, alAvanzar){
    nombre y fecha. Desde la web pública había un botón que llevaba derecho
    ahí. Cuáles son "los míos" lo dicen las claves guardadas en este
    navegador, que es lo mismo que ya hacía el rollo. */
-const CAMPOS_LISTA='codigo,nombre,fecha,portada,creado&order=creado.desc.nullslast';
+/* El desempate por codigo no es decoración: sin él, dos eventos creados
+   en el mismo milisegundo (o los dos sin 'creado') pueden salir en
+   distinto orden en cada tanda, y con offset eso es una fila repetida y
+   otra que no aparece nunca. */
+const CAMPOS_LISTA='codigo,nombre,fecha,portada,vence,creado&order=creado.desc.nullslast,codigo.asc';
 async function eventos(){
   if(!HAY_NUBE) return leerLocal(LISTA,[]);
   try{
-    if(esAdmin) return await SB.ver('ce_eventos','select='+CAMPOS_LISTA, claveMaestra);
+    if(esAdmin){
+      /* De a tandas. PostgREST corta en 1000 filas y no avisa: con la
+         tabla entera pedida de un saque, el evento 1001 no existe para el
+         administrador —ni en la lista ni en la limpieza—, así que sus
+         fotos se quedarían en el depósito para siempre. */
+      const POR_TANDA=500; let todo=[], desde=0;
+      for(let v=0; v<60; v++){
+        const tanda=await SB.ver('ce_eventos',
+          `select=${CAMPOS_LISTA}&offset=${desde}&limit=${POR_TANDA}`, claveMaestra);
+        if(!tanda||!tanda.length) break;
+        todo=todo.concat(tanda);
+        if(tanda.length<POR_TANDA) break;
+        desde+=POR_TANDA;
+      }
+      return todo;
+    }
     const mios=Object.keys(clavesGuardadas());
     if(!mios.length) return [];
     /* Uno por uno, cada cual con SU clave. En un pedido solo va una clave
@@ -1406,10 +1535,11 @@ const IC={
 };
 
 /* solapas con barra inferior: las usan el panel y el álbum */
-function activarSolapas(inicial){
+function activarSolapas(inicial, saltarArriba){
   const botones=[...app.querySelectorAll('[data-sol]')];
   if(!botones.length) return;
   const paneles=botones.map(b=>document.getElementById(b.dataset.sol)).filter(Boolean);
+  let primera=true;
   const mostrar=id=>{
     botones.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.sol===id)));
     paneles.forEach(s=>{
@@ -1417,7 +1547,10 @@ function activarSolapas(inicial){
       s.hidden=!activo;
       if(activo){ s.style.animation='none'; void s.offsetWidth; s.style.animation=''; }
     });
-    window.scrollTo({top:0,behavior:'smooth'});
+    /* Al cambiar de solapa sí se sube; al REDIBUJAR la misma (después de
+       guardar), no: el organizador estaba a mitad de una pantalla larga. */
+    if(!(primera && saltarArriba===false)) window.scrollTo({top:0,behavior:'smooth'});
+    primera=false;
   };
   botones.forEach(b=>b.onclick=()=>mostrar(b.dataset.sol));
   mostrar(inicial&&paneles.some(s=>s.id===inicial)?inicial:botones[0].dataset.sol);
@@ -1538,6 +1671,30 @@ let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 const TOPE_PUBLI=60;
 const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
+/* Cuánto vive el álbum después de la fiesta. Una foto pesa como 441 KB y
+   un casamiento de cien invitados es un giga: si no vence nunca, la cuenta
+   del depósito crece todos los meses y no para. Noventa días alcanzan de
+   sobra para que todos las vean y el organizador se baje su copia.
+   Está acá y en rollo.html; si cambia, cambia en los dos. */
+const DIAS_QUE_VIVE=90;
+const AVISAR_DESDE=15;          // cuántos días antes se le avisa
+const venceDe=fecha=>{
+  const v=new Date(fecha); if(isNaN(v)) return '';
+  v.setDate(v.getDate()+DIAS_QUE_VIVE);
+  return v.toISOString().slice(0,10);
+};
+/* Días de CALENDARIO que faltan. 0 = se borra hoy, negativo = ya venció.
+   En días de acá, no en horas ni en UTC: restando milisegundos, "vence
+   hoy" daba "queda un día" y "faltan nueve" daba diez. Y con toISOString
+   de por medio, después de las nueve de la noche ya era mañana. */
+const diasParaVencer=vence=>{
+  const p=String(vence||'').slice(0,10).split('-');
+  if(p.length!==3) return null;
+  const v=new Date(+p[0], +p[1]-1, +p[2]);
+  if(isNaN(v)) return null;
+  const h=new Date(), hoy0=new Date(h.getFullYear(),h.getMonth(),h.getDate());
+  return Math.round((v-hoy0)/86400000);
+};
 /* El código del evento ES la llave: con él se sube al muro y se abre el
    álbum. Estaba saliendo de Math.random().toString(16).slice(2,8), que
    tiene tres problemas: no es azar de verdad (se puede predecir viendo
@@ -1557,10 +1714,11 @@ const nuevoCodigo=tipo=>{
    caracteres al azar la chance es ínfima. */
 async function codigoLibre(codigo){
   if(!HAY_NUBE) return !(await leerLocal(kMeta(codigo), null));
-  try{
-    const r=await SB.ver('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}&select=codigo`);
-    return !(r&&r.length);
-  }catch(e){ return true; }
+  /* Por función, no por la tabla: desde blindaje.sql un select sin clave
+     devuelve cero filas SIEMPRE, así que esto contestaba "libre" aunque el
+     código fuera de otro. La comprobación existía y no comprobaba nada. */
+  try{ return !(await eventoPorCodigo(codigo)); }
+  catch(e){ return true; }
 }
 const CONSIGNAS=[
   'Una foto con quien menos conocés de la fiesta',
@@ -1707,9 +1865,12 @@ async function sembrar(){
     /* La base exige clave para dar de alta un evento. Si ya la tenemos
        guardada de otra vez la reusamos; si no, una nueva. */
     const claveEv=claveDe(codigo)||nuevaClave();
+    /* Sin moderación: en la demostración lo que manda el visitante tiene que
+       aparecer EN LA PANTALLA, que es todo el punto. Con moderar en true le
+       decía "Enviado, el organizador lo aprueba" y no se veía nunca. */
     const datos={codigo,nombre:'Los 15 de Delfina',fecha:enDias(12),tipo:'XV',tono:'#D9AE72',
       hashtag:'#Delfina15',lugar:'Salón Las Acacias · Rosario',
-      moderar:true,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
+      moderar:false,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
     /* En la nube las fotos van al depósito de archivos: antes se guardaban
        los items sin archivo y el muro quedaba con fotos vacías. */
     if(HAY_NUBE) datos.portadaBlob=await dataABlob(tapa);
@@ -1726,12 +1887,11 @@ async function sembrar(){
     for(let i=0;i<frases.length;i++)
       await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
         ts:Date.now()-(frases.length-i)*30000,estado:'aprobado'});
-    /* dos esperando aprobación, para que se vea moderar con algo adentro */
-    if(HAY_DEMO) for(let i=0;i<2;i++)
-      await sumar(codigo,{id:'p'+i,kind:'foto',data:fotoDemo(20+i),blob:null,
-        autor:gente[9+i],texto:'',ts:Date.now()-i*9000,estado:'pendiente'});
-    recado('Listo · fiesta "Sana" cargada');
-    ir('evento/'+codigo);
+    recado(HAY_DEMO?'Ejemplo listo':'Listo · fiesta cargada');
+    /* En demostración se entra por donde entra un invitado, no por el panel
+       del organizador: lo que se quiere mostrar es cómo se deja una foto o
+       un saludo y aparece en la pantalla del salón. */
+    ir(HAY_DEMO?'pantalla/'+codigo:'evento/'+codigo);
   }catch(e){
     console.error('sembrar',e);
     recado('No pude cargar la fiesta de ejemplo: '+motivo(e));
@@ -1784,7 +1944,7 @@ async function vAcceso(){
         text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>`}
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   const campo=app.querySelector('#pin');
   campo.focus();
   const probar=async()=>{
@@ -1838,8 +1998,12 @@ async function vPanel(){
     <h1>Tus eventos</h1>
     <button class="volver">Salir</button>
   </header>
-  ${esAdmin?`<div style="max-width:620px;margin:0 auto;padding:18px 26px 0">
-    <span class="sello-admin">${ESTRELLA} Modo administrador</span></div>`:''}
+  ${esAdmin?`<div style="max-width:620px;margin:0 auto;padding:18px 26px 0;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <span class="sello-admin">${ESTRELLA} Modo administrador</span>
+    <button class="hilo-btn" data-ir="limpieza" style="width:auto;padding:9px 16px;font-size:11px">Limpieza${
+      (()=>{ const n=evs.filter(e=>{const d=diasParaVencer(e.vence||venceDe(e.fecha)); return d!==null&&d<0;}).length;
+             return n?` · ${n} vencido${n===1?'':'s'}`:''; })()}</button></div>`:''}
   <div class="wrap-inv" style="padding-bottom:40px">
     ${evs.length
       ? `<div class="seccion-a" style="margin-top:0"><h2>Guardados</h2><span>${evs.length}</span></div>
@@ -1856,8 +2020,9 @@ async function vPanel(){
       <button class="oro-btn" id="crear" style="margin-top:12px">Crear evento</button>
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   contador('#n');
+  app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
     let t=null;
@@ -1883,7 +2048,6 @@ async function vPanel(){
     if(!nombre) return recado('Falta el nombre del evento');
     const tipo=app.querySelector('#t').value;
     const fEv=app.querySelector('#f').value||hoy();
-    const v=new Date(fEv); v.setMonth(v.getMonth()+12);
     const btn=app.querySelector('#crear');
     if(btn.disabled) return;               // evita crear dos veces con doble toque
     btn.disabled=true; btn.textContent='Creando…';
@@ -1891,7 +2055,7 @@ async function vPanel(){
     try{
       let codigo=nuevoCodigo(tipo);
       for(let i=0;i<5&&!(await codigoLibre(codigo));i++) codigo=nuevoCodigo(tipo);
-      await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:v.toISOString().slice(0,10),
+      await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:venceDe(fEv),
         moderar:false,cerrado:false,portada:null,creado:Date.now(),claveNueva:claveEv});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
       guardarClaveDe(codigo,claveEv);
@@ -1904,6 +2068,146 @@ async function vPanel(){
       recado('No se pudo crear el evento: '+motivo(e));
     }
   };
+}
+
+/* ══════════ limpieza: los 90 días, ejecutados ══════════
+   El aviso que ve el organizador en Compartir le dice que el álbum se
+   borra, pero un aviso no borra nada: alguien tiene que pasar el trapo. Sin
+   esta pantalla, la promesa de los 90 días era una frase en la interfaz y
+   el depósito seguía creciendo para siempre, que es justo lo que se paga.
+   Es del administrador porque mira TODOS los eventos, no los de un
+   teléfono. No hay tarea automática en el servidor: esto es el barrido, y
+   se hace a mano una vez por mes mirando la lista. */
+const estadoVence=e=>{
+  const vence=e.vence||venceDe(e.fecha)||'';
+  return {...e, vence, d:diasParaVencer(vence)};
+};
+function pastillaVence(d){
+  if(d===null) return `<span class="pastilla-d">sin fecha</span>`;
+  if(d<0)  return `<span class="pastilla-d ya">venció hace ${-d} día${d===-1?'':'s'}</span>`;
+  if(d===0) return `<span class="pastilla-d ya">vence hoy</span>`;
+  if(d<=AVISAR_DESDE) return `<span class="pastilla-d pronto">${d} día${d===1?'':'s'}</span>`;
+  return `<span class="pastilla-d">${d} días</span>`;
+}
+const filaVence=(e,borrable)=>`
+  <div class="fila-vence" data-fila="${esc(e.codigo)}">
+    <span class="quien"><b>${esc(e.nombre)}</b>
+      <span>${esc(e.codigo)} · ${e.vence?'hasta '+bonito(e.vence):'sin vencimiento'}</span></span>
+    ${pastillaVence(e.d)}
+    ${borrable?`<button class="btn-fila" data-borra="${esc(e.codigo)}"
+      data-nom="${esc(e.nombre)}">Borrar</button>`:''}
+  </div>`;
+
+async function vLimpieza(){
+  parar(); tono();
+  /* Sin la clave maestra esta pantalla no tiene nada que mostrar: eventos()
+     devolvería solo los de este teléfono y "borrá los vencidos de todos"
+     sería mentira. */
+  if(!esAdmin) return ir('panel');
+  const evs=(await eventos()).map(estadoVence)
+    .sort((a,b)=>(a.d===null?1e9:a.d)-(b.d===null?1e9:b.d));
+  const vencidos=evs.filter(e=>e.d!==null&&e.d<0);
+  const cerca   =evs.filter(e=>e.d!==null&&e.d>=0&&e.d<=AVISAR_DESDE);
+  const resto   =evs.filter(e=>e.d===null||e.d>AVISAR_DESDE);
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Administrador</p>
+    <h1>Limpieza</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="padding-bottom:40px">
+    <p style="font-size:13.5px;line-height:1.8;color:#B5AC9E;margin:0 0 8px">
+      Cada álbum vive <b style="color:var(--oro);font-weight:400">${DIAS_QUE_VIVE} días</b> desde la fecha
+      del evento. Al organizador le aparece el aviso ${AVISAR_DESDE} días antes, en su panel.
+      Borrar acá elimina el evento y todos sus archivos, y no se puede deshacer.</p>
+
+    <div class="seccion-a"><h2>Ya vencidos</h2><span>${vencidos.length}</span></div>
+    ${vencidos.length?`<div class="tarjeta peligro">
+        ${vencidos.map(e=>filaVence(e,true)).join('')}
+        <div id="zonaTodos" style="margin-top:20px">
+          <button class="btn-peligro" id="pedirTodos">Borrar los ${vencidos.length} vencidos</button>
+        </div>
+      </div>`
+      :`<div class="vacio" style="padding:34px 24px">No hay ninguno vencido.</div>`}
+
+    <div class="seccion-a"><h2>Vencen pronto</h2><span>${cerca.length}</span></div>
+    ${cerca.length?`<div class="tarjeta">${cerca.map(e=>filaVence(e,false)).join('')}</div>`
+      :`<div class="vacio" style="padding:34px 24px">Ninguno en los próximos ${AVISAR_DESDE} días.</div>`}
+
+    <div class="seccion-a"><h2>El resto</h2><span>${resto.length}</span></div>
+    ${resto.length?`<div class="tarjeta">${resto.map(e=>filaVence(e,false)).join('')}</div>`
+      :`<div class="vacio" style="padding:34px 24px">No hay más eventos.</div>`}
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
+
+  /* Un toque no borra: el botón se vuelve "Confirmar" y vuelve atrás solo a
+     los cinco segundos. Es la misma idea que el campo donde hay que
+     escribir el código en Ajustes, pero para una lista. */
+  app.querySelectorAll('[data-borra]').forEach(b=>{
+    let armado=null;
+    b.onclick=async()=>{
+      if(!armado){
+        armado=setTimeout(()=>{ armado=null; b.textContent='Borrar'; b.classList.remove('firme'); },5000);
+        b.textContent='Confirmar'; b.classList.add('firme');
+        return;
+      }
+      clearTimeout(armado); armado=null;
+      b.disabled=true;
+      try{
+        await borrarEvento(b.dataset.borra, t=>{ b.textContent=t; });
+        recado(`"${b.dataset.nom}" eliminado`);
+        vLimpieza();
+      }catch(err){
+        console.error('borrar vencido',err);
+        b.disabled=false; b.textContent='Borrar'; b.classList.remove('firme');
+        recado('No se pudo eliminar: '+motivo(err));
+      }
+    };
+  });
+
+  const pedir=app.querySelector('#pedirTodos');
+  if(pedir) pedir.onclick=()=>{
+    const zona=app.querySelector('#zonaTodos');
+    zona.innerHTML=`
+      <div class="campo" style="margin-bottom:14px">
+        <label for="confBorrar">Escribí <b style="color:#E08A82">BORRAR</b> para confirmar</label>
+        <input id="confBorrar" type="text" autocomplete="off" autocapitalize="characters" placeholder="BORRAR"></div>
+      <button class="btn-peligro firme" id="todosYa" disabled>Borrar los ${vencidos.length} vencidos</button>
+      <button class="hilo-btn" id="dejarTodos">Mejor no</button>`;
+    const campo=zona.querySelector('#confBorrar');
+    const ok=zona.querySelector('#todosYa');
+    campo.focus();
+    campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!=='BORRAR'; };
+    zona.querySelector('#dejarTodos').onclick=()=>vLimpieza();
+    ok.onclick=async()=>{
+      if(ok.disabled) return;
+      ok.disabled=true; campo.disabled=true;
+      /* De a uno y sin cortar la tanda: si uno falla, los demás se borran
+         igual y al final se dice cuántos quedaron. Prometer "listo" cuando
+         algo no se borró es exactamente lo que no se hace acá. */
+      let hechos=0; const fallados=[];
+      for(let i=0;i<vencidos.length;i++){
+        ok.textContent=`Borrando ${i+1} de ${vencidos.length}…`;
+        try{ await borrarEvento(vencidos[i].codigo); hechos++; }
+        catch(err){ console.error('borrar vencido',vencidos[i].codigo,err); fallados.push(vencidos[i].codigo); }
+      }
+      recado(fallados.length
+        ? `Se borraron ${hechos} de ${vencidos.length}. Quedaron sin borrar: ${fallados.join(', ')}`
+        : `Listo: ${hechos} evento${hechos===1?'':'s'} eliminado${hechos===1?'':'s'}`);
+      vLimpieza();
+    };
+  };
+}
+
+/* Volver a dibujar el evento SIN moverle el piso al organizador: misma
+   solapa y mismo punto de la página. Antes, cada "Guardar" de Ajustes lo
+   devolvía a Compartir y arriba de todo: guardabas el hashtag y tenías que
+   volver a bajar hasta las consignas. Seis botones hacían lo mismo. */
+async function redibujar(codigo){
+  const act=app.querySelector('[data-sol][aria-selected="true"]');
+  const y=window.scrollY;
+  await vEvento(codigo, act?act.dataset.sol:null);
+  window.scrollTo({top:y, behavior:'auto'});
 }
 
 /* Recién creado: la clave se muestra una vez, grande y para copiar. */
@@ -2004,7 +2308,7 @@ function vPedirClave(codigo,m){
       const r=await SB.quienSoy(codigo,v);
       if(r&&r.puede_editar){
         guardarClaveDe(codigo,v);
-        recado('Listo'); return vEvento(codigo);
+        recado('Listo'); return redibujar(codigo);
       }
       if(r&&!r.llego_la_clave){
         recado('La clave no llega a la base. Avisale a Click Eterno.');
@@ -2021,7 +2325,10 @@ function vPedirClave(codigo,m){
   campo.onkeydown=e=>{ if(e.key==='Enter') probar(); };
 }
 
-async function vEvento(codigo){
+/* "abrirEn", no "solapa": solapa() es la función que dibuja los botones de
+   las solapas y un parámetro con ese nombre la tapa adentro de vEvento.
+   Está anotado en CLAUDE.md desde la vez anterior y lo volví a hacer. */
+async function vEvento(codigo, abrirEn){
   parar();
   const m=await meta(codigo);
   if(!m){recado('No encontré ese evento'); return ir('panel');}
@@ -2051,6 +2358,29 @@ async function vEvento(codigo){
 
   <div class="wrap-ev">
     <section class="panel-ev" id="pCompartir">
+      ${(()=>{
+        /* Aviso de vencimiento. El álbum no vive para siempre y el
+           organizador tiene que enterarse ANTES, no cuando ya no está.
+           Aparece solo cuando falta poco o cuando ya venció. */
+        /* Los eventos anteriores a esta cuenta no tienen 'vence' guardado.
+           Si acá quedara en null el organizador no vería aviso nunca, y la
+           limpieza —que sí lo calcula desde la fecha— igual los borraría a
+           los 90 días. El respaldo tiene que ser el MISMO de los dos lados. */
+        const vence=m.vence||venceDe(m.fecha)||'';
+        const d=diasParaVencer(vence);
+        if(d===null||d>AVISAR_DESDE) return '';
+        const vencido=d<0;
+        return `<div class="tarjeta aviso-vence${vencido?' tarde':''}">
+          <p class="titu-s">${vencido?'El álbum ya venció':'Bajá tu copia'}</p>
+          <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin-bottom:18px">
+            ${vencido
+              ? `Venció el ${bonito(vence)}. Puede que las fotos ya no estén: si todavía se ven, bajalas ahora mismo.`
+              : d===0
+                ? `Se borra <b style="color:var(--oro)">hoy</b>. Bajá el álbum antes de que no esté.`
+                : `Las fotos se guardan hasta el ${bonito(vence)}: ${d===1?'queda <b style="color:var(--oro)">un día</b>':'quedan <b style="color:var(--oro)">'+d+' días</b>'}. Después se borran del servidor y solo vas a tener la copia que te hayas bajado.`}</p>
+          <button class="oro-btn" data-ir="album/${codigo}/guardar">Descargar todo ahora</button>
+        </div>`;
+      })()}
       ${m.cerrado?`
       <!-- Terminada la fiesta, el QR y la vista del invitado ya no sirven:
            lo que hace falta ahora es el álbum, pasárselo y llevárselo. -->
@@ -2075,7 +2405,8 @@ async function vEvento(codigo){
         <a class="hilo-btn" id="wspAlbum" href="${wsp(`Acá está el álbum de ${m.nombre}: ${enlaceAlbumDe(codigo)}`)}"
            target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px">Mandarlo por WhatsApp</a>
       </div>
-      ${m.vence?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(m.vence)}.</p>`:''}
+      ${(()=>{ const v=m.vence||venceDe(m.fecha); return v
+        ?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(v)}.</p>`:''; })()}
       <div class="tarjeta" style="margin-top:26px">
         <p class="titu-s">¿Lo cerraste antes de tiempo?</p>
         <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
@@ -2211,7 +2542,54 @@ async function vEvento(codigo){
   /* Con cosas esperando abrimos en Moderar: durante la fiesta es lo urgente.
      En la demostración no: el que entra a mirar tiene que caer en el QR y la
      pantalla del salón, que es lo que explica el producto. */
-  activarSolapas(pend.length&&!HAY_DEMO?'pModerar':'pCompartir');
+  /* Y si venimos de guardar algo, en la solapa donde estaba. */
+  activarSolapas(abrirEn || (pend.length&&!HAY_DEMO?'pModerar':'pCompartir'),
+                 abrirEn ? false : undefined);
+
+  /* ── el panel se entera solo de lo que va llegando ──
+     La pantalla del salón se refresca cada siete segundos, pero esta no lo
+     hacía: durante la fiesta el organizador se quedaba mirando "Moderar"
+     mientras las fotos se apilaban sin aparecer, y con la moderación
+     encendida eso quiere decir que no se proyecta nada. Había que salir y
+     volver a entrar para verlas, y nadie lo sabe.
+     El globo con el número se actualiza siempre; la lista se vuelve a
+     dibujar solo si el organizador está mirando Moderar, para no moverle la
+     pantalla de abajo del dedo mientras toca otra cosa. */
+  if(HAY_NUBE && !m.cerrado){
+    /* null = todavía no miramos. La primera vuelta solo anota lo que hay; no
+       redibuja. Si se inicializara con lo que se acaba de dibujar, cualquier
+       diferencia de forma entre ese dato y el que devuelve esta consulta
+       hace que "cambió" sea verdadero para siempre: el panel se redibujaba
+       solo, en bucle, bajándose la lista entera cada vez. */
+    let ultimaCola = null;
+    reloj(async()=>{
+      /* si hay una foto abierta en grande o una confirmación a medias, no es
+         momento de redibujar nada */
+      if(document.querySelector('.visorf, .capa, #zonaBorrar button[data-confirma]')) return;
+      /* Solo los que esperan, y solo su id: es lo único que hace falta para
+         el globo. Pedir el índice entero cada ocho segundos son 130 MB por
+         hora en una fiesta de 1500 recuerdos, y los paga el teléfono del
+         organizador con el wifi del salón. */
+      let pend2;
+      try{
+        pend2 = await SB.ver('ce_items',
+          `codigo=eq.${encodeURIComponent(codigo)}&estado=eq.pendiente`
+          +`&select=id&order=ts.asc&limit=200`, claveDe(codigo)) || [];
+      }catch(e){ return; }
+      const firma = pend2.map(i=>i.id).join(',');
+      if(ultimaCola === null){ ultimaCola = firma; return; }
+      if(firma === ultimaCola) return;
+      ultimaCola = firma;
+      const globo = app.querySelector('#globoPend');
+      const enModerar = (app.querySelector('[data-sol="pModerar"]')||{}).getAttribute
+        && app.querySelector('[data-sol="pModerar"]').getAttribute('aria-selected')==='true';
+      if(enModerar) return redibujar(codigo);
+      if(globo) globo.textContent = pend2.length;
+      else if(pend2.length) redibujar(codigo);   // no había globo: hay que dibujarlo
+      if(pend2.length) recado(pend2.length===1?'Llegó algo nuevo para aprobar'
+                                              :`Llegaron ${pend2.length} para aprobar`);
+    }, 8000);
+  }
   /* con el muro cerrado no hay QR que dibujar: esta solapa es el cierre */
   const cajaQR=app.querySelector('#qr');
   if(cajaQR) pintarQR(cajaQR,enlaceDe(codigo),106);
@@ -2230,7 +2608,7 @@ async function vEvento(codigo){
       await guardarMeta(m);
       delete m.portadaBlob;
       recado('Portada actualizada');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       delete m.portadaBlob;
       recado('No pude guardar la portada: '+motivo(err));
@@ -2247,7 +2625,7 @@ async function vEvento(codigo){
     try{
       await guardarMeta(m);
       recado('Muro abierto de nuevo');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       m.cerrado=true;
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Reabrir el muro';
@@ -2271,15 +2649,14 @@ async function vEvento(codigo){
     m.nombre=nombre; m.tono=tonoEd;
     if(fecha!==m.fecha){
       m.fecha=fecha;
-      /* el álbum vive un año desde la fiesta: si se corrige la fecha, se corre */
-      const v=new Date(fecha);
-      if(!isNaN(v)){ v.setMonth(v.getMonth()+12); m.vence=v.toISOString().slice(0,10); }
+      /* el álbum vive 90 días desde la fiesta: si se corrige la fecha, se corre */
+      m.vence=venceDe(fecha)||m.vence;
     }
     b.dataset.ocupado='1'; b.disabled=true; b.textContent='Guardando…';
     try{
       await guardarMeta(m);
       recado('Datos guardados');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       Object.assign(m,antes); tono(m.tono); tonoEd=m.tono;
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar los datos';
@@ -2305,7 +2682,7 @@ async function vEvento(codigo){
         return recado(`La base todavía no guarda esto: falta la columna "${faltan[0]}".`);
       }
       recado('Guardado');
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){
       Object.assign(m,antes);
       delete b.dataset.ocupado; b.disabled=false; b.textContent='Guardar';
@@ -2322,7 +2699,7 @@ async function vEvento(codigo){
         return recado('La base todavía no guarda horarios: falta agregar la columna "lanza".');
       }
       recado(aviso);
-      vEvento(codigo);
+      redibujar(codigo);
     }catch(err){ m.lanza=antes; }
   };
   const bL=app.querySelector('#guardarL');
@@ -2355,7 +2732,7 @@ async function vEvento(codigo){
         await SB.cambiarClave(codigo,claveDe(codigo),nva);
         guardarClaveDe(codigo,nva);
         recado('Clave cambiada · '+nva);
-        vEvento(codigo);
+        redibujar(codigo);
       }catch(err){
         b.disabled=false; b.textContent='Guardar la clave nueva';
         recado('No se pudo cambiar: '+motivo(err));
@@ -2379,7 +2756,7 @@ async function vEvento(codigo){
     const ok=zona.querySelector('#borrarYa');
     campo.focus();
     campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!==m.codigo.toUpperCase(); };
-    zona.querySelector('#dejarlo').onclick=()=>vEvento(codigo);
+    zona.querySelector('#dejarlo').onclick=()=>redibujar(codigo);
     ok.onclick=async()=>{
       if(ok.disabled) return;
       ok.disabled=true;
@@ -2458,7 +2835,7 @@ async function vEvento(codigo){
       try{
         await cambiarEstado(codigo,p.id,estado);
         recado(aviso,accion);
-        if(estado==='pendiente') return vEvento(codigo);   // al recuperar, redibujamos
+        if(estado==='pendiente') return redibujar(codigo);   // al recuperar, redibujamos
         /* La ficha se va sola: redibujar todo hacía saltar la pantalla
            justo cuando estás aprobando una atrás de otra. */
         d.classList.add(estado==='aprobado'?'vuela':'se-va');
@@ -2523,7 +2900,7 @@ async function vEvento(codigo){
             recado('Bajado de la pantalla',{
               texto:'Deshacer',
               hacer:async()=>{
-                try{ await cambiarEstado(codigo,p.id,'aprobado'); recado('Vuelve a la pantalla'); vEvento(codigo); }
+                try{ await cambiarEstado(codigo,p.id,'aprobado'); recado('Vuelve a la pantalla'); redibujar(codigo); }
                 catch(err){ recado('No se pudo recuperar: '+motivo(err)); }
               }
             });
@@ -2565,7 +2942,7 @@ async function vElegir(destino,titulo){
     ${evs.length? evs.map(e=>tarjetaEvento(e)).join('')
       :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
 }
 
@@ -2708,10 +3085,12 @@ async function vSubir(codigo){
       btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`;
     };
     try{
-      await sumar(codigo,{id:idNuevo(),
+      const idNuevoItem=idNuevo();
+      await sumar(codigo,{id:idNuevoItem,
         kind:medio?medio.kind:'mensaje', blob:medio?medio.blob:null, data:'', autor, texto, ts:Date.now(),
         estado:m.moderar?'pendiente':'aprobado'},
         avance);
+      borrarseSolo(codigo, idNuevoItem);
       if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
       vMomento(m,autor);
     }catch(e){
@@ -2754,6 +3133,9 @@ function vMomento(m,autor){
     <h1 class="ital sube" style="font-size:40px">${m.moderar?'Enviado':'Ya está en la pantalla'}</h1>
     <p class="sube" style="animation-delay:.15s;color:#B5AC9E;line-height:1.8;max-width:30ch;margin:18px auto 0;font-size:15px">
       ${m.moderar?'El organizador lo aprueba y se proyecta enseguida.':'Levantá la vista, '+esc(autor)+'. Es tuya la que está pasando.'}</p>
+    ${HAY_DEMO?`<p class="sube" style="animation-delay:.2s;color:var(--oro);font-size:12.5px;
+      letter-spacing:.06em;line-height:1.7;max-width:30ch;margin:14px auto 0">
+      Es una prueba: tu foto se borra sola en un par de minutos.</p>`:''}
     <div class="filete" style="max-width:220px;margin:30px auto">${ESTRELLA}</div>
     <div class="sube" style="animation-delay:.3s;max-width:330px;margin:0 auto">
       <button class="oro-btn" id="otra">Subir otra</button>
@@ -2777,9 +3159,15 @@ async function vPantalla(codigo){
      lo que mandaron. Arranca en cartel, que es lo primero que hace falta. */
   const abre=cuandoAbre(m);
   app.innerHTML=`
-  <button class="dejar">Salir</button>
-  <button class="dejar" id="completa" style="right:96px">Pantalla completa</button>
-  <div class="modos-sala" role="group" aria-label="Qué se muestra">
+  <!-- Los dos en una fila, no cada uno con su "right" a ojo: el botón de la
+       demostración es más largo y se montaba encima del otro. -->
+  <div class="botones-sala"${EN_MARCO?' hidden':''}>
+    <button class="dejar" id="completa">Pantalla completa</button>
+    <!-- En demostración esta pantalla ES la prueba, así que "Salir" no tiene
+         sentido: lo que hace falta es invitar a probar el otro lado. -->
+    <button class="dejar${HAY_DEMO?' llamada':''}">${HAY_DEMO?'Probá mandar una foto':'Salir'}</button>
+  </div>
+  <div class="modos-sala" role="group" aria-label="Qué se muestra"${EN_MARCO?' hidden':''}>
     <button data-modo="cartel" aria-pressed="true">Código</button>
     <button data-modo="tablero" aria-pressed="false">Tablero</button>
     <button data-modo="muro" aria-pressed="false">Muro</button>
@@ -2837,7 +3225,21 @@ async function vPantalla(codigo){
       <span class="qr-sala" id="qrs"></span>
     </div>
   </div>`;
-  app.querySelector('.dejar').onclick=()=>ir('evento/'+codigo);
+  const bSalir=app.querySelector('.botones-sala .dejar:last-child');
+  if(bSalir) bSalir.onclick=()=>ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
+  /* Cuánto mide la fila de modos, de verdad. En un teléfono los botones
+     de abajo se apoyan en ella, y si la damos por supuesta —o si cambia
+     de alto al envolver— se le montan encima, que es justo lo que hacía
+     que desde el celular no se pudiera cambiar de modo. */
+  (function medirModos(){
+    const fila=app.querySelector('.modos-sala');
+    const poner=()=>{ if(fila) document.body.style.setProperty(
+      '--modos', (fila.offsetHeight||38)+'px'); };
+    requestAnimationFrame(poner);
+    addEventListener('resize',poner);
+    addEventListener('orientationchange',poner);
+  })();
+
   app.querySelector('#completa').onclick=()=>{
     if(document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen?.().catch(()=>recado('Tocá F11 para pantalla completa'));
@@ -3009,7 +3411,10 @@ async function vPantalla(codigo){
     await mostrar(ids[cursor],false);
   }
   await revisar().catch(e=>console.error('sala',e));
-  verModo('cartel');
+  /* En la fiesta arranca en el cartel, que es lo primero que hace falta
+     (que escaneen). En la demostración arranca en el MURO: lo que se está
+     mostrando es cómo se ve proyectado, no el código. */
+  verModo(HAY_DEMO?'muro':'cartel');
   timerSala=setInterval(async()=>{
     try{
       const hubo=await revisar();
@@ -3115,7 +3520,8 @@ async function vAlbum(codigo,abrirEn){
             ${items.length} recuerdos de ${gente} ${gente===1?'persona':'personas'}.
             Se descargan en calidad original.</p>
           <div class="acciones" style="margin-top:0"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
-          ${m.vence?`<p class="pie-nota">Disponible para descargar hasta el ${bonito(m.vence)}.</p>`:''}`
+          ${(()=>{ const v=m.vence||venceDe(m.fecha); return v
+            ?`<p class="pie-nota">Disponible para descargar hasta el ${bonito(v)}.</p>`:''; })()}`
         :`<div class="vacio">El álbum está vacío por ahora.</div>`}
         ${sumate('Las fotos de tu fiesta,<br>en la pantalla y para siempre.','Hola! Vi un álbum de Click Eterno y quiero info para mi evento ✨')}
         <div class="pie-marca"><img src="${LOGO_MARK}" alt="Click Eterno"></div>
@@ -3369,7 +3775,13 @@ async function pruebaDeFondo(boton, salida){
     // 2. un invitado sube: la base decide el estado, no el celular
     await SB.guardar('ce_items',{id:'p-'+idNuevo(),codigo:cod,kind:'mensaje',url:'',
       autor:'Invitado de prueba',texto:'hola',estado:'aprobado',ts:Date.now()});
-    const subidos=await SB.ver('ce_items',`codigo=eq.${encodeURIComponent(cod)}&select=estado`);
+    /* CON la clave: desde blindaje.sql, sin ella la base no devuelve ni una
+       fila. Sin esto el diagnóstico veía una lista vacía y le informaba al
+       dueño "✗ un invitado puede autoaprobarse", que es falso y es justo lo
+       contrario de lo que pasa. Un diagnóstico que miente es peor que no
+       tenerlo. */
+    const subidos=await SB.ver('ce_items',
+      `codigo=eq.${encodeURIComponent(cod)}&select=estado`, clave);
     probar('Un invitado no puede autoaprobarse (moderación encendida)',
       subidos.length===1 && subidos[0].estado==='pendiente');
 
@@ -3423,6 +3835,11 @@ async function pruebaDeFondo(boton, salida){
 /* ══════════ router ══════════ */
 /* Antes ir() cambiaba el hash Y pintaba: el evento hashchange volvía a
    pintar, así que cada navegación cargaba todo dos veces. */
+/* Empezar de nuevo es recargar: todo lo de la demostración vive en memoria,
+   así que la recarga lo limpia entero y vuelve a sembrar la misma fiesta.
+   Sin hash, para caer donde cae el que entra por primera vez. */
+function reiniciarDemo(){ location.replace(location.pathname+'?demo=1'); }
+
 function ir(ruta){
   const destino='#'+ruta;
   if(location.hash===destino) pintar(ruta);   // mismo hash: no hay evento
@@ -3459,9 +3876,16 @@ function pintar(ruta){
   }
   let p;
   try{
-    /* En demostración no hay panel del organizador: el que entra a mirar
-       vuelve a la fiesta de ejemplo en vez de toparse con un pedido de clave. */
-    if(v==='panel'){ if(HAY_DEMO) return ir('evento/DEMO-FIESTA'); p=vAcceso(); }
+    /* En demostración solo existe lo que ve un invitado: subir algo, la
+       pantalla del salón y el álbum. El panel del organizador, el cartel y
+       el diagnóstico son herramientas de quien vende el servicio, no parte
+       de la muestra. Todo lo demás cae en la pantalla de subir. */
+    /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
+       es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
+    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','limpieza','portada',''].includes(v))
+      return ir('pantalla/DEMO-FIESTA');
+    if(v==='panel') p=vAcceso();
+    else if(v==='limpieza') p=vLimpieza();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
     else if(v==='invitado') p=vElegir('subir','Invitado');
@@ -3496,21 +3920,51 @@ addEventListener('error',e=>{
     /* Que el visitante caiga adentro de una fiesta andando, no en una
        pantalla de bienvenida. Si ya la sembró en esta pestaña, se entra
        directo. */
-    document.body.classList.add('en-demo');
-    document.body.insertAdjacentHTML('afterbegin', `
+    if(!EN_MARCO) document.body.classList.add('en-demo');
+    if(!EN_MARCO) document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
+        <span class="mini">Demostración</span>
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
-        <a href="/">Volver a Click Eterno</a>
+        <button id="deNuevo">Empezar de nuevo</button>
+        ${ENMARCADO?'':'<a href="/">Salir</a>'}
+        <button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button>
       </div>`);
-    const ya = await leerLocal(kMeta('DEMO-FIESTA'), null);
-    if(!ya){
-      app.innerHTML = `<div class="final"><div>
-        <img src="${LOGO_MARK}" style="width:120px;opacity:.6" alt="">
-        <p class="espaciado" style="margin-top:24px">Preparando la fiesta de ejemplo…</p>
-      </div></div>`;
-      try{ await sembrar(); }catch(e){ console.error('demo',e); }
+    const bn=document.getElementById('deNuevo');
+    if(bn) bn.onclick=reiniciarDemo;
+    /* Plegar y desplegar. Plegada, toda la tira es el botón de volver a
+       abrirla: 18px de alto son poco para apuntarle, pero es el ancho
+       entero de la pantalla. */
+    const cinta=document.getElementById('cinta-demo');
+    const plegar=document.getElementById('plegarCinta');
+    if(plegar) plegar.onclick=e=>{ e.stopPropagation();
+      document.body.classList.add('cinta-chica'); };
+    if(cinta) cinta.onclick=()=>{
+      if(document.body.classList.contains('cinta-chica'))
+        document.body.classList.remove('cinta-chica');
+      medirCinta();
+    };
+    /* Cuánto mide de verdad, después de dibujarla. Si la damos por
+       supuesta, al envolver en dos líneas la cinta vuelve a taparle los
+       botones a la proyección, que es el problema que veníamos a
+       resolver. */
+    function medirCinta(){
+      if(!cinta) return;
+      requestAnimationFrame(()=>document.body.style.setProperty(
+        '--cinta', (cinta.offsetHeight||38)+'px'));
     }
-    if(!location.hash || location.hash==='#portada') return ir('evento/DEMO-FIESTA');
+    if(plegar) plegar.addEventListener('click',medirCinta);
+    addEventListener('resize',medirCinta);
+    addEventListener('orientationchange',medirCinta);
+    medirCinta();
+    /* Se siembra SIEMPRE, sin preguntar si ya estaba: es un modo prueba, y
+       cada vez que alguien entra tiene que encontrarlo igual que el primero.
+       Lo que dejó el anterior no es parte de la muestra. */
+    app.innerHTML = `<div class="final"><div>
+      <img src="${LOGO_MARK}" style="width:120px;opacity:.6" alt="">
+      <p class="espaciado" style="margin-top:24px">Preparando la fiesta de ejemplo…</p>
+    </div></div>`;
+    try{ await sembrar(); }catch(e){ console.error('demo',e); }
+    return;   // sembrar() deja al visitante en la pantalla de subir
   }
   pintar(location.hash.slice(1)||'portada');
 })();

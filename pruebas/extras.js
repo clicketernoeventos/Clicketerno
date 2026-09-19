@@ -109,7 +109,10 @@ async function pagina(browser,{romper=null}={}){
     else bien('guardó la fecha corregida');
     if(ev.tono==='#D9AE72') mal('no guardó el tono nuevo');
     else bien('guardó el tono: '+ev.tono);
-    if(ev.vence!=='2027-09-19') mal('el vencimiento no siguió a la fecha: '+ev.vence);
+    /* 90 días desde la fiesta (DIAS_QUE_VIVE). Era un año; se acortó cuando
+       se decidió cuánto viven las fotos, y con el aviso al organizador
+       quince días antes. 2026-09-19 + 90 = 2026-12-18. */
+    if(ev.vence!=='2026-12-18') mal('el vencimiento no siguió a la fecha: '+ev.vence);
     else bien('el vencimiento se corrió con la fecha: '+ev.vence);
     const titulo=await p.locator('.quien-ev b').innerText().catch(()=>'');
     if(!/Delfina Sosa/.test(titulo)) mal('la pantalla no se actualizó: '+titulo);

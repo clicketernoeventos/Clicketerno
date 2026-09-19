@@ -49,14 +49,41 @@ img{max-width:100%;display:block}
 #app{position:relative;z-index:2;min-height:100svh}
 
 /* ── cinta de la demostración ── */
-#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:90;height:38px;display:flex;
-  align-items:center;justify-content:center;gap:14px;padding:0 14px;
+/* Alto AUTOMÁTICO y medido, no clavado en 38px: en un teléfono los
+   botones no entran en una línea, y con alto fijo lo que sobra se sale de
+   la pantalla —el ✕ y "Salir" quedaban afuera, sin forma de llegar—.
+   Envuelve, y el JS pone el alto real en --cinta. */
+#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:90;min-height:38px;display:flex;
+  flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:6px 12px;
   background:linear-gradient(90deg,#D9AE72,#EFDCBC);color:#2A1B08;
   font:500 11.5px/1 Jost,system-ui,sans-serif;letter-spacing:.06em}
 #cinta-demo b{font-weight:600}
 #cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
-body.en-demo{padding-top:38px}
+#cinta-demo button{font:500 11px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;
+  text-transform:uppercase;color:#2A1B08;background:rgba(42,27,8,.12);
+  border:1px solid rgba(42,27,8,.3);border-radius:20px;padding:5px 12px;cursor:pointer;
+  white-space:nowrap;flex:none}
+#cinta-demo button:hover{background:rgba(42,27,8,.2)}
+body.en-demo{--cinta:38px;padding-top:var(--cinta)}
 body.en-demo .pie-fijo{bottom:0}
+/* position:fixed no lo corre el padding del body. La cámara, el cuarto
+   oscuro y el visor de fotos se dibujan con inset:0, así que sin esto la
+   cinta les tapa la barra de arriba —el botón de cerrar incluido—. */
+body.en-demo .camara,
+body.en-demo .cuarto,
+body.en-demo .visorf{top:var(--cinta)}
+/* ── la cinta se pliega ──
+   En un teléfono, 38px fijos arriba le comen la pantalla a la app. Con el
+   ✕ queda una tira de 18px que se toca y vuelve, así no se pierde "Salir"
+   ni "Empezar de nuevo" (que es lo que pasaría escondiéndola del todo). */
+#cinta-demo .plegar{padding:5px 9px;border-radius:50%;line-height:1;font-size:12px;
+  letter-spacing:0;border-color:transparent;background:transparent}
+#cinta-demo .mini{display:none;font-size:9px;letter-spacing:.26em;
+  text-transform:uppercase;opacity:.9}
+body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
+  flex-wrap:nowrap;cursor:pointer}
+body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
+body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 @media(max-width:400px){
   #cinta-demo{font-size:10.5px;gap:9px}
   #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -121,6 +148,15 @@ input.grande{font-size:21px;padding:14px 2px}
   padding:7px 16px;border-radius:20px;border:1px solid var(--hilo2);color:var(--oro);margin-top:22px}
 .estado.vivo{color:#6FCF8B;border-color:rgba(111,207,139,.42)}
 .estado.gris{color:var(--mute);border-color:var(--gris)}
+/* el aviso de que el álbum se borra pronto (mismo trato que en el muro) */
+.aviso-vence{border:1px solid var(--oro);padding:20px 22px;margin:26px auto 0;max-width:34ch;
+  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+.aviso-vence.tarde{border-color:rgba(255,123,148,.5);
+  background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
+.aviso-vence b.tit{display:block;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--oro);font-weight:400;margin-bottom:12px}
+.aviso-vence.tarde b.tit{color:#FF7B94}
+.aviso-vence p{color:#B5AC9E;line-height:1.75;font-size:14px;text-align:left;margin:0}
 
 /* piezas sueltas */
 .rotulito{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin:30px 0 12px}
@@ -346,7 +382,19 @@ const NUBE = {
    una demostración" de la web: antes ese botón abría la app de verdad, y
    desde ahí se llegaba a los eventos de los clientes. */
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+/* ?marco=1: adentro de un marco en la página pública. Sin cinta. */
+const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
+   sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
+const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
 const DEMO_COD = 'DEMO-ROLLO';
+/* Lo que saca el visitante en la demostración se devuelve solo a los dos
+   minutos (igual que en el muro, ver VIDA_DEMO en muro.html). La
+   demostración pasa de mano en mano en el teléfono del negocio: sin esto
+   el tercer cliente se encuentra el rollo gastado por los dos anteriores
+   y la cámara no le abre. Las tres fotos del ejemplo no se tocan: son la
+   fiesta. */
+const VIDA_DEMO = 2*60*1000;
 const app=document.getElementById('app');
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
 const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
@@ -373,6 +421,25 @@ const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
 const urlSegura=u=>{const t=String(u==null?'':u).trim();
   return /^(https?:\/\/|data:image\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif)$/i.test(t)?t:'';};
 const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
+/* Los 90 días viven en los dos archivos (ver DIAS_QUE_VIVE en muro.html).
+   Días de CALENDARIO de acá: restando milisegundos, "vence hoy" daba
+   "queda un día", y con toISOString de por medio, pasadas las nueve de la
+   noche en Rosario ya era mañana. */
+const DIAS_QUE_VIVE=90;
+const AVISAR_DESDE=15;
+const venceDe=fecha=>{
+  const v=new Date(fecha); if(isNaN(v)) return '';
+  v.setDate(v.getDate()+DIAS_QUE_VIVE);
+  return v.toISOString().slice(0,10);
+};
+const diasParaVencer=vence=>{
+  const p=String(vence||'').slice(0,10).split('-');
+  if(p.length!==3) return null;
+  const v=new Date(+p[0], +p[1]-1, +p[2]);
+  if(isNaN(v)) return null;
+  const h=new Date(), hoy0=new Date(h.getFullYear(),h.getMonth(),h.getDate());
+  return Math.round((v-hoy0)/86400000);
+};
 const bonito=f=>{
   if(!f) return '';
   const p=String(f).slice(0,10).split('-');
@@ -550,10 +617,10 @@ if(HAY_DEMO){
   const ev={
     codigo:DEMO_COD, nombre:'Los 15 de Delfina', tipo:'XV', tono:'#D9AE72',
     fecha:hoy(), camara:true, cerrado:false,
-    /* La demostración no guarda nada, así que lo único que sobrevive a una
-       recarga es la dirección: el link del álbum lleva rev=1 y el rollo
-       vuelve a nacer revelado. */
-    revelado:/(?:^|[?&])rev=1(?:&|$)/.test(location.search), revela_en:null,
+    /* Nace REVELADO: lo que hay que mostrar es el álbum, que es el momento
+       del producto. Con ?camara=1 nace sin revelar y se ve el otro lado,
+       cómo el invitado gasta sus fotos sin ver ninguna. */
+    revelado: !/(?:^|[?&])camara=1(?:&|$)/.test(location.search), revela_en:null,
     portada:null, cupo_fotos:24, creado:new Date().toISOString()
   };
   /* Las fotos de los invitados de mentira: ruta, quién la sacó y con qué
@@ -567,6 +634,9 @@ if(HAY_DEMO){
   const MIAS=3;
   for(let i=0;i<MIAS;i++){ fotos[i].mia=true; fotos[i].nombre='Vos'; }
   let misDisparos=MIAS;
+  /* El que entra a probar ya "estuvo en la fiesta": tiene su rollo con esas
+     tres fotos. Así cae en el álbum sin que le preguntemos el nombre. */
+  const TOKEN_DEMO='demo-invitado-01';
 
   const urls={};                       // ruta -> blob: de este navegador
   const dormir=ms=>new Promise(r=>setTimeout(r,ms));   // que se note que viaja
@@ -639,6 +709,13 @@ if(HAY_DEMO){
         if(misDisparos>=ev.cupo_fotos) throw new Error('Ya usaste todas tus fotos');
         misDisparos++;
         fotos.push({ruta:a.p_ruta,nombre:'Vos',filtro:a.p_filtro,mia:true});
+        /* Y se devuelve sola, exactamente como si hubiera fallado la
+           subida: el mismo camino que ya existe, no uno nuevo. */
+        const suRuta=a.p_ruta;
+        setTimeout(function(){
+          const i=fotos.findIndex(f=>f.ruta===suRuta);
+          if(i>=0){ fotos.splice(i,1); misDisparos=Math.max(0,misDisparos-1); }
+        }, VIDA_DEMO);
         return {restantes:ev.cupo_fotos-misDisparos};
       }
       if(fn==='ce_devolver_foto'){
@@ -683,6 +760,11 @@ if(HAY_DEMO){
   /* El que entra a mirar es "el organizador" de esta fiesta inventada: le
      damos la clave en memoria para que el panel se abra sin pedirla. */
   guardarClaveDe(DEMO_COD,'DEMO');
+  /* Y su rollo, para caer derecho en el álbum. Se escribe a mano y no con
+     guardarRollo(): esa función se declara más abajo en el archivo y este
+     bloque corre antes, así que llamarla acá tira "Cannot access before
+     initialization" y la app no arranca. */
+  guarda.escribir('ce:rollo:'+DEMO_COD, JSON.stringify({token:TOKEN_DEMO,nombre:'Vos'}));
 }
 
 /* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
@@ -1011,7 +1093,8 @@ async function vCamara(m,guardado,estado){
         <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
         <div class="hueco"></div>
       </div>
-      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
+      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.${
+        HAY_DEMO?'<br><span style="color:var(--oro)">Es una prueba: el rollo se vuelve a llenar solo.</span>':''}</p>
     </div>
   </div>`;
 
@@ -1478,7 +1561,9 @@ async function crearRollo(){
      al final no se creó no molesta: la lista de la puerta solo muestra los
      que la base confirma. */
   guardarClaveDe(codigo,claveEv);
-  const vence=new Date(nuevo.fecha); vence.setMonth(vence.getMonth()+12);
+  /* 90 días, igual que el muro (ver DIAS_QUE_VIVE en muro.html): si no
+     vence nunca, el depósito crece todos los meses y no para. */
+  const vence=new Date(nuevo.fecha); vence.setDate(vence.getDate()+DIAS_QUE_VIVE);
   try{
     await SB.guardar('ce_eventos',{
       codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
@@ -1561,6 +1646,28 @@ async function vRollo(codigo){
     <button class="link-abajo" id="copiarLink">o copiar el link</button>
 
     <p class="comova" id="stats">&nbsp;</p>
+
+    ${(()=>{
+      /* El rollo también vence, y hasta ahora no lo decía en ningún lado:
+         el organizador se enteraba el día que abría el álbum y no estaba.
+         El zip es la única copia que le queda, así que el aviso tiene que
+         llegar ANTES y con el botón al lado. */
+      /* Mismo respaldo que en el muro: los rollos anteriores a esta cuenta
+         no tienen 'vence' guardado y la limpieza igual los mira por fecha.
+         Sin esto se borrarían sin que el organizador viera un solo aviso. */
+      const vence=m.vence||venceDe(m.fecha)||'';
+      const d=diasParaVencer(vence);
+      if(d===null||d>AVISAR_DESDE) return '';
+      const vencido=d<0;
+      return `<div class="aviso-vence${vencido?' tarde':''}">
+        <b class="tit">${vencido?'El álbum ya venció':'Bajá tu copia'}</b>
+        <p>${vencido
+          ? `Venció el ${esc(bonito(vence))}. Puede que las fotos ya no estén: si todavía se ven, bajalas ahora mismo.`
+          : d===0
+            ? 'Se borra <b>hoy</b>. Bajá las fotos antes de que no estén.'
+            : `Las fotos se guardan hasta el ${esc(bonito(vence))}: ${d===1?'queda <b>un día</b>':'quedan <b>'+d+' días</b>'}. Después se borran del servidor y solo vas a tener la copia que te hayas bajado.`}</p>
+      </div>`;
+    })()}
 
     ${momento==='abierto'?`
       <div class="filete" style="max-width:200px;margin:30px auto">${ESTRELLA}</div>
@@ -2019,6 +2126,12 @@ function pintar(){
   window.scrollTo(0,0);
   let p;
   try{
+    /* En demostración no se crea nada ni se administra nada: lo que se
+       muestra es lo que ve el invitado. "Crear el rollo de mi fiesta" no es
+       una prueba, es el formulario de alta. */
+    if(HAY_DEMO && (h.startsWith('nuevo')||h.startsWith('ev/')||h.startsWith('ajustes/')
+                    ||h==='codigo'||h.startsWith('clave')))
+      return location.replace(location.pathname+location.search.replace(/[?&]camara=1/,'')+'#');
     if(h.startsWith('nuevo'))        p=vNuevo(h.split('/')[1]||1);
     else if(h.startsWith('ev/'))     p=vRollo(h.slice(3));
     else if(h.startsWith('ajustes/'))p=vAjustes(h.slice(8));
@@ -2036,14 +2149,65 @@ addEventListener('click',e=>{
   if(b) location.hash=b.dataset.ir;
 });
 if(HAY_DEMO){
-  document.body.classList.add('en-demo');
-  document.body.insertAdjacentHTML('afterbegin',
-    '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
-    +'<a href="/">Volver a Click Eterno</a></div>');
-  /* Que caiga adentro del rollo andando, no en la puerta. replaceState en
-     vez de tocar location.hash: así no dispara un segundo dibujado. */
-  if(!location.hash && !codigo)
-    history.replaceState(null,'','#ev/'+DEMO_COD);
+  if(!EN_MARCO){
+    document.body.classList.add('en-demo');
+    const enCamara=/(?:^|[?&])camara=1(?:&|$)/.test(location.search);
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div id="cinta-demo"><span class="mini">Demostración</span>'
+      +'<span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
+      /* Los dos lados del rollo en un botón. La prueba entra por el álbum
+         revelado, que es lo que hay que vender, pero lo otro —el invitado
+         gastando fotos sin ver ninguna— también es el producto, y sin esto
+         solo se llegaba escribiendo ?camara=1 a mano. */
+      +'<button id="otroLado">'+(enCamara?'Ver el álbum revelado':'Ver la cámara del invitado')+'</button>'
+      +'<button id="deNuevo">Empezar de nuevo</button>'
+      +(ENMARCADO?'':'<a href="/">Salir</a>')
+      +'<button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button></div>');
+    const bo=document.getElementById('otroLado');
+    if(bo) bo.onclick=()=>location.replace(
+      location.pathname+'?demo=1'+(enCamara?'':'&camara=1'));
+    /* Plegar y desplegar. Plegada, toda la tira es el botón de volver a
+       abrirla: 18px de alto son poco para apuntarle, pero es el ancho
+       entero de la pantalla. */
+    const cinta=document.getElementById('cinta-demo');
+    const plegar=document.getElementById('plegarCinta');
+    if(plegar) plegar.onclick=e=>{ e.stopPropagation();
+      document.body.classList.add('cinta-chica'); };
+    if(cinta) cinta.onclick=()=>{
+      if(document.body.classList.contains('cinta-chica'))
+        document.body.classList.remove('cinta-chica');
+      medirCinta();
+    };
+    /* Cuánto mide de verdad, después de dibujarla. Darla por supuesta es
+       lo que dejaba el ✕ fuera de la pantalla. */
+    var medirCinta=function(){
+      if(!cinta) return;
+      requestAnimationFrame(function(){
+        document.body.style.setProperty('--cinta',(cinta.offsetHeight||38)+'px');
+      });
+    };
+    if(plegar) plegar.addEventListener('click',medirCinta);
+    addEventListener('resize',medirCinta);
+    addEventListener('orientationchange',medirCinta);
+    medirCinta();
+  }
+  /* Es un modo prueba: volver a empezar es recargar. Todo lo de la
+     demostración vive en memoria, así que la recarga lo limpia entero. */
+  const bn=document.getElementById('deNuevo');
+  if(bn) bn.onclick=()=>location.replace(location.pathname+'?demo=1');
+  /* Derecho a lo que hay que mostrar. Sin ?e= en la dirección, el que entra
+     es "un invitado de la fiesta inventada": con el rollo ya revelado eso
+     cae en el álbum, que es el momento del producto. */
+  /* Ojo: esto corre en el cuerpo del archivo, no adentro de una función.
+     Un "return" acá es un error de sintaxis y la app no arranca. */
+  if(!codigo){
+    const q=new URLSearchParams(location.search);
+    q.set('demo','1'); q.set('e',DEMO_COD);
+    if(EN_MARCO) q.set('marco','1');
+    location.replace(location.pathname+'?'+q.toString());
+  }else{
+    history.replaceState(null,'','');
+  }
 }
 pintar();
 addEventListener('pagehide',detenerCamara);
