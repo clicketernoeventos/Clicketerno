@@ -834,8 +834,53 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .porta-fila .mini{width:62px;height:62px;flex:none;border:1px solid var(--hilo);object-fit:cover;background:var(--humo)}
 .porta-fila .mini.vacia{display:grid;place-items:center;color:var(--oro);opacity:.5}
 .porta-fila .mini.vacia .estrella{width:16px;height:16px}
+/* ── tarjetas para cortar y repartir ──
+   El cartel de mesa es UNA tarjeta por hoja: para diez mesas son diez
+   impresiones. Esto es la misma tarjeta repetida en una A4, para cortar.
+   Las medidas van en milímetros y no en píxeles: lo que importa es que
+   entren en la hoja de verdad, no cómo se ven en la pantalla. */
+.hoja-tarjetas{background:#fff;padding:10px;margin:26px auto;max-width:520px;
+  display:grid;gap:0;border:1px solid var(--gris)}
+.hoja-tarjetas.de2{grid-template-columns:1fr}
+.hoja-tarjetas.de4{grid-template-columns:1fr 1fr}
+.hoja-tarjetas.de8{grid-template-columns:1fr 1fr}
+.tarjeta-qr{background:#000;color:#F6F2EA;text-align:center;padding:16px 12px;
+  border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
+.tarjeta-qr .marca-t{width:88px;opacity:.9}
+.tarjeta-qr .nom-t{font-family:'Bodoni Moda',serif;font-style:italic;font-size:24px;line-height:1.1}
+.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
+.tarjeta-qr .ped-t{font-family:'Bodoni Moda',serif;font-size:15px;line-height:1.4;margin:6px 0}
+.tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
+.tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
+.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}
+.tarjeta-qr .cod-t{font-size:9.5px;letter-spacing:.24em;color:var(--oro)}
+.hoja-tarjetas.de8 .tarjeta-qr{padding:9px 8px;gap:4px}
+.hoja-tarjetas.de8 .tarjeta-qr .marca-t{width:54px}
+.hoja-tarjetas.de8 .tarjeta-qr .nom-t{font-size:16px}
+.hoja-tarjetas.de8 .tarjeta-qr .ped-t{font-size:11px;margin:2px 0}
+.hoja-tarjetas.de8 .tarjeta-qr .ins-t{font-size:6.5px}
+.hoja-tarjetas.de8 .tarjeta-qr .qr-t canvas,.hoja-tarjetas.de8 .tarjeta-qr .qr-t img{width:84px;height:84px}
+.hoja-tarjetas.de2 .tarjeta-qr .qr-t canvas,.hoja-tarjetas.de2 .tarjeta-qr .qr-t img{width:180px;height:180px}
+.hoja-tarjetas.de2 .tarjeta-qr .nom-t{font-size:34px}
+.hoja-tarjetas.de2 .tarjeta-qr .ped-t{font-size:19px}
+.cuantas{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.cuantas button{border:1px solid var(--gris);border-radius:999px;padding:8px 16px;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.cuantas button[aria-pressed=true]{border-color:var(--oro);color:var(--oro)}
 @media print{
   #brillo,#polvo,#grano,.top,.acciones,.no-imprime,.recado,.sumate{display:none!important}
+  /* La hoja de tarjetas ocupa la A4 entera y cada tarjeta su parte exacta.
+     Sin alto en milímetros, el navegador las reparte como quiere y la
+     cuarta se va sola a la segunda hoja. */
+  /* La hoja tiene que arrancar en 0,0. El padding del body y del .wrap la
+     corrían más de un centímetro y la cuarta tarjeta se salía del papel. */
+  body,#app,.wrap,.wrap.paso-cuerpo{margin:0!important;padding:0!important;max-width:none!important}
+  .hoja-tarjetas{margin:0;padding:0;border:0;max-width:none;width:210mm;height:297mm}
+  .hoja-tarjetas.de2 .tarjeta-qr{height:148.5mm}
+  .hoja-tarjetas.de4 .tarjeta-qr{height:148.5mm}
+  .hoja-tarjetas.de8 .tarjeta-qr{height:74.25mm}
+  .tarjeta-qr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;color:#111}
   .cartel-hoja{border:0;margin:0;width:105mm;height:148mm;padding:12mm 9mm;background:#000;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;flex-direction:column;justify-content:center}
@@ -1496,6 +1541,16 @@ function recado(t,accion){
 }
 /* El tamaño 10x15 se aplicaba a TODA la app: al "Guardar en PDF" del álbum
    también le salía hoja postal. Ahora se activa solo en la vista del cartel. */
+/* La hoja de tarjetas va en A4; el cartel de mesa en 10x15. Cada vista
+   pone la suya y parar() las saca: si queda puesta, el "Guardar en PDF"
+   del álbum sale en el tamaño equivocado. Ya pasó una vez. */
+function hojaA4(activar){
+  let e=document.getElementById('hojaA4');
+  if(activar){
+    if(!e){ e=document.createElement('style'); e.id='hojaA4';
+      e.textContent='@page{size:A4;margin:0}'; document.head.appendChild(e); }
+  }else if(e) e.remove();
+}
 function hojaPostal(activar){
   let e=document.getElementById('hojaPostal');
   if(activar){
@@ -1515,6 +1570,7 @@ const parar=()=>{
   if(window._limpiarSala){window._limpiarSala();window._limpiarSala=null;}
   if(window._soltarMicro){window._soltarMicro();window._soltarMicro=null;}
   hojaPostal(false);
+  hojaA4(false);
 };
 
 /* iconos de la interfaz */
@@ -2484,6 +2540,7 @@ async function vEvento(codigo, abrirEn){
         <button data-ir="subir/${codigo}"><span class="aro-a">${IC.invitado}</span><em>Vista del<br>invitado</em></button>
         <button data-ir="album/${codigo}"><span class="aro-a">${IC.fotos}</span><em>Álbum<br>digital</em></button>
         <button data-ir="cartel/${codigo}"><span class="aro-a">${IC.cartel}</span><em>Cartel<br>de mesa</em></button>
+        <button data-ir="tarjetas/${codigo}"><span class="aro-a">${IC.cartel}</span><em>Tarjetas<br>para cortar</em></button>
       </div>
       <p class="pie-nota">Dejá la pantalla abierta en la notebook conectada al proyector. Se actualiza sola.</p>
       `}
@@ -3665,6 +3722,67 @@ async function vAlbum(codigo,abrirEn){
   }
 }
 
+/* ── tarjetas para cortar y repartir ──
+   El cartel de mesa es una sola tarjeta por hoja: para diez mesas, diez
+   impresiones. Esto es lo que el cliente necesita de verdad y era lo
+   único del producto que no se podía entregar en la mano. */
+async function vTarjetas(codigo){
+  parar();
+  const m=await meta(codigo); if(!m) return ir(pinOK?'panel':'codigo');
+  tono(m.tono);
+  hojaA4(true);
+  let cuantas=4;
+  const enlace=enlaceDe(codigo);
+
+  const tarjeta=()=>`
+    <div class="tarjeta-qr">
+      <img class="marca-t" src="${LOGO_MARK}" alt="Click Eterno">
+      <div class="nom-t">${esc(m.nombre)}</div>
+      <div class="fec-t">${esc(bonito(m.fecha))}</div>
+      <p class="ped-t">Sacá una foto<br>y mirala en la pantalla</p>
+      <div class="qr-t"></div>
+      <p class="ins-t">Escaneá con la cámara<br>No hace falta instalar nada</p>
+      <div class="cod-t">${esc(m.codigo)}</div>
+    </div>`;
+
+  function pintar(){
+    const hoja=app.querySelector('#hoja');
+    hoja.className='hoja-tarjetas de'+cuantas;
+    hoja.innerHTML=Array.from({length:cuantas},tarjeta).join('');
+    /* Un QR por tarjeta. Son pocas y se dibujan una vez: no vale la pena
+       clonar el canvas. */
+    const tam = cuantas===8?124 : cuantas===2?240 : 176;
+    hoja.querySelectorAll('.qr-t').forEach(n=>pintarQR(n,enlace,tam));
+    app.querySelectorAll('.cuantas button').forEach(b=>
+      b.setAttribute('aria-pressed', String(Number(b.dataset.n)===cuantas)));
+  }
+
+  app.innerHTML=`
+  ${barra('Tarjetas','Para cortar y repartir')}
+  <div class="wrap">
+    <div class="no-imprime">
+      <p style="color:#B5AC9E;font-size:14px;line-height:1.75;text-align:center;max-width:40ch;margin:0 auto">
+        Imprimí esta hoja y cortá por la línea. Una tarjeta en cada mesa y
+        los invitados ya están sacando fotos.</p>
+      <div class="cuantas">
+        ${[2,4,8].map(n=>`<button data-n="${n}" aria-pressed="${n===cuantas}">${n} por hoja</button>`).join('')}
+      </div>
+    </div>
+    <div id="hoja" class="hoja-tarjetas de4"></div>
+    <div class="no-imprime" style="max-width:420px;margin:0 auto">
+      <button class="oro-btn" id="imprimir">Imprimir</button>
+      <p class="pie-nota">Si en vez de imprimir querés el archivo, elegí
+        "Guardar como PDF" en el cuadro de impresión.</p>
+    </div>
+  </div>`;
+  app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);
+  app.querySelectorAll('.cuantas button').forEach(b=>b.onclick=()=>{
+    cuantas=Number(b.dataset.n); pintar();
+  });
+  app.querySelector('#imprimir').onclick=()=>window.print();
+  pintar();
+}
+
 async function vCartel(codigo){
   parar();
   const m=await meta(codigo); if(!m) return ir('panel');
@@ -3924,7 +4042,7 @@ function pantallaError(e){
   app.querySelector('#alInicio').onclick=()=>ir('portada');
 }
 
-const PIDE_CODIGO=['evento','subir','pantalla','album','cartel'];
+const PIDE_CODIGO=['evento','subir','pantalla','album','cartel','tarjetas'];
 function pintar(ruta){
   const [v,arg,extra]=String(ruta||'').split('/');
   window.scrollTo(0,0);
@@ -3940,7 +4058,7 @@ function pintar(ruta){
        de la muestra. Todo lo demás cae en la pantalla de subir. */
     /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
        es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
-    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','limpieza','codigo','portada',''].includes(v))
+    if(HAY_DEMO && ['panel','evento','cartel','tarjetas','diagnostico','invitado','proyector','limpieza','codigo','portada',''].includes(v))
       return ir('pantalla/DEMO-FIESTA');
     if(v==='panel') p=vAcceso();
     else if(v==='codigo') p=vPorCodigo();
@@ -3953,6 +4071,7 @@ function pintar(ruta){
     else if(v==='pantalla') p=vPantalla(arg);
     else if(v==='album') p=vAlbum(arg,extra);
     else if(v==='cartel') p=vCartel(arg);
+    else if(v==='tarjetas') p=vTarjetas(arg);
     else p=vPortada();
   }catch(e){ return pantallaError(e); }
   if(p&&typeof p.catch==='function') p.catch(pantallaError);

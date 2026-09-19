@@ -507,8 +507,14 @@ await corrida('se corta la señal justo al crear el rollo', async()=>{
   await page.goto('http://127.0.0.1:8890/rollo.html#nuevo/1');
   await page.waitForTimeout(500);
   await page.locator('#dato').fill('Los 15 de Delfina');
-  for(const _ of [1,2,3]){ await page.locator('#sig').click(); await page.waitForTimeout(350); }
-  await page.locator('#sig').click();     // crear, y se corta
+  /* Hasta el final sin contar pasos: contar clicks rompió esta prueba
+     cuando el alta pasó de cuatro pasos a seis, y falló por el motivo
+     equivocado. El click que no dice "Siguiente" es el de crear. */
+  for(let i=0;i<10;i++){
+    const t=((await page.locator('#sig').innerText().catch(()=>''))||'').trim().toLowerCase();
+    await page.locator('#sig').click(); await page.waitForTimeout(400);
+    if(!/siguiente/.test(t)) break;      // ese fue el de crear, y se corta
+  }
   await page.waitForTimeout(900);
   const guardadas=await page.evaluate(()=>JSON.parse(localStorage.getItem('ce:claves')||'{}'));
   const cods=Object.keys(guardadas);

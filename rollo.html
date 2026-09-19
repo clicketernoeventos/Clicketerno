@@ -88,6 +88,57 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   #cinta-demo{font-size:10.5px;gap:9px}
   #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
+/* ── tarjetas para cortar y repartir ──
+   Lo único del producto que el cliente necesita en la mano y no existía:
+   antes le sacaba una captura al QR de la pantalla. Mismas medidas que
+   las del muro, en milímetros, porque lo que importa es que entren en la
+   hoja de verdad y no cómo se ven en el monitor. */
+.hoja-tarjetas{background:#fff;padding:10px;margin:26px auto;max-width:520px;
+  display:grid;gap:0;border:1px solid var(--gris)}
+.hoja-tarjetas.de2{grid-template-columns:1fr}
+.hoja-tarjetas.de4,.hoja-tarjetas.de8{grid-template-columns:1fr 1fr}
+.tarjeta-qr{background:#0b0908;color:#F6F2EA;text-align:center;padding:16px 12px;
+  border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
+.tarjeta-qr .marca-t{width:88px;opacity:.9}
+.tarjeta-qr .nom-t{font-family:'Bodoni Moda',serif;font-style:italic;font-size:24px;line-height:1.1}
+.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
+.tarjeta-qr .ped-t{font-family:'Bodoni Moda',serif;font-size:15px;line-height:1.4;margin:6px 0}
+.tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
+.tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
+.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}
+.tarjeta-qr .cod-t{font-size:9.5px;letter-spacing:.24em;color:var(--oro)}
+.hoja-tarjetas.de8 .tarjeta-qr{padding:9px 8px;gap:4px}
+.hoja-tarjetas.de8 .tarjeta-qr .marca-t{width:54px}
+.hoja-tarjetas.de8 .tarjeta-qr .nom-t{font-size:16px}
+.hoja-tarjetas.de8 .tarjeta-qr .ped-t{font-size:11px;margin:2px 0}
+.hoja-tarjetas.de8 .tarjeta-qr .ins-t{font-size:6.5px}
+.hoja-tarjetas.de8 .tarjeta-qr .qr-t canvas,.hoja-tarjetas.de8 .tarjeta-qr .qr-t img{width:84px;height:84px}
+.hoja-tarjetas.de2 .tarjeta-qr .qr-t canvas,.hoja-tarjetas.de2 .tarjeta-qr .qr-t img{width:180px;height:180px}
+.hoja-tarjetas.de2 .tarjeta-qr .nom-t{font-size:34px}
+.hoja-tarjetas.de2 .tarjeta-qr .ped-t{font-size:19px}
+.cuantas{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.cuantas button{border:1px solid var(--gris);border-radius:999px;padding:8px 16px;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.cuantas button[aria-pressed=true]{border-color:var(--oro);color:var(--oro)}
+@media print{
+  #brillo,#grano,.cab-p,.no-imprime,#aviso-toast,#cinta-demo{display:none!important}
+  body{background:#fff;padding:0}
+  /* La hoja tiene que arrancar en 0,0. El padding del body y del .wrap la
+     corrían más de un centímetro y la cuarta tarjeta se salía del papel. */
+  body,#app,.wrap,.wrap.paso-cuerpo{margin:0!important;padding:0!important;max-width:none!important}
+  .hoja-tarjetas{margin:0;padding:0;border:0;max-width:none;width:210mm;height:297mm}
+  .hoja-tarjetas.de2 .tarjeta-qr,.hoja-tarjetas.de4 .tarjeta-qr{height:148.5mm}
+  .hoja-tarjetas.de8 .tarjeta-qr{height:74.25mm}
+  .tarjeta-qr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+/* el resumen del alta: lo que se le manda al cliente antes de cobrarle */
+.resumen{border:1px solid var(--hilo);margin-top:26px}
+.fila-res{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:14px 18px;border-bottom:1px solid var(--gris)}
+.fila-res:last-child{border-bottom:0}
+.fila-res span{font-size:12.5px;letter-spacing:.06em;color:var(--mute);flex:none}
+.fila-res b{font-weight:400;font-size:14.5px;color:#F6F2EA;text-align:right}
 .cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
 .cab img{width:82px;opacity:.7;margin-bottom:16px}
 .cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
@@ -488,6 +539,16 @@ const TIPOS={'XV':'QUI','Casamiento':'BOD','Cumpleaños':'CUM','Evento':'COR'};
    así que el rollo nacía revelado: el invitado entraba y en vez de la
    cámara le aparecía el álbum vacío. */
 const aUTC=v=>{ if(!v) return null; const d=new Date(v); return isNaN(d)?null:d.toISOString(); };
+/* Lo que escribió en el datetime-local, dicho en palabras y en la hora de
+   acá. Nada de toISOString: eso devuelve UTC y después de las nueve de la
+   noche en Rosario ya es el día siguiente. */
+const aLindo=v=>{
+  if(!v) return '';
+  const d=new Date(v); if(isNaN(d)) return '';
+  const dd=x=>String(x).padStart(2,'0');
+  return `${bonito(`${d.getFullYear()}-${dd(d.getMonth()+1)}-${dd(d.getDate())}`)}`
+       + ` a las ${dd(d.getHours())}:${dd(d.getMinutes())}`;
+};
 const aLocal=iso=>{
   if(!iso) return '';
   const d=new Date(iso); if(isNaN(d)) return '';
@@ -873,6 +934,62 @@ const guardarRollo=(c,v)=>{
 
 /* /rollo a secas (sin ?e=CODIGO): en vez de un cartel de error, la puerta
    de entrada. Alguien puede llegar acá desde la web, no solo desde el QR. */
+/* ── tarjetas para cortar y repartir ── */
+async function vTarjetas(codigo){
+  if(!claveDe(codigo)) return irA('clave/'+encodeURIComponent(codigo));
+  let m=null;
+  try{ m=await eventoConClave(codigo); }catch(e){}
+  if(!m) return vError('No encontré ese rollo.');
+  hojaA4(true);
+  let cuantas=4;
+  const enlace=enlaceDelRollo(codigo,false);
+
+  const tarjeta=()=>`
+    <div class="tarjeta-qr">
+      <img class="marca-t" src="marca.webp" alt="Click Eterno">
+      <div class="nom-t">${esc(m.nombre||codigo)}</div>
+      <div class="fec-t">${esc(bonito(m.fecha))}</div>
+      <p class="ped-t">Sacá tus fotos<br>de la fiesta</p>
+      <div class="qr-t"></div>
+      <p class="ins-t">Escaneá con la cámara · Sin instalar nada<br>
+        Nadie las ve hasta el revelado</p>
+      <div class="cod-t">${esc(codigo)}</div>
+    </div>`;
+
+  function dibujar(){
+    const hoja=app.querySelector('#hoja');
+    hoja.className='hoja-tarjetas de'+cuantas;
+    hoja.innerHTML=Array.from({length:cuantas},tarjeta).join('');
+    const tam = cuantas===8?124 : cuantas===2?240 : 176;
+    hoja.querySelectorAll('.qr-t').forEach(n=>pintarQR(n,enlace,tam));
+    app.querySelectorAll('.cuantas button').forEach(b=>
+      b.setAttribute('aria-pressed', String(Number(b.dataset.n)===cuantas)));
+  }
+
+  app.innerHTML=`
+  ${cabP('Tarjetas','ev/'+codigo)}
+  <div class="wrap">
+    <div class="no-imprime">
+      <p class="bajada">Imprimí esta hoja y cortá por la línea. Una tarjeta en
+        cada mesa y ya están sacando fotos.</p>
+      <div class="cuantas">
+        ${[2,4,8].map(n=>`<button data-n="${n}" aria-pressed="${n===cuantas}">${n} por hoja</button>`).join('')}
+      </div>
+    </div>
+    <div id="hoja" class="hoja-tarjetas de4"></div>
+    <div class="no-imprime">
+      <button class="oro-btn" id="imprimir">Imprimir</button>
+      <p class="ayudita" style="text-align:center">Si querés el archivo en vez de
+        papel, elegí "Guardar como PDF" en el cuadro de impresión.</p>
+    </div>
+  </div>`;
+  app.querySelectorAll('.cuantas button').forEach(b=>b.onclick=()=>{
+    cuantas=Number(b.dataset.n); dibujar();
+  });
+  app.querySelector('#imprimir').onclick=()=>window.print();
+  dibujar();
+}
+
 function vPedirCodigo(){
   app.innerHTML=`
   ${cabP('Entrar a un rollo','')}
@@ -1305,6 +1422,15 @@ async function vCamara(m,guardado,estado){
    importante para tocar, y arriba dice qué. Nada de listas de
    tarjetas donde no se sabe por dónde empezar.
    ══════════════════════════════════════════════════════════ */
+/* La hoja de tarjetas va en A4. Se saca al salir de la pantalla: si
+   queda puesta, cualquier otra impresión sale con ese tamaño. */
+function hojaA4(activar){
+  let e=document.getElementById('hojaA4');
+  if(activar){
+    if(!e){ e=document.createElement('style'); e.id='hojaA4';
+      e.textContent='@page{size:A4;margin:0}'; document.head.appendChild(e); }
+  }else if(e) e.remove();
+}
 function pintarQR(nodo,texto,tam){
   if(!nodo) return;
   nodo.innerHTML='';
@@ -1411,7 +1537,7 @@ async function vInicio(){
     <p class="bajada">Cada invitado saca 24 fotos y nadie ve ninguna
       —ni él— hasta que vos revelás el rollo.</p>
     <button class="oro-btn" id="crear">Crear el rollo de mi fiesta</button>
-    <p class="ayudita" style="text-align:center">Son 4 preguntas, un minuto.</p>
+    <p class="ayudita" style="text-align:center">Son 5 preguntas, un minuto.</p>
     <div id="mios"></div>
     <button class="link-abajo" id="soyInv">Soy invitado y tengo un código</button>
     <button class="link-abajo" id="conClave">Ya tengo un rollo: entrar con la clave</button>
@@ -1452,8 +1578,13 @@ async function vInicio(){
 }
 
 /* ── crear: una pregunta por pantalla ── */
-const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24,codigo:'',clave:''};
-const PASOS=4;
+const nuevo={nombre:'',tipo:'XV',fecha:hoy(),cuando:'mano',revela:'',cupo:24,
+             gente:50,codigo:'',clave:''};
+/* Seis pasos: los cuatro de antes, cuánta gente —que es el número con el
+   que se cotiza y estaba solo en la base, en 300 por defecto, sin que
+   nadie lo preguntara— y el resumen. El resumen no es un trámite: es la
+   pantalla que se le manda al cliente por WhatsApp antes de cobrarle. */
+const PASOS=6;
 function vNuevo(n){
   const paso=Math.min(Math.max(Number(n)||1,1),PASOS);
   const cuerpos={
@@ -1461,7 +1592,12 @@ function vNuevo(n){
       <h2>¿Cómo se llama la fiesta?</h2>
       <p class="sub">Es lo que van a ver tus invitados al entrar.</p>
       <input id="dato" type="text" maxlength="40" placeholder="Los 15 de Delfina"
-        value="${esc(nuevo.nombre)}" class="grande">`,
+        value="${esc(nuevo.nombre)}" class="grande">
+      <p class="rotulito">Sugerencias</p>
+      <div class="chips" id="sugerencias">
+        ${['Los 15 de','Casamiento de','Cumple de','Aniversario','Juntada']
+          .map(t=>`<button data-s="${t}">${t}</button>`).join('')}
+      </div>`,
     2:()=>`
       <h2>¿Qué festejan?</h2>
       <p class="sub">Con esto armamos el código de tu evento.</p>
@@ -1493,7 +1629,36 @@ function vNuevo(n){
         <b id="cupoTxt">${nuevo.cupo}</b>
         <button id="mas" aria-label="Más">+</button>
       </div>
-      <p class="ayudita" style="text-align:center">${nuevo.cupo===24?'24 es lo que traía una descartable.':'&nbsp;'}</p>`
+      <p class="ayudita" style="text-align:center">${nuevo.cupo===24?'24 es lo que traía una descartable.':'&nbsp;'}</p>`,
+    5:()=>`
+      <h2>¿Cuánta gente esperás?</h2>
+      <p class="sub">Contá a todos los que van a sacar fotos. Es un tope, no una lista:
+        no hace falta que aciertes.</p>
+      <input id="gente" type="number" inputmode="numeric" min="1" max="2000"
+        value="${nuevo.gente}" class="grande" style="text-align:center">
+      <div class="chips" id="cuantos" style="justify-content:center;margin-top:16px">
+        ${[30,50,100,150,200].map(g=>`<button data-g="${g}" aria-pressed="${g===nuevo.gente}">${g}</button>`).join('')}
+      </div>`,
+    6:()=>{
+      /* El resumen. Lo mismo que se va a guardar, en palabras: acá se
+         agarran los errores que después cuestan una fiesta —la fecha de
+         otro año, el revelado puesto para antes del brindis—. */
+      const fila=(q,r)=>`<div class="fila-res"><span>${q}</span><b>${esc(r)}</b></div>`;
+      return `
+      <h2>Antes de crearlo</h2>
+      <p class="sub">Mirá que esté todo bien. Después se puede cambiar desde Ajustes.</p>
+      <div class="resumen">
+        ${fila('Se llama', nuevo.nombre||'—')}
+        ${fila('Qué es', nuevo.tipo)}
+        ${fila('Cuándo', bonito(nuevo.fecha)||'—')}
+        ${fila('Fotos por invitado', String(nuevo.cupo))}
+        ${fila('Invitados con cámara', 'hasta '+nuevo.gente)}
+        ${fila('Se revela', nuevo.cuando==='hora'
+            ? (aLindo(nuevo.revela)||'a la hora que elegiste')
+            : 'cuando vos lo digas')}
+        ${fila('El álbum se guarda', DIAS_QUE_VIVE+' días')}
+      </div>`;
+    }
   };
   app.innerHTML=`
   <div class="paso-cab">
@@ -1517,6 +1682,23 @@ function vNuevo(n){
     app.querySelectorAll('#cuando [data-c]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     app.querySelector('#zonaHora').hidden = nuevo.cuando!=='hora';
   });
+  /* Sugerencias del nombre: en un teléfono, escribir es lo que más cuesta.
+     No reemplazan lo escrito, lo empiezan: "Los 15 de " y sigue él. */
+  app.querySelectorAll('#sugerencias [data-s]').forEach(b=>b.onclick=()=>{
+    const c=app.querySelector('#dato');
+    c.value = /\bde$/.test(b.dataset.s) ? b.dataset.s+' ' : b.dataset.s;
+    c.focus();
+    try{ c.setSelectionRange(c.value.length,c.value.length); }catch(e){}
+  });
+  const gente=app.querySelector('#gente');
+  if(gente){
+    const marcar=()=>app.querySelectorAll('#cuantos [data-g]').forEach(x=>
+      x.setAttribute('aria-pressed', String(Number(x.dataset.g)===Number(gente.value))));
+    app.querySelectorAll('#cuantos [data-g]').forEach(b=>b.onclick=()=>{
+      gente.value=b.dataset.g; marcar();
+    });
+    gente.addEventListener('input',marcar);
+  }
   const bm=app.querySelector('#menos');
   if(bm){
     const pintar=()=>{ app.querySelector('#cupoTxt').textContent=nuevo.cupo; };
@@ -1538,6 +1720,15 @@ function vNuevo(n){
         /* un rollo no puede nacer revelado */
         if(yaPaso(nuevo.revela)) return avisar('Esa hora ya pasó. Elegí una que venga.');
       }
+    }
+    if(paso===5){
+      const g=Math.round(Number(app.querySelector('#gente').value));
+      /* El tope de la base es 2000 (ce_cupos_sanos). Si se manda más, el
+         insert falla con un error de Postgres que no dice nada: mejor
+         atajarlo acá y decirlo en castellano. */
+      if(!Number.isFinite(g)||g<1) return avisar('¿Cuántos invitados esperás?');
+      if(g>2000) return avisar('El tope es 2000 invitados. Si son más, escribinos.');
+      nuevo.gente=g;
     }
     if(paso<PASOS) return irA('nuevo/'+(paso+1));
     crearRollo();
@@ -1591,7 +1782,7 @@ async function crearRollo(){
     await SB.guardar('ce_eventos',{
       codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
       vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
-      camara:true, cupo_fotos:nuevo.cupo, revelado:false,
+      camara:true, cupo_fotos:nuevo.cupo, cupo_invitados:nuevo.gente, revelado:false,
       revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
     }, claveEv);
     nuevo.codigo=''; nuevo.clave='';      // el próximo rollo arranca limpio
@@ -1667,6 +1858,7 @@ async function vRollo(codigo){
 
     <button class="oro-btn" id="compartir">${revelado?'Compartir el álbum':'Compartir el código'}</button>
     <button class="link-abajo" id="copiarLink">o copiar el link</button>
+    <button class="link-abajo" data-ir="tarjetas/${codigo}">o imprimir las tarjetas para las mesas</button>
 
     <p class="comova" id="stats">&nbsp;</p>
 
@@ -2144,7 +2336,7 @@ async function arranqueInvitado(){
 }
 
 function pintar(){
-  detenerPoll(); detenerCamara(); olvidarVigilia(); cerrarCapas();
+  detenerPoll(); detenerCamara(); olvidarVigilia(); cerrarCapas(); hojaA4(false);
   const h=location.hash.slice(1);
   window.scrollTo(0,0);
   let p;
@@ -2152,12 +2344,13 @@ function pintar(){
     /* En demostración no se crea nada ni se administra nada: lo que se
        muestra es lo que ve el invitado. "Crear el rollo de mi fiesta" no es
        una prueba, es el formulario de alta. */
-    if(HAY_DEMO && (h.startsWith('nuevo')||h.startsWith('ev/')||h.startsWith('ajustes/')
+    if(HAY_DEMO && (h.startsWith('nuevo')||h.startsWith('ev/')||h.startsWith('ajustes/')||h.startsWith('tarjetas/')
                     ||h==='codigo'||h.startsWith('clave')))
       return location.replace(location.pathname+location.search.replace(/[?&]camara=1/,'')+'#');
     if(h.startsWith('nuevo'))        p=vNuevo(h.split('/')[1]||1);
     else if(h.startsWith('ev/'))     p=vRollo(h.slice(3));
     else if(h.startsWith('ajustes/'))p=vAjustes(h.slice(8));
+    else if(h.startsWith('tarjetas/'))p=vTarjetas(h.slice(9));
     else if(h==='codigo')            p=vPedirCodigo();
     else if(h.startsWith('clave'))   p=vPedirClave(h.split('/')[1]||'');
     /* el invitado llega del QR con ?e=CODIGO; el resto ve la puerta */

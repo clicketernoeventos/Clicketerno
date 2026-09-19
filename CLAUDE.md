@@ -18,6 +18,20 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+**Las tarjetas para cortar** (`muro#tarjetas/CODIGO`, `rollo#tarjetas/CODIGO`)
+son lo único del producto que el cliente necesita en la mano: una A4 con la
+misma tarjeta repetida —2, 4 u 8— con el QR, el nombre y la fecha, para
+cortar y poner en las mesas. El cartel de mesa del muro sigue existiendo y
+es una sola tarjeta por hoja; esto es para repartir. Antes del rollo no
+había nada y el organizador le sacaba una captura al QR de la pantalla.
+
+**El alta del rollo son seis pasos**: nombre (con sugerencias, porque
+escribir en un teléfono es lo que más cuesta), qué festejan y cuándo,
+cuándo se ven las fotos, cuántas por invitado, **cuánta gente** —el número
+con el que se cotiza, que vivía solo en la base en 300 por defecto y nadie
+preguntaba— y el **resumen**. El resumen no es un trámite: es la pantalla
+que se le manda al cliente por WhatsApp antes de cobrarle.
+
 Al que ya contrató se entra por **`/#entrar`** de la página pública. Es lo
 primero que pregunta un cliente cuando paga, y son dos caminos distintos:
 
@@ -359,6 +373,22 @@ las del cupo?, ¿puede ver las de otro?
   el teléfono, perdido el evento. Lo que faltaba estaba en el navegador,
   no en la base.
 
+- **Lo que se imprime no se mide en la pantalla.** Las tarjetas para
+  cortar se veían perfectas en el monitor y salían mal: el `padding` del
+  `body` y del `.wrap` corrían la hoja **113px** a la derecha y la mitad
+  de las tarjetas se iba fuera del papel. En `@media print` hay que
+  resetear los contenedores (`body,#app,.wrap{margin:0;padding:0}`) y dar
+  la hoja en **milímetros** (210×297), no en píxeles. `pruebas/tarjetas.js`
+  y `pruebas/rollo_alta.js` lo miden con `emulateMedia({media:'print'})`
+  y `getBoundingClientRect`: que la hoja arranque en 0,0, que mida una A4
+  exacta, que las tarjetas sean todas iguales y que ninguna se pase del
+  borde. Sin eso, el error se descubre recién en la impresora del cliente.
+- **Una regla `@page` puesta a mano se queda puesta.** `hojaPostal()` ya
+  había hecho que el "Guardar en PDF" del álbum saliera en tamaño postal.
+  La hoja de tarjetas agrega `hojaA4()`, y **las dos se sacan en
+  `parar()`** (muro) y al cambiar de pantalla (rollo). Hay una prueba que
+  entra, sale, y comprueba que no quedó.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -467,6 +497,14 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
 - **Con el reloj falso puesto, `goto` con `waitUntil:'domcontentloaded'`
   se cuelga**; `waitUntil:'commit'` y después `waitForLoadState` vuelve en
   60 ms. Medido, no supuesto.
+- **Una prueba que cuenta clicks se rompe sola.** `rollo_hora` y
+  `rollo_hostil` recorrían el alta con "cuatro clicks en Siguiente". El
+  día que el asistente pasó a seis pasos las dos fallaron **por el motivo
+  equivocado**: se quedaban a mitad de camino y reportaban que no se
+  guardaba la clave. Se avanza mientras el botón diga "Siguiente"; el
+  click que no lo dice es el de crear. Lo mismo vale para cualquier
+  recorrido: apoyarse en lo que dice la pantalla, no en cuántas veces hay
+  que tocar.
 - **Cuidado al comparar contra `main`.** `git worktree` te da los archivos
   de main, pero las pruebas apuntan a un puerto fijo: si el servidor
   levantado sirve tu copia de trabajo, estás corriendo las pruebas de main
