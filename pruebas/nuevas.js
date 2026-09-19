@@ -70,6 +70,43 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     await ctx.close();
   }
 
+  // ═══ 1b. la maestra NUNCA se guarda en el disco ═══
+  console.log('\n─── la maestra no queda escrita en el teléfono ───');
+  /* La clave maestra vive en sessionStorage y se muere al cerrar la
+     pestaña: es la llave que abre TODOS los eventos de todos los
+     clientes. Pero si se la escribía en el campo "clave de este evento"
+     —que es lo natural cuando querés entrar a la fiesta de un cliente
+     desde otro teléfono— se guardaba en ce:claves, en localStorage, como
+     si fuera la clave de ese evento. Ahí queda para siempre. La base ya
+     nos dice cuál es (es_maestra) y lo estábamos ignorando. */
+  {
+    const {ctx,p,errs,fake}=await pagina(browser);
+    fake.db.ce_eventos.push(EVENTO());
+    await p.goto(BASE+'/muro.html#evento/QUI-7FCE64',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1400);
+    if(!(await p.locator('#claveEv').count())) mal('no pidió la clave del evento');
+    else{
+      bien('sin clave guardada, pide la clave del evento');
+      await p.fill('#claveEv','CLAVE-MAESTRA-DE-PRUEBA');
+      await p.click('#entrarEv'); await p.waitForTimeout(1800);
+      const guardadas=await p.evaluate(()=>{
+        try{ return localStorage.getItem('ce:claves')||''; }catch(e){ return 'no pude leer'; }});
+      if(/CLAVE-MAESTRA-DE-PRUEBA/.test(guardadas))
+        mal('¡LA MAESTRA QUEDÓ ESCRITA EN EL DISCO!: '+guardadas);
+      else bien('la maestra no queda en localStorage: '+(guardadas||'(vacío)'));
+      const enSesion=await p.evaluate(()=>{
+        try{ return sessionStorage.getItem('ce:maestra')||''; }catch(e){ return ''; }});
+      if(enSesion!=='CLAVE-MAESTRA-DE-PRUEBA')
+        mal('tampoco quedó en sessionStorage: no se puede seguir trabajando');
+      else bien('queda en sessionStorage, que se borra al cerrar la pestaña');
+      if(!(await p.locator('[data-sol="pAjustes"]').count()))
+        mal('con la maestra no entró a manejar el evento');
+      else bien('y entra igual a manejar el evento');
+    }
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   // ═══ 2. programar apertura ═══
   console.log('\n─── programar la apertura ───');
   {

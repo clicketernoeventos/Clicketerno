@@ -342,6 +342,23 @@ las del cupo?, ¿puede ver las de otro?
   cliente que ya pagó no tenía a dónde ir a crear su evento. Ahora está el
   apartado **`#entrar`** ("Ya contrataste"), con su entrada en el menú.
 
+- **La clave maestra no puede terminar en el disco.** Vive en
+  `sessionStorage` a propósito: se muere al cerrar la pestaña. Pero el
+  campo "clave de este evento" —el que aparece cuando entrás a la fiesta
+  de un cliente desde otro teléfono— guardaba en `ce:claves`, en
+  `localStorage`, **cualquier** clave que la base aceptara. Escribir ahí
+  la maestra, que es lo natural para entrar sin tener la del evento,
+  dejaba la llave de todos los eventos de todos los clientes escrita en
+  ese aparato, para siempre y sin que nadie lo supiera. La base ya dice
+  cuál es (`es_maestra` en `ce_quien_soy`) y lo estábamos ignorando. Pasa
+  en los dos: `pruebas/nuevas.js` y `pruebas/rollo_maestra.js`.
+- **El rollo no mandaba la maestra.** `ce_permitido` la acepta para
+  cualquier evento —la chequea ANTES que la del evento—, pero
+  `claveDe()` del rollo solo miraba las guardadas en ese teléfono. O sea
+  que un rollo solo se manejaba desde el aparato donde se creó: perdido
+  el teléfono, perdido el evento. Lo que faltaba estaba en el navegador,
+  no en la base.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo

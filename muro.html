@@ -2350,8 +2350,20 @@ function vPedirClave(codigo,m){
     try{
       const r=await SB.quienSoy(codigo,v);
       if(r&&r.puede_editar){
-        guardarClaveDe(codigo,v);
-        recado('Listo'); return redibujar(codigo);
+        /* Si es la maestra NO va al disco. Antes iba a ce:claves como si
+           fuera la clave de este evento: la llave que abre TODOS los
+           eventos de todos los clientes quedaba escrita en el localStorage
+           de ese teléfono, para siempre. La base ya nos dice cuál es
+           (es_maestra) y lo estábamos ignorando. */
+        if(r.es_maestra){
+          esAdmin=true; guarda.escribirSesion('ce:admin','1');
+          claveMaestra=v; guarda.escribirSesion('ce:maestra',v);
+          recado('Entraste con la clave de administrador');
+        }else{
+          guardarClaveDe(codigo,v);
+          recado('Listo');
+        }
+        return redibujar(codigo);
       }
       if(r&&!r.llego_la_clave){
         recado('La clave no llega a la base. Avisale a Click Eterno.');
