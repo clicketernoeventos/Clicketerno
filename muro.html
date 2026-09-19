@@ -1124,6 +1124,34 @@ async function subirArchivo(blob, base, alAvanzar){
   return SB.archivo(`${base}.${EXT[blob.type]||'jpg'}`, blob, alAvanzar);
 }
 
+/* ══════════ lo que manda el visitante en la demostración se borra solo ══════════
+   La demostración ya vive entera en memoria: se recarga y no queda nada,
+   ni en la base ni en el navegador. Pero MIENTRAS la pestaña está abierta
+   lo que mandó uno se queda, y la demostración se muestra en el teléfono
+   del negocio, de cliente en cliente: el segundo se encontraba la foto que
+   dejó el primero proyectada entre las de ejemplo.
+   Dos minutos alcanzan para verla pasar por la pantalla del salón —la
+   proyección cambia cada siete segundos— y son poco para que quede
+   colgada. Solo se le pone plazo a lo que manda el visitante: las nueve
+   fotos y los saludos del ejemplo son la fiesta y no se tocan. */
+const VIDA_DEMO = 2*60*1000;
+async function borrarDeLaDemo(codigo, id){
+  try{
+    const idx = await leerLocal(kIndex(codigo), []);
+    const quedan = idx.filter(i=>i.id!==id);
+    if(quedan.length===idx.length) return;      // ya no estaba
+    await local.set(kIndex(codigo), quedan);
+    delete memoria[kItem(codigo,id)];
+    delete cacheItem[codigo+id];
+  }catch(e){ console.warn('no pude limpiar la demostración',e); }
+}
+/* El reloj arranca cuando se manda, no cuando se mira: si el visitante se
+   queda en la pantalla del salón, igual desaparece a los dos minutos. */
+function borrarseSolo(codigo, id){
+  if(!HAY_DEMO) return;
+  setTimeout(()=>borrarDeLaDemo(codigo,id), VIDA_DEMO);
+}
+
 /* ── funciones que usa toda la app (misma firma, con o sin nube) ── */
 /* SOLO los eventos de este aparato.
    Antes se pedían todos, sin filtro: el panel decía "Tus eventos" y le
@@ -3057,10 +3085,12 @@ async function vSubir(codigo){
       btn.textContent=f>=1?'Revelando…':`Subiendo ${Math.round(f*100)}%`;
     };
     try{
-      await sumar(codigo,{id:idNuevo(),
+      const idNuevoItem=idNuevo();
+      await sumar(codigo,{id:idNuevoItem,
         kind:medio?medio.kind:'mensaje', blob:medio?medio.blob:null, data:'', autor, texto, ts:Date.now(),
         estado:m.moderar?'pendiente':'aprobado'},
         avance);
+      borrarseSolo(codigo, idNuevoItem);
       if(medio&&medio.previa) URL.revokeObjectURL(medio.previa);
       vMomento(m,autor);
     }catch(e){
@@ -3103,6 +3133,9 @@ function vMomento(m,autor){
     <h1 class="ital sube" style="font-size:40px">${m.moderar?'Enviado':'Ya está en la pantalla'}</h1>
     <p class="sube" style="animation-delay:.15s;color:#B5AC9E;line-height:1.8;max-width:30ch;margin:18px auto 0;font-size:15px">
       ${m.moderar?'El organizador lo aprueba y se proyecta enseguida.':'Levantá la vista, '+esc(autor)+'. Es tuya la que está pasando.'}</p>
+    ${HAY_DEMO?`<p class="sube" style="animation-delay:.2s;color:var(--oro);font-size:12.5px;
+      letter-spacing:.06em;line-height:1.7;max-width:30ch;margin:14px auto 0">
+      Es una prueba: tu foto se borra sola en un par de minutos.</p>`:''}
     <div class="filete" style="max-width:220px;margin:30px auto">${ESTRELLA}</div>
     <div class="sube" style="animation-delay:.3s;max-width:330px;margin:0 auto">
       <button class="oro-btn" id="otra">Subir otra</button>

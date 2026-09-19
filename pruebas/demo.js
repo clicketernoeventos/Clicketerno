@@ -13,6 +13,9 @@
      · con otro código no se ve nada, porque en la demostración no existe;
      · y sin ?demo=1, quien no tiene claves guardadas no ve los eventos
        de nadie.
+   Y que lo que manda el visitante se borre solo: la demostración se
+   muestra en el teléfono del negocio, de cliente en cliente, y sin eso el
+   segundo se encontraba proyectada la foto que dejó el primero.
    ══════════════════════════════════════════════════════════════════ */
 const { chromium } = require('playwright');
 const { crearFake } = require('./fakesb');
@@ -331,6 +334,67 @@ async function abrir(ctx) {
     afirmar(botones.some((h) => /^muro\?/.test(h)) && botones.some((h) => /^rollo\?/.test(h)),
       'cada servicio muestra SU demostración: el muro el muro y el rollo el rollo',
       botones.join(' · '));
+  }
+
+  /* ── 6 · lo que manda el visitante se borra solo ──
+     Todo lo de la demostración ya vive en memoria y se va con la recarga.
+     Lo que faltaba es MIENTRAS la pestaña sigue abierta: la demostración
+     pasa de mano en mano en el teléfono del negocio.
+     Con el reloj falso de Playwright, para no esperar dos minutos de
+     verdad en cada corrida. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const pg = await ctx.newPage();
+    const espia = { nube: [], errores: [] };
+    pg.on('request', (r) => { if (/supabase|\/rest\/v1\/|\/storage\/v1\//.test(r.url())) espia.nube.push(r.url()); });
+    pg.on('pageerror', (e) => espia.errores.push('PAGEERROR ' + e.message));
+    await pg.clock.install();
+    const cuantos = () => pg.evaluate(async () => (await window.indice('DEMO-FIESTA')).length);
+
+    await pg.goto(BASE + '/muro.html?demo=1', { waitUntil: 'domcontentloaded' });
+    await pg.clock.runFor(3000); await pg.waitForTimeout(1500);
+    const alEntrar = await cuantos();
+    afirmar(alEntrar > 0, 'la fiesta de ejemplo se siembra', String(alEntrar));
+
+    await pg.goto(BASE + '/muro.html?demo=1#subir/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.clock.runFor(2000); await pg.waitForTimeout(1200);
+    await pg.fill('#autor', 'Tomás');
+    await pg.click('[data-m="texto"]'); await pg.waitForTimeout(300);
+    await pg.fill('#msg', 'Un saludo de prueba');
+    await pg.click('#enviar');
+    await pg.clock.runFor(1500); await pg.waitForTimeout(1200);
+    const trasMandar = await cuantos();
+    afirmar(trasMandar === alEntrar + 1, 'lo que manda el visitante entra al muro',
+      `${alEntrar} → ${trasMandar}`);
+    /* Que se borre sin avisar sería peor que dejarlo: el que mandó la foto
+       la ve desaparecer y parece un producto roto. */
+    afirmar(/se borra sola/i.test(await leer(pg, '#app')),
+      'y le avisa al visitante que se borra sola');
+
+    await pg.clock.fastForward('02:30');
+    await pg.waitForTimeout(800);
+    const despues = await cuantos();
+    afirmar(despues === alEntrar, 'a los dos minutos se borró solo',
+      `quedaron ${despues}, esperaba ${alEntrar}`);
+    /* Y las nueve fotos y los saludos del ejemplo NO: son la fiesta. */
+    afirmar(despues === alEntrar && alEntrar > 10,
+      'el ejemplo sembrado sigue entero', String(despues));
+
+    /* Y la pantalla del salón se entera: si el contador se queda con el
+       número viejo, el que mira ve "15 en el muro" y catorce fotos. */
+    await pg.goto(BASE + '/muro.html?demo=1#pantalla/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.clock.runFor(3000); await pg.waitForTimeout(1200);
+    /* El número y el "En el muro" salen pegados ("14EN EL MURO"), así que
+       no hay borde de palabra donde ponerle \b: se saca el número. */
+    const enPantalla = texto(await leer(pg, '#cuenta'));
+    const nDicho = Number((enPantalla.match(/\d+/) || [])[0]);
+    afirmar(nDicho === alEntrar,
+      'la pantalla del salón muestra la cuenta al día', `dice ${enPantalla}, esperaba ${alEntrar}`);
+
+    afirmar(espia.nube.length === 0, 'y en todo esto no salió un pedido a Supabase',
+      espia.nube.slice(0, 2).join(' · '));
+    afirmar(espia.errores.length === 0, 'sin errores de JavaScript', espia.errores.join(' | '));
+    await ctx.close();
   }
 
   await browser.close();

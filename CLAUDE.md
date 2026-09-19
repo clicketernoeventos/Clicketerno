@@ -54,6 +54,20 @@ nunca, o sea que el ejemplo no mostraba nada.
 prueba: el que entra después no tiene que encontrarse con lo que dejó el
 anterior.
 
+**Lo que manda el visitante se borra solo a los dos minutos**
+(`VIDA_DEMO`, en `muro.html` y en `rollo.html`). La demostración ya vivía
+entera en memoria y se iba con la recarga, pero MIENTRAS la pestaña sigue
+abierta lo que dejó uno se queda: la demostración pasa de mano en mano en
+el teléfono del negocio, y el segundo cliente se encontraba proyectada la
+foto del primero. Dos minutos alcanzan para verla pasar por la pantalla
+del salón —la proyección cambia cada siete segundos— y son poco para que
+quede colgada. **Se le avisa al visitante**: que una foto desaparezca sin
+haberlo dicho parece un producto roto. En el rollo es lo mismo pero al
+revés: la foto se devuelve (`ce_devolver_foto`, el camino que ya existía
+para cuando falla la subida), así el cupo se repone y al tercer cliente la
+cámara le abre igual. **Lo sembrado no se toca**: las nueve fotos y los
+saludos del ejemplo son la fiesta.
+
 **La cinta se pliega.** Un ✕ la deja en una tira de 18px que se toca y
 vuelve. No se esconde del todo a propósito: es la única salida al sitio y
 el único "Empezar de nuevo". Su alto real vive en `--cinta` y lo mide el
@@ -413,6 +427,20 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   corredor avisa solo cuando **cambian**. No subir ese número para que deje
   de molestar: mirar qué apareció. Los modos `ok` y `evil` tienen que dar
   cero, siempre.
+- **Recargar la página borra la evidencia.** La prueba del rollo que se
+  vuelve a llenar sacaba una foto, adelantaba el reloj y **recargaba**
+  para leer el contador. Pero la demostración se resiembra en cada carga,
+  así que el cupo volvía entero con arreglo y sin arreglo: pasaba de los
+  dos lados. Se mide sacando una SEGUNDA foto sin recargar: si la primera
+  se devolvió, el contador vuelve a marcar lo mismo; si no, uno menos.
+- **Una pestaña que queda abierta le arruina la siguiente.** La primera
+  página de `rollo_cinta.js` se dejaba abierta hasta el final, con la
+  cámara y los sondeos andando. La segunda —que usa el reloj falso de
+  Playwright— no terminaba de cargar nunca: tres corridas colgadas en el
+  mismo punto. Cerrar el contexto cuando se termina de usar.
+- **Con el reloj falso puesto, `goto` con `waitUntil:'domcontentloaded'`
+  se cuelga**; `waitUntil:'commit'` y después `waitForLoadState` vuelve en
+  60 ms. Medido, no supuesto.
 - **Cuidado al comparar contra `main`.** `git worktree` te da los archivos
   de main, pero las pruebas apuntan a un puerto fijo: si el servidor
   levantado sirve tu copia de trabajo, estás corriendo las pruebas de main

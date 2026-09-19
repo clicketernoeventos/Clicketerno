@@ -388,6 +388,13 @@ const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
    sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
 const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
 const DEMO_COD = 'DEMO-ROLLO';
+/* Lo que saca el visitante en la demostración se devuelve solo a los dos
+   minutos (igual que en el muro, ver VIDA_DEMO en muro.html). La
+   demostración pasa de mano en mano en el teléfono del negocio: sin esto
+   el tercer cliente se encuentra el rollo gastado por los dos anteriores
+   y la cámara no le abre. Las tres fotos del ejemplo no se tocan: son la
+   fiesta. */
+const VIDA_DEMO = 2*60*1000;
 const app=document.getElementById('app');
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
 const ESTRELLA='<span class="estrella"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.7 7.6L22 12l-7.3 3.4L12 23l-2.7-7.6L2 12l7.3-3.4z"/></svg></span>';
@@ -702,6 +709,13 @@ if(HAY_DEMO){
         if(misDisparos>=ev.cupo_fotos) throw new Error('Ya usaste todas tus fotos');
         misDisparos++;
         fotos.push({ruta:a.p_ruta,nombre:'Vos',filtro:a.p_filtro,mia:true});
+        /* Y se devuelve sola, exactamente como si hubiera fallado la
+           subida: el mismo camino que ya existe, no uno nuevo. */
+        const suRuta=a.p_ruta;
+        setTimeout(function(){
+          const i=fotos.findIndex(f=>f.ruta===suRuta);
+          if(i>=0){ fotos.splice(i,1); misDisparos=Math.max(0,misDisparos-1); }
+        }, VIDA_DEMO);
         return {restantes:ev.cupo_fotos-misDisparos};
       }
       if(fn==='ce_devolver_foto'){
@@ -1079,7 +1093,8 @@ async function vCamara(m,guardado,estado){
         <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
         <div class="hueco"></div>
       </div>
-      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.</p>
+      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.${
+        HAY_DEMO?'<br><span style="color:var(--oro)">Es una prueba: el rollo se vuelve a llenar solo.</span>':''}</p>
     </div>
   </div>`;
 

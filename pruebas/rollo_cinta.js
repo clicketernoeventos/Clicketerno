@@ -30,7 +30,11 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
 const texto=async p=>(await p.evaluate(()=>document.body.innerText||'')).toLowerCase();
 
 (async()=>{
-const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+/* Sin cámara de mentira el disparador no hace nada: la app no le gasta una
+   foto al invitado si el cuadro viene negro, que es lo correcto. Mismos
+   argumentos que rollo_hostil y rollo_navegador. */
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
 const ctx=await b.newContext({viewport:TELEFONO});
 const p=await ctx.newPage();
 const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -106,6 +110,71 @@ const t3=await texto(p);
 if(/quedan fotos|usar la cámara del/.test(t3)&&!/revelando|álbum/.test(t3))
   mal('no volvió al álbum');
 else bien('vuelve al álbum');
+}
+
+/* La primera pestaña se cierra ACÁ y no al final. Dejándola abierta, la
+   que viene —que usa el reloj falso— no terminaba de cargar nunca: tres
+   corridas seguidas colgadas en el mismo punto, y cerrándola pasa siempre.
+   La causa probable son los sondeos y la cámara que quedan andando en la
+   primera; lo comprobado es que cerrarla lo arregla. */
+await ctx.close();
+
+console.log('\n─── el rollo de la prueba se vuelve a llenar ───');
+/* La demostración pasa de mano en mano en el teléfono del negocio. Sin
+   esto, el tercer cliente se encuentra las 24 fotos gastadas por los dos
+   anteriores y la cámara no le abre. Se mide con el reloj falso para no
+   esperar dos minutos de verdad en cada corrida. */
+{
+  const c2=await b.newContext({viewport:TELEFONO,permissions:['camera']});
+  const p2=await c2.newPage();
+  const e2=[]; p2.on('pageerror',e=>e2.push(e.message));
+  await p2.clock.install();
+  /* Derecho a la dirección final, con el ?e= puesto. Sin él, el arranque
+     hace un location.replace para agregarlo y la navegación se pisa con la
+     que estamos esperando: el goto se queda colgado a veces sí y a veces
+     no. Una prueba que falla una de cada tres veces es ruido. */
+  const CAMARA=BASE+'/rollo.html?demo=1&camara=1&e=DEMO-ROLLO';
+  /* En dos pasos: con el reloj falso puesto, esperar el
+     'domcontentloaded' DESDE el goto se queda colgado los 30 segundos,
+     y esperarlo aparte vuelve en 60 ms. Medido, no supuesto. */
+  const irALaCamara=async()=>{
+    await p2.goto(CAMARA,{waitUntil:'commit'});
+    await p2.waitForLoadState('domcontentloaded');
+    await p2.clock.runFor(3000); await p2.waitForTimeout(1500);
+  };
+  await irALaCamara();
+  const quedan=async()=>Number((await p2.locator('#cRestan').innerText().catch(()=>'')).trim());
+  const antes=await quedan();
+  if(!(antes>0)) mal('no se ve el contador de fotos que quedan: '+antes);
+  else{
+    bien('el rollo de prueba arranca con '+antes);
+    /* SIN recargar. Recargando, la demostración se resiembra sola y el
+       cupo vuelve a estar entero con arreglo o sin él: escrita así, la
+       prueba pasaba también contra el código de antes y no medía nada.
+       Lo que la distingue es sacar una SEGUNDA foto después del plazo: si
+       la primera se devolvió, el contador vuelve a marcar lo mismo; si no
+       se devolvió, marca uno menos. */
+    const disparar=async()=>{
+      await p2.click('#disparo').catch(()=>{});
+      await p2.clock.runFor(2500); await p2.waitForTimeout(1500);
+      return quedan();
+    };
+    const gastada=await disparar();
+    if(!(gastada<antes)) mal(`sacar una foto no gasta el cupo (${antes} → ${gastada})`);
+    else{
+      bien(`sacar una foto gasta el cupo: ${antes} → ${gastada}`);
+      await p2.clock.fastForward('02:30'); await p2.waitForTimeout(800);
+      const segunda=await disparar();
+      if(segunda!==gastada)
+        mal(`la primera foto no se devolvió a los dos minutos: la segunda dejó ${segunda}, esperaba ${gastada}`);
+      else bien(`a los dos minutos la primera se devuelve sola: la segunda vuelve a dejar ${segunda}`);
+    }
+    const pie=(await p2.locator('.pie-camara').innerText().catch(()=>'')).toLowerCase();
+    if(!/se vuelve a llenar/.test(pie)) mal('no le avisa al visitante que se repone: "'+pie+'"');
+    else bien('y se lo avisa al visitante');
+  }
+  if(e2.length) mal('errores JS en la cámara: '+e2.join(' | '));
+  await c2.close();
 }
 
 console.log('\nerrores JS: '+(errs.length?errs.join(' | '):'ninguno'));
