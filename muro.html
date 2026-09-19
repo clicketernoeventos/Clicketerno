@@ -219,6 +219,11 @@ option{background:#0B0A08}
 .cuenta small{font-family:Jost;font-size:9.5px;letter-spacing:.28em;color:var(--mute);margin-left:10px;text-transform:uppercase}
 .qr-sala{background:#fff;padding:6px;line-height:0}
 .qr-sala img,.qr-sala canvas{width:56px;height:56px;display:block}
+.botones-sala{position:fixed;top:18px;right:18px;z-index:60;display:flex;gap:8px;flex-wrap:wrap;
+  justify-content:flex-end;max-width:min(60vw,520px)}
+.botones-sala .dejar{position:static;top:auto;right:auto}
+.dejar.llamada{background:linear-gradient(135deg,var(--oro),var(--champan));color:#2A1B08;
+  border-color:transparent;font-weight:500}
 .dejar{position:fixed;top:18px;right:18px;z-index:60;border:1px solid var(--hilo);border-radius:2px;
   padding:9px 18px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
 .aguarda{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:34px}
@@ -393,6 +398,7 @@ body.en-demo .sala,
 body.en-demo .visor,
 body.en-demo .capa{top:38px}
 body.en-demo .modos-sala{top:54px}
+body.en-demo .botones-sala{top:56px}
 body.en-demo .dejar{top:56px}
 @media (max-width:420px){
   #cinta-demo{font-size:10.5px;gap:9px}
@@ -1750,7 +1756,7 @@ async function sembrar(){
     /* En demostración se entra por donde entra un invitado, no por el panel
        del organizador: lo que se quiere mostrar es cómo se deja una foto o
        un saludo y aparece en la pantalla del salón. */
-    ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
+    ir(HAY_DEMO?'pantalla/'+codigo:'evento/'+codigo);
   }catch(e){
     console.error('sembrar',e);
     recado('No pude cargar la fiesta de ejemplo: '+motivo(e));
@@ -1803,7 +1809,7 @@ async function vAcceso(){
         text-transform:uppercase;color:var(--mute)">Entrar como administrador</button>`}
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   const campo=app.querySelector('#pin');
   campo.focus();
   const probar=async()=>{
@@ -1875,7 +1881,7 @@ async function vPanel(){
       <button class="oro-btn" id="crear" style="margin-top:12px">Crear evento</button>
     </div>
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   contador('#n');
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
@@ -2645,7 +2651,7 @@ async function vElegir(destino,titulo){
     ${evs.length? evs.map(e=>tarjetaEvento(e)).join('')
       :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}
   </div>`;
-  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?reiniciarDemo():ir('portada');
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
 }
 
@@ -2857,8 +2863,14 @@ async function vPantalla(codigo){
      lo que mandaron. Arranca en cartel, que es lo primero que hace falta. */
   const abre=cuandoAbre(m);
   app.innerHTML=`
-  <button class="dejar">Salir</button>
-  <button class="dejar" id="completa" style="right:96px">Pantalla completa</button>
+  <!-- Los dos en una fila, no cada uno con su "right" a ojo: el botón de la
+       demostración es más largo y se montaba encima del otro. -->
+  <div class="botones-sala">
+    <button class="dejar" id="completa">Pantalla completa</button>
+    <!-- En demostración esta pantalla ES la prueba, así que "Salir" no tiene
+         sentido: lo que hace falta es invitar a probar el otro lado. -->
+    <button class="dejar${HAY_DEMO?' llamada':''}">${HAY_DEMO?'Probá mandar una foto':'Salir'}</button>
+  </div>
   <div class="modos-sala" role="group" aria-label="Qué se muestra">
     <button data-modo="cartel" aria-pressed="true">Código</button>
     <button data-modo="tablero" aria-pressed="false">Tablero</button>
@@ -2917,7 +2929,8 @@ async function vPantalla(codigo){
       <span class="qr-sala" id="qrs"></span>
     </div>
   </div>`;
-  app.querySelector('.dejar').onclick=()=>ir('evento/'+codigo);
+  app.querySelector('.botones-sala .dejar:last-child').onclick=
+    ()=>ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
   app.querySelector('#completa').onclick=()=>{
     if(document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen?.().catch(()=>recado('Tocá F11 para pantalla completa'));
@@ -3089,7 +3102,10 @@ async function vPantalla(codigo){
     await mostrar(ids[cursor],false);
   }
   await revisar().catch(e=>console.error('sala',e));
-  verModo('cartel');
+  /* En la fiesta arranca en el cartel, que es lo primero que hace falta
+     (que escaneen). En la demostración arranca en el MURO: lo que se está
+     mostrando es cómo se ve proyectado, no el código. */
+  verModo(HAY_DEMO?'muro':'cartel');
   timerSala=setInterval(async()=>{
     try{
       const hubo=await revisar();
@@ -3554,9 +3570,10 @@ function pintar(ruta){
        pantalla del salón y el álbum. El panel del organizador, el cartel y
        el diagnóstico son herramientas de quien vende el servicio, no parte
        de la muestra. Todo lo demás cae en la pantalla de subir. */
-    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','portada',''].includes(v))
-      return ir(v==='proyector'?'pantalla/DEMO-FIESTA':'subir/DEMO-FIESTA');
-    if(HAY_DEMO && v==='proyector') return ir('pantalla/DEMO-FIESTA');
+    /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
+       es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
+    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','portada',''].includes(v))
+      return ir('pantalla/DEMO-FIESTA');
     if(v==='panel') p=vAcceso();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);

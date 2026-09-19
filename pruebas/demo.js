@@ -51,7 +51,11 @@ async function abrir(ctx) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  /* Con cámara de mentira: sin estos dos, getUserMedia no devuelve nada, el
+     rollo cae en el camino alternativo (elegir un archivo) y el disparador
+     no dispara. La prueba fallaba por el navegador, no por la app. */
+  const browser = await chromium.launch({
+    args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
 
   /* ── 1 · el muro en demostración: SOLO lo que ve un invitado ── */
   {
@@ -60,9 +64,13 @@ async function abrir(ctx) {
     await pg.goto(`${BASE}/muro.html?demo=1`);
     await pg.waitForTimeout(3500);
 
-    afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
-      'el muro cae en la pantalla de subir, que es la del invitado',
+    afirmar(await pg.evaluate(() => location.hash) === '#pantalla/DEMO-FIESTA',
+      'el muro cae en la pantalla del salón, que es lo que hay que mostrar',
       await pg.evaluate(() => location.hash));
+    afirmar(await pg.locator('[data-modo="muro"][aria-pressed="true"]').count() === 1,
+      'y arranca proyectando el muro, no el código QR');
+    afirmar(/prob[aá] mandar/i.test(await leer(pg, '.botones-sala')),
+      'con un botón que invita a probar el otro lado');
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'se ve la cinta que avisa que es una demostración');
     afirmar(/inventad/i.test(await leer(pg, '#cinta-demo')),
@@ -78,7 +86,7 @@ async function abrir(ctx) {
     for (const ruta of ['panel', 'evento/DEMO-FIESTA', 'cartel/DEMO-FIESTA', 'portada', 'invitado']) {
       await pg.evaluate(r => { location.hash = '#' + r; }, ruta);
       await pg.waitForTimeout(900);
-      afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
+      afirmar(await pg.evaluate(() => location.hash) === '#pantalla/DEMO-FIESTA',
         `#${ruta} no lleva a ningún lado del organizador`,
         await pg.evaluate(() => location.hash));
     }
@@ -114,7 +122,7 @@ async function abrir(ctx) {
        que encontrarse con lo que dejó el anterior. */
     await pg.locator('#deNuevo').click();
     await pg.waitForTimeout(3500);
-    afirmar(await pg.evaluate(() => location.hash) === '#subir/DEMO-FIESTA',
+    afirmar(await pg.evaluate(() => location.hash) === '#pantalla/DEMO-FIESTA',
       'empezar de nuevo devuelve a la primera pantalla');
     await pg.evaluate(() => { location.hash = '#pantalla/DEMO-FIESTA'; });
     await pg.waitForTimeout(1800);
@@ -130,40 +138,54 @@ async function abrir(ctx) {
     await ctx.close();
   }
 
-  /* ── 2 · el rollo en demostración ── */
+  /* ── 2 · el rollo en demostración: derecho al álbum ── */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const { pg, espia } = await abrir(ctx);
     await pg.goto(`${BASE}/rollo.html?demo=1`);
-    await pg.waitForTimeout(2500);
+    await pg.waitForTimeout(5000);
+    /* el revelado tiene una animación que se puede saltear tocando */
+    for (let i = 0; i < 3; i++) { await pg.mouse.click(195, 420).catch(() => {}); await pg.waitForTimeout(800); }
+    await pg.waitForTimeout(1500);
 
-    afirmar(await pg.evaluate(() => location.hash) === '#ev/DEMO-ROLLO',
-      'el rollo cae adentro del rollo de ejemplo',
-      await pg.evaluate(() => location.hash));
+    const t = await leer(pg, 'body');
+    afirmar(/se revel[oó] el rollo/i.test(t),
+      'el rollo cae en el ÁLBUM, que es el momento del producto', t.slice(0, 90));
+    afirmar(!/crear el rollo de mi fiesta/i.test(t),
+      'y en ningún lado dice "crear el rollo de mi fiesta": eso es el alta, no una prueba');
+    afirmar(await pg.locator('.grilla img').count() > 0, 'se ven las fotos');
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'el rollo también avisa que es una demostración');
     afirmar(await pg.locator('#deNuevo').count() === 1,
       'y también se puede empezar de nuevo');
-    afirmar(await pg.locator('#revelar').count() === 1,
-      'el rollo de ejemplo arranca abierto, para poder revelarlo');
-
-    /* revelar tiene que funcionar de mentira, sin base */
-    try { await pg.click('#revelar', { timeout: 2000 }); } catch (e) { /* lo dice la de arriba */ }
-    await pg.waitForTimeout(1800);
-    afirmar(/revelado/i.test(await leer(pg, 'body')),
-      'se puede revelar el rollo de ejemplo y el panel lo muestra revelado');
-    afirmar(await pg.locator('#verAlbum').count() === 1, 'y aparece el álbum para ver');
-
     afirmar(espia.nube.length === 0,
       'el rollo en demostración no toca Supabase ni una vez',
       espia.nube.slice(0, 3).join(' · '));
+
+    /* nada del organizador ni del alta */
+    for (const ruta of ['nuevo', 'ev/DEMO-ROLLO', 'ajustes/DEMO-ROLLO', 'codigo', 'clave']) {
+      await pg.evaluate(r => { location.hash = '#' + r; }, ruta);
+      await pg.waitForTimeout(1800);
+      afirmar(!/crear el rollo|ajustes del rollo|revelar el rollo/i.test(await leer(pg, 'body')),
+        `#${ruta} no lleva a ningún lado del organizador`,
+        (await leer(pg, 'body')).slice(0, 70));
+    }
+
     const rastro = await pg.evaluate(() => JSON.stringify(Object.keys(localStorage)));
     afirmar(rastro === '[]', 'la demostración del rollo no deja nada en el navegador', rastro);
     afirmar(espia.errores.length === 0, 'el rollo en demostración no tira errores de JavaScript',
       espia.errores.slice(0, 2).join(' · '));
 
-    /* cualquier otro código no existe acá: es justo lo que no queremos que
-       se pueda mirar desde una demostración */
+    /* y el otro lado: con ?camara=1 se ve cómo el invitado gasta sus fotos */
+    const { pg: pgc, espia: espiac } = await abrir(ctx);
+    await pgc.goto(`${BASE}/rollo.html?demo=1&camara=1`);
+    await pgc.waitForTimeout(4000);
+    afirmar(/quedan/i.test(await leer(pgc, 'body')),
+      'con ?camara=1 se ve la cámara, el otro lado del rollo',
+      (await leer(pgc, 'body')).slice(0, 80));
+    afirmar(espiac.nube.length === 0, 'y tampoco toca Supabase');
+
+    /* cualquier otro código no existe acá */
     const { pg: pg2, espia: espia2 } = await abrir(ctx);
     await pg2.goto(`${BASE}/rollo.html?e=QUI-7FCE64&demo=1`);
     await pg2.waitForTimeout(1800);
@@ -173,22 +195,21 @@ async function abrir(ctx) {
     await ctx.close();
   }
 
-  /* ── 3 · el invitado del rollo, en demostración ── */
+  /* ── 3 · el invitado del rollo saca una foto de verdad ── */
   {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, permissions: ['camera'] });
     const { pg, espia } = await abrir(ctx);
-    await pg.goto(`${BASE}/rollo.html?e=DEMO-ROLLO&demo=1`);
-    await pg.waitForTimeout(2000);
-    afirmar(/est[aá]s invitado/i.test(await leer(pg, 'body')),
-      'el link del rollo de ejemplo abre la vista del invitado');
-    try {
-      await pg.fill('#nombreG', 'Pía', { timeout: 2000 });
-      await pg.click('#entrar', { timeout: 2000 });
-    } catch (e) { /* si no llegó ni a la pantalla del nombre, lo dice la de abajo */ }
-    await pg.waitForTimeout(3000);
-    afirmar(/quedan/i.test(await leer(pg, 'body')),
-      'y desde ahí se llega a la cámara con su contador de fotos');
-    afirmar(espia.nube.length === 0, 'el invitado de la demostración tampoco toca Supabase',
+    await pg.goto(`${BASE}/rollo.html?demo=1&camara=1`);
+    await pg.waitForTimeout(4000);
+    const antes = await leer(pg, 'body');
+    afirmar(/quedan/i.test(antes), 'la cámara abre con su contador', antes.slice(0, 80));
+    const quedaban = (antes.match(/(\d+)\s*QUEDAN/i) || [])[1];
+    await pg.locator('#disparo, .disparo, [id*=disparo]').first().click({ force: true }).catch(() => {});
+    await pg.waitForTimeout(2500);
+    const despues = (await leer(pg, 'body')).match(/(\d+)\s*QUEDAN/i);
+    afirmar(quedaban && despues && Number(despues[1]) === Number(quedaban) - 1,
+      'saca una foto y le queda una menos', `${quedaban} → ${despues && despues[1]}`);
+    afirmar(espia.nube.length === 0, 'sacar la foto tampoco toca Supabase',
       espia.nube.slice(0, 3).join(' · '));
     await ctx.close();
   }

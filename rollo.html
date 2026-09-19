@@ -555,10 +555,10 @@ if(HAY_DEMO){
   const ev={
     codigo:DEMO_COD, nombre:'Los 15 de Delfina', tipo:'XV', tono:'#D9AE72',
     fecha:hoy(), camara:true, cerrado:false,
-    /* La demostración no guarda nada, así que lo único que sobrevive a una
-       recarga es la dirección: el link del álbum lleva rev=1 y el rollo
-       vuelve a nacer revelado. */
-    revelado:/(?:^|[?&])rev=1(?:&|$)/.test(location.search), revela_en:null,
+    /* Nace REVELADO: lo que hay que mostrar es el álbum, que es el momento
+       del producto. Con ?camara=1 nace sin revelar y se ve el otro lado,
+       cómo el invitado gasta sus fotos sin ver ninguna. */
+    revelado: !/(?:^|[?&])camara=1(?:&|$)/.test(location.search), revela_en:null,
     portada:null, cupo_fotos:24, creado:new Date().toISOString()
   };
   /* Las fotos de los invitados de mentira: ruta, quién la sacó y con qué
@@ -572,6 +572,9 @@ if(HAY_DEMO){
   const MIAS=3;
   for(let i=0;i<MIAS;i++){ fotos[i].mia=true; fotos[i].nombre='Vos'; }
   let misDisparos=MIAS;
+  /* El que entra a probar ya "estuvo en la fiesta": tiene su rollo con esas
+     tres fotos. Así cae en el álbum sin que le preguntemos el nombre. */
+  const TOKEN_DEMO='demo-invitado-01';
 
   const urls={};                       // ruta -> blob: de este navegador
   const dormir=ms=>new Promise(r=>setTimeout(r,ms));   // que se note que viaja
@@ -688,6 +691,11 @@ if(HAY_DEMO){
   /* El que entra a mirar es "el organizador" de esta fiesta inventada: le
      damos la clave en memoria para que el panel se abra sin pedirla. */
   guardarClaveDe(DEMO_COD,'DEMO');
+  /* Y su rollo, para caer derecho en el álbum. Se escribe a mano y no con
+     guardarRollo(): esa función se declara más abajo en el archivo y este
+     bloque corre antes, así que llamarla acá tira "Cannot access before
+     initialization" y la app no arranca. */
+  guarda.escribir('ce:rollo:'+DEMO_COD, JSON.stringify({token:TOKEN_DEMO,nombre:'Vos'}));
 }
 
 /* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
@@ -2024,6 +2032,12 @@ function pintar(){
   window.scrollTo(0,0);
   let p;
   try{
+    /* En demostración no se crea nada ni se administra nada: lo que se
+       muestra es lo que ve el invitado. "Crear el rollo de mi fiesta" no es
+       una prueba, es el formulario de alta. */
+    if(HAY_DEMO && (h.startsWith('nuevo')||h.startsWith('ev/')||h.startsWith('ajustes/')
+                    ||h==='codigo'||h.startsWith('clave')))
+      return location.replace(location.pathname+location.search.replace(/[?&]camara=1/,'')+'#');
     if(h.startsWith('nuevo'))        p=vNuevo(h.split('/')[1]||1);
     else if(h.startsWith('ev/'))     p=vRollo(h.slice(3));
     else if(h.startsWith('ajustes/'))p=vAjustes(h.slice(8));
@@ -2048,10 +2062,18 @@ if(HAY_DEMO){
   /* Es un modo prueba: volver a empezar es recargar. Todo lo de la
      demostración vive en memoria, así que la recarga lo limpia entero. */
   document.getElementById('deNuevo').onclick=()=>location.replace(location.pathname+'?demo=1');
-  /* Que caiga adentro del rollo andando, no en la puerta. replaceState en
-     vez de tocar location.hash: así no dispara un segundo dibujado. */
-  if(!location.hash && !codigo)
-    history.replaceState(null,'','#ev/'+DEMO_COD);
+  /* Derecho a lo que hay que mostrar. Sin ?e= en la dirección, el que entra
+     es "un invitado de la fiesta inventada": con el rollo ya revelado eso
+     cae en el álbum, que es el momento del producto. */
+  /* Ojo: esto corre en el cuerpo del archivo, no adentro de una función.
+     Un "return" acá es un error de sintaxis y la app no arranca. */
+  if(!codigo){
+    const q=new URLSearchParams(location.search);
+    q.set('demo','1'); q.set('e',DEMO_COD);
+    location.replace(location.pathname+'?'+q.toString());
+  }else{
+    history.replaceState(null,'','');
+  }
 }
 pintar();
 addEventListener('pagehide',detenerCamara);

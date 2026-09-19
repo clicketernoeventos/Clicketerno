@@ -26,14 +26,24 @@ desde ahí se veían los eventos de todos los clientes en "Tus eventos" y el
 botón "cargar una fiesta de ejemplo" escribía un evento inventado **en la
 base de producción**. `pruebas/demo.js` cuida que no vuelva a pasar.
 
-**La demostración del muro es SOLO lo que ve un invitado**: se entra en la
-pantalla de subir, se deja una foto o un saludo y se lo ve proyectado en la
-pantalla del salón. El panel del organizador, el cartel y el diagnóstico no
-son parte de la muestra: `panel`, `evento`, `cartel`, `portada` e
-`invitado` caen todos en `subir/DEMO-FIESTA`. Y la fiesta de ejemplo va
-**sin moderación**: con `moderar` en true, lo que mandaba el visitante decía
-"Enviado, el organizador lo aprueba" y no se veía nunca, o sea que el
-ejemplo no mostraba nada.
+**Cada demostración entra directo a su momento.** No al alta, no al panel:
+a lo que hay que vender.
+
+- **`/muro?demo=1` → la pantalla del salón**, ya proyectando el muro (no el
+  QR). Un botón dorado, "Probá mandar una foto", lleva al otro lado; lo que
+  mandes vuelve proyectado. Todo lo del organizador (`panel`, `evento`,
+  `cartel`, `portada`, `invitado`, `proyector`) cae en `pantalla/DEMO-FIESTA`.
+- **`/rollo?demo=1` → el álbum revelado.** El rollo de ejemplo nace
+  `revelado` y el visitante ya tiene su token con tres fotos, así que cae
+  derecho ahí sin que le preguntemos el nombre. Con **`?camara=1`** nace sin
+  revelar y se ve el otro lado: cómo el invitado gasta sus fotos sin ver
+  ninguna. `nuevo`, `ev/`, `ajustes/`, `codigo` y `clave` no existen en
+  demostración: "Crear el rollo de mi fiesta" es el formulario de alta, no
+  una prueba.
+
+La fiesta del muro va **sin moderación**: con `moderar` en true, lo que
+mandaba el visitante decía "Enviado, el organizador lo aprueba" y no se veía
+nunca, o sea que el ejemplo no mostraba nada.
 
 **Se siembra en cada carga, sin preguntar si ya estaba, y la cinta tiene
 "Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
@@ -218,6 +228,14 @@ las del cupo?, ¿puede ver las de otro?
   pide solo los códigos cuya clave está guardada en ese aparato
   (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
   rollo ya lo hacía bien.
+- **Dos botones fijos, cada uno con su `right` a ojo, se montan.** En la
+  pantalla del salón "Pantalla completa" y el de al lado se pisaban apenas
+  el segundo cambiaba de texto. Van en una fila (`.botones-sala`) con `gap`,
+  no con posiciones calculadas a mano.
+- **El cuerpo del archivo no es una función.** Un `return` suelto en el
+  bloque de arranque de `rollo.html` es un error de sintaxis y la app no
+  arranca. Y llamar ahí a algo declarado más abajo con `const` tira "Cannot
+  access before initialization": ese bloque corre antes.
 - **`position:fixed` no lo corre el padding del body.** La cinta de la
   demostración empuja la página con `padding-top`, pero la pantalla del
   salón y el visor del álbum están fijos: la cinta les tapaba los botones de
