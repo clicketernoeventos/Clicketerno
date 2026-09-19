@@ -22,7 +22,7 @@ RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
 MURO=(stress extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil recorrido invitaciones)
-ROLLO=(rollo_navegador rollo_organizador rollo_hora rollo_vence rollo_cinta rollo_hostil rollo_recorrido)
+ROLLO=(rollo_navegador rollo_organizador rollo_hora rollo_vence rollo_cinta rollo_maestra rollo_hostil rollo_recorrido)
 
 azul(){ printf '\n\033[1m%s\033[0m\n' "$*"; }
 falla(){ printf '\033[31m%s\033[0m\n' "$*"; }

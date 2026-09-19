@@ -457,7 +457,16 @@ const PIN_KEY='ce:pin', CLAVES_KEY='ce:claves';
 let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 const clavesGuardadas=()=>{ try{ return JSON.parse(guarda.leer(CLAVES_KEY)||'{}'); }catch(e){ return {}; } };
 const guardarClaveDe=(c,k)=>{ const t=clavesGuardadas(); t[c]=k; guarda.escribir(CLAVES_KEY,JSON.stringify(t)); };
-const claveDe=c=>clavesGuardadas()[c]||'';
+/* ── la clave maestra ──
+   La base ya la acepta para cualquier evento: ce_permitido la chequea
+   ANTES que la del evento. El que no la mandaba era este archivo, así que
+   un rollo solo se podía manejar desde el teléfono donde se creó.
+   Vive en sessionStorage y se va al cerrar la pestaña, igual que en el
+   muro. NUNCA en localStorage: guardarla ahí, mezclada entre las claves
+   de los eventos, es dejar la llave del negocio entero escrita en el
+   disco de cualquier teléfono donde se haya entrado una vez. */
+let claveMaestra = guarda.leerSesion('ce:maestra') || '';
+const claveDe=c=>claveMaestra||clavesGuardadas()[c]||'';
 /* clave corta, sin letras que se confundan al dictarla por teléfono */
 const nuevaClave=()=>{
   const abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1342,7 +1351,8 @@ function vPedirClave(codigoPrevio){
   ${cabP('Entrar con la clave','')}
   <div class="wrap" style="padding-top:20px">
     <p class="bajada">Es la clave que te dimos al crear el rollo. Está en
-      Ajustes, en el teléfono donde lo creaste.</p>
+      Ajustes, en el teléfono donde lo creaste.<br>
+      <small style="opacity:.7">También sirve la clave de administrador.</small></p>
     <div class="campo"><label for="codClave">Código del evento</label>
       <input id="codClave" type="text" autocapitalize="characters" autocomplete="off"
         value="${esc(codigoPrevio)}" placeholder="QUI-7FCE64" style="letter-spacing:.14em"></div>
@@ -1365,7 +1375,20 @@ function vPedirClave(codigoPrevio){
       /* La única forma de saber si la clave sirve es usarla: escribimos algo
          que no cambia nada. Si la clave está mal, la base rechaza. */
       await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#D9AE72'},cl);
-      guardarClaveDe(cod,cl);
+      /* ¿Era la maestra? Entonces NO va al disco. Antes se guardaba en
+         ce:claves como si fuera la clave de ese evento: la llave que abre
+         todos los eventos de todos los clientes quedaba escrita en el
+         localStorage de ese teléfono, para siempre y sin que nadie lo
+         supiera. Va a sessionStorage, y se muere al cerrar la pestaña. */
+      let maestra=false;
+      try{ const q=await SB.rpc('ce_quien_soy',{p_codigo:cod},cl); maestra=!!(q&&q.es_maestra); }
+      catch(e){ /* base vieja sin ce_quien_soy: se guarda como siempre */ }
+      if(maestra){
+        claveMaestra=cl; guarda.escribirSesion('ce:maestra',cl);
+        avisar('Entraste con la clave de administrador');
+      }else{
+        guardarClaveDe(cod,cl);
+      }
       irA('ev/'+cod);
     }catch(e){
       b.disabled=false; b.textContent='Entrar';
