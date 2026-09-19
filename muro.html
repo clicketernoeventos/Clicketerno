@@ -241,6 +241,12 @@ option{background:#0B0A08}
 .qr-caja{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
 .qr-caja .qr{background:#fff;padding:11px;line-height:0}
 .qr-caja .qr img,.qr-caja .qr canvas{width:106px;height:106px;display:block}
+/* el aviso de que el álbum se borra pronto */
+.aviso-vence{border-color:var(--hilo2);
+  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+.aviso-vence.tarde{border-color:rgba(255,123,148,.5);
+  background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
+.aviso-vence.tarde .titu-s{color:#FF7B94}
 .llave{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 0;border-bottom:1px solid var(--gris)}
 .llave p{font-size:15px}
 .llave small{display:block;color:var(--mute);font-size:12.5px;margin-top:5px;line-height:1.6}
@@ -693,6 +699,20 @@ body.en-demo .dejar{top:56px}
 .btn-peligro.firme:disabled{background:rgba(196,86,78,.25);color:rgba(255,255,255,.5)}
 
 /* marcas */
+/* la pantalla de limpieza: qué está por vencer y qué ya venció */
+.fila-vence{display:flex;align-items:center;gap:13px;padding:15px 0;border-bottom:1px solid var(--gris)}
+.fila-vence:last-child{border-bottom:0}
+.fila-vence .quien{flex:1;min-width:0}
+.fila-vence .quien b{display:block;font-weight:400;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fila-vence .quien span{display:block;font-size:10.5px;letter-spacing:.18em;color:var(--mute);margin-top:5px;text-transform:uppercase}
+.pastilla-d{flex:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--gris);color:var(--mute);white-space:nowrap}
+.pastilla-d.pronto{border-color:var(--hilo2);color:var(--oro)}
+.pastilla-d.ya{border-color:rgba(196,86,78,.55);color:#F3A9A2}
+.btn-fila{flex:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 11px;
+  border:1px solid rgba(196,86,78,.5);color:#F3A9A2;border-radius:2px;transition:.25s var(--e)}
+.btn-fila:hover{background:rgba(196,86,78,.12)}
+.btn-fila:disabled{opacity:.4;cursor:not-allowed}
+.btn-fila.firme{background:#C4564E;border-color:#C4564E;color:#fff}
 .sello-admin{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--hilo2);
   border-radius:999px;padding:6px 13px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--oro);background:rgba(217,174,114,.08)}
@@ -1074,11 +1094,30 @@ async function subirArchivo(blob, base, alAvanzar){
    nombre y fecha. Desde la web pública había un botón que llevaba derecho
    ahí. Cuáles son "los míos" lo dicen las claves guardadas en este
    navegador, que es lo mismo que ya hacía el rollo. */
-const CAMPOS_LISTA='codigo,nombre,fecha,portada,creado&order=creado.desc.nullslast';
+/* El desempate por codigo no es decoración: sin él, dos eventos creados
+   en el mismo milisegundo (o los dos sin 'creado') pueden salir en
+   distinto orden en cada tanda, y con offset eso es una fila repetida y
+   otra que no aparece nunca. */
+const CAMPOS_LISTA='codigo,nombre,fecha,portada,vence,creado&order=creado.desc.nullslast,codigo.asc';
 async function eventos(){
   if(!HAY_NUBE) return leerLocal(LISTA,[]);
   try{
-    if(esAdmin) return await SB.ver('ce_eventos','select='+CAMPOS_LISTA, claveMaestra);
+    if(esAdmin){
+      /* De a tandas. PostgREST corta en 1000 filas y no avisa: con la
+         tabla entera pedida de un saque, el evento 1001 no existe para el
+         administrador —ni en la lista ni en la limpieza—, así que sus
+         fotos se quedarían en el depósito para siempre. */
+      const POR_TANDA=500; let todo=[], desde=0;
+      for(let v=0; v<60; v++){
+        const tanda=await SB.ver('ce_eventos',
+          `select=${CAMPOS_LISTA}&offset=${desde}&limit=${POR_TANDA}`, claveMaestra);
+        if(!tanda||!tanda.length) break;
+        todo=todo.concat(tanda);
+        if(tanda.length<POR_TANDA) break;
+        desde+=POR_TANDA;
+      }
+      return todo;
+    }
     const mios=Object.keys(clavesGuardadas());
     if(!mios.length) return [];
     /* Uno por uno, cada cual con SU clave. En un pedido solo va una clave
@@ -1567,6 +1606,30 @@ let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 const TOPE_PUBLI=60;
 const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
+/* Cuánto vive el álbum después de la fiesta. Una foto pesa como 441 KB y
+   un casamiento de cien invitados es un giga: si no vence nunca, la cuenta
+   del depósito crece todos los meses y no para. Noventa días alcanzan de
+   sobra para que todos las vean y el organizador se baje su copia.
+   Está acá y en rollo.html; si cambia, cambia en los dos. */
+const DIAS_QUE_VIVE=90;
+const AVISAR_DESDE=15;          // cuántos días antes se le avisa
+const venceDe=fecha=>{
+  const v=new Date(fecha); if(isNaN(v)) return '';
+  v.setDate(v.getDate()+DIAS_QUE_VIVE);
+  return v.toISOString().slice(0,10);
+};
+/* Días de CALENDARIO que faltan. 0 = se borra hoy, negativo = ya venció.
+   En días de acá, no en horas ni en UTC: restando milisegundos, "vence
+   hoy" daba "queda un día" y "faltan nueve" daba diez. Y con toISOString
+   de por medio, después de las nueve de la noche ya era mañana. */
+const diasParaVencer=vence=>{
+  const p=String(vence||'').slice(0,10).split('-');
+  if(p.length!==3) return null;
+  const v=new Date(+p[0], +p[1]-1, +p[2]);
+  if(isNaN(v)) return null;
+  const h=new Date(), hoy0=new Date(h.getFullYear(),h.getMonth(),h.getDate());
+  return Math.round((v-hoy0)/86400000);
+};
 /* El código del evento ES la llave: con él se sube al muro y se abre el
    álbum. Estaba saliendo de Math.random().toString(16).slice(2,8), que
    tiene tres problemas: no es azar de verdad (se puede predecir viendo
@@ -1870,8 +1933,12 @@ async function vPanel(){
     <h1>Tus eventos</h1>
     <button class="volver">Salir</button>
   </header>
-  ${esAdmin?`<div style="max-width:620px;margin:0 auto;padding:18px 26px 0">
-    <span class="sello-admin">${ESTRELLA} Modo administrador</span></div>`:''}
+  ${esAdmin?`<div style="max-width:620px;margin:0 auto;padding:18px 26px 0;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <span class="sello-admin">${ESTRELLA} Modo administrador</span>
+    <button class="hilo-btn" data-ir="limpieza" style="width:auto;padding:9px 16px;font-size:11px">Limpieza${
+      (()=>{ const n=evs.filter(e=>{const d=diasParaVencer(e.vence||venceDe(e.fecha)); return d!==null&&d<0;}).length;
+             return n?` · ${n} vencido${n===1?'':'s'}`:''; })()}</button></div>`:''}
   <div class="wrap-inv" style="padding-bottom:40px">
     ${evs.length
       ? `<div class="seccion-a" style="margin-top:0"><h2>Guardados</h2><span>${evs.length}</span></div>
@@ -1890,6 +1957,7 @@ async function vPanel(){
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   contador('#n');
+  app.querySelectorAll('[data-ir]').forEach(b=>b.onclick=()=>ir(b.dataset.ir));
   app.querySelectorAll('[data-cod]').forEach(b=>{
     b.onclick=()=>ir('evento/'+b.dataset.cod);
     let t=null;
@@ -1915,7 +1983,6 @@ async function vPanel(){
     if(!nombre) return recado('Falta el nombre del evento');
     const tipo=app.querySelector('#t').value;
     const fEv=app.querySelector('#f').value||hoy();
-    const v=new Date(fEv); v.setMonth(v.getMonth()+12);
     const btn=app.querySelector('#crear');
     if(btn.disabled) return;               // evita crear dos veces con doble toque
     btn.disabled=true; btn.textContent='Creando…';
@@ -1923,7 +1990,7 @@ async function vPanel(){
     try{
       let codigo=nuevoCodigo(tipo);
       for(let i=0;i<5&&!(await codigoLibre(codigo));i++) codigo=nuevoCodigo(tipo);
-      await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:v.toISOString().slice(0,10),
+      await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:venceDe(fEv),
         moderar:false,cerrado:false,portada:null,creado:Date.now(),claveNueva:claveEv});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
       guardarClaveDe(codigo,claveEv);
@@ -1935,6 +2002,135 @@ async function vPanel(){
       btn.disabled=false; btn.textContent='Crear evento';
       recado('No se pudo crear el evento: '+motivo(e));
     }
+  };
+}
+
+/* ══════════ limpieza: los 90 días, ejecutados ══════════
+   El aviso que ve el organizador en Compartir le dice que el álbum se
+   borra, pero un aviso no borra nada: alguien tiene que pasar el trapo. Sin
+   esta pantalla, la promesa de los 90 días era una frase en la interfaz y
+   el depósito seguía creciendo para siempre, que es justo lo que se paga.
+   Es del administrador porque mira TODOS los eventos, no los de un
+   teléfono. No hay tarea automática en el servidor: esto es el barrido, y
+   se hace a mano una vez por mes mirando la lista. */
+const estadoVence=e=>{
+  const vence=e.vence||venceDe(e.fecha)||'';
+  return {...e, vence, d:diasParaVencer(vence)};
+};
+function pastillaVence(d){
+  if(d===null) return `<span class="pastilla-d">sin fecha</span>`;
+  if(d<0)  return `<span class="pastilla-d ya">venció hace ${-d} día${d===-1?'':'s'}</span>`;
+  if(d===0) return `<span class="pastilla-d ya">vence hoy</span>`;
+  if(d<=AVISAR_DESDE) return `<span class="pastilla-d pronto">${d} día${d===1?'':'s'}</span>`;
+  return `<span class="pastilla-d">${d} días</span>`;
+}
+const filaVence=(e,borrable)=>`
+  <div class="fila-vence" data-fila="${esc(e.codigo)}">
+    <span class="quien"><b>${esc(e.nombre)}</b>
+      <span>${esc(e.codigo)} · ${e.vence?'hasta '+bonito(e.vence):'sin vencimiento'}</span></span>
+    ${pastillaVence(e.d)}
+    ${borrable?`<button class="btn-fila" data-borra="${esc(e.codigo)}"
+      data-nom="${esc(e.nombre)}">Borrar</button>`:''}
+  </div>`;
+
+async function vLimpieza(){
+  parar(); tono();
+  /* Sin la clave maestra esta pantalla no tiene nada que mostrar: eventos()
+     devolvería solo los de este teléfono y "borrá los vencidos de todos"
+     sería mentira. */
+  if(!esAdmin) return ir('panel');
+  const evs=(await eventos()).map(estadoVence)
+    .sort((a,b)=>(a.d===null?1e9:a.d)-(b.d===null?1e9:b.d));
+  const vencidos=evs.filter(e=>e.d!==null&&e.d<0);
+  const cerca   =evs.filter(e=>e.d!==null&&e.d>=0&&e.d<=AVISAR_DESDE);
+  const resto   =evs.filter(e=>e.d===null||e.d>AVISAR_DESDE);
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Administrador</p>
+    <h1>Limpieza</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="padding-bottom:40px">
+    <p style="font-size:13.5px;line-height:1.8;color:#B5AC9E;margin:0 0 8px">
+      Cada álbum vive <b style="color:var(--oro);font-weight:400">${DIAS_QUE_VIVE} días</b> desde la fecha
+      del evento. Al organizador le aparece el aviso ${AVISAR_DESDE} días antes, en su panel.
+      Borrar acá elimina el evento y todos sus archivos, y no se puede deshacer.</p>
+
+    <div class="seccion-a"><h2>Ya vencidos</h2><span>${vencidos.length}</span></div>
+    ${vencidos.length?`<div class="tarjeta peligro">
+        ${vencidos.map(e=>filaVence(e,true)).join('')}
+        <div id="zonaTodos" style="margin-top:20px">
+          <button class="btn-peligro" id="pedirTodos">Borrar los ${vencidos.length} vencidos</button>
+        </div>
+      </div>`
+      :`<div class="vacio" style="padding:34px 24px">No hay ninguno vencido.</div>`}
+
+    <div class="seccion-a"><h2>Vencen pronto</h2><span>${cerca.length}</span></div>
+    ${cerca.length?`<div class="tarjeta">${cerca.map(e=>filaVence(e,false)).join('')}</div>`
+      :`<div class="vacio" style="padding:34px 24px">Ninguno en los próximos ${AVISAR_DESDE} días.</div>`}
+
+    <div class="seccion-a"><h2>El resto</h2><span>${resto.length}</span></div>
+    ${resto.length?`<div class="tarjeta">${resto.map(e=>filaVence(e,false)).join('')}</div>`
+      :`<div class="vacio" style="padding:34px 24px">No hay más eventos.</div>`}
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
+
+  /* Un toque no borra: el botón se vuelve "Confirmar" y vuelve atrás solo a
+     los cinco segundos. Es la misma idea que el campo donde hay que
+     escribir el código en Ajustes, pero para una lista. */
+  app.querySelectorAll('[data-borra]').forEach(b=>{
+    let armado=null;
+    b.onclick=async()=>{
+      if(!armado){
+        armado=setTimeout(()=>{ armado=null; b.textContent='Borrar'; b.classList.remove('firme'); },5000);
+        b.textContent='Confirmar'; b.classList.add('firme');
+        return;
+      }
+      clearTimeout(armado); armado=null;
+      b.disabled=true;
+      try{
+        await borrarEvento(b.dataset.borra, t=>{ b.textContent=t; });
+        recado(`"${b.dataset.nom}" eliminado`);
+        vLimpieza();
+      }catch(err){
+        console.error('borrar vencido',err);
+        b.disabled=false; b.textContent='Borrar'; b.classList.remove('firme');
+        recado('No se pudo eliminar: '+motivo(err));
+      }
+    };
+  });
+
+  const pedir=app.querySelector('#pedirTodos');
+  if(pedir) pedir.onclick=()=>{
+    const zona=app.querySelector('#zonaTodos');
+    zona.innerHTML=`
+      <div class="campo" style="margin-bottom:14px">
+        <label for="confBorrar">Escribí <b style="color:#E08A82">BORRAR</b> para confirmar</label>
+        <input id="confBorrar" type="text" autocomplete="off" autocapitalize="characters" placeholder="BORRAR"></div>
+      <button class="btn-peligro firme" id="todosYa" disabled>Borrar los ${vencidos.length} vencidos</button>
+      <button class="hilo-btn" id="dejarTodos">Mejor no</button>`;
+    const campo=zona.querySelector('#confBorrar');
+    const ok=zona.querySelector('#todosYa');
+    campo.focus();
+    campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!=='BORRAR'; };
+    zona.querySelector('#dejarTodos').onclick=()=>vLimpieza();
+    ok.onclick=async()=>{
+      if(ok.disabled) return;
+      ok.disabled=true; campo.disabled=true;
+      /* De a uno y sin cortar la tanda: si uno falla, los demás se borran
+         igual y al final se dice cuántos quedaron. Prometer "listo" cuando
+         algo no se borró es exactamente lo que no se hace acá. */
+      let hechos=0; const fallados=[];
+      for(let i=0;i<vencidos.length;i++){
+        ok.textContent=`Borrando ${i+1} de ${vencidos.length}…`;
+        try{ await borrarEvento(vencidos[i].codigo); hechos++; }
+        catch(err){ console.error('borrar vencido',vencidos[i].codigo,err); fallados.push(vencidos[i].codigo); }
+      }
+      recado(fallados.length
+        ? `Se borraron ${hechos} de ${vencidos.length}. Quedaron sin borrar: ${fallados.join(', ')}`
+        : `Listo: ${hechos} evento${hechos===1?'':'s'} eliminado${hechos===1?'':'s'}`);
+      vLimpieza();
+    };
   };
 }
 
@@ -2097,6 +2293,29 @@ async function vEvento(codigo, abrirEn){
 
   <div class="wrap-ev">
     <section class="panel-ev" id="pCompartir">
+      ${(()=>{
+        /* Aviso de vencimiento. El álbum no vive para siempre y el
+           organizador tiene que enterarse ANTES, no cuando ya no está.
+           Aparece solo cuando falta poco o cuando ya venció. */
+        /* Los eventos anteriores a esta cuenta no tienen 'vence' guardado.
+           Si acá quedara en null el organizador no vería aviso nunca, y la
+           limpieza —que sí lo calcula desde la fecha— igual los borraría a
+           los 90 días. El respaldo tiene que ser el MISMO de los dos lados. */
+        const vence=m.vence||venceDe(m.fecha)||'';
+        const d=diasParaVencer(vence);
+        if(d===null||d>AVISAR_DESDE) return '';
+        const vencido=d<0;
+        return `<div class="tarjeta aviso-vence${vencido?' tarde':''}">
+          <p class="titu-s">${vencido?'El álbum ya venció':'Bajá tu copia'}</p>
+          <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin-bottom:18px">
+            ${vencido
+              ? `Venció el ${bonito(vence)}. Puede que las fotos ya no estén: si todavía se ven, bajalas ahora mismo.`
+              : d===0
+                ? `Se borra <b style="color:var(--oro)">hoy</b>. Bajá el álbum antes de que no esté.`
+                : `Las fotos se guardan hasta el ${bonito(vence)}: ${d===1?'queda <b style="color:var(--oro)">un día</b>':'quedan <b style="color:var(--oro)">'+d+' días</b>'}. Después se borran del servidor y solo vas a tener la copia que te hayas bajado.`}</p>
+          <button class="oro-btn" data-ir="album/${codigo}/guardar">Descargar todo ahora</button>
+        </div>`;
+      })()}
       ${m.cerrado?`
       <!-- Terminada la fiesta, el QR y la vista del invitado ya no sirven:
            lo que hace falta ahora es el álbum, pasárselo y llevárselo. -->
@@ -2121,7 +2340,8 @@ async function vEvento(codigo, abrirEn){
         <a class="hilo-btn" id="wspAlbum" href="${wsp(`Acá está el álbum de ${m.nombre}: ${enlaceAlbumDe(codigo)}`)}"
            target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px">Mandarlo por WhatsApp</a>
       </div>
-      ${m.vence?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(m.vence)}.</p>`:''}
+      ${(()=>{ const v=m.vence||venceDe(m.fecha); return v
+        ?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(v)}.</p>`:''; })()}
       <div class="tarjeta" style="margin-top:26px">
         <p class="titu-s">¿Lo cerraste antes de tiempo?</p>
         <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
@@ -2364,9 +2584,8 @@ async function vEvento(codigo, abrirEn){
     m.nombre=nombre; m.tono=tonoEd;
     if(fecha!==m.fecha){
       m.fecha=fecha;
-      /* el álbum vive un año desde la fiesta: si se corrige la fecha, se corre */
-      const v=new Date(fecha);
-      if(!isNaN(v)){ v.setMonth(v.getMonth()+12); m.vence=v.toISOString().slice(0,10); }
+      /* el álbum vive 90 días desde la fiesta: si se corrige la fecha, se corre */
+      m.vence=venceDe(fecha)||m.vence;
     }
     b.dataset.ocupado='1'; b.disabled=true; b.textContent='Guardando…';
     try{
@@ -3218,7 +3437,8 @@ async function vAlbum(codigo,abrirEn){
             ${items.length} recuerdos de ${gente} ${gente===1?'persona':'personas'}.
             Se descargan en calidad original.</p>
           <div class="acciones" style="margin-top:0"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
-          ${m.vence?`<p class="pie-nota">Disponible para descargar hasta el ${bonito(m.vence)}.</p>`:''}`
+          ${(()=>{ const v=m.vence||venceDe(m.fecha); return v
+            ?`<p class="pie-nota">Disponible para descargar hasta el ${bonito(v)}.</p>`:''; })()}`
         :`<div class="vacio">El álbum está vacío por ahora.</div>`}
         ${sumate('Las fotos de tu fiesta,<br>en la pantalla y para siempre.','Hola! Vi un álbum de Click Eterno y quiero info para mi evento ✨')}
         <div class="pie-marca"><img src="${LOGO_MARK}" alt="Click Eterno"></div>
@@ -3579,9 +3799,10 @@ function pintar(ruta){
        de la muestra. Todo lo demás cae en la pantalla de subir. */
     /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
        es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
-    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','portada',''].includes(v))
+    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','limpieza','portada',''].includes(v))
       return ir('pantalla/DEMO-FIESTA');
     if(v==='panel') p=vAcceso();
+    else if(v==='limpieza') p=vLimpieza();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
     else if(v==='invitado') p=vElegir('subir','Invitado');

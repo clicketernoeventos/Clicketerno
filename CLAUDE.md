@@ -278,6 +278,56 @@ las del cupo?, ¿puede ver las de otro?
   quiere decir que no se proyecta nada: había que salir y volver a entrar, y
   nadie lo sabe. Ahora el panel se entera solo.
 
+## Los 90 días
+
+Un álbum que vive para siempre es un depósito que crece para siempre, y lo
+paga el negocio todos los meses. Cada evento nace con `vence` a **90 días
+de la fecha de la fiesta** (`DIAS_QUE_VIVE`, escrito en `muro.html` y en
+`rollo.html`: si cambia, cambia en los dos).
+
+Son tres piezas y las tres hacen falta:
+
+- **El aviso**, 15 días antes (`AVISAR_DESDE`). Le aparece al organizador
+  arriba de todo en Compartir (muro) y en el panel del rollo, con el botón
+  de bajarse el álbum al lado. Cuando ya venció cambia de tono y lo dice.
+  Avisar sin dar la salida no sirve; borrar sin avisar antes es perderle
+  las fotos a un cliente.
+- **La limpieza**, `/muro#limpieza`, **solo con la clave de
+  administrador**: lista TODOS los eventos ordenados por lo que les queda
+  —vencidos, por vencer, el resto— y borra los vencidos con sus archivos.
+  Un organizador común no la ve ni llega escribiendo la dirección.
+- **El borrado**, que es `borrarEvento()`, el mismo de la zona de peligro:
+  filas, archivos de `ce-medios` y fotos de `ce-rollos`. En tanda va de a
+  uno y **no corta si uno falla**: al final dice cuántos pudo y cuáles no.
+  Decir "Listo" cuando quedó algo sin borrar es la mentira de siempre.
+
+**Los días se cuentan en días de calendario de acá, no en horas ni en
+UTC.** Restando milisegundos, "vence hoy" daba "queda un día" y "faltan
+nueve" daba diez; y con `toISOString` de por medio, pasadas las nueve de la
+noche en Rosario ya era mañana.
+
+**Los eventos de antes no tienen `vence` guardado**, así que las dos
+puntas lo calculan igual desde la fecha (`m.vence||venceDe(m.fecha)`). Si
+el aviso usara solo la columna y la limpieza la calculara, esas fiestas se
+borrarían a los 90 días sin que el organizador hubiera visto un solo
+aviso.
+
+**La lista del administrador se pide de a tandas.** PostgREST corta en 1000
+filas sin avisar: con la tabla pedida de un saque, el evento 1001 no existe
+para el administrador —ni en el panel ni en la limpieza— y sus fotos se
+quedan en el depósito para siempre. El orden lleva desempate por `codigo`:
+sin él, dos eventos con el mismo `creado` pueden salir en distinto orden en
+cada tanda, y con `offset` eso es una fila repetida y otra que no aparece
+nunca.
+
+**No hay nada automático del lado del servidor.** La limpieza es a mano,
+una vez por mes. Si algún día se automatiza, va como tarea programada en la
+base, no en el navegador de nadie.
+
+Lo miden `pruebas/vencimiento.js` (el aviso, quién entra a la limpieza, que
+borre los vencidos y solo esos, que no diga "Listo" si la base se negó, y
+el corte de las mil filas) y `pruebas/rollo_vence.js` (el aviso del rollo).
+
 ## Los dos recorridos
 
 `pruebas/recorrido.js` y `pruebas/rollo_recorrido.js` hacen lo que hace una
@@ -426,10 +476,15 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
   la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que
   lo pida él.
-- **Dónde viven las fotos a la larga.** Una foto pesa ~441 KB: un evento de
-  100 invitados con 24 fotos son ~1 GB. **El plan gratis de Supabase no
-  aguanta un solo casamiento.** Hay que decidir entre Supabase Pro y
-  Cloudflare R2, y fijar hasta cuándo se guardan.
+- **Contratar Supabase Pro.** Decidido por el dueño: las fotos se quedan
+  donde están, no se mudan a R2. Una foto pesa ~441 KB y un evento de 100
+  invitados con 24 fotos son ~1 GB: **el plan gratis (1 GB) no aguanta un
+  solo casamiento.** Pro son USD 25 al mes con 100 GB, y con los 90 días
+  puestos el depósito deja de crecer para siempre. Hasta que no se
+  contrate, el segundo casamiento del mes falla al subir.
+- **Pasar la limpieza a mano, una vez por mes.** `/muro#limpieza`, con la
+  clave de administrador. Es lo que ejecuta los 90 días: hoy no hay nada
+  automático del lado del servidor.
 - **Miniaturas.** El álbum baja las fotos enteras para mostrarlas chiquitas;
   generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son

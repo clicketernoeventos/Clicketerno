@@ -126,6 +126,15 @@ input.grande{font-size:21px;padding:14px 2px}
   padding:7px 16px;border-radius:20px;border:1px solid var(--hilo2);color:var(--oro);margin-top:22px}
 .estado.vivo{color:#6FCF8B;border-color:rgba(111,207,139,.42)}
 .estado.gris{color:var(--mute);border-color:var(--gris)}
+/* el aviso de que el álbum se borra pronto (mismo trato que en el muro) */
+.aviso-vence{border:1px solid var(--oro);padding:20px 22px;margin:26px auto 0;max-width:34ch;
+  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+.aviso-vence.tarde{border-color:rgba(255,123,148,.5);
+  background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
+.aviso-vence b.tit{display:block;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--oro);font-weight:400;margin-bottom:12px}
+.aviso-vence.tarde b.tit{color:#FF7B94}
+.aviso-vence p{color:#B5AC9E;line-height:1.75;font-size:14px;text-align:left;margin:0}
 
 /* piezas sueltas */
 .rotulito{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin:30px 0 12px}
@@ -383,6 +392,25 @@ const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
 const urlSegura=u=>{const t=String(u==null?'':u).trim();
   return /^(https?:\/\/|data:image\/|blob:)/i.test(t)||/^[\w./-]+\.(webp|jpg|jpeg|png|gif)$/i.test(t)?t:'';};
 const cssUrl=u=>urlSegura(u).replace(/["'()\\\s]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
+/* Los 90 días viven en los dos archivos (ver DIAS_QUE_VIVE en muro.html).
+   Días de CALENDARIO de acá: restando milisegundos, "vence hoy" daba
+   "queda un día", y con toISOString de por medio, pasadas las nueve de la
+   noche en Rosario ya era mañana. */
+const DIAS_QUE_VIVE=90;
+const AVISAR_DESDE=15;
+const venceDe=fecha=>{
+  const v=new Date(fecha); if(isNaN(v)) return '';
+  v.setDate(v.getDate()+DIAS_QUE_VIVE);
+  return v.toISOString().slice(0,10);
+};
+const diasParaVencer=vence=>{
+  const p=String(vence||'').slice(0,10).split('-');
+  if(p.length!==3) return null;
+  const v=new Date(+p[0], +p[1]-1, +p[2]);
+  if(isNaN(v)) return null;
+  const h=new Date(), hoy0=new Date(h.getFullYear(),h.getMonth(),h.getDate());
+  return Math.round((v-hoy0)/86400000);
+};
 const bonito=f=>{
   if(!f) return '';
   const p=String(f).slice(0,10).split('-');
@@ -1496,7 +1524,9 @@ async function crearRollo(){
      al final no se creó no molesta: la lista de la puerta solo muestra los
      que la base confirma. */
   guardarClaveDe(codigo,claveEv);
-  const vence=new Date(nuevo.fecha); vence.setMonth(vence.getMonth()+12);
+  /* 90 días, igual que el muro (ver DIAS_QUE_VIVE en muro.html): si no
+     vence nunca, el depósito crece todos los meses y no para. */
+  const vence=new Date(nuevo.fecha); vence.setDate(vence.getDate()+DIAS_QUE_VIVE);
   try{
     await SB.guardar('ce_eventos',{
       codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
@@ -1579,6 +1609,28 @@ async function vRollo(codigo){
     <button class="link-abajo" id="copiarLink">o copiar el link</button>
 
     <p class="comova" id="stats">&nbsp;</p>
+
+    ${(()=>{
+      /* El rollo también vence, y hasta ahora no lo decía en ningún lado:
+         el organizador se enteraba el día que abría el álbum y no estaba.
+         El zip es la única copia que le queda, así que el aviso tiene que
+         llegar ANTES y con el botón al lado. */
+      /* Mismo respaldo que en el muro: los rollos anteriores a esta cuenta
+         no tienen 'vence' guardado y la limpieza igual los mira por fecha.
+         Sin esto se borrarían sin que el organizador viera un solo aviso. */
+      const vence=m.vence||venceDe(m.fecha)||'';
+      const d=diasParaVencer(vence);
+      if(d===null||d>AVISAR_DESDE) return '';
+      const vencido=d<0;
+      return `<div class="aviso-vence${vencido?' tarde':''}">
+        <b class="tit">${vencido?'El álbum ya venció':'Bajá tu copia'}</b>
+        <p>${vencido
+          ? `Venció el ${esc(bonito(vence))}. Puede que las fotos ya no estén: si todavía se ven, bajalas ahora mismo.`
+          : d===0
+            ? 'Se borra <b>hoy</b>. Bajá las fotos antes de que no estén.'
+            : `Las fotos se guardan hasta el ${esc(bonito(vence))}: ${d===1?'queda <b>un día</b>':'quedan <b>'+d+' días</b>'}. Después se borran del servidor y solo vas a tener la copia que te hayas bajado.`}</p>
+      </div>`;
+    })()}
 
     ${momento==='abierto'?`
       <div class="filete" style="max-width:200px;margin:30px auto">${ESTRELLA}</div>
