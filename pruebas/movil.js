@@ -137,6 +137,71 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     await ctx.close();
   }
 
+  // ═══ 3. el cliente entra con su código y su clave ═══
+  console.log('\n─── entrar con el código, desde un teléfono nuevo ───');
+  /* Así se vende: el evento lo arma Click Eterno y al cliente se le pasa
+     el código y la clave. El rollo ya tenía esta puerta; el muro no, y
+     había que mandarle el enlace largo armado a mano. */
+  {
+    const { crearFake } = require('./fakesb');
+    const COD='QUI-7FCE64', CLAVE='ABC123';
+    const ctx=await browser.newContext({viewport:TELEFONO});
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.route('**/cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,
+      contentType:'application/javascript',
+      body:'window.QRCode=function(n){n.innerHTML="";};window.QRCode.CorrectLevel={M:0};'}));
+    const fake=crearFake('ok'); await fake.instalar(p);
+    fake.claves[COD]=CLAVE;
+    fake.db.ce_eventos.push({codigo:COD,nombre:'Delfina',fecha:'2026-08-21',tipo:'XV',
+      tono:'#D9AE72',moderar:false,cerrado:false,creado:1});
+
+    /* Un teléfono donde nadie creó nada: sin claves guardadas y sin PIN. */
+    await p.goto(BASE+'/muro.html#codigo',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1200);
+    if(!(await p.locator('#codigoEv').count())){
+      mal('no hay pantalla para entrar con el código');
+    }else{
+      bien('hay pantalla para entrar con el código, sin pedir el PIN del panel');
+      /* Un código que no existe no puede dejarlo en la nada. */
+      await p.fill('#codigoEv','QUI-0000'); await p.click('#irEvento');
+      await p.waitForTimeout(1600);
+      const perdido=await p.evaluate(()=>location.hash);
+      if(!/codigo/.test(perdido)) mal('con un código equivocado queda en '+perdido);
+      else bien('con un código equivocado vuelve a pedirlo');
+
+      await p.goto(BASE+'/muro.html#codigo',{waitUntil:'domcontentloaded'});
+      await p.waitForTimeout(1000);
+      await p.fill('#codigoEv',COD.toLowerCase());   // lo va a escribir como venga
+      await p.click('#irEvento'); await p.waitForTimeout(1800);
+      if(!(await p.locator('#claveEv').count())) mal('con el código bueno no le pide la clave');
+      else bien('con el código bueno le pide la clave');
+      /* La clave equivocada no puede abrir el evento de un cliente. */
+      await p.fill('#claveEv','NOPE'); await p.click('#entrarEv');
+      await p.waitForTimeout(1600);
+      if(await p.locator('[data-sol="pAjustes"]').count())
+        mal('¡ENTRÓ CON LA CLAVE EQUIVOCADA!');
+      else bien('con la clave equivocada no entra');
+
+      await p.fill('#claveEv',CLAVE); await p.click('#entrarEv');
+      await p.waitForTimeout(2000);
+      if(!(await p.locator('[data-sol="pAjustes"]').count()))
+        mal('con la clave buena tampoco entra');
+      else bien('con la clave buena entra a manejar su evento');
+    }
+    /* Y se llega desde el panel, para el que ya está adentro. */
+    await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(900);
+    await p.fill('#pin','4321').catch(()=>{});
+    await p.click('#entrar').catch(()=>{});
+    await p.waitForTimeout(1400);
+    if(!(await p.locator('[data-ir="codigo"]').count()))
+      mal('desde el panel no se llega a entrar con un código');
+    else bien('y desde el panel también se llega');
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
   process.exit(fallas.length?1:0);
