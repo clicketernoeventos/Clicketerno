@@ -18,9 +18,16 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
-Al que ya contrató se entra por **`/#entrar`** de la página pública: dos
-puertas, `muro#panel` y `rollo`. Es lo primero que pregunta un cliente
-cuando paga.
+Al que ya contrató se entra por **`/#entrar`** de la página pública. Es lo
+primero que pregunta un cliente cuando paga, y son dos caminos distintos:
+
+- **El que arma la fiesta** va a `muro#panel` o a `rollo`, donde crea el
+  evento y ve los suyos.
+- **El que recibe un evento ya armado** va a `muro#codigo` o a
+  `rollo#codigo`, escribe el código y después la clave. **No pasa por el
+  PIN del panel**, que no es suyo y no entiende. Así se vende: el evento lo
+  arma Click Eterno y al cliente se le pasan código y clave para que modere
+  durante la fiesta y se baje el álbum al otro día.
 
 Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
 `/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
@@ -147,33 +154,27 @@ antes" y "el día después").
 
 ### Lo que está corrido en producción
 
-`sql/claves.sql` y `sql/rollo.sql` se corrieron y se confirmaron, con el
-depósito `ce-rollos` y sus tres reglas. De `sql/columnas.sql` (del muro) no
-hay confirmación de primera mano.
+**Al 19/09/2026 la base está COMPLETA.** El dueño corrió `sql/estado.sql`
+en el SQL Editor y dieron las trece filas en ✅: `claves.sql`, `rollo.sql`
+y `blindaje.sql` están los tres puestos, con el depósito `ce-rollos` y sus
+reglas, la tabla `ce_eventos` cerrada a `curl`, y las columnas `vence` y
+`cupo_invitados`.
 
-**Pero `rollo.sql` creció después de esa confirmación**, así que el archivo
-del repo tiene más cosas que la base. Falta al menos `ce_album_pagina`, que
-es la que deja bajar TODAS las fotos. **Corregido (medido, no supuesto):**
-hoy, sin esa función, el zip **no miente** —no baja nada y dice "No se
-pudo: Could not find the function public.ce_album_pagina"—, porque el
-camino viejo que se llevaba 400 y decía "Listo" ya no existe: `bajarTodas`
-pide solo por `ce_album_pagina`. O sea que **"Descargar todas las fotos"
-directamente no anda** hasta correrla. `sql/rollo.sql` está hecho para
-poder correrse de nuevo encima de lo que ya hay, así que la forma de poner
-la base al día es volver a correrlo entero.
+Lo último que faltaba era `ce_album_pagina` —la que deja bajar TODAS las
+fotos— y se agregó sola, sin volver a correr `rollo.sql` entero. Antes de
+pasarla se probó contra una copia local idéntica a producción (todo
+instalado menos esa función): pagina 1200 fotos en 500+500+200 sin repetir
+ni saltear ninguna, corta en 500 aunque le pidan 99999, y sin la clave del
+evento —o con la de otro— devuelve cero.
 
 **Nunca dar por puesto lo que dice este archivo: mirarlo.**
-`sql/rollo_revisar.sql` y `sql/revisar.sql` dicen qué está y qué falta, fila
-por fila. Tienen que dar todas `true`.
+`sql/estado.sql` lo contesta en trece filas y dice de qué archivo viene
+cada cosa. `sql/revisar.sql`, `sql/rollo_revisar.sql` y
+`sql/blindaje_revisar.sql` lo dicen con más detalle, fila por fila.
 
 **Desde acá no se llega a la base de producción.** Cualquier cambio de SQL
 va pegado en el chat, en un bloque listo para copiar, y lo corre una
 persona en el SQL Editor.
-
-Para la pregunta de todos los días —"¿puedo hacer un evento de verdad?"—
-está **`sql/estado.sql`**: una sola consulta, trece filas, dice qué está y
-qué falta y de qué archivo viene cada cosa. Los tres `*_revisar.sql` dicen
-lo mismo con mucho más detalle.
 
 ### Probar sin tocar producción
 
@@ -535,11 +536,6 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
 
 ## Pendiente, decidido y no hecho
 
-- **Correr `sql/rollo.sql` de nuevo en Supabase.** Es lo primero de la
-  lista: sin `ce_album_pagina`, **"Descargar todas las fotos" no anda** —el
-  organizador aprieta y le dice "No se pudo"—, y esa es la única copia que
-  se lleva de la fiesta. No miente (eso se arregló), pero no funciona.
-  Comprobar antes y después con `sql/estado.sql`.
 - **El rollo nunca se probó en un teléfono de verdad.** Está repasado línea
   por línea y tiene 69 comprobaciones de casos feos, pero todo eso corre en
   un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
@@ -566,9 +562,6 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
   generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son
   provisorios.
-- **Correr `sql/blindaje.sql`.** Hasta que no se corra, la tabla de eventos
-  sigue siendo de lectura libre para cualquiera con `curl`. Comprobar
-  después con `sql/blindaje_revisar.sql`: las dieciséis filas en `true`.
 - **Pegar `apps-script/listado.gs.txt` en el Apps Script de Pía.** Es el
   `doGet` nuevo; el `doPost` no se toca. Antes de pegarlo hay que poner
   `CLAVE_LISTADO` en las propiedades del proyecto (está explicado adentro

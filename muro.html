@@ -2010,7 +2010,9 @@ async function vPanel(){
          ${evs.map(e=>tarjetaEvento(e)).join('')}`
       : `<div class="vacio">Todavía no creaste ningún evento.<br>Empezá por el nombre y la fecha.</div>`}
 
-    <div class="seccion-a"><h2>Nuevo evento</h2></div>
+    <div class="seccion-a"><h2>Nuevo evento</h2>
+      <button data-ir="codigo" style="font-size:11px;letter-spacing:.18em;
+        text-transform:uppercase;color:var(--oro)">Entrar con un código</button></div>
     <div class="tarjeta">
       <div class="campo"><label for="n">Nombre</label><input id="n" type="text" placeholder="Sana · Flor y Juan · Los 40 de papá" maxlength="34"></div>
       <div class="campo"><label for="f">Fecha</label><input id="f" type="date" value="${hoy()}"></div>
@@ -2210,6 +2212,47 @@ async function redibujar(codigo){
   window.scrollTo({top:y, behavior:'auto'});
 }
 
+/* ── entrar a un evento que ya existe ──
+   El rollo tenía esta puerta (`#codigo`) y el muro no. Faltaba justo para
+   la forma en que se vende: el evento lo crea Click Eterno, y al cliente
+   se le pasa el código y la clave para que modere durante la fiesta y se
+   baje el álbum al otro día. Sin esto había que mandarle el enlace largo
+   armado a mano, y si lo perdía no tenía por dónde volver a entrar. */
+function vPorCodigo(){
+  parar(); tono();
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Panel del organizador</p>
+    <h1>Entrar a un evento</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
+    <div class="tarjeta principal" style="margin-top:10px">
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+        Escribí el código de tu evento. Es el que está en el cartel de las mesas
+        y en el enlace que te pasamos. Después te va a pedir la clave.</p>
+      <div class="campo"><label for="codigoEv">Código del evento</label>
+        <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
+          placeholder="Por ejemplo QUI-7FCE64"
+          style="text-align:center;font-size:20px;letter-spacing:.2em;padding:15px 0"></div>
+      <button class="oro-btn" id="irEvento" style="margin-top:8px">Entrar</button>
+      <p class="pie-nota">Si perdiste la clave, escribinos y la reiniciamos.</p>
+    </div>
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
+  const campo=app.querySelector('#codigoEv');
+  campo.focus();
+  const entrar=()=>{
+    const v=campo.value.trim().toUpperCase();
+    if(v.length<4) return recado('Escribí el código completo');
+    /* Derecho al evento: si no hay clave guardada para ese código, vEvento
+       la pide, que es la pantalla que ya existe. */
+    ir('evento/'+encodeURIComponent(v));
+  };
+  app.querySelector('#irEvento').onclick=entrar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+}
+
 /* Recién creado: la clave se muestra una vez, grande y para copiar. */
 function vClaveNueva(ev,clave){
   parar(); tono();
@@ -2331,7 +2374,10 @@ function vPedirClave(codigo,m){
 async function vEvento(codigo, abrirEn){
   parar();
   const m=await meta(codigo);
-  if(!m){recado('No encontré ese evento'); return ir('panel');}
+  /* Vuelve a donde estaba: el cliente que escribió mal un código no tiene
+     por qué caer en la pantalla de "creá tu clave" del panel, que no es la
+     suya y no entiende. */
+  if(!m){recado('No encontré ese evento'); return ir(pinOK?'panel':'codigo');}
   /* sin nube no hay base que valide: el panel queda abierto como antes */
   if(HAY_NUBE && !puedoEditar(codigo) && await laBaseSabeDeClaves())
     return vPedirClave(codigo,m);
@@ -3882,9 +3928,10 @@ function pintar(ruta){
        de la muestra. Todo lo demás cae en la pantalla de subir. */
     /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
        es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
-    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','limpieza','portada',''].includes(v))
+    if(HAY_DEMO && ['panel','evento','cartel','diagnostico','invitado','proyector','limpieza','codigo','portada',''].includes(v))
       return ir('pantalla/DEMO-FIESTA');
     if(v==='panel') p=vAcceso();
+    else if(v==='codigo') p=vPorCodigo();
     else if(v==='limpieza') p=vLimpieza();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
