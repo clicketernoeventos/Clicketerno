@@ -24,6 +24,21 @@ const localEnLaPagina=min=>p.evaluate(m=>{
           instante:d.toISOString()};
 }, min);
 
+/* Avanzar hasta el final del alta SIN contar pasos. Contar clicks es lo
+   que rompió esta prueba cuando el asistente pasó de cuatro pasos a seis:
+   se quedaba a mitad de camino y fallaba por el motivo equivocado. Se
+   avanza mientras el botón diga "Siguiente"; el click que no lo dice es
+   el de crear. */
+const crearYa=async(pg)=>{
+  for(let i=0;i<10;i++){
+    const t=((await pg.locator('#sig').innerText().catch(()=>''))||'').trim().toLowerCase();
+    await pg.locator('#sig').click();
+    await pg.waitForTimeout(450);
+    if(!/siguiente/.test(t)) return;
+  }
+  throw new Error('el alta no llegó nunca al botón de crear');
+};
+
 const irAPaso3=async()=>{
   await p.goto('http://127.0.0.1:8890/rollo.html'); await p.waitForTimeout(600);
   await p.click('#crear'); await p.waitForTimeout(400);
@@ -44,8 +59,8 @@ await irAPaso3();
 const futuro=await localEnLaPagina(120);
 const puesto=futuro.texto;
 await p.fill('#revela', puesto);
-await p.click('#sig'); await p.waitForTimeout(400);
-await p.click('#sig'); await p.waitForTimeout(1200);
+await crearYa(p);
+await p.waitForTimeout(900);
 console.log('B) puse (hora local):', puesto);
 console.log('   se guardó        :', creado.revela_en);
 const guardado=new Date(creado.revela_en);
