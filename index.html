@@ -261,6 +261,11 @@ nav .links a:hover:after{width:100%}
 .cabeza{max-width:680px;margin-bottom:clamp(46px,6vw,72px)}
 .cabeza h2{font-size:clamp(30px,4.4vw,52px);margin-top:20px}
 .cabeza h2 em{font-style:italic;color:var(--oro)}
+/* El espacio antes de la parte dorada. En el HTML los títulos van pegados
+   ("...de tu fiesta,<em>en un solo lugar</em>") y sin esto se leen
+   "fiesta,en un solo lugar", como un error de tipeo. Va en el CSS y no en
+   cada título para que no se olvide en el próximo. */
+.cabeza h2 em::before{content:" "}
 .cabeza p{color:#A79E92;font-size:16px;line-height:1.85;margin-top:22px;max-width:54ch}
 .centrada{margin-inline:auto;text-align:center}
 .centrada .eyebrow{justify-content:center}
@@ -333,7 +338,39 @@ nav .links a:hover:after{width:100%}
 .inc .estrella{width:12px;height:12px;color:var(--oro-hondo);margin-bottom:16px}
 .inc b{display:block;font-family:'Bodoni Moda',serif;font-size:19px;font-weight:400;margin-bottom:8px}
 .inc p{font-size:13.5px;line-height:1.7;color:#6B6156}
-@media(max-width:900px){.incluye{grid-template-columns:repeat(2,1fr)}}
+.incluye.tres{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.incluye{grid-template-columns:repeat(2,1fr)}
+  .incluye.tres{grid-template-columns:repeat(2,1fr)}}
+
+/* ── la app andando adentro de la página ── */
+.vitrina{display:grid;grid-template-columns:1.55fr 1fr;gap:38px;align-items:end;margin-top:46px}
+@media(max-width:860px){.vitrina{grid-template-columns:1fr;gap:46px;justify-items:center}}
+.pieza{width:100%;max-width:640px;cursor:pointer;text-align:center}
+.pieza.tel{max-width:250px}
+.pieza .marco-p{position:relative;transition:transform .5s var(--e),box-shadow .5s var(--e)}
+.pieza:hover .marco-p{transform:translateY(-10px)}
+.pieza:active .marco-p{transform:translateY(-4px) scale(.995)}
+/* la pantalla del salón: una notebook */
+.pieza.sala .chasis{--r-fuera:12px;--bisel:9px;background:linear-gradient(160deg,#2A2724,#14120F);
+  box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.pieza.sala .visor-p{border-radius:4px;aspect-ratio:16/9}
+.pieza.sala .base{height:11px;margin:0 auto;width:66%;border-radius:0 0 12px 12px;
+  background:linear-gradient(180deg,#2A2724,#0D0B09)}
+.pieza.sala .pata{height:4px;width:22%;margin:0 auto;border-radius:0 0 6px 6px;background:#0D0B09;opacity:.7}
+/* el rollo: un celular, como los de Trabajos */
+.pieza.tel .chasis{--r-fuera:42px;--bisel:7px;background:linear-gradient(160deg,#2A2724,#14120F);
+  box-shadow:0 26px 60px rgba(0,0,0,.45)}
+.pieza.tel .visor-p{border-radius:36px;aspect-ratio:390/780}
+.pieza .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(10,8,6,.62);z-index:8;
+  display:grid;place-items:center;opacity:0;transition:opacity .45s var(--e)}
+.pieza:hover .lupa,.pieza:focus-visible .lupa{opacity:1}
+.pieza .lupa span{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);
+  border:1px solid rgba(217,174,114,.5);border-radius:2px;padding:9px 16px}
+.pieza .pie-p{margin-top:20px}
+.pieza .pie-p b{display:block;font-family:'Bodoni Moda',serif;font-size:20px;font-weight:400}
+.pieza .pie-p span{display:block;font-size:13px;line-height:1.7;color:#8A7F72;margin-top:6px}
+.pieza .quieto{position:absolute;inset:0;display:grid;place-items:center;z-index:1;
+  color:#8A7F72;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-align:center;padding:20px}
 @media(max-width:520px){.incluye{grid-template-columns:1fr}}
 
 /* galería de trabajos */
@@ -468,6 +505,7 @@ footer .datos a:hover{color:var(--oro)}
     <a href="#servicios">Servicios</a>
     <a href="#invitaciones">Invitaciones</a>
     <a href="#trabajos">Trabajos</a>
+    <a href="#app">La app</a>
     <a href="#preguntas">Preguntas</a>
   </div>
   <a class="btn btn-oro" href="#contacto">Pedir presupuesto</a>
@@ -478,6 +516,7 @@ footer .datos a:hover{color:var(--oro)}
   <a href="#servicios">Servicios</a>
   <a href="#invitaciones">Invitaciones</a>
   <a href="#trabajos">Trabajos</a>
+  <a href="#app">La app</a>
   <a href="#preguntas">Preguntas</a>
   <a href="#contacto" style="color:var(--oro)">Pedir presupuesto</a>
 </div>
@@ -637,6 +676,15 @@ footer .datos a:hover{color:var(--oro)}
       <div class="paso ap"><div class="n">II</div><h3 class="serif">Suben fotos y saludos</h3><p>Fotos, videos, dedicatorias y audios. Si querés, nada se proyecta sin que alguien lo apruebe antes.</p></div>
       <div class="paso ap"><div class="n">III</div><h3 class="serif">Se proyecta y queda</h3><p>La pantalla se actualiza sola toda la noche y después todo se convierte en un álbum digital.</p></div>
     </div>
+
+    <div class="incluye tres">
+      <div class="inc ap"><i class="estrella"></i><b>Cartel de mesa</b><p>Con el código de tu fiesta, listo para imprimir y poner en cada mesa. Lo escanean y ya están adentro.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Fotos, videos y voz</b><p>No solo fotos: también videos cortos, dedicatorias escritas y saludos grabados.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Moderación, si querés</b><p>Con un botón, nada se proyecta hasta que vos lo aprobás desde tu celular.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Tres modos de pantalla</b><p>El código para que escaneen, un tablero con lo que va entrando, y el muro a pantalla completa.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Consignas de la noche</b><p>Les proponés qué sacar —el brindis, la mesa más ruidosa— y se las va mostrando.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Álbum para descargar</b><p>Al otro día está todo junto en un solo archivo, con las dedicatorias aparte.</p></div>
+    </div>
     <div style="margin-top:44px" class="ap">
       <a class="btn btn-hilo" href="muro?demo=1" target="_blank">Probar la demostración →</a>
     </div>
@@ -650,7 +698,18 @@ footer .datos a:hover{color:var(--oro)}
       <p class="eyebrow">Rollo eterno</p>
       <h2 class="serif">La cámara descartable,<em>versión digital</em></h2>
       <p>Cada invitado recibe una cantidad limitada de fotos, como en un rollo de verdad, y elige entre 5 filtros antes de sacarla. No puede ver lo que sacó ni borrarlo. Al día siguiente, o a la hora que vos elijas, el rollo se revela: primero ve las suyas y después las de toda la fiesta. Sin poses, sin repetir la toma diez veces.</p>
-      <div style="margin-top:32px"><a class="btn btn-hilo" href="rollo?demo=1" target="_blank">Probar la demostración →</a></div>
+    </div>
+    <div class="incluye tres">
+      <div class="inc ap"><i class="estrella"></i><b>Fotos contadas</b><p>Vos elegís cuántas tiene cada invitado. Como un rollo de verdad: una vez que sale, salió.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Cinco filtros de película</b><p>Clásico, blanco y negro, flash, dorado y natural. Se elige antes de disparar, no después.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Nadie ve nada</b><p>Ni el que la sacó. Las fotos quedan guardadas y no se pueden abrir hasta el revelado.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Revelado a tu hora</b><p>Lo programás para el mediodía siguiente, o lo revelás vos cuando quieras.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Álbum compartido</b><p>Primero ve las suyas, después las de toda la fiesta. Con el nombre de quién sacó cada una.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Te llevás todo</b><p>Las fotos completas en un solo archivo, con el nombre de cada invitado.</p></div>
+    </div>
+
+    <div style="margin-top:44px" class="ap">
+      <a class="btn btn-hilo" href="rollo?demo=1" target="_blank">Probar la demostración →</a>
     </div>
   </div>
 </section>
@@ -660,6 +719,52 @@ footer .datos a:hover{color:var(--oro)}
   <p class="ap">La fiesta dura una noche. La invitación queda guardada para siempre.</p>
   <div class="quien ap">Un click, para toda la vida</div>
 </div>
+
+<!-- ═══ LA APP ANDANDO ═══ -->
+<section id="app" class="clara">
+  <div class="wrap">
+    <div class="cabeza centrada ap">
+      <p class="eyebrow">La app, andando</p>
+      <h2 class="serif">No te lo contamos.<em>Miralo funcionando.</em></h2>
+      <p>Lo de acá abajo no son capturas: es la aplicación de verdad, con una fiesta inventada, corriendo ahora mismo dentro de esta página. Tocá cualquiera de las dos y la probás entera.</p>
+    </div>
+
+    <div class="vitrina">
+      <div class="pieza sala ap" role="button" tabindex="0"
+           data-abrir="muro?demo=1" aria-label="Probar el muro en vivo">
+        <div class="marco-p">
+          <div class="chasis">
+            <div class="visor-p">
+              <div class="quieto">La pantalla del salón</div>
+              <div class="vivo" data-vivo="muro?demo=1&amp;marco=1" data-ancho="1200"
+                   data-nombre="el muro en vivo"></div>
+              <div class="lupa"><span>Probar el muro</span></div>
+            </div>
+          </div>
+          <div class="base"></div><div class="pata"></div>
+        </div>
+        <div class="pie-p"><b>Así se ve en el salón</b>
+          <span>Lo que mandan tus invitados, proyectado. Se actualiza solo toda la noche.</span></div>
+      </div>
+
+      <div class="pieza tel ap" role="button" tabindex="0"
+           data-abrir="rollo?demo=1" aria-label="Probar el rollo eterno">
+        <div class="marco-p">
+          <div class="chasis">
+            <div class="visor-p">
+              <div class="quieto">El álbum del rollo</div>
+              <div class="vivo" data-vivo="rollo?demo=1&amp;marco=1" data-ancho="390"
+                   data-nombre="el álbum del rollo"></div>
+              <div class="lupa"><span>Probar el rollo</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="pie-p"><b>Así se revela el rollo</b>
+          <span>Al otro día, cada invitado abre y ve las suyas primero.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ═══ PREGUNTAS ═══ -->
 <section id="preguntas">
@@ -945,8 +1050,11 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     const ancho=capa.clientWidth, alto=capa.clientHeight;
     if(!ancho||!alto) return;
     // dibujamos a 390px (ancho de celular) y achicamos hasta el marco
-    const escala=ancho/390;
-    marco.style.setProperty('--ancho-real','390px');
+    /* El ancho al que se dibuja adentro. 390 es un celular; la pantalla del
+       salón se dibuja a 1200 y se achica igual. */
+    const real=Number(capa.dataset.ancho)||390;
+    const escala=ancho/real;
+    marco.style.setProperty('--ancho-real',real+'px');
     marco.style.height=Math.ceil(alto/escala)+'px';
     marco.style.transform=`scale(${escala})`;
   };
@@ -993,6 +1101,13 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   }),{rootMargin:'400px'});
   capas.forEach(c=>vigia.observe(c));
 })();
+
+/* ═══ las dos piezas de "la app andando" abren la demostración ═══ */
+document.querySelectorAll('.pieza[data-abrir]').forEach(el=>{
+  const ir=()=>window.open(el.dataset.abrir,'_blank','noopener');
+  el.addEventListener('click',ir);
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); ir(); } });
+});
 
 /* ═══ visor ═══ */
 const visor=document.getElementById('visor'), marcoV=document.getElementById('marcoV'),

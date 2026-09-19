@@ -11,6 +11,12 @@
 # directiva lo frenó. Y corré `bash pruebas/todo.sh`, que las prueba.
 
 /*
+  # netlify.app está en connect-src Y en frame-src a propósito: la galería
+  # de Trabajos le pregunta a cada invitación si responde ANTES de meterla
+  # en un marco, para no dejar un hueco en blanco si el sitio se cayó. Sin
+  # el permiso de connect, esa pregunta falla, la galería da por muerta a la
+  # invitación y no se ve ninguna en vivo. Pasó: la CSP las apagó a las tres
+  # sin un solo error a la vista.
   # De dónde puede venir cada cosa. No hay ningún servidor de scripts de
   # terceros: las librerías (QR y zip) viven en /lib dentro del repo.
   #
@@ -19,7 +25,7 @@
   # archivo suelto. Igual sirve: sin hosts externos no se puede cargar un
   # script de afuera, y connect-src e img-src cierran la puerta de salida,
   # que es por donde se iría una clave robada.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; media-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; connect-src 'self' https://kuqlqgrwsospwjexodqa.supabase.co https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://*.netlify.app; frame-ancestors 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; media-src 'self' data: blob: https://kuqlqgrwsospwjexodqa.supabase.co; connect-src 'self' https://kuqlqgrwsospwjexodqa.supabase.co https://script.google.com https://script.googleusercontent.com https://*.netlify.app; frame-src 'self' https://*.netlify.app; frame-ancestors 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
   # Que nadie meta el muro adentro de un marco para hacerle tocar botones al
   # organizador sin que se dé cuenta.
   X-Frame-Options: SAMEORIGIN

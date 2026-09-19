@@ -228,6 +228,16 @@ las del cupo?, ¿puede ver las de otro?
   pide solo los códigos cuya clave está guardada en ese aparato
   (`codigo=in.(…)`), y la tabla entera únicamente con la clave maestra. El
   rollo ya lo hacía bien.
+- **El servidor de pruebas tiene que parecerse al de verdad.** No servía las
+  direcciones limpias (`/muro` → `muro.html`), así que la vitrina de la
+  página de inicio daba 404 **solo en las pruebas** y se veía negra, cuando
+  en producción anda. Y antes, sin las cabeceras, la CSP no la probaba
+  nadie. Cada diferencia entre los dos esconde justo lo que hay que ver.
+- **Una CSP apaga cosas sin decir nada.** `connect-src` no tenía
+  `netlify.app` y la galería de Trabajos le pregunta a cada invitación si
+  responde ANTES de meterla en un marco: la pregunta se bloqueaba, la
+  galería las daba por muertas y no se veía **ninguna** invitación en vivo.
+  Sin un solo error a la vista. Lo que la CSP bloquea hay que ir a mirarlo.
 - **Dos botones fijos, cada uno con su `right` a ojo, se montan.** En la
   pantalla del salón "Pantalla completa" y el de al lado se pisaban apenas
   el segundo cambiaba de texto. Van en una fila (`.botones-sala`) con `gap`,
@@ -360,6 +370,24 @@ ninguna página: **una página pública no puede guardar un secreto.** El
 portón anterior comparaba contra un correo escrito en el propio HTML.
 
 `apps-script/` va en `.assetsignore`: no se publica.
+
+## La app andando adentro de la web
+
+`index.html` tiene el apartado **`#app`**: una notebook con el muro
+proyectándose y un celular con el álbum del rollo, los dos corriendo de
+verdad en un marco, no capturas. Reusa la misma maquinaria que la galería
+de Trabajos (`.vivo`, con `IntersectionObserver` y un dibujo de reserva
+debajo por si el marco no carga); ahora `data-ancho` dice a qué ancho se
+dibuja adentro (1200 la pantalla del salón, 390 el celular) en vez de estar
+clavado en 390.
+
+Las apps entienden **`?marco=1`**: sin cinta de demostración y sin los
+botones de la pantalla del salón. Es una vidriera, no algo para tocar: se
+toca y se abre la demostración de verdad en otra pestaña.
+
+El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
+igual que las invitaciones. **Sin precios**, por decisión del dueño: el
+presupuesto se cierra hablando.
 
 ## Invitaciones alojadas en el repo
 

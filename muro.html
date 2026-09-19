@@ -821,6 +821,10 @@ const NUBE = {
    donde se veían los eventos de los clientes y el botón de "cargar una
    fiesta de ejemplo" escribía en la base de producción. */
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+/* ?marco=1: la demostración va adentro de un marco en la página pública,
+   como una vidriera. Sin cinta y sin botones: es una muestra de cómo se ve
+   proyectado, no algo para tocar. Se toca en la demostración de verdad. */
+const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
 const HAY_NUBE = !HAY_DEMO && !!(NUBE.url && NUBE.clave);
 
 const LISTA='ce:eventos', cacheItem={}, memoria={};
@@ -2865,13 +2869,13 @@ async function vPantalla(codigo){
   app.innerHTML=`
   <!-- Los dos en una fila, no cada uno con su "right" a ojo: el botón de la
        demostración es más largo y se montaba encima del otro. -->
-  <div class="botones-sala">
+  <div class="botones-sala"${EN_MARCO?' hidden':''}>
     <button class="dejar" id="completa">Pantalla completa</button>
     <!-- En demostración esta pantalla ES la prueba, así que "Salir" no tiene
          sentido: lo que hace falta es invitar a probar el otro lado. -->
     <button class="dejar${HAY_DEMO?' llamada':''}">${HAY_DEMO?'Probá mandar una foto':'Salir'}</button>
   </div>
-  <div class="modos-sala" role="group" aria-label="Qué se muestra">
+  <div class="modos-sala" role="group" aria-label="Qué se muestra"${EN_MARCO?' hidden':''}>
     <button data-modo="cartel" aria-pressed="true">Código</button>
     <button data-modo="tablero" aria-pressed="false">Tablero</button>
     <button data-modo="muro" aria-pressed="false">Muro</button>
@@ -2929,8 +2933,8 @@ async function vPantalla(codigo){
       <span class="qr-sala" id="qrs"></span>
     </div>
   </div>`;
-  app.querySelector('.botones-sala .dejar:last-child').onclick=
-    ()=>ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
+  const bSalir=app.querySelector('.botones-sala .dejar:last-child');
+  if(bSalir) bSalir.onclick=()=>ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
   app.querySelector('#completa').onclick=()=>{
     if(document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen?.().catch(()=>recado('Tocá F11 para pantalla completa'));
@@ -3609,14 +3613,15 @@ addEventListener('error',e=>{
     /* Que el visitante caiga adentro de una fiesta andando, no en una
        pantalla de bienvenida. Si ya la sembró en esta pestaña, se entra
        directo. */
-    document.body.classList.add('en-demo');
-    document.body.insertAdjacentHTML('afterbegin', `
+    if(!EN_MARCO) document.body.classList.add('en-demo');
+    if(!EN_MARCO) document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
         <button id="deNuevo">Empezar de nuevo</button>
         <a href="/">Salir</a>
       </div>`);
-    document.getElementById('deNuevo').onclick=reiniciarDemo;
+    const bn=document.getElementById('deNuevo');
+    if(bn) bn.onclick=reiniciarDemo;
     /* Se siembra SIEMPRE, sin preguntar si ya estaba: es un modo prueba, y
        cada vez que alguien entra tiene que encontrarlo igual que el primero.
        Lo que dejó el anterior no es parte de la muestra. */

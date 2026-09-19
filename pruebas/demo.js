@@ -18,6 +18,7 @@ const { chromium } = require('playwright');
 const { crearFake } = require('./fakesb');
 const fs = require('fs');
 const path = require('path');
+const RAIZ_WEB = path.join(__dirname, '..');
 
 const BASE = process.env.BASE || 'http://127.0.0.1:8099';
 let fallas = 0, bien = 0;
@@ -243,6 +244,54 @@ async function abrir(ctx) {
       'un visitante sin claves guardadas NO ve los eventos de los clientes',
       visto.slice(0, 120));
     await ctx.close();
+  }
+
+  /* ── 4 ter · la app andando adentro de la página de inicio ── */
+  {
+    console.log('\n── la vitrina de la página de inicio ──');
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const { pg, espia } = await abrir(ctx);
+    await pg.goto(`${BASE}/index.html`, { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(800);
+    await pg.evaluate(() => document.querySelector('.vitrina').scrollIntoView({ block: 'center' }));
+    await pg.waitForTimeout(12000);
+
+    const marcos = await pg.evaluate(() => [...document.querySelectorAll('#app .vivo')].map(v => {
+      const f = v.querySelector('iframe');
+      if (!f) return { falta: true };
+      let dentro = '';
+      try { dentro = (f.contentDocument.body.innerText || '').replace(/\s+/g, ' '); } catch (e) {}
+      let cinta = -1;
+      try { cinta = f.contentDocument.querySelectorAll('#cinta-demo').length; } catch (e) {}
+      return { src: f.getAttribute('src'), listo: v.classList.contains('listo'), dentro, cinta,
+               alto: Math.round(f.getBoundingClientRect().height) };
+    }));
+    afirmar(marcos.length === 2 && marcos.every(m => !m.falta && m.listo),
+      'los dos marcos de la vitrina se encienden', JSON.stringify(marcos).slice(0, 120));
+    afirmar(marcos.every(m => !/404|File not found|Error code/i.test(m.dentro)),
+      'y traen la app, no un 404',
+      'ojo: /muro y /rollo son direcciones limpias; el servidor de pruebas tiene que resolverlas como Cloudflare');
+    afirmar((marcos[0] || {}).dentro && /delfina/i.test(marcos[0].dentro),
+      'en la notebook se ve el muro proyectado', (marcos[0] || {}).dentro);
+    afirmar((marcos[1] || {}).dentro && /revel/i.test(marcos[1].dentro),
+      'en el celular se ve el álbum del rollo', (marcos[1] || {}).dentro);
+    afirmar(marcos.every(m => m.cinta === 0),
+      'adentro del marco no va la cinta de demostración: es una vidriera, no algo para tocar');
+    afirmar(marcos.every(m => m.alto > 200), 'y tienen alto de verdad, no cero',
+      JSON.stringify(marcos.map(m => m.alto)));
+    afirmar(espia.errores.length === 0, 'la página de inicio no tira errores de JavaScript',
+      espia.errores.slice(0, 2).join(' · '));
+    await ctx.close();
+  }
+
+  /* ── 4 quater · lo que incluye cada servicio, en la web ── */
+  {
+    const html = fs.readFileSync(path.join(RAIZ_WEB, 'index.html'), 'utf8');
+    const listas = (html.match(/class="incluye tres"/g) || []).length;
+    afirmar(listas === 2,
+      'el muro y el rollo dicen qué incluyen, como las invitaciones', String(listas));
+    afirmar(/id="app"/.test(html) && /href="#app"/.test(html),
+      'y el apartado de la app tiene su lugar en el menú');
   }
 
   /* ── 5 · los botones de la web apuntan a la demostración ── */

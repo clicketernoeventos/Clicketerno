@@ -351,6 +351,8 @@ const NUBE = {
    una demostración" de la web: antes ese botón abría la app de verdad, y
    desde ahí se llegaba a los eventos de los clientes. */
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
+/* ?marco=1: adentro de un marco en la página pública. Sin cinta. */
+const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
 const DEMO_COD = 'DEMO-ROLLO';
 const app=document.getElementById('app');
 const esc=s=>String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2055,13 +2057,16 @@ addEventListener('click',e=>{
   if(b) location.hash=b.dataset.ir;
 });
 if(HAY_DEMO){
-  document.body.classList.add('en-demo');
-  document.body.insertAdjacentHTML('afterbegin',
-    '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
-    +'<button id="deNuevo">Empezar de nuevo</button><a href="/">Salir</a></div>');
+  if(!EN_MARCO){
+    document.body.classList.add('en-demo');
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div id="cinta-demo"><span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
+      +'<button id="deNuevo">Empezar de nuevo</button><a href="/">Salir</a></div>');
+  }
   /* Es un modo prueba: volver a empezar es recargar. Todo lo de la
      demostración vive en memoria, así que la recarga lo limpia entero. */
-  document.getElementById('deNuevo').onclick=()=>location.replace(location.pathname+'?demo=1');
+  const bn=document.getElementById('deNuevo');
+  if(bn) bn.onclick=()=>location.replace(location.pathname+'?demo=1');
   /* Derecho a lo que hay que mostrar. Sin ?e= en la dirección, el que entra
      es "un invitado de la fiesta inventada": con el rollo ya revelado eso
      cae en el álbum, que es el momento del producto. */
@@ -2070,6 +2075,7 @@ if(HAY_DEMO){
   if(!codigo){
     const q=new URLSearchParams(location.search);
     q.set('demo','1'); q.set('e',DEMO_COD);
+    if(EN_MARCO) q.set('marco','1');
     location.replace(location.pathname+'?'+q.toString());
   }else{
     history.replaceState(null,'','');

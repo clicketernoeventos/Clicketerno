@@ -49,6 +49,21 @@ class Mano(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *a, **k):
         super().__init__(*a, directory=RAIZ, **k)
 
+    def translate_path(self, path):
+        """Direcciones limpias, como Cloudflare: /muro sirve muro.html.
+
+        Sin esto, cualquier cosa que use la dirección limpia daba 404 SOLO
+        en las pruebas. La vitrina de la página de inicio mete /muro y
+        /rollo en un marco: acá se veía negra y en producción anda. Un
+        servidor de pruebas que no se parece al de verdad esconde
+        exactamente lo que hay que ver.
+        """
+        entero = super().translate_path(path)
+        if not os.path.exists(entero) and not os.path.splitext(entero)[1]:
+            if os.path.exists(entero + '.html'):
+                return entero + '.html'
+        return entero
+
     def end_headers(self):
         ruta = self.path.split('?')[0]
         for patron, cab in REGLAS:
