@@ -302,6 +302,20 @@ nav .links a:hover:after{width:100%}
 .serv:hover .sobre .carta{transform:translateY(-30px)}
 .sobre .frente{position:absolute;bottom:0;left:0;width:100%;height:62%;background:#12100E;border-top:1px solid var(--hilo);z-index:3}
 
+/* ── ya contrataste: por dónde entra el cliente ──
+   Faltaba. Había un enlace al panel escondido en el pie, con media
+   opacidad, y del rollo no había nada: el cliente que ya pagó no tenía a
+   dónde ir a crear su evento y terminaba escribiendo por WhatsApp. */
+.entrar{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  margin-top:40px}
+.puerta-c{display:block;border:1px solid var(--hilo);padding:26px 24px;
+  background:rgba(217,174,114,.03);transition:.35s var(--e)}
+.puerta-c:hover{border-color:var(--oro);background:rgba(217,174,114,.07);transform:translateY(-3px)}
+.puerta-c b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;
+  font-weight:400;font-size:22px;color:var(--champan);margin-bottom:10px}
+.puerta-c p{color:#A79E92;font-size:14.5px;line-height:1.75;margin:0}
+.puerta-c .mas{display:inline-block;margin-top:16px;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--oro)}
 /* animación: muro */
 .pila{position:relative;width:130px;height:100px}
 .pila i{position:absolute;inset:0;border:1px solid var(--hilo);background:linear-gradient(140deg,#241C14,#0E0C0A);
@@ -515,6 +529,7 @@ footer .datos a:hover{color:var(--oro)}
     <a href="#trabajos">Trabajos</a>
     <a href="#app">La app</a>
     <a href="#preguntas">Preguntas</a>
+    <a href="#entrar">Ya contraté</a>
   </div>
   <a class="btn btn-oro" href="#contacto">Pedir presupuesto</a>
   <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
@@ -526,6 +541,7 @@ footer .datos a:hover{color:var(--oro)}
   <a href="#trabajos">Trabajos</a>
   <a href="#app">La app</a>
   <a href="#preguntas">Preguntas</a>
+  <a href="#entrar">Ya contraté</a>
   <a href="#contacto" style="color:var(--oro)">Pedir presupuesto</a>
 </div>
 
@@ -695,6 +711,8 @@ footer .datos a:hover{color:var(--oro)}
     </div>
     <div style="margin-top:44px" class="ap">
       <a class="btn btn-hilo" href="muro?demo=1" target="_blank">Probar la demostración →</a>
+      <a href="muro#panel" style="display:inline-block;margin-left:18px;font-size:12px;
+        letter-spacing:.16em;text-transform:uppercase;color:var(--oro)">Ya contraté · entrar →</a>
     </div>
   </div>
 </section>
@@ -718,7 +736,35 @@ footer .datos a:hover{color:var(--oro)}
 
     <div style="margin-top:44px" class="ap">
       <a class="btn btn-hilo" href="rollo?demo=1" target="_blank">Probar la demostración →</a>
+      <a href="rollo" style="display:inline-block;margin-left:18px;font-size:12px;
+        letter-spacing:.16em;text-transform:uppercase;color:var(--oro)">Ya contraté · entrar →</a>
     </div>
+  </div>
+</section>
+
+<!-- ═══ YA CONTRATASTE ═══ -->
+<section id="entrar">
+  <div class="wrap">
+    <div class="cabeza centrada ap">
+      <p class="eyebrow">Ya contrataste</p>
+      <h2 class="serif">Entrá a <em>crear tu evento</em></h2>
+      <p>Acá adentro armás la fiesta, sacás el código QR para imprimir y manejás todo desde tu celular. No hace falta instalar nada.</p>
+    </div>
+    <div class="entrar">
+      <a class="puerta-c ap" href="muro#panel">
+        <b>Muro en vivo</b>
+        <p>Creá el evento, conseguí el código QR para las mesas y abrí la pantalla del salón. Desde acá también moderás y descargás el álbum.</p>
+        <span class="mas">Entrar al panel →</span>
+      </a>
+      <a class="puerta-c ap" href="rollo">
+        <b>Rollo eterno</b>
+        <p>Creá el rollo, elegí cuántas fotos tiene cada invitado y a qué hora se revela. El mismo código QR sirve para toda la fiesta.</p>
+        <span class="mas">Entrar al rollo →</span>
+      </a>
+    </div>
+    <p class="ap" style="color:#7C7469;font-size:13px;line-height:1.8;max-width:52ch;margin:26px auto 0;text-align:center">
+      Cada evento tiene su clave. Queda guardada en el teléfono donde lo creaste; si entrás desde otro, te la va a pedir.
+      Si la perdiste, escribinos y la reiniciamos.</p>
   </div>
 </section>
 
@@ -834,7 +880,7 @@ footer .datos a:hover{color:var(--oro)}
   <div class="datos">
     Rosario, Santa Fe · Argentina<br>
     <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a><br>
-    <a href="muro#panel" style="opacity:.5">Panel del organizador</a>
+    <a href="muro#panel">Panel del muro</a> · <a href="rollo">Panel del rollo</a>
   </div>
 </div></footer>
 </main>

@@ -385,8 +385,13 @@ option{background:#0B0A08}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
 /* ── cinta de la demostración ── */
-#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;height:38px;display:flex;
-  align-items:center;justify-content:center;gap:14px;padding:0 14px;
+/* Alto AUTOMÁTICO y medido, no clavado en 38px: en un teléfono los
+   botones no entran en una línea, y con alto fijo lo que sobra se sale de
+   la pantalla —el ✕ y "Salir" quedaban afuera, sin forma de llegar—.
+   Envuelve, y el JS pone el alto real en --cinta para que las capas fijas
+   se corran lo que haga falta. */
+#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;min-height:38px;display:flex;
+  flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:6px 12px;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
   color:#2A1B08;font-size:11.5px;letter-spacing:.1em;text-align:center}
 #cinta-demo b{font-weight:500}
@@ -395,17 +400,34 @@ option{background:#0B0A08}
   color:#2A1B08;background:rgba(42,27,8,.12);border:1px solid rgba(42,27,8,.3);
   border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:none}
 #cinta-demo button:hover{background:rgba(42,27,8,.2)}
-body.en-demo{padding-top:38px}
-body.en-demo .cabecera{top:38px}
+body.en-demo{--cinta:38px;padding-top:var(--cinta)}
+body.en-demo .cabecera{top:var(--cinta)}
 /* La pantalla del salón y el álbum a pantalla completa se dibujan con
    position:fixed, así que el padding del body no los corre: la cinta les
    tapaba los botones de modo y el de salir, y no se podía llegar al muro. */
 body.en-demo .sala,
 body.en-demo .visor,
-body.en-demo .capa{top:38px}
-body.en-demo .modos-sala{top:54px}
-body.en-demo .botones-sala{top:56px}
-body.en-demo .dejar{top:56px}
+body.en-demo .capa{top:var(--cinta)}
+body.en-demo .modos-sala{top:calc(var(--cinta) + 16px)}
+body.en-demo .botones-sala,
+body.en-demo .dejar{top:calc(var(--cinta) + 18px)}
+@media (max-width:640px){
+  body.en-demo .botones-sala{top:calc(var(--cinta) + 16px + var(--modos, 38px) + 8px)}
+}
+/* ── la cinta se pliega ──
+   En un teléfono, 38px fijos arriba le comen la pantalla a la proyección:
+   los botones de modo y el de salir quedan apretados contra el borde. Con
+   el ✕ la cinta queda en una tira de 18px que se toca y vuelve, así el que
+   está mirando la demostración no pierde "Salir" ni "Empezar de nuevo"
+   (que es lo que pasaría si la escondiéramos del todo). */
+#cinta-demo .plegar{padding:5px 9px;border-radius:50%;line-height:1;font-size:12px;
+  letter-spacing:0;border-color:transparent;background:transparent}
+#cinta-demo .mini{display:none;font-size:9px;letter-spacing:.26em;
+  text-transform:uppercase;opacity:.9}
+body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
+  flex-wrap:nowrap;cursor:pointer}
+body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
+body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 @media (max-width:420px){
   #cinta-demo{font-size:10.5px;gap:9px}
   #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -653,6 +675,21 @@ body.en-demo .dejar{top:56px}
   text-transform:uppercase;color:var(--mute);transition:.3s var(--e)}
 .modos-sala button[aria-pressed=true]{color:#0A0806;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
+/* ── los mandos del salón en un teléfono ──
+   Son cuatro solapas a la izquierda y dos botones a la derecha, los dos
+   grupos fijos y calculados para una pantalla ancha. En un celular no
+   entran: "Completa" se salía del borde y el botón dorado se le montaba
+   encima, así que desde el teléfono no se podía cambiar de modo. Uno
+   arriba del otro y en todo el ancho, que es lo que hay. Pasa con
+   demostración y sin ella: la pantalla del salón se abre igual desde un
+   celular cuando el organizador la está probando. */
+@media (max-width:640px){
+  .modos-sala{left:8px;right:8px;justify-content:center}
+  .modos-sala button{padding:7px 10px;font-size:9px;letter-spacing:.14em}
+  .botones-sala{left:8px;right:8px;justify-content:center;max-width:none;
+    top:calc(16px + var(--modos, 38px) + 8px)}
+  .botones-sala .dejar,.dejar{padding:8px 13px;font-size:9.5px;letter-spacing:.16em}
+}
 
 /* cuenta regresiva hasta que se abre el muro */
 .cuenta-lanza{display:flex;gap:clamp(8px,1vw,16px);justify-content:center;flex-wrap:wrap}
@@ -3157,6 +3194,19 @@ async function vPantalla(codigo){
   </div>`;
   const bSalir=app.querySelector('.botones-sala .dejar:last-child');
   if(bSalir) bSalir.onclick=()=>ir(HAY_DEMO?'subir/'+codigo:'evento/'+codigo);
+  /* Cuánto mide la fila de modos, de verdad. En un teléfono los botones
+     de abajo se apoyan en ella, y si la damos por supuesta —o si cambia
+     de alto al envolver— se le montan encima, que es justo lo que hacía
+     que desde el celular no se pudiera cambiar de modo. */
+  (function medirModos(){
+    const fila=app.querySelector('.modos-sala');
+    const poner=()=>{ if(fila) document.body.style.setProperty(
+      '--modos', (fila.offsetHeight||38)+'px'); };
+    requestAnimationFrame(poner);
+    addEventListener('resize',poner);
+    addEventListener('orientationchange',poner);
+  })();
+
   app.querySelector('#completa').onclick=()=>{
     if(document.fullscreenElement) document.exitFullscreen();
     else document.documentElement.requestFullscreen?.().catch(()=>recado('Tocá F11 para pantalla completa'));
@@ -3840,12 +3890,39 @@ addEventListener('error',e=>{
     if(!EN_MARCO) document.body.classList.add('en-demo');
     if(!EN_MARCO) document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
+        <span class="mini">Demostración</span>
         <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
         <button id="deNuevo">Empezar de nuevo</button>
         ${ENMARCADO?'':'<a href="/">Salir</a>'}
+        <button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button>
       </div>`);
     const bn=document.getElementById('deNuevo');
     if(bn) bn.onclick=reiniciarDemo;
+    /* Plegar y desplegar. Plegada, toda la tira es el botón de volver a
+       abrirla: 18px de alto son poco para apuntarle, pero es el ancho
+       entero de la pantalla. */
+    const cinta=document.getElementById('cinta-demo');
+    const plegar=document.getElementById('plegarCinta');
+    if(plegar) plegar.onclick=e=>{ e.stopPropagation();
+      document.body.classList.add('cinta-chica'); };
+    if(cinta) cinta.onclick=()=>{
+      if(document.body.classList.contains('cinta-chica'))
+        document.body.classList.remove('cinta-chica');
+      medirCinta();
+    };
+    /* Cuánto mide de verdad, después de dibujarla. Si la damos por
+       supuesta, al envolver en dos líneas la cinta vuelve a taparle los
+       botones a la proyección, que es el problema que veníamos a
+       resolver. */
+    function medirCinta(){
+      if(!cinta) return;
+      requestAnimationFrame(()=>document.body.style.setProperty(
+        '--cinta', (cinta.offsetHeight||38)+'px'));
+    }
+    if(plegar) plegar.addEventListener('click',medirCinta);
+    addEventListener('resize',medirCinta);
+    addEventListener('orientationchange',medirCinta);
+    medirCinta();
     /* Se siembra SIEMPRE, sin preguntar si ya estaba: es un modo prueba, y
        cada vez que alguien entra tiene que encontrarlo igual que el primero.
        Lo que dejó el anterior no es parte de la muestra. */

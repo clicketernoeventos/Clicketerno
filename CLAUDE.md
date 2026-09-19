@@ -18,6 +18,10 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+Al que ya contrató se entra por **`/#entrar`** de la página pública: dos
+puertas, `muro#panel` y `rollo`. Es lo primero que pregunta un cliente
+cuando paga.
+
 Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
 `/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
 almacenamiento del navegador**. Es a donde apuntan los botones "Probar la
@@ -49,6 +53,15 @@ nunca, o sea que el ejemplo no mostraba nada.
 "Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
 prueba: el que entra después no tiene que encontrarse con lo que dejó el
 anterior.
+
+**La cinta se pliega.** Un ✕ la deja en una tira de 18px que se toca y
+vuelve. No se esconde del todo a propósito: es la única salida al sitio y
+el único "Empezar de nuevo". Su alto real vive en `--cinta` y lo mide el
+JS (ver la regla del alto escrito a mano).
+
+**Desde el álbum del rollo se pasa a la cámara y se vuelve**, con un botón
+en la cinta. Antes al otro lado solo se llegaba escribiendo `?camara=1` a
+mano, así que la mitad del producto no se mostraba nunca.
 
 **Son dos servicios aparte.** Comparten la tabla de eventos y el sistema de
 clave, pero se manejan cada uno desde lo suyo: al rollo no se llega nunca
@@ -277,6 +290,34 @@ las del cupo?, ¿puede ver las de otro?
   las fotos se apilaban sin aparecer, y con la moderación encendida eso
   quiere decir que no se proyecta nada: había que salir y volver a entrar, y
   nadie lo sabe. Ahora el panel se entera solo.
+
+- **Un alto escrito a mano en el CSS miente en cuanto el contenido
+  envuelve.** Las capas fijas se corrían `38px` —lo que mide la cinta de
+  la demostración— con el número puesto a mano en seis reglas. En un
+  teléfono la cinta no entra en una línea, envuelve, mide 60 u 88, y
+  volvió a tapar exactamente lo que ese número venía a destapar: el ✕ y
+  "Salir" quedaban **fuera de la pantalla**, sin forma de cerrarla ni de
+  volver al sitio. Ahora el JS mide la cinta y la pone en `--cinta`, y
+  todo lo fijo se corre con `calc(var(--cinta) + …)`. Lo mismo la fila de
+  modos de la sala, en `--modos`. Si un número de esos aparece dos veces
+  en el CSS, es un número que va a mentir.
+- **Dos grupos fijos, uno a cada lado, no entran en un celular.** La
+  pantalla del salón tiene las solapas de modo a la izquierda y los
+  botones a la derecha, las dos capas `position:fixed` y pensadas para un
+  proyector. En 390px se montan y "Completa" se sale del borde: **desde el
+  teléfono no se podía cambiar de modo**. Abajo de 640px van uno sobre el
+  otro y en todo el ancho. Y pasa con demostración y sin ella: el
+  organizador abre la pantalla del salón desde su celular para probarla.
+- **La demostración también se mira desde un teléfono.** Todo lo de
+  arriba se ve perfecto en un escritorio. `pruebas/movil.js` y
+  `pruebas/rollo_cinta.js` miden las cajas de verdad
+  (`getBoundingClientRect`) en 390×844: que nada se salga de la pantalla y
+  que nada se monte con nada. Mirar el CSS no alcanza.
+- **Al que ya contrató hay que decirle por dónde entra.** La página
+  pública tenía tres botones de "Probar la demostración" y un enlace al
+  panel del muro escondido en el pie a media opacidad; del rollo, nada. El
+  cliente que ya pagó no tenía a dónde ir a crear su evento. Ahora está el
+  apartado **`#entrar`** ("Ya contrataste"), con su entrada en el menú.
 
 ## Los 90 días
 
