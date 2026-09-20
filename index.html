@@ -393,8 +393,16 @@ nav .links a:hover:after{width:100%}
 .pieza .pie-p{margin-top:20px}
 .pieza .pie-p b{display:block;font-family:'Bodoni Moda',serif;font-size:20px;font-weight:400}
 .pieza .pie-p span{display:block;font-size:13px;line-height:1.7;color:#8A7F72;margin-top:6px}
-.pieza .quieto{position:absolute;inset:0;display:grid;place-items:center;z-index:1;
+/* Lo que se ve MIENTRAS baja el marco (y para siempre si nunca baja). Antes
+   era una línea de texto suelta en un rectángulo negro: parecía un producto
+   roto. La rayita que late dice "esto está viniendo". */
+.pieza .quieto{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;
+  gap:14px;z-index:1;
   color:#8A7F72;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-align:center;padding:20px}
+.pieza .quieto:after{content:'';width:34px;height:1px;background:var(--oro);opacity:.5;
+  animation:respiraLinea 1.9s ease-in-out infinite}
+@keyframes respiraLinea{50%{opacity:.12;transform:scaleX(.45)}}
+/* La rayita no puede tapar nada: cuando el marco carga, .vivo va encima. */
 @media(max-width:520px){.incluye{grid-template-columns:1fr}}
 
 /* galería de trabajos */
@@ -467,6 +475,29 @@ nav .links a:hover:after{width:100%}
 .visor .cerrar{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);
   border:1px solid var(--gris);padding:12px 22px;transition:.3s}
 .visor .cerrar:hover{border-color:var(--oro);color:var(--oro)}
+/* ── el visor en un teléfono: la pantalla entera ──
+   El marco apaisado del salón quedaba en 367x206 en un iPhone, y la app de
+   adentro cree que ESE es el tamaño de la pantalla: la cinta, las solapas
+   de modo, los botones y el QR se apilaban todos encima, ilegibles. Acá el
+   visor deja de ser una maqueta y pasa a ser la pantalla: la demostración
+   corre a 390 de ancho y el alto que sobra, que es para lo que está medida.
+   Nuestros dos botones van en una barra propia ARRIBA, no flotando encima:
+   flotando le tapaban a la cinta de la demostración su ✕ y su "Salir", y
+   quedaban dos ✕ pegados que hacían cosas distintas. */
+@media(max-width:720px){
+  .visor{padding:0;gap:0;align-items:stretch;justify-content:stretch;
+    flex-direction:column-reverse}
+  .visor .barra-v{flex:0 0 auto;justify-content:space-between;gap:8px;
+    padding:calc(env(safe-area-inset-top) + 9px) 10px 9px;
+    background:#0A0806;border-bottom:1px solid var(--gris)}
+  .visor .chasis,.visor.ancho .chasis{width:100%;--r-fuera:0;--bisel:0;
+    box-shadow:none;border-radius:0;flex:1;min-height:0;display:flex}
+  .visor .caja,.visor.ancho .caja{flex:1;min-height:0;height:auto;
+    aspect-ratio:auto;border-radius:0}
+  .visor .lateral,.visor .reflejo{display:none}
+  .visor .cerrar{padding:11px 14px;font-size:10px;letter-spacing:.18em}
+}
+
 
 /* ═══ pasos ═══ */
 .pasos{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--gris);border-bottom:1px solid var(--gris)}
@@ -1181,6 +1212,13 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     catch(e){ return false; }
   };
 
+  /* De a uno. Desde que la presentación es lo primero de la página, los
+     tres marcos se prendían casi juntos y en 4G se estorbaban entre ellos:
+     ninguno terminaba de cargar. Se enciende uno, se espera a que baje (o a
+     que se dé por vencido) y recién ahí el siguiente. */
+  let cola=Promise.resolve();
+  const enFila=fn=>(cola=cola.then(fn).catch(()=>{}));
+
   const encender=async capa=>{
     if(capa.dataset.encendida) return;
     capa.dataset.encendida='1';
@@ -1195,22 +1233,34 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     marco.referrerPolicy='no-referrer-when-downgrade';
     capa.appendChild(marco);
     encajar(capa,marco);
-    /* si tarda demasiado, se saca y queda la portada dibujada */
-    const rendirse=()=>capa.remove();
-    const plazo=setTimeout(rendirse,9000);
-    marco.addEventListener('error',()=>{ clearTimeout(plazo); rendirse(); },{once:true});
-    marco.addEventListener('load',()=>{
-      clearTimeout(plazo);
-      encajar(capa,marco);
-      capa.classList.add('listo');
-    },{once:true});
-    marco.src=capa.dataset.vivo;
-    if('ResizeObserver' in window) new ResizeObserver(()=>encajar(capa,marco)).observe(capa);
+    /* Antes esto se rendía a los NUEVE segundos y borraba el marco. Con
+       4G en la calle, la invitación de Pía —que pesa 1,3 MB— no llega en
+       nueve segundos: el cliente veía un rectángulo negro con el rótulo y
+       nada más, para siempre, aunque la descarga hubiera terminado. Ahora
+       no se saca nada: el marco sigue bajando y aparece cuando llega. Si
+       nunca llega, la portada dibujada se queda, que es lo que había que
+       lograr. Solo se saca si el navegador avisa que falló. */
+    /* La espera de la fila: termina cuando el marco cargó, cuando falló, o
+       a los doce segundos. Ese tope NO saca el marco —sigue bajando y
+       aparece cuando llegue—; solo deja pasar al siguiente, para que uno
+       lento no deje a los otros dos sin empezar nunca. */
+    return new Promise(listo=>{
+      const seguir=setTimeout(listo,12000);
+      marco.addEventListener('error',()=>{ clearTimeout(seguir); capa.remove(); listo(); },{once:true});
+      marco.addEventListener('load',()=>{
+        clearTimeout(seguir);
+        encajar(capa,marco);
+        capa.classList.add('listo');
+        listo();
+      },{once:true});
+      marco.src=capa.dataset.vivo;
+      if('ResizeObserver' in window) new ResizeObserver(()=>encajar(capa,marco)).observe(capa);
+    });
   };
 
-  if(!('IntersectionObserver' in window)) return capas.forEach(encender);
+  if(!('IntersectionObserver' in window)) return capas.forEach(c=>enFila(()=>encender(c)));
   const vigia=new IntersectionObserver(es=>es.forEach(e=>{
-    if(e.isIntersecting){ encender(e.target); vigia.unobserve(e.target); }
+    if(e.isIntersecting){ enFila(()=>encender(e.target)); vigia.unobserve(e.target); }
   }),{rootMargin:'400px'});
   capas.forEach(c=>vigia.observe(c));
 })();
@@ -1238,7 +1288,7 @@ function abrirVisor(url,nombre,ancho){
   visor.classList.add('abierto'); document.body.style.overflow='hidden';
   clearTimeout(avisoT);
   avisoT=setTimeout(()=>{
-    cargandoV.innerHTML='Si no se ve, abrila<br>en una pestaña nueva ↓';
+    cargandoV.innerHTML='Si no se ve, abrila<br>en una pestaña nueva';
   },5000);
   marcoV.onload=()=>{clearTimeout(avisoT); cargandoV.style.opacity='0';};
 }

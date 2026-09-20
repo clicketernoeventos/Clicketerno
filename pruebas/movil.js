@@ -33,6 +33,7 @@ const caja=(p,sel)=>p.evaluate(s=>{
           x2:Math.round(r.right),y2:Math.round(r.bottom),
           alto:Math.round(r.height),ancho:Math.round(r.width)};
 },sel);
+const caja2=async(p,sel)=>{ try{ return await caja(p,sel); }catch(e){ return null; } };
 const seMontan=(a,b)=>!!(a&&b&&a.x<b.x2&&b.x<a.x2&&a.y<b.y2&&b.y<a.y2);
 const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
 
@@ -186,6 +187,40 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
       const c=await caja(p,sel);
       if(!dentro({...c,y:0,y2:1},TELEFONO)) mal(`${sel} se sale de la pantalla`);
       else bien(`${sel} entra a lo ancho`);
+    }
+    /* ── y al tocarlas, que se vean ──
+       El visor abría la demostración adentro de una maqueta apaisada de
+       367x206 en un iPhone: la app de adentro creía que ESE era el tamaño
+       de la pantalla y se le apilaba todo encima, ilegible. En un teléfono
+       el visor tiene que ser la pantalla entera. */
+    await p.evaluate(()=>document.querySelectorAll('#app .pieza')[0].click());
+    await p.waitForTimeout(2500);
+    /* No se llama "caja": así se llama la función que mide, y el nombre la
+       tapaba entera ("Cannot access 'caja' before initialization"). */
+    const cajaV=await caja2(p,'#visor .caja');
+    if(!cajaV) mal('el visor no abrió');
+    else{
+      if(cajaV.ancho < TELEFONO.width-2)
+        mal(`el visor no usa el ancho de la pantalla: ${cajaV.ancho} de ${TELEFONO.width}`);
+      else bien('el visor usa el ancho entero');
+      if(cajaV.alto < TELEFONO.height*0.8)
+        mal(`el visor deja la demostración en ${cajaV.alto}px de alto: no entra nada`);
+      else bien(`la demostración corre en ${cajaV.ancho}x${cajaV.alto}`);
+      /* Y que lo que corre adentro se crea ese tamaño, no el de la maqueta. */
+      const marco=p.frames().find(f=>/muro/.test(f.url()));
+      if(!marco) mal('no cargó la demostración adentro del visor');
+      else{
+        const v=await marco.evaluate(()=>({w:innerWidth,h:innerHeight}));
+        if(v.h<600) mal(`adentro del visor la app ve ${v.w}x${v.h}: se le apila todo`);
+        else bien(`adentro la app ve ${v.w}x${v.h}`);
+      }
+      /* Nuestros dos botones no pueden taparle nada a la app. */
+      const bc=await caja2(p,'#cerrarV'), bn=await caja2(p,'#nuevaV');
+      for(const [q,c] of [['Cerrar',bc],['Abrir en pestaña nueva',bn]]){
+        if(!dentro(c,TELEFONO)) mal(`el botón "${q}" del visor se sale de la pantalla`);
+        else if(seMontan(c,cajaV)) mal(`el botón "${q}" del visor le tapa la demostración`);
+        else bien(`el botón "${q}" no tapa nada`);
+      }
     }
     if(errs.length) mal('errores JS: '+errs.join(' | '));
     await ctx.close();

@@ -712,6 +712,20 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
    demostración y sin ella: la pantalla del salón se abre igual desde un
    celular cuando el organizador la está probando. */
 @media (max-width:640px){
+  /* La consola de abajo está pensada para un proyector: el nombre de la
+     fiesta en 23px de Bodoni, "en vivo", el contador y el QR, todo en una
+     fila de 22px de separación. En 390px el nombre envuelve en tres
+     renglones y se le monta al contador. Acá se achica todo y el nombre
+     deja de empujar. */
+  .consola{gap:12px;padding:12px 14px}
+  .consola .nom{font-size:15px;line-height:1.15;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .consola .cuenta{font-size:19px}
+  .consola .cuenta small{margin-left:6px;letter-spacing:.18em}
+  .consola .envivo{font-size:8.5px;letter-spacing:.14em}
+  .qr-sala{padding:4px}
+  .qr-sala img,.qr-sala canvas{width:44px;height:44px}
+
   .modos-sala{left:8px;right:8px;justify-content:center}
   .modos-sala button{padding:7px 10px;font-size:9px;letter-spacing:.14em}
   .botones-sala{left:8px;right:8px;justify-content:center;max-width:none;

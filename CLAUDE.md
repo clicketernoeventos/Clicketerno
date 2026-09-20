@@ -457,6 +457,29 @@ las del cupo?, ¿puede ver las de otro?
   todo el texto de todas las pantallas, pregunta de qué color quedó y
   sobre qué fondo cayó, y falla abajo de 3:1.
 
+- **Una maqueta no es una pantalla.** Al tocar la notebook de la vitrina,
+  el visor abría la demostración del salón adentro de un marco apaisado de
+  **367x206** en un iPhone. La app de adentro no sabe que es una maqueta:
+  cree que ESE es el tamaño de la pantalla, y la cinta, las solapas de
+  modo, los botones, el QR y el nombre de la fiesta se le apilaron todos
+  encima. Ilegible. En un teléfono el visor no puede ser una maqueta: es la
+  pantalla entera, y la demostración corre a 390 de ancho, que es
+  exactamente para lo que está medida. Los botones nuestros van en una
+  barra propia arriba, no flotando encima: flotando le tapaban a la cinta
+  su ✕ y su "Salir", y quedaban dos ✕ pegados haciendo cosas distintas.
+
+- **Rendirse a los nueve segundos es rendirse en 4G.** Los celulares de la
+  vitrina se daban por muertos a los 9 s y BORRABAN el marco. Medido con la
+  red frenada a 900 kb/s: la invitación tarda **doce**. El cliente veía un
+  rectángulo negro con un rótulo, para siempre, aunque la descarga hubiera
+  terminado. Ahora no se saca nada por lento: el marco sigue bajando y
+  aparece cuando llega; solo se saca si el navegador avisa que falló. Y
+  como la vitrina pasó a ser lo primero de la página, los tres marcos
+  arrancaban juntos y se estorbaban: van **de a uno**, con un tope de 12 s
+  para dejar pasar al siguiente (que no cancela al que quedó bajando).
+  Mientras tanto la portada dibujada tiene una rayita que late: un
+  rectángulo negro y quieto parece un producto roto.
+
 - **`clamp()` medido en `vw` se derrumba en un teléfono.** El cartel de la
   pantalla del salón tenía el QR en `30vh` (253px en un iPhone) y el
   nombre, el código y el "ya mandaron" en `vw`: `1.3vw` de 390px son cinco
@@ -587,6 +610,12 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   corrigela contra el código *anterior* al arreglo y comprobá que falla. Si
   pasa en los dos, no estás midiendo lo que creés. Pasó con la del orden de
   las tandas: creía que probaba el desempate por `id` y no lo probaba.
+- **La regla de los nombres repetidos también vale en las pruebas.**
+  `movil.js` tiene una función `caja()` que mide un elemento. Una variable
+  local `const caja=...` adentro de un bloque la tapó entera y la suite
+  murió con "Cannot access 'caja' before initialization" — el mismo error
+  que ya nos había costado el panel con `solapa`. Antes de inventar un
+  nombre, `grep`, también acá.
 - **Una caja de 0x0 pasa todas las cuentas.** La prueba del cartel del
   salón medía `.sala-cartel` sin darse cuenta de que la demostración entra
   proyectando el muro, no el QR: el cartel está `hidden`, la caja da
