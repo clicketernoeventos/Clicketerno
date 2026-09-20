@@ -1307,7 +1307,12 @@ async function guardarMeta(m){
        mismo que dejar que cualquiera pise la portada de cualquier fiesta.
        Con un nombre al azar nunca hay nada que pisar; la anterior queda en
        el depósito y se borra junto con el evento, que lista por prefijo. */
-    copia.portada = await subirArchivo(copia.portadaBlob, `${copia.codigo}/portada-${idNuevo()}`);
+    const basePortada=`${copia.codigo}/portada-${idNuevo()}`;
+    copia.portada = await subirArchivo(copia.portadaBlob, basePortada);
+    try{
+      const chica=await miniaturaBlob(copia.portadaBlob);
+      if(chica) await SB.archivo(`${basePortada}-min.jpg`, chica);
+    }catch(e){ console.warn('portada sin miniatura',e); }
     delete copia.portadaBlob;
   }
   for(const c of COLUMNAS_NUEVAS) if(faltaColumna[c]) delete copia[c];
@@ -1451,6 +1456,16 @@ async function sumar(c,it,alAvanzar){
     try{
       url = await subirArchivo(it.blob, `${c}/${it.id}`, alAvanzar);
     }catch(e){ e.paso='subir el archivo'; throw e; }
+    /* La miniatura va aparte y NO es crítica: si falla, el álbum baja la
+       foto entera como toda la vida. Lo que no puede pasar es que un
+       error acá tire abajo una foto que YA está subida y que el invitado
+       se quede con "no se pudo" habiendo funcionado. */
+    if(it.kind==='foto'){
+      try{
+        const chica=await miniaturaBlob(it.blob);
+        if(chica) await SB.archivo(`${c}/${it.id}-min.jpg`, chica);
+      }catch(e){ console.warn('la foto subió pero sin miniatura',e); }
+    }
   }
   try{
     await SB.guardar('ce_items',{id:it.id, codigo:c, kind:it.kind, url,
@@ -1806,6 +1821,38 @@ async function comprimirBlob(file,max=1400,q=.7){
     return file;
   }finally{ URL.revokeObjectURL(url); }
 }
+/* ── miniaturas ──
+   El álbum baja las fotos ENTERAS para mostrarlas del tamaño de una uña:
+   con 1500 recuerdos son cientos de megas cada vez que alguien lo abre, y
+   el tráfico es lo único que puede hacer pasar el límite de Supabase.
+   Se genera al subir, en el mismo lugar donde ya se comprime, y ocupa un
+   5% más de depósito.
+   Va a un camino por convención —FOTO.jpg → FOTO-min.jpg— y no a una
+   columna nueva: así no hace falta tocar la base, y las fotos de antes,
+   que no la tienen, caen solas a la foto entera. */
+const MINI_LADO=420;
+async function miniaturaBlob(blob){
+  const m=await comprimirBlob(blob, MINI_LADO, .62);
+  /* comprimirBlob devuelve el ORIGINAL cuando no pudo. Subir el original
+     como "miniatura" sería pagar el doble sin ahorrar nada. */
+  return (m && m!==blob && m.size < blob.size*0.6) ? m : null;
+}
+/* La dirección de la miniatura, si es una foto nuestra. Vacío para las de
+   afuera, las data: y las que no tienen extensión conocida. */
+const miniDe=u=>{
+  const t=urlSegura(u);
+  if(!t || !/\/ce-medios\//.test(t)) return '';
+  const m=t.replace(/\.(jpe?g|png|webp|gif|heic|heif)(\?|$)/i,'-min.jpg$2');
+  return m===t ? '' : m;
+};
+/* Un <img> que pide la miniatura y se cae a la foto entera si no está.
+   El respaldo no va en cada etiqueta: va en un solo oyente, más abajo.
+   Poner onerror a mano en los seis lugares donde se dibujan fotos es
+   olvidarse en uno, y ese uno queda en blanco para siempre. */
+const imgMini=(u,extra)=>{
+  const m=miniDe(u);
+  return `<img src="${src(m||u)}"${m?` data-entera="${src(u)}"`:''}${extra?' '+extra:''}>`;
+};
 function fotoDemo(seed){
   let s=seed*9301+49297; const rnd=()=>((s=(s*9301+49297)%233280)/233280);
   const vert=rnd()>.5;
@@ -1960,7 +2007,7 @@ const tarjetaEvento=(e,extra)=>{
   const abre=cuandoAbre(e);
   return `
   <button class="ev-card" data-cod="${esc(e.codigo)}" data-nom="${esc(e.nombre)}"${extra||''}>
-    <span class="tapa-ev">${urlSegura(e.portada)?`<img src="${src(e.portada)}" alt="">`:ESTRELLA}</span>
+    <span class="tapa-ev">${urlSegura(e.portada)?imgMini(e.portada,'alt=""'):ESTRELLA}</span>
     <span class="datos-ev"><b>${esc(e.nombre)}</b><span>${bonito(e.fecha)}</span>
       ${abre&&estaPorAbrir(e)?`<span class="pastilla-prog">Abre ${esc(horaLinda(abre))}</span>`:''}</span>
     <span class="codigo-ev">${esc(e.codigo)}</span></button>`;
@@ -2711,7 +2758,7 @@ async function vEvento(codigo, abrirEn){
 
   const porta=app.querySelector('#porta');
   const hayTapa=!!urlSegura(m.portada);
-  porta.innerHTML=`${hayTapa?`<img class="mini" src="${src(m.portada)}" alt="Portada">`:`<span class="mini vacia">${ESTRELLA}</span>`}
+  porta.innerHTML=`${hayTapa?imgMini(m.portada,'class="mini" alt="Portada"'):`<span class="mini vacia">${ESTRELLA}</span>`}
     <span style="flex:1;font-size:13.5px;color:#B5AC9E;line-height:1.6">${hayTapa?'Se usa en la tapa del álbum.':'Sin elegir: usamos la primera foto que llegue.'}</span>
     <label class="hilo-btn" style="width:auto;margin:0;padding:11px 18px;cursor:pointer">Elegir<input id="fporta" type="file" accept="image/*" hidden></label>`;
   porta.querySelector('#fporta').onchange=async e=>{
@@ -2943,7 +2990,7 @@ async function vEvento(codigo, abrirEn){
   if(cola) for(const p of pend){
     const it=await item(codigo,p.id); if(!it) continue;
     const d=document.createElement('div'); d.className='espera';
-    d.innerHTML=`${it.kind==='foto'?`<img src="${src(it.data)}" alt="">`:it.kind==='video'?`<video src="${src(it.data)}" muted></video>`
+    d.innerHTML=`${it.kind==='foto'?imgMini(it.data,'alt=""'):it.kind==='video'?`<video src="${src(it.data)}" muted></video>`
       :`<div class="tx">${esc(it.texto||'Saludo de voz')}</div>`}
       <div class="par"><button class="si">Aprobar</button><button class="no">Descartar</button></div>`;
     const mover=async(estado,aviso,accion)=>{
@@ -2994,7 +3041,7 @@ async function vEvento(codigo, abrirEn){
       for(const p of tanda){
         const it=await item(codigo,p.id); if(!it) continue;
         const d=document.createElement('div'); d.className='publi';
-        const cara=it.kind==='foto'&&urlSegura(it.data)?`<img src="${src(it.data)}" alt="" loading="lazy">`
+        const cara=it.kind==='foto'&&urlSegura(it.data)?imgMini(it.data,'alt="" loading="lazy"')
           :it.kind==='video'&&urlSegura(it.data)?`<video src="${src(it.data)}" muted playsinline></video>`
           :`<div class="tx">${esc(it.texto||(it.kind==='audio'?'Saludo de voz':'Sin texto'))}</div>`;
         d.innerHTML=`${cara}<span class="quien">${esc(it.autor||'Alguien')}</span>`;
@@ -3460,7 +3507,7 @@ async function vPantalla(codigo){
         cola.dataset.marca=marca;
         cola.innerHTML=proximos.length?proximos.map(i=>{
           const u=urlSegura(i.data);
-          if(i.kind==='foto'&&u) return `<div class="prox"><img src="${src(i.data)}" alt="">
+          if(i.kind==='foto'&&u) return `<div class="prox">${imgMini(i.data,'alt=""')}
             <span class="nom-p">${esc(i.autor)}</span></div>`;
           if(i.kind==='video'&&u) return `<div class="prox"><video src="${src(i.data)}" muted preload="metadata"></video>
             <span class="nom-p">${esc(i.autor)}</span></div>`;
@@ -3613,7 +3660,7 @@ async function vAlbum(codigo,abrirEn){
                abrir un archivo con contenido ajeno desde nuestro sitio. */
             `<a href="${esc(/^https?:\/\//i.test(urlSegura(i.data))?urlSegura(i.data):'')}" target="_blank" rel="noopener noreferrer" title="Abrir en grande">
               ${i.kind==='foto'
-                ? `<img src="${src(i.data)}" alt="Foto de ${esc(i.autor)}" loading="lazy">`
+                ? imgMini(i.data,`alt="Foto de ${esc(i.autor)}" loading="lazy"`)
                 : `<video src="${src(i.data)}" muted preload="metadata"></video><span class="marca-video">▶</span>`}
               <span class="quien-f">${esc(i.autor)}</span></a>`).join('')}</div>`
         :`<div class="vacio">Todavía no hay fotos.<br>Las que suban tus invitados aparecen acá.</div>`}
@@ -4087,6 +4134,17 @@ addEventListener('unhandledrejection',e=>{
 });
 /* Y lo mismo con lo que revienta sin promesa de por medio: un toque que
    fallaba dentro de su propio manejador no mostraba nada en pantalla. */
+/* Si una miniatura no está —las fotos de antes de esto no la tienen—, la
+   imagen se cae sola a la foto entera. En captura, porque los errores de
+   un <img> no burbujean y un oyente normal no se entera nunca. */
+addEventListener('error',e=>{
+  const n=e.target;
+  if(n && n.tagName==='IMG' && n.dataset && n.dataset.entera){
+    const entera=n.dataset.entera;
+    delete n.dataset.entera;          // una sola vez: si la entera tampoco está, no insistimos
+    n.src=entera;
+  }
+}, true);
 addEventListener('error',e=>{
   if(e&&e.target&&e.target!==window) return;   // una imagen rota no es esto
   console.error('error suelto',e.error||e.message);
