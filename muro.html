@@ -750,6 +750,17 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .btn-fila:hover{background:rgba(196,86,78,.12)}
 .btn-fila:disabled{opacity:.4;cursor:not-allowed}
 .btn-fila.firme{background:#C4564E;border-color:#C4564E;color:#fff}
+.entrar-ev{display:flex;gap:6px;flex:none}
+.btn-fila.ir{border-color:var(--gris);color:var(--champan);text-decoration:none;
+  display:inline-flex;align-items:center}
+.btn-fila.ir:hover{border-color:var(--oro);color:var(--oro);background:transparent}
+@media (max-width:520px){
+  /* En un teléfono la fila no entra en una línea: nombre arriba, y los
+     botones abajo alineados a la derecha. */
+  .fila-vence{flex-wrap:wrap}
+  .fila-vence .quien{flex:1 0 100%}
+  .entrar-ev{margin-left:auto}
+}
 .sello-admin{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--hilo2);
   border-radius:999px;padding:6px 13px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--oro);background:rgba(217,174,114,.08)}
@@ -1208,7 +1219,7 @@ function borrarseSolo(codigo, id){
    en el mismo milisegundo (o los dos sin 'creado') pueden salir en
    distinto orden en cada tanda, y con offset eso es una fila repetida y
    otra que no aparece nunca. */
-const CAMPOS_LISTA='codigo,nombre,fecha,portada,vence,creado&order=creado.desc.nullslast,codigo.asc';
+const CAMPOS_LISTA='codigo,nombre,fecha,portada,vence,creado,camara,cerrado,revelado&order=creado.desc.nullslast,codigo.asc';
 async function eventos(){
   if(!HAY_NUBE) return leerLocal(LISTA,[]);
   try{
@@ -2104,7 +2115,7 @@ async function vPanel(){
   ${esAdmin?`<div style="max-width:620px;margin:0 auto;padding:18px 26px 0;
     display:flex;align-items:center;gap:14px;flex-wrap:wrap">
     <span class="sello-admin">${ESTRELLA} Modo administrador</span>
-    <button class="hilo-btn" data-ir="limpieza" style="width:auto;padding:9px 16px;font-size:11px">Limpieza${
+    <button class="hilo-btn" data-ir="central" style="width:auto;padding:9px 16px;font-size:11px">Central${
       (()=>{ const n=evs.filter(e=>{const d=diasParaVencer(e.vence||venceDe(e.fecha)); return d!==null&&d<0;}).length;
              return n?` · ${n} vencido${n===1?'':'s'}`:''; })()}</button></div>`:''}
   <div class="wrap-inv" style="padding-bottom:40px">
@@ -2194,11 +2205,20 @@ function pastillaVence(d){
   if(d<=AVISAR_DESDE) return `<span class="pastilla-d pronto">${d} día${d===1?'':'s'}</span>`;
   return `<span class="pastilla-d">${d} días</span>`;
 }
+/* Qué servicio tiene cada evento. La tabla es una sola y `camara` es lo
+   único que distingue: un evento nacido en el rollo la tiene en true. Al
+   muro se entra siempre, porque cualquier código sirve de muro. */
+const tieneRollo=e=>!!e.camara;
 const filaVence=(e,borrable)=>`
   <div class="fila-vence" data-fila="${esc(e.codigo)}">
     <span class="quien"><b>${esc(e.nombre)}</b>
-      <span>${esc(e.codigo)} · ${e.vence?'hasta '+bonito(e.vence):'sin vencimiento'}</span></span>
+      <span>${esc(e.codigo)} · ${e.vence?'hasta '+bonito(e.vence):'sin vencimiento'}
+        ${e.cerrado?' · cerrado':''}${tieneRollo(e)&&e.revelado?' · revelado':''}</span></span>
     ${pastillaVence(e.d)}
+    <span class="entrar-ev">
+      <a class="btn-fila ir" href="#evento/${esc(e.codigo)}">Muro</a>
+      ${tieneRollo(e)?`<a class="btn-fila ir" href="rollo#ev/${esc(e.codigo)}">Rollo</a>`:''}
+    </span>
     ${borrable?`<button class="btn-fila" data-borra="${esc(e.codigo)}"
       data-nom="${esc(e.nombre)}">Borrar</button>`:''}
   </div>`;
@@ -2217,20 +2237,23 @@ async function vLimpieza(){
   app.innerHTML=`
   <header class="cab-inv">
     <p class="arriba">Administrador</p>
-    <h1>Limpieza</h1>
+    <h1>Central</h1>
     <button class="volver">Salir</button>
   </header>
   <div class="wrap-inv" style="padding-bottom:40px">
     <p style="font-size:13.5px;line-height:1.8;color:#B5AC9E;margin:0 0 8px">
-      Cada álbum vive <b style="color:var(--oro);font-weight:400">${DIAS_QUE_VIVE} días</b> desde la fecha
-      del evento. Al organizador le aparece el aviso ${AVISAR_DESDE} días antes, en su panel.
-      Borrar acá elimina el evento y todos sus archivos, y no se puede deshacer.</p>
+      Todos los eventos del negocio, ordenados por lo que les queda. Desde acá
+      se entra a cualquiera —al muro o al rollo— sin depender del teléfono donde
+      se creó. Cada álbum vive <b style="color:var(--oro);font-weight:400">${DIAS_QUE_VIVE} días</b>
+      desde la fecha del evento y el organizador recibe el aviso ${AVISAR_DESDE} días antes.
+      Borrar elimina el evento y todos sus archivos, y no se puede deshacer.</p>
 
     <div class="seccion-a"><h2>Ya vencidos</h2><span>${vencidos.length}</span></div>
     ${vencidos.length?`<div class="tarjeta peligro">
         ${vencidos.map(e=>filaVence(e,true)).join('')}
         <div id="zonaTodos" style="margin-top:20px">
-          <button class="btn-peligro" id="pedirTodos">Borrar los ${vencidos.length} vencidos</button>
+          <button class="btn-peligro" id="pedirTodos">${vencidos.length===1
+            ?'Borrar el vencido':'Borrar los '+vencidos.length+' vencidos'}</button>
         </div>
       </div>`
       :`<div class="vacio" style="padding:34px 24px">No hay ninguno vencido.</div>`}
@@ -2248,6 +2271,12 @@ async function vLimpieza(){
   /* Un toque no borra: el botón se vuelve "Confirmar" y vuelve atrás solo a
      los cinco segundos. Es la misma idea que el campo donde hay que
      escribir el código en Ajustes, pero para una lista. */
+  /* Los enlaces de la fila van con el enrutador de la app, no con una
+     recarga: "Muro" es un hash de esta misma página. El del rollo sí es
+     otra página y se deja pasar. */
+  app.querySelectorAll('.entrar-ev a[href^="#"]').forEach(a=>a.onclick=e=>{
+    e.preventDefault(); ir(a.getAttribute('href').slice(1));
+  });
   app.querySelectorAll('[data-borra]').forEach(b=>{
     let armado=null;
     b.onclick=async()=>{
@@ -2277,7 +2306,8 @@ async function vLimpieza(){
       <div class="campo" style="margin-bottom:14px">
         <label for="confBorrar">Escribí <b style="color:#E08A82">BORRAR</b> para confirmar</label>
         <input id="confBorrar" type="text" autocomplete="off" autocapitalize="characters" placeholder="BORRAR"></div>
-      <button class="btn-peligro firme" id="todosYa" disabled>Borrar los ${vencidos.length} vencidos</button>
+      <button class="btn-peligro firme" id="todosYa" disabled>${vencidos.length===1
+        ?'Borrar el vencido':'Borrar los '+vencidos.length+' vencidos'}</button>
       <button class="hilo-btn" id="dejarTodos">Mejor no</button>`;
     const campo=zona.querySelector('#confBorrar');
     const ok=zona.querySelector('#todosYa');
@@ -4105,11 +4135,11 @@ function pintar(ruta){
        de la muestra. Todo lo demás cae en la pantalla de subir. */
     /* La prueba del muro es la pantalla del salón: es lo que se proyecta y
        es lo que hay que vender. Subir algo y el álbum se llegan desde ahí. */
-    if(HAY_DEMO && ['panel','evento','cartel','tarjetas','diagnostico','invitado','proyector','limpieza','codigo','portada',''].includes(v))
+    if(HAY_DEMO && ['panel','evento','cartel','tarjetas','diagnostico','invitado','proyector','limpieza','central','codigo','portada',''].includes(v))
       return ir('pantalla/DEMO-FIESTA');
     if(v==='panel') p=vAcceso();
     else if(v==='codigo') p=vPorCodigo();
-    else if(v==='limpieza') p=vLimpieza();
+    else if(v==='central'||v==='limpieza') p=vLimpieza();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
     else if(v==='invitado') p=vElegir('subir','Invitado');

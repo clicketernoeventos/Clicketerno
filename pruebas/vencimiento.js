@@ -7,7 +7,7 @@
 
      1. El organizador ve el aviso en Compartir cuando falta poco, no lo ve
         cuando falta mucho, y cuando ya venció le cambia el tono.
-     2. La pantalla de limpieza es del administrador: un organizador común
+     2. La central es del administrador: un organizador común
         no llega, aunque escriba la dirección.
      3. Borrar los vencidos borra LOS VENCIDOS: filas, archivos, y nada de
         lo que todavía vive.
@@ -172,21 +172,21 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
     await ctx.close();
   }
 
-  // ═══ 2. la limpieza es del administrador ═══
-  console.log('\n─── quién entra a la limpieza ───');
+  // ═══ 2. la central es del administrador ═══
+  console.log('\n─── quién entra a la central ───');
   {
     fake.ultimo=fake();
     const {ctx,p,errs}=await abrir(browser,{claves:{'VEN-A00001':'ABC123'}});
     await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(900);
     await p.fill('#pin','4321'); await p.click('#entrar'); await p.waitForTimeout(900);
-    if(await p.locator('[data-ir="limpieza"]').count())
-      mal('un organizador común ve el botón de limpieza');
-    else bien('un organizador común no ve el botón de limpieza');
-    await p.goto(BASE+'/muro.html#limpieza',{waitUntil:'domcontentloaded'});
+    if(await p.locator('[data-ir="central"],[data-ir="limpieza"]').count())
+      mal('un organizador común ve el botón de la central');
+    else bien('un organizador común no ve el botón de la central');
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1200);
     if(await p.locator('.fila-vence').count())
-      mal('¡ENTRA A LA LIMPIEZA SIN SER ADMINISTRADOR!');
+      mal('¡ENTRA A LA CENTRAL SIN SER ADMINISTRADOR!');
     else bien('escribiendo la dirección a mano tampoco entra');
     if(errs.length) mal('errores JS: '+errs.join(' | '));
     await ctx.close();
@@ -199,10 +199,10 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
     const {ctx,p,errs}=await abrir(browser,{admin:true});
     await p.goto(BASE+'/muro.html#panel',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1300);
-    const boton=await texto(p,'[data-ir="limpieza"]');
+    const boton=await texto(p,'[data-ir="central"]');
     if(!/3 vencidos/.test(boton)) mal(`el panel no avisa cuántos hay vencidos (dice "${boton}")`);
     else bien('desde el panel ya se ve que hay 3 vencidos');
-    await p.click('[data-ir="limpieza"]'); await p.waitForTimeout(1300);
+    await p.click('[data-ir="central"]'); await p.waitForTimeout(1300);
     const grupos=await p.$$eval('.seccion-a',ns=>ns.map(n=>
       (n.querySelector('h2').textContent+':'+(n.querySelector('span')||{}).textContent).toLowerCase()));
     const esperado='ya vencidos:3,vencen pronto:1,el resto:1';
@@ -221,7 +221,7 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
   {
     fake.ultimo=fake();
     const {ctx,p,errs,f}=await abrir(browser,{admin:true});
-    await p.goto(BASE+'/muro.html#limpieza',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('#pedirTodos'); await p.waitForTimeout(400);
     if(!(await p.evaluate(()=>document.querySelector('#todosYa').disabled)))
@@ -263,7 +263,7 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
   {
     fake.ultimo=fake({niega:['VEN-A00002']});
     const {ctx,p,errs,f}=await abrir(browser,{admin:true});
-    await p.goto(BASE+'/muro.html#limpieza',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1400);
     await p.click('#pedirTodos'); await p.waitForTimeout(350);
     await p.fill('#confBorrar','BORRAR'); await p.waitForTimeout(250);
@@ -283,16 +283,74 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
     await ctx.close();
   }
 
+  // ═══ 5b. la central: entrar a cualquier evento desde un solo lado ═══
+  console.log('\n─── la central del administrador ───');
+  /* El problema que resuelve: un rollo solo se manejaba desde el teléfono
+     donde se creó. En la central están TODOS los eventos del negocio, con
+     lo que tiene cada uno y la puerta para entrar a cada lado. */
+  {
+    fake.ultimo=fake();
+    fake.ultimo.db.ce_eventos.push(
+      {codigo:'BOD-CONROLLO',nombre:'Flor y Juan',fecha:enDias(-80),vence:enDias(20),
+       tono:'#D9AE72',moderar:false,cerrado:false,portada:null,creado:9,
+       camara:true,revelado:true},
+      {codigo:'QUI-SINROLLO',nombre:'Solo muro',fecha:enDias(-80),vence:enDias(20),
+       tono:'#D9AE72',moderar:false,cerrado:false,portada:null,creado:8,
+       camara:false,revelado:false});
+    const {ctx,p,errs}=await abrir(browser,{admin:true});
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1800);
+    const titulo=await texto(p,'.cab-inv h1');
+    if(!/central/.test(titulo)) mal(`la pantalla se llama "${titulo}", no Central`);
+    else bien('se llama Central y se llega por #central');
+
+    const puertasDe=cod=>p.evaluate(c=>{
+      const n=document.querySelector('[data-fila="'+c+'"]');
+      return n ? [...n.querySelectorAll('.entrar-ev a')].map(a=>a.getAttribute('href')) : null;
+    },cod);
+    const conRollo=await puertasDe('BOD-CONROLLO');
+    const sinRollo=await puertasDe('QUI-SINROLLO');
+    if(!conRollo||!sinRollo){
+      mal('la central no lista los dos eventos');
+    }else{
+      /* Al muro se entra siempre: cualquier código sirve de muro. */
+      if(!conRollo.some(h=>/^#evento\//.test(h))||!sinRollo.some(h=>/^#evento\//.test(h)))
+        mal('falta la puerta al muro en alguna fila');
+      else bien('desde cualquier evento se entra al muro');
+      /* Y al rollo SOLO si lo tiene: ofrecerlo en un evento que no lo
+         tiene es mandar al organizador a una pantalla vacía. */
+      if(!conRollo.some(h=>/^rollo#ev\//.test(h)))
+        mal('el evento CON rollo no ofrece entrar al rollo');
+      else bien('el que tiene rollo ofrece entrar al rollo');
+      if(sinRollo.some(h=>/rollo#/.test(h)))
+        mal('el evento SIN rollo igual ofrece el rollo: lleva a una pantalla vacía');
+      else bien('el que no lo tiene, no lo ofrece');
+      /* Y la fila dice de qué evento habla. */
+      const dice=await texto(p,'[data-fila="BOD-CONROLLO"] .quien');
+      if(!dice.includes('flor y juan')||!dice.includes('bod-conrollo'))
+        mal('la fila no dice nombre y código: '+dice);
+      else bien('la fila dice el nombre y el código');
+    }
+    /* Que la puerta funcione de verdad, sin recargar la página. */
+    await p.click('[data-fila="BOD-CONROLLO"] a[href^="#evento/"]').catch(()=>{});
+    await p.waitForTimeout(1900);
+    if(!/evento\/BOD-CONROLLO/.test(await p.evaluate(()=>location.hash)))
+      mal('la puerta al muro no lleva a ningún lado: '+(await p.evaluate(()=>location.hash)));
+    else bien('y la puerta lleva al evento');
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   // ═══ 6. con más de mil eventos, los vencidos no se pierden ═══
   console.log('\n─── 1205 eventos: el corte de las mil filas ───');
   {
     fake.ultimo=fake({relleno:1200});
     const {ctx,p,errs}=await abrir(browser,{admin:true});
-    await p.goto(BASE+'/muro.html#limpieza',{waitUntil:'domcontentloaded'});
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(3500);
     const cuantos=await p.$$eval('[data-borra]',ns=>ns.map(n=>n.dataset.borra).sort());
     if(cuantos.join()!=='VEN-A00001,VEN-A00002,VIE-000001')
-      mal(`con 1205 eventos la limpieza encuentra ${cuantos.length} vencidos, `
+      mal(`con 1205 eventos la central encuentra ${cuantos.length} vencidos, `
          +`esperaba los 3 (${cuantos.join(', ')||'ninguno'}) — se está comiendo el corte de las mil filas`);
     else bien('pide de a tandas: encuentra los 3 vencidos aunque estén después de la fila mil');
     if(errs.length) mal('errores JS: '+errs.join(' | '));
