@@ -347,7 +347,14 @@ nav .links a:hover:after{width:100%}
 .clara h2 em{color:var(--oro-hondo)}
 .incluye{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,.1);
   border:1px solid rgba(0,0,0,.1)}
-.inc{background:var(--crema);padding:30px 22px;transition:background .5s}
+/* La tinta va ACÁ, no heredada. La tarjeta clara nació adentro de la
+   sección clara (que pone color:#1A1713) y después se reusó para "qué
+   incluye" del muro y del rollo, que están en la parte NEGRA: ahí heredaba
+   --texto, que es #F6F2EA, el mismo crema del fondo. Contraste 1.00:1,
+   o sea texto invisible. En el monitor no se ve porque uno mira la
+   sección de arriba. Lo agarra pruebas/contraste.js.
+   Regla: si un bloque trae su propio fondo, trae su propia tinta. */
+.inc{background:var(--crema);color:#1A1713;padding:30px 22px;transition:background .5s}
 .inc:hover{background:#fff}
 .inc .estrella{width:12px;height:12px;color:var(--oro-hondo);margin-bottom:16px}
 .inc b{display:block;font-family:'Bodoni Moda',serif;font-size:19px;font-weight:400;margin-bottom:8px}

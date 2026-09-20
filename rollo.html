@@ -638,9 +638,17 @@ const SB = {
      lectura libre, el organizador la necesita para ver su propio rollo. */
   ver(tabla,consulta,clave){ return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab({},clave)}); },
   rpc(fn,args,clave){ return this.pedir(`/rest/v1/rpc/${fn}`, {method:'POST', headers:this.cab({},clave), body:JSON.stringify(args||{})}); },
-  guardar(tabla,obj,clave){
+  /* ALTA. Un insert pelado, sin "merge-duplicates": Postgres evalúa el
+     WITH CHECK de la política de UPDATE en TODO "insert ... on conflict do
+     update", haya conflicto o no. Esa política dice ce_permitido(codigo) y
+     en el alta la clave todavía no existe para ella (el disparador la acaba
+     de escribir, pero ce_permitido es STABLE y mira la foto del principio
+     de la sentencia): el rollo nuevo rebotaba con "new row violates row
+     level security policy". Medido contra Postgres 16 con el esquema de
+     producción entero. Ver el mismo comentario en muro.html. */
+  crear(tabla,obj,clave){
     return this.pedir(`/rest/v1/${tabla}`, {method:'POST',
-      headers:this.cab({Prefer:'resolution=merge-duplicates,return=minimal'},clave), body:JSON.stringify(obj)});
+      headers:this.cab({Prefer:'return=minimal'},clave), body:JSON.stringify(obj)});
   },
   editar(tabla,consulta,obj,clave){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {method:'PATCH',
@@ -852,7 +860,7 @@ if(HAY_DEMO){
       if(fn==='ce_revelar'||fn==='ce_revelar_rollo'){ ev.revelado=true; ev.revela_en=null; return {revelado:true}; }
       return null;
     },
-    async guardar(){ await dormir(150); return null; },
+    async crear(){ await dormir(150); return null; },
     async editar(tabla,consulta,obj){
       await dormir(180);
       if(tabla==='ce_eventos') Object.assign(ev,obj||{});
@@ -1131,6 +1139,9 @@ function vPedirNombre(m){
    que no cuenta: si la señal se cae en el primer pedido, sin esto se queda
    mirando ese cartel para siempre, sin saber si esperar o recargar. */
 let vistaViva=false;
+/* El cuarto oscuro se ve UNA vez por rollo. Esto lo pide de nuevo a mano,
+   que es lo que usa el botón "Ver cómo se revela" de la demostración. */
+let forzarRevelado=false;
 async function consultarEstado(m,guardado){
   try{
     const estado=await SB.rpc('ce_mi_rollo',{p_codigo:m.codigo,p_token:guardado.token,p_nombre:guardado.nombre});
@@ -1824,13 +1835,25 @@ async function crearRollo(){
   /* 90 días, igual que el muro (ver DIAS_QUE_VIVE en muro.html): si no
      vence nunca, el depósito crece todos los meses y no para. */
   const vence=new Date(nuevo.fecha); vence.setDate(vence.getDate()+DIAS_QUE_VIVE);
+  const fila={
+    codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
+    vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
+    camara:true, cupo_fotos:nuevo.cupo, cupo_invitados:nuevo.gente, revelado:false,
+    revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
+  };
   try{
-    await SB.guardar('ce_eventos',{
-      codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
-      vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
-      camara:true, cupo_fotos:nuevo.cupo, cupo_invitados:nuevo.gente, revelado:false,
-      revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
-    }, claveEv);
+    try{
+      await SB.crear('ce_eventos', fila, claveEv);
+    }catch(e1){
+      /* Código repetido quiere decir que el pedido anterior SÍ llegó y se
+         perdió la respuesta en el camino. La clave ya la dejó guardada el
+         disparador, así que ahora el upsert pasa y termina de guardar lo
+         mismo; si el código fuera de otro, ese upsert rebota por RLS, que
+         es lo que tiene que pasar. Sin esto, reintentar después de un
+         corte le decía "no se pudo" sobre un rollo que ya existía. */
+      if(!/duplicate key|already exists|23505/i.test(String((e1&&e1.message)||e1))) throw e1;
+      await SB.guardar('ce_eventos', fila, claveEv);
+    }
     nuevo.codigo=''; nuevo.clave='';      // el próximo rollo arranca limpio
     irA('ev/'+codigo);
   }catch(err){
@@ -2204,7 +2227,9 @@ async function vAlbum(m,guardado){
   vistaViva=true;
   app.innerHTML=`
   <div class="cab"><img src="marca.webp" alt="Click Eterno"><p class="espaciado">Se reveló el rollo</p>
-    <h1>${esc(m.nombre)}</h1></div>
+    <h1>${esc(m.nombre)}</h1>
+    ${HAY_DEMO?`<button class="hilo-btn" id="verRevelado"
+      style="width:auto;margin:14px auto 0;padding:11px 20px;font-size:11px">Ver cómo se revela</button>`:''}</div>
   <div class="wrap">
     <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
       ${esc(datos.total_fotos!=null?datos.total_fotos:todas.length)} fotos de ${esc(datos.total_invitados!=null?datos.total_invitados:'?')} invitados esta noche</p>
@@ -2219,7 +2244,17 @@ async function vAlbum(m,guardado){
   </div>`;
   };
 
-  if(enBandeja.length && !guarda.leer(kVisto) && !quieteQuieto){
+  /* ── por qué la demostración NO arranca por el cuarto oscuro ──
+     El revelado dura unos diez segundos y empieza en negro. En el
+     escritorio se lee como lo que es; en el teléfono del dueño se leyó
+     como "no muestra nada": abrís /rollo?demo=1, ves una pantalla negra
+     y te vas. La demostración tiene que caer DERECHO en el álbum, que es
+     lo que se vende, y el revelado queda a un toque de distancia con su
+     propio botón. En un rollo de verdad no cambia nada: ahí el cuarto
+     oscuro es el momento y se ve una vez, la primera. */
+  if(enBandeja.length && !quieteQuieto
+     && (forzarRevelado || (!guarda.leer(kVisto) && !HAY_DEMO))){
+    forzarRevelado=false;
     guarda.escribir(kVisto,'1');
     try{
       Object.assign(firmadas, await SB.firmar(enBandeja.map(f=>f.ruta)));
@@ -2242,6 +2277,12 @@ async function vAlbum(m,guardado){
   } else {
     pintarAlbum();
   }
+
+  /* Volver a verlo: se vuelve a entrar al álbum entero, que es lo que
+     reengancha los botones de la grilla. Pintar el cuarto oscuro encima
+     de una pantalla ya dibujada dejaba la grilla sin oyentes. */
+  const bVer=app.querySelector('#verRevelado');
+  if(bVer) bVer.onclick=()=>{ forzarRevelado=true; vAlbum(m,guardado); };
 
   const gMias=app.querySelector('#grillaMias'), gTodas=app.querySelector('#grillaTodas');
   /* El cuarto de revelado se puede cortar a mitad de camino porque el

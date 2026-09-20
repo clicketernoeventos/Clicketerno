@@ -70,7 +70,12 @@ a lo que hay que vender.
   `cartel`, `portada`, `invitado`, `proyector`) cae en `pantalla/DEMO-FIESTA`.
 - **`/rollo?demo=1` → el álbum revelado.** El rollo de ejemplo nace
   `revelado` y el visitante ya tiene su token con tres fotos, así que cae
-  derecho ahí sin que le preguntemos el nombre. Con **`?camara=1`** nace sin
+  derecho ahí sin que le preguntemos el nombre. **Y derecho quiere decir
+  sin el cuarto oscuro**: el revelado dura diez segundos y empieza en
+  negro, y en el teléfono eso se lee como "no muestra nada". En la
+  demostración el álbum está a la vista apenas entra y el revelado queda a
+  un toque, con su botón "Ver cómo se revela". En una fiesta de verdad no
+  cambia nada: ahí el cuarto oscuro es el momento y se ve una vez. Con **`?camara=1`** nace sin
   revelar y se ve el otro lado: cómo el invitado gasta sus fotos sin ver
   ninguna. `nuevo`, `ev/`, `ajustes/`, `codigo` y `clave` no existen en
   demostración: "Crear el rollo de mi fiesta" es el formulario de alta, no
@@ -425,6 +430,41 @@ las del cupo?, ¿puede ver las de otro?
   píxeles y pasó a tapar la cabecera del tablero —lo agarró
   `pruebas/nuevas.js`—. Va en `@media (max-width:820px),(pointer:coarse)`.
 
+- **`resolution=merge-duplicates` es un `on conflict do update`, y Postgres
+  le aplica el WITH CHECK de la política de UPDATE SIEMPRE, haya conflicto
+  o no.** Esa política dice `ce_permitido(codigo)`, así que las dos cosas
+  que crean una fila rebotaban: el **alta de un evento** (el disparador
+  acaba de escribir la clave, pero `ce_permitido` es `stable` y mira la
+  foto del principio de la sentencia, así que todavía no existe) y la
+  **subida del invitado**, que nunca tiene clave. En producción eso era
+  "new row violates row-level security policy for table ce_eventos" al
+  crear un rollo — y, sin que nadie lo hubiera probado todavía, **ninguna
+  fiesta del muro habría podido recibir una sola foto.** Se arregla en la
+  web, no en la base: `SB.crear()` manda un insert pelado, que la política
+  de INSERT (`with check (true)`) acepta; `SB.guardar()` —el upsert— queda
+  solo para el organizador que YA tiene la clave. De paso queda más sano:
+  dos códigos iguales ahora dan error en vez de pisarse. Medido contra
+  Postgres 16 con el esquema entero; lo cuidan `sql/probar.sql`,
+  `pruebas/fakesb.js` y `pruebas/rollo_alta.js`. **No hay SQL que correr.**
+
+- **Si un bloque trae su propio fondo, trae su propia tinta.** La tarjeta
+  `.inc` nació adentro de la sección clara —que pone `color:#1A1713`— y
+  después se reusó para el "qué incluye" del muro y del rollo, que están
+  en la parte negra: ahí heredaba `--texto`, que es exactamente el mismo
+  crema del fondo de la tarjeta. Contraste **1.00:1**: los títulos no
+  existían. En el monitor no se nota porque uno mira la sección de arriba.
+  El contraste no se opina, se calcula: `pruebas/contraste.js` recorre
+  todo el texto de todas las pantallas, pregunta de qué color quedó y
+  sobre qué fondo cayó, y falla abajo de 3:1.
+
+- **`clamp()` medido en `vw` se derrumba en un teléfono.** El cartel de la
+  pantalla del salón tenía el QR en `30vh` (253px en un iPhone) y el
+  nombre, el código y el "ya mandaron" en `vw`: `1.3vw` de 390px son cinco
+  píxeles, así que **todos** caían al mínimo del clamp. Un QR enorme y
+  todo lo demás en 12px. Y los dos grupos de mandos, que abajo de 640px
+  van uno sobre otro arriba de todo, le tapaban el logo y el título. Lo
+  mide `pruebas/movil.js` con cajas de verdad.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -497,6 +537,17 @@ Lo que se mide, en `pruebas/interfaz.js`:
 - **Con "menos movimiento" no late nada** y las fotos se ven igual:
   apagar el movimiento no puede esconder contenido.
 
+Y lo que se mide en `pruebas/contraste.js`:
+
+- **Todo el texto se LEE.** Recorre las pantallas del muro, del rollo y de
+  la página pública en teléfono y en escritorio, y de cada texto saca el
+  color efectivo (con la opacidad heredada y las capas translúcidas
+  encima) y el fondo que de verdad quedó atrás —subiendo hasta el primer
+  fondo opaco—, y calcula la razón de contraste de la WCAG. Abajo de 3:1
+  no es "poco contraste": es que el texto no está. Con `PEORES=1` lista
+  los diez más flojos de cada pantalla aunque pasen. Lo que cae sobre un
+  degradé o una foto no lo juzga: mejor callar que inventar una falla.
+
 Y tres reglas de interacción que no se ven pero se sienten:
 
 - **El `:hover` se queda PEGADO en una pantalla táctil.** Al tocar, el
@@ -536,6 +587,18 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   corrigela contra el código *anterior* al arreglo y comprobá que falla. Si
   pasa en los dos, no estás midiendo lo que creés. Pasó con la del orden de
   las tandas: creía que probaba el desempate por `id` y no lo probaba.
+- **Una caja de 0x0 pasa todas las cuentas.** La prueba del cartel del
+  salón medía `.sala-cartel` sin darse cuenta de que la demostración entra
+  proyectando el muro, no el QR: el cartel está `hidden`, la caja da
+  `0,0,0,0` y entonces "entra en la pantalla" ✓, "no se monta con nada" ✓,
+  "el QR mide 0px, no se come la pantalla" ✓. Tres verdes midiendo la
+  nada. Antes de medir, comprobar que lo que se mide EXISTE y tiene alto.
+- **Adentro de `${…}` va código, no texto.** El medidor de contraste se
+  serializa con `` `(${function(){…}})()` ``: eso es una función de verdad
+  interpolada por su fuente, así que `/[\\d.]+/` ahí adentro significa
+  "barra o punto", no "dígito". No matcheaba nada, todas las razones daban
+  `NaN`, y `NaN < 3` es falso: la prueba pasaba entera sin medir un solo
+  color. Escapes simples adentro del `${}`, dobles solo en una cadena.
 - **Nunca una ruta de tu carpeta de borradores.** Una prueba tenía
   `/tmp/qa/jszip.min.js` escrito a mano. En esa máquina pasaba; en
   cualquier otra decía `ZIP → NO bajó`, que suena a producto roto y no lo

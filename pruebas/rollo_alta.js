@@ -40,6 +40,18 @@ async function abrir(b,{viewport}={}){
     const req=r.request(), u=req.url();
     const body=()=>{try{return JSON.parse(req.postData()||'{}')}catch(e){return{}}};
     if(u.includes('/rest/v1/ce_eventos')&&req.method()==='POST'){
+      /* Como la base de verdad. "resolution=merge-duplicates" es un
+         "insert ... on conflict do update", y Postgres evalúa el WITH
+         CHECK de la política de UPDATE —ce_permitido(codigo)— en TODAS
+         esas sentencias, haya conflicto o no. En un alta la clave todavía
+         no existe para ce_permitido (es STABLE: no ve lo que acabó de
+         escribir el disparador), así que rebota. El rollo se creaba así y
+         en producción daba "new row violates row-level security policy
+         for table ce_eventos"; acá pasaba, porque este falso decía 201 a
+         todo. Medido contra Postgres 16 con el esquema entero. */
+      if(/merge-duplicates/i.test(req.headers()['prefer']||''))
+        return r.fulfill({status:403,contentType:'application/json',
+          body:JSON.stringify({message:'new row violates row-level security policy for table "ce_eventos"'})});
       visto.creado=body(); return r.fulfill({status:201,body:''}); }
     if(u.includes('/rest/v1/ce_eventos')&&req.method()==='PATCH')
       return r.fulfill({status:204,body:''});

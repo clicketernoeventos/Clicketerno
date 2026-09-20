@@ -73,6 +73,49 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     if(seMontan(modos,btns)) mal('las solapas de modo y los botones se montan');
     else bien('las solapas y los botones no se montan');
 
+    /* ── el cartel: lo que se proyecta, visto desde el celular ──
+       De una foto de la pantalla del dueño: el QR ocupaba media pantalla
+       y el nombre, el código y el "ya mandaron" estaban tan chicos que no
+       se leían, porque estaban medidos en vw (1.3vw en 390px son cinco
+       píxeles) y caían todos al mínimo del clamp. Y los dos grupos de
+       mandos le tapaban el logo y el título. Se mide, no se mira. */
+    /* La demostración entra proyectando el muro, no el QR: hay que pedirle
+       el cartel. Sin esto se medía un .sala-cartel escondido, que da una
+       caja de 0x0 en 0,0 — y una caja de cero PASA todas las cuentas: la
+       prueba decía "el QR mide 0px, no se come la pantalla" sin estar
+       midiendo nada. */
+    await p.click('.modos-sala button[data-modo="cartel"]');
+    await p.waitForTimeout(700);
+    const marca=await caja(p,'.sala-cartel .marca-c2');
+    const nombre=await caja(p,'.sala-cartel h1');
+    /* El marco blanco del QR, ya con el cartel a la vista. La librería
+       deja el <canvas> en display:none y pone un <img>, así que apuntarle
+       al dibujo con un selector doble agarra el canvas escondido y da
+       cero: se mide el marco, que es lo que ocupa en la pantalla. */
+    const qr=await caja(p,'.sala-cartel .qr-g');
+    const cod=await caja(p,'.sala-cartel .cod-g');
+    if(!(marca&&nombre&&qr&&cod)) mal('el cartel del salón no se dibujó entero');
+    else if(!(qr.alto>40)) mal(`el QR del cartel no se dibujó (mide ${qr.alto}px)`);
+    else{
+      for(const [q,c] of [['el logo',marca],['el nombre de la fiesta',nombre],
+                          ['el QR',qr],['el código',cod]]){
+        if(!dentro(c,TELEFONO)) mal(`${q} del cartel se sale de la pantalla ${JSON.stringify(c)}`);
+        else if(seMontan(c,modos)||seMontan(c,btns)) mal(`${q} del cartel queda tapado por los mandos`);
+        else bien(`${q} del cartel se ve entero`);
+      }
+      /* El QR no puede comerse la pantalla: con 253px de alto no entraba
+         nada más y el resto quedaba apretado abajo. */
+      if(qr.alto>TELEFONO.height*0.28)
+        mal(`el QR ocupa ${qr.alto}px de ${TELEFONO.height}: se come la pantalla`);
+      else bien(`el QR mide ${qr.alto}px, no se come la pantalla`);
+      /* Y el código de la fiesta —lo que la gente tipea— tiene que leerse.
+         Estaba en 12px con 0.42em de separación. */
+      const tam=await p.evaluate(()=>parseFloat(getComputedStyle(
+        document.querySelector('.sala-cartel .cod-g')).fontSize));
+      if(tam<15) mal(`el código del evento se dibuja en ${tam}px: no se lee`);
+      else bien(`el código se dibuja en ${tam}px`);
+    }
+
     /* Que se pueda cambiar de modo de verdad, no solo que se vea. */
     await p.click('.modos-sala button[data-modo="tablero"]');
     await p.waitForTimeout(700);

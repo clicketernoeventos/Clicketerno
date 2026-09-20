@@ -719,6 +719,31 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   .botones-sala .dejar,.dejar{padding:8px 13px;font-size:9.5px;letter-spacing:.16em}
 }
 
+/* ── el cartel del salón en un teléfono ──
+   Sale al revés de como tiene que estar. El QR está medido en vh (30vh
+   son 253px en un iPhone) y el resto en vw: 1.3vw en 390px son cinco
+   píxeles, así que el nombre, el código y "ya mandaron" caían TODOS al
+   mínimo del clamp. Resultado: un QR enorme y todo lo demás ilegible.
+   Y encima los dos grupos de mandos, que en el teléfono van uno sobre
+   otro arriba de todo, le tapaban el logo y el título.
+   Acá el QR se achica, el texto crece y arriba se reserva exactamente lo
+   que ocupan los mandos, MEDIDO por el JS (--modos y --botsala): un alto
+   escrito a mano miente en cuanto los botones envuelven. */
+@media (max-width:640px){
+  .sala-cartel{justify-content:flex-start;gap:15px;
+    padding:calc(16px + var(--modos,38px) + 8px + var(--botsala,38px) + 16px) 22px 26px}
+  .sala-cartel .marca-c2{width:76px}
+  .sala-cartel h1{font-size:clamp(30px,8.6vw,46px)}
+  .sala-cartel .invita{font-size:15px;max-width:26ch}
+  .sala-cartel .qr-g{padding:10px}
+  .sala-cartel .qr-g canvas,.sala-cartel .qr-g img{
+    width:min(52vw,190px)!important;height:min(52vw,190px)!important}
+  .sala-cartel .como{font-size:11px;letter-spacing:.22em}
+  .sala-cartel .cod-g{font-size:17px;letter-spacing:.3em}
+  .sala-cartel .ya{font-size:12.5px;letter-spacing:.18em}
+  .tablero{padding-top:calc(16px + var(--modos,38px) + 8px + var(--botsala,38px) + 12px)}
+}
+
 /* cuenta regresiva hasta que se abre el muro */
 .cuenta-lanza{display:flex;gap:clamp(8px,1vw,16px);justify-content:center;flex-wrap:wrap}
 .cuenta-lanza div{min-width:clamp(62px,7vw,112px);padding:clamp(9px,1vw,18px) clamp(6px,.8vw,14px);
@@ -1147,6 +1172,25 @@ const SB = {
   ver(tabla, consulta, clave){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {headers:this.cab({}, clave)});
   },
+  /* ALTA. Un insert pelado, sin "merge-duplicates", y no es un detalle:
+     Postgres evalúa el WITH CHECK de la política de UPDATE en TODO
+     "insert ... on conflict do update", haya conflicto o no. Esa política
+     dice ce_permitido(codigo), y en el alta la clave del evento todavía no
+     existe para ella —el disparador la acaba de escribir, pero ce_permitido
+     es STABLE y mira la foto del principio de la sentencia—, así que el alta
+     rebotaba con "new row violates row-level security policy". Lo mismo el
+     invitado que sube una foto: él nunca tiene clave. Medido contra Postgres
+     16 con el esquema de producción entero. De paso queda más sano: dos
+     códigos iguales ahora dan error en vez de pisarse. */
+  crear(tabla, obj, clave){
+    return this.pedir(`/rest/v1/${tabla}`, {
+      method:'POST',
+      headers:this.cab({Prefer:'return=minimal'}, clave),
+      body:JSON.stringify(obj)
+    });
+  },
+  /* FUSIÓN. Solo para quien YA tiene la clave del evento guardada: ahí sí
+     ce_permitido dice que sí y el on-conflict pasa. Nunca para un alta. */
   guardar(tabla, obj, clave){
     return this.pedir(`/rest/v1/${tabla}`, {
       method:'POST',
@@ -1399,7 +1443,19 @@ async function guardarMeta(m){
   }
   for(const c of COLUMNAS_NUEVAS) if(faltaColumna[c]) delete copia[c];
   delete copia.claveNueva;      // la clave va en la cabecera, nunca en la fila
-  const mandar=()=>SB.guardar('ce_eventos',copia, m.claveNueva||claveDe(m.codigo));
+  /* Alta o cambio: no es lo mismo para la base (ver SB.crear). Y si el
+     alta rebota por código repetido, es que el pedido anterior SÍ llegó y
+     se perdió la respuesta: la clave ya quedó guardada por el disparador,
+     así que ahora el upsert pasa y termina de guardar lo mismo. Si el
+     código fuera de otro, ese upsert rebota por RLS, que es lo correcto. */
+  const mandar=async()=>{
+    if(!m.claveNueva) return SB.guardar('ce_eventos',copia, claveDe(m.codigo));
+    try{ return await SB.crear('ce_eventos',copia, m.claveNueva); }
+    catch(e){
+      if(!/duplicate key|already exists|23505/i.test(String((e&&e.message)||e))) throw e;
+      return SB.guardar('ce_eventos',copia, m.claveNueva);
+    }
+  };
   try{
     await mandar();
   }catch(e){
@@ -1550,7 +1606,7 @@ async function sumar(c,it,alAvanzar){
     }
   }
   try{
-    await SB.guardar('ce_items',{id:it.id, codigo:c, kind:it.kind, url,
+    await SB.crear('ce_items',{id:it.id, codigo:c, kind:it.kind, url,
       autor:it.autor, texto:it.texto||null, estado:it.estado, ts:it.ts}, claveDe(c));
   }catch(e){ e.paso='guardar en la base'; throw e; }
   cacheItem[c+it.id] = {...it, url, data:url||''};
@@ -3496,8 +3552,15 @@ async function vPantalla(codigo){
      que desde el celular no se pudiera cambiar de modo. */
   (function medirModos(){
     const fila=app.querySelector('.modos-sala');
-    const poner=()=>{ if(fila) document.body.style.setProperty(
-      '--modos', (fila.offsetHeight||38)+'px'); };
+    const bots=app.querySelector('.botones-sala');
+    const poner=()=>{
+      if(fila) document.body.style.setProperty('--modos', (fila.offsetHeight||38)+'px');
+      /* y el alto de los botones, que en el teléfono van DEBAJO de la fila
+         de modos: sin esto el cartel no sabe cuánto reservar arriba y el
+         logo y el nombre de la fiesta quedan tapados. */
+      document.body.style.setProperty('--botsala',
+        ((bots && !bots.hidden && bots.offsetHeight) || 0)+'px');
+    };
     requestAnimationFrame(poner);
     addEventListener('resize',poner);
     addEventListener('orientationchange',poner);
@@ -4087,17 +4150,17 @@ async function pruebaDeFondo(boton, salida){
   try{
     // 1. crear: la base tiene que exigir clave
     try{
-      await SB.guardar('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
+      await SB.crear('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
         fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()});
       probar('Sin clave NO se puede crear un evento', false);
     }catch(e){ probar('Sin clave NO se puede crear un evento', true); }
 
-    await SB.guardar('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
+    await SB.crear('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
       fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()}, clave);
     probar('Con clave sí se crea', !!(await meta(cod)));
 
     // 2. un invitado sube: la base decide el estado, no el celular
-    await SB.guardar('ce_items',{id:'p-'+idNuevo(),codigo:cod,kind:'mensaje',url:'',
+    await SB.crear('ce_items',{id:'p-'+idNuevo(),codigo:cod,kind:'mensaje',url:'',
       autor:'Invitado de prueba',texto:'hola',estado:'aprobado',ts:Date.now()});
     /* CON la clave: desde blindaje.sql, sin ella la base no devuelve ni una
        fila. Sin esto el diagnóstico veía una lista vacía y le informaba al

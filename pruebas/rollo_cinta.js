@@ -71,6 +71,17 @@ if(!/revelando|toc[áa] para saltear|tus fotos|las de todos/.test(t))
 else bien('cae en el revelado');
 if(/#ev\//.test(p.url())) mal('quedó en la dirección del panel: '+p.url());
 else bien('y la dirección no es la del panel');
+/* Y cae DERECHO en el álbum, no en diez segundos de cuarto oscuro. El
+   revelado empieza en negro y dura eso: en el teléfono del dueño se leyó
+   como "no muestra nada" y cerró la página. En una fiesta de verdad el
+   cuarto oscuro se queda, que es el momento; en la demostración el álbum
+   tiene que estar a la vista y el revelado a un toque. */
+if(!(await p.locator('#grillaMias img').count()))
+  mal('la demostración no muestra el álbum enseguida: se queda en el revelado');
+else bien('el álbum está a la vista apenas entra');
+if(!(await p.locator('#verRevelado').count()))
+  mal('no hay forma de ver el revelado desde la demostración');
+else bien('y el revelado se puede ver con su botón');
 
 console.log('\n─── plegar y volver ───');
 /* Si el ✕ no está, esto tiene que FALLAR, no quedarse treinta segundos

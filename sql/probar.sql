@@ -40,6 +40,41 @@ select verificar('crear un evento con clave funciona',
 select verificar('crear un evento SIN clave se rechaza',
   (select como(null,'insert into ce_eventos(codigo,nombre) values (''QUI-999'',''Colado'')')) like 'error%'
   and (select count(*) from ce_eventos where codigo='QUI-999')=0);
+/* ── por qué la web manda un insert pelado y no un upsert ──
+   "insert ... on conflict do update" es lo que PostgREST arma cuando el
+   navegador manda "Prefer: resolution=merge-duplicates". Postgres evalúa
+   el WITH CHECK de la política de UPDATE en TODAS esas sentencias, haya
+   conflicto o no, y esa política dice ce_permitido(codigo). En un alta la
+   clave todavía no existe para ce_permitido —el disparador acaba de
+   escribirla, pero la función es STABLE y mira la foto del principio de
+   la sentencia—, así que rebota con "new row violates row-level security
+   policy". Así se creaban los eventos y por eso el rollo no se podía
+   crear en producción. No se arregla acá: se arregla en la web, mandando
+   un insert común, que la política de INSERT acepta. Esta prueba está
+   para que nadie "arregle" la política de UPDATE en vez del navegador. */
+select verificar('el alta con on-conflict rebota (por eso la web no lo usa)',
+  (select como('clave-oc','insert into ce_eventos(codigo,nombre) values (''QUI-OCX'',''Con upsert'')
+     on conflict (codigo) do update set nombre=excluded.nombre')) like 'error%'
+  and (select count(*) from ce_eventos where codigo='QUI-OCX')=0);
+/* Ojo: la cuenta va en OTRA sentencia. Adentro del mismo select, el
+   conteo usa la foto de antes del insert y da cero aunque haya entrado. */
+select como('clave-oc2','insert into ce_eventos(codigo,nombre) values (''QUI-OCY'',''Sin upsert'')');
+select verificar('el alta con un insert común entra',
+  (select count(*) from ce_eventos where codigo='QUI-OCY')=1);
+/* Y el invitado, que NUNCA tiene clave, sube su recuerdo con un insert
+   común: con on-conflict la fiesta entera se quedaba sin fotos. */
+select como(null,'insert into ce_items(codigo,id,kind,estado) values (''QUI-OCY'',''oc-1'',''mensaje'',''aprobado'')');
+select verificar('el invitado sube sin clave con un insert común',
+  (select count(*) from ce_items where id='oc-1')=1);
+select verificar('y con on-conflict la base se lo rechaza',
+  (select como(null,'insert into ce_items(codigo,id,kind,estado) values (''QUI-OCY'',''oc-2'',''mensaje'',''aprobado'')
+     on conflict (id) do update set kind=excluded.kind')) like 'error%'
+  and (select count(*) from ce_items where id='oc-2')=0);
+set role postgres;
+delete from ce_items where id in ('oc-1','oc-2');
+delete from ce_eventos where codigo in ('QUI-OCX','QUI-OCY');
+delete from ce_claves where codigo in ('QUI-OCX','QUI-OCY');
+
 select como('clave-dos','insert into ce_eventos(codigo,nombre,moderar) values (''BOD-222'',''Flor y Juan'',true)');
 select verificar('la clave se guarda como huella bcrypt, no en claro',
   (select count(*) from ce_claves where hash like '$2%')=2

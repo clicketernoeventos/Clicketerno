@@ -209,9 +209,23 @@ function crearFake(modo = 'ok', cerrada = true) {
     if (metodo === 'POST') {
       const cuerpo = JSON.parse(request.postData() || '{}');
       const arr = Array.isArray(cuerpo) ? cuerpo : [cuerpo];
+      /* "resolution=merge-duplicates" es un "insert ... on conflict do
+         update", y Postgres evalúa el WITH CHECK de la política de UPDATE
+         en TODAS esas sentencias, haya conflicto o no. Esa política dice
+         ce_permitido(codigo). O sea: el alta de un evento (la clave todavía
+         no existe para ce_permitido, que es STABLE) y la subida de un
+         invitado (que nunca tiene clave) rebotan con un error de RLS.
+         Medido contra Postgres 16 con claves.sql + rollo.sql + blindaje.sql
+         puestos. Sin esto acá, el falso aceptaba lo que la base de verdad
+         rechaza y la fiesta se rompía solo en producción. */
+      const fusiona = /resolution\s*=\s*merge-duplicates/i
+        .test(request.headers()['prefer'] || '');
       for (const obj of arr) {
         const pk = tabla === 'ce_items' ? 'id' : 'codigo';
         const i = filas.findIndex((f) => f[pk] === obj[pk]);
+        if (fusiona && !permitido(obj.codigo, clave))
+          return route.fulfill({ status: 403, contentType: 'application/json',
+            body: JSON.stringify({ message: 'new row violates row-level security policy for table "' + tabla + '"' }) });
         if (tabla === 'ce_eventos' && i < 0) {
           // alta de evento: la base exige clave y la guarda (trigger ce_guardar_clave)
           if (!clave || clave.length < 4)
