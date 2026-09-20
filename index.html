@@ -447,7 +447,7 @@ nav .links a:hover:after{width:100%}
     0 0 0 .5px rgba(0,0,0,.9),
     0 44px 94px -40px #000,
     0 0 100px -58px var(--oro)}
-.visor .caja{height:min(722px,72vh);border-radius:36px;overflow:hidden;background:#0B0A08;position:relative}
+.visor .caja{height:min(722px,72vh);height:min(722px,72dvh);border-radius:36px;overflow:hidden;background:#0B0A08;position:relative}
 /* La pantalla del salón no entra en un celular: el mismo visor, apaisado.
    Se le sacan los botones laterales, que son de teléfono. */
 .visor.ancho .chasis{--r-fuera:14px;--bisel:10px;width:min(1180px,94vw)}
@@ -513,6 +513,34 @@ footer{border-top:1px solid var(--gris);padding:50px 0 34px;
 footer .wrap{display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;align-items:center}
 footer .datos{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);line-height:2.2}
 footer .datos a:hover{color:var(--oro)}
+/* ══════════ interfaz ══════════
+   Medido en un teléfono de 390px: diez de los treinta y dos elementos
+   tocables de esta página estaban por debajo de 44x44 —el mínimo de
+   Apple y de Google—. Los enlaces del pie medían 14px de alto, apilados
+   y sin aire: para tocar uno había que apuntar. Se agranda el área, no
+   la tipografía. */
+:root{ --toque:44px; --rapido:.16s; }
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+nav .links a{padding:14px 0}
+.burger{padding:11px 5px;box-sizing:content-box}
+.contacto .mail,footer .datos a,.incluye a,.puerta-c .mas{
+  display:inline-block;padding:13px 2px}
+footer .datos{line-height:1.6}
+.visor .cerrar{min-height:var(--toque);display:inline-flex;align-items:center}
+/* Los enlaces sueltos dentro de un párrafo: crecen a lo alto sin romper
+   el renglón. */
+#entrar p a,.serv .mas,#muro .ap a,#rollo .ap a{display:inline-block;padding:13px 2px}
+/* Hundirse al tocar, y que el hover no se quede pegado en una pantalla
+   táctil: al tocar, el navegador deja el hover puesto y el botón parece
+   seleccionado hasta que tocás otra cosa. */
+@media(prefers-reduced-motion:no-preference){
+  .btn,.serv,.puerta-c,.pieza,.burger{transition:transform var(--rapido) var(--e),
+    border-color .35s var(--e),background .35s var(--e)}
+  .btn:active,.serv:active,.puerta-c:active,.pieza:active{transform:scale(.982)}
+}
+@media(hover:none){
+  .serv:hover,.puerta-c:hover,.btn:hover{transform:none}
+}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
