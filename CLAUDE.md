@@ -413,6 +413,18 @@ las del cupo?, ¿puede ver las de otro?
   mandar al organizador al rollo de un evento que no lo tiene es mandarlo
   a una pantalla vacía, y hay una prueba que lo cuida.
 
+- **El `load` de un `<img>` NO llega a `window`; el `error` sí.** Medido,
+  no supuesto: `addEventListener('load',fn,true)` en `window` no ve
+  ninguna carga de imagen, y en `document` las ve todas. Con el latido de
+  carga del álbum puesto, eso quería decir que **ninguna foto se marcaba
+  como cargada y el álbum entero quedaba invisible**. El respaldo de las
+  miniaturas usa `error` y por eso sí funciona en `window`. Los dos van
+  en `document`, en captura, por las dudas.
+- **Los 44px son para dedos, no para mouse.** El mínimo de área se puso
+  en todos lados y en un proyector de 1920 la fila de modos creció diez
+  píxeles y pasó a tapar la cabecera del tablero —lo agarró
+  `pruebas/nuevas.js`—. Va en `@media (max-width:820px),(pointer:coarse)`.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -469,6 +481,32 @@ base, no en el navegador de nadie.
 Lo miden `pruebas/vencimiento.js` (el aviso, quién entra a la limpieza, que
 borre los vencidos y solo esos, que no diga "Listo" si la base se negó, y
 el corte de las mil filas) y `pruebas/rollo_vence.js` (el aviso del rollo).
+
+## La interfaz
+
+Lo que se mide, en `pruebas/interfaz.js`:
+
+- **Todo lo que se toca llega a 44x44 en un teléfono.** Es la medida de
+  Apple y de Google. Antes de esta pasada **29 de 68 controles no
+  llegaban**: el "Volver" medía 56x27 y el "atrás" del rollo 23x26.
+  Se agranda el ÁREA, no la tipografía: el diseño queda igual.
+- **De 320px a 1440px no se sale nada** y el título escala solo
+  (38px → 66px en la página pública).
+- **Las fotos del álbum laten mientras cargan y terminan visibles.** El
+  hueco negro con el wifi de un salón era una pared de agujeros.
+- **Con "menos movimiento" no late nada** y las fotos se ven igual:
+  apagar el movimiento no puede esconder contenido.
+
+Y tres reglas de interacción que no se ven pero se sienten:
+
+- **El `:hover` se queda PEGADO en una pantalla táctil.** Al tocar, el
+  navegador deja el estado puesto hasta que toques otra cosa, así que el
+  botón parece seleccionado. Todo hover va en `@media(hover:hover)`, y lo
+  que quedaba va anulado en `@media(hover:none)`.
+- **Lo que se toca se hunde** (`:active` con `scale(.975)`). Sin eso, con
+  mala señal, el invitado no sabe si el toque entró y toca tres veces.
+- **`-webkit-tap-highlight-color:transparent`** en todo, no solo en un
+  botón suelto: el recuadro azul del sistema arruina el diseño.
 
 ## Los dos recorridos
 

@@ -112,8 +112,9 @@ textarea{min-height:88px;resize:vertical;line-height:1.6;border:1px solid var(--
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--oro)}
 select{appearance:none;background:transparent}
 option{background:#0B0A08}
-.tonos{display:flex;gap:14px;padding-top:4px}
-.tono{width:34px;height:34px;border-radius:50%;position:relative;transition:transform .3s var(--e)}
+.tonos{display:flex;gap:10px;padding-top:4px;flex-wrap:wrap}
+/* 34px era lindo y se le erraba: 44 es lo que un dedo acierta. */
+.tono{width:44px;height:44px;border-radius:50%;position:relative;transition:transform .3s var(--e)}
 .tono:after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;transition:border-color .3s}
 .tono[aria-pressed=true]:after{border-color:var(--oro)}
 .tono[aria-pressed=true]{transform:scale(1.05)}
@@ -149,7 +150,10 @@ option{background:#0B0A08}
 .lente b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;margin-bottom:8px}
 .lente span{font-size:13.5px;color:var(--mute)}
 .previa{position:relative;overflow:hidden;margin-bottom:24px;border:1px solid var(--gris)}
-.previa img,.previa video{width:100%;display:block;max-height:56vh;object-fit:contain;background:#000}
+/* dvh y no vh: en un teléfono la barra del navegador cuenta como alto
+   visible, así que 56vh se pasa de lo que se ve y la previa empuja el
+   botón de enviar abajo del borde. */
+.previa img,.previa video{width:100%;display:block;max-height:56vh;max-height:56dvh;object-fit:contain;background:#000}
 .previa .x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;
   background:rgba(0,0,0,.6);border:1px solid var(--hilo);color:var(--champan);backdrop-filter:blur(6px)}
 .onda{display:inline-flex;gap:3px;align-items:flex-end;height:15px;vertical-align:middle;margin-right:10px}
@@ -318,7 +322,6 @@ option{background:#0B0A08}
 .rejilla{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .rejilla a{aspect-ratio:1;overflow:hidden;background:var(--humo);display:block;position:relative}
 .rejilla img,.rejilla video{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--e),filter .5s}
-.rejilla a:hover img{transform:scale(1.06);filter:brightness(1.08)}
 .dedicatoria{padding:8px 0 8px 22px;border-left:1px solid var(--hilo);margin:26px 0}
 .dedicatoria p{font-family:'Bodoni Moda',serif;font-size:20px;line-height:1.55;font-style:italic}
 .dedicatoria b{display:block;font-family:'Bodoni Moda',serif;font-weight:400;color:var(--oro);font-size:16px;margin-top:12px}
@@ -370,7 +373,9 @@ option{background:#0B0A08}
 .cabecera{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--gris)}
 .cabecera .cab-fila{display:flex;align-items:center;gap:14px;padding:16px 26px 14px;max-width:620px;margin:0 auto}
-.cabecera .atras{color:var(--oro);font-size:20px;line-height:1;padding:2px 8px 4px 0;flex:none}
+/* 25x26 no lo acierta un pulgar. El área crece, la flecha queda igual. */
+.cabecera .atras{color:var(--oro);font-size:20px;line-height:1;padding:0 12px 0 0;flex:none;
+  min-width:var(--toque);min-height:var(--toque);display:inline-flex;align-items:center}
 .cabecera .quien-ev{flex:1;min-width:0}
 .cabecera .quien-ev b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-size:21px;
   font-weight:400;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -471,7 +476,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   stroke-linecap:round;stroke-linejoin:round}
 
 /* ═══ álbum: portada a sangre y mosaico ═══ */
-.tapa-g{position:relative;height:min(52vh,430px);overflow:hidden;display:flex;
+.tapa-g{position:relative;height:min(52vh,430px);height:min(52dvh,430px);overflow:hidden;display:flex;
   align-items:flex-end;isolation:isolate}
 .tapa-g .foto{position:absolute;inset:0;background-size:cover;background-position:center;
   transform:scale(1.06);animation:kbtapa 26s var(--e) forwards}
@@ -492,10 +497,33 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .seccion-a span{font-size:10.5px;letter-spacing:.2em;color:var(--oro)}
 .mosaico-a{columns:2;column-gap:7px}
 @media(min-width:560px){.mosaico-a{columns:3}}
+/* ── la foto que todavía no llegó ──
+   El hueco quedaba negro y la foto aparecía de golpe: con el wifi de un
+   salón, un álbum de cien fotos era una pared de agujeros. Ahora late
+   suave hasta que carga y entra con un fundido. Es CSS solo.
+   Ojo con el nombre: la grilla del álbum es .mosaico-a. `.rejilla` existe
+   en la hoja pero NO se usa acá; poner el efecto ahí no hacía nada y la
+   prueba lo cantó con "0 fotos". Antes de elegir un selector, grep. */
+@keyframes lateFoto{0%,100%{opacity:.35}50%{opacity:.75}}
 .mosaico-a a{display:block;break-inside:avoid;margin-bottom:7px;border-radius:12px;overflow:hidden;
   position:relative;background:var(--humo);line-height:0}
-.mosaico-a img,.mosaico-a video{width:100%;height:auto;display:block;
-  transition:transform .7s var(--e),filter .5s}
+.mosaico-a a::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(217,174,114,.12) 50%,transparent 70%),var(--humo);
+  animation:lateFoto 1.6s ease-in-out infinite}
+.mosaico-a a:has(img[data-lista])::before,.mosaico-a a:has(video)::before{animation:none;opacity:0}
+.mosaico-a img,.mosaico-a video{width:100%;height:auto;display:block;position:relative;z-index:2;
+  transition:transform .7s var(--e),filter .5s,opacity .45s var(--e)}
+.mosaico-a img:not([data-lista]){opacity:0}
+/* Si el navegador no entiende :has(), el latido no se apaga solo: mejor
+   que ni empiece, antes que dejarlo latiendo abajo de la foto. */
+@supports not selector(:has(*)){
+  .mosaico-a a::before{display:none}
+  .mosaico-a img{opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+  .mosaico-a a::before{animation:none}
+  .mosaico-a img:not([data-lista]){opacity:1}
+}
 .mosaico-a a:hover img{transform:scale(1.04);filter:brightness(1.06)}
 .mosaico-a .quien-f{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;
   font-size:10.5px;letter-spacing:.12em;color:#F3EDE0;line-height:1.3;
@@ -530,8 +558,8 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   max-width:620px;margin:0 auto}
 .cab-inv .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:10px}
 .cab-inv h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(28px,8.5vw,38px);line-height:1}
-.cab-inv .volver{position:absolute;right:22px;top:24px;font-size:10px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--mute);padding:8px}
+.cab-inv .volver{position:absolute;right:14px;top:12px;font-size:10px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--mute);padding:8px 12px}
 .wrap-inv{max-width:620px;margin:0 auto;padding:26px 26px 150px}
 
 /* tarjeta de evento en la lista */
@@ -831,6 +859,49 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .espera.se-va{animation:seVa .35s var(--e) forwards;pointer-events:none}
 .pendientes.se-va{animation:seVa .4s var(--e) forwards}
 
+/* ══════════ interfaz ══════════
+   Tres cosas que se miden, no que se opinan.
+
+   1. TODO lo que se toca llega a 44x44. Es la medida de Apple y de
+      Google, y acá el 43% de los controles no llegaba: el "Volver" medía
+      56x27 y el "atrás" del rollo 23x26. En un teléfono eso es errarle.
+      Se agranda el área, no la tipografía: el diseño queda igual.
+   2. El :hover se queda PEGADO en una pantalla táctil. Al tocar un botón
+      el navegador le deja el estado de hover puesto hasta que toques
+      otra cosa, así que parece seleccionado. Todo hover va adentro de
+      @media(hover:hover).
+   3. Y lo que se toca tiene que contestar: un :active que se hunde. Sin
+      eso, con mala señal, el invitado no sabe si el toque entró y toca
+      tres veces. */
+:root{
+  --toque:44px;
+  --rapido:.16s; --medio:.3s;
+}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+/* El área mínima, sin tocar cómo se ve.
+   Solo donde hay un dedo: los 44px son para tocar, no para apuntar con
+   un mouse. Aplicarlo en todos lados le creció diez píxeles a la fila de
+   modos de la pantalla del salón y en un proyector de 1920 pasó a tapar
+   la cabecera del tablero. Lo agarró pruebas/nuevas.js. */
+@media (max-width:820px),(pointer:coarse){
+  .cab-inv .volver,.seccion-a button,.modos-sala button,.cuantas button,
+  .btn-fila,.chips button,.barra-abajo button{
+    min-height:var(--toque);display:inline-flex;align-items:center;justify-content:center}
+  .oro-btn,.hilo-btn,.btn-peligro{min-height:var(--toque)}
+}
+/* Hundirse al tocar. La escala es chica a propósito: se siente, no se ve. */
+@media(prefers-reduced-motion:no-preference){
+  .oro-btn,.hilo-btn,.btn-peligro,.tono,.chips button,.cuantas button,
+  .btn-fila,.puerta,.ev-card,.modos-sala button{transition:transform var(--rapido) var(--e)}
+  .oro-btn:not(:disabled):active,.hilo-btn:not(:disabled):active,
+  .btn-peligro:not(:disabled):active,.chips button:active,.cuantas button:active,
+  .btn-fila:active,.puerta:active,.ev-card:active,.modos-sala button:active{transform:scale(.975)}
+}
+/* El hover solo donde hay puntero de verdad */
+@media(hover:none){
+  .hilo-btn:hover,.btn-fila:hover,.puerta:hover,.ev-card:hover{
+    border-color:inherit;color:inherit;background:inherit;transform:none}
+}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cartel-hoja{max-width:420px;margin:34px auto;border:1px solid var(--hilo);padding:44px 34px;text-align:center;background:#000}
 .cartel-hoja .marca-c{width:150px;opacity:.95;margin-bottom:26px}
@@ -4164,6 +4235,18 @@ addEventListener('unhandledrejection',e=>{
 });
 /* Y lo mismo con lo que revienta sin promesa de por medio: un toque que
    fallaba dentro de su propio manejador no mostraba nada en pantalla. */
+/* Cuando una foto del álbum termina de cargar se marca, y el CSS le hace
+   el fundido y le apaga el latido de abajo. En captura y una sola vez por
+   imagen, igual que el respaldo de las miniaturas: "load" tampoco burbujea. */
+/* En DOCUMENT, no en window. Medido: el "error" de un <img> sí llega a
+   window en captura —por eso el respaldo de las miniaturas funciona—
+   pero el "load" NO: en window, "load" es el de la página. Puesto en
+   window esto no marcaba una sola foto y el álbum quedaba invisible
+   entero. */
+document.addEventListener('load',e=>{
+  const n=e.target;
+  if(n && n.tagName==='IMG' && n.closest && n.closest('.mosaico-a')) n.dataset.lista='1';
+}, true);
 /* Si una miniatura no está —las fotos de antes de esto no la tienen—, la
    imagen se cae sola a la foto entera. En captura, porque los errores de
    un <img> no burbujean y un oyente normal no se entera nunca. */

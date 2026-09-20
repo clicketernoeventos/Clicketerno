@@ -139,6 +139,30 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .fila-res:last-child{border-bottom:0}
 .fila-res span{font-size:12.5px;letter-spacing:.06em;color:var(--mute);flex:none}
 .fila-res b{font-weight:400;font-size:14.5px;color:#F6F2EA;text-align:right}
+/* ══════════ interfaz ══════════
+   Lo mismo que en muro.html, y por los mismos motivos medidos: todo lo
+   que se toca llega a 44x44 (el "atrás" de este archivo medía 23x26, que
+   en un teléfono es errarle), el :hover no se queda pegado en una
+   pantalla táctil, y lo que se toca se hunde para que se note. */
+:root{ --toque:44px; --rapido:.16s; }
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+.cab-p .atras,.paso-cab .atras{min-width:var(--toque);min-height:var(--toque);
+  display:inline-flex;align-items:center;justify-content:flex-start}
+.chips button,.link-abajo,.filtro-op{min-height:var(--toque)}
+.chips button{display:inline-flex;align-items:center;justify-content:center}
+@media(prefers-reduced-motion:no-preference){
+  .oro-btn,.hilo-btn,.link-abajo,.chips button,.stepper button,
+  .dos-cartas button,.fila-ev{transition:transform var(--rapido) var(--e)}
+  .oro-btn:not(:disabled):active,.hilo-btn:not(:disabled):active,
+  .link-abajo:active,.chips button:active,.stepper button:active,
+  .dos-cartas button:active,.fila-ev:active{transform:scale(.975)}
+}
+@media(hover:none){
+  .hilo-btn:hover,.link-abajo:hover,.fila-ev:hover{
+    border-color:inherit;color:inherit;background:inherit;transform:none}
+}
+/* Faltaba: este archivo respetaba "menos movimiento" solo desde el JS. */
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
 .cab img{width:82px;opacity:.7;margin-bottom:16px}
 .cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
@@ -161,7 +185,7 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .cab-p{display:flex;align-items:center;gap:14px;padding:calc(16px + env(safe-area-inset-top)) 22px 18px;
   border-bottom:1px solid var(--gris);position:sticky;top:0;z-index:20;
   background:rgba(0,0,0,.9);backdrop-filter:blur(14px)}
-.cab-p .atras{color:var(--oro);font-size:20px;line-height:1;padding:2px 6px 4px 0}
+.cab-p .atras{color:var(--oro);font-size:20px;line-height:1;padding:0 10px 0 0}
 .cab-p .tit{flex:1;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cab-p img{width:70px;opacity:.5}
 
@@ -178,7 +202,7 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 
 /* los pasos */
 .paso-cab{display:flex;align-items:center;gap:16px;padding:calc(18px + env(safe-area-inset-top)) 22px 0}
-.paso-cab .atras{color:var(--oro);font-size:20px;line-height:1;padding:2px 6px 4px 0}
+.paso-cab .atras{color:var(--oro);font-size:20px;line-height:1;padding:0 10px 0 0}
 .paso-cab .barra{flex:1;height:2px;background:var(--gris);border-radius:2px;overflow:hidden}
 .paso-cab .barra i{display:block;height:100%;background:var(--oro);transition:width .45s var(--e)}
 .paso-cuerpo{padding-top:44px;padding-bottom:150px;max-width:460px}
@@ -223,7 +247,7 @@ input.grande{font-size:21px;padding:14px 2px}
 .punto.oro{background:var(--oro);box-shadow:0 0 0 4px rgba(217,174,114,.14)}
 .punto.gris{background:#5b5550}
 .chips{display:flex;flex-wrap:wrap;gap:9px}
-.chips button{padding:11px 18px;border:1px solid var(--gris);border-radius:22px;font-size:13.5px;color:var(--mute)}
+.chips button{padding:12px 18px;border:1px solid var(--gris);border-radius:22px;font-size:13.5px;color:var(--mute)}
 .chips button[aria-pressed=true]{border-color:var(--oro);color:var(--oro);background:rgba(217,174,114,.06)}
 .dos-cartas{display:grid;gap:12px}
 .dos-cartas button{border:1px solid var(--gris);border-radius:8px;padding:20px 18px;text-align:left;position:relative}
@@ -384,7 +408,29 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .grilla figure{margin:0;position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#111;
   opacity:0;filter:blur(14px);transform:scale(.96);transition:opacity .9s var(--e),filter .9s var(--e),transform .9s var(--e)}
 .grilla figure.rev{opacity:1;filter:blur(0);transform:none}
-.grilla img{width:100%;height:100%;object-fit:cover}
+/* ── la foto que todavía no llegó ──
+   Antes el hueco quedaba negro y la foto aparecía de golpe: con el wifi
+   de un salón, un álbum de cien fotos era una pared de agujeros. Ahora
+   late suave hasta que carga, y la imagen entra con un fundido. Es CSS
+   solo: no hay un estado más que mantener en el JavaScript.
+   El brillo se apaga con "menos movimiento" y bajo el fundido, no queda
+   latiendo para siempre en la pantalla de alguien. */
+@keyframes lateFoto{0%,100%{opacity:.35}50%{opacity:.75}}
+.grilla figure::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(217,174,114,.10) 50%,transparent 70%),#111;
+  animation:lateFoto 1.6s ease-in-out infinite}
+.grilla figure:has(img[data-lista])::before{animation:none;opacity:0}
+@supports not selector(:has(*)){
+  .grilla figure::before{display:none}
+  .grilla img{opacity:1}
+}
+.grilla img{width:100%;height:100%;object-fit:cover;position:relative;
+  transition:opacity .45s var(--e)}
+.grilla img:not([data-lista]){opacity:0}
+@media(prefers-reduced-motion:reduce){
+  .grilla figure::before{animation:none}
+  .grilla img:not([data-lista]){opacity:1}
+}
 .grilla figure.mia{outline:2px solid var(--oro);outline-offset:-2px}
 .grilla figcaption{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;font-size:10px;
   background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);color:#EFE7DA}
@@ -2359,6 +2405,17 @@ function pintar(){
   }catch(e){ console.error(e); return vError('Algo se cortó. Recargá la página.'); }
   if(p&&p.catch) p.catch(e=>{ console.error(e); vError('Algo se cortó. Recargá la página.'); });
 }
+/* La foto del álbum se marca cuando carga y el CSS hace el resto. En
+   captura: "load" de un <img> no burbujea. */
+/* En DOCUMENT, no en window. Medido: el "error" de un <img> sí llega a
+   window en captura —por eso el respaldo de las miniaturas funciona—
+   pero el "load" NO: en window, "load" es el de la página. Puesto en
+   window esto no marcaba una sola foto y el álbum quedaba invisible
+   entero. */
+document.addEventListener('load',e=>{
+  const n=e.target;
+  if(n && n.tagName==='IMG' && n.closest && n.closest('.grilla')) n.dataset.lista='1';
+}, true);
 addEventListener('hashchange',pintar);
 addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-ir]');
