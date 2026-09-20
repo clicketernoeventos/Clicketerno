@@ -406,6 +406,13 @@ las del cupo?, ¿puede ver las de otro?
   un JPEG válido estirado con relleno después del marcador de fin, que
   sigue siendo una imagen de verdad y pesa lo que uno quiera.
 
+- **No hay una columna que diga "tiene muro".** La tabla de eventos es
+  una sola y `camara` es lo único que distingue: un evento nacido en el
+  rollo la tiene en `true`. Así que la central ofrece el muro **siempre**
+  —cualquier código sirve de muro— y el rollo **solo si `camara`**:
+  mandar al organizador al rollo de un evento que no lo tiene es mandarlo
+  a una pantalla vacía, y hay una prueba que lo cuida.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -420,10 +427,11 @@ Son tres piezas y las tres hacen falta:
   de bajarse el álbum al lado. Cuando ya venció cambia de tono y lo dice.
   Avisar sin dar la salida no sirve; borrar sin avisar antes es perderle
   las fotos a un cliente.
-- **La limpieza**, `/muro#limpieza`, **solo con la clave de
-  administrador**: lista TODOS los eventos ordenados por lo que les queda
-  —vencidos, por vencer, el resto— y borra los vencidos con sus archivos.
-  Un organizador común no la ve ni llega escribiendo la dirección.
+- **La central**, `/muro#central` (`#limpieza` sigue andando), **solo con
+  la clave de administrador**: lista TODOS los eventos ordenados por lo
+  que les queda —vencidos, por vencer, el resto— y borra los vencidos con
+  sus archivos. Un organizador común no la ve ni llega escribiendo la
+  dirección.
 - **El borrado**, que es `borrarEvento()`, el mismo de la zona de peligro:
   filas, archivos de `ce-medios` y fotos de `ce-rollos`. En tanda va de a
   uno y **no corta si uno falla**: al final dice cuántos pudo y cuáles no.
@@ -447,6 +455,12 @@ quedan en el depósito para siempre. El orden lleva desempate por `codigo`:
 sin él, dos eventos con el mismo `creado` pueden salir en distinto orden en
 cada tanda, y con `offset` eso es una fila repetida y otra que no aparece
 nunca.
+
+**La central es el tablero del negocio, no solo la limpieza.** Cada fila
+dice el nombre, el código, hasta cuándo vive, si está cerrado o revelado, y
+tiene la puerta para entrar **al muro y al rollo** de ese evento. Resuelve
+lo que hacía falta de verdad: hasta acá, un rollo solo se manejaba desde el
+teléfono donde se creó.
 
 **No hay nada automático del lado del servidor.** La limpieza es a mano,
 una vez por mes. Si algún día se automatiza, va como tarea programada en la
