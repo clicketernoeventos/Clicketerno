@@ -688,9 +688,15 @@ portón anterior comparaba contra un correo escrito en el propio HTML.
 
 ## La app andando adentro de la web
 
+**Es la presentación, y va arriba de todo**: decisión del dueño. Lo primero
+que ve el que entra, apenas pasa la portada, son los tres servicios
+FUNCIONANDO —no una lista de lo que hacemos—. El menú la nombra "Probala" y
+es su primer renglón; la flecha "Deslizá" de la portada apunta ahí.
+`pruebas/movil.js` falla si esa sección se vuelve a ir abajo.
+
 `index.html` tiene el apartado **`#app`**: una notebook con el muro
-proyectándose y un celular con el álbum del rollo, los dos corriendo de
-verdad en un marco, no capturas. Reusa la misma maquinaria que la galería
+proyectándose y dos celulares —el álbum del rollo y una invitación—, los
+tres corriendo de verdad en un marco, no capturas. Reusa la misma maquinaria que la galería
 de Trabajos (`.vivo`, con `IntersectionObserver` y un dibujo de reserva
 debajo por si el marco no carga); ahora `data-ancho` dice a qué ancho se
 dibuja adentro (1200 la pantalla del salón, 390 el celular) en vez de estar
@@ -708,7 +714,18 @@ presupuesto se cierra hablando.
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:
 `delfina15/index.html` se sirve en `clicketerno.com.ar/delfina15`. Antes
-vivían en Netlify. Las reglas y los nombres prohibidos (`muro`, `rollo`,
+vivían en Netlify.
+
+**La que está en el repo abre siempre; la que está en Netlify, depende.**
+La galería de Trabajos las muestra andando adentro del celular, y antes de
+meterlas en el marco le pregunta a cada una si responde: si el sitio está
+caído, o tarda, o no se deja incrustar, queda la portada dibujada y el
+cliente ve un dibujo en vez del producto. Pía ya vive acá (`pia/nueva/`) y
+por eso abre al toque; **Key y Xiomara siguen en Netlify** y hay que
+traerlas. Falta que el dueño pase las dos carpetas enteras —el HTML, las
+fotos y la música—, no solo el HTML: con el HTML solo, las fotos siguen
+saliendo de Netlify y el problema es el mismo. Las reglas de cómo entra una
+carpeta nueva están en `invitaciones/LEEME.md`. Las reglas y los nombres prohibidos (`muro`, `rollo`,
 `app`…) están en `invitaciones/LEEME.md`; `pruebas/invitaciones.js` las
 verifica: que no tapen una ruta de la app, que no queden apuntando a
 netlify.app, que no usen caminos absolutos —que en Netlify funcionaban

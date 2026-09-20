@@ -149,6 +149,48 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
   }
 
   // ═══ 2. por dónde entra el que ya contrató ═══
+  // ═══ 1b. la presentación: los tres andando, arriba de todo ═══
+  /* Decisión del dueño: lo primero que tiene que ver el que entra son los
+     tres servicios funcionando de verdad, no una lista de lo que hacemos.
+     Si alguna vez esa sección se va abajo, esto avisa. */
+  console.log('\n─── los tres, andando, arriba de todo ───');
+  {
+    const ctx=await browser.newContext({viewport:TELEFONO});
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.goto(BASE+'/',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1200);
+    const orden=await p.$$eval('section[id]',ns=>ns.map(n=>n.id));
+    if(orden[0]!=='app')
+      mal('la presentación no es lo primero: '+orden.slice(0,3).join(' · '));
+    else bien('los tres andando son la primera sección');
+    const piezas=await p.$$eval('#app .pieza',ns=>ns.map(n=>
+      (n.querySelector('.pie-p b')||{}).textContent||'?'));
+    if(piezas.length!==3) mal(`la presentación tiene ${piezas.length} piezas, no 3`);
+    else bien('están las tres: '+piezas.join(' · '));
+    /* Que cada una se toque y abra su demostración. */
+    const abren=await p.$$eval('#app .pieza[data-abrir]',ns=>ns.map(n=>n.dataset.abrir));
+    if(abren.length!==3) mal('alguna pieza no abre nada: '+abren.join(', '));
+    else bien('las tres abren su prueba: '+abren.join(' · '));
+    for(const d of abren){
+      const r=await p.request.get(BASE+'/'+d.split('?')[0].replace(/\/$/,'/'));
+      if(!r.ok()) mal(`${d} da ${r.status()}`);
+      else bien(`${d} abre (${r.status()})`);
+    }
+    /* Y que en un teléfono no se salga ninguna de la pantalla. */
+    const anchoDoc=await p.evaluate(()=>document.documentElement.scrollWidth);
+    if(anchoDoc>TELEFONO.width+1)
+      mal(`la página se va de ancho: ${anchoDoc}px en ${TELEFONO.width}`);
+    else bien('nada se sale de ancho');
+    for(const sel of ['#app .pieza.sala','#app .pieza.tel']){
+      const c=await caja(p,sel);
+      if(!dentro({...c,y:0,y2:1},TELEFONO)) mal(`${sel} se sale de la pantalla`);
+      else bien(`${sel} entra a lo ancho`);
+    }
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   console.log('\n─── el que ya contrató ───');
   {
     const ctx=await browser.newContext({viewport:TELEFONO});
