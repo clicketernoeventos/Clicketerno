@@ -560,6 +560,8 @@ footer .datos a:hover{color:var(--oro)}
 :root{ --toque:44px; --rapido:.16s; }
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 nav .links a{padding:14px 0}
+/* El logo de arriba también es un enlace —lleva al inicio— y medía 70x29. */
+nav .wrap>a:first-child{display:inline-flex;align-items:center;min-height:var(--toque)}
 .burger{padding:11px 5px;box-sizing:content-box}
 .contacto .mail,footer .datos a,.incluye a,.puerta-c .mas{
   display:inline-block;padding:13px 2px}

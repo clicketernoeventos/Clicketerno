@@ -560,6 +560,37 @@ Lo que se mide, en `pruebas/interfaz.js`:
 - **Con "menos movimiento" no late nada** y las fotos se ven igual:
   apagar el movimiento no puede esconder contenido.
 
+Y lo que se mide en `pruebas/dispositivos.js`:
+
+- **Las siete pantallas del producto, en siete aparatos.** De un iPhone SE
+  de 320px a un proyector de 1920, pasando por el **teléfono acostado**
+  (844x390, que no es un tamaño raro: el organizador da vuelta el celular
+  para probar la proyección) y por las dos posiciones del iPad. Cuarenta y
+  nueve combinaciones, y en cada una: que nada se salga por el costado, que
+  las capas fijas que atajan el dedo no se monten entre ellas, que en un
+  aparato táctil todo lo que se toca llegue a 44x44, que los mandos del
+  salón no le tapen el cartel, y que no haya un error de JavaScript.
+- **Filtrar el ruido es parte de la medición.** Sin filtro, el barrido
+  informaba treinta choques por pantalla y ninguno era un problema: las
+  capas decorativas (`#brillo`, `#polvo`, los velos) tienen
+  `pointer-events:none` y tapar no les cuesta nada, una capa del tamaño de
+  la pantalla es el fondo de esa pantalla, y la marquesina corre 1400px de
+  texto adentro de un `overflow:hidden`. Una prueba que informa treinta
+  cosas cuando hay dos es una prueba que nadie lee.
+- **Una lista de selectores escrita a mano se queda corta sola.** El mínimo
+  de 44px estaba puesto como una enumeración, y se le habían escapado los
+  mandos de la pantalla del salón (29px de alto) y toda la cinta de la
+  demostración, donde el **"Salir" medía 26x11**: la única puerta de vuelta
+  al sitio, imposible de acertar con el pulgar. La lista sigue existiendo
+  porque poner el mínimo en todo rompe el proyector, pero lo que la cuida
+  ahora es la medición en los siete aparatos, no la lista.
+- **Un botón que no puede hacer su trabajo molesta más que no estar.** En
+  el iPhone no existe la pantalla completa —Safari no la da para un
+  elemento cualquiera—, así que "Pantalla completa" de la sala no podía
+  funcionar nunca, y el mensaje de respaldo decía *"Tocá F11"*, una tecla
+  que ese aparato no tiene. Si el navegador no la ofrece, el botón no se
+  dibuja.
+
 Y lo que se mide en `pruebas/contraste.js`:
 
 - **Todo el texto se LEE.** Recorre las pantallas del muro, del rollo y de

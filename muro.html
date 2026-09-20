@@ -924,9 +924,20 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
    la cabecera del tablero. Lo agarró pruebas/nuevas.js. */
 @media (max-width:820px),(pointer:coarse){
   .cab-inv .volver,.seccion-a button,.modos-sala button,.cuantas button,
-  .btn-fila,.chips button,.barra-abajo button{
+  .btn-fila,.chips button,.barra-abajo button,
+  /* Se habían quedado afuera y son de los más importantes: los mandos de
+     la pantalla del salón (29px de alto) y los de la cinta de la
+     demostración, donde el "Salir" medía 29x12 — la única puerta de vuelta
+     al sitio, imposible de acertar con el pulgar. La lista escrita a mano
+     se queda corta sola; por eso ahora el barrido de pruebas/dispositivos.js
+     los mide todos en siete tamaños en vez de confiar en la lista. */
+  .dejar,#cinta-demo button,#cinta-demo a{
     min-height:var(--toque);display:inline-flex;align-items:center;justify-content:center}
   .oro-btn,.hilo-btn,.btn-peligro{min-height:var(--toque)}
+  #cinta-demo .plegar{min-width:var(--toque)}
+  /* "Salir" es una palabra corta: llegaba a 44 de alto y se quedaba en 26
+     de ancho. El área se agranda a lo ancho también. */
+  #cinta-demo a,#cinta-demo .plegar{min-width:var(--toque);padding-inline:10px}
 }
 /* Hundirse al tocar. La escala es chica a propósito: se siente, no se ve. */
 @media(prefers-reduced-motion:no-preference){
@@ -3580,9 +3591,22 @@ async function vPantalla(codigo){
     addEventListener('orientationchange',poner);
   })();
 
-  app.querySelector('#completa').onclick=()=>{
+  /* Reconocer dónde se abre. En el iPhone no existe la pantalla completa
+     —Safari no la da para un elemento cualquiera—, así que el botón no
+     podía funcionar nunca y el mensaje de respaldo decía "Tocá F11", una
+     tecla que ese aparato no tiene. Un botón que no puede hacer su trabajo
+     molesta más que no estar: si el navegador no la ofrece, no se dibuja. */
+  const hayCompleta = !!(document.documentElement.requestFullscreen
+                      || document.documentElement.webkitRequestFullscreen);
+  if(!hayCompleta) app.querySelector('#completa').remove();
+  else app.querySelector('#completa').onclick=()=>{
     if(document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen?.().catch(()=>recado('Tocá F11 para pantalla completa'));
+    else (document.documentElement.requestFullscreen
+        ? document.documentElement.requestFullscreen()
+        : Promise.resolve(document.documentElement.webkitRequestFullscreen())
+      ).catch(()=>recado(matchMedia('(pointer:coarse)').matches
+        ? 'Tu navegador no deja poner pantalla completa'
+        : 'Tocá F11 para pantalla completa'));
   };
 
   const cartel=app.querySelector('#salaCartel');

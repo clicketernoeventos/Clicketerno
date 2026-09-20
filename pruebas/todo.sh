@@ -21,7 +21,7 @@ cd "$(dirname "$0")/.."
 RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
-MURO=(stress extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste tarjetas miniaturas interfaz recorrido invitaciones)
+MURO=(stress extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste dispositivos tarjetas miniaturas interfaz recorrido invitaciones)
 ROLLO=(rollo_navegador rollo_organizador rollo_hora rollo_vence rollo_cinta rollo_maestra rollo_alta rollo_hostil rollo_recorrido)
 
 azul(){ printf '\n\033[1m%s\033[0m\n' "$*"; }
