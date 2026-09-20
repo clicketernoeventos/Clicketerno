@@ -18,6 +18,16 @@ mal pensado.
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
 
+**Las miniaturas van por convención, no por columna.** La foto se sube a
+`CODIGO/ID.jpg` y su miniatura a `CODIGO/ID-min.jpg`; el álbum la arma con
+`miniDe()` y no le pregunta nada a la base. Así **no hizo falta tocar el
+SQL** y las fotos de antes —que no la tienen— caen solas a la foto entera:
+un único oyente de `error` **en captura** (los errores de un `<img>` no
+burbujean) cambia el `src` por el de `data-entera`, una sola vez. Y **lo
+que se proyecta en el salón sigue siendo la foto entera**: una miniatura
+de 420px estirada a tres metros se ve horrible, y hay una prueba que lo
+cuida.
+
 **Las tarjetas para cortar** (`muro#tarjetas/CODIGO`, `rollo#tarjetas/CODIGO`)
 son lo único del producto que el cliente necesita en la mano: una A4 con la
 misma tarjeta repetida —2, 4 u 8— con el QR, el nombre y la fecha, para
@@ -389,6 +399,13 @@ las del cupo?, ¿puede ver las de otro?
   `parar()`** (muro) y al cambiar de pantalla (rollo). Hay una prueba que
   entra, sale, y comprueba que no quedó.
 
+- **Medir con imágenes falsas no mide nada.** La primera medición de las
+  miniaturas usaba `Buffer.alloc()` como si fueran fotos: el navegador no
+  las puede decodificar, las da por rotas, **dispara el respaldo** y baja
+  las dos. El resultado decía que las miniaturas gastan MÁS. Se mide con
+  un JPEG válido estirado con relleno después del marcador de fin, que
+  sigue siendo una imagen de verdad y pesa lo que uno quiera.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -613,8 +630,9 @@ porque cada una era un sitio aparte y acá no— y que no pesen de más.
 - **Pasar la limpieza a mano, una vez por mes.** `/muro#limpieza`, con la
   clave de administrador. Es lo que ejecuta los 90 días: hoy no hay nada
   automático del lado del servidor.
-- **Miniaturas.** El álbum baja las fotos enteras para mostrarlas chiquitas;
-  generar miniaturas al subir ahorraría cerca de 11 veces el tráfico.
+- ~~**Miniaturas**~~. **Hecho.** El álbum baja **8,6 veces menos**
+  (medido: 13,4 MB → 1,5 MB con 30 fotos). Se generan al subir, en el
+  mismo lugar donde ya se comprime, y ocupan un 5% más de depósito.
 - **Los nombres de los servicios.** "Muro en vivo" y "Rollo eterno" son
   provisorios.
 - **Pegar `apps-script/listado.gs.txt` en el Apps Script de Pía.** Es el
