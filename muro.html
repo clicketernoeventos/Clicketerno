@@ -722,10 +722,25 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   overflow:hidden;display:flex;
   -webkit-mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
   mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+/* ── la cinta de dedicatorias del tablero ──
+   La duración NO puede ser fija. Con 44s clavados, el ancho de la tira
+   manda la velocidad: medido en 1920, cuatro dedicatorias corrían a 53
+   píxeles por segundo y diez a 175 —el triple—, así que en una fiesta con
+   mensajes largos pasaba volando y no se leía nada. Ahora el JS mide el
+   ancho y pone la duración en --giro para que la velocidad sea SIEMPRE la
+   misma (ver TIRA_VEL). Es la misma regla que --cinta y --modos: si un
+   número de estos se escribe a mano, miente.
+   Y va DUPLICADA: con una sola copia, al llegar al final la tira pegaba un
+   salto de vuelta al principio. Con dos, al correr media tira la segunda
+   cae exactamente donde estaba la primera y el bucle no se ve. */
 .tab-tira .pista-t{flex:0 0 auto;min-width:100%;display:flex;align-items:center;
   gap:clamp(22px,3vw,54px);padding-right:clamp(22px,3vw,54px);
-  animation:correrT 44s linear infinite;will-change:transform}
-@keyframes correrT{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+  animation:correrT var(--giro,44s) linear infinite;will-change:transform}
+/* Corta la que no llena el ancho: una sola dedicatoria no tiene por qué
+   desfilar, y con la tira más angosta que la pantalla el -50% saltaba. */
+.tab-tira .pista-t.quieta{animation:none;justify-content:center;width:100%}
+@keyframes correrT{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.tab-tira .pista-t{animation:none}}
 .tab-tira .dicho{white-space:nowrap;font-size:clamp(12px,1.7vh,21px);color:#D9D2C6;font-weight:200}
 .tab-tira .dicho b{color:var(--oro);font-weight:400;margin-left:10px;font-size:.88em}
 .tab-tira .vacia{font-size:clamp(11px,1.5vh,17px);color:var(--mute);letter-spacing:.2em;
@@ -3815,11 +3830,63 @@ async function vPantalla(codigo){
       const marca=dichos.map(i=>i.id).join('|');
       if(tira.dataset.marca!==marca){
         tira.dataset.marca=marca;
-        tira.innerHTML=dichos.length
+        const uno=dichos.length
           ? dichos.map(i=>`<span class="dicho">“${esc(i.texto)}”<b>${esc(i.autor)}</b></span>`).join('')
           : `<span class="vacia">Las dedicatorias van a aparecer acá</span>`;
+        acomodarTira(tira, uno);
       }
     }
+  }
+
+  /* ── acomodar la cinta de dedicatorias ──
+     Tres cosas que no se pueden dejar al CSS solo:
+       1. La VELOCIDAD. La duración se calcula del ancho para que sea
+          siempre la misma, venga una dedicatoria o vengan diez.
+       2. El BUCLE. Se dibuja el contenido DOS veces y se corre media
+          tira: así la segunda copia cae donde estaba la primera y no hay
+          salto. Con una sola copia la tira volvía de golpe al principio.
+       3. NO VOLVER AL PRINCIPIO cuando llega una dedicatoria nueva.
+          Reemplazar el HTML reinicia la animación, y en una fiesta llegan
+          seguido: la cinta pegaba un tirón cada pocos segundos, que es lo
+          que se veía como "se vuelve loca". Se guarda en qué parte del
+          giro venía y se la deja ahí. */
+  const TIRA_VEL=70;            // píxeles por segundo, siempre
+  function acomodarTira(tira, uno){
+    /* dónde venía, como fracción del giro, ANTES de tocar nada */
+    let donde=0;
+    try{
+      const a=tira.getAnimations()[0];
+      if(a && a.effect){
+        const d=a.effect.getTiming().duration;
+        if(d) donde=((Number(a.currentTime)||0)/d)%1;
+      }
+    }catch(e){}
+
+    /* el ancho real de UNA copia: con min-width:100% puesto, scrollWidth
+       nunca baja del ancho de la pantalla y no se puede saber si el
+       contenido llena o no */
+    tira.innerHTML=uno;
+    tira.style.minWidth='0';
+    const anchoUno=tira.scrollWidth;
+    tira.style.minWidth='';
+    const cabe=anchoUno <= tira.parentElement.clientWidth;
+
+    if(cabe){                    // no desfila: se queda quieta y centrada
+      tira.classList.add('quieta');
+      tira.style.removeProperty('--giro');
+      return;
+    }
+    tira.classList.remove('quieta');
+    tira.innerHTML=uno+uno;      // la segunda copia es la que tapa el salto
+    tira.style.setProperty('--giro', (anchoUno/TIRA_VEL).toFixed(2)+'s');
+    /* y la dejamos donde venía, no en cero */
+    try{
+      const a=tira.getAnimations()[0];
+      if(a && a.effect){
+        const d=a.effect.getTiming().duration;
+        if(d) a.currentTime=donde*d;
+      }
+    }catch(e){}
   }
 
   async function mosaico(){

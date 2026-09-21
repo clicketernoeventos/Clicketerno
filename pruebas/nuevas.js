@@ -297,6 +297,97 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     await ctx.close();
   }
 
+  /* ══ la cinta de dedicatorias del tablero ══
+     Reportado desde el proyector de verdad: "pasa rapidísimo y trabado
+     como volviéndose loco". Medido en 1920: la animación duraba 44s
+     fijos, así que la velocidad la mandaba el ANCHO —cuatro dedicatorias
+     a 53 px/s, diez a 175, el triple— y encima había una sola copia, así
+     que al terminar pegaba un salto. Y cada dedicatoria nueva reemplazaba
+     el HTML y reiniciaba la animación desde cero. */
+  {
+    console.log('\n─── la cinta de dedicatorias ───');
+    const ctx=await browser.newContext({viewport:{width:1920,height:1080}});
+    await ctx.addInitScript(()=>{ try{
+      localStorage.setItem('ce:pin','4321'); sessionStorage.setItem('ce:pinOK','1');
+    }catch(e){} });
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.route('**/cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,
+      contentType:'application/javascript',
+      body:'window.QRCode=function(n,o){n.innerHTML="<canvas></canvas>";};window.QRCode.CorrectLevel={M:0};'}));
+    const COD='QUI-TIRA01';
+    const fake=crearFake('ok'); await fake.instalar(p); fake.claves[COD]='ABC123';
+    fake.db.ce_eventos.push({codigo:COD,nombre:'Los 15 de Delfina',fecha:'2026-10-18',
+      tipo:'XV',tono:'#D9AE72',moderar:false,cerrado:false,creado:Date.now()});
+    const meter=(n,desde)=>{ for(let i=0;i<n;i++) fake.db.ce_items.push({
+      id:'t'+(desde+i),codigo:COD,kind:'mensaje',url:'',autor:'Invitado '+(desde+i),
+      texto:'Qué noche increíble, no me la olvido más en la vida '+(desde+i),
+      estado:'aprobado',ts:Date.now()+desde+i}); };
+
+    meter(4,0);
+    await p.goto(BASE+'/muro.html#pantalla/'+COD,{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(2000);
+    await p.click('.modos-sala button[data-modo="tablero"]');
+    await p.waitForTimeout(2200);
+
+    /* La velocidad de verdad: una copia de la tira dividido el tiempo del
+       giro. Dos copias recorren media tira por vuelta. */
+    const medir=()=>p.evaluate(()=>{
+      const t=document.querySelector('.tab-tira .pista-t');
+      if(!t) return null;
+      const quieta=t.classList.contains('quieta');
+      const ancho=t.getBoundingClientRect().width;
+      const seg=parseFloat(getComputedStyle(t).animationDuration)||0;
+      const a=(t.getAnimations()[0])||null;
+      return {quieta, hijos:t.children.length, ancho:Math.round(ancho), seg,
+              px_s: seg? Math.round((ancho/2)/seg) : 0,
+              reloj: a? Number(a.currentTime)||0 : 0};
+    });
+
+    const con4=await medir();
+    if(!con4) mal('la cinta de dedicatorias no se dibujó');
+    else{
+      bien(`con 4 dedicatorias: ${con4.px_s} px/s`);
+      /* Duplicada: sin la segunda copia el bucle pega un salto al volver. */
+      if(con4.hijos!==8) mal(`la cinta no está duplicada (${con4.hijos} hijos para 4 dedicatorias)`);
+      else bien('la cinta va duplicada, así el bucle no salta');
+
+      meter(20,10);
+      await p.waitForTimeout(9000);
+      const con10=await medir();
+      bien(`con el tope de 10: ${con10.px_s} px/s`);
+      /* Lo que se rompió: la velocidad NO puede depender de cuántas haya. */
+      const dif=Math.abs(con10.px_s-con4.px_s);
+      if(dif>10) mal(`la velocidad cambia con la cantidad: ${con4.px_s} → ${con10.px_s} px/s`);
+      else bien('la velocidad no cambia con la cantidad');
+
+      /* Acá había una cuarta comprobación —"al llegar una dedicatoria
+         nueva la cinta no vuelve al principio"— y se sacó porque PASABA
+         CON EL CÓDIGO VIEJO TAMBIÉN: reemplazar los hijos con innerHTML
+         NO reinicia la animación CSS del padre, que es quien la tiene.
+         Era una hipótesis mía, la medición la desmintió, y una prueba que
+         pasa de los dos lados no prueba nada. */
+    }
+
+    /* Una sola dedicatoria corta no tiene por qué desfilar. */
+    const COD2='QUI-TIRA02';
+    fake.claves[COD2]='ABC123';
+    fake.db.ce_eventos.push({codigo:COD2,nombre:'Chica',fecha:'2026-10-18',tipo:'XV',
+      tono:'#D9AE72',moderar:false,cerrado:false,creado:Date.now()});
+    fake.db.ce_items.push({id:'u1',codigo:COD2,kind:'mensaje',url:'',autor:'Ana',
+      texto:'Felicidades',estado:'aprobado',ts:Date.now()});
+    await p.goto(BASE+'/muro.html#pantalla/'+COD2,{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(2000);
+    await p.click('.modos-sala button[data-modo="tablero"]');
+    await p.waitForTimeout(2200);
+    const corta=await medir();
+    if(corta && !corta.quieta) mal('una sola dedicatoria corta desfila igual, y no llena el ancho');
+    else bien('una dedicatoria que entra en la pantalla se queda quieta');
+
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
 })();
