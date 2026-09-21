@@ -184,11 +184,28 @@ antes" y "el día después").
 
 ### Lo que está corrido en producción
 
-**Al 19/09/2026 la base está COMPLETA.** El dueño corrió `sql/estado.sql`
-en el SQL Editor y dieron las trece filas en ✅: `claves.sql`, `rollo.sql`
-y `blindaje.sql` están los tres puestos, con el depósito `ce-rollos` y sus
-reglas, la tabla `ce_eventos` cerrada a `curl`, y las columnas `vence` y
-`cupo_invitados`.
+**Al 21/09/2026 la base está COMPLETA, con el muro blindado.** El dueño
+corrió `sql/blindaje2.sql` en el SQL Editor y las cinco comprobaciones
+dieron `true`: la puerta de `ce_items`, el freno de `ce_eventos`, que la
+puerta corre como dueña, `ce_evento_abierto` en su lugar y la columna
+`acepto`. Así que **los cuatro archivos están puestos**: `claves.sql`,
+`rollo.sql`, `blindaje.sql` y `blindaje2.sql`.
+
+Antes de eso, al 19/09/2026, ya estaban los tres primeros: el depósito
+`ce-rollos` con sus reglas, la tabla `ce_eventos` cerrada a `curl`, y las
+columnas `vence` y `cupo_invitados`.
+
+**Lo que cambió para el usuario el día que se corrió `blindaje2.sql`**, y
+conviene tenerlo presente si alguien reporta algo raro:
+
+- Con el **muro cerrado**, al invitado ya no le entra nada: antes la app se
+  lo escondía pero la base aceptaba. Ahora la base contesta *"El muro de
+  esta fiesta está cerrado"*.
+- Un evento acepta **hasta 2000 recuerdos** y **120 por minuto**. Si alguna
+  vez una fiesta de verdad toca ese techo, el número está en la función
+  `ce_items_puerta` y se sube; no es una constante mágica escondida.
+- El **orden de la proyección** ya no lo puede elegir el que sube: el `ts`
+  lo pone la base.
 
 Lo último que faltaba era `ce_album_pagina` —la que deja bajar TODAS las
 fotos— y se agregó sola, sin volver a correr `rollo.sql` entero. Antes de
@@ -198,8 +215,8 @@ ni saltear ninguna, corta en 500 aunque le pidan 99999, y sin la clave del
 evento —o con la de otro— devuelve cero.
 
 **Nunca dar por puesto lo que dice este archivo: mirarlo.**
-`sql/estado.sql` lo contesta en trece filas y dice de qué archivo viene
-cada cosa. `sql/revisar.sql`, `sql/rollo_revisar.sql` y
+`sql/estado.sql` lo contesta en dieciséis filas y dice de qué archivo
+viene cada cosa. `sql/revisar.sql`, `sql/rollo_revisar.sql` y
 `sql/blindaje_revisar.sql` lo dicen con más detalle, fila por fila.
 
 **Desde acá no se llega a la base de producción.** Cualquier cambio de SQL
