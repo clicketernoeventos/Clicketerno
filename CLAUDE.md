@@ -791,6 +791,99 @@ verifica: que no tapen una ruta de la app, que no queden apuntando a
 netlify.app, que no usen caminos absolutos —que en Netlify funcionaban
 porque cada una era un sitio aparte y acá no— y que no pesen de más.
 
+## Lo legal: privacidad, consumidor y la imagen de la gente
+
+Dos páginas públicas —`privacidad.html` y `terminos.html`, servidas en
+`/privacidad` y `/terminos`— y un protocolo interno, `SEGURIDAD.md`, que no
+se publica. Lo mide `pruebas/legales.js`.
+
+**Esto lo escribió un programa, no un abogado.** Está investigado contra las
+normas vigentes y verificado contra las fuentes oficiales en septiembre de
+2026, pero antes de apoyarse en ello para un conflicto conviene que lo mire
+un matriculado. Lo que sí resuelve es no tener nada, que era la situación
+anterior.
+
+### Qué se aplica, verificado
+
+- **Ley 25.326 de Protección de los Datos Personales** y su Decreto
+  1558/2001. **Sigue vigente**: hay cuatro proyectos de reforma dando
+  vueltas en el Congreso (Rossi 3397-D-2026, Yeza 1751-D-2026, Carro
+  1948-D-2025, Doñate 644-S-2025) y **ninguno se sancionó**. Órgano de
+  control: la **AAIP**.
+- **Resolución 14/2018 de la AAIP**: derogó la vieja Disposición 10/2008,
+  así que **las leyendas obligatorias de antes ya no van**. Lo que hay que
+  hacer hoy es mostrar la información del **artículo 6 de la Ley 25.326**
+  en forma clara y expresa **antes** de recolectar el dato, diciendo
+  especialmente cómo se ejercen los derechos. Si alguna vez alguien
+  propone pegar la leyenda vieja, está copiando una norma derogada.
+- **Resolución 47/2018 de la AAIP**: medidas de seguridad recomendadas.
+  Su Anexo I tiene ocho secciones —recolección, control de acceso, control
+  de cambios, respaldo y recuperación, gestión de vulnerabilidades,
+  destrucción de la información, incidentes de seguridad y entorno de
+  desarrollo— y `SEGURIDAD.md` está armado con esas ocho, en ese orden.
+- **Artículo 21 de la Ley 25.326**: inscribir la base en el **Registro
+  Nacional de Bases de Datos** es obligatorio para cualquiera que trate
+  datos más allá del uso personal. Es gratis, por Trámites a Distancia.
+  **Está sin hacer.**
+- **Disposición 60-E/2016**: transferencia internacional. Los Estados
+  Unidos **no** están en la lista de países con protección adecuada, y ahí
+  es donde suelen estar los servidores de Supabase y Cloudflare. La
+  política lo dice con todas las letras en vez de esconderlo.
+- **Artículo 53 del Código Civil y Comercial**: para captar o reproducir la
+  imagen o la voz de una persona hace falta su consentimiento. Las tres
+  excepciones son actos públicos, interés científico o cultural, y derecho
+  de informar: **una fiesta privada no es ninguna de las tres**. Más el
+  **artículo 31 de la Ley 11.723** para el retrato fotográfico. Este es el
+  riesgo central del producto, no un detalle.
+- **Menores**: en una fiesta de quince hay menores en casi todas las fotos.
+  El consentimiento lo dan quienes ejercen la responsabilidad parental
+  (arts. 26 y 53 CCyC) y **lo tiene que reunir el organizador**, que es
+  quien conoce a los invitados. Nosotros no podemos.
+- **Ley 24.240 de Defensa del Consumidor** y art. 42 CN. Dos cosas que se
+  cumplen y no son opinables: el **derecho de revocación de 10 días
+  corridos** (art. 34) y que **la jurisdicción es la del domicilio del
+  consumidor** (art. 36) — cualquier cláusula en contra es nula, así que
+  los Términos no la tienen.
+- **Resolución 424/2020 de la Secretaría de Comercio Interior**: el
+  **botón de arrepentimiento**, accesible desde la página de inicio y en
+  lugar destacado. Está en el pie, con borde dorado, y la prueba mide que
+  se vea, que llegue a 44px y que lleve a una página que existe.
+- **Multas**: Resoluciones 240/2022 y 244/2022 de la AAIP, hasta 3, 10 y 15
+  millones de pesos según la gravedad.
+
+### El aviso del artículo 6 va DONDE se pide el dato
+
+No en un enlace al pie. El invitado ve, en la misma pantalla en la que
+escribe su nombre y elige su foto, un desplegable (`.aviso-datos`) que dice
+para qué es, quién es el responsable, que es voluntario, que se borra a los
+90 días y cómo pedir que se borre antes. Está en `muro.html` (pantalla del
+invitado) y en `rollo.html` (pantalla del nombre). `pruebas/legales.js`
+verifica que estén **las cinco cosas**, no que el desplegable exista.
+
+**Plegado no es escondido, pero debajo de una capa fija sí.** La primera
+versión quedó entre el contenido y la barra `position:fixed` de "Enviar":
+se dibujaba, la prueba lo encontraba en el DOM, y era **imposible de
+abrir**. Va adentro del contenido que scrollea.
+
+### Los 90 días también son un argumento legal
+
+El borrado automático a los 90 días existía por plata. Además cumple el
+**artículo 4 inciso 7** de la Ley 25.326: el dato se destruye cuando deja de
+ser necesario para la finalidad que justificó tratarlo. Por eso la limpieza
+mensual de `/muro#central` dejó de ser una tarea de mantenimiento y pasó a
+ser una obligación declarada por escrito en una página pública.
+
+### Lo que falta y solo lo puede hacer el dueño
+
+1. **Verificación en dos pasos** en Supabase, Cloudflare y el correo del
+   negocio. Es lo que más baja el riesgo de todo el sistema.
+2. **Respaldo del contenido.** Hoy las fotos están en un solo lugar.
+3. **Inscribir la base en el Registro Nacional de Bases de Datos** (AAIP).
+4. **Razón social y CUIT** para las dos páginas legales. Mientras falten,
+   `pruebas/legales.js` lo informa como "salteada" en cada corrida: no
+   rompe la suite, pero no deja olvidarse.
+5. **Rotar la clave maestra**, que nunca se cambió.
+
 ## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.

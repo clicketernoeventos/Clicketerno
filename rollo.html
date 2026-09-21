@@ -148,6 +148,28 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .cab-p .atras,.paso-cab .atras{min-width:var(--toque);min-height:var(--toque);
   display:inline-flex;align-items:center;justify-content:flex-start}
+/* ── el aviso de datos del invitado (artículo 6, Ley 25.326) ──
+   Plegado ocupa un renglón para no empujar el botón fuera de la pantalla;
+   abierto dice todo. Plegado no es esconderlo: el renglón dice de qué se
+   trata y está en la misma pantalla donde se pide el dato. */
+.aviso-datos{margin:18px auto 0;max-width:420px;text-align:left;
+  border:1px solid var(--gris);background:rgba(217,174,114,.04);border-radius:2px}
+.aviso-datos summary{list-style:none;cursor:pointer;padding:13px 16px;
+  font-size:12px;letter-spacing:.08em;color:var(--oro);
+  display:flex;align-items:center;gap:10px;min-height:var(--toque)}
+.aviso-datos summary::-webkit-details-marker{display:none}
+.aviso-datos summary:before{content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--oro);flex:none}
+.aviso-datos summary:after{content:'Ver';margin-left:auto;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.aviso-datos[open] summary:after{content:'Cerrar'}
+.aviso-datos .cuerpo{padding:2px 16px 16px}
+.aviso-datos p{font-size:13px;line-height:1.75;color:var(--mute);margin-top:10px}
+.aviso-datos b{color:#EDE6DA;font-weight:500}
+.aviso-datos a{color:var(--oro);text-decoration:underline;text-underline-offset:3px;
+  /* enlace suelto adentro de un párrafo: crece a lo alto sin romper el
+     renglón, que es como se llega a 44px sin desarmar el texto */
+  display:inline-block;padding:13px 2px}
 .chips button,.link-abajo,.filtro-op{min-height:var(--toque)}
 .chips button{display:inline-flex;align-items:center;justify-content:center}
 /* Estos se habían quedado afuera. El "Salir" de la cinta medía 26x11 —la
@@ -1125,6 +1147,25 @@ function vPedirNombre(m){
         <input id="nombreG" type="text" maxlength="26" placeholder="Como querés que aparezca"></div>
       <button class="oro-btn" id="entrar">Agarrar mi cámara</button>
       <p class="sin-app">Sin instalar nada. Sin cuenta.</p>
+      <!-- El aviso del artículo 6 de la Ley 25.326, antes de pedirle el
+           nombre y antes de abrirle la cámara. Ver el mismo en muro.html. -->
+      <details class="aviso-datos" id="avisoDatos">
+        <summary>Qué pasa con tus fotos y tu nombre</summary>
+        <div class="cuerpo">
+          <p>Tus fotos quedan en el álbum de <b>esta</b> fiesta, y se ven recién cuando
+          el organizador revela el rollo. Tu nombre va al pie de las tuyas. No las
+          usamos para nada más: no las publicamos, no las vendemos y no hay publicidad.</p>
+          <p>Se borran solas a los <b>90 días</b> de la fecha de la fiesta. Sacar fotos es
+          <b>voluntario</b>: si no sacás ninguna, no pasa nada.</p>
+          <p>Al sacar una foto confirmás que las personas que aparecen están de acuerdo.
+          Si hay menores, el consentimiento lo dan sus padres o tutores.</p>
+          <p>Podés pedir que borremos una foto tuya, o todas, sin dar explicaciones,
+          escribiendo a
+          <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.
+          Responsable: Click Eterno, Rosario, Santa Fe.
+          <a href="/privacidad" target="_blank" rel="noopener">Política de Privacidad</a>.</p>
+        </div>
+      </details>
     </div>
   </div>`;
   const campo=app.querySelector('#nombreG');

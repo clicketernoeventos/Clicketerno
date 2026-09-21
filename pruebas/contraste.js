@@ -137,6 +137,8 @@ async function mirar(p, url, nombre, piso){
       camara:true,cupo_fotos:24,cupo_invitados:100,revelado:true});
 
     await mirar(p, S+'/index.html', 'la página pública');
+    await mirar(p, S+'/privacidad', 'la política de privacidad');
+    await mirar(p, S+'/terminos', 'los términos y condiciones');
     await mirar(p, S+'/muro.html#panel', 'el panel del muro');
     await mirar(p, S+'/muro.html#evento/'+COD, 'el evento');
     await mirar(p, S+'/muro.html#subir/'+COD, 'lo que ve el invitado');

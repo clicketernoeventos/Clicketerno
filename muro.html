@@ -214,6 +214,28 @@ option{background:#0B0A08}
 .mosaico{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}
 .mosaico img{width:100%;height:100%;object-fit:cover;opacity:0;animation:asoma .9s var(--e) forwards}
 @keyframes asoma{to{opacity:1}}
+/* ── el aviso de datos del invitado ──
+   Plegado ocupa un renglón para no pisarle el "Enviar"; abierto dice todo
+   lo que exige el artículo 6 de la Ley 25.326. Plegado NO es esconderlo:
+   el renglón dice de qué se trata y está arriba del botón. */
+.aviso-datos{margin:18px auto 0;width:min(100% - 36px,560px);
+  border:1px solid var(--gris);background:rgba(217,174,114,.04);border-radius:2px}
+.aviso-datos summary{list-style:none;cursor:pointer;padding:13px 16px;
+  font-size:12px;letter-spacing:.08em;color:var(--oro);
+  display:flex;align-items:center;gap:10px;min-height:var(--toque)}
+.aviso-datos summary::-webkit-details-marker{display:none}
+.aviso-datos summary:before{content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--oro);flex:none}
+.aviso-datos summary:after{content:'Ver';margin-left:auto;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.aviso-datos[open] summary:after{content:'Cerrar'}
+.aviso-datos .cuerpo{padding:2px 16px 16px}
+.aviso-datos p{font-size:13px;line-height:1.75;color:var(--mute);margin-top:10px}
+.aviso-datos b{color:var(--texto);font-weight:500}
+.aviso-datos a{color:var(--oro);text-decoration:underline;text-underline-offset:3px;
+  /* enlace suelto adentro de un párrafo: crece a lo alto sin romper el
+     renglón, que es como se llega a 44px sin desarmar el texto */
+  display:inline-block;padding:13px 2px}
 .consola{display:flex;align-items:center;gap:22px;padding:18px 30px;border-top:1px solid var(--gris);background:#000}
 .consola .nom{font-family:'Bodoni Moda',serif;font-style:italic;font-size:23px;flex:1}
 .envivo{display:flex;align-items:center;gap:9px;font-size:9.5px;letter-spacing:.34em;color:var(--oro);text-transform:uppercase}
@@ -3316,6 +3338,33 @@ async function vSubir(codigo){
     <div id="zona"></div>
     <div class="campo"><label for="autor">Tu nombre</label>
       <input id="autor" type="text" placeholder="Como querés que salga en la pantalla" maxlength="26"></div>
+  <!-- ── el aviso del artículo 6 de la Ley 25.326 ──
+       Antes de recolectar un dato personal hay que decir, en forma clara y
+       expresa, para qué es, quién lo trata, si darlo es voluntario y cómo
+       se pide que lo borren. Hasta acá el invitado mandaba su nombre y su
+       foto sin que nadie le dijera una palabra. Va ARRIBA del botón de
+       enviar, no en un enlace al pie: el consentimiento se presta sabiendo,
+       y "informar" no es "tenerlo escrito en otra página".
+       Y va ADENTRO del contenido que scrollea, no entre el contenido y la
+       barra de abajo: la barra es position:fixed y le tapaba el aviso
+       entero, que quedaba imposible de abrir. -->
+  <details class="aviso-datos" id="avisoDatos">
+    <summary>Qué pasa con tu foto y tu nombre</summary>
+    <div class="cuerpo">
+      <p>Lo que mandes se proyecta en la pantalla de <b>esta</b> fiesta y queda en el
+      álbum del evento, que se descarga el organizador. No lo usamos para nada más:
+      no lo publicamos, no lo vendemos y no hay publicidad.</p>
+      <p>Se borra solo a los <b>90 días</b> de la fecha de la fiesta. Mandar algo es
+      <b>voluntario</b>: si no mandás nada, no pasa nada.</p>
+      <p>Al mandar una foto o un video confirmás que las personas que aparecen están de
+      acuerdo con que se proyecte. Si hay menores, el consentimiento lo dan sus padres
+      o tutores.</p>
+      <p>Podés pedir que lo borremos antes, sin dar explicaciones, escribiendo a
+      <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.
+      Responsable: Click Eterno, Rosario, Santa Fe.
+      <a href="/privacidad" target="_blank" rel="noopener">Política de Privacidad</a>.</p>
+    </div>
+  </details>
   </div>
   <div class="accion-abajo"><div class="dentro">
     <button class="oro-btn" id="enviar">Enviar a la pantalla</button>

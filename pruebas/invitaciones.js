@@ -8,7 +8,10 @@ const bien=m=>console.log('  ✓ '+m);
 
 /* Lo que ya usa la app. Una carpeta con uno de estos nombres la tapa. */
 const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
-                  'logo','marca','og','index','_redirects','_headers'];
+                  'logo','marca','og','index','_redirects','_headers',
+                  /* los legales: una carpeta llamada "privacidad" taparía la
+                     política de privacidad, que es una obligación legal */
+                  'privacidad','terminos','.well-known'];
 const TOPE_FOTO=300*1024, TOPE_TOTAL=12*1024*1024;
 /* La música es aparte: con preload="none" recién se baja si el invitado
    toca el botón, así que no frena la primera carga. Igual hay un tope:

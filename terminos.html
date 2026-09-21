@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Términos y Condiciones · Click Eterno</title>
+<meta name="description" content="Condiciones de contratación de Click Eterno: qué incluye cada servicio, plazos, derecho de arrepentimiento, los 90 días del álbum y responsabilidades.">
+<link rel="canonical" href="https://clicketerno.com.ar/terminos">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+:root{
+  --negro:#000; --carbon:#0A0908;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#9B9287;
+  --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26);
+  --e:cubic-bezier(.22,.7,.24,1); --toque:44px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--negro);color:var(--texto);font-family:Jost,system-ui,sans-serif;
+  font-weight:300;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-weight:400;line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button,a,input{-webkit-tap-highlight-color:transparent}
+.serif{font-family:'Bodoni Moda',serif}
+.wrap{width:min(100% - 40px, 780px);margin-inline:auto}
+
+.barra{border-bottom:1px solid var(--gris);padding:18px 0;position:sticky;top:0;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(14px);z-index:10}
+.barra .wrap{display:flex;align-items:center;gap:16px}
+.barra img{width:104px;opacity:.9}
+.barra .wrap>a:first-child{display:inline-flex;align-items:center;min-height:var(--toque)}
+.barra .volver{margin-left:auto;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mute);border:1px solid var(--gris);padding:0 16px;border-radius:2px;
+  min-height:var(--toque);display:inline-flex;align-items:center;transition:.3s var(--e)}
+@media(hover:hover){.barra .volver:hover{border-color:var(--oro);color:var(--oro)}}
+
+header.tapa{padding:clamp(48px,8vw,86px) 0 clamp(26px,4vw,40px);border-bottom:1px solid var(--gris)}
+header.tapa .rotulo{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--oro-hondo)}
+header.tapa h1{font-family:'Bodoni Moda',serif;font-size:clamp(32px,6.4vw,54px);margin-top:16px}
+header.tapa .fecha{margin-top:20px;font-size:12.5px;letter-spacing:.12em;color:var(--mute)}
+
+main{padding:clamp(34px,5vw,54px) 0 clamp(60px,9vw,100px)}
+section.bloque{margin-top:clamp(34px,5vw,52px);scroll-margin-top:90px}
+section.bloque:first-child{margin-top:0}
+h2{font-family:'Bodoni Moda',serif;font-size:clamp(21px,3.1vw,28px);color:var(--champan);
+  padding-bottom:12px;border-bottom:1px solid var(--gris)}
+h3{font-size:15px;letter-spacing:.06em;color:var(--oro);margin-top:26px}
+p,li{font-size:15.5px;line-height:1.85;color:#CFC7BB;margin-top:14px}
+li{margin-top:9px}
+ul,ol{margin-top:12px;padding-left:22px}
+li::marker{color:var(--oro-hondo)}
+strong,b{color:var(--texto);font-weight:500}
+/* Un enlace adentro de un párrafo: crece a lo alto hasta los 44 sin
+   romper el renglón, y una dirección larga corta en vez de salirse de la
+   pantalla. Las dos cosas las agarró pruebas/dispositivos.js. */
+a.enl{color:var(--oro);border-bottom:1px solid var(--hilo);
+  display:inline-block;padding:8px 0;max-width:100%;overflow-wrap:anywhere}
+@media(hover:hover){a.enl:hover{border-bottom-color:var(--oro)}}
+
+/* el índice de arriba */
+.indice{margin-top:30px;border:1px solid var(--gris);padding:20px 22px;background:var(--carbon)}
+.indice p{margin:0 0 10px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+.indice ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+.indice li{margin-top:7px;font-size:14px;break-inside:avoid}
+/* 44px también acá: son enlaces, y en un iPad se tocan con el dedo.
+   Lo agarró pruebas/dispositivos.js en mi propia página. */
+.indice a{color:#CFC7BB;display:inline-flex;align-items:center;min-height:var(--toque)}
+@media(hover:hover){.indice a:hover{color:var(--oro)}}
+@media(max-width:560px){.indice ol{columns:1}}
+
+/* la tabla de qué dato para qué */
+.tabla{margin-top:18px;border:1px solid var(--gris);overflow:hidden}
+.tabla .fila{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);
+  border-top:1px solid var(--gris)}
+.tabla .fila:first-child{border-top:0;background:rgba(217,174,114,.06)}
+.tabla .fila>div{padding:13px 16px;font-size:14px;line-height:1.7;color:#CFC7BB;min-width:0;
+  overflow-wrap:anywhere}
+.tabla .fila:first-child>div{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--oro);padding-block:11px}
+.tabla .fila>div:first-child{border-right:1px solid var(--gris);color:var(--texto)}
+@media(max-width:560px){
+  .tabla .fila{grid-template-columns:1fr}
+  .tabla .fila>div:first-child{border-right:0;border-bottom:1px solid var(--gris);
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--oro);padding-bottom:8px}
+  .tabla .fila:first-child{display:none}
+}
+
+.aviso{margin-top:22px;border-left:2px solid var(--oro);background:rgba(217,174,114,.05);
+  padding:16px 20px}
+.aviso p{margin-top:0}
+.aviso p+p{margin-top:12px}
+
+footer{border-top:1px solid var(--gris);padding:40px 0 calc(34px + env(safe-area-inset-bottom));
+  text-align:center;color:var(--mute);font-size:13px;line-height:1.9}
+footer a{color:var(--mute);display:inline-block;padding:14px 2px}
+@media(hover:hover){footer a:hover{color:var(--oro)}}
+footer .enlaces{margin-top:12px}
+footer .enlaces a{display:inline-block;padding:11px 8px;min-height:var(--toque)}
+/* el botón de arrepentimiento: tiene que verse, es su razón de ser */
+.arrep{margin-top:20px;border:1px solid var(--hilo);background:rgba(217,174,114,.06);
+  padding:22px}
+.arrep a{display:inline-flex;align-items:center;justify-content:center;min-height:var(--toque);
+  margin-top:16px;padding:0 26px;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 60%,var(--champan));
+  color:#2A1B08;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="barra"><div class="wrap">
+  <a href="/"><img src="marca.webp" alt="Click Eterno"></a>
+  <a class="volver" href="/">Volver al sitio</a>
+</div></div>
+
+<header class="tapa"><div class="wrap">
+  <p class="rotulo">Click Eterno</p>
+  <h1 class="serif">Términos y Condiciones</h1>
+  <p class="fecha">Vigente desde el 21 de septiembre de 2026 · Última actualización: 21 de septiembre de 2026</p>
+</div></header>
+
+<main><div class="wrap">
+
+  <section class="bloque">
+    <p>Estas condiciones rigen la contratación de los servicios de <strong>Click Eterno</strong>
+    y el uso de <strong>clicketerno.com.ar</strong>. Al contratar o al usar el sitio, las aceptás.</p>
+    <p>Como en casi todos los casos vas a ser un <strong>consumidor</strong> en los términos del
+    <strong>artículo 42 de la Constitución Nacional</strong> y de la <strong>Ley 24.240 de Defensa del
+    Consumidor</strong>, dejamos dicho desde acá que <strong>ninguna cláusula de este contrato puede
+    interpretarse en contra de tus derechos</strong>. Si alguna lo hiciera, se tiene por no escrita.</p>
+
+    <div class="indice">
+      <p>En esta página</p>
+      <ol>
+        <li><a href="#quienes">Quiénes somos</a></li>
+        <li><a href="#servicios">Qué se contrata</a></li>
+        <li><a href="#contratacion">Cómo se contrata y cómo se paga</a></li>
+        <li><a href="#arrepentimiento">Botón de arrepentimiento</a></li>
+        <li><a href="#plazos">Plazos de entrega</a></li>
+        <li><a href="#vida">Los 90 días del álbum</a></li>
+        <li><a href="#organizador">Lo que te toca a vos como organizador</a></li>
+        <li><a href="#invitados">Reglas para los invitados</a></li>
+        <li><a href="#propiedad">De quién son las fotos</a></li>
+        <li><a href="#disponibilidad">Disponibilidad y límites</a></li>
+        <li><a href="#datos">Datos personales</a></li>
+        <li><a href="#reclamos">Reclamos</a></li>
+        <li><a href="#ley">Ley aplicable y jurisdicción</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloque" id="quienes">
+    <h2>1 · Quiénes somos</h2>
+    <p><strong>Click Eterno</strong>, con domicilio en la ciudad de Rosario, Provincia de Santa Fe,
+    República Argentina.</p>
+    <ul>
+      <li>Correo: <a class="enl" href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a></li>
+      <li>WhatsApp: <a class="enl" href="https://wa.me/5493412506451">341 250-6451</a></li>
+    </ul>
+    <p id="datos-fiscales" data-completar="razon-social-cuit">Identificación fiscal:
+    <strong>[PENDIENTE: razón social y CUIT]</strong>.</p>
+  </section>
+
+  <section class="bloque" id="servicios">
+    <h2>2 · Qué se contrata</h2>
+    <h3>Invitaciones digitales</h3>
+    <p>Una página web propia para tu evento, con la información, la cuenta regresiva, la
+    confirmación de asistencia y lo que acordemos en cada caso. Se entrega como un enlace
+    que compartís vos.</p>
+    <h3>Muro en vivo</h3>
+    <p>Una pantalla que se proyecta en el salón con las fotos y los saludos que mandan
+    tus invitados desde el teléfono, más el panel para administrarla y el álbum
+    descargable.</p>
+    <h3>Rollo eterno</h3>
+    <p>Una cámara descartable digital: cada invitado saca una cantidad limitada de fotos
+    y <strong>nadie ve ninguna hasta el revelado</strong>, que definís vos. Después, el álbum
+    queda disponible para todos.</p>
+    <p>El alcance concreto de cada contratación —cantidad de invitados, cantidad de fotos
+    por invitado, fecha del revelado, personalizaciones— es el que quede acordado por
+    escrito al cotizar.</p>
+  </section>
+
+  <section class="bloque" id="contratacion">
+    <h2>3 · Cómo se contrata y cómo se paga</h2>
+    <p><strong>En este sitio no hay carrito ni pago en línea.</strong> El presupuesto se arma
+    hablando, por WhatsApp o por correo, y ahí quedan acordados el alcance, el precio y
+    la forma de pago. El contrato queda perfeccionado cuando aceptás el presupuesto.</p>
+    <p>Los precios se informan en pesos argentinos. Salvo que digamos otra cosa, una
+    cotización vale <strong>15 días corridos</strong>.</p>
+  </section>
+
+  <section class="bloque" id="arrepentimiento">
+    <h2>4 · Botón de arrepentimiento</h2>
+    <p>Como la contratación se hace a distancia, tenés <strong>10 días corridos</strong> para
+    arrepentirte, contados desde que aceptás el presupuesto o desde que recibís el
+    servicio, lo que pase último. Es el <strong>derecho de revocación del artículo 34 de la
+    Ley 24.240</strong>, y ejercerlo <strong>no tiene ningún costo para vos</strong> ni hace falta que
+    des explicaciones.</p>
+    <div class="arrep">
+      <p><strong>Para arrepentirte, escribinos y listo.</strong> No tenés que registrarte, ni
+      completar formularios, ni llamar por teléfono. Dentro de las 24 horas te
+      confirmamos la revocación con su número de identificación, y te devolvemos lo que
+      hayas pagado.</p>
+      <a href="https://wa.me/5493412506451?text=Hola%2C%20quiero%20ejercer%20el%20bot%C3%B3n%20de%20arrepentimiento%20y%20revocar%20la%20contrataci%C3%B3n."
+         target="_blank" rel="noopener" id="botonArrepentimiento">Botón de arrepentimiento</a>
+      <p>También vale por correo a
+      <a class="enl" href="mailto:clicketernoeventos@gmail.com?subject=Bot%C3%B3n%20de%20arrepentimiento">clicketernoeventos@gmail.com</a>.</p>
+    </div>
+    <p>Único caso en que no aplica: si el servicio ya se prestó por completo —la fiesta ya
+    pasó y el muro se proyectó— porque ahí no hay nada que revocar. Si la fiesta todavía
+    no pasó, el arrepentimiento vale siempre.</p>
+  </section>
+
+  <section class="bloque" id="plazos">
+    <h2>5 · Plazos de entrega</h2>
+    <ul>
+      <li><strong>Invitaciones digitales:</strong> 72 horas hábiles desde que tenemos todo el
+      material (textos, fotos, datos del evento). Si falta material, el plazo corre desde
+      que llega lo último.</li>
+      <li><strong>Muro en vivo y Rollo eterno:</strong> quedan listos el mismo día en que los
+      creás. El QR y las tarjetas para imprimir se descargan en el momento.</li>
+      <li><strong>Álbum descargable:</strong> disponible desde el día siguiente al evento, y
+      hasta que venza el plazo del punto 6.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="vida">
+    <h2>6 · Los 90 días del álbum</h2>
+    <p>Esto es importante y por eso está en letra grande y no en una nota al pie:</p>
+    <div class="aviso">
+      <p><strong>El álbum de tu evento vive 90 días corridos contados desde la fecha de la
+      fiesta.</strong> Cumplido ese plazo, se borra todo: las fotos, los videos, los audios y
+      los mensajes. No queda copia.</p>
+      <p><strong>15 días antes</strong> te avisamos en tu panel, con el botón de descarga al lado.
+      Descargate el álbum. Es tuyo y te lo llevás entero.</p>
+    </div>
+    <p>El plazo existe por dos razones y las dos son honestas: guardar fotos para siempre
+    cuesta plata todos los meses, y la ley de datos personales manda destruir los datos
+    cuando dejan de ser necesarios para lo que se los pidió.</p>
+    <p>Si necesitás más tiempo, pedilo <strong>antes</strong> de que venza y lo arreglamos.</p>
+  </section>
+
+  <section class="bloque" id="organizador">
+    <h2>7 · Lo que te toca a vos como organizador</h2>
+    <p>Vos sos el dueño de tu fiesta, y eso trae responsabilidades que no podemos asumir
+    por vos:</p>
+    <ul>
+      <li><strong>Avisarles a tus invitados</strong> que va a haber un muro proyectándose o una
+      cámara, y darles la posibilidad de no participar. Para eso te damos los carteles de
+      mesa y las tarjetas para cortar.</li>
+      <li><strong>Reunir el consentimiento para la imagen de los menores</strong> que aparezcan,
+      de quienes ejercen la responsabilidad parental. Es el punto 7 de la
+      <a class="enl" href="/privacidad#menores">Política de Privacidad</a> y no es un
+      formalismo.</li>
+      <li><strong>Cuidar la clave de tu evento.</strong> Quien la tenga puede administrar la
+      fiesta. Si se te pierde o creés que la tiene alguien más, avisanos y la cambiamos.</li>
+      <li><strong>Moderar, si lo activaste.</strong> Nosotros no miramos lo que suben tus
+      invitados: la herramienta es tuya.</li>
+      <li><strong>Descargarte el álbum</strong> antes de los 90 días.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="invitados">
+    <h2>8 · Reglas para los invitados</h2>
+    <p>Al mandar una foto, un video, un audio o un mensaje, quien lo manda declara que:</p>
+    <ul>
+      <li>Es suyo o tiene derecho a compartirlo.</li>
+      <li>Las personas que aparecen prestaron su conformidad.</li>
+      <li>No contiene nada ilegal, discriminatorio, violento, sexual, ni que invada la
+      intimidad de un tercero.</li>
+    </ul>
+    <p>El organizador —y nosotros, si nos lo piden o si tomamos conocimiento— podemos
+    bajar cualquier contenido que incumpla esto, sin aviso previo y sin que eso genere
+    derecho a reclamo alguno.</p>
+  </section>
+
+  <section class="bloque" id="propiedad">
+    <h2>9 · De quién son las fotos</h2>
+    <ul>
+      <li><strong>Las fotos, los videos y los mensajes de tu fiesta son tuyos y de tus
+      invitados.</strong> No adquirimos ningún derecho sobre ellos.</li>
+      <li><strong>No los usamos para promocionarnos.</strong> Ni en redes, ni en la web, ni como
+      muestra de trabajo, salvo autorización escrita tuya y de las personas que aparecen,
+      para fotos puntuales. Las imágenes de la demostración del sitio son inventadas.</li>
+      <li><strong>El software, el diseño, los textos y la marca Click Eterno son nuestros.</strong>
+      Contratar el servicio te da derecho a usarlo, no a copiarlo ni a revenderlo.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="disponibilidad">
+    <h2>10 · Disponibilidad y límites</h2>
+    <p>Ponemos todo de nuestra parte para que la noche salga bien, y también decimos con
+    claridad qué no depende de nosotros:</p>
+    <ul>
+      <li><strong>La conexión del salón.</strong> Si en el salón no hay señal, los invitados no
+      van a poder mandar fotos. Conviene probarlo antes.</li>
+      <li><strong>El proyector, el televisor y los cables.</strong> Los pone el salón o vos.</li>
+      <li><strong>El teléfono de cada invitado.</strong> Modelos muy viejos o navegadores raros
+      pueden fallar.</li>
+      <li><strong>Los servicios de terceros</strong> de los que depende el sistema. Si alguno se
+      cae, hacemos lo posible por restablecerlo cuanto antes.</li>
+    </ul>
+    <p>Si por una falla que sí nos es atribuible el servicio no se presta, te devolvemos
+    lo que pagaste por la parte no prestada. Nada de lo dicho acá limita la
+    responsabilidad que la Ley 24.240 pone en cabeza del proveedor, ni el derecho a ser
+    indemnizado por los daños efectivamente sufridos.</p>
+  </section>
+
+  <section class="bloque" id="datos">
+    <h2>11 · Datos personales</h2>
+    <p>Todo lo relativo a datos personales está en la
+    <a class="enl" href="/privacidad">Política de Privacidad</a>, que forma parte de estos
+    Términos. Ahí figura qué datos tratamos, para qué, por cuánto tiempo y cómo pedir que
+    los borremos.</p>
+  </section>
+
+  <section class="bloque" id="reclamos">
+    <h2>12 · Reclamos</h2>
+    <p>Lo primero: escribinos. La mayoría de las cosas se resuelven en el día.</p>
+    <p>Si no quedás conforme, podés reclamar ante los organismos de Defensa del Consumidor:</p>
+    <ul>
+      <li><strong>Ventanilla Única Federal de Defensa del Consumidor:</strong>
+      <a class="enl" href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">argentina.gob.ar/produccion/defensadelconsumidor</a></li>
+      <li><strong>Defensa del Consumidor de la Provincia de Santa Fe</strong> y la oficina
+      municipal de tu ciudad.</li>
+    </ul>
+    <p>En materia de datos personales, el organismo de control es la
+    <strong>Agencia de Acceso a la Información Pública</strong>:
+    <a class="enl" href="https://www.argentina.gob.ar/aaip" target="_blank" rel="noopener">argentina.gob.ar/aaip</a>.</p>
+  </section>
+
+  <section class="bloque" id="ley">
+    <h2>13 · Ley aplicable y jurisdicción</h2>
+    <p>Estas condiciones se rigen por las leyes de la República Argentina.</p>
+    <p>Tratándose de una relación de consumo, <strong>son competentes los tribunales del
+    domicilio del consumidor</strong>, conforme al artículo 36 de la Ley 24.240. Cualquier
+    pacto en contrario se tiene por no escrito.</p>
+    <p>Si alguna cláusula de estos Términos resultara inválida, las demás siguen vigentes.</p>
+  </section>
+
+</div></main>
+
+<footer><div class="wrap">
+  Click Eterno · Rosario, Santa Fe · Argentina<br>
+  <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>
+  <div class="enlaces">
+    <a href="/">Inicio</a> ·
+    <a href="/terminos">Términos y Condiciones</a> ·
+    <a href="/privacidad">Política de Privacidad</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

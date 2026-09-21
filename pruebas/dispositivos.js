@@ -96,6 +96,8 @@ const montan=(a,b)=>!!(a&&b&&a.x<b.x2&&b.x<a.x2&&a.y<b.y2&&b.y<a.y2);
   const browser=await chromium.launch();
   const PANTALLAS=[
     ['la página pública',      M+'/index.html',                 2200],
+    ['la política de privacidad', M+'/privacidad',              1400],
+    ['los términos',           M+'/terminos',                   1400],
     ['la pantalla del salón',  M+'/muro.html#pantalla/'+COD,    2600],
     ['el panel',               M+'/muro.html#panel',            1600],
     ['el evento',              M+'/muro.html#evento/'+COD,      1800],

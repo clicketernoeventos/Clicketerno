@@ -541,6 +541,16 @@ nav .links a:hover:after{width:100%}
   animation:aro 2.6s var(--e) infinite}
 @keyframes aro{from{transform:scale(1);opacity:1}to{transform:scale(1.6);opacity:0}}
 
+footer .legales{margin-top:26px;padding-top:22px;border-top:1px solid var(--gris);
+  display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;justify-content:center}
+footer .legales a{font-size:12.5px;letter-spacing:.1em;color:var(--mute);
+  display:inline-flex;align-items:center;min-height:var(--toque);padding:0 2px}
+footer .legales .arrepentirse{color:var(--oro);border:1px solid var(--hilo);
+  border-radius:2px;padding:0 16px}
+@media(hover:hover){
+  footer .legales a:hover{color:var(--champan)}
+  footer .legales .arrepentirse:hover{border-color:var(--oro)}
+}
 footer{border-top:1px solid var(--gris);padding:50px 0 34px;
   padding-bottom:calc(34px + env(safe-area-inset-bottom))}
 @media(max-width:900px){
@@ -952,6 +962,15 @@ footer .datos{line-height:1.6}
     Rosario, Santa Fe · Argentina<br>
     <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a><br>
     <a href="muro#panel">Panel del muro</a> · <a href="rollo">Panel del rollo</a>
+  </div>
+  <!-- Los legales no van escondidos a media opacidad. El botón de
+       arrepentimiento, además, la Resolución 424/2020 de la Secretaría de
+       Comercio Interior lo exige "en un lugar destacado" y accesible desde
+       la página de inicio: no puede estar enterrado. -->
+  <div class="legales">
+    <a href="/terminos">Términos y Condiciones</a>
+    <a href="/privacidad">Política de Privacidad</a>
+    <a class="arrepentirse" href="/terminos#arrepentimiento">Botón de arrepentimiento</a>
   </div>
 </div></footer>
 </main>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Política de Privacidad · Click Eterno</title>
+<meta name="description" content="Qué datos personales trata Click Eterno, para qué, cuánto tiempo los guarda y cómo ejercer los derechos de la Ley 25.326.">
+<link rel="canonical" href="https://clicketerno.com.ar/privacidad">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+:root{
+  --negro:#000; --carbon:#0A0908;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#9B9287;
+  --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26);
+  --e:cubic-bezier(.22,.7,.24,1); --toque:44px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--negro);color:var(--texto);font-family:Jost,system-ui,sans-serif;
+  font-weight:300;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-weight:400;line-height:1.15}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button,a,input{-webkit-tap-highlight-color:transparent}
+.serif{font-family:'Bodoni Moda',serif}
+.wrap{width:min(100% - 40px, 780px);margin-inline:auto}
+
+.barra{border-bottom:1px solid var(--gris);padding:18px 0;position:sticky;top:0;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(14px);z-index:10}
+.barra .wrap{display:flex;align-items:center;gap:16px}
+.barra img{width:104px;opacity:.9}
+.barra .wrap>a:first-child{display:inline-flex;align-items:center;min-height:var(--toque)}
+.barra .volver{margin-left:auto;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mute);border:1px solid var(--gris);padding:0 16px;border-radius:2px;
+  min-height:var(--toque);display:inline-flex;align-items:center;transition:.3s var(--e)}
+@media(hover:hover){.barra .volver:hover{border-color:var(--oro);color:var(--oro)}}
+
+header.tapa{padding:clamp(48px,8vw,86px) 0 clamp(26px,4vw,40px);border-bottom:1px solid var(--gris)}
+header.tapa .rotulo{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--oro-hondo)}
+header.tapa h1{font-family:'Bodoni Moda',serif;font-size:clamp(32px,6.4vw,54px);margin-top:16px}
+header.tapa .fecha{margin-top:20px;font-size:12.5px;letter-spacing:.12em;color:var(--mute)}
+
+main{padding:clamp(34px,5vw,54px) 0 clamp(60px,9vw,100px)}
+section.bloque{margin-top:clamp(34px,5vw,52px);scroll-margin-top:90px}
+section.bloque:first-child{margin-top:0}
+h2{font-family:'Bodoni Moda',serif;font-size:clamp(21px,3.1vw,28px);color:var(--champan);
+  padding-bottom:12px;border-bottom:1px solid var(--gris)}
+h3{font-size:15px;letter-spacing:.06em;color:var(--oro);margin-top:26px}
+p,li{font-size:15.5px;line-height:1.85;color:#CFC7BB;margin-top:14px}
+li{margin-top:9px}
+ul,ol{margin-top:12px;padding-left:22px}
+li::marker{color:var(--oro-hondo)}
+strong,b{color:var(--texto);font-weight:500}
+/* Un enlace adentro de un párrafo: crece a lo alto hasta los 44 sin
+   romper el renglón, y una dirección larga corta en vez de salirse de la
+   pantalla. Las dos cosas las agarró pruebas/dispositivos.js. */
+a.enl{color:var(--oro);border-bottom:1px solid var(--hilo);
+  display:inline-block;padding:8px 0;max-width:100%;overflow-wrap:anywhere}
+@media(hover:hover){a.enl:hover{border-bottom-color:var(--oro)}}
+
+/* el índice de arriba */
+.indice{margin-top:30px;border:1px solid var(--gris);padding:20px 22px;background:var(--carbon)}
+.indice p{margin:0 0 10px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+.indice ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+.indice li{margin-top:7px;font-size:14px;break-inside:avoid}
+/* 44px también acá: son enlaces, y en un iPad se tocan con el dedo.
+   Lo agarró pruebas/dispositivos.js en mi propia página. */
+.indice a{color:#CFC7BB;display:inline-flex;align-items:center;min-height:var(--toque)}
+@media(hover:hover){.indice a:hover{color:var(--oro)}}
+@media(max-width:560px){.indice ol{columns:1}}
+
+/* la tabla de qué dato para qué */
+.tabla{margin-top:18px;border:1px solid var(--gris);overflow:hidden}
+.tabla .fila{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);
+  border-top:1px solid var(--gris)}
+.tabla .fila:first-child{border-top:0;background:rgba(217,174,114,.06)}
+.tabla .fila>div{padding:13px 16px;font-size:14px;line-height:1.7;color:#CFC7BB;min-width:0;
+  overflow-wrap:anywhere}
+.tabla .fila:first-child>div{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--oro);padding-block:11px}
+.tabla .fila>div:first-child{border-right:1px solid var(--gris);color:var(--texto)}
+@media(max-width:560px){
+  .tabla .fila{grid-template-columns:1fr}
+  .tabla .fila>div:first-child{border-right:0;border-bottom:1px solid var(--gris);
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--oro);padding-bottom:8px}
+  .tabla .fila:first-child{display:none}
+}
+
+.aviso{margin-top:22px;border-left:2px solid var(--oro);background:rgba(217,174,114,.05);
+  padding:16px 20px}
+.aviso p{margin-top:0}
+.aviso p+p{margin-top:12px}
+
+footer{border-top:1px solid var(--gris);padding:40px 0 calc(34px + env(safe-area-inset-bottom));
+  text-align:center;color:var(--mute);font-size:13px;line-height:1.9}
+footer a{color:var(--mute);display:inline-block;padding:14px 2px}
+@media(hover:hover){footer a:hover{color:var(--oro)}}
+footer .enlaces{margin-top:12px}
+footer .enlaces a{display:inline-block;padding:11px 8px;min-height:var(--toque)}
+</style>
+</head>
+<body>
+
+<div class="barra"><div class="wrap">
+  <a href="/"><img src="marca.webp" alt="Click Eterno"></a>
+  <a class="volver" href="/">Volver al sitio</a>
+</div></div>
+
+<header class="tapa"><div class="wrap">
+  <p class="rotulo">Click Eterno</p>
+  <h1 class="serif">Política de Privacidad</h1>
+  <p class="fecha">Vigente desde el 21 de septiembre de 2026 · Última actualización: 21 de septiembre de 2026</p>
+</div></header>
+
+<main><div class="wrap">
+
+  <section class="bloque">
+    <p>Esta política explica <strong>qué datos personales tratamos, para qué, con quién los
+    compartimos, cuánto tiempo los guardamos y cómo pedirnos que los borremos</strong>. Está
+    escrita para que se entienda, no para cubrirnos: si algo acá no se entiende,
+    escribinos y lo cambiamos.</p>
+    <p>Se rige por la <strong>Ley 25.326 de Protección de los Datos Personales</strong> y su
+    Decreto reglamentario 1558/2001, por el <strong>artículo 43 de la Constitución Nacional</strong>
+    (acción de habeas data) y, en lo que hace a las fotos y los videos, por el
+    <strong>artículo 53 del Código Civil y Comercial de la Nación</strong>.</p>
+
+    <div class="indice">
+      <p>En esta página</p>
+      <ol>
+        <li><a href="#responsable">Quién es el responsable</a></li>
+        <li><a href="#roles">Dos roles distintos</a></li>
+        <li><a href="#datos">Qué datos tratamos</a></li>
+        <li><a href="#para-que">Para qué y con qué fundamento</a></li>
+        <li><a href="#cuanto">Cuánto tiempo los guardamos</a></li>
+        <li><a href="#imagen">Fotos, videos y voz</a></li>
+        <li><a href="#menores">Menores de edad</a></li>
+        <li><a href="#terceros">Con quién los compartimos</a></li>
+        <li><a href="#fuera">Servidores fuera del país</a></li>
+        <li><a href="#seguridad">Cómo los protegemos</a></li>
+        <li><a href="#incidentes">Si algo sale mal</a></li>
+        <li><a href="#navegador">Cookies y memoria del navegador</a></li>
+        <li><a href="#derechos">Tus derechos y cómo ejercerlos</a></li>
+        <li><a href="#cambios">Cambios en esta política</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="bloque" id="responsable">
+    <h2>1 · Quién es el responsable</h2>
+    <p>El responsable de las bases de datos es <strong>Click Eterno</strong>, con domicilio en
+    la ciudad de <strong>Rosario, Provincia de Santa Fe, República Argentina</strong>.</p>
+    <p>Para cualquier cosa relacionada con tus datos personales:</p>
+    <ul>
+      <li>Correo: <a class="enl" href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a></li>
+      <li>WhatsApp: <a class="enl" href="https://wa.me/5493412506451">341 250-6451</a></li>
+    </ul>
+    <p id="datos-fiscales" data-completar="razon-social-cuit">Identificación fiscal:
+    <strong>[PENDIENTE: razón social y CUIT]</strong>.</p>
+  </section>
+
+  <section class="bloque" id="roles">
+    <h2>2 · Dos roles distintos, y conviene no confundirlos</h2>
+    <p>Click Eterno hace dos cosas diferentes con los datos, y las reglas no son las mismas:</p>
+    <h3>Cuando sos nuestro cliente</h3>
+    <p>Si contratás una invitación, el Muro en vivo o el Rollo eterno, <strong>nosotros somos
+    el responsable</strong> de tus datos: tu nombre, tu contacto y los datos de tu evento.</p>
+    <h3>Cuando sos invitado a una fiesta</h3>
+    <p>Si llegaste acá porque escaneaste un QR en una mesa, <strong>el responsable de esa
+    fiesta es quien la organiza</strong>: es quien decidió hacerla, quien te invitó y quien
+    decide qué se proyecta. Click Eterno pone la herramienta y trata esos datos
+    <strong>por cuenta y orden del organizador</strong>, en los términos del
+    <strong>artículo 25 de la Ley 25.326</strong> (prestación de servicios de tratamiento de datos).</p>
+    <p>En la práctica: podés reclamarnos a nosotros y te vamos a responder igual —y borrar
+    lo que pidas—, pero quien define para qué se usan las fotos de esa noche es el
+    organizador, no nosotros.</p>
+  </section>
+
+  <section class="bloque" id="datos">
+    <h2>3 · Qué datos tratamos</h2>
+    <p>Esta es la lista completa. No hay nada más.</p>
+
+    <h3>Del organizador del evento</h3>
+    <div class="tabla">
+      <div class="fila"><div>Dato</div><div>De dónde sale</div></div>
+      <div class="fila"><div>Nombre del evento, tipo y fecha</div><div>Lo escribe al crear el evento</div></div>
+      <div class="fila"><div>Lugar del evento y hashtag</div><div>Opcionales, los escribe él</div></div>
+      <div class="fila"><div>Cantidad de invitados esperada</div><div>La elige al crear el rollo; sirve para cotizar y para poner un tope</div></div>
+      <div class="fila"><div>Imagen de portada</div><div>La sube él, si quiere</div></div>
+      <div class="fila"><div>Código y clave del evento</div><div>Los genera el sistema al azar. La clave se guarda <strong>cifrada</strong> (bcrypt): ni nosotros podemos leerla</div></div>
+      <div class="fila"><div>Nombre, teléfono y correo de contacto</div><div>Los da al contratar, por WhatsApp o por correo</div></div>
+    </div>
+
+    <h3>Del invitado, en el Muro en vivo</h3>
+    <div class="tabla">
+      <div class="fila"><div>Dato</div><div>De dónde sale</div></div>
+      <div class="fila"><div>El nombre o apodo con el que quiere aparecer</div><div>Lo escribe él. No pedimos el nombre real ni lo verificamos</div></div>
+      <div class="fila"><div>Un mensaje o un epígrafe</div><div>Lo escribe él, si quiere</div></div>
+      <div class="fila"><div>Una foto, un video o un audio</div><div>Los manda él desde su teléfono</div></div>
+      <div class="fila"><div>El momento en que lo mandó</div><div>Lo registra el sistema, para ordenar la proyección</div></div>
+    </div>
+
+    <h3>Del invitado, en el Rollo eterno</h3>
+    <div class="tabla">
+      <div class="fila"><div>Dato</div><div>De dónde sale</div></div>
+      <div class="fila"><div>El nombre con el que firma sus fotos</div><div>Lo escribe él</div></div>
+      <div class="fila"><div>Las fotos que saca</div><div>Las saca con la cámara de su teléfono, dentro de la app</div></div>
+      <div class="fila"><div>Cuántas sacó y con qué filtro</div><div>Lo registra el sistema, para respetar el cupo</div></div>
+      <div class="fila"><div>Un identificador al azar de su cámara</div><div>Lo genera su propio teléfono y vive en su navegador. No está atado a su identidad</div></div>
+    </div>
+
+    <h3>Lo que NO hacemos</h3>
+    <ul>
+      <li>No pedimos DNI, ni domicilio, ni datos bancarios, ni el correo del invitado.</li>
+      <li>No tratamos <strong>datos sensibles</strong> en el sentido del artículo 2 de la Ley 25.326
+      (origen racial o étnico, opiniones políticas, convicciones religiosas, salud o vida sexual).
+      Si alguien los sube igual dentro de una foto o un texto, se borran cuando nos lo piden.</li>
+      <li>No hacemos perfiles, ni reconocimiento facial, ni decisiones automatizadas sobre personas.</li>
+      <li>No vendemos, alquilamos ni cedemos datos a nadie con fines comerciales.</li>
+      <li>No hay publicidad, ni analítica, ni píxeles de seguimiento, ni botones de redes
+      sociales que espíen. El sitio no carga <strong>ningún</strong> script de terceros:
+      las librerías que usa (el generador de QR y el que arma el archivo comprimido)
+      están alojadas en nuestro propio servidor.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="para-que">
+    <h2>4 · Para qué los usamos y con qué fundamento</h2>
+    <p>Cada dato tiene un único uso, y es el que se ve:</p>
+    <div class="tabla">
+      <div class="fila"><div>Finalidad</div><div>Fundamento legal</div></div>
+      <div class="fila"><div>Prestar el servicio contratado: proyectar el muro, revelar el rollo, entregar el álbum</div><div>Ejecución del contrato y consentimiento del titular (arts. 5 y 11, Ley 25.326)</div></div>
+      <div class="fila"><div>Identificar quién mandó cada recuerdo, para poder moderarlo y borrarlo</div><div>Interés legítimo del organizador y consentimiento del invitado</div></div>
+      <div class="fila"><div>Cobrar, facturar y cumplir obligaciones impositivas</div><div>Obligación legal</div></div>
+      <div class="fila"><div>Responder consultas por WhatsApp o correo</div><div>Consentimiento del que escribe</div></div>
+    </div>
+    <p><strong>El invitado presta su consentimiento cuando manda la foto</strong>: antes de
+    mandarla ve, en la misma pantalla, qué se hace con ella, quién la va a ver y por
+    cuánto tiempo. Mandar algo es voluntario: nadie está obligado a participar, y quien
+    no participa no pierde nada.</p>
+  </section>
+
+  <section class="bloque" id="cuanto">
+    <h2>5 · Cuánto tiempo los guardamos</h2>
+    <p>Los datos de una fiesta <strong>no se guardan para siempre</strong>. Cada evento nace con
+    una fecha de vencimiento: <strong>90 días corridos contados desde la fecha de la fiesta</strong>.</p>
+    <ul>
+      <li><strong>15 días antes</strong> de que venza, al organizador le aparece un aviso en su
+      panel, con el botón para descargarse el álbum completo.</li>
+      <li>Cumplido el plazo, el evento se borra: las filas de la base, las fotos, los
+      videos y los audios de los dos depósitos. No queda una copia "por las dudas".</li>
+      <li>Los datos de facturación se conservan el plazo que exige la ley impositiva,
+      separados del contenido de la fiesta.</li>
+    </ul>
+    <p>Este plazo cumple el <strong>artículo 4, inciso 7 de la Ley 25.326</strong>: los datos deben
+    destruirse cuando dejan de ser necesarios para la finalidad que justificó tratarlos.
+    Una fiesta se termina; su álbum, también.</p>
+    <p>Si querés que borremos algo <strong>antes</strong> de los 90 días, lo borramos. Mirá el
+    punto 13.</p>
+  </section>
+
+  <section class="bloque" id="imagen">
+    <h2>6 · Fotos, videos y voz</h2>
+    <p>Este es el punto más importante de toda esta página, y conviene leerlo entero.</p>
+    <p>El <strong>artículo 53 del Código Civil y Comercial</strong> dice que para captar o reproducir
+    la imagen o la voz de una persona <strong>hace falta su consentimiento</strong>. Las excepciones
+    son tres y ninguna alcanza a una fiesta privada: que la persona participe en actos
+    públicos, que haya un interés científico, cultural o educacional prioritario, o que se
+    trate del ejercicio regular del derecho de informar sobre acontecimientos de interés
+    general. <strong>Un casamiento o un cumpleaños de quince no es un acto público.</strong></p>
+    <p>En el mismo sentido, el <strong>artículo 31 de la Ley 11.723</strong> exige el consentimiento de
+    la persona retratada para poner su retrato fotográfico en el comercio.</p>
+    <h3>Qué significa esto en la práctica</h3>
+    <ul>
+      <li><strong>Quien saca la foto y la manda</strong> declara que las personas que aparecen
+      prestaron su conformidad para que se proyecte en esa fiesta y quede en el álbum del evento.</li>
+      <li><strong>El organizador</strong> es quien tiene que avisarles a sus invitados que va a
+      haber un muro y una cámara, y darles la chance de no participar. Le damos los carteles
+      de mesa y las tarjetas justamente para eso.</li>
+      <li><strong>Click Eterno</strong> no usa las fotos de tu fiesta para nada que no sea tu
+      fiesta. <strong>No las publicamos en nuestras redes, no las ponemos en la web, no las
+      mostramos como muestra de trabajo</strong>, salvo que nos lo autorices por escrito y para
+      fotos puntuales. Las que se ven en la demostración del sitio son inventadas.</li>
+      <li>Si aparecés en una foto y no querés estar, escribinos: la bajamos. No hace falta
+      que nos expliques por qué, ni que seas el que la sacó.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="menores">
+    <h2>7 · Menores de edad</h2>
+    <p>Muchas de nuestras fiestas son de quince años, así que esto no es un párrafo de
+    relleno: <strong>hay menores en casi todos los eventos</strong>.</p>
+    <ul>
+      <li>La imagen de un menor <strong>no se difunde sin el consentimiento de quienes ejercen
+      la responsabilidad parental</strong>, y del propio menor según su grado de madurez
+      (artículos 26 y 53 del Código Civil y Comercial).</li>
+      <li>Ese consentimiento lo tiene que reunir <strong>el organizador de la fiesta</strong>, que
+      es quien conoce a los invitados. No podemos reunirlo nosotros.</li>
+      <li>Si sos madre, padre o tutor y aparece un menor a tu cargo en un álbum nuestro,
+      <strong>escribinos y lo bajamos sin pedirte nada a cambio</strong>. Es el único trámite que
+      resolvemos sin verificar nada: ante la duda, se baja.</li>
+      <li>No dirigimos publicidad a menores ni les pedimos datos de contacto.</li>
+    </ul>
+  </section>
+
+  <section class="bloque" id="terceros">
+    <h2>8 · Con quién los compartimos</h2>
+    <p>Con nadie que no sea imprescindible para que el servicio funcione. Los proveedores
+    que intervienen son:</p>
+    <div class="tabla">
+      <div class="fila"><div>Proveedor</div><div>Para qué</div></div>
+      <div class="fila"><div>Supabase</div><div>Base de datos y depósito de las fotos, los videos y los audios</div></div>
+      <div class="fila"><div>Cloudflare</div><div>Alojamiento del sitio y entrega de las páginas</div></div>
+      <div class="fila"><div>Google (Apps Script y Hojas de cálculo)</div><div>Solo en las invitaciones digitales: la lista de confirmaciones de asistencia</div></div>
+      <div class="fila"><div>Google Fonts</div><div>Las tipografías del sitio</div></div>
+    </div>
+    <p>Ninguno de ellos puede usar los datos para sus propios fines: los tratan por cuenta
+    nuestra, para prestarnos el servicio. <strong>No hay anunciantes, ni redes de publicidad,
+    ni empresas de analítica.</strong></p>
+    <p>Además, entregamos datos cuando nos lo ordena un juez o una autoridad competente,
+    y en ese caso solo lo estrictamente requerido.</p>
+  </section>
+
+  <section class="bloque" id="fuera">
+    <h2>9 · Servidores fuera del país</h2>
+    <p>Te lo decimos con todas las letras porque casi nadie lo dice: <strong>los servidores de
+    nuestros proveedores pueden estar fuera de la Argentina</strong>. Eso es una transferencia
+    internacional de datos y está regulada por el <strong>artículo 12 de la Ley 25.326</strong>.</p>
+    <p>La ley prohíbe transferir datos a países que no tengan un nivel de protección
+    adecuado, salvo que el titular preste su consentimiento o que el traspaso se haga bajo
+    <strong>las cláusulas contractuales modelo aprobadas por la Disposición 60-E/2016</strong>.
+    Los Estados Unidos, donde suelen estar estos servidores, <strong>no integran</strong> la lista
+    de países con protección adecuada de esa Disposición.</p>
+    <p>Al usar el servicio prestás tu consentimiento para esa transferencia, que es
+    necesaria para que el álbum exista. Si esto te preocupa, escribinos antes de contratar.</p>
+  </section>
+
+  <section class="bloque" id="seguridad">
+    <h2>10 · Cómo los protegemos</h2>
+    <p>Las medidas están alineadas con la <strong>Resolución 47/2018 de la AAIP</strong>, que aprobó
+    las medidas de seguridad recomendadas para el tratamiento de datos personales en medios
+    informatizados. Sin tecnicismos, esto es lo que hay:</p>
+    <ul>
+      <li><strong>Nadie entra directo a las tablas.</strong> La base tiene la seguridad a nivel de
+      fila encendida y sin reglas abiertas, que en la práctica quiere decir "nadie". Todo
+      pasa por funciones controladas del lado del servidor.</li>
+      <li><strong>Cada evento tiene su propia clave</strong>, distinta de la de los demás. Se guarda
+      cifrada con bcrypt: ni nosotros podemos leerla, solo verificar si la que nos dan es
+      la correcta.</li>
+      <li><strong>Las fotos del Rollo eterno viven en un depósito privado.</strong> Antes del
+      revelado no se pueden ver ni siquiera teniendo la dirección: el servidor no las
+      entrega. Después del revelado se leen con enlaces firmados que caducan en una hora.</li>
+      <li><strong>Todo viaja cifrado</strong> (HTTPS obligatorio en todo el sitio).</li>
+      <li><strong>El sitio no puede cargar código de terceros.</strong> Una política de seguridad de
+      contenido (CSP) bloquea cualquier script que no sea nuestro, y también le cierra la
+      salida a los datos por si alguno llegara a entrar.</li>
+      <li><strong>La clave de administrador no se guarda en el disco</strong> de ningún aparato:
+      vive solo en la memoria de la pestaña y se borra al cerrarla.</li>
+      <li><strong>Los permisos son los mínimos.</strong> El organizador ve su evento y nada más;
+      el invitado ve lo que le corresponde y nada más.</li>
+      <li><strong>Se prueba antes de publicar.</strong> Cada cambio pasa por una batería automática
+      que incluye pruebas específicas de seguridad, de invitados hostiles y de la base.</li>
+    </ul>
+    <p>Ninguna medida es infalible y no te vamos a decir que lo es. Lo que sí podemos decir
+    es que la promesa del producto está escrita en las reglas del servidor y no solamente
+    en la pantalla, que es la diferencia entre una protección real y una decoración.</p>
+  </section>
+
+  <section class="bloque" id="incidentes">
+    <h2>11 · Si algo sale mal</h2>
+    <p>Si detectamos un incidente de seguridad que afecte datos personales:</p>
+    <ol>
+      <li>Lo contenemos y dejamos registro de qué pasó, cuándo y a qué datos alcanzó.</li>
+      <li><strong>Notificamos a la Agencia de Acceso a la Información Pública</strong>, indicando
+      la naturaleza del incidente, la categoría de datos afectados, los titulares
+      alcanzados, las medidas que tomamos para mitigarlo y las que tomamos para que no
+      vuelva a pasar (Resolución 47/2018 de la AAIP).</li>
+      <li><strong>Te avisamos a vos</strong>, por el canal que tengamos, si tus datos estuvieron
+      entre los afectados. No vamos a enterarnos y callarnos.</li>
+    </ol>
+  </section>
+
+  <section class="bloque" id="navegador">
+    <h2>12 · Cookies y memoria del navegador</h2>
+    <p><strong>Este sitio no usa cookies.</strong> Ni propias ni de terceros, ni de publicidad ni de
+    analítica. Por eso tampoco vas a ver el cartelito de cookies: no tendríamos qué pedirte.</p>
+    <p>Lo que sí usamos es la <strong>memoria local del navegador</strong>, que no viaja a ningún
+    servidor y se borra cuando borrás los datos del sitio:</p>
+    <div class="tabla">
+      <div class="fila"><div>Qué se guarda</div><div>Para qué</div></div>
+      <div class="fila"><div>Las claves de los eventos que creaste en ese aparato</div><div>Para que no tengas que escribirlas cada vez</div></div>
+      <div class="fila"><div>El PIN del panel</div><div>Para no pedírtelo en cada pantalla</div></div>
+      <div class="fila"><div>El identificador de tu cámara del rollo</div><div>Para que la app sepa cuántas fotos te quedan</div></div>
+      <div class="fila"><div>La clave de administrador</div><div>Solo mientras la pestaña está abierta. Se borra al cerrarla</div></div>
+    </div>
+  </section>
+
+  <section class="bloque" id="derechos">
+    <h2>13 · Tus derechos y cómo ejercerlos</h2>
+    <p>La Ley 25.326 te da estos derechos sobre tus datos, y se ejercen <strong>gratis</strong>:</p>
+    <ul>
+      <li><strong>Acceso</strong> (art. 14): pedirnos qué datos tuyos tenemos. Tenemos <strong>10 días
+      corridos</strong> para contestarte.</li>
+      <li><strong>Rectificación, actualización y supresión</strong> (art. 16): pedirnos que
+      corrijamos lo que está mal o que borremos lo que no querés que esté. Tenemos
+      <strong>5 días hábiles</strong> para hacerlo.</li>
+      <li><strong>Oposición</strong>: pedirnos que dejemos de tratar tus datos para una finalidad.</li>
+      <li><strong>Retirar el consentimiento</strong> en cualquier momento, sin que eso afecte lo
+      que hicimos antes con tu permiso.</li>
+    </ul>
+    <h3>Cómo lo pedís</h3>
+    <p>Escribinos a
+    <a class="enl" href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>
+    o por WhatsApp al <a class="enl" href="https://wa.me/5493412506451">341 250-6451</a>,
+    diciendo qué querés y, si podés, en qué fiesta fue. Para pedidos de acceso o de
+    borrado masivo te vamos a pedir que acredites tu identidad, porque no queremos
+    entregarle los datos de una persona a otra.</p>
+    <p>Para bajar una foto puntual en la que aparecés <strong>no te pedimos nada</strong>: mandanos
+    cuál y la sacamos.</p>
+    <div class="aviso">
+      <p>Si considerás que no cumplimos, podés hacer una denuncia ante la
+      <strong>Agencia de Acceso a la Información Pública</strong>, que es el órgano de control de
+      la Ley 25.326: <a class="enl" href="https://www.argentina.gob.ar/aaip" target="_blank" rel="noopener">argentina.gob.ar/aaip</a>.</p>
+      <p>También tenés la <strong>acción de habeas data</strong> del artículo 43 de la Constitución
+      Nacional para acudir directamente a la Justicia.</p>
+    </div>
+  </section>
+
+  <section class="bloque" id="cambios">
+    <h2>14 · Cambios en esta política</h2>
+    <p>Si la cambiamos, cambia la fecha de arriba. Si el cambio es importante —por ejemplo,
+    si empezáramos a usar los datos para algo nuevo— te lo avisamos por el canal que
+    tengamos antes de que empiece a regir.</p>
+    <p>Esta política se rige por la ley argentina. Para cualquier controversia son
+    competentes los tribunales ordinarios de la ciudad de Rosario, Provincia de Santa Fe,
+    sin perjuicio del derecho del consumidor a demandar ante el juez de su domicilio.</p>
+  </section>
+
+</div></main>
+
+<footer><div class="wrap">
+  Click Eterno · Rosario, Santa Fe · Argentina<br>
+  <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>
+  <div class="enlaces">
+    <a href="/">Inicio</a> ·
+    <a href="/terminos">Términos y Condiciones</a> ·
+    <a href="/privacidad">Política de Privacidad</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

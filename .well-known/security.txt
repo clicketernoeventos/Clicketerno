@@ -1,0 +1,12 @@
+# Click Eterno · https://clicketerno.com.ar
+# Si encontraste un problema de seguridad, escribinos. No hace falta que
+# sepas explicarlo bien: contanos qué viste y nos arreglamos.
+# Pedimos una sola cosa: no entres a la fiesta de un cliente para probarlo.
+# Hay una demostración en /muro?demo=1 y /rollo?demo=1 para eso.
+
+Contact: mailto:clicketernoeventos@gmail.com
+Contact: https://wa.me/5493412506451
+Expires: 2027-09-21T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://clicketerno.com.ar/.well-known/security.txt
+Policy: https://clicketerno.com.ar/privacidad
