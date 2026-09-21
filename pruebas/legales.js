@@ -54,8 +54,12 @@ const ART6=[
   console.log('\n─── las páginas legales ───');
   const browser=await chromium.launch();
   const ctx=await browser.newContext({viewport:{width:390,height:844},hasTouch:true});
+  /* El PIN también: sin él, #panel muestra la pantalla del PIN y la
+     comprobación del alta medía otra cosa. */
   await ctx.addInitScript(c=>{ try{
     localStorage.setItem('ce:claves',JSON.stringify(c));
+    localStorage.setItem('ce:pin','4321');
+    sessionStorage.setItem('ce:pinOK','1');
   }catch(e){} },{[COD]:CLAVE});
   const p=await ctx.newPage();
   const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -148,6 +152,45 @@ const ART6=[
   });
   await mirarAviso('el rollo', S+'/rollo.html?e=TEST-1');
 
+  /* 3 bis · la puerta: sin aceptar no se crea el evento */
+  console.log('\n─── quién se hace cargo: la casilla del alta ───');
+  {
+    /* Que la casilla exista no alcanza: lo que importa es que SEA una
+       puerta. Se intenta crear sin marcarla y la fila no tiene que
+       aparecer en ningún lado. */
+    const fake2=crearFake('ok'); await fake2.instalar(p);
+    await p.goto(S+'/muro.html#panel',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1600);
+    const hay=await p.locator('#aceptoT').count();
+    if(!hay) mal('el alta del muro no pide que el organizador se haga cargo');
+    else{
+      bien('el alta del muro tiene la casilla');
+      /* El enlace se lee ANTES de crear: al crear, la pantalla cambia y
+         la casilla ya no está. */
+      const destino=await p.getAttribute('.acepto a','href');
+      if(!/terminos#responsable/.test(String(destino)))
+        mal('la casilla no enlaza la cláusula de responsabilidad: '+destino);
+      else bien('la casilla enlaza la cláusula de responsabilidad');
+      await p.fill('#n','Fiesta de prueba');
+      const antes=fake2.db.ce_eventos.length;
+      await p.click('#crear'); await p.waitForTimeout(900);
+      if(fake2.db.ce_eventos.length>antes)
+        mal('se creó el evento SIN que el organizador aceptara');
+      else bien('sin aceptar no se crea el evento');
+      await p.check('#aceptoT');
+      await p.click('#crear'); await p.waitForTimeout(1400);
+      const nuevo=fake2.db.ce_eventos[fake2.db.ce_eventos.length-1];
+      if(fake2.db.ce_eventos.length<=antes) mal('aceptando tampoco se creó el evento');
+      else{
+        bien('aceptando sí se crea');
+        /* Y que quede la constancia: un contrato que nadie puede probar
+           que se aceptó no sirve de mucho. */
+        if(!nuevo || !nuevo.acepto) mal('no queda constancia de cuándo aceptó (columna acepto)');
+        else bien('queda la constancia del momento en que aceptó');
+      }
+    }
+  }
+
   /* 4 · que la política no se vacíe */
   console.log('\n─── que los textos no se vacíen con el tiempo ───');
   const priv=fs.readFileSync(path.join(RAIZ,'privacidad.html'),'utf8');
@@ -176,7 +219,15 @@ const ART6=[
       ['los 10 días para arrepentirse',/10 días/i],
       ['la jurisdicción del consumidor',/domicilio del consumidor/i],
       ['los 90 días del álbum',      /90 días/i],
-      ['Defensa del Consumidor',     /Defensa del Consumidor/i]]){
+      ['Defensa del Consumidor',     /Defensa del Consumidor/i],
+      /* Lo que cubre al negocio: el reparto de roles y la indemnidad. Si
+         alguien "limpia" los términos y se lleva esto puesto, el negocio
+         queda sin lo único que lo protege de un reclamo de un tercero. */
+      ['quién es el responsable de los datos', /artículo 25 de la Ley 25\.?326|por tu cuenta y orden/i],
+      ['las declaraciones del organizador',    /declarás y garantizás/i],
+      ['el consentimiento de los menores',     /responsabilidad parental/i],
+      ['la indemnidad',                        /mantenés indemnes/i],
+      ['que la indemnidad no tapa lo nuestro', /si el problema es nuestro/i]]){
     if(!re.test(term)) mal(`los términos ya no mencionan ${q}`);
     else bien(`los términos mencionan ${q}`);
   }

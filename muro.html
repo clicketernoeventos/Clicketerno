@@ -218,6 +218,20 @@ option{background:#0B0A08}
    Plegado ocupa un renglón para no pisarle el "Enviar"; abierto dice todo
    lo que exige el artículo 6 de la Ley 25.326. Plegado NO es esconderlo:
    el renglón dice de qué se trata y está arriba del botón. */
+.acepto{display:flex;gap:12px;align-items:flex-start;margin-top:18px;padding:14px 16px;
+  border:1px solid var(--gris);border-radius:2px;background:rgba(217,174,114,.04);
+  cursor:pointer;transition:border-color .3s var(--e)}
+.acepto.falta{border-color:#FF7B94}
+.acepto input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--oro);cursor:pointer}
+.acepto span{font-size:13px;line-height:1.7;color:var(--mute)}
+.acepto a{color:var(--oro);text-decoration:underline;text-underline-offset:3px;
+  display:inline-block;padding:12px 2px}
+/* La casilla es una puerta legal: en un teléfono tiene que llegar a 44x44
+   como todo lo que se toca. Con 22 la agarró pruebas/dispositivos.js. En
+   un escritorio queda del tamaño normal, que ahí se apunta con el mouse. */
+@media (max-width:820px),(pointer:coarse){
+  .acepto input{width:var(--toque);height:var(--toque)}
+}
 .aviso-datos{margin:18px auto 0;width:min(100% - 36px,560px);
   border:1px solid var(--gris);background:rgba(217,174,114,.04);border-radius:2px}
 .aviso-datos summary{list-style:none;cursor:pointer;padding:13px 16px;
@@ -1468,7 +1482,11 @@ async function meta(c){
    aunque no se haya corrido el SQL nuevo.
    Antes había un mecanismo por tanda de columnas; ahora es uno solo. */
 const COLS_CAMARA=['camara','cupo_fotos','revela_en','revelado'];
-const COLUMNAS_NUEVAS=['lanza','hashtag','lugar',...COLS_CAMARA];
+/* "acepto" va acá por la regla de siempre: primero la web, después el SQL.
+   Si todavía no se corrió blindaje2.sql, la columna no existe y PostgREST
+   rechaza el alta ENTERA. Con la columna en esta lista, guardarMeta la saca
+   y reintenta, y el evento se crea igual. */
+const COLUMNAS_NUEVAS=['lanza','hashtag','lugar','acepto',...COLS_CAMARA];
 const faltaColumna={};
 const sinColumna=c=>!!faltaColumna[c];
 async function guardarMeta(m){
@@ -2307,6 +2325,18 @@ async function vPanel(){
       <div class="campo"><label for="t">Tipo de evento</label><select id="t">${Object.keys(TIPOS).map(t=>`<option>${t}</option>`).join('')}</select></div>
       <div class="campo"><label>Tono del evento</label>
         <div class="tonos">${TONOS.map((t,i)=>`<button class="tono" data-c="${t.c}" aria-pressed="${i===0}" title="${t.n}" style="background:${t.c}"></button>`).join('')}</div></div>
+      <!-- ── la puerta ──
+           El organizador es el responsable de los datos de SU fiesta; nosotros
+           tratamos por su cuenta y orden (art. 25, Ley 25.326). Lo que él
+           declara acá es lo único que no podemos cumplir por él: avisarles a
+           sus invitados y tener el consentimiento de imagen, sobre todo el de
+           los menores. Sin esto marcado no se crea el evento, y el momento
+           queda guardado en la fila (columna "acepto"). -->
+      <label class="acepto"><input type="checkbox" id="aceptoT">
+        <span>Me hago cargo de avisarles a mis invitados que va a haber muro y
+        cámara, y de tener el permiso de las personas que aparezcan —incluidos
+        los menores, de sus padres o tutores—.
+        <a href="/terminos#responsable" target="_blank" rel="noopener">Leer los Términos</a>.</span></label>
       <button class="oro-btn" id="crear" style="margin-top:12px">Crear evento</button>
     </div>
   </div>`;
@@ -2336,6 +2366,12 @@ async function vPanel(){
   app.querySelector('#crear').onclick=async()=>{
     const nombre=app.querySelector('#n').value.trim();
     if(!nombre) return recado('Falta el nombre del evento');
+    const casilla=app.querySelector('#aceptoT');
+    if(casilla && !casilla.checked){
+      casilla.closest('.acepto').classList.add('falta');
+      casilla.focus();
+      return recado('Falta aceptar: sos vos quien tiene el permiso de tus invitados');
+    }
     const tipo=app.querySelector('#t').value;
     const fEv=app.querySelector('#f').value||hoy();
     const btn=app.querySelector('#crear');
@@ -2346,7 +2382,8 @@ async function vPanel(){
       let codigo=nuevoCodigo(tipo);
       for(let i=0;i<5&&!(await codigoLibre(codigo));i++) codigo=nuevoCodigo(tipo);
       await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:venceDe(fEv),
-        moderar:false,cerrado:false,portada:null,creado:Date.now(),claveNueva:claveEv});
+        moderar:false,cerrado:false,portada:null,creado:Date.now(),
+        acepto:Date.now(),claveNueva:claveEv});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
       guardarClaveDe(codigo,claveEv);
       btn.textContent='✓ Evento creado';

@@ -165,10 +165,11 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 
 ### El orden en que se corre el SQL
 
-    sql/claves.sql  →  sql/rollo.sql  →  sql/blindaje.sql
+    sql/claves.sql → sql/rollo.sql → sql/blindaje.sql → sql/blindaje2.sql
 
-`blindaje.sql` va **último siempre**: reemplaza políticas y funciones que
-crean los otros dos. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
+`blindaje.sql` va **después de los dos primeros**: reemplaza políticas y
+funciones que ellos crean. `blindaje2.sql` va **al final**: cierra el muro
+(la puerta de `ce_items`) y usa funciones que crea `blindaje.sql`. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
 `sql/blindaje_revisar.sql` tienen que dar todas `true`.
 
 **El orden entre la web y el SQL NO es libre: primero la web, después el
@@ -479,6 +480,29 @@ las del cupo?, ¿puede ver las de otro?
   para dejar pasar al siguiente (que no cancela al que quedó bajando).
   Mientras tanto la portada dibujada tiene una rayita que late: un
   rectángulo negro y quieto parece un producto roto.
+
+- **El rollo estaba blindado y el muro no.** Toda la atención de seguridad
+  se la había llevado el rollo —cupos, rutas, depósito privado— y el muro
+  quedó como estaba. Medido contra una copia del esquema de producción, un
+  desconocido **sin ninguna clave** podía: meter 500 filas en la fiesta de
+  otro (y 500.000: no había tope), **seguir subiendo con el muro
+  CERRADO** —el organizador aprieta el candado, la app le esconde el
+  formulario, y la base aceptaba igual—, meter fotos en un evento que **no
+  existe**, y **elegir el `ts`**, que es lo que ordena la proyección:
+  poniendo un número grande su foto quedaba primera en la pantalla del
+  salón toda la noche. El depósito de archivos ya estaba bien; lo que
+  faltaba era la tabla. Lo arregla `sql/blindaje2.sql` con un disparador
+  —no una política, para poder DECIR qué pasó— y lo cuida `sql/probar.sql`.
+  Es la tercera vez que aparece la misma trampa: **lo que decide el
+  navegador no es una regla, es una decoración.**
+
+- **Medir un tope adentro de una sola transacción da cero.** La primera
+  medición del tope de ráfaga hacía 400 inserts en un bloque `do $$`: los
+  primeros 120 entraban, el 121 levantaba la excepción y el `exception
+  when others` **revertía el bloque entero**. El resultado decía "entraron
+  0", que parecía un blindaje perfecto y no era lo que pasa: en la vida
+  real cada insert es un pedido HTTP aparte y el atacante se lleva sus 120.
+  Los topes se miden con un `begin/exception` **por insert**.
 
 - **`clamp()` medido en `vw` se derrumba en un teléfono.** El cartel de la
   pantalla del salón tenía el QR en `30vh` (253px en un iPhone) y el
@@ -872,6 +896,42 @@ El borrado automático a los 90 días existía por plata. Además cumple el
 ser necesario para la finalidad que justificó tratarlo. Por eso la limpieza
 mensual de `/muro#central` dejó de ser una tarea de mantenimiento y pasó a
 ser una obligación declarada por escrito en una página pública.
+
+### Quién responde por los datos, y qué cubre al negocio
+
+Decisión del dueño: **el responsable tiene que ser quien contrata**. Está
+escrito en `terminos.html#responsable` y es defendible, porque es verdad:
+el organizador decide hacer la fiesta, elige a quién invita, sabe quiénes
+son menores y está en el salón. Click Eterno trata **por su cuenta y
+orden**, en los términos del **artículo 25 de la Ley 25.326**.
+
+Lo que lo sostiene son tres piezas, y las tres hacen falta:
+
+1. **El reparto de roles**, escrito: él responsable, nosotros prestadores
+   del servicio de tratamiento.
+2. **Las declaraciones del organizador**: avisarles a los invitados, tener
+   el consentimiento de imagen y el de los menores, no subir contenido
+   ilícito, cuidar la clave. Son *lo único que no podemos cumplir por él*.
+3. **La indemnidad**: si un tercero nos reclama por culpa de que él no
+   cumplió, se hace cargo él.
+
+**Y una casilla que es una puerta de verdad.** Sin marcarla no se crea el
+evento —ni en el muro ni en el rollo— y el momento queda guardado en la
+columna `acepto`. Un contrato que nadie puede probar que se aceptó no
+sirve de mucho. `pruebas/legales.js` intenta crear sin marcarla y falla si
+el evento aparece igual.
+
+**Lo que esto NO hace, y conviene tenerlo claro antes de dormir
+tranquilo:** un invitado que aparece en una foto **no firmó nada** y puede
+reclamarnos directamente a nosotros. La indemnidad no lo impide: reparte
+entre nosotros y el organizador quién asume qué, y nos da con qué repetir.
+Y como el tratamiento nuestro es comercial, la Ley 25.326 **nos alcanza
+igual**: la seguridad, el borrado y la información son obligaciones
+nuestras y no se tercerizan. Quien ofrezca un blindaje total está
+mintiendo. Por eso los Términos dicen, con las mismas letras, *"si el
+problema es nuestro, es nuestro"*: una cláusula que intentara taparlo
+sería nula frente a un consumidor (art. 37 de la Ley 24.240) y de paso nos
+dejaría peor parados.
 
 ### Lo que falta y solo lo puede hacer el dueño
 

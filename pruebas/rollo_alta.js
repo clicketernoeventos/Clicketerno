@@ -130,6 +130,19 @@ console.log('\n─── el alta, paso por paso ───');
   if(!/crear/.test(boton)) mal(`en el resumen el botón dice "${boton}"`);
   else bien('y el botón ya dice crear');
 
+  /* La casilla del organizador es una puerta de verdad: sin marcarla no se
+     crea nada. Primero se comprueba que FRENE —si no frena, no sirve— y
+     después se marca para seguir con el resto del recorrido. */
+  if(!(await p.locator('#aceptoT').count()))
+    mal('el resumen no le pide al organizador que se haga cargo');
+  else{
+    bien('el resumen pide que el organizador se haga cargo');
+    await p.click('#sig'); await p.waitForTimeout(900);
+    if(visto.creado) mal('creó el rollo SIN que el organizador aceptara');
+    else bien('sin aceptar no se crea el rollo');
+    await p.check('#aceptoT');
+  }
+
   await p.click('#sig'); await p.waitForTimeout(2500);
   const c=visto.creado;
   if(!c) mal('no llegó a crear el rollo');

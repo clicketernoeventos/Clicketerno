@@ -4,7 +4,7 @@
 --  Una sola consulta, para pegar en el SQL Editor de Supabase y pegar
 --  el resultado de vuelta en el chat. Los tres revisar.sql dicen lo
 --  mismo con mucho más detalle; esto contesta la pregunta de todos los
---  días —"¿puedo hacer un evento de verdad?"— en trece filas.
+--  días —"¿puedo hacer un evento de verdad?"— en dieciséis filas.
 --
 --  Todo tiene que dar ✅. Lo que aparezca con ❌ dice qué archivo
 --  falta correr:
@@ -45,4 +45,11 @@ from (
          not exists(select 1 from pg_policies
                     where tablename='ce_eventos' and cmd in ('SELECT','ALL')
                       and 'anon'=any(roles) and coalesce(qual,'true')='true')
+  union all select 'puerta de ce_items · tope, muro cerrado y ts (blindaje2)',
+         exists(select 1 from pg_trigger where tgname='z_ce_items_puerta')
+  union all select 'freno de ce_eventos · no se crean sin fin (blindaje2)',
+         exists(select 1 from pg_trigger where tgname='ce_eventos_freno')
+  union all select 'columna acepto · constancia del organizador (blindaje2)',
+         exists(select 1 from information_schema.columns
+                where table_name='ce_eventos' and column_name='acepto')
 ) t order by ok, que;

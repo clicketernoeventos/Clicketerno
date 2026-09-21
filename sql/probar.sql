@@ -80,6 +80,88 @@ select verificar('la clave se guarda como huella bcrypt, no en claro',
   (select count(*) from ce_claves where hash like '$2%')=2
   and (select count(*) from ce_claves where hash in ('clave-uno','clave-dos'))=0);
 
+select '── el muro, blindado (blindaje2.sql) ──';
+/* Todo esto lo podía hacer un desconocido SIN NINGUNA CLAVE hasta que se
+   corrió blindaje2.sql. Medido, no supuesto. */
+/* Con como(), que manda la clave en la cabecera: un insert directo a
+   ce_eventos lo rechaza el disparador ce_guardar_clave —"Falta la clave
+   del evento"— aunque uno sea postgres, porque el disparador corre igual.
+   Sin el evento creado, TODAS las comprobaciones de abajo pasaban o
+   fallaban por el motivo equivocado. */
+select como('clave-bli','insert into ce_eventos(codigo,nombre,moderar,cerrado,creado) values (''BLI-001'',''Fiesta blindada'',false,false,0)');
+select verificar('la fiesta de prueba del blindaje se creó',
+  (select count(*) from ce_eventos where codigo='BLI-001')=1);
+
+select como(null,'insert into ce_items(codigo,id,kind,url,autor) values (''BLI-001'',''bli-ok'',''foto'',''https://x/y.jpg'',''Ana'')');
+select verificar('el invitado legítimo sigue pudiendo subir',
+  (select count(*) from ce_items where id='bli-ok')=1);
+
+/* El "cuándo" lo pone la base. Con el ts en manos del que sube, poner un
+   número gigante dejaba su foto PRIMERA en la proyección toda la noche. */
+select verificar('el ts lo pone la base, no el teléfono',
+  (select ts from ce_items where id='bli-ok') between
+    (extract(epoch from now())*1000)::bigint - 60000 and
+    (extract(epoch from now())*1000)::bigint + 1000);
+
+select verificar('NO se puede subir a un evento que no existe',
+  (select como(null,'insert into ce_items(codigo,id,kind,url) values (''NO-HAY'',''bli-x'',''foto'',''https://x/y.jpg'')')) like 'error%'
+  and (select count(*) from ce_items where id='bli-x')=0);
+
+set role postgres; update ce_eventos set cerrado=true where codigo='BLI-001';
+select verificar('con el muro CERRADO la base rechaza, no solo la pantalla',
+  (select como(null,'insert into ce_items(codigo,id,kind,url) values (''BLI-001'',''bli-c'',''foto'',''https://x/y.jpg'')')) like 'error%'
+  and (select count(*) from ce_items where id='bli-c')=0);
+set role postgres; update ce_eventos set cerrado=false where codigo='BLI-001';
+
+select verificar('un tipo de recuerdo inventado se rechaza',
+  (select como(null,'insert into ce_items(codigo,id,kind,url) values (''BLI-001'',''bli-k'',''iframe'',''https://x/y.jpg'')')) like 'error%');
+
+select como(null,'insert into ce_items(codigo,id,kind,texto,autor) values (''BLI-001'',''bli-l'',''mensaje'',repeat(''A'',100000),repeat(''B'',9000))');
+select verificar('los textos gigantes se recortan en la base, no en el navegador',
+  (select length(texto) from ce_items where id='bli-l')=400
+  and (select length(autor) from ce_items where id='bli-l')=40);
+
+/* La ráfaga: cada insert es un pedido HTTP aparte, así que se prueba uno
+   por uno. Adentro de una sola transacción el primer error revierte los
+   que sí habían entrado y la cuenta da cero, que no es lo que pasa. */
+do $ra$ declare i int; begin
+  perform set_config('request.headers','{}',true);
+  for i in 1..200 loop
+    begin
+      execute 'set local role anon';
+      insert into ce_items(id,codigo,kind,url) values ('raf-'||i,'BLI-001','foto','https://x/y.jpg');
+    exception when others then null; end;
+    execute 'set local role postgres';
+  end loop;
+end $ra$;
+/* Se cuenta TODO lo de la fiesta en el minuto, no solo las 'raf-': el
+   tope es por evento, y arriba ya habían entrado dos. Afirmar que las
+   'raf-' son 120 daba 118 y hacía fallar una regla que funcionaba. */
+select verificar('la ráfaga corta a los 120 por minuto',
+  (select count(*) from ce_items where codigo='BLI-001')=120,
+  'entraron '||(select count(*) from ce_items where codigo='BLI-001'));
+
+/* Y el freno de eventos: treinta por minuto en toda la base. */
+do $ev$ declare i int; begin
+  perform set_config('request.headers',json_build_object('x-clave','clave-freno')::text,true);
+  for i in 1..50 loop
+    begin
+      execute 'set local role anon';
+      insert into ce_eventos(codigo,nombre,creado)
+        values ('FRE-'||i,'x',(extract(epoch from now())*1000)::bigint);
+    exception when others then null; end;
+    execute 'set local role postgres';
+  end loop;
+end $ev$;
+select verificar('no se pueden crear eventos sin fin',
+  (select count(*) from ce_eventos where codigo like 'FRE-%')<=30,
+  'se crearon '||(select count(*) from ce_eventos where codigo like 'FRE-%'));
+
+set role postgres;
+delete from ce_items where codigo='BLI-001';
+delete from ce_eventos where codigo like 'FRE-%' or codigo='BLI-001';
+delete from ce_claves where codigo like 'FRE-%' or codigo='BLI-001';
+
 select '── un invitado cualquiera (sin clave) ──';
 /* Antes acá decía "puede leer el evento" y estaba bien que lo dijera: la
    regla era "using (true)". El problema es lo que eso significaba con un

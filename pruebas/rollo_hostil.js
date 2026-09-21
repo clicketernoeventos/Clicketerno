@@ -512,6 +512,8 @@ await corrida('se corta la señal justo al crear el rollo', async()=>{
      equivocado. El click que no dice "Siguiente" es el de crear. */
   for(let i=0;i<10;i++){
     const t=((await page.locator('#sig').innerText().catch(()=>''))||'').trim().toLowerCase();
+    /* Desde blindaje2: sin la casilla del organizador no se crea nada. */
+    await page.locator('#aceptoT').check().catch(()=>{});
     await page.locator('#sig').click(); await page.waitForTimeout(400);
     if(!/siguiente/.test(t)) break;      // ese fue el de crear, y se corta
   }

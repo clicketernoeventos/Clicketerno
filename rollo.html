@@ -148,6 +148,20 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .cab-p .atras,.paso-cab .atras{min-width:var(--toque);min-height:var(--toque);
   display:inline-flex;align-items:center;justify-content:flex-start}
+.acepto{display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;
+  text-align:left;border:1px solid var(--gris);border-radius:2px;
+  background:rgba(217,174,114,.04);cursor:pointer;transition:border-color .3s var(--e)}
+.acepto.falta{border-color:#FF7B94}
+.acepto input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--oro);cursor:pointer}
+.acepto span{font-size:13px;line-height:1.7;color:var(--mute)}
+.acepto a{color:var(--oro);text-decoration:underline;text-underline-offset:3px;
+  display:inline-block;padding:12px 2px}
+/* La casilla es una puerta legal: en un teléfono tiene que llegar a 44x44
+   como todo lo que se toca. Con 22 la agarró pruebas/dispositivos.js. En
+   un escritorio queda del tamaño normal, que ahí se apunta con el mouse. */
+@media (max-width:820px),(pointer:coarse){
+  .acepto input{width:var(--toque);height:var(--toque)}
+}
 /* ── el aviso de datos del invitado (artículo 6, Ley 25.326) ──
    Plegado ocupa un renglón para no empujar el botón fuera de la pantalla;
    abierto dice todo. Plegado no es esconderlo: el renglón dice de qué se
@@ -1766,7 +1780,18 @@ function vNuevo(n){
             ? (aLindo(nuevo.revela)||'a la hora que elegiste')
             : 'cuando vos lo digas')}
         ${fila('El álbum se guarda', DIAS_QUE_VIVE+' días')}
-      </div>`;
+      </div>
+      <!-- ── la puerta ──
+           El organizador es el responsable de los datos de SU fiesta; nosotros
+           tratamos por su cuenta y orden (art. 25, Ley 25.326). Esto es lo
+           único que no podemos cumplir por él: avisarles a sus invitados y
+           tener el permiso de imagen, sobre todo el de los menores. Sin la
+           casilla no se crea el rollo, y el momento queda en la fila. -->
+      <label class="acepto"><input type="checkbox" id="aceptoT">
+        <span>Me hago cargo de avisarles a mis invitados que va a haber una
+        cámara, y de tener el permiso de las personas que aparezcan —incluidos
+        los menores, de sus padres o tutores—.
+        <a href="/terminos#responsable" target="_blank" rel="noopener">Leer los Términos</a>.</span></label>`;
     }
   };
   app.innerHTML=`
@@ -1839,6 +1864,13 @@ function vNuevo(n){
       if(g>2000) return avisar('El tope es 2000 invitados. Si son más, escribinos.');
       nuevo.gente=g;
     }
+    if(paso===PASOS){
+      const casilla=app.querySelector('#aceptoT');
+      if(casilla && !casilla.checked){
+        casilla.closest('.acepto').classList.add('falta');
+        return avisar('Falta aceptar: sos vos quien tiene el permiso de tus invitados');
+      }
+    }
     if(paso<PASOS) return irA('nuevo/'+(paso+1));
     crearRollo();
   }
@@ -1891,11 +1923,20 @@ async function crearRollo(){
     codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
     vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
     camara:true, cupo_fotos:nuevo.cupo, cupo_invitados:nuevo.gente, revelado:false,
+    acepto:Date.now(),
     revela_en: nuevo.cuando==='hora' ? aUTC(nuevo.revela) : null
   };
+  /* Primero la web, después el SQL: si blindaje2.sql todavía no se corrió,
+     la columna "acepto" no existe y PostgREST rechaza el alta ENTERA. Se
+     saca y se reintenta, igual que hace el muro con COLUMNAS_NUEVAS. */
+  const sinAcepto=()=>{ const {acepto,...resto}=fila; return resto; };
   try{
     try{
-      await SB.crear('ce_eventos', fila, claveEv);
+      try{ await SB.crear('ce_eventos', fila, claveEv); }
+      catch(eCol){
+        if(!/acepto/i.test(String((eCol&&eCol.message)||eCol))) throw eCol;
+        await SB.crear('ce_eventos', sinAcepto(), claveEv);
+      }
     }catch(e1){
       /* Código repetido quiere decir que el pedido anterior SÍ llegó y se
          perdió la respuesta en el camino. La clave ya la dejó guardada el

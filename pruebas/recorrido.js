@@ -38,7 +38,7 @@ const PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAA
 
  await org.fill('#n','Casamiento Flor y Juan');
  await org.selectOption('#t','Boda').catch(()=>{});
- await org.click('#crear'); await org.waitForTimeout(2200);
+ await org.locator('#aceptoT').check().catch(()=>{}); await org.click('#crear'); await org.waitForTimeout(2200);
  const cod=Object.keys(fake.claves)[0]||'';
  const clave=fake.claves[cod]||'';
  af(/^BOD-[A-Z2-9]{6}$/.test(cod),'el código es del tipo elegido y de 6 al azar',cod);

@@ -168,6 +168,7 @@ async function recorrer(browser, modo) {
     if (!/nombre/i.test(aviso)) anota(modo, 'crear-vacio', 'no avisa que falta el nombre');
 
     await page.fill('#n', 'Fiesta "Test" <b>& cía</b>');
+    await page.locator('#aceptoT').check().catch(()=>{});
     await page.click('#crear');
     await page.waitForTimeout(300);
     await page.click('#crear').catch(() => {});  // doble toque

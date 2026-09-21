@@ -32,6 +32,10 @@ const localEnLaPagina=min=>p.evaluate(m=>{
 const crearYa=async(pg)=>{
   for(let i=0;i<10;i++){
     const t=((await pg.locator('#sig').innerText().catch(()=>''))||'').trim().toLowerCase();
+    /* Desde blindaje2: sin la casilla del organizador no se crea nada. Va
+       antes de cada click porque solo el paso del resumen la tiene, y
+       tocarla donde no está no cuesta nada. */
+    await pg.locator('#aceptoT').check().catch(()=>{});
     await pg.locator('#sig').click();
     await pg.waitForTimeout(450);
     if(!/siguiente/.test(t)) return;

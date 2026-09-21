@@ -63,6 +63,10 @@ autenticación, y que los permisos sean los mínimos.
   `CODIGO/TOKEN/archivo.jpg` con el código y el token de quien está sacando la foto.
 - La clave `anon` de Supabase está escrita en el HTML **a propósito**: es pública por
   diseño. Lo que protege son las políticas, no el secreto de esa clave.
+- **El muro cerrado lo aplica la base** (`blindaje2.sql`). Hasta ahí, el candado
+  del organizador lo respetaba solamente el navegador: la app le escondía el
+  formulario al invitado y la base seguía aceptando. Lo mismo las fotos en un
+  evento que no existe, que quedaban huérfanas y sin forma de limpiarlas.
 
 **Lo que falta.**
 
@@ -262,8 +266,46 @@ y que el entorno esté separado del de producción.
 
 ---
 
+## Lo que se revisó y está sano
+
+Repaso hecho a propósito, no de casualidad:
+
+- **Inyección en la pantalla (XSS).** `esc()` escapa `< > & " '`, que cubre texto y
+  atributo, y todo lo que escribe un invitado pasa por ahí. Las direcciones pasan
+  además por `urlSegura()`, que solo deja `http(s):`, `data:` de imagen, video o
+  audio, `blob:` y nombres de archivo con extensión conocida — un `javascript:` no
+  llega nunca a un `href`. Lo atacan `pruebas/xss.js`, `hostil.js` (27) y
+  `rollo_hostil.js` (69).
+- **Sin `eval`, sin `new Function`, sin `document.write`, sin `srcdoc`, sin oyentes
+  de `postMessage`.** No hay por dónde entrar código.
+- **Sin dependencias.** No hay `npm install`: no existe la clase de vulnerabilidad
+  que llega por un paquete transitivo.
+- **El depósito ya estaba bien**: subir exige `ce_evento_abierto(carpeta)`, no hay
+  regla de UPDATE (no se puede pisar un archivo que ya está), y el tamaño y el tipo
+  los limita el depósito, no la página.
+- **Borrar un recuerdo exige la clave del evento**, y reusar el `id` de otro choca
+  contra la clave primaria en vez de pisarlo.
+
+## Lo que sigue abierto y se acepta a sabiendas
+
+- **El código del evento es la llave.** Son seis dígitos al azar y
+  `ce_evento_publico` contesta "existe / no existe": con paciencia se pueden probar
+  códigos. Es inherente a un producto sin cuentas, donde el invitado entra
+  escaneando un QR. Lo que lo hace tolerable es que con el código se ve *un* evento
+  y nunca una lista, y que un rollo sin revelar no se puede mirar igual. Si algún
+  día molesta, la salida es un código más largo, no una cuenta por invitado.
+- **El PIN del panel no es una barrera de seguridad**, es una traba de conveniencia:
+  vive en el navegador y se saltea. No importa: el panel solo muestra los eventos
+  cuya clave está guardada en ese aparato, y eso lo valida la base.
+- **`ce_evento_publico` devuelve la fila entera**, con columnas que el invitado no
+  necesita. Angostarla toca lo que lee la pantalla del invitado y, por la regla de
+  "primero la web", no va en la misma tanda que un blindaje de la base.
+
 ## Lo que hay que hacer, en orden de urgencia
 
+0. **Correr `sql/blindaje2.sql`** en el SQL Editor. Hasta que no se corra, el muro
+   sigue sin tope, acepta con el candado puesto y deja elegir el orden de la
+   proyección.
 1. **Verificación en dos pasos** en Supabase, en Cloudflare y en el correo del negocio.
    Es gratis, son diez minutos, y es lo que más reduce el riesgo de todo este
    documento.

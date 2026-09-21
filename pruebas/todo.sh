@@ -139,7 +139,7 @@ sql(){
   # blindaje.sql va SIEMPRE al final: reemplaza políticas y funciones que
   # crearon los dos anteriores, así que el orden importa. Es el mismo orden
   # en el que hay que correrlos en Supabase.
-  for par in "esquema_falso claves rollo blindaje:probar" "esquema_falso claves rollo blindaje:rollo_probar"; do
+  for par in "esquema_falso claves rollo blindaje blindaje2:probar" "esquema_falso claves rollo blindaje blindaje2:rollo_probar"; do
     local instalar="${par%%:*}" prueba="${par##*:}"
     local args=(); for f in $instalar; do args+=(-f "sql/$f.sql"); done
     printf '  %-22s' "$prueba"

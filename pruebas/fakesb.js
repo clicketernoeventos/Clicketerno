@@ -233,6 +233,21 @@ function crearFake(modo = 'ok', cerrada = true) {
               body: JSON.stringify({ message: 'Falta la clave del evento' }) });
           claves[obj.codigo] = clave;
         }
+        /* Como la base desde blindaje2.sql: el recuerdo no entra si la
+           fiesta no existe o está cerrada, y el "cuándo" lo pone el
+           servidor. Antes el falso aceptaba las dos cosas, así que "el
+           muro cerrado corta las subidas" se cumplía solo en la pantalla
+           y en las pruebas, y no en la base. */
+        if (tabla === 'ce_items' && i < 0) {
+          const ev = db.ce_eventos.find((f) => f.codigo === obj.codigo);
+          if (!ev)
+            return route.fulfill({ status: 400, contentType: 'application/json',
+              body: JSON.stringify({ message: 'No encontré esa fiesta' }) });
+          if (ev.cerrado)
+            return route.fulfill({ status: 400, contentType: 'application/json',
+              body: JSON.stringify({ message: 'El muro de esta fiesta está cerrado' }) });
+          obj.ts = Date.now();
+        }
         if (tabla === 'ce_items' && i < 0 && !permitido(obj.codigo, clave)) {
           // como el disparador ce_forzar_estado: el invitado no elige su estado
           const ev = db.ce_eventos.find((f) => f.codigo === obj.codigo);

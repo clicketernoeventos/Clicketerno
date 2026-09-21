@@ -17,7 +17,8 @@ drop table if exists storage.buckets cascade;
 create table ce_eventos(
   codigo text primary key, nombre text, fecha text, tipo text, tono text,
   moderar boolean default false, cerrado boolean default false,
-  portada text, consignas text[], vence text, lanza text, creado bigint);
+  portada text, consignas text[], vence text, lanza text, creado bigint,
+  acepto bigint);
 create table ce_items(
   id text primary key, codigo text, kind text, url text,
   autor text, texto text, estado text, ts bigint);
