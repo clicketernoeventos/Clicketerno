@@ -53,6 +53,27 @@ primero que pregunta un cliente cuando paga, y son dos caminos distintos:
   arma Click Eterno y al cliente se le pasan código y clave para que modere
   durante la fiesta y se baje el álbum al otro día.
 
+**La portada del muro tiene cuatro puertas y cada una dice para quién es.**
+Antes el que compró y el invitado entraban por la misma: "Soy invitado"
+mostraba la lista de eventos guardados EN ESE CELULAR —vacía en el teléfono
+de un invitado, con un cartel que le decía "Creá uno desde el panel del
+organizador", que no es lo suyo— y al que contrató no había puerta que lo
+llevara: había que saberse `#codigo` de memoria. Lo que las separa es lo
+importante: **el que contrató entra con código Y CLAVE porque administra;
+el invitado entra solo con el código, sin clave y sin cuenta.** Al invitado
+no se le pide ni se le hace inventar una contraseña en ningún momento.
+
+**El código se escribe como sale.** El invitado lo lee del cartel de la mesa
+con el teléfono en una mano, así que entra igual en minúscula, sin el guión,
+con espacios de más, o **solo los seis del final**: `normalizarCodigo()`
+limpia y pone el guión, y `resolverCodigo()` prueba los prefijos (`QUI`,
+`BOD`, `CUM`, `COR`, `EVE`, `DEMO`) cuando falta. Son cinco consultas en el
+peor caso y solo cuando hacen falta; la alternativa es hacerle escribir
+cuatro caracteres que ya sabemos. Están en los dos archivos —si cambia,
+cambia en los dos— y los prefijos van **de más largo a más corto**: si no,
+`DEMO-FIESTA` se partiría como `DEM-OFIESTA`. También se normaliza el `?e=`
+de la dirección, que alguien puede copiar mal o pasar por WhatsApp.
+
 Los dos tienen **modo demostración**: `?demo=1` (`/muro?demo=1`,
 `/rollo?demo=1`) arma una fiesta inventada y **no toca Supabase ni el
 almacenamiento del navegador**. Es a donde apuntan los botones "Probar la

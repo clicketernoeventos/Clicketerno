@@ -388,6 +388,108 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     await ctx.close();
   }
 
+  /* ══ las dos puertas: el que contrató y el invitado ══
+     Entraban por la misma. "Soy invitado" mostraba la lista de eventos
+     guardados EN ESE CELULAR, que en el teléfono de un invitado está
+     vacía y le decía "Creá uno desde el panel del organizador", que no es
+     lo suyo. Y al que contrató no había puerta que lo llevara: había que
+     saberse la dirección #codigo de memoria.
+     Y el código: el invitado lo lee del cartel con el teléfono en una
+     mano. Minúscula, sin guión o solo los seis del final tienen que
+     entrar igual — pedirle precisión a alguien en una fiesta no sirve. */
+  {
+    console.log('\n─── entrar: el que contrató y el invitado ───');
+    const ctx=await browser.newContext({viewport:{width:390,height:844},hasTouch:true});
+    const p=await ctx.newPage();
+    const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.route('**/cdnjs.cloudflare.com/**',r=>r.fulfill({status:200,
+      contentType:'application/javascript',
+      body:'window.QRCode=function(n){n.innerHTML="";};window.QRCode.CorrectLevel={M:0};'}));
+    const COD='QUI-7FCE64';
+    const fake=crearFake('ok'); await fake.instalar(p); fake.claves[COD]='ABC123';
+    fake.db.ce_eventos.push({codigo:COD,nombre:'Los 15 de Delfina',fecha:'2026-10-18',
+      tipo:'XV',tono:'#D9AE72',moderar:false,cerrado:false,creado:Date.now()});
+
+    await p.goto(BASE+'/muro.html#portada',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1500);
+    const puertas=await p.$$eval('.puerta',ns=>ns.map(n=>({
+      t:(n.querySelector('b')||{}).textContent||'', ir:n.dataset.ir })));
+    const dice=re=>puertas.find(x=>re.test(x.t));
+    const pContrato=dice(/contrat/i), pInv=dice(/invitado/i);
+    if(!pContrato) mal('la portada no tiene puerta para el que ya contrató');
+    else if(pContrato.ir!=='codigo') mal(`la puerta del que contrató va a "${pContrato.ir}"`);
+    else bien('la portada tiene la puerta del que contrató, y va al código');
+    if(!pInv) mal('la portada no tiene puerta de invitado');
+    else if(pInv.ir===pContrato?.ir) mal('el invitado y el que contrató entran por la misma puerta');
+    else bien('la del invitado es otra');
+
+    /* Las cinco maneras en que una persona escribe un código. */
+    for(const [q,escrito] of [['tal cual','QUI-7FCE64'],['en minúscula','qui-7fce64'],
+                              ['sin el guión','qui7fce64'],['solo los seis del final','7fce64'],
+                              ['con espacios de más',' Qui 7fce64 ']]){
+      await p.goto(BASE+'/muro.html#invitado',{waitUntil:'domcontentloaded'});
+      await p.waitForTimeout(1100);
+      if(!(await p.locator('#codInv').count())){
+        mal('la pantalla del invitado no tiene dónde escribir el código');
+        break;
+      }
+      await p.fill('#codInv',escrito);
+      await p.click('#irFiesta');
+      await p.waitForTimeout(2500);
+      const h=await p.evaluate(()=>location.hash);
+      if(h!=='#subir/'+COD) mal(`escrito ${q} ("${escrito}") no entra: quedó en ${h}`);
+      else bien(`escrito ${q} entra igual`);
+    }
+
+    /* Un código cuyo prefijo NO conocemos tiene que sobrevivir entero.
+       La primera versión del normalizador sacaba el guión de todo lo que
+       no empezara con un prefijo de la lista, así que "TEST-1" quedaba
+       "TEST1" y el evento dejaba de existir. Lo agarró rollo_navegador
+       con un código de prueba: destruir un dato bueno es peor que no
+       normalizar nada. */
+    fake.db.ce_eventos.push({codigo:'TEST-1',nombre:'Rara',fecha:'2026-10-18',
+      tipo:'XV',tono:'#D9AE72',moderar:false,cerrado:false,creado:Date.now()});
+    await p.goto(BASE+'/muro.html#invitado',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1100);
+    if(await p.locator('#codInv').count()){
+      await p.fill('#codInv','test-1');
+      await p.click('#irFiesta');
+      await p.waitForTimeout(2500);
+      const h=await p.evaluate(()=>location.hash);
+      if(h!=='#subir/TEST-1') mal(`un código con prefijo desconocido se rompe: quedó en ${h}`);
+      else bien('un código con prefijo desconocido entra entero');
+    }
+
+    /* Y lo más importante: al invitado NO se le pide ninguna clave. */
+    const clavePedida=await p.evaluate(()=>
+      document.querySelectorAll('input[type=password]').length);
+    if(clavePedida) mal('al invitado le piden una clave para subir una foto');
+    else bien('al invitado no le piden ninguna clave');
+
+    /* Un código que no existe: se le dice, y no se lo manda a una pantalla
+       rota. Antes iba derecho al evento y el error aparecía después. */
+    /* Con guarda: si el campo no está, esta prueba tiene que INFORMARLO,
+       no morirse. Una suite que revienta a la mitad tapa todo lo que
+       venía después. */
+    await p.goto(BASE+'/muro.html#invitado',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(1100);
+    if(!(await p.locator('#codInv').count()))
+      mal('no hay campo de código: no se puede probar el código inexistente');
+    else{
+      await p.fill('#codInv','zzz999');
+      await p.click('#irFiesta');
+      await p.waitForTimeout(3000);
+      const quedo=await p.evaluate(()=>location.hash);
+      const aviso=await p.evaluate(()=>/no encontr/i.test(document.body.innerText));
+      if(quedo!=='#invitado') mal(`con un código inexistente se fue a ${quedo}`);
+      else if(!aviso) mal('con un código inexistente no le dice nada');
+      else bien('con un código inexistente se lo dice y lo deja donde estaba');
+    }
+
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
 })();

@@ -1998,6 +1998,41 @@ const nuevoCodigo=tipo=>{
   catch(e){ for(let i=0;i<n.length;i++) n[i]=Math.floor(Math.random()*4294967296); }
   return (TIPOS[tipo]||'EVE')+'-'+[...n].map(x=>abc[x%abc.length]).join('');
 };
+/* ── el código, como lo escribe una persona ──
+   El invitado lo lee del cartel de la mesa, con el teléfono en una mano y
+   un vaso en la otra. Escribe en minúscula, se come el guión, o directamente
+   no escribe el "QUI-" porque son cuatro toques más en un teclado chico.
+   Todo eso tiene que entrar igual: normalizamos nosotros en vez de pedirle
+   precisión a alguien que está en una fiesta.
+   Los prefijos van de más largo a más corto: si no, "DEMO-FIESTA" se
+   partiría como "DEM-OFIESTA". */
+const PREFIJOS=[...new Set([...Object.values(TIPOS),'EVE','DEMO'])]
+  .sort((a,b)=>b.length-a.length);
+const normalizarCodigo=v=>{
+  /* El guión que la persona SÍ escribió no se toca nunca: sacarlo rompe
+     cualquier código cuyo prefijo no esté en la lista —"TEST-1" quedaba
+     "TEST1"— y eso es destruir un dato bueno. Solo lo AGREGAMOS cuando
+     falta y reconocemos el prefijo. */
+  const s=String(v==null?'':v).toUpperCase().replace(/[^A-Z0-9-]/g,'')
+    .replace(/^-+|-+$/g,'');
+  if(s.includes('-')) return s;
+  for(const p of PREFIJOS) if(s.length>p.length && s.startsWith(p)) return p+'-'+s.slice(p.length);
+  return s;
+};
+/* Y si vino solo la parte del final, probamos los prefijos hasta dar con
+   la fiesta. Son cinco consultas en el peor caso, y solo cuando hace falta:
+   la alternativa es hacerle escribir cuatro caracteres que ya sabemos. */
+async function resolverCodigo(v){
+  const s=normalizarCodigo(v);
+  if(!s) return null;
+  if(s.includes('-')) return (await meta(s)) ? s : null;
+  for(const p of PREFIJOS){
+    const c=p+'-'+s;
+    if(await meta(c)) return c;
+  }
+  return null;
+}
+
 /* ¿ese código ya es de alguien? Preguntar es barato; pisarle la fiesta a
    otro no tiene arreglo. Sin señal para preguntar seguimos igual: con seis
    caracteres al azar la chance es ínfima. */
@@ -2135,11 +2170,22 @@ async function vPortada(){
     <img class="logo-full sube" src="${LOGO_FULL}" alt="Click Eterno">
     <p class="lema sube" style="animation-delay:.15s">El muro en vivo de tu fiesta.<br>Tus invitados sacan la foto y aparece en la pantalla del salón.</p>
     <div class="filete sube" style="animation-delay:.25s">${ESTRELLA}</div>
+    <!-- ── cuatro puertas, y cada una dice para quién es ──
+         El que compró y el invitado entraban por la misma: "Soy invitado"
+         mostraba la lista de eventos guardados EN ESE CELULAR, que para un
+         invitado de verdad está vacía ("Creá uno desde el panel del
+         organizador", que no es lo suyo). Y el que contrató no tenía
+         puerta: había que saberse la dirección #codigo.
+         Ahora son distintas, y lo que las separa es lo importante: el que
+         contrató entra con código Y CLAVE porque administra; el invitado
+         entra solo con el código, sin clave y sin cuenta. -->
     <div class="puertas sube" style="animation-delay:.35s">
-      <button class="puerta" data-ir="panel"><span class="ico-p">${IC.organizador}</span>
-        <span style="flex:1"><b>Panel del organizador</b><span>Crear evento, código y moderación</span></span><span class="fl">→</span></button>
+      <button class="puerta" data-ir="codigo"><span class="ico-p">${IC.organizador}</span>
+        <span style="flex:1"><b>Ya contraté mi evento</b><span>Entrar con el código y la clave</span></span><span class="fl">→</span></button>
+      <button class="puerta" data-ir="panel"><span class="ico-p">${IC.pantalla}</span>
+        <span style="flex:1"><b>Panel del organizador</b><span>Crear eventos y ver los míos</span></span><span class="fl">→</span></button>
       <button class="puerta" data-ir="invitado"><span class="ico-p">${IC.foto}</span>
-        <span style="flex:1"><b>Soy invitado</b><span>Subir fotos, videos y dedicatorias</span></span><span class="fl">→</span></button>
+        <span style="flex:1"><b>Soy invitado</b><span>Subir fotos sin clave ni cuenta</span></span><span class="fl">→</span></button>
       <button class="puerta" data-ir="proyector"><span class="ico-p">${IC.pantalla}</span>
         <span style="flex:1"><b>Pantalla del salón</b><span>Proyección en vivo</span></span><span class="fl">→</span></button>
     </div>
@@ -2588,25 +2634,37 @@ function vPorCodigo(){
   <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
     <div class="tarjeta principal" style="margin-top:10px">
       <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
-        Escribí el código de tu evento. Es el que está en el cartel de las mesas
-        y en el enlace que te pasamos. Después te va a pedir la clave.</p>
+        Para el que contrató la fiesta. Escribí el código que te pasamos y
+        después la clave, que es lo que te deja
+        <b style="color:var(--champan);font-weight:400">moderar y bajarte el álbum</b>.<br>
+        Si sos invitado y solo querés mandar una foto,
+        <a href="#invitado" style="color:var(--oro);text-decoration:underline;
+           text-underline-offset:3px;display:inline-block;padding:10px 2px">entrá por acá</a>:
+        no necesitás clave.</p>
       <div class="campo"><label for="codigoEv">Código del evento</label>
         <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
-          placeholder="Por ejemplo QUI-7FCE64"
+          placeholder="QUI-7FCE64"
           style="text-align:center;font-size:20px;letter-spacing:.2em;padding:15px 0"></div>
       <button class="oro-btn" id="irEvento" style="margin-top:8px">Entrar</button>
-      <p class="pie-nota">Si perdiste la clave, escribinos y la reiniciamos.</p>
+      <p class="pie-nota">Podés escribirlo en minúscula, sin el guión, o solo
+        los seis del final.<br>Si perdiste la clave, escribinos y la reiniciamos.</p>
     </div>
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
   const campo=app.querySelector('#codigoEv');
+  const btn=app.querySelector('#irEvento');
   campo.focus();
-  const entrar=()=>{
-    const v=campo.value.trim().toUpperCase();
-    if(v.length<4) return recado('Escribí el código completo');
+  const entrar=async()=>{
+    if(btn.disabled) return;
+    if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');
+    btn.disabled=true; btn.textContent='Buscando…';
+    let cod=null;
+    try{ cod=await resolverCodigo(campo.value); }catch(e){}
+    btn.disabled=false; btn.textContent='Entrar';
+    if(!cod) return recado('No encontré ese evento. Fijate el código que te pasamos.');
     /* Derecho al evento: si no hay clave guardada para ese código, vEvento
        la pide, que es la pantalla que ya existe. */
-    ir('evento/'+encodeURIComponent(v));
+    ir('evento/'+encodeURIComponent(cod));
   };
   app.querySelector('#irEvento').onclick=entrar;
   campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
@@ -3362,6 +3420,55 @@ async function vElegir(destino,titulo){
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
+}
+
+/* ── la puerta del invitado ──
+   Un código y listo. NO se le pide clave ni se le hace inventar una: el
+   invitado no administra nada, solo manda su foto. Antes esta pantalla
+   mostraba la lista de eventos guardados en el aparato, que en el teléfono
+   de un invitado está siempre vacía. */
+async function vInvitado(){
+  parar(); tono();
+  const evs=await eventos();
+  app.innerHTML=`
+  <header class="cab-inv">
+    <p class="arriba">Soy invitado</p>
+    <h1>Entrá a la fiesta</h1>
+    <button class="volver">Salir</button>
+  </header>
+  <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
+    <div class="tarjeta principal" style="margin-top:10px">
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+        Escribí el código que está en el cartel de tu mesa.
+        <b style="color:var(--champan);font-weight:400">No hace falta clave ni crear una cuenta.</b></p>
+      <div class="campo"><label for="codInv">Código de la fiesta</label>
+        <input id="codInv" type="text" inputmode="text" autocapitalize="characters" autocomplete="off"
+          placeholder="QUI-7FCE64"
+          style="text-align:center;font-size:20px;letter-spacing:.2em;padding:15px 0"></div>
+      <button class="oro-btn" id="irFiesta" style="margin-top:8px">Entrar</button>
+      <p class="pie-nota">Podés escribirlo en minúscula, sin el guión, o solo
+        los seis del final.</p>
+    </div>
+    ${evs.length?`<div class="seccion-a"><h2>En este celular</h2><span>${evs.length}</span></div>
+       ${evs.map(e=>tarjetaEvento(e)).join('')}`:''}
+  </div>`;
+  app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
+  app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir('subir/'+b.dataset.cod));
+  const campo=app.querySelector('#codInv');
+  const btn=app.querySelector('#irFiesta');
+  campo.focus();
+  const entrar=async()=>{
+    if(btn.disabled) return;
+    if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');
+    btn.disabled=true; btn.textContent='Buscando…';
+    let cod=null;
+    try{ cod=await resolverCodigo(campo.value); }catch(e){}
+    btn.disabled=false; btn.textContent='Entrar';
+    if(!cod) return recado('No encontré esa fiesta. Fijate el código del cartel.');
+    ir('subir/'+encodeURIComponent(cod));   // derecho a subir: sin clave
+  };
+  btn.onclick=entrar;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
 }
 
 async function vSubir(codigo){
@@ -4467,7 +4574,7 @@ function pintar(ruta){
     else if(v==='central'||v==='limpieza') p=vLimpieza();
     else if(v==='diagnostico') p=vDiagnostico();
     else if(v==='evento') p=vEvento(arg);
-    else if(v==='invitado') p=vElegir('subir','Invitado');
+    else if(v==='invitado') p=vInvitado();
     else if(v==='proyector') p=vElegir('pantalla','Pantalla');
     else if(v==='subir') p=vSubir(arg);
     else if(v==='pantalla') p=vPantalla(arg);

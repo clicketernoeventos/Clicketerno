@@ -655,6 +655,36 @@ const hoy=()=>{ const d=new Date(), c=n=>String(n).padStart(2,'0');
   return `${d.getFullYear()}-${c(d.getMonth()+1)}-${c(d.getDate())}`; };
 /* cupo de fotos: si la columna quedó vacía, vale lo de una descartable */
 const cupoDe=e=>{ const k=Number(e&&e.cupo); return Number.isFinite(k)&&k>0?k:24; };
+/* ── el código, como lo escribe una persona ──
+   Minúscula, sin el guión, o solo los seis del final: todo tiene que
+   entrar igual. El invitado lo lee del cartel de la mesa con el teléfono
+   en una mano. Mismo criterio que en muro.html; si cambia, cambia en los
+   dos. Los prefijos van de más largo a más corto: si no, "DEMO-FIESTA" se
+   partiría como "DEM-OFIESTA". */
+const PREFIJOS=['DEMO','QUI','BOD','CUM','COR','EVE'].sort((a,b)=>b.length-a.length);
+const normalizarCodigo=v=>{
+  /* El guión que la persona SÍ escribió no se toca nunca: sacarlo rompe
+     cualquier código cuyo prefijo no esté en la lista —"TEST-1" quedaba
+     "TEST1"— y eso es destruir un dato bueno. Solo lo AGREGAMOS cuando
+     falta y reconocemos el prefijo. */
+  const s=String(v==null?'':v).toUpperCase().replace(/[^A-Z0-9-]/g,'')
+    .replace(/^-+|-+$/g,'');
+  if(s.includes('-')) return s;
+  for(const p of PREFIJOS) if(s.length>p.length && s.startsWith(p)) return p+'-'+s.slice(p.length);
+  return s;
+};
+/* Si vino solo la parte del final, se prueban los prefijos. */
+async function resolverCodigo(v){
+  const s=normalizarCodigo(v);
+  if(!s) return null;
+  if(s.includes('-')) return (await eventoPorCodigo(s,'codigo').catch(()=>null)) ? s : null;
+  for(const p of PREFIJOS){
+    const c=p+'-'+s;
+    try{ if(await eventoPorCodigo(c,'codigo')) return c; }catch(e){}
+  }
+  return null;
+}
+
 /* un identificador al azar que no depende de que exista crypto */
 const nuevoId=()=>{
   try{ if(crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
@@ -1021,7 +1051,11 @@ function aplicarFiltro(ctx,w,h,css,grano){
   ctx.putImageData(d,0,0);
 }
 
-const codigo=(new URLSearchParams(location.search).get('e')||'').trim().toUpperCase();
+/* También el que llega por la dirección: alguien puede escribirla a mano, o
+   copiarla mal, o pasarla por WhatsApp en minúscula. Se normaliza igual.
+   normalizarCodigo está declarada arriba a propósito: este bloque corre en
+   el cuerpo del archivo, y llamar a un const de más abajo revienta. */
+const codigo=normalizarCodigo(new URLSearchParams(location.search).get('e')||'');
 const kRollo=c=>`ce:rollo:${c}`;
 const leerRollo=c=>{ try{ return JSON.parse(guarda.leer(kRollo(c))||'null'); }catch(e){ return null; } };
 /* Si el teléfono no deja guardar (modo privado, o el navegador de adentro
@@ -1095,17 +1129,24 @@ function vPedirCodigo(){
   app.innerHTML=`
   ${cabP('Entrar a un rollo','')}
   <div class="wrap" style="padding-top:20px">
-    <p class="bajada">Escaneá el código que está en tu mesa, o escribilo acá abajo.</p>
+    <p class="bajada">Escaneá el código que está en tu mesa, o escribilo acá abajo.
+      Podés ponerlo en minúscula, sin el guión, o solo los seis del final.</p>
     <div class="campo"><label for="codigoEv">Código del evento</label>
       <input id="codigoEv" type="text" autocapitalize="characters" autocomplete="off"
-        placeholder="Por ejemplo QUI-7FCE64" style="letter-spacing:.14em"></div>
+        placeholder="QUI-7FCE64" style="letter-spacing:.14em"></div>
     <button class="oro-btn" id="irEvento">Entrar</button>
   </div>`;
   const campo=app.querySelector('#codigoEv');
-  const entrar=()=>{
-    const v=campo.value.trim().toUpperCase();
-    if(v.length<4) return avisar('Escribí el código completo');
-    location.search='?e='+encodeURIComponent(v)+(HAY_DEMO?'&demo=1':'');
+  const btn=app.querySelector('#irEvento');
+  const entrar=async()=>{
+    if(btn.disabled) return;
+    if(normalizarCodigo(campo.value).length<6) return avisar('Escribí el código completo');
+    btn.disabled=true; btn.textContent='Buscando…';
+    let cod=null;
+    try{ cod=await resolverCodigo(campo.value); }catch(e){}
+    btn.disabled=false; btn.textContent='Entrar';
+    if(!cod) return avisar('No encontré esa fiesta. Fijate el código del cartel.');
+    location.search='?e='+encodeURIComponent(cod)+(HAY_DEMO?'&demo=1':'');
   };
   app.querySelector('#irEvento').onclick=entrar;
   campo.addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
