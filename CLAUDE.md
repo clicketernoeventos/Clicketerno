@@ -226,9 +226,10 @@ conviene tenerlo presente si alguien reporta algo raro:
 - Con el **muro cerrado**, al invitado ya no le entra nada: antes la app se
   lo escondía pero la base aceptaba. Ahora la base contesta *"El muro de
   esta fiesta está cerrado"*.
-- Un evento acepta **hasta 2000 recuerdos** y **120 por minuto**. Si alguna
-  vez una fiesta de verdad toca ese techo, el número está en la función
-  `ce_items_puerta` y se sube; no es una constante mágica escondida.
+- Un evento acepta **hasta 2000 recuerdos** y **300 por minuto** (eran 120
+  hasta que `rafaga.sql` los subió). Si alguna vez una fiesta de verdad
+  toca ese techo, el número está en la función `ce_items_puerta` y se sube;
+  no es una constante mágica escondida.
 - El **orden de la proyección** ya no lo puede elegir el que sube: el `ts`
   lo pone la base.
 
@@ -239,14 +240,15 @@ instalado menos esa función): pagina 1200 fotos en 500+500+200 sin repetir
 ni saltear ninguna, corta en 500 aunque le pidan 99999, y sin la clave del
 evento —o con la de otro— devuelve cero.
 
-**Falta correr `sql/rafaga.sql`** (22/09/2026). Sube el tope de ráfaga de
-120 a 300 recuerdos por minuto y por fiesta, y hace que ese rechazo llegue
-al navegador como un 429 en vez de un 403. Hasta que se corra, **una fiesta
-de 200 invitados pierde todo lo que pase de 120 en el minuto del brindis**:
-medido contra una copia del esquema de producción, la número 121 rebota.
-La web ya está del lado nuevo y aguanta las dos: con el tope viejo espera
-y vuelve a intentar sola, así que correrlo no es urgente para que ande —
-es urgente para que no haya que esperar.
+**`sql/rafaga.sql` está corrido** (22/09/2026): el dueño lo pasó por el SQL
+Editor y la comprobación dio `300` y `true`. Sube el tope de ráfaga de 120
+a 300 recuerdos por minuto y por fiesta, y hace que ese rechazo llegue al
+navegador como un 429 en vez de un 403. Antes de esto, **una fiesta de 200
+invitados perdía todo lo que pasara de 120 en el minuto del brindis** —
+medido contra una copia del esquema de producción, la número 121 rebotaba—
+y cada una de esas perdidas ya tenía el archivo subido, así que además
+   quedaba huérfano en el depósito.
+Así que **los cinco archivos están puestos**.
 
 **Nunca dar por puesto lo que dice este archivo: mirarlo.**
 `sql/estado.sql` lo contesta en dieciséis filas y dice de qué archivo
