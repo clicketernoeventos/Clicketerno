@@ -1277,9 +1277,16 @@ const SB = {
     return c;
   },
   async pedir(ruta, opciones){
-    const r = await fetch(NUBE.url+ruta, opciones);
+    /* El estado viaja pegado al error (ver conEstado): sin él, decidir si
+       vale la pena reintentar hay que hacerlo leyendo el texto del
+       mensaje, que cambia según de dónde venga. Un corte de red no llega
+       acá como respuesta: lo tira el propio fetch, y por eso se marca
+       aparte con 0. */
+    let r;
+    try{ r = await fetch(NUBE.url+ruta, opciones); }
+    catch(e){ throw conEstado(new Error(e&&e.message||'Failed to fetch'), 0); }
     const txt = await r.text();                 // siempre texto, nunca falla
-    if(!r.ok) throw new Error(txt || ('HTTP '+r.status));
+    if(!r.ok) throw conEstado(new Error(txt || ('HTTP '+r.status)), r.status);
     if(!txt) return null;                        // guardado correcto, sin contenido
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
@@ -1723,6 +1730,33 @@ async function item(c,id){
   if(v) cacheItem[k]=v;
   return v;
 }
+/* La foto ya está subida —eso es lo caro y lo lento— y lo que queda es un
+   pedido de un kilobyte. Si JUSTO ese se cae por un parpadeo del wifi, al
+   invitado le decíamos "no se pudo" y el archivo quedaba huérfano en el
+   depósito: pagado, invisible, y sin ninguna fila que lo nombre.
+   Reintentarlo es seguro porque el id lo pone el teléfono y es la CLAVE
+   PRIMARIA de ce_items: si el primer intento sí había entrado, el segundo
+   choca con la clave repetida. Por eso acá un "duplicate key" es un éxito
+   —quiere decir "ya estaba"— y no un error.
+   Esto vale para ce_items y NO para ce_eventos: ahí un código repetido
+   puede ser el evento de OTRO, y darlo por bueno sería meter al
+   organizador adentro de una fiesta ajena. */
+const yaEstaba=e=>/duplicate key|23505|already exists/i.test((e&&e.message)||'')
+  || (e&&e.estado===409);
+async function anotarItem(fila, clave){
+  const ESPERAS=[700,2000];
+  let ultimo=null;
+  for(let i=0;i<=ESPERAS.length;i++){
+    if(i) await esperarRed(ESPERAS[i-1]);
+    try{ return await SB.crear('ce_items', fila, clave); }
+    catch(e){
+      if(yaEstaba(e)) return null;
+      ultimo=e;
+      if(!seVuelveAIntentar(e)) throw e;
+    }
+  }
+  throw ultimo;
+}
 async function sumar(c,it,alAvanzar){
   if(!HAY_NUBE){
     /* Sin nube se guarda en el propio navegador, y ahí un Blob no sobrevive
@@ -1756,7 +1790,7 @@ async function sumar(c,it,alAvanzar){
     }
   }
   try{
-    await SB.crear('ce_items',{id:it.id, codigo:c, kind:it.kind, url,
+    await anotarItem({id:it.id, codigo:c, kind:it.kind, url,
       autor:it.autor, texto:it.texto||null, estado:it.estado, ts:it.ts}, claveDe(c));
   }catch(e){ e.paso='guardar en la base'; throw e; }
   cacheItem[c+it.id] = {...it, url, data:url||''};
@@ -4403,8 +4437,9 @@ async function vTarjetas(codigo){
     <div id="hoja" class="hoja-tarjetas de4"></div>
     <div class="no-imprime" style="max-width:420px;margin:0 auto">
       <button class="oro-btn" id="imprimir">Imprimir</button>
-      <p class="pie-nota">Si en vez de imprimir querés el archivo, elegí
-        "Guardar como PDF" en el cuadro de impresión.</p>
+      <p class="pie-nota">Si en vez de imprimir querés el archivo para
+        mandarlo por WhatsApp, elegí "Guardar como PDF" en el cuadro de
+        impresión.</p>
     </div>
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('evento/'+codigo);

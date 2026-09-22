@@ -44,3 +44,8 @@
 # guarde y no lo vuelva a pedir en cada pantalla.
 /lib/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Los iconos de "poner en la pantalla del teléfono": tampoco cambian, y el
+# sistema los pide cada vez que dibuja el acceso.
+/iconos/*
+  Cache-Control: public, max-age=31536000, immutable

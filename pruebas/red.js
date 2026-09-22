@@ -39,13 +39,14 @@ const JPG = Buffer.from(
   'base64');
 
 /* ── el andamio: una fiesta que existe, y el depósito bajo control ── */
-async function conFiesta(browser, guionDeSubida) {
+async function conFiesta(browser, guionDeSubida, guionDeFila) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const p = await ctx.newPage();
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message));
-  const intentos = [];
-  const guardado = [];
+  const intentos = [];   // cada vez que el depósito recibe un archivo
+  const filas = [];      // cada vez que la base recibe un insert
+  const guardado = [];   // los inserts que de verdad quedaron
 
   await p.route('**/cdnjs.cloudflare.com/**', (r) => r.fulfill({
     status: 200, contentType: 'application/javascript',
@@ -65,7 +66,11 @@ async function conFiesta(browser, guionDeSubida) {
       body: JSON.stringify([{ codigo: COD, nombre: 'Fiesta con mal wifi', fecha: '2026-11-08',
         tono: '#D9AE72', moderar: false, cerrado: false, creado: 1 }]) });
     if (u.includes('ce_items') && req.method() === 'POST') {
-      try { guardado.push(JSON.parse(req.postData() || '{}')); } catch (e) {}
+      let fila = {};
+      try { fila = JSON.parse(req.postData() || '{}'); } catch (e) {}
+      filas.push(fila);
+      if (guionDeFila) return guionDeFila(r, filas.length, fila, guardado);
+      guardado.push(fila);
       return r.fulfill({ status: 201, contentType: 'application/json', body: '[]' });
     }
     return r.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
@@ -73,7 +78,7 @@ async function conFiesta(browser, guionDeSubida) {
 
   await p.goto(BASE + '/muro.html#subir/' + COD, { waitUntil: 'domcontentloaded' });
   await p.waitForTimeout(1500);
-  return { ctx, p, intentos, guardado, errs };
+  return { ctx, p, intentos, filas, guardado, errs };
 }
 
 async function mandarUnaFoto(p) {
@@ -196,6 +201,58 @@ async function mandarUnaFoto(p) {
     else if (intentos !== 3) mal(`con la red cortada intentó ${intentos} veces, se esperaban 3`);
     else bien('con la red cortada intenta tres veces y recién ahí se rinde');
 
+    if (errs.length) mal('errores JS: ' + errs[0]);
+    await ctx.close();
+  }
+
+  /* ══ LA FILA QUE QUEDABA HUÉRFANA ══
+     Lo caro ya pasó: el archivo está arriba. Lo que queda es un pedido de
+     un kilobyte, y si JUSTO ese se cae, hasta acá el invitado veía "no se
+     pudo" y el archivo quedaba en el depósito sin ninguna fila que lo
+     nombre: pagado, invisible y para siempre. */
+  titulo('la foto ya subió y se cae el último pedido');
+  {
+    const { ctx, p, intentos, guardado, errs } = await conFiesta(browser,
+      (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"Key":"ok"}' }),
+      (r, n, fila, ok) => {
+        if (n === 1) return r.abort('connectionfailed');
+        ok.push(fila);
+        return r.fulfill({ status: 201, contentType: 'application/json', body: '[]' });
+      });
+    await mandarUnaFoto(p);
+    await p.waitForTimeout(9000);
+    const texto = (await p.evaluate(() => document.body.innerText)).toLowerCase();
+    if (!guardado.length) mal('la fila no se reintentó: el archivo quedó huérfano en el depósito');
+    else bien('reintenta el insert y la fila queda guardada');
+    if (intentos.length !== 1) mal(`volvió a subir el archivo ${intentos.length} veces (se paga dos veces)`);
+    else bien('y NO vuelve a subir el archivo, que ya estaba');
+    if (/no se pudo|algo se cort|error/.test(texto))
+      mal('quedó guardada pero le muestra un error: ' + texto.slice(0, 120));
+    else bien('y al invitado no se le muestra ningún error');
+    if (errs.length) mal('errores JS: ' + errs[0]);
+    await ctx.close();
+  }
+
+  titulo('el insert entró pero la respuesta se perdió');
+  {
+    /* El caso más difícil de ver: el primer intento SÍ llegó a la base, y
+       lo que se cortó fue la respuesta. El segundo intento choca con la
+       clave repetida —el id lo pone el teléfono y es la clave primaria—, y
+       eso quiere decir "ya estaba", no "falló". */
+    const { ctx, p, guardado, errs } = await conFiesta(browser,
+      (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"Key":"ok"}' }),
+      (r, n, fila, ok) => {
+        if (n === 1) { ok.push(fila); return r.abort('connectionfailed'); }
+        return r.fulfill({ status: 409, contentType: 'application/json',
+          body: '{"code":"23505","message":"duplicate key value violates unique constraint"}' });
+      });
+    await mandarUnaFoto(p);
+    await p.waitForTimeout(9000);
+    const texto = (await p.evaluate(() => document.body.innerText)).toLowerCase();
+    if (guardado.length !== 1) mal('el andamio no reprodujo el caso');
+    else if (/no se pudo|algo se cort|error|duplicate/.test(texto))
+      mal('la foto está guardada y le dice que falló: ' + texto.slice(0, 140));
+    else bien('una clave repetida se lee como "ya estaba", no como un error');
     if (errs.length) mal('errores JS: ' + errs[0]);
     await ctx.close();
   }

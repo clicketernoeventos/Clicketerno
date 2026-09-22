@@ -745,9 +745,14 @@ const SB = {
     return c;
   },
   async pedir(ruta,opciones){
-    const r = await fetch(NUBE.url+ruta, opciones);
+    /* El estado viaja pegado al error (ver conEstado): ver el comentario
+       igual en muro.html. */
+    let r;
+    try{ r = await fetch(NUBE.url+ruta, opciones); }
+    catch(e){ throw conEstado(new Error(e&&e.message||'Failed to fetch'), 0); }
     const txt = await r.text();
-    if(!r.ok){ let m=txt; try{ m=JSON.parse(txt).message||txt; }catch(e){} throw new Error(m||('HTTP '+r.status)); }
+    if(!r.ok){ let m=txt; try{ m=JSON.parse(txt).message||txt; }catch(e){}
+      throw conEstado(new Error(m||('HTTP '+r.status)), r.status); }
     if(!txt) return null;
     try{ return JSON.parse(txt); }catch(e){ return null; }
   },
@@ -1175,8 +1180,9 @@ async function vTarjetas(codigo){
     <div id="hoja" class="hoja-tarjetas de4"></div>
     <div class="no-imprime">
       <button class="oro-btn" id="imprimir">Imprimir</button>
-      <p class="ayudita" style="text-align:center">Si querés el archivo en vez de
-        papel, elegí "Guardar como PDF" en el cuadro de impresión.</p>
+      <p class="ayudita" style="text-align:center">Si querés el archivo para
+        mandarlo por WhatsApp en vez de papel, elegí "Guardar como PDF" en el
+        cuadro de impresión.</p>
     </div>
   </div>`;
   app.querySelectorAll('.cuantas button').forEach(b=>b.onclick=()=>{
@@ -2721,6 +2727,16 @@ if(HAY_DEMO){
 pintar();
 addEventListener('pagehide',detenerCamara);
 addEventListener('unhandledrejection',e=>{ console.error(e.reason); avisar('Algo falló: probá de nuevo'); e.preventDefault(); });
+/* Y lo que revienta SIN promesa de por medio. El muro ya lo tenía y el
+   rollo no: un toque que fallaba adentro de su propio manejador no dejaba
+   nada en pantalla, y del otro lado lo único que llega es "no anda".
+   El filtro del target es para no confundir una imagen rota con esto: los
+   errores de un <img> también llegan acá. */
+addEventListener('error',e=>{
+  if(e&&e.target&&e.target!==window) return;
+  console.error('error suelto',e.error||e.message);
+  try{ avisar('Algo falló: probá de nuevo'); }catch(_){}
+});
 </script>
 </body>
 </html>

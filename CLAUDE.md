@@ -410,6 +410,24 @@ las del cupo?, ¿puede ver las de otro?
   Lo mide `pruebas/red.js`, que también comprueba lo de siempre: que cuando
   de verdad no se pudo, el mensaje **no diga "listo"**. Contra el código
   anterior esa suite da 6 fallas.
+- **Lo caro ya pasó y lo que se cae es el último pedido de un kilobyte.**
+  La foto está subida y lo único que falta es la fila de `ce_items`. Si
+  JUSTO ese pedido se cae, hasta acá el invitado veía "no se pudo" y el
+  archivo quedaba **huérfano en el depósito: pagado, invisible y sin
+  ninguna fila que lo nombre**. Ahora `anotarItem()` lo reintenta.
+  **Reintentar un insert es seguro solo porque el `id` lo pone el teléfono
+  y es la CLAVE PRIMARIA de `ce_items`**: si el primer intento sí había
+  entrado y lo que se perdió fue la respuesta, el segundo choca con la
+  clave repetida. Por eso ahí un `duplicate key` (23505 / 409) es un
+  **éxito** —quiere decir "ya estaba"— y no un error.
+  **Esto vale para `ce_items` y NO para `ce_eventos`.** Ahí un código
+  repetido puede ser el evento de OTRO, y darlo por bueno sería meter al
+  organizador adentro de una fiesta ajena. Es la misma razón por la que
+  `SB.crear` no usa `merge-duplicates`.
+  Para que todo esto se pueda decidir sin leer el texto del mensaje —que
+  cambia según de dónde venga—, `SB.pedir` ahora **pega el estado HTTP al
+  error** (`conEstado`), y un corte de red, que no llega como respuesta
+  sino como excepción del propio `fetch`, se marca con 0.
 - **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
   pantalla del salón se refresca cada siete segundos; el panel del
   organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
