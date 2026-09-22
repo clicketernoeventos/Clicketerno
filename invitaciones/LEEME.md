@@ -25,12 +25,16 @@ Son los que ya usa la app. Una carpeta con uno de estos nombres tapa la
 aplicación entera:
 
     muro  rollo  app  sql  pruebas  invitaciones  logo  marca  og
-    privacidad  terminos  .well-known
+    privacidad  terminos  .well-known  iconos
 
 Los dos últimos de la primera línea y los de la segunda son páginas legales
 y archivos que el sitio tiene que servir sí o sí: una carpeta con uno de
 esos nombres tapa la Política de Privacidad, los Términos o el
 `security.txt`, y eso ya no es un bug, es un incumplimiento.
+
+`iconos` guarda los del manifiesto —los que hacen que el muro y el rollo se
+puedan poner en la pantalla del teléfono—. Una carpeta con ese nombre los
+tapa y el sistema dibuja un cuadrado gris con la inicial.
 
 `node pruebas/invitaciones.js` revisa esto y falla si alguna carpeta pisa
 algo. Corrélo después de agregar una.

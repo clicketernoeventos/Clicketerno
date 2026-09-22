@@ -11,7 +11,11 @@ const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   'logo','marca','og','index','_redirects','_headers',
                   /* los legales: una carpeta llamada "privacidad" taparía la
                      política de privacidad, que es una obligación legal */
-                  'privacidad','terminos','.well-known'];
+                  'privacidad','terminos','.well-known',
+                  /* los iconos de "poner en la pantalla del teléfono": una
+                     carpeta acá taparía los que declara el manifiesto, y el
+                     sistema pondría un cuadrado gris con la inicial */
+                  'iconos'];
 const TOPE_FOTO=300*1024, TOPE_TOTAL=12*1024*1024;
 /* La música es aparte: con preload="none" recién se baja si el invitado
    toca el botón, así que no frena la primera carga. Igual hay un tope:
@@ -26,7 +30,9 @@ const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')
     /* lib/ son las librerías del sitio (QR, zip, excel), no una invitación */
-    && !['sql','pruebas','invitaciones','node_modules','lib','apps-script'].includes(d);
+    && !['sql','pruebas','invitaciones','node_modules','lib','apps-script',
+         /* iconos/ son los del manifiesto, no una invitación */
+         'iconos'].includes(d);
 };
 const pesar=d=>fs.readdirSync(d,{withFileTypes:true}).reduce((t,e)=>{
   const p=path.join(d,e.name);
