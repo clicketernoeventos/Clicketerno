@@ -1743,16 +1743,29 @@ async function item(c,id){
    organizador adentro de una fiesta ajena. */
 const yaEstaba=e=>/duplicate key|23505|already exists/i.test((e&&e.message)||'')
   || (e&&e.estado===409);
+/* El freno de ráfaga de la base (ce_items_puerta) corta en N por minuto
+   POR FIESTA. Medido contra una copia del esquema de producción: con el
+   tope en 120, en una fiesta de 200 la número 121 del brindis rebota.
+   Acá eso duele el doble, porque el archivo YA está subido: perder la
+   fila es dejarlo huérfano y hacerle sacar la foto de nuevo.
+   Se lo reconoce por las dos puntas —el estado 429 y el texto de nuestro
+   propio mensaje— porque no depende de nosotros con qué estado lo
+   traduce PostgREST, y el mensaje sí: lo escribimos nosotros. */
+const esRafaga=e=>!!e && (e.estado===429
+  || /muchas juntas|demasiado r[áa]pido|rate limit/i.test((e&&e.message)||''));
 async function anotarItem(fila, clave){
-  const ESPERAS=[700,2000];
+  /* La ventana del freno es de un minuto, así que ahí no sirve esperar
+     dos segundos: se espera de verdad. Al invitado se le avisa (ver
+     quien llama) en vez de dejarlo mirando una barra quieta. */
+  const CORTAS=[700,2000], LARGAS=[9000,26000];
   let ultimo=null;
-  for(let i=0;i<=ESPERAS.length;i++){
-    if(i) await esperarRed(ESPERAS[i-1]);
+  for(let i=0;i<=CORTAS.length;i++){
+    if(i) await esperarRed((esRafaga(ultimo)?LARGAS:CORTAS)[i-1]);
     try{ return await SB.crear('ce_items', fila, clave); }
     catch(e){
       if(yaEstaba(e)) return null;
       ultimo=e;
-      if(!seVuelveAIntentar(e)) throw e;
+      if(!seVuelveAIntentar(e) && !esRafaga(e)) throw e;
     }
   }
   throw ultimo;

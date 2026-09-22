@@ -86,8 +86,22 @@ class Mano(http.server.SimpleHTTPRequestHandler):
         pass
 
 
+class Servidor(socketserver.ThreadingTCPServer):
+    """Atiende de a varios, como Cloudflare.
+
+    Con el TCPServer pelado atendía de a UNO: la prueba de sesenta
+    invitados mandando la foto al mismo tiempo fallaba con "timeout" en
+    cincuenta y tres de ellos, y no era la app — era este servidor
+    haciendo cola para entregar un HTML de 250 KB. Un servidor de
+    pruebas que no se parece al de verdad esconde justo lo que hay que
+    ver, y acá lo que escondía era lo contrario: inventaba una falla
+    que en producción no existe.
+    """
+    daemon_threads = True
+    allow_reuse_address = True
+
+
 if __name__ == '__main__':
     puerto = int(sys.argv[1]) if len(sys.argv) > 1 else 8099
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(('127.0.0.1', puerto), Mano) as s:
+    with Servidor(('127.0.0.1', puerto), Mano) as s:
         s.serve_forever()

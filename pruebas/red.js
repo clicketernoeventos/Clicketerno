@@ -257,6 +257,44 @@ async function mandarUnaFoto(p) {
     await ctx.close();
   }
 
+  /* ══ EL BRINDIS: LA BASE DICE "MUCHAS JUNTAS" ══
+     El freno de ráfaga de ce_items_puerta corta en N por minuto por
+     fiesta. Medido contra una copia del esquema de producción: con el
+     tope en 120, en una fiesta de 200 la 121 del brindis rebota. Y el
+     archivo YA está subido, así que rendirse ahí es dejarlo huérfano y
+     hacerle sacar la foto de nuevo al invitado. */
+  titulo('el brindis: la base contesta "están llegando muchas juntas"');
+  {
+    let arranquePico = 0;
+    const { ctx, p, intentos, guardado, errs } = await conFiesta(browser,
+      (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"Key":"ok"}' }),
+      (r, n, fila, ok) => {
+        /* El freno de la base es una VENTANA DE TIEMPO, no un contador
+           de intentos: sigue diciendo que no hasta que pasa el pico.
+           Reproducirlo así es lo único que mide el arreglo. Con la
+           escalera corta de antes (0,7 s + 2 s = menos de tres
+           segundos) nunca llega; con la larga, sí. */
+        if (n === 1) { arranquePico = Date.now(); }
+        if (Date.now() - arranquePico < 6000)
+          return r.fulfill({ status: 429, contentType: 'application/json',
+            body: '{"message":"Están llegando muchas juntas, probá de nuevo en un minuto"}' });
+        ok.push(fila);
+        return r.fulfill({ status: 201, contentType: 'application/json', body: '[]' });
+      });
+    await mandarUnaFoto(p);
+    await p.waitForTimeout(24000);      // la espera larga es de 9 s
+    const texto = (await p.evaluate(() => document.body.innerText)).toLowerCase();
+    if (!guardado.length) mal('se rindió con el freno de ráfaga: el archivo quedó huérfano');
+    else bien('espera y vuelve: la foto entra igual cuando pasa el pico');
+    if (intentos.length !== 1) mal(`volvió a subir el archivo ${intentos.length} veces`);
+    else bien('y no vuelve a subir el archivo');
+    if (/no se pudo|muchas juntas|error/.test(texto))
+      mal('entró pero le muestra un error: ' + texto.slice(0, 120));
+    else bien('y al invitado no se le muestra ningún error');
+    if (errs.length) mal('errores JS: ' + errs[0]);
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);

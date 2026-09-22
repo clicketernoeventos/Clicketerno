@@ -126,7 +126,9 @@ select verificar('los textos gigantes se recortan en la base, no en el navegador
    que sí habían entrado y la cuenta da cero, que no es lo que pasa. */
 do $ra$ declare i int; begin
   perform set_config('request.headers','{}',true);
-  for i in 1..200 loop
+  /* Cuatrocientos para un tope de trescientos: si se prueba con menos
+     del tope, la prueba pasa sin haber llegado nunca al freno. */
+  for i in 1..400 loop
     begin
       execute 'set local role anon';
       insert into ce_items(id,codigo,kind,url) values ('raf-'||i,'BLI-001','foto','https://x/y.jpg');
@@ -137,8 +139,10 @@ end $ra$;
 /* Se cuenta TODO lo de la fiesta en el minuto, no solo las 'raf-': el
    tope es por evento, y arriba ya habían entrado dos. Afirmar que las
    'raf-' son 120 daba 118 y hacía fallar una regla que funcionaba. */
-select verificar('la ráfaga corta a los 120 por minuto',
-  (select count(*) from ce_items where codigo='BLI-001')=120,
+/* Trescientos, no ciento veinte: con 120 la 121 del brindis de una
+   fiesta de 200 rebotaba. Lo sube sql/rafaga.sql. */
+select verificar('la ráfaga corta a los 300 por minuto',
+  (select count(*) from ce_items where codigo='BLI-001')=300,
   'entraron '||(select count(*) from ce_items where codigo='BLI-001'));
 
 /* Y el freno de eventos: treinta por minuto en toda la base. */

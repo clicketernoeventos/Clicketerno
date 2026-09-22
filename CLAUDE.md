@@ -187,11 +187,15 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 ### El orden en que se corre el SQL
 
     sql/claves.sql → sql/rollo.sql → sql/blindaje.sql → sql/blindaje2.sql
+    → sql/rafaga.sql
 
 `blindaje.sql` va **después de los dos primeros**: reemplaza políticas y
 funciones que ellos crean. `blindaje2.sql` va **al final**: cierra el muro
-(la puerta de `ce_items`) y usa funciones que crea `blindaje.sql`. Después, `sql/revisar.sql`, `sql/rollo_revisar.sql` y
-`sql/blindaje_revisar.sql` tienen que dar todas `true`.
+(la puerta de `ce_items`) y usa funciones que crea `blindaje.sql`.
+`rafaga.sql` va **después de blindaje2**: reemplaza `ce_items_puerta`
+entera, así que corrido antes lo pisa el otro. Después, `sql/revisar.sql`,
+`sql/rollo_revisar.sql` y `sql/blindaje_revisar.sql` tienen que dar todas
+`true`.
 
 **El orden entre la web y el SQL NO es libre: primero la web, después el
 SQL.** La app nueva aguanta la base vieja (prueba la función y, si no está,
@@ -234,6 +238,15 @@ pasarla se probó contra una copia local idéntica a producción (todo
 instalado menos esa función): pagina 1200 fotos en 500+500+200 sin repetir
 ni saltear ninguna, corta en 500 aunque le pidan 99999, y sin la clave del
 evento —o con la de otro— devuelve cero.
+
+**Falta correr `sql/rafaga.sql`** (22/09/2026). Sube el tope de ráfaga de
+120 a 300 recuerdos por minuto y por fiesta, y hace que ese rechazo llegue
+al navegador como un 429 en vez de un 403. Hasta que se corra, **una fiesta
+de 200 invitados pierde todo lo que pase de 120 en el minuto del brindis**:
+medido contra una copia del esquema de producción, la número 121 rebota.
+La web ya está del lado nuevo y aguanta las dos: con el tope viejo espera
+y vuelve a intentar sola, así que correrlo no es urgente para que ande —
+es urgente para que no haya que esperar.
 
 **Nunca dar por puesto lo que dice este archivo: mirarlo.**
 `sql/estado.sql` lo contesta en dieciséis filas y dice de qué archivo
@@ -428,6 +441,28 @@ las del cupo?, ¿puede ver las de otro?
   cambia según de dónde venga—, `SB.pedir` ahora **pega el estado HTTP al
   error** (`conEstado`), y un corte de red, que no llega como respuesta
   sino como excepción del propio `fetch`, se marca con 0.
+- **El brindis no es un ataque.** El freno de ráfaga de `ce_items_puerta`
+  cortaba en **120 recuerdos por minuto y por fiesta**, con el comentario
+  "ciento veinte por minuto no los manda una persona". No los manda una
+  persona: los manda una fiesta. Medido contra una copia del esquema de
+  producción entero, con 200 invitados subiendo en el mismo minuto —que es
+  exactamente lo que pasa cuando el QR aparece en la pantalla o se levanta
+  el brindis— **entran 120 y rebotan 80**, y cada una de esas 80 ya tenía
+  el archivo subido: el invitado pierde la foto y en el depósito queda un
+  archivo huérfano. Lo sube a 300 `sql/rafaga.sql`. El techo de verdad
+  sigue siendo el de **2000 por fiesta**, que es el que limita lo que un
+  script puede costarnos en depósito.
+  Del lado de la web, ese rechazo ahora **se espera y se vuelve a
+  intentar** (`esRafaga` + la escalera larga de `anotarItem`, 9 s y 26 s):
+  la ventana del freno es de un minuto, así que ahí esperar dos segundos
+  no sirve de nada. Se lo reconoce por el estado **429** y también por el
+  texto del mensaje, porque con qué estado lo traduce PostgREST no depende
+  de nosotros y el mensaje sí.
+  **Así se midió esa prueba y así hay que medir cualquier tope**: el falso
+  tiene que rechazar por una VENTANA DE TIEMPO, no por un contador de
+  intentos. La primera versión rechazaba "el primer intento" y pasaba
+  contra el código viejo también —que ya reintentaba, solo que con esperas
+  cortas—: no medía el arreglo, medía que existiera un reintento.
 - **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
   pantalla del salón se refresca cada siete segundos; el panel del
   organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
