@@ -286,8 +286,14 @@ const ART6=[
   for(const [q,arch] of [['la política de privacidad','privacidad.html'],
                          ['los términos y condiciones','terminos.html']]){
     const t=fs.readFileSync(path.join(RAIZ,arch),'utf8');
-    if(/\[PENDIENTE: razón social y CUIT\]/.test(t))
-      nota(`${q} todavía dice "[PENDIENTE: razón social y CUIT]": hay que completarlo`);
+    /* El marcador vive en un COMENTARIO del HTML, no a la vista: un
+       "[PENDIENTE: …]" entre corchetes publicado en una página legal es
+       peor que no tener la línea. El recordatorio sigue saliendo en cada
+       corrida igual. */
+    if(/FALTA COMPLETAR: razon-social-cuit/.test(t))
+      nota(`${q} todavía no tiene la identificación fiscal (razón social y CUIT): hay que completarla`);
+    if(/\[PENDIENTE/.test(t))
+      mal(`${q} tiene un "[PENDIENTE…]" a la vista del cliente`);
   }
 
   if(errs.length) mal('errores de JavaScript: '+errs.slice(0,2).join(' | '));
