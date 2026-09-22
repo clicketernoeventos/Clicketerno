@@ -371,10 +371,45 @@ las del cupo?, ¿puede ver las de otro?
   130 MB por hora, en el teléfono del organizador y con el wifi del salón.
   Ahora pregunta solo por los que esperan y solo su `id`. Medido, no
   estimado: `pruebas/recorrido.js` falla si se vuelve al sondeo caro.
-  **La pantalla del salón sigue haciendo lo mismo**: 1131 pedidos y 132 MB
-  por hora con 1500 recuerdos. No tiene fugas (DOM y memoria quedan planos
-  toda la noche) pero es plata. Está sin resolver a propósito: tocar el
-  refresco de la proyección en plena fiesta es lo más delicado que hay.
+  **La pantalla del salón hacía lo mismo y ya no**: medido, 1029 pedidos y
+  **137,2 MB por hora** con 1500 recuerdos. Ahora pide solo la **punta**
+  —los aprobados que vienen DESPUÉS de los que ya tiene, con "cuántos
+  llevamos" de `offset`— y eso son unos veinte bytes por vuelta:
+  **137,2 MB → prácticamente cero**, los mismos 514 pedidos.
+  Funciona porque los dos caminos de lectura (`ce_items` con la clave y
+  `ce_items_de` sin ella) devuelven SOLO lo aprobado y en el mismo orden
+  `(ts, id)`, así que la cantidad que llevamos ES el offset. Una foto nueva
+  y una recién aprobada caen las dos ahí: las dos suben el total.
+  **Lo que la punta no ve es lo que DESAPARECE** —un recuerdo borrado o
+  desaprobado no deja hueco en la punta—, y por eso cada 30 vueltas
+  (`RESINCRO`, tres minutos y medio) se vuelve a leer todo. Sin esa red una
+  foto borrada se seguiría proyectando toda la noche.
+  Lo mide `pruebas/recorrido.js`, y comprobado contra el código anterior:
+  ahí falla con 3 lecturas completas en 22 segundos.
+  El competidor resuelve lo mismo con un `text/event-stream` (el servidor
+  avisa en vez de que el teléfono pregunte). Es más lindo y necesita un
+  servidor; esto no necesita ninguno y da el mismo resultado.
+- **En el wifi de un salón, que la conexión se corte dos segundos es lo
+  normal, no una excepción.** Doscientos teléfonos colgados del mismo
+  router. Hasta acá el primer tropiezo le devolvía "no se pudo" al
+  invitado: en el muro se perdía la foto y en el rollo se perdía ADEMÁS una
+  de las que tenía para sacar, porque `ce_tomar_foto` reserva el cupo
+  ANTES de subir. Ahora `SB.archivo` (muro) y `SB.subir` (rollo) intentan
+  **tres veces**, esperando 1,2 s y 3,5 s.
+  **Solo se repite lo que puede salir bien la próxima**: un corte, un
+  tiempo agotado, un 5xx o un 429. Un 4xx es una negativa —el camino ya
+  existe, el archivo es muy grande, el muro está cerrado— y repetirla es
+  hacerlo esperar para darle el mismo error. Eso lo decide
+  `seVuelveAIntentar()`, que mira el estado HTTP, no el texto del mensaje.
+  Dos detalles que no son adorno: si el teléfono está **sin señal** se
+  espera al evento `online` en vez de gastar un intento contra el vidrio
+  (`esperarRed`, con tope de 20 s), y hay un **tope total de 4 minutos**
+  además del de intentos, porque tres esperas seguidas de tres minutos cada
+  una es una pantalla que parece colgada. Reintentar la misma ruta ya
+  reservada del rollo NO gasta otra foto.
+  Lo mide `pruebas/red.js`, que también comprueba lo de siempre: que cuando
+  de verdad no se pudo, el mensaje **no diga "listo"**. Contra el código
+  anterior esa suite da 6 fallas.
 - **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
   pantalla del salón se refresca cada siete segundos; el panel del
   organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
@@ -549,6 +584,88 @@ las del cupo?, ¿puede ver las de otro?
   todo lo demás en 12px. Y los dos grupos de mandos, que abajo de 640px
   van uno sobre otro arriba de todo, le tapaban el logo y el título. Lo
   mide `pruebas/movil.js` con cajas de verdad.
+
+## El competidor: instante.camera
+
+Medido sobre dos capturas de red (HAR) del sitio real, el 22/09/2026. Es el
+servicio que el dueño puso como referencia para la interfaz del rollo.
+
+**Están en Rosario.** El WhatsApp del pie es **341 542-9448** y la empresa
+detrás se llama **Runia**. No es un competidor lejano.
+
+**Precios**, leídos del `AggregateOffer` de su propia página: gratis hasta
+**30 invitados**, y cinco planes pagos por tamaño de evento —50, 100, 150,
+200 y más de 200— de **$19.900 a $99.900**, o USD 14,99 a 89,99. Un solo
+pago al crear el evento, MercadoPago en Argentina y tarjeta desde afuera,
+con cuotas sin interés. El gratis es el anzuelo: el que prueba con una
+juntada después paga la boda.
+
+**Cómo está hecho**: Next.js en Vercel, cuenta con email y contraseña
+(Better Auth), fotos en Cloudflare R2, y PostHog + píxel de Meta + píxel de
+TikTok, con grabación de sesión. Están pautando.
+
+**Cómo sube una foto** (los tres primeros pasos son nuestro
+`ce_tomar_foto`): pide permiso y le contestan `{ok:true, restantes:24}`
+—**24 fotos por invitado, el mismo número que usamos**—, pide dónde subir y
+el servidor le **firma una URL de subida que dura 10 minutos**, sube, y
+confirma. El teléfono no elige la carpeta.
+
+**Dónde son más débiles, y es lo único que importa**: la lectura. La foto
+revelada se sirve desde un **depósito PÚBLICO** (`pub-….r2.dev`) sin firma,
+sin vencimiento y para siempre. Antes del revelado su servidor no entrega
+la dirección —eso está bien—, pero su privacidad es *"la dirección es
+imposible de adivinar"*. La nuestra es *"el servidor se niega a firmarla"*.
+No es lo mismo y es lo que vendemos.
+Tampoco tienen CSP (solo la que Next le pone a su optimizador de imágenes).
+
+**Qué medían mal mis primeras conclusiones**, por si alguien vuelve sobre
+esto: se dijo que sus fotos eran de 480x640 y ~80 KB mirando una captura de
+DevTools. Era el tamaño con el que se MOSTRABA. El archivo de verdad, sacado
+del HAR, es **941x1355 y 533 KB** — más pesado que el nuestro (441 KB). Un
+tamaño en el inspector no es el tamaño del archivo.
+
+**Lo que les tomamos**: que la app se pueda poner en la pantalla del
+teléfono (lo hicieron con un manifiesto; nosotros también, ver abajo) y la
+idea de no sondear —ellos usan `text/event-stream`, nosotros pedimos solo
+la punta, mismo resultado sin servidor—.
+
+**Lo que NO les tomamos y por qué**:
+
+- *El blog* (71 notas apuntadas a "cuánto sale cabina de fotos", "espejo
+  mágico precio"…). Es su canal de captación y se nota que funciona, pero
+  el dueño lo bajó por ahora: *"el blog no me interesa"*. Está acá anotado
+  para cuando cambie de idea.
+- *Un filtro por evento, elegido por el organizador.* Nosotros vamos más
+  lejos: el invitado elige entre cinco **por foto**, viendo en vivo cómo
+  queda. No hay nada que copiar.
+- *Los píxeles de Meta y TikTok en la pantalla del invitado.* Ellos cargan
+  los dos, con grabación de sesión, donde un menor saca una foto en una
+  fiesta. Frente a la Ley 25.326 eso es exposición, y no cargar terceros es
+  parte de lo que vendemos.
+- *El recap en video*: lo tienen. Descartado por el dueño el 16/09. No
+  insistir.
+
+## Que se pueda poner en la pantalla del teléfono
+
+`muro.webmanifest` y `rollo.webmanifest`, con los iconos en `iconos/`
+(generados de `marca.webp`: 192, 512, uno `maskable` de 512 con más margen
+porque Android recorta en círculo, y uno de 180 para iOS).
+
+**A propósito NO hay service worker.** En un sitio sin build que se publica
+solo con cada push, un service worker es la forma más rápida de dejarle a
+un cliente una versión vieja pegada para siempre — y lo que se pidió es
+estabilidad. El costo: en Android no salta el cartel automático de
+"instalar", pero la opción del menú del navegador funciona igual. En el
+iPhone —que es donde están los invitados— "Añadir a pantalla de inicio"
+alcanza con el manifiesto y las dos `meta` de Apple.
+
+**Son cuatro piezas y si falta una el navegador se calla**: ni un error,
+simplemente no ofrece instalarla. Por eso `pruebas/nuevas.js` las prueba
+las cuatro contra el servidor de verdad —incluido que cada icono declarado
+se baje, porque un icono 404 es peor que no declararlo: el sistema pone un
+cuadrado gris con la inicial—. Y `pruebas/servidor.py` tuvo que aprender
+que `.webmanifest` es `application/manifest+json`: Python lo servía como
+`octet-stream` y el navegador lo ignoraba sin decir nada.
 
 ## Los 90 días
 

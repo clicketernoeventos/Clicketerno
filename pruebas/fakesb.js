@@ -175,7 +175,11 @@ function crearFake(modo = 'ok', cerrada = true) {
           out = out.filter((f) => String(f[campo]) === v);
         }
       }
-      if (q.order && q.order.startsWith('ts.asc')) out.sort((a, b) => a.ts - b.ts);
+      /* con desempate por id, como PostgREST y como ce_items_de: sin él,
+         dos filas con el mismo ts salen en cualquier orden y el offset de
+         la tanda siguiente repite una y se saltea otra. */
+      if (q.order && q.order.startsWith('ts.asc'))
+        out.sort((a, b) => (a.ts - b.ts) || String(a.id).localeCompare(String(b.id)));
       if (q.order && q.order.startsWith('creado.desc')) out.sort((a, b) => (b.creado || 0) - (a.creado || 0));
       // como la base de verdad: nunca más de TOPE filas, y respeta offset
       const desde = +(q.offset || 0);

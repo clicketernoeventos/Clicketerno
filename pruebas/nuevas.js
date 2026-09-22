@@ -490,6 +490,62 @@ const EVENTO=extra=>Object.assign({codigo:'QUI-7FCE64',nombre:'Delfina',fecha:'2
     await ctx.close();
   }
 
+  /* ══ SE PUEDE PONER EN LA PANTALLA DEL TELÉFONO ══
+     El competidor lo tiene y nosotros no lo teníamos. Son cuatro piezas y
+     si falta una el navegador se calla: ni un error, simplemente no
+     ofrece instalarla. Por eso se prueban las cuatro, y contra el
+     servidor de verdad (que manda el tipo de contenido correcto), no
+     mirando el HTML. */
+  {
+    const ctx=await browser.newContext({viewport:{width:390,height:844}});
+    const p=await ctx.newPage();
+    for(const app of ['muro','rollo']){
+      await p.goto(`${BASE}/${app}.html`,{waitUntil:'domcontentloaded'});
+      await p.waitForTimeout(400);
+      const href=await p.evaluate(()=>{
+        const l=document.querySelector('link[rel=manifest]');
+        return l?l.href:null;
+      });
+      if(!href){ mal(`${app}: no declara manifiesto, no se puede instalar`); continue; }
+      const r=await p.request.get(href);
+      if(!r.ok()){ mal(`${app}: el manifiesto da ${r.status()}`); continue; }
+      if(!/manifest\+json|application\/json/.test(r.headers()['content-type']||''))
+        mal(`${app}: el manifiesto se sirve como ${r.headers()['content-type']}, el navegador lo ignora`);
+      let m=null; try{ m=JSON.parse(await r.text()); }catch(e){}
+      if(!m){ mal(`${app}: el manifiesto no es JSON válido`); continue; }
+      const faltan=['name','short_name','start_url','display','icons']
+        .filter(k=>!m[k]||(Array.isArray(m[k])&&!m[k].length));
+      if(faltan.length) mal(`${app}: al manifiesto le faltan ${faltan.join(', ')}`);
+      else bien(`${app}: el manifiesto está completo`);
+      if(m.display!=='standalone') mal(`${app}: display es "${m.display}", se abre con la barra del navegador`);
+      /* Un icono declarado que da 404 es peor que no declararlo: el sistema
+         pone un cuadrado gris con la inicial. */
+      let rotos=0;
+      for(const ic of m.icons||[]){
+        const ri=await p.request.get(new URL(ic.src,href).href);
+        if(!ri.ok()||!/^image\//.test(ri.headers()['content-type']||'')) rotos++;
+      }
+      if(rotos) mal(`${app}: ${rotos} iconos del manifiesto no se bajan`);
+      else bien(`${app}: los ${(m.icons||[]).length} iconos se bajan`);
+      if(!(m.icons||[]).some(i=>/maskable/.test(i.purpose||'')))
+        mal(`${app}: sin icono "maskable", Android le recorta el logo`);
+      /* iOS no lee el manifiesto: mira estas dos. Sin ellas, "Añadir a
+         pantalla de inicio" guarda un acceso que abre Safari con su barra. */
+      const ios=await p.evaluate(()=>({
+        capaz:!!document.querySelector('meta[name="apple-mobile-web-app-capable"][content="yes"]'),
+        icono:(document.querySelector('link[rel="apple-touch-icon"]')||{}).href||null
+      }));
+      if(!ios.capaz) mal(`${app}: en el iPhone se abriría con la barra de Safari`);
+      if(!ios.icono) mal(`${app}: sin icono para el iPhone`);
+      else{
+        const ri=await p.request.get(ios.icono);
+        if(!ri.ok()) mal(`${app}: el icono del iPhone da ${ri.status()}`);
+        else bien(`${app}: el iPhone la puede poner en la pantalla de inicio`);
+      }
+    }
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
 })();

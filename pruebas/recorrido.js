@@ -104,9 +104,40 @@ const PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAA
  await org.locator('#cola .si').first().click(); await org.waitForTimeout(1500);
  af(fake.db.ce_items[0].estado==='aprobado','aprueba y la base lo marca aprobado',fake.db.ce_items[0].estado);
 
- await sala.reload({waitUntil:'domcontentloaded'}); await sala.waitForTimeout(2200);
- await sala.locator('[data-modo="muro"]').click().catch(()=>{}); await sala.waitForTimeout(1800);
- af((await T(sala)).includes('Que sean muy felices'),'ahora sí se proyecta',await T(sala));
+ /* SIN recargar. Recargar borra la evidencia: la pantalla del salón vuelve
+    a leer todo al arrancar, así que con recarga esto pasaba igual estuviera
+    o no andando el refresco. */
+ await sala.waitForTimeout(9000);
+ af((await T(sala)).includes('Que sean muy felices'),
+    'sin recargar, la pantalla del salón se entera sola de la aprobación',await T(sala));
+
+ console.log('\n═══ LA PANTALLA DEL SALÓN QUIETA NO GASTA DATOS ═══');
+ /* Medido antes de este arreglo: la pantalla del salón se bajaba el índice
+    ENTERO cada siete segundos —1131 pedidos y 132 MB por hora con 1500
+    recuerdos, en el teléfono del organizador y con el wifi del salón—.
+    Ahora pide solo la punta: los aprobados que vienen DESPUÉS de los que ya
+    tiene. Una lectura completa es la que arranca en el principio de la
+    lista (offset 0 / p_desde 0).
+    Comprobado contra el código anterior: ahí esta prueba falla (3 lecturas
+    completas en 22 segundos). */
+ let salaGordos=0, salaFinos=0;
+ sala.on('request', r=>{
+   const u=r.url();
+   if(/\/rest\/v1\/ce_items\?/.test(u)){
+     if(/offset=0(&|$)/.test(u)||!/offset=/.test(u)) salaGordos++; else salaFinos++;
+   }
+   if(/\/rpc\/ce_items_de/.test(u)){
+     const b=r.postData()||'';
+     if(/"p_desde"\s*:\s*0(\D|$)/.test(b)) salaGordos++; else salaFinos++;
+   }
+ });
+ await sala.waitForTimeout(22000);           // tres vueltas del reloj de 7 s
+ af(salaGordos===0,
+    'quieta 22 segundos, la pantalla del salón no vuelve a bajarse el índice entero',
+    `lo bajó ${salaGordos} veces (y pidió la punta ${salaFinos})`);
+ af(salaFinos>0,
+    'pero sigue preguntando: pide solo la punta',
+    `${salaFinos} pedidos de punta`);
 
  console.log('\n═══ SEGUNDO APARATO, CON LA CLAVE ═══');
  /* Navegador aparte de verdad: en el mismo contexto comparten localStorage

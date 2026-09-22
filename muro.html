@@ -7,6 +7,19 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
+<!-- Que se pueda poner en la pantalla del teléfono, como cualquier app.
+     En el iPhone eso es "Compartir → Añadir a pantalla de inicio" y alcanza
+     con esto. A propósito NO hay service worker: en un sitio sin build que
+     se publica solo con cada push, un service worker es la forma más
+     rápida de dejarle a un cliente una versión vieja pegada para siempre.
+     En Android eso hace que no salte el cartel automático de "instalar",
+     pero la opción del menú del navegador funciona igual. -->
+<link rel="manifest" href="/muro.webmanifest">
+<link rel="apple-touch-icon" href="/iconos/apple-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Muro en vivo">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -1226,6 +1239,33 @@ const nuevaClave=()=>{
   }
 };
 
+/* ══════════ reintentar una subida que se cortó ══════════
+   Tres piezas chicas que usan el muro y el rollo igual. Si cambian, cambian
+   en los dos. */
+/* El mensaje solo no alcanza para decidir: hay que saber con qué contestó
+   el servidor. 0 = ni contestó (se cortó la red o se agotó el tiempo). */
+const conEstado=(e,estado)=>{ e.estado=estado; return e; };
+/* Se vuelve a intentar lo que puede andar la próxima: un corte, un tiempo
+   agotado, un 5xx (el servidor se cayó) o un 429 (pedí demasiado rápido).
+   Un 4xx es una negativa y no cambia por insistir. */
+const seVuelveAIntentar=e=>{
+  const n=e&&typeof e.estado==='number'?e.estado:null;
+  if(n===null) return false;              // no vino de una subida: no tocar
+  return n===0 || n===408 || n===429 || n>=500;
+};
+/* Espera, y si el teléfono está sin señal espera a que vuelva en vez de
+   gastar el intento al vidrio. El tope existe para no quedarse colgado
+   para siempre: al invitado hay que contestarle algo. */
+const esperarRed=(ms,tope=20000)=>new Promise(listo=>{
+  const dormir=()=>setTimeout(listo,ms);
+  if(typeof navigator==='undefined'||navigator.onLine!==false) return dormir();
+  let hecho=false;
+  const seguir=()=>{ if(hecho) return; hecho=true;
+    window.removeEventListener('online',seguir); clearTimeout(t); dormir(); };
+  const t=setTimeout(seguir,tope);
+  window.addEventListener('online',seguir);
+});
+
 const SB = {
   cab(extra, clave){
     const c=Object.assign({
@@ -1330,9 +1370,35 @@ const SB = {
     }
     return null;
   },
+  /* En el wifi de un salón lleno, un corte de dos segundos es lo normal, y
+     hasta acá el primer tropiezo le devolvía "no se pudo" al invitado y la
+     foto se perdía. Ahora se intenta tres veces.
+     Solo se repite lo que PUEDE salir bien en el segundo intento: un corte
+     de red, un tiempo agotado, o un 5xx/429 del servidor. Un 4xx es una
+     negativa —el camino ya existe, el archivo es muy grande, el muro está
+     cerrado— y repetirla es hacerlo esperar para darle el mismo error.
+     Y si el teléfono está sin señal, no se gasta un intento al vidrio:
+     espera a que vuelva. */
+  async archivo(ruta, blob, alAvanzar){
+    const ESPERAS=[1200,3500], ARRANQUE=Date.now(), TOPE_TOTAL=240000;
+    let ultimo=null;
+    for(let i=0;i<=ESPERAS.length;i++){
+      /* Un tope de tiempo además del de intentos: cada intento ya puede
+         tardar lo suyo y tres seguidos son una espera que al invitado le
+         parece que se colgó. Pasados cuatro minutos se le contesta. */
+      if(i && Date.now()-ARRANQUE > TOPE_TOTAL) break;
+      if(i){
+        if(alAvanzar) alAvanzar(0);       // que la barra vuelva a empezar
+        await esperarRed(ESPERAS[i-1]);
+      }
+      try{ return await this.unArchivo(ruta, blob, alAvanzar); }
+      catch(e){ ultimo=e; if(!seVuelveAIntentar(e)) throw e; }
+    }
+    throw ultimo;
+  },
   /* XHR en vez de fetch para poder mostrar el avance y cortar si se cuelga:
      en un salón con mala señal, "Revelando…" quedaba girando sin fin. */
-  archivo(ruta, blob, alAvanzar){
+  unArchivo(ruta, blob, alAvanzar){
     return new Promise((res,rej)=>{
       const x=new XMLHttpRequest();
       x.open('POST',`${NUBE.url}/storage/v1/object/ce-medios/${ruta}`);
@@ -1352,10 +1418,10 @@ const SB = {
       };
       x.onload=()=>{
         if(x.status>=200&&x.status<300) res(`${NUBE.url}/storage/v1/object/public/ce-medios/${ruta}`);
-        else rej(new Error(x.responseText||('HTTP '+x.status)));
+        else rej(conEstado(new Error(x.responseText||('HTTP '+x.status)), x.status));
       };
-      x.onerror=()=>rej(new Error('Failed to fetch'));
-      x.ontimeout=()=>rej(new Error('La subida tardó demasiado'));
+      x.onerror=()=>rej(conEstado(new Error('Failed to fetch'), 0));
+      x.ontimeout=()=>rej(conEstado(new Error('La subida tardó demasiado'), 0));
       x.send(blob);
     });
   }
@@ -1584,9 +1650,13 @@ const POR_TANDA=1000;
    sin que alguien lo mire primero" se cumplía solo del lado del dibujo, y
    un invitado con la consola abierta las veía igual. */
 async function itemsDe(c, campos, desde, cuanto){
+  /* el desempate por id NO es decorativo: dos recuerdos con el mismo ts
+     pueden salir en distinto orden en cada tanda, y con offset de por medio
+     eso es una fila repetida y otra que no aparece nunca. La función de la
+     base ya ordena por (ts, id); acá faltaba. */
   if(puedoEditar(c))
     return await SB.ver('ce_items',
-      `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
+      `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc,id.asc`
       +`&offset=${desde}&limit=${cuanto}`, claveDe(c));
   if(hayFuncionesNuevas!==false){
     try{
@@ -1598,7 +1668,7 @@ async function itemsDe(c, campos, desde, cuanto){
     }
   }
   return await SB.ver('ce_items',
-    `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc`
+    `codigo=eq.${encodeURIComponent(c)}&select=${campos}&order=ts.asc,id.asc`
     +`&offset=${desde}&limit=${cuanto}`);
 }
 async function porTandas(c, campos){
@@ -3853,6 +3923,10 @@ async function vPantalla(codigo){
 
   const tela=app.querySelector('#tela'), destello=app.querySelector('#destello');
   let ids=[], cursor=-1, vueltas=0, arrancado=false;
+  /* Cada cuántas vueltas del reloj se vuelve a leer TODO. Ver la nota de
+     colaNueva(): 30 vueltas de 7 s son tres minutos y medio. */
+  const RESINCRO=30;
+  let vueltasSondeo=0;
 
   const telaT=app.querySelector('#telaT');
   /* el tablero y el muro comparten el mismo mecanismo; cambia el recuadro */
@@ -4003,12 +4077,61 @@ async function vPantalla(codigo){
     marco(`<div class="mosaico">${fotos.map((f,i)=>`<img src="${src(f.data)}" style="animation-delay:${i*.1}s">`).join('')}</div>`,'encaja');
     return true;
   }
+  /* Solo la PUNTA: los aprobados que vienen después de los que ya tenemos.
+     Devuelve null si no se pudo pedir así, y entonces el que llama lee todo.
+
+     El sondeo de la pantalla del salón se bajaba el índice ENTERO cada
+     siete segundos: medido, 1131 pedidos y 132 MB por hora con 1500
+     recuerdos, en el teléfono del organizador y con el wifi del salón. Y
+     durante la fiesta las fotos entran de a una, así que casi todo eso era
+     volver a bajar lo que ya estaba.
+
+     Como los dos caminos devuelven SOLO lo aprobado y en el mismo orden
+     (ts, id), "cuántos llevamos" es un offset exacto. Una foto nueva y una
+     que el organizador acaba de aprobar caen las dos acá: las dos suben el
+     total de aprobados.
+
+     Lo que esto NO ve es lo que DESAPARECE —un recuerdo borrado, o
+     desaprobado—, porque pedir la punta nunca muestra un hueco de más
+     atrás. Para eso está la relectura completa cada RESINCRO vueltas: sin
+     ella una foto borrada se seguiría proyectando toda la noche. */
+  async function colaNueva(cuantosLlevamos){
+    if(!HAY_NUBE) return null;
+    try{
+      if(puedoEditar(codigo))
+        return await SB.ver('ce_items',
+          `codigo=eq.${encodeURIComponent(codigo)}&estado=eq.aprobado`
+          +`&select=id,kind,autor,ts,estado&order=ts.asc,id.asc`
+          +`&offset=${cuantosLlevamos}&limit=${POR_TANDA}`, claveDe(codigo));
+      if(hayFuncionesNuevas!==false){
+        const v=await SB.rpc('ce_items_de',
+          {p_codigo:codigo, p_desde:cuantosLlevamos, p_cuanto:POR_TANDA});
+        if(Array.isArray(v)) return v;
+      }
+    }catch(e){ /* que lea todo */ }
+    return null;
+  }
   async function revisar(){
-    const idx=(await indice(codigo)).filter(i=>i.estado==='aprobado');
     const cuenta=app.querySelector('#cuenta');
     if(!cuenta||!tela.isConnected) return false;   // la vista ya no está
-    const nuevos=idx.filter(i=>!ids.includes(i.id));
-    ids=idx.map(i=>i.id);
+    let nuevos;
+    /* la primera vuelta y cada RESINCRO: todo. El resto: la punta. */
+    const todo = !ids.length || (vueltasSondeo % RESINCRO)===0;
+    vueltasSondeo++;
+    let cola = todo ? null : await colaNueva(ids.length);
+    if(cola===null){
+      const idx=(await indice(codigo)).filter(i=>i.estado==='aprobado');
+      nuevos=idx.filter(i=>!ids.includes(i.id));
+      ids=idx.map(i=>i.id);
+    }else{
+      /* el camino sin clave trae la fila entera: aprovecharla evita un
+         pedido más por foto cuando le toque proyectarse */
+      for(const v of cola) if(v && typeof v.url==='string' && !cacheItem[codigo+v.id]){
+        v.data=v.url; cacheItem[codigo+v.id]=v;
+      }
+      nuevos=cola.filter(i=>i.estado==='aprobado' && !ids.includes(i.id));
+      ids=ids.concat(nuevos.map(i=>i.id));
+    }
     if(cuenta.dataset.n!==String(ids.length)){
       cuenta.innerHTML='<b style="font:inherit">0</b><small>En el muro</small>';
       contarHasta(cuenta.querySelector('b'),ids.length,700);

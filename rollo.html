@@ -7,6 +7,19 @@
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex">
 <link rel="icon" href="marca.webp" type="image/webp">
+<!-- Que se pueda poner en la pantalla del teléfono, como cualquier app.
+     En el iPhone eso es "Compartir → Añadir a pantalla de inicio" y alcanza
+     con esto. A propósito NO hay service worker: en un sitio sin build que
+     se publica solo con cada push, un service worker es la forma más
+     rápida de dejarle a un cliente una versión vieja pegada para siempre.
+     En Android eso hace que no salte el cartel automático de "instalar",
+     pero la opción del menú del navegador funciona igual. -->
+<link rel="manifest" href="/rollo.webmanifest">
+<link rel="apple-touch-icon" href="/iconos/apple-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Rollo eterno">
+<meta name="mobile-web-app-capable" content="yes">
 <!-- En el repo, no en un CDN: ver el comentario de muro.html. -->
 <script src="lib/qrcode.min.js"></script>
 <script src="lib/jszip.min.js"></script>
@@ -698,6 +711,33 @@ const enlaceDelRollo=(c,rev)=>HAY_DEMO
   : `https://clicketerno.com.ar/rollo?e=${c}`;
 
 /* ── cliente mínimo de Supabase (sin librerías) ── */
+/* ══════════ reintentar una subida que se cortó ══════════
+   Tres piezas chicas que usan el muro y el rollo igual. Si cambian, cambian
+   en los dos. */
+/* El mensaje solo no alcanza para decidir: hay que saber con qué contestó
+   el servidor. 0 = ni contestó (se cortó la red o se agotó el tiempo). */
+const conEstado=(e,estado)=>{ e.estado=estado; return e; };
+/* Se vuelve a intentar lo que puede andar la próxima: un corte, un tiempo
+   agotado, un 5xx (el servidor se cayó) o un 429 (pedí demasiado rápido).
+   Un 4xx es una negativa y no cambia por insistir. */
+const seVuelveAIntentar=e=>{
+  const n=e&&typeof e.estado==='number'?e.estado:null;
+  if(n===null) return false;              // no vino de una subida: no tocar
+  return n===0 || n===408 || n===429 || n>=500;
+};
+/* Espera, y si el teléfono está sin señal espera a que vuelva en vez de
+   gastar el intento al vidrio. El tope existe para no quedarse colgado
+   para siempre: al invitado hay que contestarle algo. */
+const esperarRed=(ms,tope=20000)=>new Promise(listo=>{
+  const dormir=()=>setTimeout(listo,ms);
+  if(typeof navigator==='undefined'||navigator.onLine!==false) return dormir();
+  let hecho=false;
+  const seguir=()=>{ if(hecho) return; hecho=true;
+    window.removeEventListener('online',seguir); clearTimeout(t); dormir(); };
+  const t=setTimeout(seguir,tope);
+  window.addEventListener('online',seguir);
+});
+
 const SB = {
   cab(extra, clave){
     const c=Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{});
@@ -731,7 +771,27 @@ const SB = {
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {method:'PATCH',
       headers:this.cab({Prefer:'return=minimal'},clave), body:JSON.stringify(obj)});
   },
-  subir(ruta,blob){
+  /* Tres intentos. Acá importa más que en el muro: la foto YA le descontó
+     una del cupo (ce_tomar_foto reserva antes de subir), así que perderla
+     por un corte de dos segundos del wifi del salón es perderle una foto
+     de verdad al invitado. Reintentar la MISMA ruta reservada no gasta
+     otra: el cupo ya está tomado.
+     Qué se reintenta y qué no: ver seVuelveAIntentar(). */
+  async subir(ruta,blob){
+    const ESPERAS=[1200,3500], ARRANQUE=Date.now(), TOPE_TOTAL=240000;
+    let ultimo=null;
+    for(let i=0;i<=ESPERAS.length;i++){
+      /* Un tope de tiempo además del de intentos: cada intento ya puede
+         tardar lo suyo y tres seguidos son una espera que al invitado le
+         parece que se colgó. Pasados cuatro minutos se le contesta. */
+      if(i && Date.now()-ARRANQUE > TOPE_TOTAL) break;
+      if(i) await esperarRed(ESPERAS[i-1]);
+      try{ return await this.unaSubida(ruta,blob); }
+      catch(e){ ultimo=e; if(!seVuelveAIntentar(e)) throw e; }
+    }
+    throw ultimo;
+  },
+  unaSubida(ruta,blob){
     return new Promise((res,rej)=>{
       const x=new XMLHttpRequest();
       x.open('POST', `${NUBE.url}/storage/v1/object/ce-rollos/${ruta}`);
@@ -739,9 +799,10 @@ const SB = {
       x.setRequestHeader('Authorization','Bearer '+NUBE.clave);
       x.setRequestHeader('Content-Type', blob.type||'image/jpeg');
       x.timeout=60000;
-      x.onload=()=> (x.status>=200&&x.status<300) ? res(true) : rej(new Error(x.responseText||('HTTP '+x.status)));
-      x.onerror=()=>rej(new Error('Failed to fetch'));
-      x.ontimeout=()=>rej(new Error('La subida tardó demasiado'));
+      x.onload=()=> (x.status>=200&&x.status<300) ? res(true)
+        : rej(conEstado(new Error(x.responseText||('HTTP '+x.status)), x.status));
+      x.onerror=()=>rej(conEstado(new Error('Failed to fetch'), 0));
+      x.ontimeout=()=>rej(conEstado(new Error('La subida tardó demasiado'), 0));
       x.send(blob);
     });
   },

@@ -46,6 +46,16 @@ def casa(patron, ruta):
 
 
 class Mano(http.server.SimpleHTTPRequestHandler):
+    # Python no conoce .webmanifest y lo serviría como "octet-stream": el
+    # navegador entonces ignora el manifiesto sin decir nada y la app deja
+    # de poder ponerse en la pantalla del teléfono. Cloudflare sí lo manda
+    # bien, así que sin esto la diferencia esconde justo lo que hay que ver.
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        '.webmanifest': 'application/manifest+json',
+        '.webp': 'image/webp',
+    }
+
     def __init__(self, *a, **k):
         super().__init__(*a, directory=RAIZ, **k)
 
