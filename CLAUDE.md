@@ -830,6 +830,19 @@ tiene la puerta para entrar **al muro y al rollo** de ese evento. Resuelve
 lo que hacía falta de verdad: hasta acá, un rollo solo se manejaba desde el
 teléfono donde se creó.
 
+**Se puede guardar antes de borrar.** La central es la única pantalla donde
+las fotos de un cliente se borran para siempre, y hasta el 22/09 ofrecía
+"Muro", "Rollo" y "Borrar": **ninguna puerta para guardar**. Como hoy las
+fotos viven en un solo lugar, lo que se borra de ahí no está en ninguna
+otra parte. Ahora cada fila lleva un **"Bajar"** en dorado —va primero, y
+lleva a `#album/CODIGO`, que es donde está "Descargar todo"— y el borrado
+en tanda avisa, ANTES de pedir la confirmación, que no hay otra copia.
+Lo mide `pruebas/vencimiento.js`.
+**Esto no reemplaza un respaldo de verdad**: sigue siendo a mano, uno por
+evento, y depende de que alguien se acuerde. El respaldo del contenido
+sigue en la lista de lo que solo puede hacer el dueño.
+
+
 **No hay nada automático del lado del servidor.** La limpieza es a mano,
 una vez por mes. Si algún día se automatiza, va como tarea programada en la
 base, no en el navegador de nadie.

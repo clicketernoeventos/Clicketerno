@@ -885,6 +885,12 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .btn-fila.ir{border-color:var(--gris);color:var(--champan);text-decoration:none;
   display:inline-flex;align-items:center}
 .btn-fila.ir:hover{border-color:var(--oro);color:var(--oro);background:transparent}
+/* "Bajar" no es una puerta más: es la única copia que existe de las fotos
+   de un cliente. Va en dorado para que se vea antes que "Borrar". */
+.aviso-copia{font-size:12.5px;line-height:1.7;color:#E8CFA8;margin:0 0 16px;
+  padding:12px 14px;border-left:2px solid var(--oro);background:rgba(217,174,114,.07)}
+.btn-fila.ir.guardar{border-color:var(--oro);color:var(--oro)}
+.btn-fila.ir.guardar:hover{background:rgba(217,174,114,.12)}
 @media (max-width:520px){
   /* En un teléfono la fila no entra en una línea: nombre arriba, y los
      botones abajo alineados a la derecha. */
@@ -2605,6 +2611,13 @@ const filaVence=(e,borrable)=>`
         ${e.cerrado?' · cerrado':''}${tieneRollo(e)&&e.revelado?' · revelado':''}</span></span>
     ${pastillaVence(e.d)}
     <span class="entrar-ev">
+      <!-- La puerta para GUARDAR, y va primero. Esta pantalla borraba las
+           fotos de un cliente para siempre y no ofrecía en ningún lado
+           bajarlas antes: había que entrar al evento y buscar el botón.
+           Hoy las fotos viven en un solo lugar, así que este enlace es el
+           único respaldo que existe. -->
+      <a class="btn-fila ir guardar" href="#album/${esc(e.codigo)}"
+         title="Abrir el álbum para bajarlo antes de borrarlo">Bajar</a>
       <a class="btn-fila ir" href="#evento/${esc(e.codigo)}">Muro</a>
       ${tieneRollo(e)?`<a class="btn-fila ir" href="rollo#ev/${esc(e.codigo)}">Rollo</a>`:''}
     </span>
@@ -2692,6 +2705,13 @@ async function vLimpieza(){
   if(pedir) pedir.onclick=()=>{
     const zona=app.querySelector('#zonaTodos');
     zona.innerHTML=`
+      <!-- Lo que hay que decir ANTES, no después: hoy las fotos viven en un
+           solo lugar. Lo que se borra acá no está en ninguna otra parte, y
+           el que aprieta el botón es el único que puede saber si esos
+           álbumes ya se bajaron. -->
+      <p class="aviso-copia">Las fotos de estos eventos <b>no están guardadas en
+        ningún otro lado</b>. Si querés quedarte con alguna, bajá el álbum
+        primero con el botón <b style="color:var(--oro)">Bajar</b> de cada fila.</p>
       <div class="campo" style="margin-bottom:14px">
         <label for="confBorrar">Escribí <b style="color:#E08A82">BORRAR</b> para confirmar</label>
         <input id="confBorrar" type="text" autocomplete="off" autocapitalize="characters" placeholder="BORRAR"></div>

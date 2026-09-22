@@ -357,6 +357,54 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
     await ctx.close();
   }
 
+  // ═══ 7. la única copia que existe ═══
+  /* La central es la pantalla donde las fotos de un cliente se borran para
+     siempre. Hoy viven en un solo lugar: si de acá se borran sin bajarlas,
+     no hay de dónde sacarlas. Hasta este arreglo, esta pantalla ofrecía
+     "Muro", "Rollo" y "Borrar", y ninguna puerta para GUARDAR. */
+  console.log('\n─── se puede guardar antes de borrar ───');
+  {
+    fake.ultimo=fake({});
+    const {ctx,p,errs}=await abrir(browser,{admin:true});
+    await p.goto(BASE+'/muro.html#central',{waitUntil:'domcontentloaded'});
+    await p.waitForTimeout(3000);
+    const filas=await p.$$eval('.fila-vence',ns=>ns.map(n=>({
+      cod:n.dataset.fila,
+      bajar:!!n.querySelector('a.guardar'),
+      destino:(n.querySelector('a.guardar')||{}).getAttribute
+        ? n.querySelector('a.guardar').getAttribute('href') : null,
+      borrar:!!n.querySelector('[data-borra]'),
+    })));
+    if(!filas.length) mal('la central no muestra ninguna fila: no se puede medir');
+    else{
+      const sinBajar=filas.filter(f=>!f.bajar);
+      if(sinBajar.length)
+        mal(`${sinBajar.length} de ${filas.length} filas no ofrecen bajar el álbum: `
+           +sinBajar.map(f=>f.cod).join(', '));
+      else bien(`las ${filas.length} filas ofrecen bajar el álbum antes de nada`);
+      /* Sin exigir que HAYA alguno, este chequeo pasa contra el código
+         que no tiene el botón: filtrar una lista vacía da una lista vacía
+         y "ninguno está mal" es verdadero. Es la trampa de la caja de 0x0. */
+      const conBoton=filas.filter(f=>f.bajar);
+      const mal2=conBoton.filter(f=>!/^#album\//.test(f.destino||''));
+      if(!conBoton.length) mal('no hay ningún botón de bajar: no se puede mirar a dónde lleva');
+      else if(mal2.length) mal('el botón de bajar no lleva al álbum: '+mal2[0].destino);
+      else bien('y lleva al álbum, que es donde está "Descargar todo"');
+      /* Que el que borra en tanda SEPA que no hay otra copia. */
+      const hayBorrables=filas.some(f=>f.borrar);
+      if(!hayBorrables) mal('no hay vencidos en el andamio: no se puede medir el aviso');
+      else{
+        await p.click('#pedirTodos'); await p.waitForTimeout(500);
+        const aviso=(await p.locator('.aviso-copia').innerText().catch(()=>'')).toLowerCase();
+        if(!/no est[áa]n guardadas en ning[úu]n otro lado/.test(aviso))
+          mal(`antes de borrar en tanda no avisa que no hay copia: "${aviso.slice(0,90)}"`);
+        else bien('y antes de borrar en tanda avisa que no hay otra copia');
+      }
+    }
+    if(errs.length) mal('errores JS: '+errs.join(' | '));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fallas.length?`\n${fallas.length} FALLAS`:'\n✓ Sin fallas');
   process.exit(fallas.length?1:0);
