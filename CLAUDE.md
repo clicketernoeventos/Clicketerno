@@ -722,6 +722,65 @@ cuadrado gris con la inicial—. Y `pruebas/servidor.py` tuvo que aprender
 que `.webmanifest` es `application/manifest+json`: Python lo servía como
 `octet-stream` y el navegador lo ignoraba sin decir nada.
 
+## La cámara del invitado
+
+Es la pantalla donde el invitado pasa la noche. Lo que se pidió de ella
+—"que la app guíe sola, una cosa para tocar por pantalla"— no se cumplía, y
+lo que faltaba no era decoración:
+
+**Se ve que es un rollo.** Arriba hay una tira de cuadraditos, uno por foto
+del cupo, que se van apagando. El número de las que quedan está al lado, en
+grande. Antes el contador era un `21 QUEDAN` chiquito en un rincón de
+abajo, del mismo peso visual que todo lo demás: lo que hace que esto sea
+una cámara descartable y no una app de fotos es justamente que las fotos se
+**acaban**, y eso no se veía. Arriba de 36 de cupo los cuadraditos no se
+dibujan —sesenta rayitas de dos píxeles no dicen nada— y ahí el total se
+escribe.
+
+**"21 de 24" se lee de las dos maneras.** La primera versión de esto decía
+eso y es ambiguo: puede entenderse como "vas por la foto 21 de 24", o sea
+que quedan tres, que es lo contrario. Dice **"quedan"**, que no se presta, y
+hay una prueba que lo cuida.
+
+**Los filtros se pliegan.** Los cinco en vivo son lo mejor que tiene la
+pantalla —el competidor tiene uno solo, elegido por el organizador— así que
+se muestran abiertos al entrar, que es el momento en que impresionan. Pero
+el filtro se elige UNA vez y el disparador se toca veinticuatro: con la
+tira siempre abierta había **seis cosas tocables abajo, del mismo tamaño
+que el disparador**, y 170 de los 844 píxeles de un teléfono ocupados para
+siempre por una decisión ya tomada. Sacada la primera foto —o elegido un
+filtro— la tira se pliega a una ficha con el nombre, que la vuelve a abrir.
+Quedan **dos** controles abajo. Eso está medido en `pruebas/rollo_camara.js`,
+no opinado: la prueba cuenta los controles visibles en la mitad de abajo y
+contra el código anterior da 6.
+El filtro elegido se recuerda en el aparato (`ce:filtro`), y con la tira
+plegada las muestras dejan de dibujarse: eran tres repintados por segundo
+de cinco canvas que nadie está mirando, o sea batería del invitado.
+
+**Una sola línea, y cambia sola.** El pie era un párrafo fijo que explicaba
+lo mismo toda la noche —a partir de la segunda foto no lo lee nadie—. Ahora
+dice dónde está: la primera, el acuse de la que acaba de salir, las últimas
+tres, la última. **El acuse y el aviso van en el MISMO renglón**: con el
+acuse solo, en la foto que más importa —la última— tapaba justo el aviso, y
+el aviso aparecía recién tres segundos después, cuando el invitado ya había
+disparado de nuevo. Lo agarró la prueba.
+
+**El velo de arriba llega hasta abajo del contador.** Con 150px tapaba solo
+el nombre de la fiesta: apuntando a algo claro —una pared blanca, el cielo,
+una pantalla— los cuadraditos y el número quedaban ilegibles sobre la
+propia imagen.
+
+**Los nombres cortos de los filtros** (`corto`) existen porque "Blanco y
+negro" envolvía a dos líneas y esa sola columna empujaba la tira entera más
+abajo que las otras cuatro. En la ficha va el nombre entero.
+
+**Lo que las pruebas del rollo usan de esta pantalla y no se puede
+renombrar sin mirarlas**: `#disparo`, `#cRestan`, `#video`, `#altNativa` y
+`.pie-camara` (que en demostración tiene que seguir diciendo "se vuelve a
+llenar"). `rollo_cinta.js` daba por hecho que en la pantalla aparecía la
+palabra "quedan" para saber si había llegado a la cámara: es un proxy
+frágil, y conviene mirarlo si alguna vez se cambia ese texto.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -1168,10 +1227,15 @@ dejaría peor parados.
   un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
   en hardware real: la cámara de un iPhone (Safari es donde más se rompió
   esto), el revelado en una pantalla chica, y el wifi de un salón lleno.
-- **Darle forma a la interfaz del rollo.** Es el paso que sigue y está
-  pedido: que la app guíe sola, una cosa para tocar por pantalla, y
-  personalizarla. La referencia que gustó es instante.camera, pero con
-  interfaz propia y más moderna: copiar el funcionamiento, no el aspecto.
+- **Darle forma a la interfaz del rollo.** **La cámara del invitado está
+  hecha** (ver su apartado más arriba): el rollo se ve gastarse, abajo
+  quedan dos cosas para tocar en vez de seis, y la línea de abajo guía
+  sola. Falta la otra mitad de lo pedido: **personalizarla**. Hoy todos los
+  rollos nacen con el mismo dorado —`tono` se aplica pero se crea clavado
+  en `#D9AE72` y el organizador no tiene dónde cambiarlo— y la portada es
+  lo único propio de cada fiesta. La referencia sigue siendo
+  instante.camera, que tiene un "Estudio" con el branding del evento:
+  copiar el funcionamiento, no el aspecto.
 - ~~**Video recap** del álbum~~. **Descartado por el dueño** (16/09), con
   la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que

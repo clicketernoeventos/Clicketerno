@@ -364,8 +364,11 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .camara .flash.on{animation:flashea .32s ease-out}
 @keyframes flashea{0%{opacity:.9}100%{opacity:0}}
 /* dos sombras suaves para que se lea lo de arriba y lo de abajo */
-.camara .velo-arr{position:absolute;top:0;left:0;right:0;height:150px;pointer-events:none;
-  background:linear-gradient(180deg,rgba(0,0,0,.7),transparent)}
+/* Tiene que llegar hasta ABAJO del contador del rollo: apuntando a algo
+   claro —una pared blanca, el cielo, una pantalla— los cuadraditos y el
+   número quedaban ilegibles sobre la propia imagen. */
+.camara .velo-arr{position:absolute;top:0;left:0;right:0;height:250px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.78) 30%,rgba(0,0,0,.45) 65%,transparent)}
 .camara .velo-aba{position:absolute;bottom:0;left:0;right:0;height:330px;pointer-events:none;
   background:linear-gradient(0deg,rgba(0,0,0,.88) 30%,transparent)}
 
@@ -380,23 +383,49 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .cam-abajo{position:relative;z-index:3;margin-top:auto;
   padding:0 0 calc(20px + env(safe-area-inset-bottom))}
 /* la tira de filtros: cada uno muestra lo que estás apuntando ahora mismo */
-.tira-filtros{display:flex;gap:14px;overflow-x:auto;padding:0 22px 16px;scrollbar-width:none;
-  scroll-snap-type:x proximity}
+.tira-filtros{display:flex;gap:8px;overflow-x:auto;padding:0 14px 14px;scrollbar-width:none;
+  scroll-snap-type:x proximity;justify-content:center}
 .tira-filtros::-webkit-scrollbar{display:none}
-.filtro-op{flex:none;width:62px;display:flex;flex-direction:column;align-items:center;gap:7px;
+/* 62px no le entran a "Blanco y negro": envolvía a dos líneas y esa sola
+   columna empujaba la tira entera más abajo que las otras. */
+.filtro-op{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:7px;
   scroll-snap-align:center}
 .filtro-op canvas{width:56px;height:56px;border-radius:10px;display:block;background:#141210;
   border:2px solid transparent;transition:border-color .25s,transform .25s var(--e)}
 .filtro-op[aria-pressed=true] canvas{border-color:var(--oro);transform:scale(1.06)}
-.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(246,242,234,.6);text-align:center;line-height:1.25}
+.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(246,242,234,.6);text-align:center;
+  line-height:1.25;white-space:nowrap}
 .filtro-op[aria-pressed=true] span{color:var(--oro)}
 
-.fila-disparo{display:flex;align-items:center;justify-content:space-between;padding:0 30px}
-/* el contador, como la ventanita de una descartable */
-.contador-rollo{width:62px;text-align:center;flex:none}
-.contador-rollo b{display:block;font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;color:var(--texto)}
-.contador-rollo span{display:block;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(246,242,234,.5);margin-top:5px}
+.fila-disparo{display:flex;align-items:center;justify-content:center;padding:0 30px}
+
+/* ── el rollo, arriba ──
+   Los cuadraditos son la película: se apagan de a uno. Con un cupo grande
+   no entran, así que arriba de TOPE_CUADROS se dibuja solo el número: una
+   tira de sesenta rayitas de dos píxeles no dice nada. */
+.rollo-tira{position:relative;z-index:3;padding:12px 18px 0;text-align:center}
+.cuadros{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;max-width:320px;margin:0 auto}
+.cuadros i{display:block;width:8px;height:12px;border-radius:2px;background:var(--oro);
+  box-shadow:0 0 6px rgba(217,174,114,.45);transition:background .4s,box-shadow .4s}
+.cuadros i.gastado{background:rgba(246,242,234,.14);box-shadow:none}
+.rollo-cuenta{margin-top:6px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(246,242,234,.5);display:flex;align-items:baseline;justify-content:center;gap:7px}
+.rollo-cuenta b{font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;letter-spacing:0;
+  color:var(--texto);text-transform:none;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+/* cuando quedan pocas, el número lo dice sin que haya que leer */
+.rollo-tira.poquitas .rollo-cuenta b{color:var(--oro)}
+.rollo-tira.ultima .rollo-cuenta b{color:var(--oro);animation:latecuenta 1.8s ease-in-out infinite}
+@keyframes latecuenta{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.rollo-tira.ultima .rollo-cuenta b{animation:none}}
+
+/* la ficha del filtro, cuando la tira está plegada */
+.filtro-chip{display:flex;align-items:center;gap:9px;margin:0 auto 14px;padding:9px 16px;
+  border-radius:999px;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
+  border:1px solid rgba(246,242,234,.16);min-height:var(--toque)}
+.filtro-chip .pto{width:12px;height:12px;border-radius:3px;background:var(--oro);flex:none}
+.filtro-chip span{font-size:12.5px;color:var(--texto)}
+.filtro-chip em{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(246,242,234,.5);font-style:normal}
 .disparar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(246,242,234,.9);
   position:relative;flex:none;transition:transform .12s}
 .disparar:before{content:'';position:absolute;inset:5px;border-radius:50%;
@@ -1036,12 +1065,16 @@ if(HAY_DEMO){
 
 /* "grano" es cuánta textura de película lleva cada uno. Sin esto un filtro
    es apenas un cambio de color; el grano es lo que hace que parezca film. */
+/* "corto" es el nombre que va debajo de la muestra en la tira: con el
+   nombre entero, "Blanco y negro" envolvía a dos líneas y esa columna
+   empujaba la tira más abajo que las otras cuatro, y los cinco no entraban
+   en 390px sin scrollear. El nombre entero sigue estando en la ficha. */
 const FILTROS=[
-  {id:'natural', nombre:'Natural',        css:'none', grano:0,  muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
-  {id:'clasico', nombre:'Clásico',        css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
-  {id:'bn',      nombre:'Blanco y negro', css:'grayscale(1) contrast(1.15) brightness(1.05)', grano:20, muestra:'linear-gradient(135deg,#111,#ccc)'},
-  {id:'flash',   nombre:'Flash',          css:'contrast(1.28) brightness(1.15) saturate(.85)', grano:8,  muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
-  {id:'dorado',  nombre:'Dorado',         css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
+  {id:'natural', nombre:'Natural',        corto:'Natural', css:'none', grano:0,  muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
+  {id:'clasico', nombre:'Clásico',        corto:'Clásico', css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
+  {id:'bn',      nombre:'Blanco y negro', corto:'B y N',   css:'grayscale(1) contrast(1.15) brightness(1.05)', grano:20, muestra:'linear-gradient(135deg,#111,#ccc)'},
+  {id:'flash',   nombre:'Flash',          corto:'Flash',   css:'contrast(1.28) brightness(1.15) saturate(.85)', grano:8,  muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
+  {id:'dorado',  nombre:'Dorado',         corto:'Dorado',  css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
 ];
 
 /* ══════════ el filtro de la foto guardada ══════════
@@ -1441,25 +1474,54 @@ async function vCamara(m,guardado,estado){
         <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
       </button>
     </div>
+    <!-- El rollo, arriba y a la vista. Antes el "quedan 21" era un número
+         chico en un rincón de abajo, del mismo tamaño que todo lo demás, y
+         lo que hace que esto sea una cámara descartable y no una app de
+         fotos es justamente que las fotos se ACABAN. Los cuadraditos se
+         van apagando: se VE el rollo gastándose. -->
+    <div class="rollo-tira" id="rolloTira">
+      <div class="cuadros" id="cuadros" aria-hidden="true"></div>
+      <!-- "21 DE 24" se lee de las dos maneras: puede entenderse como "vas
+           por la foto 21 de 24", o sea tres, que es lo contrario. La
+           palabra "quedan" no se presta. El total lo dicen los cuadraditos;
+           cuando son tantos que no se dibujan, se escribe. -->
+      <p class="rollo-cuenta"><b id="cRestan">${cupoDe(estado)-(Number(estado.disparos)||0)}</b><span>quedan${cupoDe(estado)>36?` de ${cupoDe(estado)}`:''}</span></p>
+    </div>
     <label class="native-alt" id="altNativa" hidden>Usar la cámara del teléfono
       <input type="file" accept="image/*" capture="environment" hidden></label>
     <div class="cam-abajo">
-      <div class="tira-filtros" id="filtros" role="group" aria-label="Filtro"></div>
-      <div class="fila-disparo">
-        <div class="contador-rollo"><b id="cRestan">${cupoDe(estado)-(Number(estado.disparos)||0)}</b><span>quedan</span></div>
-        <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
-        <div class="hueco"></div>
+      <!-- Los filtros se eligen una vez, no por foto, pero la vista previa
+           EN VIVO de los cinco es lo mejor que tenemos: se muestra abierta
+           al principio —ese es el momento en que impresiona— y después de
+           la primera foto se pliega a una sola ficha. Así abajo queda UNA
+           cosa para tocar: el disparador. -->
+      <div class="filtros-caja" id="filtrosCaja">
+        <div class="tira-filtros" id="filtros" role="group" aria-label="Filtro"></div>
+        <button class="filtro-chip" id="filtroChip" hidden aria-expanded="false">
+          <i class="pto"></i><span id="filtroNombre"></span><em>cambiar</em></button>
       </div>
-      <p class="pie-camara">Una vez que sale, sale: sin repetir y sin verla todavía.${
-        HAY_DEMO?'<br><span style="color:var(--oro)">Es una prueba: el rollo se vuelve a llenar solo.</span>':''}</p>
+      <div class="fila-disparo">
+        <button class="disparar" id="disparo" aria-label="Sacar foto"></button>
+      </div>
+      <!-- Una sola línea, y cambia sola según dónde está el invitado: la
+           primera foto, las últimas tres, la última. Antes era un párrafo
+           fijo que explicaba lo mismo para siempre. -->
+      <p class="pie-camara" id="pieCamara"></p>
     </div>
   </div>`;
 
   video=app.querySelector('#video');
+  /* el que ya eligió su filtro en este teléfono no tiene que volver a
+     elegirlo cada vez que entra a la cámara */
+  try{
+    const guardadoF=localStorage.getItem('ce:filtro');
+    const f=guardadoF&&FILTROS.find(x=>x.id===guardadoF);
+    if(f) filtroActual=f;
+  }catch(e){}
   const filtrosEl=app.querySelector('#filtros');
   filtrosEl.innerHTML=FILTROS.map(f=>`
     <button class="filtro-op" data-f="${f.id}" aria-pressed="${f.id===filtroActual.id}">
-      <canvas width="112" height="112"></canvas><span>${esc(f.nombre)}</span></button>`).join('');
+      <canvas width="112" height="112"></canvas><span>${esc(f.corto||f.nombre)}</span></button>`).join('');
 
   /* Cada filtro se muestra aplicado a lo que la cámara está viendo AHORA,
      no a un degradado ni a una foto de archivo. Es la diferencia entre
@@ -1467,6 +1529,9 @@ async function vCamara(m,guardado,estado){
   let relojMuestras=null;
   function pintarMuestras(){
     if(!video||!video.videoWidth) return;
+    /* con la tira plegada los cinco canvas no se ven: dibujarlos tres
+       veces por segundo es batería del invitado tirada al vidrio */
+    if(typeof filtrosAbiertos!=='undefined' && !filtrosAbiertos) return;
     const lado=Math.min(video.videoWidth,video.videoHeight);
     const cx=(video.videoWidth-lado)/2, cy=(video.videoHeight-lado)/2;
     filtrosEl.querySelectorAll('[data-f]').forEach(b=>{
@@ -1482,13 +1547,43 @@ async function vCamara(m,guardado,estado){
   }
   const granoVisor=app.querySelector('#granoVisor');
   const pintarGranoVisor=()=>{ if(granoVisor) granoVisor.style.opacity=String((filtroActual.grano||0)/26); };
+  /* ── la tira se pliega ──
+     Los cinco filtros en vivo son lo mejor que tiene esta pantalla, pero
+     el filtro se elige UNA vez y el disparador se toca veinticuatro. Con
+     la tira siempre abierta, abajo había cinco cosas para tocar del mismo
+     tamaño que el disparador, y 170 de los 844 píxeles del teléfono
+     ocupados para siempre por una decisión ya tomada.
+     Abierta al entrar —ese es el momento en que impresiona— y plegada a
+     una ficha en cuanto elegís o sacás la primera. */
+  const cajaFiltros=app.querySelector('#filtrosCaja');
+  const chip=app.querySelector('#filtroChip');
+  const chipNombre=app.querySelector('#filtroNombre');
+  let filtrosAbiertos=true;
+  function pintarChip(){
+    if(chipNombre) chipNombre.textContent=filtroActual.nombre;
+    const pto=chip&&chip.querySelector('.pto');
+    /* la muestra del filtro en la ficha: el mismo degradé que usa la tira */
+    if(pto) pto.style.background=filtroActual.muestra||'var(--oro)';
+  }
+  function mostrarFiltros(abrir){
+    filtrosAbiertos=!!abrir;
+    filtrosEl.hidden=!filtrosAbiertos;
+    if(chip){ chip.hidden=filtrosAbiertos; chip.setAttribute('aria-expanded',String(filtrosAbiertos)); }
+    pintarChip();
+  }
+  if(chip) chip.onclick=()=>mostrarFiltros(true);
   filtrosEl.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{
     filtroActual=FILTROS.find(f=>f.id===b.dataset.f);
     filtrosEl.querySelectorAll('[data-f]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     if(video) video.style.filter=filtroActual.css;
     pintarGranoVisor();
+    /* Se recuerda en el aparato: el que vuelve a entrar a la cámara no
+       tiene que volver a elegir. */
+    try{ localStorage.setItem('ce:filtro', filtroActual.id); }catch(e){}
+    mostrarFiltros(false);
   });
   pintarGranoVisor();
+  pintarChip();
 
   const btnDisparo=app.querySelector('#disparo');
   const btnGirar=app.querySelector('#girar');
@@ -1565,8 +1660,57 @@ async function vCamara(m,guardado,estado){
     const f=app.querySelector('#flash'); if(!f) return;
     f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
   }
-  function pintarContador(){
+  /* ── el rollo y la línea que guía ──
+     Las dos cosas que faltaban en esta pantalla: VER que las fotos se
+     acaban, y que la app diga qué pasa sin que haya que preguntarle. */
+  const TOPE_CUADROS=36;          // más que esto y las rayitas no dicen nada
+  const cupoTotal=cupoDe(estado);
+  const tiraRollo=app.querySelector('#rolloTira');
+  const cuadros=app.querySelector('#cuadros');
+  const pie=app.querySelector('#pieCamara');
+  if(cuadros){
+    if(cupoTotal>TOPE_CUADROS) cuadros.hidden=true;
+    else cuadros.innerHTML='<i></i>'.repeat(cupoTotal);
+  }
+  const DEMO_PIE=HAY_DEMO
+    ? '<br><span style="color:var(--oro)">Es una prueba: el rollo se vuelve a llenar solo.</span>' : '';
+  /* Lo que dice cambia según dónde está, no según lo que quisimos explicar
+     una vez. Un párrafo fijo debajo del disparador lo lee nadie a partir
+     de la segunda foto. */
+  function textoGuia(reciente){
+    /* El acuse y el aviso son el MISMO renglón: si el acuse va solo, en la
+       foto que más importa —la última— tapa justo el aviso, y el aviso
+       recién aparece tres segundos después, cuando ya disparó otra vez. */
+    if(reciente){
+      if(restantes<=0)  return 'Esa fue la última. Ahora a esperar el revelado.';
+      if(restantes===1) return 'Salió. Te queda 1: la última.';
+      if(restantes<=3)  return `Salió. Te quedan ${restantes}, guardalas para lo mejor.`;
+      return `Salió. Te quedan ${restantes}.`;
+    }
+    if(restantes<=0)        return 'Rollo completo.';
+    if(restantes===1)       return 'Última foto. Elegí bien.';
+    if(restantes<=3)        return `Te quedan ${restantes}. Guardalas para lo mejor.`;
+    if(restantes===cupoTotal) return 'Sacá la primera. Nadie la ve hasta el revelado, ni vos.';
+    return 'Una vez que sale, sale: sin repetir y sin verla todavía.';
+  }
+  let avisoReciente=null;
+  function pintarContador(reciente){
     const c=app.querySelector('#cRestan'); if(c) c.textContent=restantes;
+    if(cuadros && !cuadros.hidden){
+      const gastadas=cupoTotal-restantes;
+      cuadros.querySelectorAll('i').forEach((n,i)=>n.classList.toggle('gastado', i<gastadas));
+    }
+    if(tiraRollo){
+      tiraRollo.classList.toggle('poquitas', restantes>0 && restantes<=3);
+      tiraRollo.classList.toggle('ultima', restantes===1);
+    }
+    if(pie){
+      pie.innerHTML=textoGuia(reciente)+DEMO_PIE;
+      /* el "salió" es un acuse, no un estado: vuelve solo a la línea de
+         siempre para no dejar un mensaje viejo colgado toda la noche */
+      clearTimeout(avisoReciente);
+      if(reciente) avisoReciente=setTimeout(()=>{ if(pie.isConnected) pie.innerHTML=textoGuia(false)+DEMO_PIE; },3200);
+    }
   }
 
   async function subirDisparo(canvas){
@@ -1587,7 +1731,10 @@ async function vCamara(m,guardado,estado){
     }
     const quedan=Number(r&&r.restantes);
     restantes=Number.isFinite(quedan)?quedan:Math.max(0,restantes-1);
-    pintarContador(); flash();
+    pintarContador(true); flash();
+    /* Sacada la primera, el filtro ya está elegido: abajo queda una sola
+       cosa para tocar. */
+    if(filtrosAbiertos) mostrarFiltros(false);
     if(restantes<=0){
       detenerCamara(); olvidarVigilia();
       rutear(m,guardado,{...estado, disparos:cupoDe(estado)});
@@ -1645,6 +1792,12 @@ async function vCamara(m,guardado,estado){
     }catch(err){ avisar('No se pudo usar esa foto: '+(err.message||err)); }
     e.target.value=''; disparando=false;
   };
+
+  /* Los cuadraditos del rollo y la línea que guía, dibujados al entrar:
+     hasta acá pintarContador solo corría DESPUÉS de una foto, así que el
+     invitado veía la pantalla en blanco justo en el momento en que más
+     falta hace que le digan qué hacer. */
+  pintarContador();
 }
 
 /* ══════════════════════════════════════════════════════════
