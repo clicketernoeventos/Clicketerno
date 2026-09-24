@@ -781,6 +781,51 @@ llenar"). `rollo_cinta.js` daba por hecho que en la pantalla aparecía la
 palabra "quedan" para saber si había llegado a la cámara: es un proxy
 frágil, y conviene mirarlo si alguna vez se cambia ese texto.
 
+### El color de la fiesta
+
+La otra mitad de "darle forma al rollo". Hasta acá **todos los rollos se
+veían iguales**: `tono` se aplicaba pero se creaba clavado en `#D9AE72` y
+el organizador no tenía dónde cambiarlo, así que la cámara del invitado de
+un casamiento y la de unos quince eran la misma pantalla dorada.
+
+Se elige en **Ajustes del rollo**, con las **mismas cuatro pastillas que
+el muro** (Oro, Perla, Rosa antiguo, Salvia). Si cambia la paleta, cambia
+en los dos archivos.
+
+**Es una lista corta y no un selector libre de color, a propósito.** Con un
+selector libre el organizador puede dejar el texto ilegible sobre el negro,
+y eso **no lo agarra ninguna prueba**: `pruebas/contraste.js` mide el
+código, y ese color no está en el código, está en la base. Cuatro tonos
+mirados uno por uno es la única forma de prometer que se lee.
+
+**El acento no viaja solo: viaja con su versión honda.** El disparador es
+un degradé de `--oro` a `--oro-hondo`, así que cambiando solo el primero el
+botón quedaba **de dorado a verde en el mismo círculo**. Cada tono trae su
+`h` en la paleta —el del oro es el que estaba escrito a mano desde siempre
+y se dejó igual, porque es el aspecto actual de todo y ya pasó la prueba de
+contraste— y `masHondo()` lo calcula para cualquier otro valor que venga de
+la base. Baja la **luminosidad** dejando el tinte y la saturación:
+multiplicar los tres canales por un número apaga el color además de
+oscurecerlo, y el dorado quedaba barroso.
+
+**Se aplica al tocar, sin botón de guardar**, y se pinta ANTES de guardar:
+el cambio se ve en el momento y eso es la confirmación. Si la base se
+niega, **se vuelve al color anterior** y se lo dice — dejarlo pintado de un
+color que no se guardó es la mentira de siempre.
+
+**`pintar()` resetea el tono en cada pantalla.** Sin eso, el color del
+último rollo que abriste se quedaba puesto en la portada, en el alta y en
+el rollo siguiente: la pantalla de crear una fiesta salía del color de la
+fiesta de otro. Cada vista pone el suyo cuando sabe de qué evento se trata,
+y eso son tres lugares: `arranqueInvitado` (el invitado), `vRollo` (el
+panel) y `vAjustes` (donde se elige — ahí hace falta especialmente, porque
+si no el organizador ve la pastilla de Salvia marcada y todo lo demás
+dorado, y no sabe cuál de las dos le miente).
+
+Lo mide `pruebas/rollo_color.js`, y lo que mide de verdad es que **el color
+le llegue al invitado**: el organizador no elige un color para su panel, lo
+elige para la cámara de los que van a la fiesta.
+
 ## Los 90 días
 
 Un álbum que vive para siempre es un depósito que crece para siempre, y lo
@@ -1217,8 +1262,14 @@ dejaría peor parados.
 
 ### Lo que falta y solo lo puede hacer el dueño
 
-1. **Verificación en dos pasos** en Supabase, Cloudflare y el correo del
-   negocio. Es lo que más baja el riesgo de todo el sistema.
+1. ~~**Verificación en dos pasos**~~ **Hecha** (24/09/2026): Supabase,
+   Cloudflare y el correo del negocio, los tres con aplicación
+   autenticadora. Era lo que más bajaba el riesgo de todo el sistema.
+   En Cloudflare la pantalla nueva no tiene el botón "Enable" de antes:
+   son tres métodos en fila —clave de seguridad, aplicación móvil, correo—
+   y los botones quedan **a la derecha**, fuera de la vista si la ventana
+   está angosta. El que vale es *aplicación móvil* (TOTP); el de correo no
+   sirve de nada acá, porque con el correo se resetean las otras dos.
 2. **Respaldo del contenido.** Hoy las fotos están en un solo lugar.
 3. **Inscribir la base en el Registro Nacional de Bases de Datos** (AAIP).
 4. **Razón social y CUIT** para las dos páginas legales. Mientras falten,
@@ -1240,15 +1291,11 @@ dejaría peor parados.
   un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
   en hardware real: la cámara de un iPhone (Safari es donde más se rompió
   esto), el revelado en una pantalla chica, y el wifi de un salón lleno.
-- **Darle forma a la interfaz del rollo.** **La cámara del invitado está
-  hecha** (ver su apartado más arriba): el rollo se ve gastarse, abajo
-  quedan dos cosas para tocar en vez de seis, y la línea de abajo guía
-  sola. Falta la otra mitad de lo pedido: **personalizarla**. Hoy todos los
-  rollos nacen con el mismo dorado —`tono` se aplica pero se crea clavado
-  en `#D9AE72` y el organizador no tiene dónde cambiarlo— y la portada es
-  lo único propio de cada fiesta. La referencia sigue siendo
-  instante.camera, que tiene un "Estudio" con el branding del evento:
-  copiar el funcionamiento, no el aspecto.
+- ~~**Darle forma a la interfaz del rollo.**~~ **Hecho.** La cámara del
+  invitado y el color de la fiesta tienen su apartado más arriba. Lo que
+  queda de la referencia (instante.camera) es su "Estudio": generar piezas
+  para redes con el branding del evento. Eso es otra cosa y no está
+  pedido.
 - ~~**Video recap** del álbum~~. **Descartado por el dueño** (16/09), con
   la propuesta técnica sobre la mesa y comprobada: canvas + `MediaRecorder`
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que

@@ -320,6 +320,17 @@ input.grande{font-size:21px;padding:14px 2px}
 .stepper button{width:48px;height:48px;border:1px solid var(--gris);border-radius:50%;font-size:22px;color:var(--oro)}
 .stepper b{font-family:'Bodoni Moda',serif;font-size:36px;min-width:60px;text-align:center}
 .clave-gr{font-size:25px;letter-spacing:.24em;color:var(--oro)}
+/* Los colores de la fiesta. Mismas medidas que en el muro; el aro del
+   elegido va en --texto y no en --oro como allá, porque acá --oro ES el
+   color que se está eligiendo: con el dorado puesto, un aro dorado
+   alrededor de una pastilla dorada no se ve. Los 44px son de toque. */
+.tonos{display:flex;gap:14px;padding-top:4px;flex-wrap:wrap}
+.tono{width:44px;height:44px;border-radius:50%;position:relative;flex:none;
+  transition:transform .3s var(--e)}
+.tono:after{content:'';position:absolute;inset:-6px;border-radius:50%;
+  border:1px solid transparent;transition:border-color .3s}
+.tono[aria-pressed=true]:after{border-color:var(--texto)}
+.tono[aria-pressed=true]{transform:scale(1.06)}
 .llave-fila{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:28px 0 10px}
 .llave-fila p{font-size:15px}
 .llave-fila small{display:block;color:var(--mute);font-size:12.5px;margin-top:5px;line-height:1.6}
@@ -601,7 +612,52 @@ const guarda = HAY_DEMO ? (()=>{
   leerSesion(k){try{return sessionStorage.getItem(k);}catch(e){return null;}},
   escribirSesion(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
 };
-const tono=t=>document.documentElement.style.setProperty('--oro', t||'#D9AE72');
+/* Los mismos cuatro que el muro: si cambia la paleta, cambia en los dos.
+   Es una lista corta a propósito y no un selector libre de color — con uno
+   libre el organizador puede elegir un tono que deje el texto ilegible
+   sobre el negro, y eso no lo agarra ninguna prueba porque el color no
+   está en el código, está en la base. */
+/* "h" es el mismo color más hondo, el otro extremo del degradé del
+   disparador. El del oro es el que estaba escrito a mano desde siempre y
+   se deja igual: es el aspecto actual de todo y ya pasó por la prueba de
+   contraste. Los otros tres salen de masHondo(). */
+const TONOS=[{n:'Oro',          c:'#D9AE72', h:'#A87B43'},
+             {n:'Perla',        c:'#E8E4DC', h:'#B6A990'},
+             {n:'Rosa antiguo', c:'#D8A0A6', h:'#B95560'},
+             {n:'Salvia',       c:'#9FB39B', h:'#6D8968'}];
+/* El mismo color, más hondo. Se baja la LUMINOSIDAD y se dejan el tinte y
+   la saturación: multiplicar los tres canales por un número apaga el color
+   además de oscurecerlo, y el dorado quedaba barroso. */
+const masHondo=(hex,cuanto)=>{
+  const n=parseInt(String(hex||'').replace('#',''),16);
+  if(!Number.isFinite(n)) return hex;
+  const r=(n>>16&255)/255, g=(n>>8&255)/255, b=(n&255)/255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/2, d=mx-mn;
+  let h=0, sa=0;
+  if(d){
+    sa=d/(1-Math.abs(2*l-1));
+    h = mx===r ? ((g-b)/d+(g<b?6:0)) : mx===g ? ((b-r)/d+2) : ((r-g)/d+4);
+    h*=60;
+  }
+  const L=Math.max(0,Math.min(1,l*cuanto));
+  const c=(1-Math.abs(2*L-1))*sa, x=c*(1-Math.abs((h/60)%2-1)), mm=L-c/2;
+  const [rr,gg,bb]=h<60?[c,x,0]:h<120?[x,c,0]:h<180?[0,c,x]
+                   :h<240?[0,x,c]:h<300?[x,0,c]:[c,0,x];
+  const q=v=>Math.round((v+mm)*255).toString(16).padStart(2,'0');
+  return '#'+q(rr)+q(gg)+q(bb);
+};
+/* El color de la fiesta. Cambia el acento Y su versión honda: el
+   disparador es un degradé de las dos, y con solo el acento cambiado el
+   botón quedaba de dorado a verde en el mismo círculo. */
+const tono=t=>{
+  const c=t||'#D9AE72';
+  const r=document.documentElement.style;
+  const enPaleta=TONOS.find(x=>x.c.toLowerCase()===String(c).toLowerCase());
+  r.setProperty('--oro', c);
+  /* De la paleta si está —son valores mirados uno por uno— y calculado si
+     viene cualquier otra cosa de la base, que no debería pero puede. */
+  r.setProperty('--oro-hondo', (enPaleta&&enPaleta.h) || masHondo(c,.72));
+};
 /* Solo dejamos pasar lo que parezca un archivo real: si alguien mete texto
    raro en la base, no llega a la pantalla. Mismo criterio que en el muro. */
 const urlSegura=u=>{const t=String(u==null?'':u).trim();
@@ -2226,6 +2282,9 @@ async function vRollo(codigo){
   let m=null;
   try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
+  /* El panel también va del color de la fiesta: es donde el organizador
+     mira si le gustó cómo quedó. */
+  tono(m.tono);
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
   const enlace=enlaceDelRollo(codigo,revelado);
 
@@ -2441,6 +2500,10 @@ async function vAjustes(codigo){
   try{ m=await eventoConClave(codigo); }catch(e){}
   if(!m) return vError('No encontré ese rollo.');
   const clave=claveDe(codigo);
+  /* La pantalla donde se elige el color tiene que estar PINTADA de ese
+     color: si no, el organizador ve la pastilla de Salvia marcada y todo
+     lo demás dorado, y no sabe cuál de las dos le está mintiendo. */
+  tono(m.tono);
   const revelado=!!m.revelado || (m.revela_en && new Date(m.revela_en)<=new Date());
   let cupo=Number(m.cupo_fotos||24);
 
@@ -2462,6 +2525,18 @@ async function vAjustes(codigo){
       <p class="ayudita">Guardala. Desde otro teléfono te la vamos a pedir para manejar este rollo.</p>
       <button class="hilo-btn" id="copiarClave">Copiar la clave</button>`
       :`<p class="ayudita">En este teléfono no está guardada.</p>`}
+
+    <!-- El color de la fiesta. Es lo único que hace que la cámara del
+         invitado se parezca a ESTA fiesta y no a todas las demás: hasta
+         acá todos los rollos nacían del mismo dorado y no había dónde
+         cambiarlo. Se aplica al tocar, sin botón de guardar: el cambio se
+         ve en el momento y eso ES la confirmación. -->
+    <p class="rotulito">El color de la fiesta</p>
+    <p class="ayudita" style="margin:0 0 12px">Tiñe la cámara del invitado y el álbum.</p>
+    <div class="tonos" id="tonos">${TONOS.map(t=>`
+      <button class="tono" data-c="${t.c}" title="${esc(t.n)}" aria-label="${esc(t.n)}"
+        aria-pressed="${(m.tono||'#D9AE72').toLowerCase()===t.c.toLowerCase()}"
+        style="background:${t.c}"></button>`).join('')}</div>
 
     <div class="llave-fila">
       <p>Rollo cerrado<small>Corta las fotos. El álbum sigue disponible.</small></p>
@@ -2487,6 +2562,27 @@ async function vAjustes(codigo){
   const bO=$('#ocultar'); if(bO) bO.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
   const bC=$('#copiarClave'); if(bC) bC.onclick=()=>copiar(clave,'Clave copiada');
   $('#cerrar').onclick=()=>guardar({cerrado:!m.cerrado}, m.cerrado?'Rollo abierto':'Rollo cerrado');
+  /* Se pinta ANTES de guardar: si la señal está mal, el organizador ve el
+     color igual y el aviso le dice si quedó o no. Y no se redibuja la
+     pantalla —guardar() lo hace— para no moverle el piso justo cuando
+     está comparando dos tonos. */
+  app.querySelectorAll('#tonos .tono').forEach(b=>b.onclick=async()=>{
+    app.querySelectorAll('#tonos .tono').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    const c=b.dataset.c;
+    tono(c);
+    try{
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(codigo)}`,{tono:c},clave);
+      m.tono=c;
+      avisar('Listo · '+(b.getAttribute('aria-label')||'color cambiado'));
+    }catch(e){
+      /* No mentirle: si no se guardó, se vuelve el color de antes. */
+      tono(m.tono);
+      app.querySelectorAll('#tonos .tono').forEach(x=>x.setAttribute('aria-pressed',
+        String((m.tono||'#D9AE72').toLowerCase()===x.dataset.c.toLowerCase())));
+      avisar('No se pudo guardar el color: '+(e.message||e));
+    }
+  });
 }
 
 /* ── el cuarto de revelado ──
@@ -2778,6 +2874,12 @@ async function arranqueInvitado(){
 
 function pintar(){
   detenerPoll(); detenerCamara(); olvidarVigilia(); cerrarCapas(); hojaA4(false);
+  /* El color vuelve al de la casa en cada pantalla, y cada vista pone el
+     suyo cuando sabe de qué evento se trata. Sin esto, el tono del último
+     rollo que abriste se quedaba puesto en la portada, en el alta y en el
+     rollo siguiente: la pantalla de crear una fiesta salía del color de la
+     fiesta de otro. */
+  tono();
   const h=location.hash.slice(1);
   window.scrollTo(0,0);
   let p;
