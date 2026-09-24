@@ -3542,6 +3542,16 @@ async function vEvento(codigo, abrirEn){
   }
 }
 
+/* ── la puerta de la pantalla del salón ──
+   Mostraba SOLO los eventos guardados en ese celular, y si no había
+   ninguno decía "Creá uno desde el panel del organizador" y ahí se
+   terminaba: un callejón sin salida. Es exactamente el mismo agujero que
+   ya se había tapado en la puerta del invitado, que sobrevivió acá.
+   Y le pasa justo al cliente que MÁS importa: al que compró el muro, le
+   armamos nosotros el evento y le pasamos código y clave. Ese entra desde
+   otro teléfono, no tiene nada guardado, y lo único que quiere es poner la
+   proyección en la pantalla del salón. Con el código alcanza: lo que se
+   proyecta es lo que ya está aprobado. */
 async function vElegir(destino,titulo){
   parar(); tono();
   const evs=await eventos();
@@ -3551,12 +3561,40 @@ async function vElegir(destino,titulo){
     <h1>Elegí el evento</h1>
     <button class="volver">Salir</button>
   </header>
-  <div class="wrap-inv" style="padding-bottom:40px">
-    ${evs.length? evs.map(e=>tarjetaEvento(e)).join('')
-      :`<div class="vacio">No hay eventos todavía.<br>Creá uno desde el panel del organizador.</div>`}
+  <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
+    <div class="tarjeta principal" style="margin-top:10px">
+      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+        Escribí el código de la fiesta y la proyección abre en esta pantalla.
+        <b style="color:var(--champan);font-weight:400">Conectá el celular o la
+        notebook al proyector y ponelo en pantalla completa.</b></p>
+      <div class="campo"><label for="codPant">Código de la fiesta</label>
+        <input id="codPant" type="text" inputmode="text" autocapitalize="characters" autocomplete="off"
+          placeholder="QUI-7FCE64"
+          style="text-align:center;font-size:20px;letter-spacing:.2em;padding:15px 0"></div>
+      <button class="oro-btn" id="irPant" style="margin-top:8px">Abrir la pantalla</button>
+      <p class="pie-nota">Podés escribirlo en minúscula, sin el guión, o solo
+        los seis del final.</p>
+    </div>
+    ${evs.length?`<div class="seccion-a"><h2>En este celular</h2><span>${evs.length}</span></div>
+       ${evs.map(e=>tarjetaEvento(e)).join('')}`:''}
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
+  const campo=app.querySelector('#codPant');
+  const btn=app.querySelector('#irPant');
+  campo.focus();
+  const abrir=async()=>{
+    if(btn.disabled) return;
+    if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');
+    btn.disabled=true; btn.textContent='Buscando…';
+    let cod=null;
+    try{ cod=await resolverCodigo(campo.value); }catch(e){}
+    btn.disabled=false; btn.textContent='Abrir la pantalla';
+    if(!cod) return recado('No encontré esa fiesta. Fijate el código del cartel.');
+    ir(destino+'/'+encodeURIComponent(cod));
+  };
+  btn.onclick=abrir;
+  campo.addEventListener('keydown',e=>{ if(e.key==='Enter') abrir(); });
 }
 
 /* ── la puerta del invitado ──

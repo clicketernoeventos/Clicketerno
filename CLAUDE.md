@@ -63,6 +63,20 @@ importante: **el que contrató entra con código Y CLAVE porque administra;
 el invitado entra solo con el código, sin clave y sin cuenta.** Al invitado
 no se le pide ni se le hace inventar una contraseña en ningún momento.
 
+**Ese mismo agujero sobrevivió en la puerta del proyector.** `#proyector`
+(elegir qué fiesta se proyecta) seguía mostrando SOLO los eventos guardados
+en ese celular, y sin ninguno decía "Creá uno desde el panel del
+organizador" y ahí se terminaba: **nada para tocar salvo "Salir"**. Le pega
+justo al cliente que compró el muro, al que le armamos nosotros el evento y
+le pasamos código y clave: llega al salón con otro teléfono, sin nada
+guardado, y lo único que quiere es poner la proyección. Ahora tiene su campo
+de código, igual que la puerta del invitado —con el código alcanza: lo que
+se proyecta es lo que YA está aprobado—. Lo encontró `pruebas/puertas.js`,
+que recorre **todas** las puertas de las dos apps y de la página pública con
+un navegador limpio y le exige a cada una tres cosas: que cargue, que diga
+algo, y que **haya por dónde seguir**. Un callejón sin salida no tira ningún
+error: la pantalla se dibuja perfecta y el cliente se queda ahí.
+
 **El código se escribe como sale.** El invitado lo lee del cartel de la mesa
 con el teléfono en una mano, así que entra igual en minúscula, sin el guión,
 con espacios de más, o **solo los seis del final**: `normalizarCodigo()`
