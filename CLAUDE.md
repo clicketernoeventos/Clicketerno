@@ -201,13 +201,14 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 ### El orden en que se corre el SQL
 
     sql/claves.sql → sql/rollo.sql → sql/blindaje.sql → sql/blindaje2.sql
-    → sql/rafaga.sql
+    → sql/rafaga.sql → sql/camaras.sql
 
 `blindaje.sql` va **después de los dos primeros**: reemplaza políticas y
 funciones que ellos crean. `blindaje2.sql` va **al final**: cierra el muro
 (la puerta de `ce_items`) y usa funciones que crea `blindaje.sql`.
 `rafaga.sql` va **después de blindaje2**: reemplaza `ce_items_puerta`
-entera, así que corrido antes lo pisa el otro. Después, `sql/revisar.sql`,
+entera, así que corrido antes lo pisa el otro. `camaras.sql` va al final
+por lo mismo: reemplaza `ce_mi_rollo`, que la crea `blindaje.sql`. Después, `sql/revisar.sql`,
 `sql/rollo_revisar.sql` y `sql/blindaje_revisar.sql` tienen que dar todas
 `true`.
 
@@ -479,6 +480,37 @@ las del cupo?, ¿puede ver las de otro?
   intentos. La primera versión rechazaba "el primer intento" y pasaba
   contra el código viejo también —que ya reintentaba, solo que con esperas
   cortas—: no medía el arreglo, medía que existiera un reintento.
+- **Un "ya existe" del depósito es un ÉXITO, no una negativa.** La regla
+  estaba escrita para `anotarItem` del muro (el 23505 de `ce_items`) y
+  faltaba la mitad del rollo. El wifi del salón se corta dos segundos: la
+  foto LLEGÓ y lo que se perdió fue la respuesta. El reintento va a la
+  misma ruta y Storage contesta **409**. Como 409 es 4xx, salía por el
+  camino del error, y ahí pasaban tres cosas y las tres eran mentira:
+  `ce_devolver_foto` se negaba —el archivo está—, el mensaje decía igual
+  *"la foto te la devolvimos"*, y el contador se quedaba en el número de
+  antes porque `pintarContador()` está DESPUÉS del `throw`: la pantalla
+  decía 24 y la base 23. El invitado la saca de nuevo y gasta otra.
+  Ahora `SB.subir` trata el 409 como éxito, pero **solo en un reintento**:
+  un 409 en el primer intento no es nuestro, es un choque de nombre, y ahí
+  sí es un error. Lo mide `pruebas/rollo_red.js`.
+- **Un `<script src>` sincrónico arriba de todo para el dibujado entero.**
+  Las dos librerías (QR y zip) se bajaban SIEMPRE, y el invitado —el que
+  está colgado del wifi del salón— no usa ninguna: el QR es del panel, del
+  cartel y de las tarjetas; el zip es de "Descargar todas". Medido con el
+  navegador: **el rollo bajaba 117 KB de más y el muro 97 KB**, y en
+  `rollo.html` estaban incluso ANTES del preconnect. Ahora las trae
+  `cargarLib()` cuando hacen falta. `pintarQR()` sigue siendo sincrónica a
+  propósito —la llaman pantallas que arman su HTML de una—: dibuja el
+  reemplazo ya, pide la librería y se repinta sola cuando llega.
+  Lo mide `pruebas/arranque.js`, que además exige el `preconnect` a
+  Supabase y el `Cache-Control` del HTML.
+- **Una URL firmada no se puede anular.** "Volver a ocultar las fotos"
+  cambia `revelado`, pero las direcciones ya firmadas valen una hora más:
+  se validan al FIRMARLAS, no al usarlas. El botón ahora lo dice. **No se
+  bajó el vencimiento**, que es lo que parece obvio: `firmadas` es un
+  caché y una ruta ya firmada no se vuelve a firmar en esa página, así que
+  acortarlo rompería cualquier sesión más larga que el plazo. La promesa
+  que se vende —nada ANTES del revelado— está intacta.
 - **Lo que se actualiza solo tiene que actualizarse en los dos lados.** La
   pantalla del salón se refresca cada siete segundos; el panel del
   organizador no lo hacía. Durante la fiesta él miraba "Moderar" mientras
@@ -909,6 +941,47 @@ base, no en el navegador de nadie.
 Lo miden `pruebas/vencimiento.js` (el aviso, quién entra a la limpieza, que
 borre los vencidos y solo esos, que no diga "Listo" si la base se negó, y
 el corte de las mil filas) y `pruebas/rollo_vence.js` (el aviso del rollo).
+
+## Que no se quede una fiesta sin cámaras
+
+El token del rollo lo inventa el teléfono. Alguien que lee el QR de
+cualquier mesa —o al que le reenviaron el link por WhatsApp— llama 300
+veces a `ce_mi_rollo` con tokens inventados: sin clave y sin cuenta.
+Agotado `cupo_invitados`, al invitado siguiente le contesta *"Esta fiesta
+ya tiene todas sus cámaras repartidas"* y **no había nada que el
+organizador pudiera hacer**. Reproducido contra una copia del esquema de
+producción entero.
+
+Lo arregla `sql/camaras.sql`, con tres piezas porque ninguna sola alcanza:
+
+- **Freno de ritmo**: 100 cámaras nuevas por minuto y por fiesta, y va
+  **holgado a propósito**. Cuando el QR aparece en la pantalla, doscientos
+  invitados lo leen en dos minutos. Es la misma lección de `rafaga.sql`:
+  ya pusimos un tope pensando en un atacante y le cortamos el brindis a
+  una fiesta de verdad. Llega como **429** para que el navegador espere y
+  vuelva solo.
+- **El cupo deja de contar las vacías y viejas.** El cupo existe para
+  limitar lo que el negocio paga en depósito, y una cámara sin una sola
+  foto no ocupa nada: se cuentan las que tienen fotos más las vacías de
+  las últimas tres horas. Con eso el ataque **se cura solo**. No le saca
+  la cámara a nadie: el token que ya existe sigue andando igual, esto solo
+  cambia la cuenta para admitir uno nuevo.
+- **`ce_liberar_vacias(codigo)`**, en Ajustes del rollo: borra las cámaras
+  sin una sola foto. Las otras dos demoran el problema; ésta lo arregla en
+  el momento, que es lo que hace falta una noche.
+
+`camaras.sql` va **después de `blindaje.sql`**, porque reemplaza
+`ce_mi_rollo` entera. Lo mide `sql/camaras_probar.sql`: 8 fallas contra el
+esquema anterior, 13 verdes con el arreglo.
+
+**El freno de altas de `ce_eventos` sigue siendo global** (30 por minuto
+en toda la base, `blindaje2.sql`), así que alguien que sostenga 30 altas
+por minuto deja sin crear eventos a todo el mundo. La solución obvia
+—contar por la clave presentada— **no sirve**: `SB.crear` manda la clave
+del evento nuevo, que sale de `nuevaClave()` y es distinta cada vez, así
+que la cuenta daría 1 siempre y el freno dejaría de existir. Habría que
+contar por IP y falta saber qué cabecera pasa Supabase, que desde acá no
+se puede averiguar.
 
 ## La interfaz
 
