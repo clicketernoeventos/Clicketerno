@@ -24,13 +24,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap"></noscript>
+<!-- Lo primero que la app consulta de verdad es Supabase: adelantar el
+     DNS, el TCP y el TLS le saca medio segundo al primer byte en 4G. -->
+<link rel="preconnect" href="https://kuqlqgrwsospwjexodqa.supabase.co" crossorigin>
 <!-- Las dos librerías viven en el repo, no en un CDN. Traerlas de afuera
      era darle a un tercero permiso para correr código en la página que
      tiene a mano la clave del evento (y la maestra): si cdnjs sirviera
      otra cosa, un día cualquiera, nos enteraríamos tarde. Y de paso el
-     QR y el zip andan aunque el wifi del salón no deje salir. -->
-<script src="lib/qrcode.min.js"></script>
-<script src="lib/jszip.min.js"></script>
+     QR y el zip andan aunque el wifi del salón no deje salir.
+     NO se cargan acá: eran dos <script src> sincrónicos arriba de todo,
+     o sea que nada empezaba hasta que bajaban las dos. El invitado —que
+     es el que está en el wifi del salón— no usa ninguna: el QR es del
+     panel, del cartel y de las tarjetas, y el zip es de "Descargar
+     todas". Se piden con cargarLib() recién cuando hacen falta. -->
 
 <style>
 :root{
@@ -2264,10 +2270,35 @@ function bajarBlob(blob,nombre){
   a.href=u; a.download=nombre; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),4000);
 }
+/* ── traer una librería recién cuando hace falta ──
+   Las dos (el dibujante de QR y el armador de zip) eran <script src>
+   sincrónicos arriba de todo: nada empezaba hasta que bajaban. Y el
+   invitado, que es el que está colgado del wifi del salón, no usa
+   ninguna. Se memoriza la promesa, así dos llamadas seguidas piden el
+   archivo una sola vez; y si falló se olvida, para que el siguiente que
+   la necesite pueda volver a intentar. */
+const LIBS={};
+function cargarLib(src){
+  if(LIBS[src]) return LIBS[src];
+  return LIBS[src]=new Promise((listo,no)=>{
+    const s=document.createElement('script');
+    s.src=src; s.async=true;
+    s.onload=()=>listo(true);
+    s.onerror=()=>{ delete LIBS[src]; no(new Error('no se pudo cargar '+src)); };
+    document.head.appendChild(s);
+  });
+}
+/* Sigue siendo sincrónica a propósito: la llaman pantallas que arman su
+   HTML de una. Dibuja el reemplazo ya, pide la librería, y cuando llega
+   se repinta sola. El guard de window.QRCode corta la recursión si la
+   librería cargó pero no dejó nada. */
 function pintarQR(nodo,texto,tam){
   nodo.innerHTML='';
   if(window.QRCode){ try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){} }
   nodo.innerHTML=`<div style="width:${tam}px;height:${tam}px;display:grid;place-items:center;color:#111;font:500 10px Jost;text-align:center;padding:6px">${esc(texto.split('/').pop())}</div>`;
+  cargarLib('lib/qrcode.min.js')
+    .then(()=>{ if(nodo.isConnected && window.QRCode) pintarQR(nodo,texto,tam); })
+    .catch(()=>{});   // sin librería queda el reemplazo, que ya está dibujado
 }
 const enlaceDe=c=>`https://clicketerno.com.ar/muro#subir/${c}`;
 const enlaceAlbumDe=c=>`https://clicketerno.com.ar/muro#album/${c}`;
@@ -4429,6 +4460,8 @@ async function vAlbum(codigo,abrirEn){
         const texto=dedis.length?`${m.nombre} · ${bonito(m.fecha)}\n\n`+
           dedis.map(i=>`"${i.texto}"\n   — ${i.autor}\n`).join('\n'):'';
 
+        /* El zip se pide acá, que es el único lugar del muro que lo usa. */
+        try{ await cargarLib('lib/jszip.min.js'); }catch(e){}
         if(window.JSZip){
           dl.textContent='Armando el archivo…';
           const zip=new JSZip();

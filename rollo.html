@@ -20,9 +20,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Rollo eterno">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- En el repo, no en un CDN: ver el comentario de muro.html. -->
-<script src="lib/qrcode.min.js"></script>
-<script src="lib/jszip.min.js"></script>
+<!-- En el repo, no en un CDN: ver el comentario de muro.html. Y no se
+     cargan acá: se piden con cargarLib() cuando hacen falta. Acá estaban
+     incluso ANTES del preconnect, así que la cámara del invitado esperaba
+     a 117 KB de librerías que no iba a usar antes de empezar nada. -->
+<link rel="preconnect" href="https://kuqlqgrwsospwjexodqa.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
@@ -1891,10 +1893,32 @@ function hojaA4(activar){
       e.textContent='@page{size:A4;margin:0}'; document.head.appendChild(e); }
   }else if(e) e.remove();
 }
+/* ── traer una librería recién cuando hace falta ──
+   Las dos (el dibujante de QR y el armador de zip) eran <script src>
+   sincrónicos arriba de todo: nada empezaba hasta que bajaban. Y el
+   invitado, que es el que está colgado del wifi del salón, no usa
+   ninguna. Se memoriza la promesa, así dos llamadas seguidas piden el
+   archivo una sola vez; y si falló se olvida, para que el siguiente que
+   la necesite pueda volver a intentar. */
+const LIBS={};
+function cargarLib(src){
+  if(LIBS[src]) return LIBS[src];
+  return LIBS[src]=new Promise((listo,no)=>{
+    const s=document.createElement('script');
+    s.src=src; s.async=true;
+    s.onload=()=>listo(true);
+    s.onerror=()=>{ delete LIBS[src]; no(new Error('no se pudo cargar '+src)); };
+    document.head.appendChild(s);
+  });
+}
+/* Sincrónica a propósito: ver el comentario gemelo en muro.html. */
 function pintarQR(nodo,texto,tam){
   if(!nodo) return;
   nodo.innerHTML='';
-  try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){}
+  if(window.QRCode){ try{ new QRCode(nodo,{text:texto,width:tam,height:tam,correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){} }
+  cargarLib('lib/qrcode.min.js')
+    .then(()=>{ if(nodo.isConnected && window.QRCode) pintarQR(nodo,texto,tam); })
+    .catch(()=>{});
   /* Sin el dibujante de códigos (el wifi del salón, o el CDN caído) quedaba
      la dirección entera escrita adentro del cuadrito del QR, encimada sobre
      sí misma y sin poder leerse. Mejor decir qué pasó y dejar el link a
@@ -2438,6 +2462,8 @@ async function vRollo(codigo){
    metiendo en el archivo. No hay servidor que lo haga por nosotros, así
    que hay que avisar cuánto falta o parece colgado. */
 async function bajarTodas(m, boton){
+  /* El zip se pide acá, que es el único lugar del rollo que lo usa. */
+  try{ await cargarLib('lib/jszip.min.js'); }catch(e){}
   if(!window.JSZip) return avisar('No pude cargar el armador de archivos. Probá desde una computadora.');
   const original=boton.textContent;
   const paso=t=>{ boton.textContent=t; };
@@ -2538,7 +2564,11 @@ async function vAjustes(codigo){
     <p class="ayudita" style="margin:0 0 12px">Dejalo vacío si preferís revelarlo vos a mano.</p>
     <input id="revela" type="datetime-local" value="${esc(aLocal(m.revela_en))}">
     <button class="hilo-btn" id="guardarHora">Guardar la hora</button>
-    ${revelado?`<button class="hilo-btn" id="ocultar">Volver a ocultar las fotos</button>`:''}
+    ${revelado?`<button class="hilo-btn" id="ocultar">Volver a ocultar las fotos</button>
+      <p class="ayudita" style="margin:8px 0 0">Se ocultan para el que entre de ahora en adelante. El que
+        ya tenía el álbum abierto puede seguir viéndolas hasta una hora: las
+        direcciones de las fotos se firman por ese rato y no se pueden anular
+        antes.</p>`:''}
 
     <p class="rotulito">La clave de este rollo</p>
     ${clave?`<p class="clave-gr">${esc(clave)}</p>

@@ -39,6 +39,13 @@
   Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # El HTML se baja entero en cada visita: son 261 KB el muro y 157 el
+  # rollo, y el invitado abre la pantalla más de una vez en la noche. Con
+  # esto el navegador se lo guarda un minuto y después REVALIDA, así que
+  # nunca queda una versión vieja pegada — que es justo el motivo por el
+  # que a propósito no hay service worker. El stale-while-revalidate hace
+  # que la segunda visita sea instantánea mientras chequea por atrás.
+  Cache-Control: public, max-age=60, stale-while-revalidate=86400
 
 # Lo de /lib no cambia nunca (son versiones fijas): que el navegador se lo
 # guarde y no lo vuelva a pedir en cada pantalla.
