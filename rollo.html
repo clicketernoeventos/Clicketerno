@@ -2592,6 +2592,17 @@ async function vAjustes(codigo){
       <p>Rollo cerrado<small>Corta las fotos. El álbum sigue disponible.</small></p>
       <button class="palanca" id="cerrar" aria-pressed="${!!m.cerrado}"></button>
     </div>
+
+    <!-- La salida cuando la fiesta se queda sin cámaras. El token lo
+         inventa el teléfono, así que cualquiera que tenga el código puede
+         abrir cámaras hasta agotar el cupo y dejar afuera a los invitados
+         de verdad. La base lo frena y lo cura sola a las tres horas, pero
+         una fiesta dura una noche: esto lo arregla en el momento. Borra
+         SOLO las que no tienen ni una foto. -->
+    <p class="rotulito">Si no les abre la cámara</p>
+    <p class="ayudita" style="margin:0 0 12px">Libera las cámaras que nadie usó —las que no
+      tienen ni una foto— para que entren los invitados que faltan. No toca ninguna foto.</p>
+    <button class="hilo-btn" id="liberar">Liberar las cámaras sin usar</button>
   </div>`;
 
   const $=s=>app.querySelector(s);
@@ -2612,6 +2623,25 @@ async function vAjustes(codigo){
   const bO=$('#ocultar'); if(bO) bO.onclick=()=>guardar({revelado:false,revela_en:null},'Oculto de nuevo');
   const bC=$('#copiarClave'); if(bC) bC.onclick=()=>copiar(clave,'Clave copiada');
   $('#cerrar').onclick=()=>guardar({cerrado:!m.cerrado}, m.cerrado?'Rollo abierto':'Rollo cerrado');
+  /* Primero la web y después el SQL: mientras camaras.sql no esté corrido
+     la función no existe y PostgREST contesta PGRST202. Eso no es un error
+     del organizador y no se le puede mostrar como tal. */
+  $('#liberar').onclick=async(e)=>{
+    const b=e.currentTarget, antes=b.textContent;
+    b.disabled=true; b.textContent='Liberando…';
+    try{
+      const r=await SB.rpc('ce_liberar_vacias',{p_codigo:codigo},clave);
+      const n=Number(r&&r.liberadas)||0;
+      avisar(n?`Listo · ${n} cámara${n===1?'':'s'} liberada${n===1?'':'s'}`
+              :'No había ninguna cámara sin usar');
+    }catch(err){
+      const t=String((err&&err.message)||err);
+      avisar(/PGRST202|does not exist|Could not find the function/i.test(t)
+        ? 'Todavía no está puesta esta función en la base.'
+        : 'No se pudo: '+t);
+    }
+    b.disabled=false; b.textContent=antes;
+  };
   /* Se pinta ANTES de guardar: si la señal está mal, el organizador ve el
      color igual y el aviso le dice si quedó o no. Y no se redibuja la
      pantalla —guardar() lo hace— para no moverle el piso justo cuando
