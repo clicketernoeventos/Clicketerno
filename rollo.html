@@ -805,6 +805,12 @@ const conEstado=(e,estado)=>{ e.estado=estado; return e; };
 /* Se vuelve a intentar lo que puede andar la próxima: un corte, un tiempo
    agotado, un 5xx (el servidor se cayó) o un 429 (pedí demasiado rápido).
    Un 4xx es una negativa y no cambia por insistir. */
+/* "Ya estaba" es un ÉXITO, no un error: quiere decir que el intento
+   anterior SÍ entró y lo que se perdió fue la respuesta. Misma definición
+   que en muro.html (ahí lo usa anotarItem con el 23505 de ce_items): si
+   cambia, cambia en los dos. */
+const yaEstaba=e=>/duplicate key|23505|already exists|duplicate/i.test((e&&e.message)||'')
+  || (e&&e.estado===409);
 const seVuelveAIntentar=e=>{
   const n=e&&typeof e.estado==='number'?e.estado:null;
   if(n===null) return false;              // no vino de una subida: no tocar
@@ -877,7 +883,16 @@ const SB = {
       if(i && Date.now()-ARRANQUE > TOPE_TOTAL) break;
       if(i) await esperarRed(ESPERAS[i-1]);
       try{ return await this.unaSubida(ruta,blob); }
-      catch(e){ ultimo=e; if(!seVuelveAIntentar(e)) throw e; }
+      catch(e){
+        /* El wifi del salón se cortó DESPUÉS de que el archivo entró: se
+           perdió la respuesta, no la foto. El reintento va a la misma ruta
+           y el depósito contesta 409 "ya existe" — o sea que está arriba.
+           Sale por el camino bueno: el cupo ya lo anotó ce_tomar_foto y
+           pedir que la devuelvan sería borrarle una foto que tiene.
+           Solo cuando YA intentamos (i>0): un 409 en el primer intento no
+           es nuestro, es un choque de nombre, y ahí sí es un error. */
+        if(i && yaEstaba(e)) return true;
+        ultimo=e; if(!seVuelveAIntentar(e)) throw e; }
     }
     throw ultimo;
   },
@@ -1781,9 +1796,14 @@ async function vCamara(m,guardado,estado){
     try{
       await SB.subir(ruta,blob);
     }catch(e){
-      try{ await SB.rpc('ce_devolver_foto',{p_codigo:m.codigo,p_token:token,p_ruta:ruta}); }
-      catch(_){ /* si tampoco se puede devolver, al menos no mentimos con el contador */ }
-      throw new Error('no se pudo subir, la foto te la devolvimos');
+      /* Si la devolución tampoco se pudo, el mensaje NO puede decir que se
+         devolvió: es la regla de no mentirle al usuario. Le decimos que la
+         intente de nuevo, que es lo único cierto que le sirve. */
+      let devuelta=false;
+      try{ await SB.rpc('ce_devolver_foto',{p_codigo:m.codigo,p_token:token,p_ruta:ruta}); devuelta=true; }
+      catch(_){}
+      throw new Error(devuelta ? 'no se pudo subir, la foto te la devolvimos'
+                               : 'no se pudo subir, probá de nuevo');
     }
     const quedan=Number(r&&r.restantes);
     restantes=Number.isFinite(quedan)?quedan:Math.max(0,restantes-1);
