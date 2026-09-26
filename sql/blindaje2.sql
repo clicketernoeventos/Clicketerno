@@ -127,6 +127,15 @@ create trigger ce_eventos_freno before insert on ce_eventos
 -- Un contrato que nadie puede probar que se aceptó no sirve de mucho.
 alter table ce_eventos add column if not exists acepto bigint;
 
+
+-- ── que PostgREST se entere ──
+-- El caché de esquema de PostgREST no se actualiza solo al toque: una
+-- función recién creada existe en la base pero la API contesta PGRST202,
+-- "no matches were found in the schema cache". O sea que el SQL da todas
+-- las comprobaciones en true —miran pg_proc directo— y la app sigue sin
+-- poder llamarla. Medido el 25/09/2026 con ce_espiar_cabeceras.
+notify pgrst, 'reload schema';
+
 -- ── 4. comprobación ──
 -- Las cuatro tienen que dar true después de correr esto.
 select 'la puerta de ce_items está puesta' as que,

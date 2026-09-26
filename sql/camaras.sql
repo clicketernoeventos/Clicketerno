@@ -127,6 +127,15 @@ end $$;
 revoke all on function ce_liberar_vacias(text) from public;
 grant execute on function ce_liberar_vacias(text) to anon, authenticated;
 
+
+-- ── que PostgREST se entere ──
+-- El caché de esquema de PostgREST no se actualiza solo al toque: una
+-- función recién creada existe en la base pero la API contesta PGRST202,
+-- "no matches were found in the schema cache". O sea que el SQL da todas
+-- las comprobaciones en true —miran pg_proc directo— y la app sigue sin
+-- poder llamarla. Medido el 25/09/2026 con ce_espiar_cabeceras.
+notify pgrst, 'reload schema';
+
 -- ══ las comprobaciones: las tres tienen que decir true ══
 select 'freno de ritmo al abrir cámaras' as que,
        (regexp_match(prosrc, 'v_nuevas >= (\d+)'))[1] as vale,

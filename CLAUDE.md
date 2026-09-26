@@ -274,6 +274,16 @@ viene cada cosa. `sql/revisar.sql`, `sql/rollo_revisar.sql` y
 va pegado en el chat, en un bloque listo para copiar, y lo corre una
 persona en el SQL Editor.
 
+**Crear una función no alcanza: PostgREST tiene que enterarse.** Su caché
+de esquema no se actualiza al toque, así que una función recién creada
+existe en la base y la API igual contesta `PGRST202`, *"no matches were
+found in the schema cache"*. Lo peor es cómo se ve: **las comprobaciones
+del propio SQL dan todas `true`** —miran `pg_proc` directo— y la app sigue
+sin poder llamarla, así que parece que el archivo se corrió mal cuando se
+corrió bien. Cada archivo de `sql/` termina con `notify pgrst, 'reload
+schema';` por eso. Si alguna vez se pasa una función suelta pegada en el
+chat, esa línea va al final o no sirve de nada. Medido el 25/09/2026.
+
 **En el SQL Editor NO existe `request.headers`.** Se conecta directo a
 Postgres y esa variable la pone **PostgREST**, o sea el camino por el que
 entra la app. Ahí `current_setting('request.headers', true)` devuelve
