@@ -962,6 +962,52 @@ Lo miden `pruebas/vencimiento.js` (el aviso, quién entra a la limpieza, que
 borre los vencidos y solo esos, que no diga "Listo" si la base se negó, y
 el corte de las mil filas) y `pruebas/rollo_vence.js` (el aviso del rollo).
 
+## Lo que se vio en un iPhone de verdad
+
+La primera prueba en hardware real, y encontró dos cosas que ninguna de
+las 39 suites podía ver, porque las dos son sobre **cómo se siente**, no
+sobre si funciona.
+
+**De la cámara no se podía salir.** Entrabas y no había forma de volver
+hasta gastar las 24 fotos. Una fiesta dura seis horas y nadie saca
+veinticuatro seguidas: el invitado saca dos en la entrada, guarda el
+teléfono y vuelve en el brindis. Y mientras tanto **la cámara quedaba
+prendida**, comiéndole la batería toda la noche. Ahora hay un ✕ arriba a
+la izquierda que la apaga y lleva a una pantalla con cuántas le quedan y
+un botón para volver.
+
+Tres cosas que no son adorno:
+
+- **El sondeo lo devolvía solo.** El estado se consulta cada 15 s y esa
+  consulta llama a `rutear()`, que manda a la cámara mientras queden
+  fotos: sin cuidarlo, el invitado salía y a los quince segundos la app lo
+  metía adentro de nuevo. Lo cuida la bandera `pausado`, que `rutear()`
+  mira **después** de `revelado` y `cerrado`, así esos dos siguen mandando.
+  Hay una comprobación que espera 18 s justamente para eso.
+- **Al volver se vuelve a preguntar el estado**, en vez de confiar en el
+  que teníamos: si el organizador cerró o reveló mientras el invitado
+  estaba en pausa, va a donde corresponde y no a la cámara.
+- **La pausa es de esa visita, no del rollo.** Si recarga o vuelve a leer
+  el QR, entra derecho a la cámara: el que reabre el link quiere sacar una
+  foto, no ver un cartel.
+
+**El revelado existía entero y no se veía.** Parecía que duraba poco, y no
+era la duración: las copias caen todas en el **mismo lugar** de la
+bandeja, una encima de la otra, y la imagen tarda ~2,4 s en subir desde el
+papel — pero la siguiente copia caía a los **680 ms**. Tapaba a la
+anterior cuando iba por la cuarta parte del revelado, así que de las cinco
+se veía revelarse **una: la última**. Medido con el DOM, no deducido: los
+huecos daban `680, 680` contra un revelado de 2,2 s.
+Ahora `PASO_COPIA` son 1400 ms y la imagen sube en 2,6 s. Con 5 copias el
+cuarto oscuro pasa de ~8 s a ~11, y el "Tocá para saltear" aparece antes:
+alargar el efecto sin dar la salida es hacer esperar al que no lo quiere
+ver. Lo mide `pruebas/rollo_revelado.js`.
+
+**La lección que dejan las dos**: lo que una suite no puede medir es si
+algo se SIENTE bien. Las dos fallas estaban a la vista en el código y
+ninguna rompía nada. Hasta que no lo tuvo en la mano una persona, no
+existieron.
+
 ## Que no se quede una fiesta sin cámaras
 
 El token del rollo lo inventa el teléfono. Alguien que lee el QR de
@@ -1166,6 +1212,14 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   claves foráneas y el `create table if not exists` no las repone. La copia
   quedaba sin borrado en cascada y la prueba que justo cuida eso pasaba
   sola en la segunda corrida, sobre datos sucios.
+- **Un servidor que quedó de antes te deja fallas que parecen del
+  producto.** `todo.sh` no levanta el suyo si ya hay algo escuchando el
+  puerto —lo dice: *"ya había algo sirviendo (no lo toco)"*— así que reusa
+  el que quedó de una corrida a mano. Si ese se cae en el medio, las suites
+  que faltaban informan `ERR_CONNECTION_REFUSED` y parece que el producto
+  se rompió: pasó con `rollo_hostil`, seis fallas seguidas que no existían.
+  Antes de creerle a una corrida, mirar ese renglón: si dice "ya había algo
+  sirviendo", matar todo (`pkill -f pruebas/servidor.py`) y correr de nuevo.
 - **Lo que falla por el entorno no es una falla del producto.** Un proxy
   que firma los certificados hace que el navegador rechace el CDN y la
   prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
