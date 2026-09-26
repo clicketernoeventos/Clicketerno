@@ -497,7 +497,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 /* la imagen sube desde el papel: primero sombras lavadas, después los negros */
 .copia img{width:100%;height:100%;object-fit:cover;display:block;
   opacity:.05;filter:brightness(2.3) contrast(.16) saturate(.2);
-  transition:opacity 2s ease-out,filter 2.2s ease-out}
+  transition:opacity 2.4s ease-out,filter 2.6s ease-out}
 .copia.revelada img{opacity:1;filter:none}
 .cuarto .saltear{position:absolute;z-index:7;bottom:calc(26px + env(safe-area-inset-bottom));
   left:0;right:0;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
@@ -2728,6 +2728,14 @@ async function vAjustes(codigo){
 /* ── el cuarto de revelado ──
    Se ve una sola vez por teléfono: la segunda vez que entrás al álbum ya
    no tiene gracia, y encima molesta. Se puede saltear tocando. */
+/* Cuánto tarda en caer la copia siguiente. NO es un número de gusto: las
+   copias caen todas en el MISMO lugar de la bandeja, una encima de la otra,
+   y la imagen tarda ~2,4 s en subir desde el papel. Estaba en 680 ms, así
+   que la siguiente tapaba a la anterior cuando iba por la cuarta parte del
+   revelado: de las cinco copias se veía revelarse UNA, la última. Probado
+   en un iPhone de verdad y medido en pruebas/rollo_revelado.js.
+   Si se vuelve a bajar, el efecto sigue existiendo y deja de verse. */
+const PASO_COPIA = 1400;
 function cuartoOscuro(m, fotos, mapa, alApagarse){
   return new Promise(res=>{
     const c=document.createElement('div');
@@ -2771,20 +2779,21 @@ function cuartoOscuro(m, fotos, mapa, alApagarse){
         bandeja.appendChild(cop);
         requestAnimationFrame(()=>{
           cop.classList.add('puesta');
-          t(()=>cop.classList.add('revelada'), 220);
+          /* empieza a subir cuando el papel ya está apoyado, no mientras cae */
+          t(()=>cop.classList.add('revelada'), 320);
         });
-      }, 520 + i*680);
+      }, 520 + i*PASO_COPIA);
     });
 
-    t(()=>c.querySelector('#saltear').classList.add('visible'), 1600);
-    const finCopias = 520 + (fotos.length-1)*680 + 2200;
+    t(()=>c.querySelector('#saltear').classList.add('visible'), 1400);
+    const finCopias = 520 + (fotos.length-1)*PASO_COPIA + 2400;
     /* se prenden las luces: el rojo se va y aparecen los colores */
     t(()=>{
       c.classList.add('luces');
       const r=c.querySelector('#rotuloTope');
       if(r) r.textContent='Se reveló';
     }, finCopias);
-    t(terminar, finCopias + 1700);
+    t(terminar, finCopias + 1900);
   });
 }
 

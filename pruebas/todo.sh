@@ -25,7 +25,7 @@ MURO=(stress extras nuevas borrar xss hostil diagnostico demo seguridad vencimie
 # Mide lo que baja un invitado en las DOS apps, así que necesita los dos
 # puertos levantados. Por eso tiene bloque propio y no vive en ninguna lista.
 AMBAS=(arranque)
-ROLLO=(rollo_navegador rollo_red rollo_organizador rollo_hora rollo_vence rollo_cinta rollo_camara rollo_color rollo_maestra rollo_alta rollo_hostil rollo_recorrido)
+ROLLO=(rollo_navegador rollo_red rollo_revelado rollo_organizador rollo_hora rollo_vence rollo_cinta rollo_camara rollo_color rollo_maestra rollo_alta rollo_hostil rollo_recorrido)
 
 azul(){ printf '\n\033[1m%s\033[0m\n' "$*"; }
 falla(){ printf '\033[31m%s\033[0m\n' "$*"; }
