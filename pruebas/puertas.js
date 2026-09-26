@@ -332,6 +332,74 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     else bien('.assetsignore excluye el SQL, las pruebas, el Apps Script y los .md');
   }
 
+  /* ══ LO QUE UNA PUERTA PÚBLICA NO TIENE QUE MOSTRAR ══
+     Las puertas del invitado y del proyector pintaban la lista de eventos
+     guardados con un "En este celular · N". A cualquiera que abra esa
+     pantalla le decía cuántas fiestas hay en ese aparato — y esa persona
+     no administra nada.
+     Peor: `eventos()` con la clave de administrador devuelve la TABLA
+     ENTERA. O sea que con el modo administrador puesto, la puerta del
+     invitado listaba el casamiento de todos los clientes. Y además se
+     bajaba la tabla de a 500 filas para dibujar una puerta.
+     La lista del organizador va en el panel, que está detrás del PIN. */
+  titulo('las puertas públicas no muestran los eventos guardados');
+  {
+    /* Con el falso vacío, "no lista ningún evento" pasa midiendo la nada:
+       es la caja de 0x0 de siempre. Hay que sembrarlo. */
+    const fake = crearFake('ok');
+    fake.claves[COD] = CLAVE;
+    fake.db.ce_eventos.push({ codigo: COD, nombre: 'Fiesta de las puertas',
+      fecha: '2026-12-05', tono: '#D9AE72', creado: Date.now(), cerrado: false });
+    const ctxAdmin = await contexto(browser, { admin: true, claves: { [COD]: CLAVE } });
+    for (const [nombre, url] of [['la puerta del invitado', '/muro.html#invitado'],
+                                 ['la del proyector', '/muro.html#proyector']]) {
+      const p = await ctxAdmin.newPage();
+      const pedidos = [];
+      p.on('request', (r) => { if (r.url().includes('ce_eventos')) pedidos.push(r.url()); });
+      await fake.instalar(p);
+      await p.goto(BASE + url, { waitUntil: 'domcontentloaded' });
+      await p.waitForTimeout(2200);
+      const v = await p.evaluate(() => ({
+        cuenta: !!document.querySelector('.seccion-a'),
+        tarjetas: document.querySelectorAll('[data-cod]').length,
+        texto: (document.body.innerText || '').toLowerCase(),
+      }));
+      await p.close();
+
+      if (v.cuenta || /en este celular/.test(v.texto))
+        mal(`${nombre} muestra cuántos eventos hay guardados en el aparato`);
+      else bien(`${nombre} no dice cuántos eventos hay guardados`);
+      if (v.tarjetas)
+        mal(`${nombre} lista ${v.tarjetas} evento(s) a quien no administra nada`);
+      else bien(`${nombre} no lista ningún evento`);
+      /* Y ni siquiera se lo pregunta a la base: con el administrador puesto
+         eso era bajarse la tabla entera para dibujar una puerta. */
+      if (pedidos.length)
+        mal(`${nombre} le pide la lista de eventos a la base (${pedidos.length} pedidos)`);
+      else bien(`${nombre} ni se lo pregunta a la base`);
+    }
+    await ctxAdmin.close();
+  }
+
+  /* Y la otra mitad, que es la que evita el borrado a lo bruto: en el
+     panel —detrás del PIN— el organizador SÍ tiene que ver los suyos. */
+  titulo('pero el panel sí muestra los del organizador');
+  {
+    const fake = crearFake('ok');
+    fake.claves[COD] = CLAVE;
+    fake.db.ce_eventos.push({ codigo: COD, nombre: 'Fiesta de las puertas',
+      fecha: '2026-12-05', tono: '#D9AE72', creado: Date.now(), cerrado: false });
+    const ctx2 = await contexto(browser, { admin: true, claves: { [COD]: CLAVE } });
+    const p = await ctx2.newPage();
+    await fake.instalar(p);
+    await p.goto(BASE + '/muro.html#panel', { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(2600);
+    const n = await p.evaluate(() => document.querySelectorAll('[data-cod]').length);
+    await p.close(); await ctx2.close();
+    if (!n) mal('el panel del organizador dejó de mostrar sus eventos');
+    else bien(`el panel sigue mostrando los eventos del organizador (${n})`);
+  }
+
   await browser.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);

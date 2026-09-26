@@ -3582,10 +3582,10 @@ async function vEvento(codigo, abrirEn){
    armamos nosotros el evento y le pasamos código y clave. Ese entra desde
    otro teléfono, no tiene nada guardado, y lo único que quiere es poner la
    proyección en la pantalla del salón. Con el código alcanza: lo que se
-   proyecta es lo que ya está aprobado. */
+   proyecta es lo que ya está aprobado.
+   Tampoco lista los eventos guardados, por lo mismo que la del invitado. */
 async function vElegir(destino,titulo){
   parar(); tono();
-  const evs=await eventos();
   app.innerHTML=`
   <header class="cab-inv">
     <p class="arriba">${esc(titulo)}</p>
@@ -3606,11 +3606,8 @@ async function vElegir(destino,titulo){
       <p class="pie-nota">Podés escribirlo en minúscula, sin el guión, o solo
         los seis del final.</p>
     </div>
-    ${evs.length?`<div class="seccion-a"><h2>En este celular</h2><span>${evs.length}</span></div>
-       ${evs.map(e=>tarjetaEvento(e)).join('')}`:''}
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
-  app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir(destino+'/'+b.dataset.cod));
   const campo=app.querySelector('#codPant');
   const btn=app.querySelector('#irPant');
   campo.focus();
@@ -3630,12 +3627,16 @@ async function vElegir(destino,titulo){
 
 /* ── la puerta del invitado ──
    Un código y listo. NO se le pide clave ni se le hace inventar una: el
-   invitado no administra nada, solo manda su foto. Antes esta pantalla
-   mostraba la lista de eventos guardados en el aparato, que en el teléfono
-   de un invitado está siempre vacía. */
+   invitado no administra nada, solo manda su foto.
+   Y NO muestra la lista de eventos guardados. Esta puerta la abre
+   cualquiera: decirle "En este celular · 1" es contarle algo que no es
+   suyo. Peor con el modo administrador puesto, porque ahí `eventos()`
+   devuelve la TABLA ENTERA: la puerta del invitado llegaba a listar el
+   casamiento de todos los clientes, y se bajaba la tabla de a 500 filas
+   para dibujar una puerta. La lista del organizador va en el panel, que
+   está detrás del PIN. Lo mide pruebas/puertas.js. */
 async function vInvitado(){
   parar(); tono();
-  const evs=await eventos();
   app.innerHTML=`
   <header class="cab-inv">
     <p class="arriba">Soy invitado</p>
@@ -3655,11 +3656,8 @@ async function vInvitado(){
       <p class="pie-nota">Podés escribirlo en minúscula, sin el guión, o solo
         los seis del final.</p>
     </div>
-    ${evs.length?`<div class="seccion-a"><h2>En este celular</h2><span>${evs.length}</span></div>
-       ${evs.map(e=>tarjetaEvento(e)).join('')}`:''}
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
-  app.querySelectorAll('[data-cod]').forEach(b=>b.onclick=()=>ir('subir/'+b.dataset.cod));
   const campo=app.querySelector('#codInv');
   const btn=app.querySelector('#irFiesta');
   campo.focus();
