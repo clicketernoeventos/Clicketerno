@@ -507,6 +507,7 @@ await corrida('se corta la señal justo al crear el rollo', async()=>{
   await page.goto('http://127.0.0.1:8890/rollo.html#nuevo/1');
   await page.waitForTimeout(500);
   await page.locator('#dato').fill('Los 15 de Delfina');
+  await page.locator('#act').fill('CE-PRUEBA1').catch(()=>{});   // el alta pide código
   /* Hasta el final sin contar pasos: contar clicks rompió esta prueba
      cuando el alta pasó de cuatro pasos a seis, y falló por el motivo
      equivocado. El click que no dice "Siguiente" es el de crear. */

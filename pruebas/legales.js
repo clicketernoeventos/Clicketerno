@@ -172,6 +172,11 @@ const ART6=[
         mal('la casilla no enlaza la cláusula de responsabilidad: '+destino);
       else bien('la casilla enlaza la cláusula de responsabilidad');
       await p.fill('#n','Fiesta de prueba');
+      /* El alta pide un código de activación. Va acá, ANTES del intento sin
+         aceptar, para que lo que rebote sea la casilla de los Términos y no
+         el código: si no, "sin aceptar no se crea" pasaría por el motivo
+         equivocado. */
+      await p.locator('#act').fill('CE-PRUEBA1').catch(()=>{});
       const antes=fake2.db.ce_eventos.length;
       await p.click('#crear'); await p.waitForTimeout(900);
       if(fake2.db.ce_eventos.length>antes)
