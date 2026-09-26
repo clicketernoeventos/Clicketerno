@@ -201,7 +201,7 @@ comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 ### El orden en que se corre el SQL
 
     sql/claves.sql → sql/rollo.sql → sql/blindaje.sql → sql/blindaje2.sql
-    → sql/rafaga.sql → sql/camaras.sql
+    → sql/rafaga.sql → sql/camaras.sql → sql/activacion.sql
 
 `blindaje.sql` va **después de los dos primeros**: reemplaza políticas y
 funciones que ellos crean. `blindaje2.sql` va **al final**: cierra el muro
@@ -1008,6 +1008,59 @@ algo se SIENTE bien. Las dos fallas estaban a la vista en el código y
 ninguna rompía nada. Hasta que no lo tuvo en la mano una persona, no
 existieron.
 
+## El alta no es gratis: el código de activación
+
+Hasta el 26/09/2026 **cualquiera que llegara a `/#entrar` se armaba su
+evento sin pagar**. La "clave" que pedía el panel es un PIN que el propio
+visitante inventa y que se guarda EN ESE TELÉFONO —el comentario del
+código ya lo decía: *"sirve de traba en este aparato y nada más"*— y en el
+rollo no había ni eso. Y no hacía falta ni el navegador: la política de
+INSERT de `ce_eventos` dice `with check (true)`, así que con `curl`
+también. Lo encontró el dueño probando su propia página.
+
+Es la misma trampa por **tercera vez**: *lo que decide el navegador no es
+una regla, es una decoración.* Esconder el botón no cierra nada.
+
+Lo arregla `sql/activacion.sql`:
+
+- **`ce_codigos`**, cerrada a lectura. Si se pudieran leer, se podrían
+  usar.
+- Un **disparador en `ce_eventos`**: sin un código válido y sin usar, no
+  hay evento. Se consume **en el mismo movimiento en que se comprueba**
+  (un `update ... where usado_en is null`), así que dos pedidos
+  simultáneos con el mismo código no entran los dos.
+- **Con la clave maestra no hace falta código**: es para cuando la fiesta
+  la arma Click Eterno, que es como se vende hoy.
+- Los genera **la base** (`ce_crear_codigo`), no el navegador: *si el
+  navegador lo genera, el navegador lo puede repetir*.
+
+Del lado de la web: el alta del muro y la del rollo lo piden —en el rollo
+va en el **primer** paso, porque enterarse en el sexto después de elegir
+todo es peor—, viaja en `x-activacion`, y **la central pasó a ser la caja
+del negocio**: ahí se generan los códigos, se copian y se ve cuáles se
+usaron.
+
+**Esto no cobra: es una puerta, no una caja.** El día que se automatice
+con Mercado Pago, MP no tiene que hacer otra cosa que llamar a
+`ce_crear_codigo` cuando el pago se acredita. Por eso este trabajo no se
+tira si algún día se integra.
+
+**Mercado Pago no podía ir primero**, y el motivo principal es del dueño:
+un checkout obliga a **publicar precios**, y está decidido que no
+(*"el presupuesto se cierra hablando"*). Además necesita un servidor que
+reciba el aviso del pago, y razón social y CUIT, que todavía no hay.
+
+Lo mide `sql/activacion_probar.sql` (5 fallas contra el esquema anterior,
+13 verdes con el candado) y `pruebas/puertas.js` del lado de la web.
+
+**Ocho suites crean eventos recorriendo la pantalla** (`stress`, `hostil`,
+`seguridad`, `legales`, `recorrido`, `rollo_hostil`, y las del alta): todas
+tuvieron que aprender a poner el código, porque una persona también tiene
+que ponerlo. En `legales` **el orden importa**: hay una comprobación que
+mide "sin aceptar los Términos no se crea el evento", y con el código
+puesto DESPUÉS de ese intento lo que rebotaría sería el código y no la
+casilla — la prueba seguiría verde midiendo otra cosa.
+
 ## Que no se quede una fiesta sin cámaras
 
 El token del rollo lo inventa el teléfono. Alguien que lee el QR de
@@ -1145,6 +1198,17 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   corrigela contra el código *anterior* al arreglo y comprobá que falla. Si
   pasa en los dos, no estás midiendo lo que creés. Pasó con la del orden de
   las tandas: creía que probaba el desempate por `id` y no lo probaba.
+- **Un acento grave adentro de una plantilla la cierra, aunque esté en un
+  comentario HTML.** Escribir `` `nuevo` `` dentro de un `<!-- … -->` que
+  vive adentro de un template literal rompió `rollo.html` entero, con un
+  "Unexpected identifier" que apuntaba a una línea que se leía perfecta.
+  Los comentarios de adentro de una plantilla no llevan acentos graves.
+- **Mirar que el cambio haya ENTRADO, no suponerlo.** Un script de edición
+  se cortó a mitad por un `assert` y no escribió el archivo, así que la
+  cabecera `x-activacion` nunca se editó — pero las otras dos ediciones de
+  scripts posteriores sí, y todo *parecía* hecho. Lo agarró la prueba: el
+  `POST` del alta salía con `x-clave` y sin `x-activacion`. Después de
+  editar, un `grep` de lo que se acaba de poner.
 - **La regla de los nombres repetidos también vale en las pruebas.**
   `movil.js` tiene una función `caja()` que mide un elemento. Una variable
   local `const caja=...` adentro de un bloque la tapó entera y la suite
