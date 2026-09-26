@@ -392,6 +392,12 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .girar{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
   display:flex;align-items:center;justify-content:center;flex:none}
 .girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6;stroke-linecap:round}
+/* La salida de la cámara. Es del tamaño del pulgar a propósito: probado en
+   un iPhone, el invitado entraba y no podía salir hasta gastar las 24. */
+.salir-cam{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.42);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.salir-cam svg{width:17px;height:17px;stroke:var(--texto);fill:none;stroke-width:1.8;stroke-linecap:round}
 
 .cam-abajo{position:relative;z-index:3;margin-top:auto;
   padding:0 0 calc(20px + env(safe-area-inset-bottom))}
@@ -1419,6 +1425,12 @@ function vPedirNombre(m){
    que no cuenta: si la señal se cae en el primer pedido, sin esto se queda
    mirando ese cartel para siempre, sin saber si esperar o recargar. */
 let vistaViva=false;
+/* El invitado salió de la cámara con fotos sin gastar. Vive acá y no en la
+   base a propósito: es de ESTA visita, no del rollo. Si recarga la página
+   vuelve a entrar derecho a la cámara, que es lo que quiere. Lo mira
+   rutear(), porque el sondeo de estado lo devolvía solo a la cámara cada
+   quince segundos. */
+let pausado=false;
 /* El cuarto oscuro se ve UNA vez por rollo. Esto lo pide de nuevo a mano,
    que es lo que usa el botón "Ver cómo se revela" de la demostración. */
 let forzarRevelado=false;
@@ -1455,7 +1467,44 @@ function rutear(m,guardado,estado){
   const cupo=cupoDe(estado), hechos=Number(estado.disparos)||0;
   const est={...estado, cupo, disparos:hechos};
   if(hechos>=cupo) return vEsperando(m,guardado,est);
+  /* Va DESPUÉS de revelado y cerrado: esos dos mandan siempre. Si el
+     organizador cierra el rollo mientras el invitado está en pausa, la
+     próxima vuelta del sondeo lo saca de acá. */
+  if(pausado) return vPausa(m,guardado,est);
   return vCamara(m,guardado,est);
+}
+
+/* ── el rollo guardado para después ──
+   Probado en un iPhone: se entraba a la cámara y no había forma de salir
+   hasta gastar las 24 fotos. Una fiesta dura seis horas; el invitado saca
+   dos en la entrada, guarda el teléfono, y vuelve en el brindis. Y
+   mientras tanto la cámara quedaba PRENDIDA, comiéndole la batería. */
+function vPausa(m,guardado,estado){
+  detenerCamara(); olvidarVigilia();
+  /* El sondeo la vuelve a llamar cada quince segundos. Redibujar acá sería
+     pisarle la pantalla al invitado sin que nada haya cambiado: lo que
+     cambia —el cierre y el revelado— ya lo atajó rutear() más arriba. */
+  if(app.querySelector('#pausa')) return;
+  detenerPoll(); vistaViva=true;
+  const quedan=Math.max(0,cupoDe(estado)-(Number(estado.disparos)||0));
+  app.innerHTML=`
+  <div class="centro" id="pausa">
+    ${ESTRELLA}
+    <p class="espaciado" style="margin-top:16px">Tu rollo te espera</p>
+    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">
+      Te ${quedan===1?'queda':'quedan'} ${quedan} ${quedan===1?'foto':'fotos'}</h1>
+    <p class="info">Las que sacaste ya están guardadas. Volvé cuando quieras:
+      el rollo sigue abierto hasta que lo cierre el organizador.</p>
+    <button class="oro-btn" id="seguir" style="max-width:280px;margin:26px auto 0">Seguir sacando fotos</button>
+  </div>`;
+  app.querySelector('#seguir').onclick=()=>{
+    pausado=false;
+    /* Se vuelve a preguntar en vez de confiar en lo que teníamos: si el
+       organizador cerró el rollo o lo reveló mientras el invitado estaba
+       acá, tiene que ir a donde corresponde y no a la cámara. */
+    consultarEstado(m,guardado);
+  };
+  if(guardado) cadaTanto(()=>consultarEstado(m,guardado),15000);
 }
 
 function vCerrado(m,guardado){
@@ -1541,7 +1590,9 @@ async function vCamara(m,guardado,estado){
       <div class="velo-arr"></div><div class="velo-aba"></div>
     </div>
     <div class="cam-arriba">
-      <span class="hueco" style="width:40px"></span>
+      <button class="salir-cam" id="salirCam" aria-label="Guardar el rollo para después">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
       <span class="nombre-ev">${esc(m.nombre)}</span>
       <button class="girar" id="girar" aria-label="Girar cámara" hidden>
         <svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.9-4M20 15a8 8 0 0 1-13.9 4"/><path d="M18 3v5h-5M6 21v-5h5"/></svg>
@@ -1660,6 +1711,15 @@ async function vCamara(m,guardado,estado){
 
   const btnDisparo=app.querySelector('#disparo');
   const btnGirar=app.querySelector('#girar');
+  /* Guardar el rollo para después. Sin esto el invitado entraba a la cámara
+     y no salía hasta gastar las 24: probado en un iPhone. Se apaga la
+     cámara —si no le come la batería toda la noche— y se lo lleva a una
+     pantalla que le dice cuántas le quedan y cómo volver. */
+  app.querySelector('#salirCam').onclick=()=>{
+    pausado=true;
+    detenerCamara(); olvidarVigilia();
+    vPausa(m,guardado,{...estado, disparos:cupoDe(estado)-restantes});
+  };
   const altNativa=app.querySelector('#altNativa');
   let restantes=cupoDe(estado)-(Number(estado.disparos)||0);
   /* ¿el teléfono nos dejó prender la cámara? Si no, el botón grande abre la

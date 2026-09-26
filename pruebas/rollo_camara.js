@@ -176,6 +176,76 @@ const disparar = async (p) => { await p.click('#disparo').catch(() => {}); await
     await c2.close();
   }
 
+  /* ══ 6 · SE PUEDE SALIR SIN GASTAR EL ROLLO ══
+     Probado en un iPhone de verdad: entrabas a la cámara y no había forma
+     de salir hasta gastar las 24. Una fiesta dura seis horas y nadie saca
+     veinticuatro fotos seguidas; el invitado quiere sacar dos, guardar el
+     teléfono, y volver en el brindis. Y mientras tanto la cámara quedaba
+     PRENDIDA, comiéndole la batería toda la noche. */
+  titulo('se puede salir de la cámara sin gastarla');
+  {
+    const { ctx: c3, p: p3, errs: e3 } = await abrir(browser);
+    const hay = (sel) => p3.evaluate((s) => {
+      const n = document.querySelector(s);
+      return !!n && !n.hidden && n.getClientRects().length > 0;
+    }, sel);
+
+    if (!(await hay('#disparo'))) mal('no abrió la cámara para medir la salida');
+    else {
+      if (!(await hay('#salirCam')))
+        mal('no hay por dónde salir de la cámara: hay que gastar las 24 fotos');
+      else {
+        bien('hay un botón para salir de la cámara');
+        const c = await p3.evaluate(() => {
+          const r = document.querySelector('#salirCam').getBoundingClientRect();
+          return { w: r.width, h: r.height };
+        });
+        if (c.w < 44 || c.h < 44) mal(`el botón de salir mide ${Math.round(c.w)}x${Math.round(c.h)}, no llega a 44x44`);
+        else bien(`y llega a 44x44 (${Math.round(c.w)}x${Math.round(c.h)})`);
+
+        /* Se sale con fotos SIN gastar: eso es lo que no se podía. */
+        await disparar(p3);
+        const antes = (await mirar(p3)).quedan;
+        await p3.click('#salirCam');
+        await p3.waitForTimeout(1200);
+
+        if (await hay('#disparo')) mal('tocando salir sigue en la cámara');
+        else bien('sale de la cámara');
+        if (!(await hay('#pausa'))) mal('salió de la cámara pero no muestra nada');
+        else {
+          const dice = (await p3.evaluate(() => document.body.innerText)).toLowerCase();
+          if (!new RegExp('\\b' + antes + '\\b').test(dice))
+            mal(`la pantalla de pausa no dice cuántas le quedan (${antes}): "${dice.slice(0, 110)}"`);
+          else bien(`y le dice cuántas le quedan (${antes})`);
+        }
+        /* La cámara tiene que APAGARSE: si no, sigue comiendo batería. */
+        const viva = await p3.evaluate(() => !!document.querySelector('#video'));
+        if (viva) mal('salió pero el visor sigue en la pantalla: la cámara quedó prendida');
+        else bien('y apaga la cámara');
+
+        /* Y no puede rebotarlo solo a la cámara: el sondeo de estado llama
+           a rutear() cada 15 s, que es justo lo que lo devolvía. */
+        await p3.waitForTimeout(18000);
+        if (await hay('#disparo')) mal('a los 18 s el sondeo lo devolvió solo a la cámara');
+        else bien('y se queda en pausa aunque el sondeo siga andando');
+
+        /* Volver tiene que ser un toque. */
+        if (!(await hay('#seguir'))) mal('desde la pausa no hay cómo volver a sacar fotos');
+        else {
+          await p3.click('#seguir');
+          await p3.waitForTimeout(2500);
+          if (!(await hay('#disparo'))) mal('el botón de volver no reabre la cámara');
+          else bien('y vuelve a la cámara de un toque');
+          const luego = (await mirar(p3)).quedan;
+          if (luego !== antes) mal(`al volver le cambió el cupo: ${antes} → ${luego}`);
+          else bien(`y le conserva las ${luego} que le quedaban`);
+        }
+      }
+    }
+    if (e3.length) mal('errores JS al salir de la cámara: ' + e3[0]);
+    await c3.close();
+  }
+
   await browser.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);
