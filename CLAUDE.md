@@ -274,6 +274,16 @@ viene cada cosa. `sql/revisar.sql`, `sql/rollo_revisar.sql` y
 va pegado en el chat, en un bloque listo para copiar, y lo corre una
 persona en el SQL Editor.
 
+**En el SQL Editor NO existe `request.headers`.** Se conecta directo a
+Postgres y esa variable la pone **PostgREST**, o sea el camino por el que
+entra la app. Ahí `current_setting('request.headers', true)` devuelve
+siempre `null`, haga lo que haga el navegador. Cualquier cosa que dependa
+de las cabeceras —la clave del evento, la maestra, una IP— **no se puede
+diagnosticar desde el editor**: hay que hacerla medir por un pedido de
+verdad (una función `stable` que las devuelva, llamada por `/rest/v1/rpc/`,
+y borrada después). Se perdió una vuelta entera dando `NULL` y creyendo
+que decía algo.
+
 ### Probar sin tocar producción
 
 `sql/esquema_falso.sql` arma una copia del esquema en un Postgres local y
@@ -1388,9 +1398,21 @@ dejaría peor parados.
   da un mp4 de ~2,5 MB para 30 segundos, sin servidor. No insistir sin que
   lo pida él.
 - **Contratar Supabase Pro.** Decidido por el dueño: las fotos se quedan
-  donde están, no se mudan a R2. Una foto pesa ~441 KB y un evento de 100
-  invitados con 24 fotos son ~1 GB: **el plan gratis (1 GB) no aguanta un
-  solo casamiento.** Pro son USD 25 al mes con 100 GB, y con los 90 días
+  donde están, no se mudan a R2. Hay DOS motivos, y el segundo es peor que
+  el primero.
+  **El depósito**: una foto pesa ~441 KB y un evento de 100 invitados con
+  24 fotos son ~1 GB, así que **el plan gratis (1 GB) no aguanta un solo
+  casamiento.**
+  **Y que el plan gratis PAUSA el proyecto solo** tras unos días sin
+  actividad. Pasó el 25/09/2026: el proyecto apareció pausado y **con eso
+  el producto entero está caído** —la página pública abre, pero el muro no
+  proyecta, la cámara del rollo no abre y nadie entra a su evento—. Desde
+  acá no se nota: las demostraciones y las 37 suites corren contra un
+  Supabase de mentira y dan verde igual. Se despierta gratis con "Resume
+  project" y no se pierde nada (los datos y los respaldos quedan), pero el
+  riesgo de verdad es otro: **si entre la venta y la noche de la fiesta
+  pasan unos días sin que nadie toque la base, se puede pausar justo el
+  día del evento**, con los QR impresos y el salón lleno. Pro son USD 25 al mes con 100 GB, y con los 90 días
   puestos el depósito deja de crecer para siempre. Hasta que no se
   contrate, el segundo casamiento del mes falla al subir.
 - **Pasar la limpieza a mano, una vez por mes.** `/muro#limpieza`, con la
