@@ -1279,13 +1279,17 @@ const esperarRed=(ms,tope=20000)=>new Promise(listo=>{
 });
 
 const SB = {
-  cab(extra, clave){
+  cab(extra, clave, activacion){
     const c=Object.assign({
       apikey: NUBE.clave,
       Authorization: 'Bearer '+NUBE.clave,
       'Content-Type': 'application/json'
     }, extra||{});
     if(clave) c['x-clave']=clave;
+    /* El código de activación: lo consume el disparador del alta y se gasta
+       una sola vez. Solo viaja al CREAR un evento; con la clave maestra no
+       hace falta ninguno. */
+    if(activacion) c['x-activacion']=activacion;
     return c;
   },
   async pedir(ruta, opciones){
@@ -1317,10 +1321,10 @@ const SB = {
      invitado que sube una foto: él nunca tiene clave. Medido contra Postgres
      16 con el esquema de producción entero. De paso queda más sano: dos
      códigos iguales ahora dan error en vez de pisarse. */
-  crear(tabla, obj, clave){
+  crear(tabla, obj, clave, activacion){
     return this.pedir(`/rest/v1/${tabla}`, {
       method:'POST',
-      headers:this.cab({Prefer:'return=minimal'}, clave),
+      headers:this.cab({Prefer:'return=minimal'}, clave, activacion),
       body:JSON.stringify(obj)
     });
   },
@@ -1608,6 +1612,8 @@ async function guardarMeta(m){
   }
   for(const c of COLUMNAS_NUEVAS) if(faltaColumna[c]) delete copia[c];
   delete copia.claveNueva;      // la clave va en la cabecera, nunca en la fila
+  const activacion=m.activacion||'';
+  delete copia.activacion;      // el código de activación, también
   /* Alta o cambio: no es lo mismo para la base (ver SB.crear). Y si el
      alta rebota por código repetido, es que el pedido anterior SÍ llegó y
      se perdió la respuesta: la clave ya quedó guardada por el disparador,
@@ -1615,7 +1621,7 @@ async function guardarMeta(m){
      código fuera de otro, ese upsert rebota por RLS, que es lo correcto. */
   const mandar=async()=>{
     if(!m.claveNueva) return SB.guardar('ce_eventos',copia, claveDe(m.codigo));
-    try{ return await SB.crear('ce_eventos',copia, m.claveNueva); }
+    try{ return await SB.crear('ce_eventos',copia, m.claveNueva, activacion); }
     catch(e){
       if(!/duplicate key|already exists|23505/i.test(String((e&&e.message)||e))) throw e;
       return SB.guardar('ce_eventos',copia, m.claveNueva);
@@ -1651,6 +1657,11 @@ function motivo(e){
   const t=(e&&e.message)||'';
   if(/Failed to fetch|NetworkError/i.test(t)) return 'sin conexión con la base';
   if(/relation .* does not exist|PGRST205|42P01/i.test(t)) return 'faltan las tablas (correr el SQL)';
+  /* Los del código de activación van ANTES del 28000 genérico: la base
+     los manda con ese mismo código y ahí abajo se convertirían en "falta
+     la clave del evento", que es mentira y manda al cliente a buscar otra
+     cosa. El texto lo escribe la base, así que se reusa tal cual. */
+  if(/c[óo]digo de activaci[óo]n/i.test(t)) return t.replace(/^.*?:\s*/,'').slice(0,110);
   if(/Falta la clave del evento|28000/i.test(t)) return 'falta la clave del evento';
   if(/row-level security|42501|PGRST301/i.test(t)) return 'la clave de este evento no es la correcta';
   if(/duplicate key|23505/i.test(t)) return 'ese código ya existe';
@@ -2535,6 +2546,15 @@ async function vPanel(){
       <button data-ir="codigo" style="font-size:11px;letter-spacing:.18em;
         text-transform:uppercase;color:var(--oro)">Entrar con un código</button></div>
     <div class="tarjeta">
+      <!-- ── el código de activación ──
+           Va PRIMERO porque es la puerta: sin él la base no crea el
+           evento, y descubrirlo después de llenar todo el formulario es
+           peor. Con la clave maestra no aparece: ahí lo arma el dueño. -->
+      ${esAdmin?'':`<div class="campo"><label for="act">Código de activación</label>
+        <input id="act" type="text" autocapitalize="characters" autocomplete="off"
+          placeholder="CE-XXXXXXXX" style="letter-spacing:.14em">
+        <p class="pie-nota" style="margin-top:8px">Te lo damos cuando contratás.
+          ¿Todavía no? <a href="/#contacto" style="color:var(--oro)">Escribinos</a>.</p></div>`}
       <div class="campo"><label for="n">Nombre</label><input id="n" type="text" placeholder="Sana · Flor y Juan · Los 40 de papá" maxlength="34"></div>
       <div class="campo"><label for="f">Fecha</label><input id="f" type="date" value="${hoy()}"></div>
       <div class="campo"><label for="t">Tipo de evento</label><select id="t">${Object.keys(TIPOS).map(t=>`<option>${t}</option>`).join('')}</select></div>
@@ -2593,12 +2613,19 @@ async function vPanel(){
     if(btn.disabled) return;               // evita crear dos veces con doble toque
     btn.disabled=true; btn.textContent='Creando…';
     const claveEv=nuevaClave();
+    const campoAct=app.querySelector('#act');
+    const activacion=campoAct?campoAct.value.trim().toUpperCase():'';
+    if(campoAct && !activacion){
+      btn.disabled=false; btn.textContent='Crear evento';
+      campoAct.focus();
+      return recado('Falta el código de activación');
+    }
     try{
       let codigo=nuevoCodigo(tipo);
       for(let i=0;i<5&&!(await codigoLibre(codigo));i++) codigo=nuevoCodigo(tipo);
       await guardarMeta({codigo,nombre,fecha:fEv,tipo,tono:color,vence:venceDe(fEv),
         moderar:false,cerrado:false,portada:null,creado:Date.now(),
-        acepto:Date.now(),claveNueva:claveEv});
+        acepto:Date.now(),claveNueva:claveEv,activacion});
       if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
       guardarClaveDe(codigo,claveEv);
       btn.textContent='✓ Evento creado';
@@ -2681,6 +2708,28 @@ async function vLimpieza(){
       desde la fecha del evento y el organizador recibe el aviso ${AVISAR_DESDE} días antes.
       Borrar elimina el evento y todos sus archivos, y no se puede deshacer.</p>
 
+    <!-- ── los códigos de activación ──
+         Es lo primero porque es lo que se hace después de vender: el
+         cliente paga por WhatsApp, vos generás un código y se lo pasás.
+         Sin un código la base NO crea el evento (sql/activacion.sql), así
+         que esta pantalla es la caja registradora del negocio. -->
+    <div class="seccion-a" style="margin-top:26px"><h2>Códigos de activación</h2>
+      <span id="cuentaCod"></span></div>
+    <div class="tarjeta">
+      <p style="font-size:13px;line-height:1.75;color:#B5AC9E;margin:0 0 16px">
+        Uno por evento vendido, y se gasta al usarlo. Sin código, nadie puede
+        crear un evento — salvo vos con esta clave.</p>
+      <div class="campo" style="margin-bottom:14px">
+        <label for="notaCod">¿Para quién es? (opcional)</label>
+        <input id="notaCod" type="text" maxlength="60" placeholder="Delfina · 15 · pagó 20/10"></div>
+      <button class="oro-btn" id="nuevoCod">Generar un código</button>
+      <div id="codRecien" hidden style="margin-top:18px;text-align:center">
+        <p class="rotulito" style="margin:0 0 8px">Pasale esto al cliente</p>
+        <p class="clave-gr" id="codTexto" style="margin:0"></p>
+        <button class="hilo-btn" id="copiarCod" style="margin-top:12px">Copiar</button></div>
+      <div id="listaCod" style="margin-top:18px"></div>
+    </div>
+
     <div class="seccion-a"><h2>Ya vencidos</h2><span>${vencidos.length}</span></div>
     ${vencidos.length?`<div class="tarjeta peligro">
         ${vencidos.map(e=>filaVence(e,true)).join('')}
@@ -2731,6 +2780,55 @@ async function vLimpieza(){
       }
     };
   });
+
+  /* ── los códigos de activación ──
+     Todo esto aguanta que la base todavía no tenga sql/activacion.sql:
+     primero la web, después el SQL. Mientras no esté, PostgREST contesta
+     PGRST202 y se lo decimos sin asustar. */
+  const sinCandado=t=>/PGRST202|does not exist|Could not find the function/i.test(String(t||''));
+  const pintarCodigos=async()=>{
+    const caja=app.querySelector('#listaCod'), cuenta=app.querySelector('#cuentaCod');
+    if(!caja) return;
+    let lista=[];
+    try{ lista=await SB.rpc('ce_codigos_lista',{},claveMaestra)||[]; }
+    catch(e){
+      caja.innerHTML=`<p class="pie-nota">${sinCandado(e&&e.message)
+        ? 'El candado del alta todavía no está puesto en la base.'
+        : 'No pude traer los códigos: '+esc(motivo(e))}</p>`;
+      return;
+    }
+    const libres=lista.filter(c=>!c.usado_en);
+    if(cuenta) cuenta.textContent=`${libres.length} sin usar`;
+    caja.innerHTML=lista.length?`
+      <p class="rotulito" style="margin:0 0 10px">Los últimos</p>
+      ${lista.slice(0,12).map(c=>`<div class="fila-res">
+        <span style="letter-spacing:.1em${c.usado_en?';opacity:.45;text-decoration:line-through':''}">${esc(c.codigo)}</span>
+        <b style="font-size:11.5px;color:${c.usado_en?'var(--mute)':'var(--oro)'}">${
+          c.usado_en?('usado · '+esc(c.usado_por||'')):(esc(c.nota||'sin nota'))}</b></div>`).join('')}`
+      :`<p class="pie-nota">Todavía no generaste ninguno.</p>`;
+  };
+  const bCod=app.querySelector('#nuevoCod');
+  if(bCod) bCod.onclick=async()=>{
+    if(bCod.disabled) return;
+    bCod.disabled=true; bCod.textContent='Generando…';
+    try{
+      const nota=(app.querySelector('#notaCod').value||'').trim();
+      const r=await SB.rpc('ce_crear_codigo',{p_nota:nota},claveMaestra);
+      const cod=r&&r.codigo;
+      if(!cod) throw new Error('la base no devolvió el código');
+      app.querySelector('#codTexto').textContent=cod;
+      app.querySelector('#codRecien').hidden=false;
+      app.querySelector('#notaCod').value='';
+      app.querySelector('#copiarCod').onclick=()=>copiarTexto(cod,'Código copiado');
+      await pintarCodigos();
+    }catch(e){
+      recado(sinCandado(e&&e.message)
+        ? 'Falta correr sql/activacion.sql en la base'
+        : 'No se pudo generar: '+motivo(e));
+    }
+    bCod.disabled=false; bCod.textContent='Generar un código';
+  };
+  pintarCodigos();
 
   const pedir=app.querySelector('#pedirTodos');
   if(pedir) pedir.onclick=()=>{

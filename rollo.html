@@ -838,9 +838,12 @@ const esperarRed=(ms,tope=20000)=>new Promise(listo=>{
 });
 
 const SB = {
-  cab(extra, clave){
+  cab(extra, clave, activacion){
     const c=Object.assign({apikey:NUBE.clave, Authorization:'Bearer '+NUBE.clave,'Content-Type':'application/json'}, extra||{});
     if(clave) c['x-clave']=clave;      // la valida la base, el navegador solo la lleva
+    /* El código de activación, que consume el disparador del alta y se
+       gasta una sola vez. Igual que en muro.html. */
+    if(activacion) c['x-activacion']=activacion;
     return c;
   },
   async pedir(ruta,opciones){
@@ -867,9 +870,9 @@ const SB = {
      de la sentencia): el rollo nuevo rebotaba con "new row violates row
      level security policy". Medido contra Postgres 16 con el esquema de
      producción entero. Ver el mismo comentario en muro.html. */
-  crear(tabla,obj,clave){
+  crear(tabla,obj,clave,activacion){
     return this.pedir(`/rest/v1/${tabla}`, {method:'POST',
-      headers:this.cab({Prefer:'return=minimal'},clave), body:JSON.stringify(obj)});
+      headers:this.cab({Prefer:'return=minimal'},clave,activacion), body:JSON.stringify(obj)});
   },
   editar(tabla,consulta,obj,clave){
     return this.pedir(`/rest/v1/${tabla}?${consulta}`, {method:'PATCH',
@@ -2141,7 +2144,17 @@ function vNuevo(n){
       <div class="chips" id="sugerencias">
         ${['Los 15 de','Casamiento de','Cumple de','Aniversario','Juntada']
           .map(t=>`<button data-s="${t}">${t}</button>`).join('')}
-      </div>`,
+      </div>
+      <!-- ── el código de activación ──
+           Va en el PRIMER paso porque es la puerta: sin él la base no crea
+           el rollo, y enterarse en el sexto —después de elegir todo— es
+           peor. Se pide una sola vez y queda en el paso siguiente. -->
+      <p class="rotulito">Código de activación</p>
+      <input id="act" type="text" autocapitalize="characters" autocomplete="off"
+        placeholder="CE-XXXXXXXX" value="${esc(nuevo.activacion||'')}"
+        style="letter-spacing:.14em;text-align:center">
+      <p class="ayudita" style="margin-top:8px">Te lo damos cuando contratás el rollo.
+        ¿Todavía no? <a href="/#contacto" style="color:var(--oro)">Escribinos</a>.</p>`,
     2:()=>`
       <h2>¿Qué festejan?</h2>
       <p class="sub">Con esto armamos el código de tu evento.</p>
@@ -2263,6 +2276,9 @@ function vNuevo(n){
 
   function seguir(){
     if(paso===1){
+      const ca=app.querySelector('#act');
+      nuevo.activacion=ca?ca.value.trim().toUpperCase():'';
+      if(ca && !nuevo.activacion){ ca.focus(); return avisar('Falta el código de activación'); }
       const v=app.querySelector('#dato').value.trim();
       if(!v) return avisar('Ponele un nombre a la fiesta');
       nuevo.nombre=v;
@@ -2330,7 +2346,7 @@ async function crearRollo(){
     nuevo.codigo=intento;
     nuevo.clave=nuevaClave();
   }
-  const codigo=nuevo.codigo, claveEv=nuevo.clave;
+  const codigo=nuevo.codigo, claveEv=nuevo.clave, activacion=nuevo.activacion||'';
   /* La clave se guarda ANTES de crear. Si el pedido llega a la base pero la
      respuesta se pierde en el camino, el evento queda creado y sin esto el
      organizador no lo podría manejar nunca más. Una clave de un evento que
@@ -2353,10 +2369,10 @@ async function crearRollo(){
   const sinAcepto=()=>{ const {acepto,...resto}=fila; return resto; };
   try{
     try{
-      try{ await SB.crear('ce_eventos', fila, claveEv); }
+      try{ await SB.crear('ce_eventos', fila, claveEv, activacion); }
       catch(eCol){
         if(!/acepto/i.test(String((eCol&&eCol.message)||eCol))) throw eCol;
-        await SB.crear('ce_eventos', sinAcepto(), claveEv);
+        await SB.crear('ce_eventos', sinAcepto(), claveEv, activacion);
       }
     }catch(e1){
       /* Código repetido quiere decir que el pedido anterior SÍ llegó y se

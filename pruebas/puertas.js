@@ -400,6 +400,77 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     else bien(`el panel sigue mostrando los eventos del organizador (${n})`);
   }
 
+  /* ══ EL ALTA NO ES GRATIS ══
+     Cualquiera que llegara a /#entrar se armaba su evento sin pagar. El
+     candado de verdad está en la base (sql/activacion.sql); esto mide la
+     mitad de la web: que se le PIDA el código, que viaje en la cabecera, y
+     que con la clave maestra no haga falta —ahí el evento lo arma el
+     dueño—. */
+  titulo('el alta pide el código de activación');
+  {
+    const fake = crearFake('ok');
+    const ctx3 = await contexto(browser, {});
+    const p = await ctx3.newPage();
+    await fake.instalar(p);
+    /* El PIN del panel es una traba de este aparato: se crea y se entra. */
+    await p.goto(BASE + '/muro.html#panel', { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(1200);
+    const pin = await p.$('#pin');
+    if (pin) { await pin.fill('4321'); await p.click('#entrar'); await p.waitForTimeout(1600); }
+
+    const hayCampo = await p.evaluate(() => {
+      const n = document.querySelector('#act');
+      return !!n && n.getClientRects().length > 0;
+    });
+    if (!hayCampo) mal('el alta del muro no pide ningún código de activación');
+    else bien('el alta del muro pide el código de activación');
+
+    /* Sin código no se manda nada a la base: el viaje se ahorra y el
+       mensaje es nuestro, no un error de Postgres. */
+    let altas = 0;
+    p.on('request', (r) => { if (r.method() === 'POST' && r.url().includes('ce_eventos')) altas++; });
+    await p.fill('#n', 'Fiesta sin pagar');
+    /* La casilla de los Términos es otra puerta y va aparte: sin marcarla
+       el alta sale antes de llegar al código, y la prueba mediría eso. */
+    await p.check('#aceptoT').catch(() => {});
+    await p.click('#crear');
+    await p.waitForTimeout(1200);
+    if (altas) mal('sin código igual intentó crear el evento');
+    else bien('sin código no intenta crear nada');
+
+    /* Con código, viaja en la cabecera x-activacion. */
+    const cabeceras = [];
+    p.on('request', (r) => {
+      if (r.method() === 'POST' && r.url().includes('ce_eventos'))
+        cabeceras.push(r.headers()['x-activacion'] || '');
+    });
+    await p.fill('#act', 'ce-probando');
+    await p.click('#crear');
+    await p.waitForTimeout(2200);
+    if (!cabeceras.length) mal('con código puesto tampoco intentó crear el evento');
+    else if (cabeceras[0] !== 'CE-PROBANDO')
+      mal(`el código no viajó bien en la cabecera: "${cabeceras[0]}"`);
+    else bien('con código, viaja en x-activacion y en mayúsculas');
+    await p.close(); await ctx3.close();
+  }
+
+  titulo('pero el dueño no necesita código');
+  {
+    const fake = crearFake('ok');
+    const ctx4 = await contexto(browser, { admin: true });
+    const p = await ctx4.newPage();
+    await fake.instalar(p);
+    await p.goto(BASE + '/muro.html#panel', { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(1800);
+    const pide = await p.evaluate(() => {
+      const n = document.querySelector('#act');
+      return !!n && n.getClientRects().length > 0;
+    });
+    if (pide) mal('con la clave maestra igual le pide un código de activación');
+    else bien('con la clave maestra no le pide código');
+    await p.close(); await ctx4.close();
+  }
+
   await browser.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);

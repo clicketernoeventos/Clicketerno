@@ -144,7 +144,7 @@ sql(){
   # en el que hay que correrlos en Supabase.
   # camaras.sql va DESPUÉS de blindaje.sql: reemplaza ce_mi_rollo entera,
   # así que corrido antes lo pisa el otro. Mismo orden que en Supabase.
-  for par in "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:probar" "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:rollo_probar" "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:camaras_probar"; do
+  for par in "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:probar" "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:rollo_probar" "esquema_falso claves rollo blindaje blindaje2 rafaga camaras:camaras_probar" "esquema_falso claves rollo blindaje blindaje2 rafaga camaras activacion:activacion_probar"; do
     local instalar="${par%%:*}" prueba="${par##*:}"
     local args=(); for f in $instalar; do args+=(-f "sql/$f.sql"); done
     printf '  %-22s' "$prueba"
