@@ -158,6 +158,7 @@ const evento=extra=>Object.assign({codigo:COD,nombre:'Delfina',fecha:'2026-08-21
     await p.fill('#pin','4321'); await p.click('#entrar'); await p.waitForTimeout(800);
     await p.fill('#n','Triple toque');
     await p.locator('#aceptoT').check().catch(()=>{});
+    await p.locator('#act').fill('CE-PRUEBA1').catch(()=>{});   // el alta pide código
     await Promise.all([p.click('#crear'),p.click('#crear').catch(()=>{}),p.click('#crear').catch(()=>{})]);
     await p.waitForTimeout(2200);
     if(fake.db.ce_eventos.length!==1)

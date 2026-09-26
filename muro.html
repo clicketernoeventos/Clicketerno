@@ -1007,7 +1007,11 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
      al sitio, imposible de acertar con el pulgar. La lista escrita a mano
      se queda corta sola; por eso ahora el barrido de pruebas/dispositivos.js
      los mide todos en siete tamaños en vez de confiar en la lista. */
-  .dejar,#cinta-demo button,#cinta-demo a{
+  .dejar,#cinta-demo button,#cinta-demo a,
+  /* El "Escribinos" de la nota del código de activación: 63x15 es
+     imposible de acertar con el pulgar, y es la salida del que todavía no
+     contrató. Lo agarró pruebas/dispositivos.js. */
+  .pie-nota a,.ayudita a{
     min-height:var(--toque);display:inline-flex;align-items:center;justify-content:center}
   .oro-btn,.hilo-btn,.btn-peligro{min-height:var(--toque)}
   #cinta-demo .plegar{min-width:var(--toque)}

@@ -203,8 +203,14 @@ const texto=async(p,sel)=>((await p.locator(sel).first().innerText().catch(()=>'
     if(!/3 vencidos/.test(boton)) mal(`el panel no avisa cuántos hay vencidos (dice "${boton}")`);
     else bien('desde el panel ya se ve que hay 3 vencidos');
     await p.click('[data-ir="central"]'); await p.waitForTimeout(1300);
-    const grupos=await p.$$eval('.seccion-a',ns=>ns.map(n=>
+    /* Se miran SOLO los tres grupos del vencimiento, no todas las
+       secciones de la pantalla: la central también tiene la de los códigos
+       de activación, y una prueba que compara la lista entera se rompe
+       cada vez que la pantalla gana una sección legítima. */
+    const todas=await p.$$eval('.seccion-a',ns=>ns.map(n=>
       (n.querySelector('h2').textContent+':'+(n.querySelector('span')||{}).textContent).toLowerCase()));
+    const quiero=['ya vencidos','vencen pronto','el resto'];
+    const grupos=todas.filter(g=>quiero.some(q=>g.startsWith(q+':')));
     const esperado='ya vencidos:3,vencen pronto:1,el resto:1';
     if(grupos.join(',')!==esperado) mal(`los grupos dan "${grupos.join(', ')}", esperaba "${esperado}"`);
     else bien('los agrupa bien: 3 vencidos, 1 por vencer, 1 tranquilo');

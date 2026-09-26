@@ -169,6 +169,9 @@ async function recorrer(browser, modo) {
 
     await page.fill('#n', 'Fiesta "Test" <b>& cía</b>');
     await page.locator('#aceptoT').check().catch(()=>{});
+    /* El alta pide un código de activación: sin él no se crea el evento,
+       igual que le pasa a una persona. */
+    await page.locator('#act').fill('CE-PRUEBA1').catch(()=>{});
     await page.click('#crear');
     await page.waitForTimeout(300);
     await page.click('#crear').catch(() => {});  // doble toque

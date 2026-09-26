@@ -146,7 +146,9 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
     await pg.waitForTimeout(800);
     await pg.fill('#pin', '1234'); await pg.click('#entrar');
     await pg.waitForTimeout(900);
-    await pg.locator('#aceptoT').check().catch(()=>{}); await pg.fill('#n', 'Fiesta de prueba'); await pg.click('#crear');
+    await pg.locator('#aceptoT').check().catch(()=>{}); await pg.fill('#n', 'Fiesta de prueba');
+    await pg.locator('#act').fill('CE-PRUEBA1').catch(()=>{});   // el alta pide código
+    await pg.click('#crear');
     await pg.waitForTimeout(2000);
     const codigo = Object.keys(fake.claves)[0] || '';
     afirmar(/^[A-Z]{3}-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(codigo),
