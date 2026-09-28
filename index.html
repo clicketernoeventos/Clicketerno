@@ -703,7 +703,11 @@ footer .datos{line-height:1.6}
           <div class="chasis">
             <div class="visor-p">
               <div class="quieto">La pantalla del salón</div>
-              <div class="vivo" data-vivo="muro?demo=1&amp;marco=1" data-ancho="1200"
+              <!-- La dirección la pone MUESTRA_MURO, más abajo: vacía es la
+                   demostración inventada; con un código es esa fiesta de
+                   verdad. Se deja la demostración escrita acá para que, si
+                   el JS no corre, igual se vea algo. -->
+              <div class="vivo" id="vitrinaMuro" data-vivo="muro?demo=1&amp;marco=1" data-ancho="1200"
                    data-nombre="el muro en vivo"></div>
               <div class="lupa"><span>Probar el muro</span></div>
             </div>
@@ -1148,6 +1152,37 @@ addEventListener('load',()=>setTimeout(()=>{
 })();
 
 /* ═══ galería de trabajos ═══ */
+/* ═══ la fiesta que se muestra en la vitrina ═══
+   Vacío = la demostración inventada (nueve fotos de ejemplo, sin tocar la
+   base). Con un código de evento, la vitrina proyecta ESA fiesta de verdad:
+   lo que se ve en la página de inicio es lo que hay en el muro.
+
+   Decisión del dueño (28/09/2026). Dos cosas que hay que sostener para que
+   no se vuelva en contra, y las dos se hacen desde el panel de ese evento:
+
+     · **El muro de esa fiesta tiene que estar CERRADO** (el candado de
+       Ajustes). Si queda abierto, cualquiera que consiga el código sube lo
+       que quiera y aparece en la página de inicio del negocio. Cerrado, las
+       fotos que ya están se siguen proyectando igual y nadie puede sumar:
+       eso lo hace cumplir la base, no la pantalla (sql/blindaje2.sql).
+     · **Ese evento no se borra en la limpieza de los 90 días.** El día que
+       se borre, la vitrina va a mostrar "Esperando la primera foto" para
+       siempre y nadie se va a enterar.
+
+   Para volver a la demostración: dejarlo vacío. */
+const MUESTRA_MURO='';
+
+(function(){
+  const v=document.getElementById('vitrinaMuro');
+  if(v && MUESTRA_MURO){
+    v.dataset.vivo='muro?marco=1#pantalla/'+encodeURIComponent(MUESTRA_MURO);
+    /* Y el toque abre esa misma fiesta, no la demostración: si no, lo que
+       se ve y lo que se abre son dos cosas distintas. */
+    const p=v.closest('[data-abrir]');
+    if(p) p.dataset.abrir='muro#pantalla/'+encodeURIComponent(MUESTRA_MURO);
+  }
+})();
+
 /* vivo:true  → se muestra la invitación real corriendo adentro del celular.
    vivo:false → se muestra la portada dibujada (por si un sitio no se deja
                 incrustar, o para que la página pese menos).

@@ -826,6 +826,31 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   .sala-cartel .cod-g{font-size:17px;letter-spacing:.3em}
   .sala-cartel .ya{font-size:12.5px;letter-spacing:.18em}
   .tablero{padding-top:calc(16px + var(--modos,38px) + 8px + var(--botsala,38px) + 12px)}
+
+  /* ── el tablero en un teléfono ──
+     Está pensado para un proyector: la foto a la izquierda y la columna
+     de "entrando ahora" al costado. En 390px esa columna se lleva sus
+     190 de mínimo y a la foto le quedan 162 de ancho contra 505 de alto
+     — una rendija—. Con object-fit:cover eso no la achica: la RECORTA.
+     Medido: de una foto se veía el 42%. Lo reportó el dueño en su
+     iPhone y lo cuida pruebas/tablero.js.
+     Acá se apila: la foto arriba y ancha, las que entran en una fila
+     abajo. En el proyector no cambia nada. */
+  .tab-cuerpo{grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr) auto;gap:10px}
+  .tab-lado{gap:8px}
+  /* las tres que vienen entrando, una al lado de la otra */
+  .tab-cola{flex-direction:row;flex:none;height:clamp(66px,11vh,96px)}
+  .tab-cola .prox{flex:1;min-width:0}
+  .tab-cola .prox .nom-p{padding:16px 7px 5px;font-size:10px}
+  /* La foto principal ya tiene todo el ancho: lo que falta es que no la
+     recorte de arriba y abajo. `contain` la muestra entera; el fondo del
+     recuadro hace de marco. */
+  .tab-foto .toma img,.tab-foto .toma video{object-fit:contain}
+  .tab-foto .epigrafe{padding-top:clamp(28px,6vh,60px)}
+  .tab-qr{padding:8px;gap:9px}
+  .tab-qr .caja-q canvas,.tab-qr .caja-q img{width:56px!important;height:56px!important}
+  .tab-cabeza h2{font-size:clamp(20px,5.4vw,30px)}
 }
 
 /* cuenta regresiva hasta que se abre el muro */

@@ -471,6 +471,58 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     await p.close(); await ctx4.close();
   }
 
+  /* ══ LA VITRINA DEL INICIO ══
+     Decisión del dueño: la vitrina puede proyectar una fiesta de verdad en
+     vez de la demostración inventada. Se controla con una sola constante,
+     MUESTRA_MURO. Lo que se mide es que esa constante mande de verdad —en
+     las dos direcciones— y que lo que se VE y lo que se ABRE al tocar sean
+     la misma fiesta: si no, el cliente toca lo que le gustó y le abre otra
+     cosa. */
+  titulo('la vitrina del inicio');
+  {
+    const conCodigo = async (codigo) => {
+      const ctx = await browser.newContext({ viewport: TELEFONO });
+      const p = await ctx.newPage();
+      if (codigo !== null) {
+        await p.route(BASE + '/', async (r) => {
+          const res = await r.fetch();
+          const html = (await res.text())
+            .replace("const MUESTRA_MURO='';", `const MUESTRA_MURO='${codigo}';`);
+          await r.fulfill({ response: res, body: html });
+        });
+      }
+      await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
+      await p.waitForTimeout(1200);
+      const v = await p.evaluate(() => {
+        const n = document.getElementById('vitrinaMuro');
+        const pieza = n && n.closest('[data-abrir]');
+        return n ? { vivo: n.dataset.vivo, abre: pieza ? pieza.dataset.abrir : '' } : null;
+      });
+      await ctx.close();
+      return v;
+    };
+
+    const solo = await conCodigo(null);
+    if (!solo) mal('no encontré la vitrina del muro en el inicio');
+    else if (!/demo=1/.test(solo.vivo))
+      mal(`sin código, la vitrina no cae en la demostración: "${solo.vivo}"`);
+    else bien('sin código puesto, la vitrina muestra la demostración');
+
+    const real = await conCodigo('QUI-MUESTRA');
+    if (!real) mal('no encontré la vitrina con el código puesto');
+    else {
+      if (!/pantalla\/QUI-MUESTRA/.test(real.vivo) || /demo=1/.test(real.vivo))
+        mal(`con el código puesto la vitrina no proyecta esa fiesta: "${real.vivo}"`);
+      else bien('con el código puesto, la vitrina proyecta esa fiesta');
+      if (!/marco=1/.test(real.vivo))
+        mal('la vitrina no va en modo marco: le van a aparecer los botones de la sala');
+      else bien('y va en modo marco, sin los botones de la sala');
+      if (!/pantalla\/QUI-MUESTRA/.test(real.abre || ''))
+        mal(`al tocarla abre otra cosa: "${real.abre}"`);
+      else bien('y al tocarla abre esa misma fiesta');
+    }
+  }
+
   await browser.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);
