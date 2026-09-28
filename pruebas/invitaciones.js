@@ -15,7 +15,9 @@ const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   /* los iconos de "poner en la pantalla del teléfono": una
                      carpeta acá taparía los que declara el manifiesto, y el
                      sistema pondría un cuadrado gris con la inicial */
-                  'iconos'];
+                  'iconos',
+                  /* el estudio de videos: /video sirve video.html */
+                  'video'];
 const TOPE_FOTO=300*1024, TOPE_TOTAL=12*1024*1024;
 /* La música es aparte: con preload="none" recién se baja si el invitado
    toca el botón, así que no frena la primera carga. Igual hay un tope:

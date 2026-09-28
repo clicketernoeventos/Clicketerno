@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El video de los XV · Click Eterno</title>
+<meta name="description" content="Las fotos de la fiesta, ordenadas por la hora en que se sacaron, en un video listo para proyectar o para Instagram. Se arma en la Mac: las fotos no salen de la computadora.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="manifest" href="/video.webmanifest">
+<link rel="apple-touch-icon" href="/iconos/apple-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Video de los XV">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@300;400;500&display=swap">
+<!--
+  EL VIDEO DE LOS XV · una herramienta del negocio, para la Mac.
+
+  Se eligen las fotos de la fiesta (de la cámara, de los teléfonos, del
+  rollo bajado en zip), se ordenan solas por la HORA EN QUE SE SACARON
+  —la que la cámara escribe adentro del archivo, no la del archivo— y se
+  arma un video con portada, las fotos con movimiento suave, la hora en un
+  rincón si se quiere, y la música de la fiesta.
+
+  Nada sale de la computadora: no hay Supabase ni servidor. Las fotos se
+  leen, se dibujan en un canvas y MediaRecorder graba ese canvas. Por eso
+  tarda lo mismo que dura el video, y por eso la pestaña tiene que quedar
+  a la vista (si se esconde, la grabación se pausa y retoma sola).
+-->
+<style>
+:root{
+  color-scheme: dark;
+  --negro:#000; --carbon:#0A0908; --humo:#131110;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#A39A8F; --rojo:#FF8A9E;
+  --hilo:rgba(217,174,114,.24); --hilo2:rgba(217,174,114,.5); --gris:rgba(255,255,255,.09);
+  --e:cubic-bezier(.22,.7,.24,1); --toque:44px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html,body{margin:0;background:var(--negro);color:var(--texto)}
+body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:400}
+button,input,select{font-family:inherit;color:inherit;font-size:inherit}
+button,a,input,label{-webkit-tap-highlight-color:transparent}
+button{border:0;background:none;cursor:pointer}
+.serif{font-family:'Bodoni Moda',serif}
+.ital{font-family:'Bodoni Moda',serif;font-style:italic}
+.espaciado{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
+
+header{display:flex;align-items:center;gap:14px;margin-bottom:34px}
+header img{width:40px;height:40px;border-radius:50%}
+header .espaciado{color:var(--oro)}
+
+.portada h1{font-size:clamp(38px,6vw,68px);line-height:1.05}
+.portada h1 em{color:var(--oro)}
+.portada p.bajada{margin-top:16px;max-width:620px;color:var(--mute);font-size:17px;line-height:1.7}
+
+.soltar{margin-top:30px;border:1px dashed var(--hilo2);border-radius:4px;padding:46px 24px;text-align:center;
+  background:rgba(217,174,114,.03);transition:background .25s var(--e),border-color .25s var(--e)}
+.soltar.encima{background:rgba(217,174,114,.1);border-color:var(--oro)}
+.soltar p{color:var(--mute);margin-top:14px;font-size:14px;line-height:1.7}
+/* Con las fotos ya elegidas, la portada se achica: lo que importa pasa a
+   ser la vista previa, y con la portada entera quedaba abajo del pliegue. */
+body.con-fotos .portada h1{font-size:34px}
+body.con-fotos .bajada{display:none}
+body.con-fotos .soltar{margin-top:18px;padding:14px 20px;display:flex;align-items:center;gap:18px;text-align:left}
+body.con-fotos .soltar p{margin-top:0}
+body.con-fotos .soltar .btn.oro{background:none;border:1px solid var(--hilo2);color:var(--champan)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:var(--toque);
+  padding:12px 26px;border-radius:2px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+  transition:transform .12s,background .2s,opacity .2s}
+.btn:active{transform:scale(.975)}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.oro{background:linear-gradient(135deg,var(--oro),var(--oro-hondo));color:#1A1713}
+.btn.linea{border:1px solid var(--hilo2);color:var(--champan)}
+@media(hover:hover){.btn.linea:hover{background:rgba(217,174,114,.08)}}
+.enlace{color:var(--oro);text-decoration:underline;text-underline-offset:3px;min-height:var(--toque);padding:0 4px}
+
+.mesa{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:34px;margin-top:34px;align-items:start}
+@media(max-width:860px){.mesa{grid-template-columns:1fr}}
+
+.ajustes{display:flex;flex-direction:column;gap:20px}
+.campo label,.campo .rot{display:block;margin-bottom:8px}
+.campo input[type=text]{width:100%;min-height:var(--toque);padding:10px 14px;background:var(--humo);
+  border:1px solid var(--gris);border-radius:2px;font-size:16px}
+.campo input[type=text]:focus{border-color:var(--hilo2);outline:0}
+.campo small{display:block;color:var(--mute);font-size:13px;margin-top:6px;line-height:1.6}
+.pastillas{display:flex;gap:8px;flex-wrap:wrap}
+.pastillas button{min-height:var(--toque);padding:8px 16px;border:1px solid var(--gris);border-radius:2px;font-size:14px;color:var(--mute)}
+.pastillas button[aria-pressed=true]{border-color:var(--oro);color:var(--oro);background:rgba(217,174,114,.08)}
+.rango{display:flex;align-items:center;gap:14px}
+.rango input{flex:1;accent-color:var(--oro);min-height:var(--toque)}
+.rango output{min-width:56px;text-align:right;color:var(--champan)}
+.casilla{display:flex;gap:12px;align-items:center;cursor:pointer;min-height:var(--toque)}
+.casilla input{width:20px;height:20px;accent-color:var(--oro)}
+.musica{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.musica span{color:var(--champan);font-size:14px;word-break:break-all}
+
+.escenario{position:sticky;top:18px}
+.pantalla{background:#050404;border:1px solid var(--gris);display:flex;align-items:center;justify-content:center;
+  aspect-ratio:16/9;overflow:hidden}
+.pantalla.vertical{aspect-ratio:9/16;max-height:70vh;margin:0 auto}
+.pantalla canvas{width:100%;height:100%;display:block;object-fit:contain}
+.mandos{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.resumen{color:var(--mute);font-size:14px;margin-top:12px;line-height:1.7}
+.barra{height:3px;background:var(--gris);margin-top:14px;overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:var(--oro);transition:width .3s linear}
+.estado{margin-top:12px;font-size:15px;line-height:1.7;min-height:1.7em}
+.estado.error{color:var(--rojo)}
+.estado.bien{color:var(--champan)}
+
+.avisos{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+.aviso{border-left:2px solid var(--oro);padding:10px 14px;background:rgba(217,174,114,.05);font-size:14px;line-height:1.7;color:var(--champan)}
+.aviso.error{border-color:var(--rojo);color:#FFD5DC;background:rgba(255,138,158,.06)}
+
+.linea-tiempo{margin-top:40px}
+.linea-tiempo h2{font-size:28px}
+.linea-tiempo .espaciado{margin-top:6px;display:block}
+.grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:22px;
+  list-style:none;padding:0}
+.grilla li{position:relative;background:var(--humo);border:1px solid var(--gris)}
+.grilla li.sin-hora{border-color:rgba(255,138,158,.55)}
+.grilla canvas{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#0d0c0b}
+.grilla .pie{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:13px;gap:6px}
+.grilla .hora{color:var(--champan)}
+.grilla .sin-hora .hora{color:var(--rojo)}
+.grilla .num{color:var(--mute);font-size:12px}
+.grilla .acciones{display:flex;border-top:1px solid var(--gris)}
+.grilla .acciones button{flex:1;min-height:var(--toque);color:var(--mute);font-size:16px}
+@media(hover:hover){.grilla .acciones button:hover{color:var(--oro);background:rgba(217,174,114,.06)}}
+.grilla .acciones button[disabled]{opacity:.25;cursor:default}
+.grilla li.corte{background:none;border:0;grid-column:1/-1;display:flex;align-items:center;gap:14px;color:var(--oro);font-size:13px;letter-spacing:.2em;text-transform:uppercase;margin-top:6px}
+.corte:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--hilo2),transparent)}
+
+.nota{margin-top:50px;color:var(--mute);font-size:13px;line-height:1.8;max-width:760px}
+.nota strong{color:var(--champan);font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="marca.webp" alt="" width="40" height="40">
+    <span class="espaciado">Click Eterno · Estudio</span>
+  </header>
+
+  <section class="portada">
+    <h1 class="serif">El video de <em class="ital">los XV</em></h1>
+    <p class="bajada">Elegí las fotos de la fiesta y se ordenan solas por la hora en que se sacaron: la llegada, la entrada, el vals, el brindis. Le ponés la música y sale un video listo para proyectar o para subir.</p>
+
+    <div class="soltar" id="soltar">
+      <label class="btn oro" for="fotos">Elegir las fotos</label>
+      <input type="file" id="fotos" accept="image/*,.heic,.heif" multiple hidden>
+      <p>O arrastralas acá, todas juntas. También sirve una carpeta entera.<br>
+      Las fotos <strong>no salen de esta computadora</strong>: el video se arma acá mismo.</p>
+    </div>
+  </section>
+
+  <div class="avisos" id="avisos"></div>
+
+  <section class="mesa" id="mesa" hidden>
+    <div class="ajustes">
+      <div class="campo">
+        <label class="espaciado" for="nombre">Nombre de la quinceañera</label>
+        <input type="text" id="nombre" maxlength="40" placeholder="Delfina" autocomplete="off">
+      </div>
+      <div class="campo">
+        <label class="espaciado" for="titulo">Arriba del nombre</label>
+        <input type="text" id="titulo" maxlength="40" value="Mis XV" autocomplete="off">
+      </div>
+      <div class="campo">
+        <label class="espaciado" for="fecha">Fecha</label>
+        <input type="text" id="fecha" maxlength="40" placeholder="14 de marzo de 2026" autocomplete="off">
+        <small>Sale sola de las fotos; se puede cambiar.</small>
+      </div>
+      <div class="campo">
+        <label class="espaciado" for="cierre">Frase del final</label>
+        <input type="text" id="cierre" maxlength="60" value="Gracias por ser parte" autocomplete="off">
+      </div>
+      <div class="campo">
+        <span class="rot espaciado">Formato</span>
+        <div class="pastillas" id="formato">
+          <button type="button" data-f="h" aria-pressed="true">Horizontal · para proyectar</button>
+          <button type="button" data-f="v" aria-pressed="false">Vertical · para Instagram</button>
+        </div>
+      </div>
+      <div class="campo">
+        <span class="rot espaciado">Música</span>
+        <div class="musica">
+          <label class="btn linea" for="cancion">Elegir canción</label>
+          <input type="file" id="cancion" accept="audio/*" hidden>
+          <span id="cancionNombre"></span>
+          <button type="button" class="enlace" id="sinMusica" hidden>Quitar</button>
+        </div>
+        <label class="casilla" id="ajustarFila" hidden><input type="checkbox" id="ajustar" checked> Que el video dure lo que dura la canción</label>
+      </div>
+      <div class="campo">
+        <label class="espaciado" for="segundos">Cada foto</label>
+        <div class="rango"><input type="range" id="segundos" min="1.5" max="8" step="0.5" value="3"><output id="segundosVer">3 s</output></div>
+      </div>
+      <label class="casilla"><input type="checkbox" id="verHora" checked> Mostrar la hora en un rincón</label>
+    </div>
+
+    <div class="escenario">
+      <div class="pantalla" id="pantalla"><canvas id="lienzo" width="1920" height="1080"></canvas></div>
+      <div class="mandos">
+        <button type="button" class="btn linea" id="ver">Ver cómo queda</button>
+        <button type="button" class="btn oro" id="crear">Crear el video</button>
+        <button type="button" class="btn linea" id="cortar" hidden>Cortar</button>
+        <a class="btn oro" id="descargar" hidden>Descargar el video</a>
+      </div>
+      <p class="resumen" id="resumen"></p>
+      <div class="barra" id="barra" hidden><i></i></div>
+      <p class="estado" id="estado" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="linea-tiempo" id="lineaTiempo" hidden>
+    <h2 class="serif">En este orden</h2>
+    <span class="espaciado" id="cuantas"></span>
+    <ul class="grilla" id="grilla"></ul>
+  </section>
+
+  <p class="nota">
+    <strong>Cómo sabe el orden.</strong> Cada cámara y cada teléfono escribe adentro de la foto la hora en que se sacó, y esa es la que se usa. Las que pasaron por WhatsApp la pierden: esas quedan por la fecha del archivo, marcadas en rojo, y conviene mirar si cayeron en su lugar.<br>
+    <strong>En la Mac.</strong> Anda en Safari y en Chrome. Safari abre también las fotos del iPhone (HEIC); Chrome no. Para tenerla en el Dock: en Safari, Archivo → Agregar al Dock.<br>
+    <strong>Mientras se crea</strong> el video tarda lo mismo que dura, y la pestaña tiene que quedar a la vista: si se esconde, se pausa y sigue sola al volver.
+  </p>
+</div>
+
+<script>
+'use strict';
+/* ═════════════ el estado ═════════════ */
+const $=s=>document.querySelector(s);
+const EST={
+  fotos:[],            // {id, archivo, clave, hora, fecha, conHora, ancho, alto}
+  formato:'h',
+  musica:null,         // {nombre, buffer}
+  grabando:false, viendo:false,
+};
+const TAM={h:[1920,1080], v:[1080,1920]};
+const FUNDIDO=0.8;            // segundos que dura el cruce entre dos fotos
+const PLACA=3.5;              // lo que dura la portada y el cierre
+const HOLGURA=1.1;            // el lienzo preparado es 10% más grande: el zoom lento vive ahí
+const CORTE_MOMENTO=45*60e3;  // un hueco de 45 minutos sin fotos es otro momento de la fiesta
+let idSig=1;
+
+/* ═════════════ la hora de la foto ═════════════
+   Se lee del EXIF (DateTimeOriginal, y si no DateTimeDigitized o DateTime).
+   Sirve para JPEG y para HEIC: en los dos el bloque empieza con "Exif\0\0"
+   y sigue una cabecera TIFF, así que no hace falta entender el contenedor.
+   La hora se queda como TEXTO ("2026:03:14 21:40:05"): es la hora de la
+   pared del lugar donde se sacó, sin zona, y pasarla por Date la correría
+   según el huso de la computadora. Ordenada como texto ya queda bien. */
+function buscarExif(u){
+  for(let i=0;i<u.length-10;i++){
+    if(u[i]===0x45&&u[i+1]===0x78&&u[i+2]===0x69&&u[i+3]===0x66&&u[i+4]===0&&u[i+5]===0){
+      const t=i+6;
+      if((u[t]===0x49&&u[t+1]===0x49&&u[t+2]===0x2A)||(u[t]===0x4D&&u[t+1]===0x4D&&u[t+3]===0x2A)) return t;
+    }
+  }
+  return -1;
+}
+function leerTiff(u,t){
+  const le=u[t]===0x49;
+  const dv=new DataView(u.buffer,u.byteOffset,u.byteLength);
+  const u16=o=>dv.getUint16(t+o,le), u32=o=>dv.getUint32(t+o,le);
+  const texto=(e)=>{            // valor ASCII de una entrada del directorio
+    const n=u32(e+4); const donde=n<=4?e+8:u32(e+8);
+    let s='';
+    for(let k=0;k<n&&t+donde+k<u.length;k++){const c=u[t+donde+k]; if(!c)break; s+=String.fromCharCode(c);}
+    return s;
+  };
+  const directorio=(o)=>{
+    const out={};
+    if(o<=0||t+o+2>u.length) return out;
+    const n=u16(o);
+    for(let k=0;k<n;k++){
+      const e=o+2+k*12; if(t+e+12>u.length) break;
+      const tag=u16(e), tipo=u16(e+2);
+      if(tipo===2) out[tag]=texto(e);
+      else if(tipo===4||tipo===3) out[tag]=tipo===4?u32(e+8):u16(e+8);
+    }
+    return out;
+  };
+  const cero=directorio(u32(4));
+  const exif=cero[0x8769]?directorio(cero[0x8769]):{};
+  const buena=s=>/^\d{4}:\d\d:\d\d \d\d:\d\d:\d\d/.test(s||'')&&!/^0000/.test(s);
+  const hora=[exif[0x9003],exif[0x9004],cero[0x0132]].find(buena);
+  if(!hora) return null;
+  const sub=String(exif[0x9291]||exif[0x9292]||'').replace(/\D/g,'').padEnd(3,'0').slice(0,3);
+  return hora.slice(0,19)+'.'+sub;
+}
+async function horaDe(archivo){
+  const intentar=async(hasta)=>{
+    const u=new Uint8Array(await archivo.slice(0,hasta).arrayBuffer());
+    const t=buscarExif(u); return t<0?null:leerTiff(u,t);
+  };
+  try{
+    let h=await intentar(256*1024);
+    /* en algunos HEIC el bloque viene más atrás */
+    if(!h&&archivo.size>256*1024&&archivo.size<60e6) h=await intentar(archivo.size);
+    return h;
+  }catch(e){return null;}
+}
+const dos=n=>String(n).padStart(2,'0');
+function claveDeFecha(d){
+  return `${d.getFullYear()}:${dos(d.getMonth()+1)}:${dos(d.getDate())} ${dos(d.getHours())}:${dos(d.getMinutes())}:${dos(d.getSeconds())}.000`;
+}
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function partes(clave){
+  const m=/^(\d{4}):(\d\d):(\d\d) (\d\d):(\d\d)/.exec(clave);
+  return m?{a:+m[1],me:+m[2],d:+m[3],h:m[4],mi:m[5]}:null;
+}
+const horaCorta=c=>{const p=partes(c);return p?`${p.h}:${p.mi}`:'';};
+const fechaLarga=c=>{const p=partes(c);return p?`${p.d} de ${MESES[p.me-1]} de ${p.a}`:'';};
+/* minutos desde una fecha fija, para medir huecos sin pasar por el huso */
+const minutos=c=>{const p=partes(c);return p?Date.UTC(p.a,p.me-1,p.d,+p.h,+p.mi)/60e3:0;};
+
+/* ═════════════ abrir una foto ═════════════
+   Con un <img>: el navegador ya la gira según la orientación del EXIF, cosa
+   que createImageBitmap no hace igual en todos lados. */
+function abrirImagen(archivo){
+  return new Promise((ok,mal)=>{
+    const url=URL.createObjectURL(archivo);
+    const im=new Image();
+    im.onload=()=>{ok({im,soltar:()=>URL.revokeObjectURL(url)});};
+    im.onerror=()=>{URL.revokeObjectURL(url);mal(new Error('no se pudo abrir'));};
+    im.src=url;
+  });
+}
+
+/* ═════════════ elegir y ordenar ═════════════ */
+const esImagen=f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|heif|gif)$/i.test(f.name);
+async function sumar(archivos){
+  archivos=archivos.filter(esImagen);
+  if(!archivos.length){avisar('Eso no trae fotos. Probá de nuevo con las imágenes de la fiesta.','error');return;}
+  if(EST.grabando) return;
+  pararVista();
+  const ya=new Set(EST.fotos.map(f=>f.archivo.name+'|'+f.archivo.size));
+  const nuevas=archivos.filter(f=>!ya.has(f.name+'|'+f.size));
+  estado(`Leyendo ${nuevas.length} ${nuevas.length===1?'foto':'fotos'}…`);
+  const rotas=[];
+  for(const archivo of nuevas){
+    const h=await horaDe(archivo);
+    let ancho=0,alto=0,mini=null;
+    try{
+      const {im,soltar}=await abrirImagen(archivo);
+      ancho=im.naturalWidth; alto=im.naturalHeight;
+      mini=miniatura(im); soltar();
+    }catch(e){rotas.push(archivo.name);continue;}
+    EST.fotos.push({id:idSig++,archivo,mini,ancho,alto,conHora:!!h,
+      clave:h||claveDeFecha(new Date(archivo.lastModified))});
+  }
+  ordenar();
+  avisosDeCarga(rotas);
+  pintar();
+  estado('');
+  if(!$('#fecha').value&&EST.fotos.length){
+    /* la fecha de la fiesta es la del día que más fotos tiene: la previa y
+       el after pueden caer en otro día */
+    const cuenta={};
+    EST.fotos.filter(f=>f.conHora).forEach(f=>{const k=f.clave.slice(0,10);cuenta[k]=(cuenta[k]||0)+1;});
+    const dia=Object.keys(cuenta).sort((a,b)=>cuenta[b]-cuenta[a])[0];
+    if(dia) $('#fecha').value=fechaLarga(dia+' 00:00');
+  }
+}
+function ordenar(){
+  EST.fotos.sort((a,b)=>a.clave<b.clave?-1:a.clave>b.clave?1:a.archivo.name.localeCompare(b.archivo.name,'es',{numeric:true}));
+}
+function miniatura(im){
+  const c=document.createElement('canvas'); c.width=c.height=240;
+  const x=c.getContext('2d');
+  const s=Math.max(240/im.naturalWidth,240/im.naturalHeight);
+  const w=im.naturalWidth*s,h=im.naturalHeight*s;
+  x.drawImage(im,(240-w)/2,(240-h)/2,w,h);
+  return c;
+}
+function avisosDeCarga(rotas){
+  const caja=$('#avisos'); caja.innerHTML='';
+  if(rotas.length){
+    const heic=rotas.some(n=>/\.hei[cf]$/i.test(n));
+    avisar(`${rotas.length===1?'Una foto no se pudo abrir':rotas.length+' fotos no se pudieron abrir'} y ${rotas.length===1?'quedó':'quedaron'} afuera: ${rotas.slice(0,4).join(', ')}${rotas.length>4?'…':''}.`
+      +(heic?' Son fotos de iPhone (HEIC): este navegador no las lee. Abrí esta página en Safari y elegilas de nuevo.':''),'error');
+  }
+  const sin=EST.fotos.filter(f=>!f.conHora).length;
+  if(sin) avisar(`${sin===1?'Una foto no trae':sin+' fotos no traen'} la hora en que se ${sin===1?'sacó':'sacaron'} (pasa con las que se mandaron por WhatsApp). ${sin===1?'Quedó':'Quedaron'} por la fecha del archivo y ${sin===1?'está marcada':'están marcadas'} en rojo: mirá si ${sin===1?'cayó':'cayeron'} en su lugar y movelas con las flechas.`);
+}
+function avisar(txt,tipo){
+  const d=document.createElement('div'); d.className='aviso'+(tipo?' '+tipo:''); d.textContent=txt;
+  $('#avisos').appendChild(d);
+}
+
+/* ═════════════ la línea de tiempo ═════════════ */
+function pintar(){
+  const hay=EST.fotos.length>0;
+  $('#mesa').hidden=!hay; $('#lineaTiempo').hidden=!hay;
+  document.body.classList.toggle('con-fotos',hay);
+  $('label[for=fotos]').textContent=hay?'Sumar más fotos':'Elegir las fotos';
+  const ul=$('#grilla'); ul.innerHTML='';
+  let anterior=null;
+  EST.fotos.forEach((f,i)=>{
+    if(anterior&&f.conHora&&anterior.conHora&&(minutos(f.clave)-minutos(anterior.clave))*60e3>=CORTE_MOMENTO){
+      const c=document.createElement('li'); c.className='corte'; c.textContent=horaCorta(f.clave);
+      c.setAttribute('aria-hidden','true'); ul.appendChild(c);
+    }
+    anterior=f;
+    const li=document.createElement('li');
+    li.className='foto'+(f.conHora?'':' sin-hora');
+    li.dataset.nombre=f.archivo.name;
+    li.appendChild(f.mini);
+    const pie=document.createElement('div'); pie.className='pie';
+    pie.innerHTML=`<span class="hora"></span><span class="num">${i+1}</span>`;
+    pie.firstChild.textContent=f.conHora?horaCorta(f.clave):'sin hora';
+    pie.title=f.archivo.name;
+    li.appendChild(pie);
+    const ac=document.createElement('div'); ac.className='acciones';
+    ac.innerHTML=`<button type="button" data-a="antes" aria-label="Mover antes" ${i===0?'disabled':''}>←</button>`
+      +`<button type="button" data-a="quitar" aria-label="Sacar del video">✕</button>`
+      +`<button type="button" data-a="despues" aria-label="Mover después" ${i===EST.fotos.length-1?'disabled':''}>→</button>`;
+    ac.dataset.id=f.id;
+    li.appendChild(ac);
+    ul.appendChild(li);
+  });
+  const n=EST.fotos.length;
+  $('#cuantas').textContent=`${n} ${n===1?'foto':'fotos'} · de la más temprana a la más tarde`;
+  resumir();
+  if(hay&&!EST.viendo&&!EST.grabando) portadaQuieta();
+}
+$('#grilla').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-a]'); if(!b||EST.grabando) return;
+  const id=+b.parentNode.dataset.id;
+  const i=EST.fotos.findIndex(f=>f.id===id); if(i<0) return;
+  pararVista();
+  const a=b.dataset.a;
+  if(a==='quitar') EST.fotos.splice(i,1);
+  else{
+    const j=a==='antes'?i-1:i+1; if(j<0||j>=EST.fotos.length) return;
+    [EST.fotos[i],EST.fotos[j]]=[EST.fotos[j],EST.fotos[i]];
+  }
+  pintar();
+  const otro=$(`#grilla .acciones[data-id="${id}"] button[data-a="${a}"]`);
+  if(otro&&!otro.disabled) otro.focus();
+});
+
+/* ═════════════ la duración ═════════════ */
+function porFoto(){
+  const n=EST.fotos.length;
+  if(EST.musica&&$('#ajustar').checked&&n){
+    /* las placas duran lo suyo y el resto se reparte entre las fotos */
+    const s=(EST.musica.buffer.duration-2*PLACA)/n;
+    return Math.min(10,Math.max(1.2,s));
+  }
+  return +$('#segundos').value;
+}
+function guion(){
+  const d=porFoto();
+  const partes=[{tipo:'portada',dura:PLACA}];
+  EST.fotos.forEach(f=>partes.push({tipo:'foto',foto:f,dura:d}));
+  partes.push({tipo:'cierre',dura:PLACA});
+  let t=0; partes.forEach(p=>{p.desde=t;t+=p.dura;});
+  return {partes,total:t};
+}
+const reloj=s=>{s=Math.round(s);const m=Math.floor(s/60);return m?`${m} min ${dos(s%60)} s`:`${s} s`;};
+function resumir(){
+  const {total}=guion();
+  const d=porFoto();
+  $('#segundosVer').textContent=(Math.round(d*10)/10).toString().replace('.',',')+' s';
+  $('#segundos').disabled=!!(EST.musica&&$('#ajustar').checked);
+  $('#resumen').textContent=`El video dura ${reloj(total)}`+(EST.musica&&$('#ajustar').checked?`, lo mismo que la canción: cada foto queda ${String(Math.round(d*10)/10).replace('.',',')} s.`:'.')
+    +` Crearlo tarda lo mismo.`;
+}
+
+/* ═════════════ dibujar ═════════════ */
+const lienzo=$('#lienzo'); const ctx=lienzo.getContext('2d');
+function medir(){const [w,h]=TAM[EST.formato]; if(lienzo.width!==w||lienzo.height!==h){lienzo.width=w;lienzo.height=h;}
+  $('#pantalla').classList.toggle('vertical',EST.formato==='v');}
+
+/* Lo caro —abrir una foto de 12 megapíxeles— se hace una vez por foto y
+   ANTES de que le toque: se compone en un lienzo aparte, del tamaño del
+   video más la holgura del zoom, y en cada cuadro solo se recorta. */
+const preparadas=new Map();   // índice → Promise<canvas>
+function preparar(parte,i,W,H){
+  if(preparadas.has(i)) return preparadas.get(i);
+  const p=(async()=>{
+    const c=document.createElement('canvas');
+    c.width=Math.round(W*HOLGURA); c.height=Math.round(H*HOLGURA);
+    const x=c.getContext('2d');
+    if(parte.tipo!=='foto'){placa(x,c.width,c.height,parte.tipo);return c;}
+    const {im,soltar}=await abrirImagen(parte.foto.archivo);
+    fotoEn(x,im,c.width,c.height);
+    soltar();
+    return c;
+  })();
+  p.listo=null; p.then(c=>{p.listo=c;},()=>{p.listo='rota';});
+  preparadas.set(i,p);
+  return p;
+}
+function fotoEn(x,im,W,H){
+  const iw=im.naturalWidth, ih=im.naturalHeight;
+  const rv=W/H, rf=iw/ih;
+  x.fillStyle='#000'; x.fillRect(0,0,W,H);
+  /* Si la foto tiene la forma del video, la llena. Si no (una vertical en
+     un video horizontal) va entera al medio, sobre ella misma ampliada y
+     borrosa. El borroso se hace achicándola mucho y volviéndola a
+     agrandar: ctx.filter no existe en Safari. */
+  if(Math.abs(Math.log(rf/rv))<0.28){
+    const s=Math.max(W/iw,H/ih);
+    x.drawImage(im,(W-iw*s)/2,(H-ih*s)/2,iw*s,ih*s);
+    return;
+  }
+  const chico=document.createElement('canvas');
+  chico.width=Math.max(8,Math.round(W/28)); chico.height=Math.max(8,Math.round(H/28));
+  const cx=chico.getContext('2d');
+  const sc=Math.max(chico.width/iw,chico.height/ih);
+  cx.drawImage(im,(chico.width-iw*sc)/2,(chico.height-ih*sc)/2,iw*sc,ih*sc);
+  x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+  x.drawImage(chico,0,0,W,H);
+  x.fillStyle='rgba(0,0,0,.5)'; x.fillRect(0,0,W,H);
+  const s=Math.min(W*.94/iw,H*.94/ih);
+  const w=iw*s,h=ih*s;
+  x.shadowColor='rgba(0,0,0,.6)'; x.shadowBlur=W*.02;
+  x.drawImage(im,(W-w)/2,(H-h)/2,w,h);
+  x.shadowBlur=0;
+}
+function datos(){
+  return {
+    nombre:$('#nombre').value.trim(),
+    titulo:$('#titulo').value.trim(),
+    fecha:$('#fecha').value.trim(),
+    cierre:$('#cierre').value.trim(),
+  };
+}
+function placa(x,W,H,tipo){
+  const d=datos(); const base=Math.min(W,H);
+  const g=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*.7);
+  g.addColorStop(0,'#15110D'); g.addColorStop(1,'#000');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.textAlign='center'; x.textBaseline='middle';
+  const oro='#D9AE72';
+  const filete=(y)=>{x.strokeStyle='rgba(217,174,114,.55)';x.lineWidth=Math.max(1,base*.0015);
+    x.beginPath();x.moveTo(W/2-base*.16,y);x.lineTo(W/2+base*.16,y);x.stroke();};
+  if(tipo==='portada'){
+    x.fillStyle=oro; x.font=`italic 400 ${Math.round(base*.07)}px "Bodoni Moda", serif`;
+    x.fillText(d.titulo||'Mis XV',W/2,H*.36);
+    x.fillStyle='#F6F2EA';
+    ajustado(x,d.nombre||'',`400 ${Math.round(base*.15)}px "Bodoni Moda", serif`,W*.86,W/2,H*.5);
+    filete(H*.6);
+    x.fillStyle='#EFDCBC'; x.font=`300 ${Math.round(base*.032)}px Jost, sans-serif`;
+    x.fillText(espaciado(d.fecha.toUpperCase()),W/2,H*.66);
+  }else{
+    x.fillStyle='#F6F2EA';
+    ajustado(x,d.cierre||'Gracias',`italic 400 ${Math.round(base*.08)}px "Bodoni Moda", serif`,W*.86,W/2,H*.46);
+    filete(H*.55);
+    x.fillStyle=oro; x.font=`400 ${Math.round(base*.045)}px "Bodoni Moda", serif`;
+    x.fillText(d.nombre||'',W/2,H*.62);
+  }
+}
+function ajustado(x,txt,font,max,cx,cy){
+  x.font=font;
+  const w=x.measureText(txt).width;
+  if(w>max){const px=parseFloat(/(\d+)px/.exec(font)[1]);x.font=font.replace(/\d+px/,Math.floor(px*max/w)+'px');}
+  x.fillText(txt,cx,cy);
+}
+const espaciado=s=>s.split('').join(String.fromCharCode(8202));
+
+/* El cuadro del instante t. Cada parte entra fundiéndose sobre la anterior
+   durante FUNDIDO segundos y se mueve lento todo el tiempo que está a la
+   vista (el zoom va y viene alternando para que no maree). */
+function cuadro(g,t,W,H){
+  const {partes,total}=g;
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  let i=partes.findIndex(p=>t<p.desde+p.dura); if(i<0) i=partes.length-1;
+  const pintarParte=(k,alfa,alfaSello)=>{
+    const p=partes[k]; const pr=preparadas.get(k);
+    const c=pr&&pr.listo; if(!c||c==='rota') return;
+    const u=Math.min(1,Math.max(0,(t-p.desde+FUNDIDO)/(p.dura+FUNDIDO)));
+    const sube=k%2===0;
+    const z=p.tipo==='foto'?(sube?1+.09*u:1.09-.09*u):1+.03*u;
+    const sw=c.width/z, sh=c.height/z;
+    const dx=(k%3-1)*.25, dy=(k%2?.2:-.2);
+    const sx=(c.width-sw)/2*(1+dx*(u-.5)*2);
+    const sy=(c.height-sh)/2*(1+dy*(u-.5)*2);
+    ctx.globalAlpha=alfa;
+    ctx.drawImage(c,Math.max(0,sx),Math.max(0,sy),Math.min(sw,c.width),Math.min(sh,c.height),0,0,W,H);
+    ctx.globalAlpha=1;
+    if(p.tipo==='foto'&&$('#verHora').checked&&p.foto.conHora) sello(p.foto.clave,W,H,alfaSello);
+  };
+  /* en el cruce, la de antes queda entera abajo y la nueva aparece encima;
+     las horas se cruzan igual, para que no se lean dos a la vez */
+  const enFundido=t-partes[i].desde;
+  if(i>0&&enFundido<FUNDIDO){const a=enFundido/FUNDIDO; pintarParte(i-1,1,1-a); pintarParte(i,a,a);}
+  else pintarParte(i,1,1);
+  /* al final se va a negro */
+  const falta=total-t;
+  if(falta<1.2){ctx.fillStyle=`rgba(0,0,0,${1-Math.max(0,falta)/1.2})`;ctx.fillRect(0,0,W,H);}
+}
+function sello(clave,W,H,alfa){
+  const base=Math.min(W,H), m=base*.045;
+  ctx.globalAlpha=alfa*.92;
+  ctx.font=`400 ${Math.round(base*.034)}px Jost, sans-serif`;
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  ctx.shadowColor='rgba(0,0,0,.7)'; ctx.shadowBlur=base*.012;
+  ctx.fillStyle='#EFDCBC';
+  ctx.fillText(horaCorta(clave),m,H-m);
+  ctx.shadowBlur=0; ctx.globalAlpha=1;
+}
+function portadaQuieta(){
+  medir();
+  const [W,H]=TAM[EST.formato];
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  placa(c.getContext('2d'),W,H,'portada');
+  ctx.drawImage(c,0,0);
+}
+
+/* ═════════════ andar: la vista previa y la grabación son el mismo motor ═════════════
+   El reloj es propio, no el de la pared: avanza solo cuando las fotos que
+   tocan ya están listas y la pestaña está a la vista. Si no, se frena el
+   reloj, la grabación Y la música —las tres juntas— y no queda ni un salto
+   en el video. */
+let motor=null;
+async function andar({grabar}){
+  medir(); preparadas.clear();
+  const [W,H]=TAM[EST.formato];
+  try{await Promise.all([document.fonts.load('italic 400 60px "Bodoni Moda"'),document.fonts.load('400 60px "Bodoni Moda"'),document.fonts.load('300 30px Jost')]);}catch(e){}
+  const g=guion();
+  const m={g,t:0,parado:false,frenado:false,fin:null};
+  motor=m;
+  const hecho=new Promise(r=>m.fin=r);
+
+  /* la música */
+  let audio=null;
+  if(EST.musica){
+    audio=new (window.AudioContext||window.webkitAudioContext)();
+    const src=audio.createBufferSource(); src.buffer=EST.musica.buffer;
+    const vol=audio.createGain();
+    const dura=Math.min(g.total,EST.musica.buffer.duration);
+    vol.gain.setValueAtTime(1,0);
+    vol.gain.setValueAtTime(1,Math.max(0,dura-2.5));
+    vol.gain.linearRampToValueAtTime(0,dura);
+    src.connect(vol);
+    m.salidaAudio=grabar?audio.createMediaStreamDestination():null;
+    vol.connect(grabar?m.salidaAudio:audio.destination);
+    if(grabar) vol.connect(audio.destination);   // que se oiga mientras se arma
+    m.audio=audio; m.fuente=src;
+  }
+
+  /* la grabación */
+  let rec=null, trozos=[];
+  if(grabar){
+    const flujo=lienzo.captureStream(30);
+    if(m.salidaAudio) m.salidaAudio.stream.getAudioTracks().forEach(tr=>flujo.addTrack(tr));
+    const tipo=tipoDeVideo();
+    rec=new MediaRecorder(flujo,{mimeType:tipo||undefined,videoBitsPerSecond:12e6,audioBitsPerSecond:192e3});
+    rec.ondataavailable=e=>{if(e.data&&e.data.size) trozos.push(e.data);};
+    m.rec=rec; m.tipo=rec.mimeType||tipo||'video/webm';
+  }
+
+  const listas=(t)=>{
+    let i=g.partes.findIndex(p=>t<p.desde+p.dura); if(i<0) i=g.partes.length-1;
+    for(let k=Math.max(0,i-1);k<=Math.min(g.partes.length-1,i+3);k++) preparar(g.partes[k],k,W,H);
+    for(const k of [...preparadas.keys()]) if(k<i-1) preparadas.delete(k);
+    const a=preparadas.get(i), b=preparadas.get(i-1);
+    const siguiente=preparadas.get(i+1);
+    /* hace falta la actual (y la anterior si se está fundiendo), y la que
+       sigue cuando ya falta poco: así no se frena en el medio del cruce */
+    const tFalta=g.partes[i].desde+g.partes[i].dura-t;
+    return !!(a&&a.listo)&&(!b||t-g.partes[i].desde>=FUNDIDO||!!b.listo)&&(!siguiente||tFalta>FUNDIDO+.2||!!siguiente.listo);
+  };
+  const frenar=()=>{if(m.frenado)return;m.frenado=true;
+    if(rec&&rec.state==='recording') rec.pause();
+    if(audio&&audio.state==='running') audio.suspend();};
+  const soltar=()=>{if(!m.frenado)return;m.frenado=false;
+    if(rec&&rec.state==='paused') rec.resume();
+    if(audio&&audio.state==='suspended') audio.resume();};
+
+  /* Con la pestaña escondida no llega ningún cuadro, así que el freno no
+     lo puede poner el bucle: sin esto la grabación seguía corriendo con la
+     imagen quieta y la música andando. */
+  const alEsconder=()=>{if(document.hidden&&!m.cerrado){frenar();if(grabar)estado('En pausa: volvé a esta pestaña para que siga.');}};
+  document.addEventListener('visibilitychange',alEsconder);
+
+  /* esperar a que la portada y las primeras fotos estén */
+  estado(grabar?'Preparando…':'');
+  while(!listas(0)){await new Promise(r=>setTimeout(r,60)); if(m.parado) break;}
+  if(m.parado){cerrar();return;}
+  cuadro(g,0,W,H);
+  if(rec) rec.start(1000);
+  if(audio){m.fuente.start(0); await audio.resume().catch(()=>{});}
+
+  let antes=performance.now();
+  const paso=(ahora)=>{
+    if(m.parado) return cerrar();
+    const dt=Math.min(.25,(ahora-antes)/1000); antes=ahora;
+    if(document.hidden||!listas(m.t)){
+      frenar();
+      if(grabar) estado(document.hidden?'En pausa: volvé a esta pestaña para que siga.':'Preparando la foto que sigue…');
+    }else{
+      if(m.frenado){soltar();}
+      else m.t+=dt;
+      if(m.t>=g.total){m.t=g.total;cuadro(g,m.t,W,H);return cerrar(true);}
+      cuadro(g,m.t,W,H);
+      if(grabar){
+        $('#barra i').style.width=(100*m.t/g.total).toFixed(1)+'%';
+        estado(`Creando el video… faltan ${reloj(g.total-m.t)}. Dejá esta pestaña a la vista.`);
+      }
+    }
+    m.raf=requestAnimationFrame(paso);
+  };
+  m.raf=requestAnimationFrame(t=>{antes=t;paso(t);});
+
+  function cerrar(completo){
+    cancelAnimationFrame(m.raf);
+    if(m.cerrado) return; m.cerrado=true;
+    document.removeEventListener('visibilitychange',alEsconder);
+    const terminar=()=>{
+      if(audio){try{m.fuente.stop();}catch(e){} audio.close().catch(()=>{});}
+      preparadas.clear();
+      m.fin({completo:!!completo,trozos,tipo:m.tipo});
+    };
+    if(rec&&rec.state!=='inactive'){rec.onstop=terminar; if(rec.state==='paused')rec.resume(); rec.stop();}
+    else terminar();
+  }
+  m.cortar=()=>{m.parado=true;};
+  return hecho;
+}
+function tipoDeVideo(){
+  if(!window.MediaRecorder) return null;
+  /* mp4 primero: es lo que abre QuickTime, lo que acepta Instagram y lo que
+     reproduce cualquier televisor. Safari lo graba siempre; Chrome desde
+     la versión 126. webm queda de respaldo. */
+  const tipos=['video/mp4;codecs="avc1.640028,mp4a.40.2"','video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=avc1','video/mp4',
+               'video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+  return tipos.find(t=>MediaRecorder.isTypeSupported(t))||'';
+}
+function pararVista(){if(motor&&!EST.grabando&&motor.cortar) motor.cortar();}
+
+/* ═════════════ los botones ═════════════ */
+function estado(txt,tipo){const e=$('#estado');e.textContent=txt;e.className='estado'+(tipo?' '+tipo:'');}
+function bloquear(si){
+  ['#ver','#crear','#nombre','#titulo','#fecha','#cierre','#segundos','#verHora','#ajustar','#fotos','#cancion']
+    .forEach(s=>{$(s).disabled=si;});
+  $('#formato').querySelectorAll('button').forEach(b=>b.disabled=si);
+  $('#sinMusica').disabled=si;
+  document.querySelectorAll('#grilla button').forEach(b=>{if(si)b.disabled=true;});
+  if(!si) pintar();
+}
+let ultimoVideo=null;
+$('#ver').addEventListener('click',async()=>{
+  if(EST.viendo){pararVista();return;}
+  if(!EST.fotos.length) return;
+  EST.viendo=true; $('#ver').textContent='Parar'; $('#crear').disabled=true;
+  await andar({grabar:false});
+  EST.viendo=false; $('#ver').textContent='Ver cómo queda'; $('#crear').disabled=false;
+  estado('');
+  portadaQuieta();
+});
+$('#crear').addEventListener('click',async()=>{
+  if(!EST.fotos.length||EST.grabando) return;
+  if(!window.MediaRecorder||!lienzo.captureStream){
+    estado('Este navegador no puede grabar video. Abrí esta página en Safari o en Chrome.','error');return;
+  }
+  if(ultimoVideo){URL.revokeObjectURL(ultimoVideo);ultimoVideo=null;}
+  $('#descargar').hidden=true;
+  EST.grabando=true; bloquear(true);
+  $('#crear').hidden=true; $('#cortar').hidden=false; $('#barra').hidden=false; $('#barra i').style.width='0';
+  let r;
+  try{ r=await andar({grabar:true}); }
+  catch(e){ r={error:e}; }
+  EST.grabando=false; bloquear(false);
+  $('#crear').hidden=false; $('#cortar').hidden=true; $('#barra').hidden=true;
+  if(r.error){estado('No se pudo crear el video: '+(r.error.message||r.error)+'. Probá de nuevo; si sigue, probá en Safari.','error');return;}
+  if(!r.completo){estado('Cortado. No se guardó nada: cuando quieras, empezá de nuevo.');return;}
+  const blob=new Blob(r.trozos,{type:r.tipo.split(';')[0]});
+  /* No decir "listo" si no hay nada: una grabación vacía es un error. */
+  if(!blob.size){estado('La grabación salió vacía. Probá de nuevo con la pestaña a la vista; si sigue, probá en Safari.','error');return;}
+  const mp4=/mp4/.test(blob.type);
+  ultimoVideo=URL.createObjectURL(blob);
+  const a=$('#descargar');
+  const base=('XV '+($('#nombre').value.trim()||'fiesta')).replace(/[\\/:*?"<>|]+/g,'').trim();
+  a.href=ultimoVideo; a.download=base+(mp4?'.mp4':'.webm');
+  a.dataset.peso=blob.size; a.hidden=false;
+  estado(`Listo: ${(blob.size/1048576).toFixed(1).replace('.',',')} MB. Tocá "Descargar el video".`
+    +(mp4?'':' Salió en formato WebM, que la Mac no abre con QuickTime: para un MP4, crealo desde Safari.'),'bien');
+  portadaQuieta();
+});
+$('#cortar').addEventListener('click',()=>{if(motor&&motor.cortar)motor.cortar();});
+
+$('#fotos').addEventListener('change',e=>{sumar([...e.target.files]);e.target.value='';});
+$('#formato').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-f]'); if(!b) return;
+  pararVista();
+  EST.formato=b.dataset.f;
+  $('#formato').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+  portadaQuieta();
+});
+['#nombre','#titulo','#fecha','#cierre'].forEach(s=>$(s).addEventListener('input',()=>{if(!EST.viendo&&!EST.grabando)portadaQuieta();}));
+$('#segundos').addEventListener('input',()=>{pararVista();resumir();});
+$('#ajustar').addEventListener('change',()=>{pararVista();resumir();});
+$('#cancion').addEventListener('change',async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  pararVista();
+  $('#cancionNombre').textContent='Leyendo…';
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    const c=new Ctx();
+    const buf=await new Promise((ok,mal)=>{
+      f.arrayBuffer().then(ab=>{const p=c.decodeAudioData(ab,ok,mal); if(p&&p.catch)p.catch(mal);},mal);
+    });
+    c.close&&c.close();
+    EST.musica={nombre:f.name,buffer:buf};
+    $('#cancionNombre').textContent=`${f.name} · ${reloj(buf.duration)}`;
+    $('#sinMusica').hidden=false; $('#ajustarFila').hidden=false;
+  }catch(err){
+    EST.musica=null;
+    $('#cancionNombre').textContent='';
+    estado('Esa canción no se pudo leer. Probá con un MP3 o un M4A.','error');
+  }
+  resumir();
+});
+$('#sinMusica').addEventListener('click',()=>{
+  pararVista(); EST.musica=null;
+  $('#cancionNombre').textContent=''; $('#sinMusica').hidden=true; $('#ajustarFila').hidden=true;
+  resumir();
+});
+
+/* arrastrar y soltar, carpetas incluidas */
+const zona=$('#soltar');
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();zona.classList.add('encima');}));
+['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'||!e.relatedTarget)zona.classList.remove('encima');}));
+document.addEventListener('drop',async e=>{
+  const items=[...(e.dataTransfer.items||[])];
+  const entradas=items.map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry()).filter(Boolean);
+  if(!entradas.length){sumar([...e.dataTransfer.files]);return;}
+  const archivos=[];
+  const recorrer=async(en)=>{
+    if(en.isFile){archivos.push(await new Promise((ok,mal)=>en.file(ok,mal)).catch(()=>null));return;}
+    const lector=en.createReader();
+    for(;;){
+      const tanda=await new Promise((ok,mal)=>lector.readEntries(ok,mal)).catch(()=>[]);
+      if(!tanda.length) break;
+      for(const h of tanda) await recorrer(h);
+    }
+  };
+  for(const en of entradas) await recorrer(en);
+  sumar(archivos.filter(Boolean));
+});
+</script>
+</body>
+</html>
