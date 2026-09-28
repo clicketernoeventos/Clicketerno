@@ -480,17 +480,19 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
      cosa. */
   titulo('la vitrina del inicio');
   {
+    /* Las DOS ramas se fuerzan interceptando el HTML. Leer el valor que hoy
+       está publicado sería atar la prueba a una decisión comercial: el día
+       que se cambia la fiesta de la vitrina, la prueba fallaría sin que
+       nada se haya roto. */
     const conCodigo = async (codigo) => {
       const ctx = await browser.newContext({ viewport: TELEFONO });
       const p = await ctx.newPage();
-      if (codigo !== null) {
-        await p.route(BASE + '/', async (r) => {
-          const res = await r.fetch();
-          const html = (await res.text())
-            .replace("const MUESTRA_MURO='';", `const MUESTRA_MURO='${codigo}';`);
-          await r.fulfill({ response: res, body: html });
-        });
-      }
+      await p.route(BASE + '/', async (r) => {
+        const res = await r.fetch();
+        const html = (await res.text())
+          .replace(/const MUESTRA_MURO='[^']*';/, `const MUESTRA_MURO='${codigo}';`);
+        await r.fulfill({ response: res, body: html });
+      });
       await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(1200);
       const v = await p.evaluate(() => {
@@ -502,7 +504,7 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       return v;
     };
 
-    const solo = await conCodigo(null);
+    const solo = await conCodigo('');
     if (!solo) mal('no encontré la vitrina del muro en el inicio');
     else if (!/demo=1/.test(solo.vivo))
       mal(`sin código, la vitrina no cae en la demostración: "${solo.vivo}"`);
