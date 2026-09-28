@@ -407,7 +407,11 @@ async function landing(browser) {
   const errores = [];
   page.on('pageerror', (e) => errores.push('pageerror: ' + e.message));
   page.on('console', (m) => {
-    if (m.type() === 'error' && !/fonts|gstatic|cdnjs|favicon|Failed to load resource/i.test(m.text()))
+    // 'Failed to fetch' es del entorno, no del producto: la vitrina del inicio le
+    // pregunta a Supabase de produccion por el evento de muestra y desde aca no
+    // se sale a internet. Lo que importa de verdad -que sin respuesta el marco
+    // caiga a la demostracion- lo mide la comprobacion de mas abajo.
+    if (m.type() === 'error' && !/fonts|gstatic|cdnjs|favicon|Failed to load resource|Failed to fetch/i.test(m.text()))
       errores.push('console.error: ' + m.text());
   });
   await page.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
