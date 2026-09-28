@@ -498,7 +498,9 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       const v = await p.evaluate(() => {
         const n = document.getElementById('vitrinaMuro');
         const pieza = n && n.closest('[data-abrir]');
-        return n ? { vivo: n.dataset.vivo, abre: pieza ? pieza.dataset.abrir : '' } : null;
+        const t = document.getElementById('txtVitrina');
+        return n ? { vivo: n.dataset.vivo, abre: pieza ? pieza.dataset.abrir : '',
+                     texto: t ? t.textContent : '' } : null;
       });
       await ctx.close();
       return v;
@@ -509,6 +511,9 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     else if (!/demo=1/.test(solo.vivo))
       mal(`sin código, la vitrina no cae en la demostración: "${solo.vivo}"`);
     else bien('sin código puesto, la vitrina muestra la demostración');
+    if (solo && !/inventada/i.test(solo.texto || ''))
+      mal('sin código, el texto dejó de avisar que la fiesta es inventada');
+    else if (solo) bien('y el texto avisa que la fiesta es inventada');
 
     /* ── que el visor se pueda cerrar ──
        Apenas la vitrina pasó a proyectar una fiesta de verdad, el foco se
@@ -560,6 +565,12 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       if (!/pantalla\/QUI-MUESTRA/.test(real.abre || ''))
         mal(`al tocarla abre otra cosa: "${real.abre}"`);
       else bien('y al tocarla abre esa misma fiesta');
+      /* "No son capturas, es una fiesta inventada" deja de ser cierto en
+         cuanto se proyecta una de verdad — y es justo la frase que promete
+         que lo que se ve es real. */
+      if (/inventada/i.test(real.texto || ''))
+        mal('con una fiesta de verdad, el texto sigue diciendo "inventada"');
+      else bien('y el texto no dice "inventada"');
     }
   }
 

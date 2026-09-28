@@ -693,7 +693,11 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Esto es lo que hacemos</p>
       <h2 class="serif">No te lo contamos.<em>Miralo funcionando.</em></h2>
-      <p>Los tres son de verdad, no capturas: la pantalla del salón, el álbum del rollo y una invitación, corriendo ahora mismo adentro de esta página con una fiesta inventada. Tocá cualquiera de los tres y lo probás entero.</p>
+      <!-- Con MUESTRA_MURO puesto, la pantalla del salón proyecta una fiesta
+           DE VERDAD: decir "inventada" ahí pasa a ser mentira, y justo en la
+           frase que promete que no son capturas. El texto lo ajusta el JS
+           según qué haya puesto; acá queda la versión sin código. -->
+      <p id="txtVitrina">Los tres son de verdad, no capturas: la pantalla del salón, el álbum del rollo y una invitación, corriendo ahora mismo adentro de esta página con una fiesta inventada. Tocá cualquiera de los tres y lo probás entero.</p>
     </div>
 
     <div class="vitrina">
@@ -1180,6 +1184,13 @@ const MUESTRA_MURO='QUI-XJLJ56';
        se ve y lo que se abre son dos cosas distintas. */
     const p=v.closest('[data-abrir]');
     if(p) p.dataset.abrir='muro#pantalla/'+encodeURIComponent(MUESTRA_MURO);
+    /* Y el texto deja de decir "una fiesta inventada", que con una fiesta
+       de verdad proyectándose sería mentira — y encima en la frase que
+       promete que no son capturas. */
+    const t=document.getElementById('txtVitrina');
+    if(t) t.textContent='Los tres son de verdad, no capturas: la pantalla del salón '
+      +'está proyectando una fiesta nuestra ahora mismo, y al lado el álbum del rollo '
+      +'y una invitación. Tocá cualquiera de los tres y lo probás entero.';
   }
 })();
 
