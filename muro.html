@@ -4041,7 +4041,19 @@ function vMomento(m,autor){
 
 async function vPantalla(codigo){
   parar();
-  const m=await meta(codigo); if(!m) return ir('proyector');
+  const m=await meta(codigo);
+  if(!m){
+    /* ── en la vitrina nunca una puerta ──
+       Adentro del marco de la página pública esto caía en "Elegí el
+       evento": un formulario pidiéndole el código de una fiesta al que
+       entró a mirar qué vendemos. Pasa cada vez que el evento no se puede
+       leer —el proyecto de Supabase pausado, el evento borrado a los 90
+       días, o el visitante sin señal—, o sea justo cuando peor queda.
+       Se cae a la demostración, que es lo que la vitrina mostraba antes y
+       no depende de nada. Lo agarró pruebas/demo.js. */
+    if(EN_MARCO){ location.replace('muro?demo=1&marco=1'); return; }
+    return ir('proyector');
+  }
   tono(m.tono);
   await cargarTodo(codigo);        // el muro arranca de una, no foto por foto
   /* Dos modos en la misma pantalla:

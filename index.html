@@ -1180,10 +1180,13 @@ const MUESTRA_MURO='QUI-XJLJ56';
   const v=document.getElementById('vitrinaMuro');
   if(v && MUESTRA_MURO){
     v.dataset.vivo='muro?marco=1#pantalla/'+encodeURIComponent(MUESTRA_MURO);
-    /* Y el toque abre esa misma fiesta, no la demostración: si no, lo que
-       se ve y lo que se abre son dos cosas distintas. */
-    const p=v.closest('[data-abrir]');
-    if(p) p.dataset.abrir='muro#pantalla/'+encodeURIComponent(MUESTRA_MURO);
+    /* El TOQUE sigue abriendo la demostración, no la fiesta de verdad, y
+       es a propósito: la lupa dice "Probar el muro", y en una fiesta real
+       el visitante no puede probar nada —es una pantalla de solo mirar—;
+       donde sí puede mandar una foto y verla proyectada es en la
+       demostración. Y abrir la fiesta a pantalla completa expone las fotos
+       de invitados reales bastante más que una miniatura.
+       Así que el marco es la vidriera y el toque es la prueba. */
     /* Y el texto deja de decir "una fiesta inventada", que con una fiesta
        de verdad proyectándose sería mentira — y encima en la frase que
        promete que no son capturas. */

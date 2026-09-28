@@ -562,9 +562,13 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       if (!/marco=1/.test(real.vivo))
         mal('la vitrina no va en modo marco: le van a aparecer los botones de la sala');
       else bien('y va en modo marco, sin los botones de la sala');
-      if (!/pantalla\/QUI-MUESTRA/.test(real.abre || ''))
-        mal(`al tocarla abre otra cosa: "${real.abre}"`);
-      else bien('y al tocarla abre esa misma fiesta');
+      /* El toque abre la DEMOSTRACIÓN aunque el marco muestre una fiesta de
+         verdad: la lupa dice "Probar el muro" y en una fiesta real no hay
+         nada que probar. Y a pantalla completa expondría fotos de
+         invitados reales. */
+      if (!/demo=1/.test(real.abre || ''))
+        mal(`al tocarla no abre la demostración: "${real.abre}"`);
+      else bien('y al tocarla abre la demostración, que es donde se prueba');
       /* "No son capturas, es una fiesta inventada" deja de ser cierto en
          cuanto se proyecta una de verdad — y es justo la frase que promete
          que lo que se ve es real. */

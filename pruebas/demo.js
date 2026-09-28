@@ -49,6 +49,15 @@ async function abrir(ctx) {
     /* Un CDN que no baja es el proxy de esta máquina, no un bug del
        producto: lo que no se perdona es un error de JavaScript. */
     if (/net::ERR|Failed to load resource/.test(m.text())) return;
+    /* Y desde que la vitrina del inicio proyecta una fiesta de VERDAD, el
+       marco le pregunta a Supabase — que desde acá no se alcanza, a
+       propósito: este entorno no llega a producción. Ese "Failed to fetch"
+       es del entorno, no del producto, y además está cubierto: cuando el
+       evento no se puede leer, el marco se cae solo a la demostración (hay
+       una comprobación de eso justo arriba). Si alguna vez falla algo de
+       verdad en esa llamada, lo que se rompe es esa comprobación, no
+       ésta. */
+    if (/Failed to fetch/.test(m.text())) return;
     espia.errores.push(m.text());
   });
   return { pg, espia };
