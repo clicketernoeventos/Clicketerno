@@ -1164,6 +1164,13 @@ const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
    como una vidriera. Sin cinta y sin botones: es una muestra de cómo se ve
    proyectado, no algo para tocar. Se toca en la demostración de verdad. */
 const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* ── en la vitrina no se enfoca nada ──
+   Adentro del marco de la página pública, poner el cursor en un campo le
+   ROBA el foco a la página de afuera: la tecla Escape deja de llegarle al
+   visor y el visitante no lo puede cerrar con el teclado. Medido: el foco
+   pasa al <iframe> a los 900 ms, justo cuando corre el JS de acá.
+   Es una vidriera, no algo para tocar; no hay nada que enfocar. */
+const enfocar = n => { try{ if(!EN_MARCO && n) n.focus(); }catch(e){} };
 /* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
    sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
 const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
@@ -2507,7 +2514,7 @@ async function vAcceso(){
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   const campo=app.querySelector('#pin');
-  campo.focus();
+  enfocar(campo);
   const probar=async()=>{
     const v=campo.value.trim();
     if(v.length<4) return recado('Mínimo 4 números');
@@ -2545,7 +2552,7 @@ async function vAcceso(){
     campo.style.letterSpacing='.1em';
     campo.dataset.admin='1';
     bAdmin.remove();
-    campo.focus();
+    enfocar(campo);
     recado('Entrá con la clave que abre todos los eventos');
   };
 }
@@ -2633,7 +2640,7 @@ async function vPanel(){
     const casilla=app.querySelector('#aceptoT');
     if(casilla && !casilla.checked){
       casilla.closest('.acepto').classList.add('falta');
-      casilla.focus();
+      enfocar(casilla);
       return recado('Falta aceptar: sos vos quien tiene el permiso de tus invitados');
     }
     const tipo=app.querySelector('#t').value;
@@ -2646,7 +2653,7 @@ async function vPanel(){
     const activacion=campoAct?campoAct.value.trim().toUpperCase():'';
     if(campoAct && !activacion){
       btn.disabled=false; btn.textContent='Crear evento';
-      campoAct.focus();
+      enfocar(campoAct);
       return recado('Falta el código de activación');
     }
     try{
@@ -2878,7 +2885,7 @@ async function vLimpieza(){
       <button class="hilo-btn" id="dejarTodos">Mejor no</button>`;
     const campo=zona.querySelector('#confBorrar');
     const ok=zona.querySelector('#todosYa');
-    campo.focus();
+    enfocar(campo);
     campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!=='BORRAR'; };
     zona.querySelector('#dejarTodos').onclick=()=>vLimpieza();
     ok.onclick=async()=>{
@@ -2948,7 +2955,7 @@ function vPorCodigo(){
   app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
   const campo=app.querySelector('#codigoEv');
   const btn=app.querySelector('#irEvento');
-  campo.focus();
+  enfocar(campo);
   const entrar=async()=>{
     if(btn.disabled) return;
     if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');
@@ -3053,7 +3060,7 @@ function vPedirClave(codigo,m){
   </div>`;
   app.querySelector('.cab-inv .volver').onclick=()=>ir('panel');
   const campo=app.querySelector('#claveEv');
-  campo.focus();
+  enfocar(campo);
   const probar=async()=>{
     const v=campo.value.trim();
     if(v.length<4) return recado('Clave muy corta');
@@ -3525,7 +3532,7 @@ async function vEvento(codigo, abrirEn){
       <button class="hilo-btn" id="dejarlo">Mejor no</button>`;
     const campo=zona.querySelector('#confirmaCod');
     const ok=zona.querySelector('#borrarYa');
-    campo.focus();
+    enfocar(campo);
     campo.oninput=()=>{ ok.disabled = campo.value.trim().toUpperCase()!==m.codigo.toUpperCase(); };
     zona.querySelector('#dejarlo').onclick=()=>redibujar(codigo);
     ok.onclick=async()=>{
@@ -3737,7 +3744,7 @@ async function vElegir(destino,titulo){
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   const campo=app.querySelector('#codPant');
   const btn=app.querySelector('#irPant');
-  campo.focus();
+  enfocar(campo);
   const abrir=async()=>{
     if(btn.disabled) return;
     if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');
@@ -3787,7 +3794,7 @@ async function vInvitado(){
   app.querySelector('.cab-inv .volver').onclick=()=>HAY_DEMO?ir('pantalla/DEMO-FIESTA'):ir('portada');
   const campo=app.querySelector('#codInv');
   const btn=app.querySelector('#irFiesta');
-  campo.focus();
+  enfocar(campo);
   const entrar=async()=>{
     if(btn.disabled) return;
     if(normalizarCodigo(campo.value).length<6) return recado('Escribí el código completo');

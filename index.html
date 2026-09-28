@@ -1349,7 +1349,34 @@ function abrirVisor(url,nombre,ancho){
   avisoT=setTimeout(()=>{
     cargandoV.innerHTML='Si no se ve, abrila<br>en una pestaña nueva';
   },5000);
-  marcoV.onload=()=>{clearTimeout(avisoT); cargandoV.style.opacity='0';};
+  marcoV.onload=()=>{
+    clearTimeout(avisoT); cargandoV.style.opacity='0';
+    /* ── la tecla Escape adentro del marco ──
+       La app de adentro pone el cursor en alguno de sus campos apenas
+       carga, y desde ahí la tecla se la come el iframe: el visor no
+       cerraba más. Medido apenas la vitrina pasó a proyectar una fiesta
+       de verdad — con la demostración no pasaba porque no enfocaba nada,
+       así que el agujero estaba y no se veía.
+       Enfocar el botón de cerrar no alcanza: el marco se roba el foco
+       DESPUÉS de cargar. Así que se escucha adentro. Es nuestra propia
+       app y mismo origen; con una invitación de afuera esto no se puede
+       y el try lo deja pasar —ahí siguen la X y el clic en el fondo—. */
+    /* El foco se lo lleva el marco AL CARGAR, y desde ahí la tecla Escape
+       ya no llega al visor. Se lo devolvemos al botón de cerrar: además de
+       arreglar la tecla, es lo correcto para una capa como ésta —al
+       abrirse, el foco entra en ella—. */
+    try{ document.getElementById('cerrarV').focus({preventScroll:true}); }catch(e){}
+    /* Y por si el visitante igual termina tecleando adentro del marco: es
+       nuestra propia app y mismo origen, así que se puede escuchar ahí.
+       Con una invitación de afuera esto no se puede y el try lo deja
+       pasar; ahí quedan la X y el clic en el fondo. */
+    try{
+      const d=marcoV.contentDocument, w=marcoV.contentWindow;
+      const salir=ev=>{ if(ev.key==='Escape') cerrarVisor(); };
+      if(d) d.addEventListener('keydown',salir,true);
+      if(w) w.addEventListener('keydown',salir,true);
+    }catch(e){}
+  };
 }
 function cerrarVisor(){
   visor.classList.remove('abierto'); document.body.style.overflow='';

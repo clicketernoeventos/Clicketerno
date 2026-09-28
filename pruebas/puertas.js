@@ -510,6 +510,44 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       mal(`sin código, la vitrina no cae en la demostración: "${solo.vivo}"`);
     else bien('sin código puesto, la vitrina muestra la demostración');
 
+    /* ── que el visor se pueda cerrar ──
+       Apenas la vitrina pasó a proyectar una fiesta de verdad, el foco se
+       fue al <iframe> y la tecla Escape dejó de llegarle al visor: quedaba
+       abierto y el body con el scroll bloqueado. La X seguía andando, pero
+       el que aprieta Escape se queda encerrado.
+       Se mide con las DOS: la tecla y la X, y que el scroll vuelva. */
+    for (const cod of ['', 'QUI-MUESTRA']) {
+      const ctx = await browser.newContext({ viewport: TELEFONO });
+      const p = await ctx.newPage();
+      await p.route(BASE + '/', async (r) => {
+        const res = await r.fetch();
+        const html = (await res.text())
+          .replace(/const MUESTRA_MURO='[^']*';/, `const MUESTRA_MURO='${cod}';`);
+        await r.fulfill({ response: res, body: html });
+      });
+      await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
+      await p.waitForTimeout(1800);
+      const como = cod ? 'con una fiesta de verdad' : 'con la demostración';
+      await p.click('.pieza.sala[data-abrir]').catch(() => {});
+      await p.waitForTimeout(2600);
+      const abrio = await p.evaluate(() =>
+        document.getElementById('visor').classList.contains('abierto'));
+      if (!abrio) mal(`${como}: el visor no abrió`);
+      else {
+        await p.keyboard.press('Escape');
+        await p.waitForTimeout(800);
+        const est = await p.evaluate(() => ({
+          abierto: document.getElementById('visor').classList.contains('abierto'),
+          overflow: document.body.style.overflow || '',
+        }));
+        if (est.abierto) mal(`${como}: Escape no cierra el visor`);
+        else if (est.overflow === 'hidden')
+          mal(`${como}: cerró pero el scroll de la página quedó bloqueado`);
+        else bien(`${como}: Escape cierra el visor y devuelve el scroll`);
+      }
+      await p.close(); await ctx.close();
+    }
+
     const real = await conCodigo('QUI-MUESTRA');
     if (!real) mal('no encontré la vitrina con el código puesto');
     else {

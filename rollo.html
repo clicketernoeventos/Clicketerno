@@ -592,6 +592,13 @@ const NUBE = {
 const HAY_DEMO = /(?:^|[?&])demo=1(?:&|$)/.test(location.search);
 /* ?marco=1: adentro de un marco en la página pública. Sin cinta. */
 const EN_MARCO = /(?:^|[?&])marco=1(?:&|$)/.test(location.search);
+/* ── en la vitrina no se enfoca nada ──
+   Adentro del marco de la página pública, poner el cursor en un campo le
+   ROBA el foco a la página de afuera: la tecla Escape deja de llegarle al
+   visor y el visitante no lo puede cerrar con el teclado. Medido: el foco
+   pasa al <iframe> a los 900 ms, justo cuando corre el JS de acá.
+   Es una vidriera, no algo para tocar; no hay nada que enfocar. */
+const enfocar = n => { try{ if(!EN_MARCO && n) n.focus(); }catch(e){} };
 /* Adentro de un marco (el visor de la página de inicio), "Salir" llevaría el
    sitio adentro de sí mismo: el visor ya tiene su propio CERRAR. */
 const ENMARCADO = (()=>{ try{ return window.top!==window.self; }catch(e){ return true; } })();
@@ -2243,7 +2250,7 @@ function vNuevo(n){
 
   app.querySelector('#atras').onclick=()=>{ paso===1?irA(''):irA('nuevo/'+(paso-1)); };
   const campo=app.querySelector('#dato');
-  if(campo){ campo.focus(); campo.addEventListener('keydown',e=>{ if(e.key==='Enter') seguir(); }); }
+  if(campo){ enfocar(campo); campo.addEventListener('keydown',e=>{ if(e.key==='Enter') seguir(); }); }
   app.querySelectorAll('#tipos [data-t]').forEach(b=>b.onclick=()=>{
     nuevo.tipo=b.dataset.t;
     app.querySelectorAll('#tipos [data-t]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
@@ -2258,7 +2265,7 @@ function vNuevo(n){
   app.querySelectorAll('#sugerencias [data-s]').forEach(b=>b.onclick=()=>{
     const c=app.querySelector('#dato');
     c.value = /\bde$/.test(b.dataset.s) ? b.dataset.s+' ' : b.dataset.s;
-    c.focus();
+    enfocar(c);
     try{ c.setSelectionRange(c.value.length,c.value.length); }catch(e){}
   });
   const gente=app.querySelector('#gente');
@@ -2281,7 +2288,7 @@ function vNuevo(n){
     if(paso===1){
       const ca=app.querySelector('#act');
       nuevo.activacion=ca?ca.value.trim().toUpperCase():'';
-      if(ca && !nuevo.activacion){ ca.focus(); return avisar('Falta el código de activación'); }
+      if(ca && !nuevo.activacion){ enfocar(ca); return avisar('Falta el código de activación'); }
       const v=app.querySelector('#dato').value.trim();
       if(!v) return avisar('Ponele un nombre a la fiesta');
       nuevo.nombre=v;
