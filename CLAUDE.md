@@ -17,7 +17,6 @@ mal pensado.
 | `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + su panel |
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
-| `/video` | `video.html` | **El video de los XV**: herramienta del negocio, para la Mac. Fotos en orden cronológico → video |
 
 **Las miniaturas van por convención, no por columna.** La foto se sube a
 `CODIGO/ID.jpg` y su miniatura a `CODIGO/ID-min.jpg`; el álbum la arma con
@@ -766,65 +765,6 @@ la punta, mismo resultado sin servidor—.
   parte de lo que vendemos.
 - *El recap en video*: lo tienen. Descartado por el dueño el 16/09. No
   insistir.
-
-## El video de los XV (`/video`)
-
-Una herramienta **del negocio**, no de la fiesta: se abre en la Mac, se
-eligen las fotos (de la cámara, de los teléfonos, del rollo bajado en
-zip) y sale un video con portada, las fotos **en el orden en que pasaron**,
-la hora en un rincón y la música. Horizontal 1920x1080 para proyectar o
-vertical 1080x1920 para Instagram.
-
-**No toca Supabase ni ningún servidor.** Las fotos se leen en el navegador,
-se dibujan en un canvas y `MediaRecorder` graba ese canvas. Por eso no
-hubo nada que instalar ni SQL que correr, y por eso las fotos no salen de
-la computadora — que con menores en casi todas es justamente lo que hay
-que poder decir. **No es una app nativa a propósito**: una `.app` de
-macOS pide Xcode, firmarla con una cuenta de desarrollador de Apple (USD
-99 por año) y la advertencia de Gatekeeper en cada Mac nueva. Esto se pone
-en el Dock desde Safari (Archivo → Agregar al Dock) y se actualiza solo con
-cada push.
-
-**El orden sale de la hora escrita ADENTRO de la foto** (EXIF:
-`DateTimeOriginal`, desempatada por `SubSecTimeOriginal` para las
-ráfagas), no del nombre ni de la fecha del archivo, que cambian al
-copiarlas. Se lee buscando `Exif\0\0` + la cabecera TIFF, así que sirve
-igual para JPEG y para HEIC sin entender el contenedor. **La hora se queda
-como texto** (`2026:03:14 21:40:05`): es la hora de la pared del salón, sin
-zona, y pasarla por `Date` la correría según el huso de la Mac — la misma
-trampa de siempre con las horas.
-
-Lo que no tiene hora (lo que pasó por **WhatsApp**, que la borra) queda por
-la fecha del archivo, **marcado en rojo y avisado**: acomodarlo es de la
-persona, con las flechas. Un hueco de 45 minutos sin fotos se marca en la
-grilla como otro momento de la fiesta.
-
-Cuatro cosas que no son adorno:
-
-- **Tarda lo que dura el video.** `MediaRecorder` graba en tiempo real.
-- **El reloj es propio, no el de la pared.** Avanza solo si la foto que
-  toca ya está preparada y la pestaña está a la vista; si no, se frenan
-  juntos el reloj, la grabación (`rec.pause()`) y la música
-  (`audio.suspend()`), y no queda ni un salto. La pestaña escondida se
-  atiende con `visibilitychange` y no desde el bucle: escondida no llega
-  ningún `requestAnimationFrame`.
-- **Una foto de 12 MP se abre una sola vez y antes de que le toque**: se
-  compone en un lienzo aparte un 10% más grande que el video (el zoom lento
-  vive en esa holgura) y en cada cuadro solo se recorta.
-- **El fondo borroso de una foto vertical en un video horizontal** se hace
-  achicándola mucho y volviéndola a agrandar: `ctx.filter` no existe en
-  Safari.
-
-Sale **MP4** en Safari y en Chrome 126+; si el navegador solo graba WebM lo
-dice, porque QuickTime no lo abre. Chrome no abre HEIC y Safari sí: la
-foto que no se puede abrir queda afuera **diciéndolo**.
-
-Lo mide `pruebas/video.js`, con JPEGs de verdad y un EXIF armado a mano en
-las dos órdenes de bytes, y los nombres de archivo al revés de la
-cronología. **Lo que no puede medir** es la pestaña escondida de verdad:
-Chromium sin ventana sigue mandando cuadros, así que la prueba mide que se
-frene y lo diga, no que el navegador deje de dibujar. Igual que el rollo,
-esto todavía no se probó en una Mac.
 
 ## Que se pueda poner en la pantalla del teléfono
 
