@@ -19,6 +19,7 @@
    Contra el código anterior falla: la principal mostraba ~35%.
    ═══════════════════════════════════════════════════════════════ */
 const { chromium } = require('playwright');
+const { crearFake } = require('./fakesb');
 const BASE = 'http://127.0.0.1:8099';
 const TELEFONO = { width: 390, height: 844 };
 const PROYECTOR = { width: 1920, height: 1080 };
@@ -134,6 +135,71 @@ async function abrirTablero(browser, viewport) {
       mal(`en 1920 la columna dejó de estar al costado (foto ${caja.foto}, lado ${caja.lado})`);
     else bien(`en 1920 sigue a dos columnas: foto ${caja.foto}px, lado ${caja.lado}px`);
     if (errs.length) mal('errores JS en el proyector: ' + errs[0]);
+    await ctx.close();
+  }
+
+  /* La vitrina de la página pública. La notebook dibujada del inicio abre
+     la pantalla del salón con ?marco=1, y ahí arrancaba en el CARTEL: una
+     notebook con un QR gigante adentro, que no dice nada de lo que hace el
+     producto y que encima nadie puede escanear desde una maqueta. Lo que
+     vende es el tablero. */
+  titulo('la vitrina del inicio abre en el tablero, no en el QR');
+  {
+    /* El camino de verdad: la notebook del inicio abre una fiesta REAL, sin
+       ?demo=1. Ese es el caso que hay que medir, y no se puede medir con la
+       demostración: en demostración la sala ya arrancaba en el muro, así que
+       el QR no aparecía y la comprobación pasaba con el código viejo también.
+       Con una fiesta de verdad el código viejo abre el cartel del QR. */
+    const ctx = await browser.newContext({ viewport: { width: 1200, height: 750 } });
+    const p = await ctx.newPage();
+    const fake = crearFake('ok');
+    await fake.instalar(p);
+    const COD = 'BOD-VITRIN';
+    fake.db.ce_eventos.push({ codigo: COD, nombre: 'Casamiento de muestra', tipo: 'Boda',
+      fecha: '2026-12-05', moderar: false, cerrado: false, tono: '#D9AE72' });
+    const FOTO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    for (let i = 0; i < 4; i++)
+      fake.db.ce_items.push({ id: 'it' + i, codigo: COD, kind: 'foto', url: FOTO,
+        autor: 'Invitado ' + i, texto: '', estado: 'aprobado', ts: 1000 + i });
+    const errs = [];
+    p.on('pageerror', (e) => errs.push(e.message));
+    await p.goto(`${BASE}/muro.html?marco=1#pantalla/${COD}`, { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(3500);
+    const v = await p.evaluate(() => {
+      const t = document.querySelector('#salaTablero'), c = document.querySelector('#salaCartel');
+      const alto = n => (n ? Math.round(n.getBoundingClientRect().height) : 0);
+      return { tablero: !!t && !t.hidden, altoTab: alto(t),
+               cartel: !!c && !c.hidden, altoCartel: alto(c),
+               modos: !!document.querySelector('.modos-sala:not([hidden])') };
+    });
+    if (!v.tablero || v.altoTab < 100)
+      mal(`la vitrina no abre en el tablero (alto ${v.altoTab})`);
+    else bien(`la vitrina abre en el tablero (${v.altoTab}px de alto)`);
+    if (v.cartel && v.altoCartel > 10) mal('la vitrina sigue mostrando el cartel del QR');
+    else bien('y el cartel del QR no está a la vista');
+    /* Una maqueta no se toca: si los botones de modo se dibujaran, el
+       cliente los tocaría adentro del marco y no pasaría nada. */
+    if (v.modos) mal('la vitrina dibuja los botones de modo, que adentro del marco no sirven');
+    else bien('sin los botones de modo, que adentro de la maqueta no se tocan');
+    /* Que adentro haya una foto de verdad y la caja tenga forma de foto.
+       Acá NO se mide cuánto se recorta, como sí se mide en el teléfono: la
+       vitrina es una pantalla apaisada y ahí `cover` recorta a propósito,
+       igual que el proyector de verdad. Medido: en 1920x1080 se ve el 43%
+       y en el marco el 52%, así que exigirle 60% a la vitrina sería
+       exigirle más que a la pantalla que está mostrando. Una caja con
+       forma de rendija sí es un problema, y eso sí se mide. */
+    await p.waitForSelector('.tab-foto img, .tab-foto video', { timeout: 30000 }).catch(() => {});
+    const foto = await p.evaluate(() => {
+      const n = document.querySelector('.tab-foto img, .tab-foto video');
+      if (!n) return null;
+      const c = n.getBoundingClientRect();
+      return { w: Math.round(c.width), h: Math.round(c.height) };
+    });
+    if (!foto || !foto.w || !foto.h) mal('en la vitrina no llegó a tocar ninguna foto en 30 s');
+    else if (foto.w / foto.h < 0.5 || foto.w / foto.h > 3)
+      mal(`en la vitrina la foto principal quedó en una rendija: ${foto.w}x${foto.h}`);
+    else bien(`en la vitrina se está proyectando una foto: ${foto.w}x${foto.h}`);
+    if (errs.length) mal('errores JS en la vitrina: ' + errs[0]);
     await ctx.close();
   }
 

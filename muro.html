@@ -4440,8 +4440,13 @@ async function vPantalla(codigo){
   await revisar().catch(e=>console.error('sala',e));
   /* En la fiesta arranca en el cartel, que es lo primero que hace falta
      (que escaneen). En la demostración arranca en el MURO: lo que se está
-     mostrando es cómo se ve proyectado, no el código. */
-  verModo(HAY_DEMO?'muro':'cartel');
+     mostrando es cómo se ve proyectado, no el código.
+     Y en la vitrina de la página pública (?marco=1) arranca en el TABLERO,
+     que es la pantalla que vende: la foto grande, las que vienen, el
+     contador y el QR chiquito, todo junto. Un QR a pantalla completa
+     adentro de una notebook dibujada no dice nada de lo que hace el
+     producto — y encima no se puede escanear desde ahí. */
+  verModo(EN_MARCO?'tablero':(HAY_DEMO?'muro':'cartel'));
   timerSala=setInterval(async()=>{
     try{
       const hubo=await revisar();
