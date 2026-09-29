@@ -396,6 +396,34 @@ las del cupo?, ¿puede ver las de otro?
   pantalla del salón "Pantalla completa" y el de al lado se pisaban apenas
   el segundo cambiaba de texto. Van en una fila (`.botones-sala`) con `gap`,
   no con posiciones calculadas a mano.
+- **Una capa con degradado hecha para ir arriba de una foto se le monta al
+  texto.** El nombre de las fichas de "entrando ahora" (`.nom-p`) es un
+  `position:absolute` con un degradado negro: arriba de una foto separa y
+  se lee, pero la MISMA ficha sirve para un saludo escrito, y ahí no hay
+  foto que oscurecer — solo la última línea del saludo, tapada. Medido en
+  un teléfono: 18px de superposición, y en la pantalla se leía *"de esto."*
+  con *"Nacho"* encima. En la ficha de texto el nombre va en el flujo. Y el
+  saludo se corta con `-webkit-line-clamp`: cortado a la mitad de una
+  palabra parece un producto roto, cortado en "…" se lee como "sigue". Se
+  puede recortar porque la dedicatoria entera pasa igual por la pantalla
+  grande y por la cinta de abajo.
+- **La tipografía de las dedicatorias está en `--dedi`, una sola vez.** Lo
+  que escribe el invitado va en **Poppins** (decisión del dueño); la Bodoni
+  queda para los NOMBRES y los títulos. La dedicatoria se dibuja en cinco
+  lugares —la placa del salón, el epígrafe de la foto, las fichas de
+  "entrando ahora", la cinta que corre abajo y el álbum—: escrito cinco
+  veces, alguno se queda atrás y el salón muestra dos tipografías para la
+  misma cosa. Y el peso que se pide en el link tiene que ser el que usa el
+  CSS: `font-weight:200` con Poppins cargada en 300 es pedirle al navegador
+  que invente un peso, y eso no avisa.
+- **Desde acá no se puede VER una fuente de Google.** El proxy firma los
+  certificados y el navegador rechaza `fonts.googleapis.com`:
+  `document.fonts` queda vacío y **tampoco carga la Bodoni**, así que un
+  `[]` ahí no dice nada del producto. Lo que sí se mide, y es lo que se
+  rompe de verdad, son las dos mitades: que el HTML la PIDA (incluido el
+  `<link>` del `<noscript>`, que el navegador no expone como elemento —hay
+  que mirar el HTML crudo—) y que el CSS la APLIQUE. Con una sola de las
+  dos el texto sale en otra tipografía y no hay ningún error.
 - **El cuerpo del archivo no es una función.** Un `return` suelto en el
   bloque de arranque de `rollo.html` es un error de sintaxis y la app no
   arranca. Y llamar ahí a algo declarado más abajo con `const` tira "Cannot
@@ -1341,6 +1369,25 @@ clavado en 390.
 Las apps entienden **`?marco=1`**: sin cinta de demostración y sin los
 botones de la pantalla del salón. Es una vidriera, no algo para tocar: se
 toca y se abre la demostración de verdad en otra pestaña.
+
+**Y con `?marco=1` la pantalla del salón arranca en el TABLERO.** En una
+fiesta arranca en el cartel del código, que es lo primero que hace falta;
+adentro de una notebook dibujada eso es un QR gigante que no dice nada de
+lo que hace el producto —y que encima nadie puede escanear desde una
+maqueta—. Lo que vende es el tablero: la foto grande, las que vienen, el
+contador y el QR chiquito, todo junto. **Esto no se puede medir con la
+demostración**: ahí la sala ya arrancaba en el muro, así que el QR no
+aparecía y una prueba contra `?demo=1` pasaba con el código viejo también.
+`pruebas/tablero.js` lo mide con una fiesta de verdad servida por el
+Supabase falso.
+
+La notebook proyecta el evento de verdad que diga `MUESTRA_MURO` en
+`index.html`. **Ese código no se lee desde la prueba**: si la prueba mirara
+la constante publicada, fallaría el día que el negocio cambie de fiesta de
+muestra. Y en la vitrina NO se mide cuánto recorta la foto: es una pantalla
+apaisada y `cover` recorta a propósito, igual que el proyector —medido, 43%
+en 1920x1080 y 52% en el marco—, así que exigirle más a la vitrina que a la
+pantalla que está mostrando es inventar una falla.
 
 El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
 igual que las invitaciones. **Sin precios**, por decisión del dueño: el

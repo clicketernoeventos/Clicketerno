@@ -22,8 +22,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"></noscript>
 <!-- Lo primero que la app consulta de verdad es Supabase: adelantar el
      DNS, el TCP y el TLS le saca medio segundo al primer byte en 4G. -->
 <link rel="preconnect" href="https://kuqlqgrwsospwjexodqa.supabase.co" crossorigin>
@@ -47,6 +47,17 @@
   --acc:#D9AE72;
   --e:cubic-bezier(.22,.7,.24,1);
 }
+/* ── la tipografía de las dedicatorias ──
+   Lo que escribe el invitado va en Poppins, no en la Bodoni de la marca.
+   Pedido del dueño. La Bodoni sigue siendo la de los NOMBRES y los
+   títulos: es una tipografía de titular, con mucho contraste de trazo, y
+   proyectada en una pared a tres metros una frase larga en Bodoni cursiva
+   se lee peor que el nombre de una persona.
+   Va en una sola variable: la dedicatoria se dibuja en cinco lugares
+   —la placa del salón, el epígrafe de la foto, las fichas de "entrando
+   ahora", la cinta de abajo y el álbum— y si el nombre se escribe cinco
+   veces, alguno se va a quedar atrás. */
+:root{--dedi:Poppins,Jost,system-ui,sans-serif}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 /* foco visible con los colores de la marca (antes quedaba el del navegador) */
@@ -226,9 +237,9 @@ option{background:#0B0A08}
 .epigrafe .recien .estrella{width:11px;height:11px;animation:gira 3.4s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
 .epigrafe .quien{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(30px,5.6vw,52px);color:var(--champan);line-height:1}
-.epigrafe .dice{font-size:clamp(15px,2.4vw,21px);margin-top:12px;color:#D9D2C6;line-height:1.5;max-width:38ch;font-weight:200}
+.epigrafe .dice{font-family:var(--dedi);font-size:clamp(15px,2.4vw,21px);margin-top:12px;color:#D9D2C6;line-height:1.5;max-width:38ch;font-weight:300}
 .placa{padding:9vh 9vw;text-align:center;max-width:1200px}
-.placa .cita{font-family:'Bodoni Moda',serif;font-size:clamp(28px,4.4vw,54px);line-height:1.3}
+.placa .cita{font-family:var(--dedi);font-size:clamp(28px,4.4vw,54px);line-height:1.3}
 .placa .quien{margin-top:30px;font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(19px,2.4vw,28px);color:var(--oro)}
 .mosaico{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}
 .mosaico img{width:100%;height:100%;object-fit:cover;opacity:0;animation:asoma .9s var(--e) forwards}
@@ -378,7 +389,7 @@ option{background:#0B0A08}
 .rejilla a{aspect-ratio:1;overflow:hidden;background:var(--humo);display:block;position:relative}
 .rejilla img,.rejilla video{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--e),filter .5s}
 .dedicatoria{padding:8px 0 8px 22px;border-left:1px solid var(--hilo);margin:26px 0}
-.dedicatoria p{font-family:'Bodoni Moda',serif;font-size:20px;line-height:1.55;font-style:italic}
+.dedicatoria p{font-family:var(--dedi);font-size:20px;line-height:1.55;font-style:italic}
 .dedicatoria b{display:block;font-family:'Bodoni Moda',serif;font-weight:400;color:var(--oro);font-size:16px;margin-top:12px}
 .acciones{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:38px 0 18px}
 .acciones button{border:1px solid var(--hilo);padding:17px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champan);transition:.3s}
@@ -722,9 +733,23 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   font-size:clamp(10px,1.4vh,16px);color:#F3EDE0;font-weight:500;
   background:linear-gradient(transparent,rgba(0,0,0,.85));
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tab-cola .prox.solo-texto{display:grid;place-items:center;padding:10px;text-align:center}
-.tab-cola .prox.solo-texto span{font-family:'Bodoni Moda',serif;font-style:italic;
-  font-size:clamp(11px,1.5vh,17px);color:var(--champan);line-height:1.35}
+/* ── las fichas de "entrando ahora" que son un saludo escrito ──
+   El nombre de abajo (.nom-p) es una CAPA con degradado, pensada para ir
+   arriba de una foto. Sobre una ficha de texto no hay foto que oscurecer
+   y lo único que hace es montarse a la última línea: medido en un
+   teléfono, 18px de superposición, y en la pantalla se leía "de esto."
+   con "Nacho" encima. Acá el nombre va en el FLUJO, debajo del texto.
+   Y el texto se corta por líneas enteras, con puntos suspensivos: cortado
+   a la mitad de una palabra parece un error, cortado en "…" se lee como
+   "sigue". El recorte NO esconde nada que no esté en otro lado: la
+   dedicatoria entera pasa por la pantalla grande y por la cinta de abajo. */
+.tab-cola .prox.solo-texto{display:flex;flex-direction:column;justify-content:center;
+  align-items:center;gap:5px;padding:10px 9px;text-align:center}
+.tab-cola .prox.solo-texto span:not(.nom-p){font-family:var(--dedi);font-style:italic;
+  font-size:clamp(11px,1.5vh,17px);color:var(--champan);line-height:1.35;max-width:100%;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.tab-cola .prox.solo-texto .nom-p{position:static;padding:0;background:none;
+  color:var(--oro);font-size:.8em;max-width:100%}
 
 .tab-qr{flex:none;display:flex;gap:clamp(9px,1.2vw,15px);align-items:center;
   border:1px solid var(--hilo);border-radius:10px;padding:clamp(9px,1.2vh,15px);
@@ -760,7 +785,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .tab-tira .pista-t.quieta{animation:none;justify-content:center;width:100%}
 @keyframes correrT{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.tab-tira .pista-t{animation:none}}
-.tab-tira .dicho{white-space:nowrap;font-size:clamp(12px,1.7vh,21px);color:#D9D2C6;font-weight:200}
+.tab-tira .dicho{font-family:var(--dedi);white-space:nowrap;font-size:clamp(12px,1.7vh,21px);color:#D9D2C6;font-weight:300}
 .tab-tira .dicho b{color:var(--oro);font-weight:400;margin-left:10px;font-size:.88em}
 .tab-tira .vacia{font-size:clamp(11px,1.5vh,17px);color:var(--mute);letter-spacing:.2em;
   text-transform:uppercase}
@@ -839,10 +864,14 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   .tab-cuerpo{grid-template-columns:minmax(0,1fr);
     grid-template-rows:minmax(0,1fr) auto;gap:10px}
   .tab-lado{gap:8px}
-  /* las tres que vienen entrando, una al lado de la otra */
-  .tab-cola{flex-direction:row;flex:none;height:clamp(66px,11vh,96px)}
+  /* las tres que vienen entrando, una al lado de la otra.
+     93px de alto daban tres renglones de texto y la ficha quedaba
+     apretada; con 118 entran cuatro y el nombre abajo sin pisar nada. */
+  .tab-cola{flex-direction:row;flex:none;height:clamp(96px,14vh,128px)}
   .tab-cola .prox{flex:1;min-width:0}
   .tab-cola .prox .nom-p{padding:16px 7px 5px;font-size:10px}
+  .tab-cola .prox.solo-texto{padding:8px 7px;gap:4px}
+  .tab-cola .prox.solo-texto .nom-p{padding:0;font-size:9.5px}
   /* La foto principal ya tiene todo el ancho: lo que falta es que no la
      recorte de arriba y abajo. `contain` la muestra entera; el fondo del
      recuadro hace de marco. */

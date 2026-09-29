@@ -105,6 +105,46 @@ async function abrirTablero(browser, viewport) {
           mal(`de las de "entrando ahora" se ve el ${Math.round(peor * 100)}%: salen cortadas`);
         else bien(`de las de "entrando ahora" se ve el ${Math.round(peor * 100)}% (${lado.length} fotos)`);
       }
+      /* ── las fichas de "entrando ahora" que son un saludo escrito ──
+         El nombre de abajo es una capa con degradado hecha para ir arriba
+         de una foto. Sobre una ficha de texto se le montaba a la última
+         línea: medido en un iPhone, 18px de superposición, y en la
+         pantalla se leía "de esto." con "Nacho" encima. */
+      const fichas = await p.evaluate(() => {
+        const caja = (n) => { const c = n.getBoundingClientRect();
+          return { top: c.top, bottom: c.bottom, alto: Math.round(c.height) }; };
+        const out = [];
+        for (const n of document.querySelectorAll('.tab-cola .prox.solo-texto')) {
+          const t = n.querySelector('span:not(.nom-p)');
+          const nm = n.querySelector('.nom-p');
+          if (!t) continue;
+          out.push({
+            conNombre: !!nm,
+            pisa: nm ? Math.round(caja(t).bottom - caja(nm).top) : 0,
+            sobra: Math.round(caja(t).bottom - caja(n).bottom),
+            renglones: Math.round(caja(t).alto),
+            recortado: t.scrollHeight > Math.ceil(caja(t).alto) + 1,
+            recorteLimpio: getComputedStyle(t).webkitLineClamp !== 'none',
+          });
+        }
+        return out;
+      });
+      const conTexto = fichas.filter((f) => f.conNombre);
+      if (!conTexto.length) bien('no tocó ninguna ficha de texto para medir (no es una falla)');
+      else {
+        const peor = Math.max(...conTexto.map((f) => f.pisa));
+        if (peor > 1) mal(`en las fichas de texto el saludo le pisa ${peor}px al nombre`);
+        else bien(`el saludo y el nombre no se pisan (${conTexto.length} fichas)`);
+        const fuera = Math.max(...conTexto.map((f) => f.sobra));
+        if (fuera > 1) mal(`el saludo se sale ${fuera}px de su ficha`);
+        else bien('y el saludo no se sale de su ficha');
+        /* Un texto largo tiene que cortarse por renglones enteros y con
+           puntos suspensivos: cortado a la mitad de una palabra parece un
+           error del producto. */
+        if (!conTexto.every((f) => f.recorteLimpio))
+          mal('el saludo se corta a lo bruto: falta el recorte por renglones');
+        else bien('y si es largo se corta por renglones, con puntos suspensivos');
+      }
       /* Y que no se salga nada por el costado, que es lo otro que pasa
          cuando una columna tiene un mínimo más ancho que la pantalla. */
       const sobra = await p.evaluate(() => {
@@ -200,6 +240,69 @@ async function abrirTablero(browser, viewport) {
       mal(`en la vitrina la foto principal quedó en una rendija: ${foto.w}x${foto.h}`);
     else bien(`en la vitrina se está proyectando una foto: ${foto.w}x${foto.h}`);
     if (errs.length) mal('errores JS en la vitrina: ' + errs[0]);
+    await ctx.close();
+  }
+
+  /* ── la tipografía de las dedicatorias ──
+     Pedido del dueño: lo que escribe el invitado va en Poppins.
+     Acá NO se mira si la fuente se DIBUJÓ: en esta máquina no baja
+     ninguna fuente de Google (el proxy firma los certificados y el
+     navegador rechaza fonts.googleapis.com), así que ni Bodoni carga.
+     Lo que sí se puede medir, y es lo que se rompe de verdad, son las dos
+     mitades: que el HTML la PIDA y que el CSS la APLIQUE. Con una sola de
+     las dos el texto sale en otra tipografía y nadie ve un error. */
+  titulo('las dedicatorias van en Poppins');
+  {
+    const ctx = await browser.newContext({ viewport: PROYECTOR });
+    const p = await ctx.newPage();
+    await p.goto(`${BASE}/muro.html?demo=1#pantalla/DEMO-FIESTA`, { waitUntil: 'domcontentloaded' });
+    await p.waitForTimeout(3000);
+    /* Solo las hojas de estilo: el preconnect también apunta a
+       fonts.googleapis.com y no lleva ninguna familia. */
+    const pide = await p.evaluate(() => [...document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]')]
+      .map((l) => l.href));
+    if (!pide.length) mal('no hay ningún link a las fuentes');
+    else if (!pide.every((h) => /family=Poppins:/.test(h)))
+      mal('un link de fuentes no pide Poppins: ' + pide.find((h) => !/Poppins/.test(h)).slice(0, 90));
+    else bien(`la hoja de fuentes pide Poppins`);
+    /* El <noscript> es el mismo link para el que entra sin JavaScript, y
+       el navegador no lo expone como elemento: si se edita uno y no el
+       otro, nadie se entera. Se mira el HTML crudo. */
+    const crudo = await (await fetch(`${BASE}/muro.html`)).text();
+    const cuantos = (crudo.match(/fonts\.googleapis\.com\/css2/g) || []).length;
+    const conPoppins = (crudo.match(/family=Poppins:/g) || []).length;
+    if (cuantos !== conPoppins)
+      mal(`hay ${cuantos} hojas de fuentes en el HTML y solo ${conPoppins} piden Poppins`);
+    else bien(`las ${cuantos} hojas de fuentes del HTML (con el noscript) piden Poppins`);
+    /* Y que la pida con los pesos que el CSS usa: pedir 400 y escribir 200
+       es que el navegador invente el peso, y eso no avisa. */
+    if (pide.length && !/Poppins:ital,wght@[^&"]*0,300/.test(pide[0]))
+      mal('pide Poppins pero no el peso 300, que es el que usa el CSS');
+    else bien('y con los pesos que el CSS pide');
+
+    await p.click('[data-modo="tablero"]').catch(() => {});
+    await p.waitForTimeout(2500);
+    /* La dedicatoria se dibuja en varios lugares y basta que uno se quede
+       con la Bodoni para que el salón muestre dos tipografías distintas
+       para la misma cosa. Se miran todos los que estén a la vista. */
+    const donde = await p.evaluate(() => {
+      const sel = ['.placa .cita', '.epigrafe .dice', '.tab-cola .prox.solo-texto span',
+        '.tab-tira .dicho', '.dedicatoria p'];
+      const out = {};
+      for (const s of sel) {
+        const n = document.querySelector(s);
+        out[s] = n ? getComputedStyle(n).fontFamily : null;
+      }
+      return out;
+    });
+    let vistos = 0;
+    for (const [sel, fam] of Object.entries(donde)) {
+      if (fam === null) continue;
+      vistos++;
+      if (!/^Poppins/.test(fam)) mal(`${sel} no quedó en Poppins: ${fam}`);
+      else bien(`${sel} en Poppins`);
+    }
+    if (!vistos) mal('no se dibujó ninguna dedicatoria: no se pudo medir nada');
     await ctx.close();
   }
 
