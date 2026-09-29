@@ -63,6 +63,11 @@ img{max-width:100%;display:block}
 .eyebrow{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);display:flex;align-items:center;gap:12px}
 .eyebrow:before{content:'';width:26px;height:1px;background:var(--oro)}
 section{padding:clamp(70px,10vw,130px) 0;position:relative}
+/* En un teléfono ese clamp se clava en el mínimo —10vw de 390 son 39— así
+   que son 70+70 por sección y nueve secciones: 1,5 pantallas de aire. */
+@media(max-width:520px){section{padding:52px 0}
+  .cabeza{margin-bottom:32px}
+  .cabeza p{font-size:15px;line-height:1.7;margin-top:16px}}
 
 /* ═══ atmósfera ═══ */
 #brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -273,6 +278,51 @@ nav .links a:hover:after{width:100%}
 
 /* aparición */
 .ap{opacity:0;transform:translateY(26px);transition:opacity .9s var(--e),transform .9s var(--e)}
+
+/* ── animación atada al scroll, sin JavaScript ──
+   Hasta acá la aparición era un interruptor: el IntersectionObserver
+   agregaba .ver y el CSS hacía un fundido de 0,9 s que ya no dependía de
+   dónde estabas. Con `animation-timeline:view()` el fundido lo maneja la
+   POSICIÓN del elemento en la pantalla: si frenás a mitad de camino, la
+   animación frena ahí. Eso es lo que se siente actual, y no cuesta ni un
+   kilobyte: es CSS del navegador, no una librería.
+
+   Va adentro de @supports Y REDEFINE opacity:1 en la primera línea. Eso
+   no es adorno: `animation-timeline` recién llegó a Safari, y los iPhone
+   que no lo tienen son exactamente donde están los invitados. Si el
+   bloque entero dependiera de que la animación corra, en esos teléfonos
+   la página quedaría EN BLANCO — el mismo agujero que ya tiene comentado
+   el IntersectionObserver más abajo. Acá el estado por defecto es
+   "visible" y la animación solo le saca opacidad mientras entra.
+
+   Y el JS de .ver sigue puesto a propósito: en un navegador sin soporte
+   es el único camino, y en uno con soporte no molesta porque los dos
+   terminan en lo mismo (opacidad 1, sin desplazar). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ap{opacity:1;transform:none;transition:none;
+      animation:asomar linear both;
+      animation-timeline:view();
+      /* El rango termina DENTRO de `entry` a propósito. Con `cover 22%`
+         un bloque de la última pantalla nunca lo alcanza —no queda
+         página por delante para recorrer— y se quedaría a mitad del
+         fundido: medio transparente para siempre, sin ningún error. */
+      animation-range:entry 5% entry 85%}
+    /* Los tres aparatos de la vitrina crecen un pelo al entrar: es lo
+       único que se mueve con la página y por eso se nota sin marear. */
+    .vitrina .pieza{animation:acercar linear both;
+      animation-timeline:view();animation-range:entry 0% entry 95%}
+  }
+}
+@keyframes asomar{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes acercar{from{transform:scale(.93)}to{transform:none}}
+
+/* Un título que corta "en vivo" dejando "vivo" solo en un renglón se lee
+   peor aunque entre. `balance` reparte los renglones; `pretty` evita la
+   palabra huérfana en los párrafos. No los soporta todo el mundo y no
+   pasa nada: sin soporte corta como cortaba antes. */
+h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
+.cabeza p,.inc p,.serv p{text-wrap:pretty}
 .ap.ver{opacity:1;transform:none}
 
 /* ═══ servicios ═══ */
@@ -403,12 +453,37 @@ nav .links a:hover:after{width:100%}
   animation:respiraLinea 1.9s ease-in-out infinite}
 @keyframes respiraLinea{50%{opacity:.12;transform:scaleX(.45)}}
 /* La rayita no puede tapar nada: cuando el marco carga, .vivo va encima. */
-@media(max-width:520px){.incluye{grid-template-columns:1fr}}
+/* ── el "qué incluye" en un teléfono ──
+   Son VEINTE tarjetas entre las tres listas y a una columna medían 5,8
+   pantallas de las 21 que tenía la página: más de un cuarto del sitio
+   entero para una grilla de características. Medido, no estimado.
+   A dos columnas y compactas bajan a menos de la mitad. Cada tarjeta
+   sigue diciendo lo mismo: lo que se achica es el aire, no el contenido.
+   No se baja de dos columnas: a 320px entran igual porque el texto es
+   corto y la caja no tiene ancho mínimo. */
+@media(max-width:520px){
+  .incluye,.incluye.tres{grid-template-columns:repeat(2,1fr)}
+  .inc{padding:16px 13px}
+  .inc .estrella{width:9px;height:9px;margin-bottom:9px}
+  .inc b{font-size:15px;line-height:1.2;margin-bottom:5px}
+  .inc p{font-size:12px;line-height:1.55}
+}
 
 /* galería de trabajos */
 .trabajos{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
   gap:clamp(30px,4vw,52px);margin-top:64px;width:100%}
 .trabajo{flex:0 1 258px;width:100%;max-width:258px;margin-inline:auto;text-align:center;cursor:pointer}
+/* ── la galería en un teléfono: se desliza, no se apila ──
+   Son tres celulares idénticos uno abajo del otro y medían 2,3 pantallas
+   de las 21 de la página. Apilados obligan a scrollear tres veces para ver
+   lo mismo; al costado se ven los tres en una.
+   El `scroll-snap` es lo que hace que no quede a mitad de camino, y el
+   recorte del costado (el tercer celular asomando) es lo que le DICE al
+   que mira que hay más: un carrusel que no asoma nada parece una sola
+   tarjeta y nadie lo desliza.
+   Los márgenes negativos sacan la galería del padding del .wrap para que
+   el deslizado llegue hasta el borde de la pantalla; el padding propio se
+   lo devuelve al contenido. */
 .trabajo .cuerpo-t{--r-fuera:42px;--bisel:7px;
   transition:transform .6s var(--e),box-shadow .6s var(--e)}
 .trabajo:hover .cuerpo-t{transform:translateY(-12px);
@@ -448,6 +523,26 @@ nav .links a:hover:after{width:100%}
 @media(max-width:860px){
   .trabajos{flex-direction:column;flex-wrap:nowrap;gap:48px;align-items:center}
   .trabajo{flex:0 0 auto;max-width:min(258px,72vw)}
+}
+/* Este bloque va DESPUÉS del de 860px a propósito: aquel pone
+   flex-direction:column y, escrito antes, lo pisaba entero — la galería
+   seguía apilada y la medición decía 2,3 pantallas igual que sin tocar
+   nada. Dos reglas para lo mismo, gana la última. */
+@media(max-width:640px){
+  .trabajos{flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;
+    align-items:flex-start;overflow-x:auto;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin-inline:-24px;padding-inline:24px;padding-bottom:6px;
+    gap:18px;scrollbar-width:none}
+  .trabajos::-webkit-scrollbar{display:none}
+  .trabajo{flex:0 0 78%;width:78%;max-width:78%;margin-inline:0;scroll-snap-align:center}
+  /* En el carrusel las tarjetas que esperan están FUERA de la pantalla
+     por el costado, así que el IntersectionObserver no se entera nunca de
+     ellas: se quedaban en opacidad 0 y al deslizar aparecía una tarjeta
+     en blanco. La aparición de a una tiene sentido apiladas, no en una
+     fila que se desliza: acá entra la fila entera y listo. */
+  .trabajo.ap{opacity:1;transform:none;animation:none}
+  .pista-toque{margin-top:26px}
 }
 
 /* visor */
@@ -763,7 +858,7 @@ footer .datos{line-height:1.6}
     <div class="cabeza ap">
       <p class="eyebrow">Lo que hacemos</p>
       <h2 class="serif">Todo lo digital de tu fiesta,<em>en un solo lugar</em></h2>
-      <p>Empezamos por la invitación, seguimos durante la noche y terminamos con el recuerdo. Cada pieza se puede contratar sola o las tres juntas.</p>
+      <p>De la invitación al recuerdo. Cada pieza va sola o las tres juntas.</p>
     </div>
 
     <div class="servicios">
@@ -772,7 +867,7 @@ footer .datos{line-height:1.6}
           <div class="sobre"><div class="carta"></div><div class="solapa"></div><div class="frente"></div></div>
         </div>
         <h3 class="serif">Invitaciones <em>digitales</em></h3>
-        <p>Una web propia para tu evento. Se abre como un sobre, cuenta los días que faltan, confirma asistencia y guarda la playlist que arman tus invitados.</p>
+        <p>Una web propia para tu evento: se abre como un sobre, cuenta los días, confirma asistencia y arma la playlist.</p>
         <span class="mas">Ver más →</span>
       </a>
 
@@ -780,7 +875,7 @@ footer .datos{line-height:1.6}
         <span class="etiq">Nuevo</span>
         <div class="escena"><div class="pila"><i></i><i></i><i></i></div></div>
         <h3 class="serif">Muro de fotos <em>en vivo</em></h3>
-        <p>Tus invitados escanean un código, sacan la foto y aparece proyectada en la pantalla del salón al instante. La fiesta se mira a sí misma.</p>
+        <p>Escanean, sacan la foto y aparece proyectada al instante. La fiesta se mira a sí misma.</p>
         <span class="mas">Ver más →</span>
       </a>
 
@@ -792,7 +887,7 @@ footer .datos{line-height:1.6}
             <div class="perf aba"></div><div class="velo">Revelando</div></div>
         </div>
         <h3 class="serif">Rollo <em>eterno</em></h3>
-        <p>La cámara descartable, versión digital. Cada invitado tiene fotos contadas y nadie ve nada hasta el día siguiente, cuando el rollo se revela para todos.</p>
+        <p>La cámara descartable, digital. Fotos contadas y nadie ve nada hasta que el rollo se revela.</p>
         <span class="mas">Ver más →</span>
       </a>
     </div>
@@ -805,18 +900,18 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Invitaciones digitales</p>
       <h2 class="serif">No es una imagen.<em>Es una web para tu fiesta.</em></h2>
-      <p>La mandás por WhatsApp y se abre en el celular de cada invitado. Sin instalar nada, sin imprimir nada, sin que nadie pierda el papelito.</p>
+      <p>La mandás por WhatsApp y se abre en el celular de cada invitado. Sin instalar nada, sin papelitos que se pierdan.</p>
     </div>
 
     <div class="incluye">
-      <div class="inc ap"><i class="estrella"></i><b>Sobre animado</b><p>La invitación se abre con un gesto. Es el primer momento y tiene que emocionar.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Cuenta regresiva</b><p>Los días, horas y minutos que faltan, corriendo en vivo.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Confirmación</b><p>Cada uno confirma desde el celular y vos ves quiénes vienen y cuántos son.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Playlist colaborativa</b><p>Sugieren la canción que no puede faltar. El DJ lo agradece.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Cómo llegar</b><p>Dirección con mapa y un botón que abre el GPS.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Dress code</b><p>Explicado con estilo, para que nadie pregunte qué se pone.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Alias para regalos</b><p>Se toca y se copia solo. Sin incomodar a nadie.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Diseño a medida</b><p>Bosque encantado, elegante, temático. Se diseña para tu fiesta, no se elige de una lista.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Sobre animado</b><p>Se abre con un gesto. Es el primer momento y tiene que emocionar.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Cuenta regresiva</b><p>Días, horas y minutos, corriendo en vivo.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Confirmación</b><p>Confirman desde el celular y vos ves quiénes vienen.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Playlist colaborativa</b><p>Sugieren la canción que no puede faltar.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Cómo llegar</b><p>Mapa y un botón que abre el GPS.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Dress code</b><p>Para que nadie pregunte qué se pone.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Alias para regalos</b><p>Se toca y se copia solo.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Diseño a medida</b><p>Se diseña para tu fiesta. No se elige de una lista.</p></div>
     </div>
   </div>
 </section>
@@ -827,7 +922,7 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Trabajos</p>
       <h2 class="serif">Tocá un celular<em>y probala de verdad</em></h2>
-      <p>Estas son invitaciones reales que hicimos. Se abren acá mismo: confirmá asistencia, mirá la cuenta regresiva, tocá el alias. Son las que recibieron los invitados.</p>
+      <p>Invitaciones reales, las mismas que recibieron los invitados. Se abren acá: confirmá, mirá la cuenta regresiva, tocá el alias.</p>
     </div>
 
     <div class="trabajos" id="galeriaTrabajos"></div>
@@ -841,7 +936,7 @@ footer .datos{line-height:1.6}
     <div class="cabeza ap">
       <p class="eyebrow">Muro de fotos en vivo</p>
       <h2 class="serif">Las fotos de tus invitados,<em>en la pantalla del salón</em></h2>
-      <p>Escanean el código de la mesa, sacan la foto y aparece proyectada antes de que guarden el celular. Nadie se pierde el momento por estar mirando el teléfono: lo mira toda la fiesta junta. Al día siguiente, todo queda en un álbum digital para descargar.</p>
+      <p>Escanean el código de la mesa, sacan la foto y aparece proyectada antes de que guarden el celular. Al otro día queda todo en un álbum para descargar.</p>
     </div>
     <div class="pasos">
       <div class="paso ap"><div class="n">I</div><h3 class="serif">El código en las mesas</h3><p>Un cartel impreso con el nombre del evento. Lo escanean con la cámara: no hay que instalar nada ni crear cuenta.</p></div>
@@ -850,12 +945,12 @@ footer .datos{line-height:1.6}
     </div>
 
     <div class="incluye tres">
-      <div class="inc ap"><i class="estrella"></i><b>Cartel de mesa</b><p>Con el código de tu fiesta, listo para imprimir y poner en cada mesa. Lo escanean y ya están adentro.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Fotos, videos y voz</b><p>No solo fotos: también videos cortos, dedicatorias escritas y saludos grabados.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Moderación, si querés</b><p>Con un botón, nada se proyecta hasta que vos lo aprobás desde tu celular.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Tres modos de pantalla</b><p>El código para que escaneen, un tablero con lo que va entrando, y el muro a pantalla completa.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Consignas de la noche</b><p>Les proponés qué sacar —el brindis, la mesa más ruidosa— y se las va mostrando.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Álbum para descargar</b><p>Al otro día está todo junto en un solo archivo, con las dedicatorias aparte.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Cartel de mesa</b><p>Listo para imprimir. Lo escanean y ya están adentro.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Fotos, videos y voz</b><p>Videos cortos, dedicatorias escritas y saludos grabados.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Moderación, si querés</b><p>Nada se proyecta hasta que lo aprobás desde tu celular.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Tres modos de pantalla</b><p>El código, un tablero con lo que entra, y el muro completo.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Consignas de la noche</b><p>Les proponés qué sacar y la pantalla se los va pidiendo.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Álbum para descargar</b><p>Todo en un archivo, con las dedicatorias aparte.</p></div>
     </div>
     <div style="margin-top:44px" class="ap">
       <a class="btn btn-hilo" href="muro?demo=1" target="_blank">Probar la demostración →</a>
@@ -871,15 +966,15 @@ footer .datos{line-height:1.6}
     <div class="cabeza ap">
       <p class="eyebrow">Rollo eterno</p>
       <h2 class="serif">La cámara descartable,<em>versión digital</em></h2>
-      <p>Cada invitado recibe una cantidad limitada de fotos, como en un rollo de verdad, y elige entre 5 filtros antes de sacarla. No puede ver lo que sacó ni borrarlo. Al día siguiente, o a la hora que vos elijas, el rollo se revela: primero ve las suyas y después las de toda la fiesta. Sin poses, sin repetir la toma diez veces.</p>
+      <p>Fotos contadas, cinco filtros, y nadie ve nada hasta el revelado — ni el que la sacó. A la hora que elijas se abre para todos. Sin poses, sin repetir la toma diez veces.</p>
     </div>
     <div class="incluye tres">
-      <div class="inc ap"><i class="estrella"></i><b>Fotos contadas</b><p>Vos elegís cuántas tiene cada invitado. Como un rollo de verdad: una vez que sale, salió.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Cinco filtros de película</b><p>Clásico, blanco y negro, flash, dorado y natural. Se elige antes de disparar, no después.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Nadie ve nada</b><p>Ni el que la sacó. Las fotos viven en un depósito privado: hasta el revelado no existe ninguna dirección con la que abrirlas, ni para nosotros.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Revelado a tu hora</b><p>Lo programás para el mediodía siguiente, o lo revelás vos cuando quieras.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Álbum compartido</b><p>Primero ve las suyas, después las de toda la fiesta. Con el nombre de quién sacó cada una.</p></div>
-      <div class="inc ap"><i class="estrella"></i><b>Te llevás todo</b><p>Las fotos completas en un solo archivo, con el nombre de cada invitado.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Fotos contadas</b><p>Vos elegís cuántas tiene cada uno. Una vez que sale, salió.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Cinco filtros de película</b><p>Se eligen antes de disparar, no después.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Nadie ve nada</b><p>Ni el que la sacó. Hasta el revelado no existe ninguna dirección con la que abrirlas, ni para nosotros.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Revelado a tu hora</b><p>Programalo, o revelalo vos cuando quieras.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Álbum compartido</b><p>Primero las suyas, después las de toda la fiesta.</p></div>
+      <div class="inc ap"><i class="estrella"></i><b>Te llevás todo</b><p>Las fotos completas en un archivo, con cada nombre.</p></div>
     </div>
 
     <div style="margin-top:44px" class="ap">
@@ -914,11 +1009,10 @@ footer .datos{line-height:1.6}
     <p class="ap" style="color:var(--oro);font-size:13.5px;line-height:1.8;max-width:52ch;margin:26px auto 0;text-align:center">
       ¿Todavía no contrataste? <a href="#contacto" style="color:var(--oro);border-bottom:1px solid var(--hilo2)">Escribinos y lo armamos</a>.</p>
     <p class="ap" style="color:#7C7469;font-size:13px;line-height:1.8;max-width:52ch;margin:14px auto 0;text-align:center">
-      ¿Te pasamos el evento ya armado? Entrá derecho con
+      ¿Te pasamos el evento ya armado? Entrá con
       <a href="muro#codigo" style="color:var(--oro)">tu código del muro</a> o
-      <a href="rollo#codigo" style="color:var(--oro)">tu código del rollo</a>.<br>
-      Cada evento tiene su clave. Queda guardada en el teléfono donde lo abriste; si entrás desde otro, te la va a pedir.
-      Si la perdiste, escribinos y la reiniciamos.</p>
+      <a href="rollo#codigo" style="color:var(--oro)">tu código del rollo</a>.
+      Cada uno tiene su clave; si la perdiste, escribinos.</p>
   </div>
 </section>
 

@@ -1316,6 +1316,21 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   que firma los certificados hace que el navegador rechace el CDN y la
   prueba lo contaba como error del rollo. Todo lo que sea "no pude bajar un
   archivo" es ruido: lo que no se perdona es un error de JavaScript.
+- **Un servidor de comparación que devuelve 404 da una base perfecta y
+  falsa.** Para medir contra `main` se copió `index.html` a otra carpeta y
+  se levantó un servidor ahí; faltaban archivos, contestaba **404**, y la
+  medición dijo "main: 0 invisibles" — que no era un 0, era la página de
+  error. Sobre esa base yo daba 65 fallas y parecía una regresión mía.
+  Antes de creerle a una comparación: `curl -o /dev/null -w "%{http_code}"`
+  al archivo que se está midiendo, y contar en el HTML servido los
+  elementos que la prueba busca. Si el conteo da **cero**, no estás
+  midiendo el código viejo: no estás midiendo nada. Es la regla de la caja
+  de 0x0 otra vez, con un servidor en el medio.
+- **Una prueba que falla igual contra el código de antes no mide tu
+  cambio.** Es la regla de siempre, pero conviene decirla al revés:
+  también hay que correr la prueba NUEVA contra `main` cuando falla, no
+  solo cuando pasa. Las 18 fallas de la animación por scroll daban 20
+  contra `main`: el problema estaba en cómo medía, no en la página.
 
 ## Las cabeceras y las librerías
 
@@ -1392,6 +1407,62 @@ pantalla que está mostrando es inventar una falla.
 El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
 igual que las invitaciones. **Sin precios**, por decisión del dueño: el
 presupuesto se cierra hablando.
+
+### La página no puede ser infinita
+
+Medido en un teléfono: tenía **21,3 pantallas de scroll**. El contenido
+estaba bien; lo que sobraba era aire. Las **veinte** tarjetas de "qué
+incluye" solas se llevaban **5,8 pantallas** —más de un cuarto del sitio—
+porque abajo de 520px caían a UNA columna. Ahora van a dos y compactas, la
+galería de trabajos es un carrusel que se desliza (2,3 → 0,7) y los textos
+dicen lo mismo con menos palabras: **21,3 → 16,6**. Lo cuida
+`pruebas/largo.js`, con el tope en 18 para que no crezca sola otra vez.
+
+**Dos reglas para lo mismo, gana la última.** El carrusel de `.trabajos`
+no funcionaba escrito antes del `@media(max-width:860px)` que pone
+`flex-direction:column`: la galería seguía apilada y la medición decía
+2,3 pantallas igual que sin tocar nada. Parecía que el CSS no había
+entrado.
+
+**Un carrusel que no asoma nada parece una tarjeta sola** y nadie lo
+desliza. El recorte del costado —el siguiente celular asomando— es lo que
+le dice al que mira que hay más, y hay una prueba que mide esos píxeles.
+
+### La animación atada al scroll
+
+`animation-timeline: view()` en vez de un interruptor: el fundido lo
+maneja la POSICIÓN del bloque en la pantalla, así que si frenás a mitad de
+camino la animación frena ahí. Es CSS del navegador, no cuesta un
+kilobyte y encaja con "no hay build".
+
+Tres cosas que se pagaron caro y no son opcionales:
+
+- **Va adentro de `@supports` y ahí `.ap` se redefine a `opacity:1`.**
+  `animation-timeline` recién llegó a Safari y los iPhone que no lo tienen
+  son exactamente donde están los invitados. Si el estado por defecto
+  fuera invisible, en esos teléfonos **la página quedaría en blanco**, y
+  eso no tira ningún error: se ve negro y listo. Es el mismo agujero que
+  ya tenía comentado el `IntersectionObserver`.
+- **El rango termina dentro de `entry`, no en `cover`.** Con
+  `cover 22%` un bloque de la ÚLTIMA pantalla nunca lo alcanza —no queda
+  página por delante para recorrer— y se queda a mitad del fundido: medio
+  transparente para siempre. Lo agarró la prueba.
+- **Lo que está fuera de la pantalla POR EL COSTADO no lo revela el
+  observador.** Al volver la galería un carrusel, las tarjetas que
+  esperaban a la derecha nunca intersecaban, se quedaban en opacidad 0, y
+  al deslizar aparecía una tarjeta EN BLANCO. En una fila que se desliza
+  la aparición de a una no tiene sentido: entra la fila entera
+  (`.trabajo.ap{opacity:1}`).
+
+**Cómo se mide "no esconde nada", porque la primera versión no medía
+nada.** Miraba TODOS los `.ap` en cada parada de un scroll a los saltos e
+informaba 18 fallas… y también **20 contra `main`**: no medía la página,
+medía que un scroll a los saltos le gana al observador. La prueba correcta
+mira **solo lo que está en pantalla**, y si lo encuentra invisible espera
+sin moverse y vuelve a mirar: agarrar un bloque a mitad de la aparición no
+es una falla. Se prueba en tres modos —normal, "menos movimiento" y **sin
+JavaScript**—, porque cada uno recorre un camino distinto y en los tres el
+contenido tiene que verse.
 
 ## Invitaciones alojadas en el repo
 

@@ -21,7 +21,7 @@ cd "$(dirname "$0")/.."
 RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
-MURO=(stress tablero extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste dispositivos legales tarjetas miniaturas interfaz red puertas recorrido invitaciones)
+MURO=(stress tablero largo extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste dispositivos legales tarjetas miniaturas interfaz red puertas recorrido invitaciones)
 # Mide lo que baja un invitado en las DOS apps, así que necesita los dos
 # puertos levantados. Por eso tiene bloque propio y no vive en ninguna lista.
 AMBAS=(arranque)
