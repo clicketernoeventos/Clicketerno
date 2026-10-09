@@ -66,8 +66,27 @@ const afirmar = (c, t, extra) => (c ? ok(t) : mal(t, extra));
       ['frame-ancestors', 'no se puede meter la app adentro de otro sitio'],
       ['connect-src', 'la app solo puede hablar con Supabase y con el sitio'],
     ]) afirmar(cab.includes(dir), t, dir);
-    afirmar(!/script-src[^;]*https?:\/\//.test(cab),
-      'la CSP no le da permiso a ningún servidor de scripts de afuera');
+    /* Hasta que se decidió hacer publicidad, acá no entraba NINGÚN
+       dominio: la regla era "cero scripts de afuera" y punto. Ahora entra
+       uno solo, el de la etiqueta de Google Ads, y la prueba pasa a ser
+       una lista blanca en vez de una prohibición — si mañana alguien
+       agrega un CDN, un chat o un píxel, esto sigue fallando.
+
+       Dos cosas que esto NO afirma y conviene no confundir:
+       · La CSP es una sola para todo el sitio, así que el permiso vale
+         también para muro.html y rollo.html. Lo que mantiene la etiqueta
+         fuera de las pantallas del invitado no es la CSP: es que esos
+         archivos no la nombran, y eso lo verifica pruebas/ads.js.
+       · Mientras ADS_ID esté vacío no se carga nada: el permiso está,
+         el script no. */
+    const AFUERA_PERMITIDOS = ['https://www.googletagmanager.com'];
+    const dirScript = (cab.match(/script-src[^;\n]*/g) || [])
+      .sort((x, y) => y.length - x.length)[0] || '';
+    const colados = (dirScript.match(/https?:\/\/[^\s;]+/g) || [])
+      .filter((d) => !AFUERA_PERMITIDOS.includes(d));
+    afirmar(colados.length === 0,
+      'en script-src solo entra la etiqueta de Google Ads, nada más',
+      colados.join(' · '));
     afirmar(/X-Content-Type-Options:\s*nosniff/i.test(cab),
       'el navegador no adivina el tipo de los archivos subidos');
 
