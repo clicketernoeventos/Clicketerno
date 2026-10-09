@@ -50,7 +50,70 @@ calculadas ahí.
 - **Arco:** la energía por compás es 26 · 30 · 17 · 20 · 39 · 40 · 28 ·
   34. Intro, caída, pico, resolución.
 
-## Las tres iteraciones que importaron
+## La reescritura: era un pase de diapositivas
+
+El dueño lo vio y dijo dos cosas: **"está re trabado"** y **"no tiene la
+esencia de la publicidad"**. Las dos eran ciertas y la primera se pudo
+medir.
+
+Saqué la diferencia media entre cuadros consecutivos del MP4 encodeado:
+**0,26 sobre 255**, y **624 de 899 cuadros estaban prácticamente
+quietos**. Toda la energía estaba en siete saltos de 16 a 53, que eran
+los cambios de compás. O sea: ocho composiciones fijas, siete cortes
+duros. Cada cuadro suelto estaba lindo y el conjunto se veía trabado.
+
+La primera versión también era un catálogo de funciones. Un aviso no
+enumera: promete algo. El texto arranca ahora con la línea que ya usa la
+página —*"Tu fiesta merece algo más que un flyer"*— y termina en
+*"Pedí la tuya"*.
+
+### Lo que la reemplazó: una cámara que no se detiene
+
+Hay **un solo mundo** con todo puesto en una línea, y la cámara lo
+recorre durante los quince segundos. Los compases dejaron de ser cortes
+y pasaron a ser **los lugares donde llega la cámara**.
+
+```
+   0   los tres modelos (Key -520 · Xiomara 0 · Pia 520)
+1750   la cuenta regresiva
+2900   la confirmación (el formulario se vuelve el gracias en el lugar)
+4100   el cierre
+```
+
+Encima: cada aparato flota con su propio balanceo, el polvo va a otra
+velocidad que la cámara (paralaje) y la cámara lleva tres senos de
+periodos primos entre sí, así nunca se repite un encuadre.
+
+**Los encuadres no se estimaron.** El `y` de cada clave sale de exigir
+que el borde de arriba del sujeto caiga debajo de y=300, que es donde
+termina la banda de los títulos: `camY = -alto/2 + 240/z`. La primera
+versión los tenía a ojo y el título se montaba con los teléfonos en
+cuatro de los ocho planos.
+
+### Y todavía se frenaba ocho veces
+
+Con la cámara puesta, la medición bajó de 624 cuadros quietos a 176 —
+pero quedaban cinco tramos muertos de hasta 45 cuadros, y caían
+**exactamente en las claves de cámara**. La causa: interpolar con una
+curva suave hace que la cámara llegue a cada clave **con velocidad
+cero**. Se paraba ocho veces en quince segundos.
+
+Cambié la interpolación por **Catmull-Rom**, que pasa por los puntos sin
+frenar, con la fracción del tramo lineal (si además se suaviza ahí, se
+vuelve a parar). El sobrepaso de la curva en los giros no es un defecto:
+es lo que le da peso al movimiento.
+
+| | mediana entre cuadros | casi quietos | cortes duros |
+|---|---|---|---|
+| v1 · diapositivas | 0,26 | 624 / 899 | 15 |
+| v2 · cámara suave | 1,51 | 176 / 899 | 11 |
+| **v3 · Catmull-Rom** | **2,09** | **34 / 899** | **10** |
+
+Cero tramos quietos. Los cortes que quedan son los **dos buscados**: el
+golpe del título y el momento en que el formulario se vuelve el
+"gracias". Los otros seis cambios de compás son movimientos de cámara.
+
+## Las tres iteraciones del primer armado
 
 ### 1. La música arrancaba más fuerte que el cuerpo
 
@@ -114,11 +177,16 @@ no el material de origen.**
 
 ## Tiempo
 
-**16 minutos** de punta a punta: investigar qué había disponible,
+**16 minutos** el primer armado, **12 más** la reescritura: 28 en total.
+
+Detalle del primero: investigar qué había disponible,
 verificar los bloqueos de red, capturar los tres modelos, componer y
 medir la música (dos iteraciones), escribir y corregir la escena (una
 iteración de composición), renderizar los 900 cuadros, encontrar y
 arreglar el clipping del AAC, y volver a armar todo de cero para
 comprobar que es reproducible.
 
-El render solo son 3 minutos y medio de esos 16.
+El render son 2 minutos y medio de cada vuelta. De los 12 de la
+reescritura, la mitad se fueron en medir: sacar el perfil de diferencia
+entre cuadros tres veces es lo que convirtió "está trabado" en un número
+y señaló la causa exacta (las claves de cámara con velocidad cero).
