@@ -26,13 +26,23 @@ const TOPE_AUDIO=8*1024*1024;
    el suyo: todo eso se baja de una antes de que se vea nada. */
 const TOPE_HTML=2*1024*1024;
 
+/* Lo que NO se publica no puede ser una invitación: si Cloudflare no lo
+   sube, no hay ninguna dirección que abrir. Así que la lista sale de
+   .assetsignore y no de acá — una enumeración escrita a mano se queda
+   corta sola, y de hecho se quedó: el día que apareció `video/` esta
+   prueba la reclamó como invitación sin index.html. */
+const NO_PUBLICADAS = fs.readFileSync(path.join(RAIZ, '.assetsignore'), 'utf8')
+  .split('\n').map(l => l.trim())
+  .filter(l => l && !l.startsWith('#') && l.endsWith('/'))
+  .map(l => l.slice(0, -1));
+/* Estas SÍ se publican y tampoco son invitaciones: lib/ son las
+   librerías del sitio (QR, zip, excel) e iconos/ los del manifiesto. */
+const PUBLICADAS_NO_INVITACION = ['lib', 'iconos', 'node_modules'];
 const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')
-    /* lib/ son las librerías del sitio (QR, zip, excel), no una invitación */
-    && !['sql','pruebas','invitaciones','node_modules','lib','apps-script',
-         /* iconos/ son los del manifiesto, no una invitación */
-         'iconos'].includes(d);
+    && !NO_PUBLICADAS.includes(d)
+    && !PUBLICADAS_NO_INVITACION.includes(d);
 };
 const pesar=d=>fs.readdirSync(d,{withFileTypes:true}).reduce((t,e)=>{
   const p=path.join(d,e.name);

@@ -15,7 +15,7 @@ const SALIDA = process.argv[2] || '/tmp/claude-0/video/rollo-eterno.mp4';
   const pag = await ctx.newPage();
   const errores = [];
   pag.on('pageerror', e => errores.push(e.message));
-  await pag.goto('file:///tmp/claude-0/video/escena.html', { waitUntil: 'load' });
+  await pag.goto('file://' + __dirname + '/escena.html', { waitUntil: 'load' });
   await pag.waitForFunction('window.__listo===true', { timeout: 60000 });
   const dur = await pag.evaluate(() => window.__dur);
   const total = Math.round(dur * FPS);

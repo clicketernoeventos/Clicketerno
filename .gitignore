@@ -1,7 +1,11 @@
 pruebas/.cache/
 
-# El video se regenera con video/armar.sh: 6 MB no van al repo.
-video/rollo-eterno.mp4
+# Todo lo que arma video/armar.sh: se regenera en un minuto y pesa.
+# Nada de esto va al repo — ni los MP4 (6 MB cada uno), ni las capturas
+# de la invitación (que tienen que salir frescas en cada armado: si
+# quedaran guardadas, el día que pia/nueva cambie el video seguiría
+# mostrando la versión vieja).
+*.mp4
+video/img/
 video/escena.html
 video/fuentes.css
-rollo-eterno.mp4

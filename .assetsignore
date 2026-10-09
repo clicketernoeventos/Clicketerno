@@ -4,6 +4,10 @@
 sql/
 pruebas/
 apps-script/
+# Solo tiene el LEEME de cómo entra una invitación nueva. Va acá además
+# de por el *.md: "invitaciones" es un nombre reservado de la app, y la
+# prueba saca de este archivo qué carpetas NO son una invitación.
+invitaciones/
 *.md
 wrangler.json
 .assetsignore
