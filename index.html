@@ -1121,6 +1121,43 @@ document.getElementById('wspFlota').href=wsp('Hola! Quiero info para mi evento �
 document.getElementById('ctaWsp').href=wsp('Hola Click Eterno! Quiero pedir un presupuesto. Mi evento es el:');
 document.getElementById('ctaWsp').target='_blank';
 
+/* ═══ medición de Google Ads ═══
+   Acá NO hay ninguna etiqueta cargada hasta que ADS_ID tenga un valor.
+   Eso no es pereza, es la decisión: mientras esté vacío el sitio sigue sin
+   un solo script de terceros, que es lo que venimos vendiendo. El día que
+   se lance la campaña se pega el ID y recién ahí baja gtag.
+
+   Y va SOLO en index.html. En `muro.html` y `rollo.html` no entra nunca:
+   esas son las pantallas donde un menor saca una foto en una fiesta, y no
+   cargar terceros ahí es parte del producto (es lo que le criticamos al
+   competidor, que mete Meta y TikTok con grabación de sesión).
+
+   La conversión que importa NO es el clic en el anuncio —eso ya lo cuenta
+   Google— sino el que de verdad vale plata: que toquen WhatsApp. Sin esto
+   Google optimiza para clics baratos y no para clientes. */
+const ADS_ID='';            // ← acá va AW-XXXXXXXXXX cuando exista la cuenta
+const ADS_CONV='';          // ← y acá la etiqueta de conversión, AW-XXXXXXXXXX/abc123
+
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+if(ADS_ID){
+  const g=document.createElement('script');
+  g.async=true;                       // nunca sincrónico: no frena el dibujado
+  g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(ADS_ID);
+  document.head.appendChild(g);
+  gtag('js', new Date());
+  gtag('config', ADS_ID);
+}
+/* Un clic en cualquier enlace a wa.me cuenta como consulta, haya o no
+   etiqueta: se escucha UNA vez en el documento en vez de atar cada botón,
+   porque los botones de WhatsApp se dibujan en varios lugares y alguno se
+   iba a quedar sin contar. */
+document.addEventListener('click', e=>{
+  const a=e.target && e.target.closest && e.target.closest('a[href*="wa.me"]');
+  if(!a || !ADS_CONV) return;
+  gtag('event','conversion',{send_to:ADS_CONV});
+}, true);
+
 /* ═══ polvo ═══ */
 (function(){
   const p=document.getElementById('polvo');
