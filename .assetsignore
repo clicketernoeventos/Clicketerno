@@ -7,3 +7,5 @@ apps-script/
 *.md
 wrangler.json
 .assetsignore
+video/
+*.mp4

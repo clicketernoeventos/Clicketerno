@@ -1,1 +1,7 @@
 pruebas/.cache/
+
+# El video se regenera con video/armar.sh: 6 MB no van al repo.
+video/rollo-eterno.mp4
+video/escena.html
+video/fuentes.css
+rollo-eterno.mp4
