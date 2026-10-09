@@ -6,6 +6,12 @@ pruebas/.cache/
 # quedaran guardadas, el día que pia/nueva cambie el video seguiría
 # mostrando la versión vieja).
 *.mp4
+*.wav
 video/img/
+video/img-muro/
+video/img-reel/
 video/escena.html
 video/fuentes.css
+# La copia de la raíz es solo para abrirla desde la app; la que vale
+# está en video/DECISIONES.md.
+/DECISIONES.md
