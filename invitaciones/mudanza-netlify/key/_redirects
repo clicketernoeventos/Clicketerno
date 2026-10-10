@@ -1,0 +1,4 @@
+# Todo lo que llegue a este sitio de Netlify se va a clicketerno.com.ar.
+# 301 = mudanza permanente. :splat es "lo que venga despues de la barra",
+# asi que /key/fotos/1.jpg tambien llega bien.
+/*  https://clicketerno.com.ar/key/:splat  301!

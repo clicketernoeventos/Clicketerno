@@ -13,3 +13,4 @@ wrangler.json
 .assetsignore
 video/
 *.mp4
+ads/
