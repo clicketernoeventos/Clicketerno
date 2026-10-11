@@ -120,6 +120,37 @@ La fiesta del muro va **sin moderación**: con `moderar` en true, lo que
 mandaba el visitante decía "Enviado, el organizador lo aprueba" y no se veía
 nunca, o sea que el ejemplo no mostraba nada.
 
+**Las fotos de las dos demostraciones son FOTOS DE VERDAD.** Están en
+`demo/`, diez archivos de ~1000px y 750 KB en total, y se publican con el
+sitio. Hasta acá las dos dibujaban un degradado con manchas de luz en un
+canvas (`fotoDemo` en el muro, `fotoInventada` en el rollo): el que entra
+a "Probar la demostración" veía manchas, y lo que hay que mostrarle es el
+producto. El álbum revelado del rollo —que es LA pantalla que vende— era
+el peor caso.
+
+Son caminos relativos (`demo/01.jpg`), no `data:`: `urlSegura` los acepta,
+`miniDe` devuelve vacío para todo lo que no sea del depósito y en
+demostración no hay nube, así que la foto entra por el mismo camino que
+una de verdad sin tocar nada más. En el rollo **lo que sacó el que está
+probando sigue ganando**: `urlDe` mira primero el `blob:` de su propia
+foto. La portada del muro es la 10 porque es la única apaisada y se
+proyecta a tres metros.
+
+**Si faltara uno de esos archivos no pasaría nada visible**: la foto queda
+en blanco y no hay ningún error. Lo cuida `pruebas/demo.js`, que exige que
+los diez se sirvan, que `demo/` **no** esté en `.assetsignore` —ahí
+Cloudflare no los sube pero el servidor de pruebas los sirve igual, y la
+prueba pasaría en verde con la web rota— y que las fotos del álbum carguen
+de verdad (`naturalWidth > 0`). Contra el código anterior esa suite da 4
+fallas. `demo` quedó en la lista de nombres reservados de
+`invitaciones/LEEME.md`.
+
+**Son fotos de personas y están publicadas.** No es lo mismo que ponerlas
+en un video que se manda por WhatsApp: acá quedan en una dirección fija,
+las puede bajar cualquiera y las puede indexar un buscador. Vale lo del
+artículo 53 del Código Civil y Comercial igual que para un cliente, y si
+alguna vez aparece un menor en una, no va.
+
 **Se siembra en cada carga, sin preguntar si ya estaba, y la cinta tiene
 "Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
 prueba: el que entra después no tiene que encontrarse con lo que dejó el
@@ -1376,6 +1407,55 @@ web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
 `clicketerno.com.ar/sql/claves.sql` se bajaba desde el navegador — y ese
 archivo llevaba la clave maestra de producción escrita en texto plano.
 Antes de agregar un archivo al repo, preguntate si querés que sea público.
+
+## Las piezas de video
+
+No se publican (`video/` y `*.mp4` están en `.assetsignore` y en
+`.gitignore`): se arman acá y se mandan por WhatsApp o se suben a redes.
+Se rehacen con `bash video/armar.sh <cual>` y tardan uno o dos minutos.
+
+| Qué | Archivo | Qué muestra |
+|---|---|---|
+| `rollo` | `rollo-eterno.mp4` | la cámara descartable, 25 s |
+| `muro` | `muro-en-vivo.mp4` | el muro en vivo, 28 s |
+| `invitaciones` | `invitaciones.mp4` | la invitación digital, 24 s |
+| `reel` | `reel-invitaciones.mp4` | el reel con música, 15 s (ver `video/DECISIONES.md`) |
+
+**Las pantallas no se dibujan: se capturan de la app de verdad.** Mostrar
+una pantalla que no existe como si existiera es mentirle al cliente.
+`capturar.js` recorre `pia/nueva` y `capturar-muro.js` recorre el muro
+—montando una fiesta en el Supabase falso de las pruebas, igual que
+`pruebas/tablero.js`—. Se sacan de nuevo en cada armado a propósito:
+guardadas, el día que el muro cambie el video seguiría mostrando la
+versión vieja y nadie se enteraría.
+
+**El muro NO se captura de la demostración.** Ahí todo lo del organizador
+—panel, evento, cartel— cae en la pantalla del salón a propósito, así que
+de ahí no salen esas pantallas, y además arrastra la cinta de "la fiesta y
+las fotos son inventadas", que en una pieza de venta no puede aparecer.
+
+Tres cosas que costaron una vuelta cada una:
+
+- **`#invitado` es la puerta donde se ESCRIBE el código**, no la pantalla
+  donde el invitado elige la foto: ésa es `#subir/CODIGO`. La primera
+  versión de la pieza mostraba un formulario de código donde tenía que
+  mostrar el producto.
+- **Un `ts` inventado se dibuja tal cual.** Con `ts: 1000` el panel decía
+  *"hace 20738 d"* abajo de cada foto. Las fechas del falso se ponen
+  relativas a `Date.now()`.
+- **Un anillo dorado alrededor de un botón dorado no se ve.** El señalador
+  (`senalar`) queda para lo que es chiquito y está sobre negro, como el
+  "Aprobar" del panel; sobre el "Enviar a la pantalla", que ya es lo más
+  grande de la captura, sólo ensucia. Y dónde cae el anillo **sale del
+  DOM** (`cajas.json`, que mide `capturar-muro.js` y pega `montar.py` en
+  `window.__CAJAS_MURO`), nunca de mirar la imagen: puesto a ojo señala
+  cualquier cosa, y ya pasó en el de invitaciones.
+
+**Las fotos que se ven adentro son las de `video/fotos/`**, una fiesta de
+verdad. Esa carpeta está en `.gitignore` —fotos de gente no se versionan—
+y si está vacía las dos escenas dibujan manchas de luz y la pieza se arma
+igual, más fea. No confundirla con `demo/`, que sí se publica y es otra
+cosa.
 
 ## El Apps Script de las invitaciones
 

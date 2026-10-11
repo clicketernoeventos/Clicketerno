@@ -1047,44 +1047,21 @@ if(HAY_DEMO){
   const urls={};                       // ruta -> blob: de este navegador
   const dormir=ms=>new Promise(r=>setTimeout(r,ms));   // que se note que viaja
 
-  /* Una foto de fiesta dibujada a mano: luces desenfocadas sobre un fondo
-     oscuro. Es lo mismo que hace el muro para su ejemplo. */
-  function fotoInventada(semilla){
-    let x=semilla*9301+49297;
-    const rnd=()=>((x=(x*9301+49297)%233280)/233280);
-    const vert=rnd()>.45;
-    const c=document.createElement('canvas');
-    c.width=vert?720:960; c.height=vert?960:720;
-    const g=c.getContext('2d');
-    const pares=[['#120E0A','#3B2A18'],['#0C0D14','#26313F'],['#160D10','#452028'],
-                 ['#0E1210','#22332B'],['#141014','#3A2438']];
-    const t=pares[semilla%pares.length];
-    const f=g.createLinearGradient(0,0,c.width,c.height);
-    f.addColorStop(0,t[0]); f.addColorStop(1,t[1]);
-    g.fillStyle=f; g.fillRect(0,0,c.width,c.height);
-    const luces=['#F3D9A6','#FFE9C4','#E8C79A','#FFF4DF','#D9AE72'];
-    for(let i=0;i<30;i++){
-      g.globalAlpha=.07+rnd()*.44;
-      g.fillStyle=luces[Math.floor(rnd()*luces.length)];
-      g.beginPath(); g.arc(rnd()*c.width,rnd()*c.height,6+rnd()*70,0,7); g.fill();
-    }
-    g.globalAlpha=1;
-    const v=g.createRadialGradient(c.width/2,c.height/2,c.height*.2,
-                                   c.width/2,c.height/2,c.height*.82);
-    v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.74)');
-    g.fillStyle=v; g.fillRect(0,0,c.width,c.height);
-    return c;
-  }
-  /* El álbum pide URLs firmadas y las mete en un <img> y en un fetch(): un
-     blob: de este mismo navegador sirve para las dos cosas. */
-  function urlDe(ruta,i){
-    if(urls[ruta]) return urls[ruta];
-    const c=fotoInventada(i+3);
-    /* toDataURL es síncrono y no necesita esperar al toBlob: acá no importa
-       el peso, son cinco imágenes en pantalla. */
-    urls[ruta]=c.toDataURL('image/jpeg',.72);
-    return urls[ruta];
-  }
+  /* Las fotos del rollo de ejemplo son FOTOS DE VERDAD, de una fiesta
+     nuestra, servidas desde demo/ (las mismas diez que usa el muro).
+     Antes se dibujaban luces desenfocadas en un canvas: el álbum
+     revelado es la pantalla que vende el producto y mostraba manchas.
+
+     El camino relativo le sirve igual al <img> y al fetch() del zip, que
+     son los dos usos. Lo cuida pruebas/demo.js: si alguno de los
+     archivos faltara, el álbum quedaría en blanco sin tirar un error.
+
+     Lo que sacó EL QUE ESTÁ PROBANDO sigue ganando: su foto está en
+     `urls` como blob: de este navegador y es la que tiene que ver. Sin
+     ese primer renglón, el que saca una foto en la demostración ve en su
+     lugar una de las sembradas. */
+  const FOTOS_DEMO=10;
+  const urlDe=(ruta,i)=>urls[ruta]||`demo/${String((i%FOTOS_DEMO)+1).padStart(2,'0')}.jpg`;
   const revelado=()=>!!ev.revelado || (ev.revela_en && new Date(ev.revela_en)<=new Date());
   const listado=()=>fotos.map(f=>({ruta:f.ruta,nombre:f.nombre,filtro:f.filtro}));
 

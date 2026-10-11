@@ -2329,26 +2329,23 @@ const imgMini=(u,extra)=>{
   const m=miniDe(u);
   return `<img src="${src(m||u)}"${m?` data-entera="${src(u)}"`:''}${extra?' '+extra:''}>`;
 };
-function fotoDemo(seed){
-  let s=seed*9301+49297; const rnd=()=>((s=(s*9301+49297)%233280)/233280);
-  const vert=rnd()>.5;
-  const c=document.createElement('canvas'); c.width=vert?760:1000; c.height=vert?1000:760;
-  const x=c.getContext('2d');
-  const pares=[['#120E0A','#3B2A18'],['#0C0D14','#26313F'],['#160D10','#452028'],['#0E1210','#22332B'],['#141014','#3A2438']];
-  const t=pares[seed%pares.length];
-  const g=x.createLinearGradient(0,0,c.width,c.height); g.addColorStop(0,t[0]); g.addColorStop(1,t[1]);
-  x.fillStyle=g; x.fillRect(0,0,c.width,c.height);
-  const luces=['#F3D9A6','#FFE9C4','#E8C79A','#FFF4DF','#D9AE72'];
-  for(let i=0;i<28;i++){
-    x.globalAlpha=.08+rnd()*.42; x.fillStyle=luces[Math.floor(rnd()*luces.length)];
-    x.beginPath(); x.arc(rnd()*c.width,rnd()*c.height,7+rnd()*72,0,7); x.fill();
-  }
-  x.globalAlpha=1;
-  const v=x.createRadialGradient(c.width/2,c.height/2,c.height*.22,c.width/2,c.height/2,c.height*.8);
-  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.72)');
-  x.fillStyle=v; x.fillRect(0,0,c.width,c.height);
-  return c.toDataURL('image/jpeg',.72);
-}
+/* Las fotos de la fiesta de ejemplo son FOTOS DE VERDAD, de una fiesta
+   nuestra, servidas desde demo/ (diez archivos de ~1000px, 750 KB en
+   total, que solo se bajan en la demostración). Antes acá se dibujaba un
+   degradado con manchas de luz en un canvas: no se veía una fiesta, se
+   veía una mancha, y el que entra a "Probar la demostración" tiene que
+   ver el producto.
+
+   Si alguno de esos archivos faltara, la demostración quedaría con
+   fotos en blanco y eso no tira ningún error: lo cuida pruebas/demo.js,
+   que comprueba que las nueve carguen de verdad (naturalWidth > 0).
+
+   Devuelve un camino RELATIVO a propósito: `urlSegura` los acepta y
+   `miniDe` devuelve vacío para todo lo que no sea del depósito, así que
+   la foto entra por el mismo camino que una de verdad sin tocar nada
+   más. En la nube `dataABlob` la busca y la sube igual. */
+const FOTOS_DEMO=10;
+const fotoDemo=seed=>`demo/${String(((seed-1)%FOTOS_DEMO+FOTOS_DEMO)%FOTOS_DEMO+1).padStart(2,'0')}.jpg`;
 /* Baja cualquier cosa (data: o https:) como archivo real.
    Antes se usaba <a download> con una URL de otro dominio: el navegador
    ignora download y te saca de la página. */
@@ -2476,7 +2473,10 @@ async function sembrar(){
     /* En demostración el código lleva la palabra adelante: si alguna vez
        esto llegara a la base de verdad, se ve de lejos que es de mentira. */
     const codigo = 'DEMO-FIESTA';
-    const tapa=fotoDemo(3);
+    /* La portada se proyecta a tres metros y la pantalla del salón es
+       apaisada: la 10 es la única horizontal ancha del grupo. De paso no
+       repite ninguna de las nueve del álbum. */
+    const tapa=fotoDemo(10);
     /* La base exige clave para dar de alta un evento. Si ya la tenemos
        guardada de otra vez la reusamos; si no, una nueva. */
     const claveEv=claveDe(codigo)||nuevaClave();

@@ -14,6 +14,16 @@ if os.path.exists('img/cajas.json'):
     cajas = json.load(open('img/cajas.json'))
 js = 'window.__CAJAS=' + json.dumps(cajas) + ';\n' + js
 
+# Lo mismo para el muro: capturar-muro.js mide del DOM dónde cae el
+# boton "Enviar a la pantalla" y el "Aprobar" del panel. Van aparte de
+# las de la invitacion porque son otra app y otras pantallas; con un
+# solo diccionario, el dia que las dos tengan un "enviar" una pisaria a
+# la otra y el anillo señalaria cualquier cosa.
+cajas_muro = {}
+if os.path.exists('img-muro/cajas.json'):
+    cajas_muro = json.load(open('img-muro/cajas.json'))
+js = 'window.__CAJAS_MURO=' + json.dumps(cajas_muro) + ';\n' + js
+
 # Fotos de verdad para el rollo. Si la carpeta video/fotos/ tiene
 # imagenes, se incrustan en base64 y la escena las usa en vez de las
 # dibujadas; si esta vacia, sigue andando igual con las dibujadas. Van

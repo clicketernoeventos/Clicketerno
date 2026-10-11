@@ -92,12 +92,15 @@ async function montarFiesta(ctx, fotos) {
     fake.db.ce_items.push({
       id: 'f' + i, codigo: COD, kind: 'foto', url: fotos[i],
       autor: NOMBRES[i % NOMBRES.length], texto: '',
-      estado: esperando ? 'pendiente' : 'aprobado', ts: 1000 + (n++),
+      estado: esperando ? 'pendiente' : 'aprobado',
+      /* Un ts de 1000 es el año 1970 y el panel lo dibuja tal cual:
+         "hace 20738 d" abajo de la foto, en una pieza de venta. */
+      ts: Date.now() - (30 - (n++)) * 60000,
     });
   }
   SALUDOS.forEach(([texto, autor], i) => fake.db.ce_items.push({
     id: 'm' + i, codigo: COD, kind: 'mensaje', url: '',
-    autor, texto, estado: 'aprobado', ts: 1000 + (n++),
+    autor, texto, estado: 'aprobado', ts: Date.now() - (30 - (n++)) * 60000,
   }));
   /* La clave guardada en el aparato es lo que hace que la app lo trate
      como el organizador y no como un invitado. */
@@ -156,14 +159,18 @@ async function montarFiesta(ctx, fotos) {
     }, sel);
   };
 
-  await ir('invitado/' + COD); await guardar(pag, 'invitado');
-  await medir('entrar', '#entrar, button[type=submit], .btn-oro');
+  /* `invitado` es la puerta donde se ESCRIBE el código; la pantalla que
+     vende es la de al lado, donde el invitado elige la foto y escribe su
+     saludo. Capturando la primera, la pieza mostraba un formulario de
+     código donde tenía que mostrar el producto. */
+  await ir('subir/' + COD); await guardar(pag, 'invitado');
+  await medir('enviar', '#enviar');
   await ir('evento/' + COD, 3600);
   /* el panel abre en Compartir; Moderar es lo que hay que mostrar */
   await pag.locator('[data-sol="pModerar"]').click({ timeout: 4000 }).catch(() => {});
   await pag.waitForTimeout(1800);
   await guardar(pag, 'panel');
-  await medir('aprobar', '.pendiente button, [data-ok], button');
+  await medir('aprobar', '.par .si');
   await ir('album/' + COD, 4200); await guardar(pag, 'album');
   fs.writeFileSync(path.join(DEST, 'cajas.json'), JSON.stringify(cajas, null, 1));
   console.log('  anillos:', JSON.stringify(cajas));
@@ -191,7 +198,14 @@ async function montarFiesta(ctx, fotos) {
       }
       await sala.waitForTimeout(1100);
     }
+    /* La fila de modos es una herramienta del organizador: en una pieza
+       de venta es una pastilla gris arriba a la izquierda y nada más. Se
+       la esconde para la foto y se la vuelve a mostrar para poder seguir
+       recorriendo los tres modos. */
+    await sala.evaluate(() => document.querySelector('.modos-sala')?.setAttribute('hidden', ''));
+    await sala.waitForTimeout(350);
     await guardar(sala, nombre, '.ancha');
+    await sala.evaluate(() => document.querySelector('.modos-sala')?.removeAttribute('hidden'));
   };
   /* Con ?marco=1 la sala arranca en el tablero, así que los botones de
      modo están ocultos: se los muestra para poder recorrer los tres. */

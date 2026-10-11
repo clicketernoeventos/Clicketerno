@@ -345,6 +345,84 @@ async function abrir(ctx) {
       botones.join(' · '));
   }
 
+  /* ── 5 bis · las fotos del ejemplo son fotos de VERDAD ──
+     Antes las dos demostraciones dibujaban un degradado con manchas de
+     luz en un canvas: el que entra a "Probar la demostración" veía
+     manchas, no una fiesta. Ahora salen de demo/, diez archivos del
+     repo.
+
+     Lo que se mide es que CARGUEN (naturalWidth > 0), no que el src diga
+     lo que tiene que decir: un archivo que falta deja la foto en blanco
+     y no tira ningún error — es la regla de la caja de 0x0. Un <img>
+     roto da naturalWidth 0 y pasa cualquier cuenta. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const { pg } = await abrir(ctx);
+
+    /* Los diez archivos tienen que estar servidos, antes de mirar
+       ninguna pantalla: si faltan, lo que sigue falla por otro motivo y
+       el mensaje no dice qué pasó. */
+    const faltan = [];
+    for (let i = 1; i <= 10; i++) {
+      const n = String(i).padStart(2, '0');
+      const r = await pg.request.get(`${BASE}/demo/${n}.jpg`);
+      if (!r.ok()) faltan.push(`${n}.jpg → ${r.status()}`);
+    }
+    afirmar(faltan.length === 0, 'los diez archivos de demo/ están publicados', faltan.join(' · '));
+
+    /* Y que no se hayan quedado en .assetsignore: ahí Cloudflare no los
+       sube y el servidor de pruebas los sirve igual, así que esto pasaría
+       en verde y la demostración de la web quedaría en blanco. */
+    const ignora = fs.readFileSync(path.join(RAIZ_WEB, '.assetsignore'), 'utf8')
+      .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+    afirmar(!ignora.some((l) => /^\/?demo\/?$/.test(l) || /^demo\//.test(l)),
+      'demo/ se publica (no está en .assetsignore)', ignora.filter((l) => /demo/.test(l)).join(' · '));
+
+    const cargadas = async (sel) => pg.evaluate((s) => Array.from(document.querySelectorAll(s))
+      .filter((i) => i.getBoundingClientRect().width > 20)
+      .map((i) => ({ w: i.naturalWidth, src: i.currentSrc || i.src })), sel);
+
+    /* El álbum del muro: nueve fotos sembradas. Hay que pasar PRIMERO
+       por la pantalla del salón, que es donde se siembra la fiesta:
+       entrando derecho al álbum no hay nada todavía y el único <img> que
+       queda es el QR de compartir — con eso la comprobación medía la nada
+       (la regla de la caja de 0x0, otra vez). */
+    await pg.goto(BASE + '/muro.html?demo=1#pantalla/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(4000);
+    await pg.goto(BASE + '/muro.html?demo=1#album/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(3500);
+    const mur = (await cargadas('#app img')).filter((i) => /\/demo\/\d\d\.jpg/.test(i.src));
+    afirmar(mur.length >= 9, 'el álbum del ejemplo del muro dibuja las nueve fotos', String(mur.length));
+    afirmar(mur.length > 0 && mur.every((i) => i.w > 0),
+      'y todas cargaron de verdad', mur.filter((i) => !i.w).map((i) => i.src.slice(-14)).join(' · '));
+    afirmar(mur.some((i) => /\/demo\/\d\d\.jpg/.test(i.src)),
+      'y son los archivos de demo/, no un canvas', (mur[0] || {}).src || '');
+
+    /* La pantalla del salón proyecta la foto ENTERA, nunca la miniatura:
+       una de 420px estirada a tres metros se ve horrible. Acá además no
+       hay miniaturas, así que lo que se comprueba es que lo proyectado
+       cargue y sea una de las de verdad. */
+    await pg.goto(BASE + '/muro.html?demo=1#pantalla/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(4000);
+    const sala = await cargadas('.toma img, .tab-foto img, #app img');
+    afirmar(sala.length > 0 && sala.every((i) => i.w > 0),
+      'la pantalla del salón proyecta una foto que cargó',
+      sala.length ? sala.filter((i) => !i.w).map((i) => i.src.slice(-14)).join(' · ') : 'ninguna');
+
+    /* El rollo entra derecho al álbum revelado: es la pantalla que
+       vende, y es justo la que mostraba manchas. */
+    await pg.goto(BASE + '/rollo.html?demo=1', { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(4500);
+    const rol = await cargadas('#app img');
+    afirmar(rol.length >= 3, 'el álbum revelado del rollo dibuja sus fotos', String(rol.length));
+    afirmar(rol.length > 0 && rol.every((i) => i.w > 0),
+      'y todas cargaron de verdad', rol.filter((i) => !i.w).map((i) => i.src.slice(-14)).join(' · '));
+    afirmar(rol.some((i) => /\/demo\/\d\d\.jpg/.test(i.src)),
+      'y también son los archivos de demo/', (rol[0] || {}).src || '');
+
+    await ctx.close();
+  }
+
   /* ── 6 · lo que manda el visitante se borra solo ──
      Todo lo de la demostración ya vive en memoria y se va con la recarga.
      Lo que faltaba es MIENTRAS la pestaña sigue abierta: la demostración

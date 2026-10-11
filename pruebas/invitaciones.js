@@ -9,6 +9,10 @@ const bien=m=>console.log('  ✓ '+m);
 /* Lo que ya usa la app. Una carpeta con uno de estos nombres la tapa. */
 const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   'logo','marca','og','index','_redirects','_headers',
+                  /* las fotos de la fiesta de ejemplo: una carpeta
+                     "demo" las tapa y las dos demostraciones quedan con
+                     las fotos en blanco, sin tirar ningún error */
+                  'demo','empezar','404',
                   /* los legales: una carpeta llamada "privacidad" taparía la
                      política de privacidad, que es una obligación legal */
                   'privacidad','terminos','.well-known',

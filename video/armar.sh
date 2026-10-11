@@ -3,9 +3,10 @@
 # incrusta, renderiza los cuadros y los encodea a MP4.
 #
 #     bash video/armar.sh rollo          -> video/rollo-eterno.mp4
+#     bash video/armar.sh muro           -> video/muro-en-vivo.mp4
 #     bash video/armar.sh invitaciones   -> video/invitaciones.mp4
 #     bash video/armar.sh reel           -> video/reel-invitaciones.mp4
-#     bash video/armar.sh                -> los tres
+#     bash video/armar.sh                -> los cuatro
 #
 # El reel es el unico con musica: se compone y se sintetiza con
 # video/musica.py, sin samples, y dura exactamente lo mismo que el
@@ -62,6 +63,27 @@ fi
 
 if [ "$QUE" = "rollo" ] || [ "$QUE" = "todos" ]; then
   armar_uno rollo rollo-eterno.mp4
+fi
+
+if [ "$QUE" = "muro" ] || [ "$QUE" = "todos" ]; then
+  # Todas las pantallas del muro son capturas de la app de verdad,
+  # recorrida contra el Supabase falso de las pruebas (no contra la
+  # demostracion: ahi todo lo del organizador cae en la pantalla del
+  # salon y ademas arrastra la cinta de "la fiesta es inventada", que
+  # en una pieza de venta no puede aparecer). Se sacan de nuevo en
+  # cada armado a proposito: guardadas, el dia que el muro cambie el
+  # video seguiria mostrando la version vieja y nadie se enteraria.
+  PUERTO=8097
+  LEVANTE=""
+  if ! (command -v ss >/dev/null && ss -ltn 2>/dev/null | grep -q ":$PUERTO "); then
+    (cd .. && python3 pruebas/servidor.py "$PUERTO" >/dev/null 2>&1 &)
+    sleep 2
+    LEVANTE="si"
+  fi
+  echo "  capturando las pantallas del muro..."
+  BASE="http://127.0.0.1:$PUERTO" node capturar-muro.js
+  if [ -n "$LEVANTE" ]; then pkill -f "servidor.py $PUERTO" 2>/dev/null || true; fi
+  armar_uno muro muro-en-vivo.mp4
 fi
 
 if [ "$QUE" = "reel" ] || [ "$QUE" = "todos" ]; then

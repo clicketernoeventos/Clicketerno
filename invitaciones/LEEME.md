@@ -25,9 +25,13 @@ Son los que ya usa la app. Una carpeta con uno de estos nombres tapa la
 aplicación entera:
 
     muro  rollo  app  sql  pruebas  invitaciones  logo  marca  og
+    demo  empezar  404
     privacidad  terminos  .well-known  iconos
 
-Los dos últimos de la primera línea y los de la segunda son páginas legales
+`demo` son las fotos de la fiesta de ejemplo: tapada, las dos
+demostraciones quedan con las fotos en blanco y no tiran ningún error.
+
+Los dos últimos de la primera línea y los de la tercera son páginas legales
 y archivos que el sitio tiene que servir sí o sí: una carpeta con uno de
 esos nombres tapa la Política de Privacidad, los Términos o el
 `security.txt`, y eso ya no es un bug, es un incumplimiento.
