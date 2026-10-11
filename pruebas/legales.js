@@ -215,7 +215,15 @@ const ART6=[
       ['la transferencia internacional',/transferencia internacional|60-E\/2016/i],
       ['el derecho a la imagen',        /art[ií]culo 53|53 del C[óo]digo Civil/i],
       ['a los menores de edad',         /menores/i],
-      ['que no hay cookies',            /no usa cookies|sin cookies/i]]){
+      /* Antes esto exigía que dijera "no usa cookies". Dejó de ser verdad el
+         día que se prendió la etiqueta de Google Ads en la página de inicio,
+         y una prueba que exige una mentira es peor que no tener prueba. Lo
+         que hay que cuidar ahora es que la política NOMBRE la cookie que de
+         verdad se pone, y que siga diciendo que en las pantallas de los
+         invitados no hay ninguna. Que la etiqueta no pueda prenderse sin
+         actualizar esta página lo cuida `pruebas/ads.js`. */
+      ['la cookie de publicidad por su nombre', /_gcl_aw/i],
+      ['que las apps no usan cookies',  /no usan ninguna cookie|no usa cookies|sin cookies/i]]){
     if(!re.test(priv)) mal(`la política de privacidad ya no menciona ${q}`);
     else bien(`la política menciona ${q}`);
   }
