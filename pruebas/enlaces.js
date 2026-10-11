@@ -44,6 +44,9 @@ const nota=m=>console.log('  · '+m);
 const PAGINAS=[['la página de inicio','/',200],
                ['la política de privacidad','/privacidad',200],
                ['los términos','/terminos',200],
+               /* La que se le manda a cada cliente que pregunta. Si un enlace
+                  de acá se rompe, se rompe en el medio de una venta. */
+               ['cómo empezar','/empezar',200],
                ['la pantalla de 404','/esta-direccion-no-existe-jamas',404]];
 
 /* Los tres productos y el pedazo de mensaje que tiene que llevar cada
@@ -207,7 +210,8 @@ const PRODUCTOS=[['#invitaciones','invitaci'],['#muro','muro'],['#rollo','rollo'
      única forma de saberlo es medirla. */
   console.log('\n─── la vista previa al compartir el link ───');
   const CARD=[['la página de inicio','/'],['el muro','/muro'],['el rollo','/rollo'],
-              ['la política de privacidad','/privacidad'],['los términos','/terminos']];
+              ['la política de privacidad','/privacidad'],['los términos','/terminos'],
+              ['cómo empezar','/empezar']];
   for(const [nombre,ruta] of CARD){
     let html='';
     try{ html = await (await api.get(S+ruta)).text(); }catch(e){ mal(`${nombre}: no se pudo leer`); continue; }

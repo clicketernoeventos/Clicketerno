@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cómo funciona tu invitación digital · Click Eterno</title>
+<meta name="description" content="Cómo se hace tu invitación digital, qué incluye y qué material necesitamos de vos para empezar.">
+<link rel="canonical" href="https://clicketerno.com.ar/empezar">
+<meta name="theme-color" content="#000000">
+<!-- Esta página se manda por WhatsApp a cada cliente que pregunta, así que
+     la tarjeta del chat importa tanto como el contenido. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Click Eterno">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://clicketerno.com.ar/empezar">
+<meta property="og:title" content="Cómo funciona tu invitación digital">
+<meta property="og:description" content="Los cuatro pasos, qué incluye y qué material necesitamos para empezar.">
+<meta property="og:image" content="https://clicketerno.com.ar/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Click Eterno">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="apple-touch-icon" href="marca.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+:root{
+  --negro:#000; --carbon:#0A0908; --humo:#131110;
+  --crema:#F6F2EA; --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --mute:#9B9287; --hilo:rgba(217,174,114,.26);
+  --e:cubic-bezier(.22,.7,.24,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--negro);color:var(--crema);font-family:Jost,system-ui,sans-serif;
+  font-weight:300;font-size:17px;line-height:1.75;-webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:660px;margin:0 auto;padding-left:22px;padding-right:22px}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+
+header{padding-block:56px 10px;text-align:center}
+.marca{width:118px;margin:0 auto 34px;display:block;opacity:.95}
+.sobretitulo{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--oro);margin-bottom:18px}
+h1{font-family:'Bodoni Moda',serif;font-weight:400;font-size:clamp(30px,7.5vw,46px);
+  line-height:1.12;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--oro);display:block}
+.bajada{color:var(--mute);margin:20px auto 0;max-width:46ch;font-size:16.5px}
+
+section{padding-block:46px}
+section+section{border-top:1px solid rgba(255,255,255,.07)}
+h2{font-family:'Bodoni Moda',serif;font-weight:400;font-size:clamp(23px,5.4vw,30px);
+  line-height:1.2;margin-bottom:10px;text-wrap:balance}
+h2 em{font-style:italic;color:var(--oro)}
+.intro{color:var(--mute);margin-bottom:26px;font-size:16px}
+
+/* los cuatro pasos */
+.pasos{counter-reset:p;display:grid;gap:1px;background:var(--hilo);border:1px solid var(--hilo)}
+.paso{background:var(--negro);padding:22px 24px;display:flex;gap:18px;align-items:flex-start}
+.paso .n{flex:0 0 auto;font-family:'Bodoni Moda',serif;font-size:26px;color:var(--oro);
+  line-height:1;min-width:30px}
+.paso b{display:block;font-weight:400;font-family:'Bodoni Moda',serif;font-size:19px;margin-bottom:4px}
+.paso p{font-size:15.5px;color:var(--mute);line-height:1.65}
+
+/* qué incluye */
+.incluye{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hilo);
+  border:1px solid var(--hilo)}
+.inc{background:var(--negro);padding:18px 20px}
+.inc b{display:block;font-weight:400;font-family:'Bodoni Moda',serif;font-size:17px;margin-bottom:3px}
+.inc p{font-size:14px;color:var(--mute);line-height:1.6}
+
+/* lo que necesitamos */
+.pide{border:1px solid var(--hilo);background:var(--carbon);padding:4px 0;margin-bottom:22px}
+.pide .fila{display:flex;gap:14px;padding:15px 22px;border-bottom:1px solid rgba(255,255,255,.06)}
+.pide .fila:last-child{border-bottom:0}
+.pide .ast{flex:0 0 auto;color:var(--oro);font-size:13px;line-height:1.9}
+.pide b{display:block;font-weight:400;font-size:16.5px;margin-bottom:2px}
+.pide p{font-size:14.5px;color:var(--mute);line-height:1.6}
+.opc{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--oro-hondo);
+  margin-left:8px;vertical-align:1px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;
+  padding:16px 30px;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;border:0;font-family:inherit;
+  color:#0A0806;font-weight:600;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
+  transition:transform .4s var(--e),box-shadow .4s var(--e)}
+.btn:active{transform:scale(.98)}
+.btn-hilo{background:none;border:1px solid var(--oro-hondo);color:#EFDCBC;font-weight:400}
+@media(hover:hover){
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -18px var(--oro)}
+  .btn-hilo:hover{border-color:var(--oro);color:var(--oro);box-shadow:none}
+}
+.acciones{display:flex;flex-wrap:wrap;gap:13px;margin-top:8px}
+@media(max-width:520px){.acciones{flex-direction:column}.acciones .btn{width:100%}
+  .incluye{grid-template-columns:1fr}}
+
+.nota{font-size:14.5px;color:var(--mute);margin-top:20px}
+.nota b{color:var(--champan);font-weight:400}
+footer{border-top:1px solid rgba(255,255,255,.07);padding-block:38px 56px;text-align:center}
+footer p{font-size:14px;color:var(--mute)}
+footer a{color:var(--oro);text-decoration:none;border-bottom:1px solid var(--hilo)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <img class="marca" src="marca.webp" alt="Click Eterno">
+  <p class="sobretitulo">Invitaciones digitales</p>
+  <h1>Así hacemos<em>la invitación de tu fiesta</em></h1>
+  <p class="bajada">No es una imagen que se reenvía: es una web propia de tu
+  evento, que se abre en el celular de cada invitado y confirma la asistencia sola.</p>
+</header>
+
+<section>
+  <h2>Cómo <em>funciona</em></h2>
+  <p class="intro">Cuatro pasos. De los cuatro, vos trabajás en uno.</p>
+  <div class="pasos">
+    <div class="paso"><span class="n">1</span><div>
+      <b>Me contás de la fiesta</b>
+      <p>Qué festejan, cuándo, dónde y para cuánta gente. Con eso te paso el presupuesto cerrado, sin sorpresas.</p>
+    </div></div>
+    <div class="paso"><span class="n">2</span><div>
+      <b>La diseño desde cero</b>
+      <p>Con tus colores, tus fotos y tu música. No se elige de una lista de plantillas: se hace para tu fiesta.</p>
+    </div></div>
+    <div class="paso"><span class="n">3</span><div>
+      <b>La probás y me decís</b>
+      <p>Te mando el link, la abrís en tu celular y la tocás entera. Los ajustes los hacemos juntos hasta que quede.</p>
+    </div></div>
+    <div class="paso"><span class="n">4</span><div>
+      <b>La mandás por WhatsApp</b>
+      <p>Un link, y listo. Se abre en el celular de cada invitado: sin instalar nada, sin crear cuenta y sin que se pierda ningún papelito.</p>
+    </div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Qué <em>incluye</em></h2>
+  <div class="incluye">
+    <div class="inc"><b>Sobre animado</b><p>Se abre con un gesto. Es el primer momento y tiene que emocionar.</p></div>
+    <div class="inc"><b>Cuenta regresiva</b><p>Días, horas y minutos, corriendo en vivo.</p></div>
+    <div class="inc"><b>Confirmación de asistencia</b><p>Se anotan uno por uno, con nombre y apellido.</p></div>
+    <div class="inc"><b>Qué come cada uno</b><p>Celíaco, vegetariano, sin lactosa o lo que escriban.</p></div>
+    <div class="inc"><b>Tu lista, siempre al día</b><p>La ves en tu panel, la bajás en Excel o la imprimís.</p></div>
+    <div class="inc"><b>Playlist colaborativa</b><p>Cada uno sugiere la canción que no puede faltar.</p></div>
+    <div class="inc"><b>Cómo llegar</b><p>Mapa y un botón que abre el GPS del celular.</p></div>
+    <div class="inc"><b>Dress code</b><p>Para que nadie te pregunte qué se pone.</p></div>
+    <div class="inc"><b>Alias para regalos</b><p>Se toca y se copia solo, sin tener que dictarlo.</p></div>
+    <div class="inc"><b>Música al abrir</b><p>Suena tu tema desde el primer segundo.</p></div>
+  </div>
+  <p class="nota"><b>La confirmación es la parte que más vas a usar.</b> No te dice
+  sólo cuántos vienen: te dice quiénes, y qué come cada uno. Esa es la lista que
+  te pide el salón tres días antes, y la vas a tener hecha sin perseguir a nadie.</p>
+</section>
+
+<section>
+  <h2>Qué necesito <em>de vos</em></h2>
+  <p class="intro">Esto es todo. Lo que tenga un ✦ al lado hace falta para empezar;
+  lo demás se puede sumar después.</p>
+
+  <div class="pide">
+    <div class="fila"><span class="ast">✦</span><div>
+      <b>Los datos de la fiesta</b>
+      <p>Nombre de quien festeja, qué se festeja, fecha y hora, y el nombre y la dirección del salón.</p></div></div>
+    <div class="fila"><span class="ast">✦</span><div>
+      <b>Entre 3 y 8 fotos</b>
+      <p>Las mejores que tengas, en la mejor calidad posible. Mandámelas como <em>archivo</em> o <em>documento</em> en WhatsApp, no como foto: así no se achican.</p></div></div>
+    <div class="fila"><span class="ast">✦</span><div>
+      <b>Los colores o la onda</b>
+      <p>Si ya tenés una paleta, pasámela. Si no, mandame una foto de algo que te guste —un vestido, una decoración, otra invitación— y de ahí salimos.</p></div></div>
+    <div class="fila"><span class="ast">✦</span><div>
+      <b>Hasta cuándo pueden confirmar</b>
+      <p>Una fecha límite. Después de esa, el formulario se cierra solo.</p></div></div>
+    <div class="fila"><span class="ast">·</span><div>
+      <b>Dress code <span class="opc">opcional</span></b>
+      <p>Elegante sport, etiqueta, blanco… como lo digas vos.</p></div></div>
+    <div class="fila"><span class="ast">·</span><div>
+      <b>Alias para regalos <span class="opc">opcional</span></b>
+      <p>El alias o CBU, y a nombre de quién está.</p></div></div>
+    <div class="fila"><span class="ast">·</span><div>
+      <b>Una canción <span class="opc">opcional</span></b>
+      <p>La que querés que suene al abrir la invitación.</p></div></div>
+    <div class="fila"><span class="ast">·</span><div>
+      <b>Un texto tuyo <span class="opc">opcional</span></b>
+      <p>Unas líneas para tus invitados. Si no se te ocurre, lo escribimos juntos.</p></div></div>
+  </div>
+
+  <div class="acciones">
+    <button class="btn" id="copiar" type="button">Copiar la lista para responder</button>
+    <a class="btn btn-hilo" id="mandar" href="https://wa.me/5493412506451" target="_blank" rel="noopener">Mandarme el material →</a>
+  </div>
+  <p class="nota">El botón de la izquierda te copia las preguntas al portapapeles.
+  Pegalas en WhatsApp, respondé abajo de cada una y mandámelas.</p>
+</section>
+
+<section>
+  <h2>Un par de <em>cosas más</em></h2>
+  <p class="intro">Lo que suelen preguntar antes de empezar.</p>
+  <div class="pasos">
+    <div class="paso"><span class="n">·</span><div>
+      <b>¿Mis invitados tienen que instalar algo?</b>
+      <p>No. Tocan el link y se abre. Tampoco crean ninguna cuenta ni dejan contraseña.</p></div></div>
+    <div class="paso"><span class="n">·</span><div>
+      <b>¿Se puede cambiar algo después de mandarla?</b>
+      <p>Sí. Es una web: se corrige y a todos les aparece corregida, aunque ya la hayan abierto.</p></div></div>
+    <div class="paso"><span class="n">·</span><div>
+      <b>¿Cuánto tarda?</b>
+      <p>Los tiempos los acordamos al empezar, según la fecha de tu fiesta. Lo que más demora es juntar las fotos: cuanto antes las mandes, antes la ves.</p></div></div>
+    <div class="paso"><span class="n">·</span><div>
+      <b>¿Y si quiero algo más para la noche?</b>
+      <p>Hay dos cosas más: el <b>Muro en vivo</b>, que proyecta en el salón las fotos que sacan tus invitados, y el <b>Rollo eterno</b>, una cámara descartable digital que se revela al otro día. Se pueden sumar o no.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <p>Cualquier duda, escribime: <a href="https://wa.me/5493412506451" target="_blank" rel="noopener">341 250-6451</a><br>
+  <a href="/">clicketerno.com.ar</a></p>
+</footer>
+
+</div>
+
+<script>
+/* El material llega por WhatsApp y siempre falta algo. Copiar las preguntas
+   y responderlas abajo de cada una es lo único que hace que vuelva completo:
+   pedirlo en prosa termina en tres fotos y ninguna fecha. */
+const LISTA = [
+  'MI FIESTA',
+  '',
+  '1) Quién festeja (nombre):',
+  '2) Qué se festeja:',
+  '3) Fecha y hora:',
+  '4) Salón (nombre y dirección):',
+  '5) Hasta cuándo pueden confirmar:',
+  '6) Colores o la onda que me imagino:',
+  '7) Dress code (opcional):',
+  '8) Alias para regalos y a nombre de quién (opcional):',
+  '9) Canción para cuando se abre (opcional):',
+  '10) Unas líneas mías para los invitados (opcional):',
+  '',
+  'Las fotos las mando aparte, como archivo.'
+].join('\n');
+
+const boton = document.getElementById('copiar');
+const original = boton.textContent;
+
+function avisar(txt){
+  boton.textContent = txt;
+  setTimeout(()=>{ boton.textContent = original; }, 2400);
+}
+
+boton.addEventListener('click', ()=>{
+  /* Si el navegador no deja escribir en el portapapeles no se puede mentir
+     diciendo "copiado": se abre WhatsApp con la lista ya escrita, que es
+     lo que el cliente quería hacer igual. */
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(LISTA).then(
+      ()=>avisar('Copiado ✓ — pegalo en WhatsApp'),
+      irAWhatsApp
+    );
+  } else {
+    irAWhatsApp();
+  }
+});
+
+function irAWhatsApp(){
+  avisar('Te abro WhatsApp con la lista');
+  window.open('https://wa.me/5493412506451?text=' + encodeURIComponent(LISTA), '_blank', 'noopener');
+}
+
+document.getElementById('mandar').href =
+  'https://wa.me/5493412506451?text=' +
+  encodeURIComponent('Hola! Te mando el material para mi invitación 📸');
+</script>
+</body>
+</html>
