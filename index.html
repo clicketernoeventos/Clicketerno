@@ -687,7 +687,11 @@ footer .datos a:hover{color:var(--oro)}
    la tipografía. */
 :root{ --toque:44px; --rapido:.16s; }
 button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
-nav .links a{padding:14px 0}
+/* El alto ya lo daba el padding; lo que faltaba era el ANCHO. "Muro"
+   medía 42x66 en una tablet —el menú de escritorio se ve hasta 900px y
+   ahí ya se toca con el dedo— y no llegaba a los 44. Lo agarró
+   `pruebas/dispositivos.js` al agregar los dos productos al menú. */
+nav .links a{padding:14px 0;min-width:var(--toque);text-align:center}
 /* El logo de arriba también es un enlace —lleva al inicio— y medía 70x29. */
 nav .wrap>a:first-child{display:inline-flex;align-items:center;min-height:var(--toque)}
 .burger{padding:11px 5px;box-sizing:content-box}

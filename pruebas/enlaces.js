@@ -81,7 +81,11 @@ const PRODUCTOS=[['#invitaciones','invitaci'],['#muro','muro'],['#rollo','rollo'
     /* 1 · errores de JavaScript. Lo que no se puede bajar por el proxy
        no es una falla del producto: eso ya nos mandó a buscar un bug
        que no existía. Lo que no se perdona es un error del código. */
-    const propios = errores.filter(e=>!/net::|Failed to fetch|ERR_|fonts\.(googleapis|gstatic)|googletagmanager|favicon/i.test(e));
+    /* En la pantalla de 404 el propio documento contesta 404 y el navegador
+       lo anota como "Failed to load resource". Es lo que estamos buscando,
+       no una falla: si no se filtra, la prueba se acusa a sí misma. */
+    const propios = errores.filter(e=>!/net::|Failed to fetch|ERR_|fonts\.(googleapis|gstatic)|googletagmanager|favicon/i.test(e))
+      .filter(e=>!(esperado===404 && /Failed to load resource.*404/i.test(e)));
     if(propios.length) mal(`${nombre}: ${propios.length} error(es) de JavaScript · ${propios[0].slice(0,120)}`);
     else bien('sin errores de JavaScript');
 
