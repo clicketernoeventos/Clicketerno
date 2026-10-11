@@ -5,7 +5,7 @@
    animaciones de CSS — así el render sale parejo aunque la máquina
    vaya lenta, y se puede volver a generar idéntico.
    ═══════════════════════════════════════════════════════════════ */
-const W = 1080, H = 1920, DUR = 22;
+const W = 1080, H = 1920, DUR = 25;
 
 const ORO = '#D9AE72', CHAMPAN = '#F3D9A6', HONDO = '#8A6530';
 const NEGRO = '#0A0806', CREMA = '#EDE6D8', MUTE = '#B3A896';
@@ -63,8 +63,16 @@ function vineta(f = .85) {
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 }
 
-/* Una “foto” inventada: no son capturas, son manchas de luz de fiesta.
-   Cada una con su semilla, así la número 7 es siempre la misma. */
+/* Una “foto” inventada. Antes eran manchas de luz y se leían como
+   abstracciones: en una pieza que vende FOTOS, el cuadro no puede estar
+   vacío. Ahora cada una es una escena de fiesta — gente de contraluz,
+   guirnalda de luces, papelitos y el flash duro de una descartable —
+   dibujada con su semilla, así la número 7 es siempre la misma.
+
+   Son siluetas a propósito, no caras: una cara inventada en una pieza
+   que vende fotos de verdad promete algo que no es, y una cara de una
+   persona real necesita su consentimiento (art. 53 del CCyC). Cuando
+   haya fotos de una fiesta nuestra, se cambian por esas. */
 function foto(x, y, w, h, semilla, revelado = 1, redondeo = 10) {
   const pares = [['#140E0A', '#53381C'], ['#0C0D14', '#2C3A4B'], ['#160D10', '#52252E'],
                  ['#0E1210', '#273B31'], ['#141014', '#432A40'], ['#13100A', '#5B4420']];
@@ -74,12 +82,82 @@ function foto(x, y, w, h, semilla, revelado = 1, redondeo = 10) {
   const g = ctx.createLinearGradient(x, y, x + w, y + h);
   g.addColorStop(0, p[0]); g.addColorStop(1, p[1]);
   ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+
+  /* el resplandor del salón: la luz viene de arriba, como el flash */
+  const gl = ctx.createRadialGradient(x + w * .5, y + h * .22, 4, x + w * .5, y + h * .22, w * .95);
+  gl.addColorStop(0, `rgba(255,228,180,${.30 * revelado})`);
+  gl.addColorStop(1, 'rgba(255,228,180,0)');
+  ctx.fillStyle = gl; ctx.fillRect(x, y, w, h);
+
+  /* Guirnalda de luces. No va en todas ni a la misma altura: puesta
+     siempre igual, nueve fotos juntas se leen como un patrón repetido
+     y ahí se nota que están dibujadas. */
   const luces = ['#F3D9A6', '#FFE9C4', '#E8C79A', '#FFF4DF', '#D9AE72'];
-  for (let i = 0; i < 11; i++) {
+  const hayGuirnalda = rnd(semilla * 53) > .35;
+  const altoG = .06 + rnd(semilla * 61) * .13, caida = .04 + rnd(semilla * 67) * .09;
+  for (let i = 0; hayGuirnalda && i < 9; i++) {
+    const fx = (i + .5) / 9, lx = x + fx * w;
+    const ly = y + h * (altoG + Math.sin(fx * Math.PI) * caida) + rnd(semilla + i) * 6;
+    ctx.globalAlpha = (.45 + rnd(semilla * 3 + i) * .4) * revelado;
+    ctx.fillStyle = luces[Math.floor(rnd(semilla * 7 + i) * luces.length)];
+    ctx.beginPath(); ctx.arc(lx, ly, w * .018, 0, 7); ctx.fill();
+    ctx.globalAlpha = (.12 + rnd(semilla + i * 3) * .18) * revelado;
+    ctx.beginPath(); ctx.arc(lx, ly, w * .07, 0, 7); ctx.fill();
+  }
+
+  /* La gente, de contraluz. Dibujadas limpias se leían como el icono de
+     usuario de un formulario: lo que las vuelve una foto es el
+     DESENFOQUE y que no sean todas iguales — las del fondo chicas, muy
+     borrosas y claritas; las de adelante grandes, nítidas y oscuras. */
+  const cuantos = 4 + Math.floor(rnd(semilla * 5) * 4);
+  const gente = [];
+  for (let i = 0; i < cuantos; i++) gente.push({ i, z: rnd(semilla * 13 + i * 4.3) });
+  gente.sort((a, b) => a.z - b.z);                 // del fondo hacia adelante
+  for (const { i, z } of gente) {
+    const r = rnd(semilla * 29 + i * 2.1);
+    const cx = x + w * (.08 + ((i * 1.37 + r) % 1) * .86);
+    const esc = .55 + z * .95;
+    const cab = w * .082 * esc;
+    const base = y + h * (1.02 + rnd(semilla + i * 2) * .06);
+    const homY = base - h * (.26 + rnd(semilla * 9 + i) * .15) * esc;
+    const anchoHom = cab * (1.7 + rnd(semilla * 11 + i) * .9);
+    ctx.save();
+    ctx.filter = `blur(${(1 - z) * w * .035 + w * .004}px)`;
+    ctx.globalAlpha = (.42 + z * .5) * revelado;
+    ctx.fillStyle = '#060509';
+    ctx.beginPath();
+    ctx.ellipse(cx, homY - cab * 1.7, cab * (.92 + r * .2), cab * 1.1, (r - .5) * .3, 0, 7);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - anchoHom * 1.25, base);
+    ctx.quadraticCurveTo(cx - anchoHom * 1.08, homY, cx, homY - cab * .3);
+    ctx.quadraticCurveTo(cx + anchoHom * 1.08, homY, cx + anchoHom * 1.25, base);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  /* papelitos */
+  for (let i = 0; i < 14; i++) {
+    const r = rnd(semilla * 23 + i), r2 = rnd(semilla * 41 + i * 2.7);
+    ctx.globalAlpha = (.25 + r2 * .5) * revelado;
+    ctx.fillStyle = luces[Math.floor(r2 * luces.length)];
+    ctx.save();
+    ctx.filter = `blur(${w * (.002 + rnd(semilla * 13 + i) * .012)}px)`;
+    ctx.translate(x + r * w, y + r2 * h * .8);
+    ctx.rotate(r * 6.2);
+    ctx.fillRect(0, 0, w * .016, w * .034);
+    ctx.restore();
+  }
+
+  /* dos o tres velos de bokeh grandes, que es lo que daba el aire de foto */
+  for (let i = 0; i < 3; i++) {
     const r = rnd(semilla * 31 + i), r2 = rnd(semilla * 17 + i * 5.1), r3 = rnd(semilla + i * 9.7);
-    ctx.globalAlpha = (.10 + r3 * .42) * revelado;
+    ctx.save();
+    ctx.filter = `blur(${w * .05}px)`;
+    ctx.globalAlpha = (.08 + r3 * .18) * revelado;
     ctx.fillStyle = luces[Math.floor(r3 * luces.length)];
-    ctx.beginPath(); ctx.arc(x + r * w, y + r2 * h, (.04 + r3 * .22) * w, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + r * w, y + r2 * h * .6, (.10 + r3 * .18) * w, 0, 7); ctx.fill();
+    ctx.restore();
   }
   ctx.globalAlpha = 1;
   /* el revelado: la foto sube desde el negro, no aparece de golpe */
@@ -210,38 +288,62 @@ function actoSecreto(t) {
     { tam: 40, color: MUTE, alfa: inv(u, 2.5, 3.4) });
 }
 
-/* ══════════ 4 · el revelado ══════════ */
+/* Una de las dos puertas del revelado. Se dibujan juntas porque el
+   punto es que son DOS y las elige el organizador: decir sólo "al otro
+   día" dejaba afuera la mitad del producto, y es lo primero que preguntan. */
+function opcion(cx, cy, w, h, rotulo, titulo, bajada, alfa, marcada) {
+  if (alfa <= .002) return;
+  ctx.save(); ctx.globalAlpha = alfa;
+  ctx.fillStyle = marcada ? 'rgba(217,174,114,.07)' : 'rgba(255,255,255,.025)';
+  ctx.beginPath(); ctx.roundRect(cx - w / 2, cy, w, h, 10); ctx.fill();
+  ctx.strokeStyle = marcada ? 'rgba(217,174,114,.55)' : 'rgba(217,174,114,.22)';
+  ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.roundRect(cx - w / 2, cy, w, h, 10); ctx.stroke();
+  ctx.restore();
+  texto(rotulo, cx, cy + 50, { tam: 22, esp: 6, color: ORO, peso: 400, alfa });
+  texto(titulo, cx, cy + 124, { tam: 50, fam: 'Bodoni Moda', color: CHAMPAN, alfa });
+  texto(bajada, cx, cy + 186, { tam: 32, color: MUTE, alfa });
+}
+
+/* ══════════ 4 · el revelado: dos formas ══════════ */
 function actoRevelado(t) {
-  const u = t - 11.0;                                  // 0 … 5.0
-  texto('AL OTRO DÍA', W / 2, 300,
+  const u = t - 11.0;                                  // 0 … 6.5
+  texto('EL REVELADO', W / 2, 288,
     { tam: 30, esp: 14, color: ORO, alfa: inv(u, .2, 1.0), peso: 400 });
-  texto('El rollo se revela.', W / 2, 430,
-    { tam: 86, fam: 'Bodoni Moda', color: CHAMPAN, alfa: inv(u, .5, 1.4) });
+  texto('Vos elegís cuándo', W / 2, 400,
+    { tam: 82, fam: 'Bodoni Moda', color: CHAMPAN, alfa: inv(u, .45, 1.3) });
+  texto('se abre el rollo.', W / 2, 492,
+    { tam: 82, fam: 'Bodoni Moda', cursiva: true, color: ORO, alfa: inv(u, .7, 1.6) });
+
+  const aw = 452, ah = 232, ay = 596;
+  opcion(W / 2 - 240, ay, aw, ah, 'A LA HORA QUE ELIJAS', 'En la fiesta',
+    'Lo ven ahí mismo', inv(u, 1.25, 2.1), true);
+  opcion(W / 2 + 240, ay, aw, ah, 'O AL OTRO DÍA', 'A la mañana',
+    'Se despiertan con todo', inv(u, 1.65, 2.5), false);
 
   /* tres copias que suben desde el negro, una atrás de otra */
-  const w = 430, h = 570, cx = W / 2, cy = 1150;
+  const w = 392, h = 516, cx = W / 2, cy = 1372;
   for (let i = 0; i < 3; i++) {
-    const d = i * .55, ap = inv(u, 1.0 + d, 1.5 + d), rev = inv(u, 1.15 + d, 2.5 + d);
+    const d = i * .55, ap = inv(u, 2.7 + d, 3.2 + d), rev = inv(u, 2.85 + d, 4.2 + d);
     if (ap <= 0) continue;
     const sub = sale(ap);
     ctx.save();
     ctx.globalAlpha = ap;
-    ctx.translate(cx + (i - 1) * 235, cy + (1 - sub) * 120 + Math.abs(i - 1) * 46);
+    ctx.translate(cx + (i - 1) * 214, cy + (1 - sub) * 120 + Math.abs(i - 1) * 42);
     ctx.rotate((i - 1) * .085);
     /* papel */
     ctx.fillStyle = '#111';
-    ctx.beginPath(); ctx.roundRect(-w / 2 - 14, -h / 2 - 14, w + 28, h + 28 + 58, 12); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(-w / 2 - 13, -h / 2 - 13, w + 26, h + 26 + 52, 12); ctx.fill();
     foto(-w / 2, -h / 2, w, h, i * 5 + 11, suave(rev), 6);
     ctx.restore();
   }
-  const c = inv(u, 3.6, 4.5);
-  texto('Primero las tuyas. Después, toda la fiesta.', W / 2, H - 190,
-    { tam: 42, color: MUTE, alfa: c });
+  texto('Primero las tuyas. Después, toda la fiesta.', W / 2, H - 112,
+    { tam: 42, color: MUTE, alfa: inv(u, 5.1, 5.9) });
 }
 
 /* ══════════ 5 · el álbum ══════════ */
 function actoAlbum(t) {
-  const u = t - 16.0;                                  // 0 … 3.5
+  const u = t - 17.5;                                  // 0 … 4.0
   texto('EL ÁLBUM', W / 2, 300, { tam: 30, esp: 14, color: ORO, alfa: inv(u, 0, .7), peso: 400 });
   texto('Toda la noche, junta.', W / 2, 420,
     { tam: 76, fam: 'Bodoni Moda', color: CHAMPAN, alfa: inv(u, .15, 1.0) });
@@ -267,7 +369,7 @@ function actoAlbum(t) {
 
 /* ══════════ 6 · cierre ══════════ */
 function actoCierre(t) {
-  const u = t - 19.5;                                  // 0 … 2.5
+  const u = t - 21.5;                                  // 0 … 3.5
   const a = inv(u, .1, .9);
   texto('CLICK', W / 2, H / 2 - 90,
     { tam: 130, fam: 'Bodoni Moda', esp: 20, color: CHAMPAN, alfa: a });
@@ -293,10 +395,10 @@ function dibujar(t) {
   if (t < 3.2) actoGancho(t);
   else if (t < 7.0) actoGasta(t);
   else if (t < 11.0) actoSecreto(t);
-  else if (t < 16.0) actoRevelado(t);
-  else if (t < 19.5) actoAlbum(t);
+  else if (t < 17.5) actoRevelado(t);
+  else if (t < 21.5) actoAlbum(t);
   else actoCierre(t);
-  vineta(t >= 16 && t < 19.5 ? .42 : .62);
+  vineta(t >= 17.5 && t < 21.5 ? .42 : .62);
   grano(t);
   /* fundidos de entrada y de salida */
   const n = Math.min(inv(t, 0, .45), 1 - inv(t, DUR - .5, DUR));
