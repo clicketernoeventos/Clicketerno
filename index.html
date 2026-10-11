@@ -170,6 +170,27 @@ nav .links a:hover:after{width:100%}
 .hero .fino{animation-delay:.58s}
 .telefono{animation-delay:.34s}
 /* respuesta al toque en el celular */
+/* Los tres juntos no son tres tarjetas sueltas: son una línea de tiempo.
+   El orden antes / durante / después ES el argumento — el combo no se
+   vende como descuento, se vende como la fiesta completa. */
+.linea-combo{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--hilo);border:1px solid var(--hilo);margin-top:34px}
+.eslabon{background:var(--negro);padding:24px 22px}
+.eslabon .paso-n{display:block;font-size:10.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--oro);margin-bottom:14px}
+.eslabon b{display:block;font-family:'Bodoni Moda',serif;font-size:20px;
+  font-weight:400;margin-bottom:9px;color:var(--texto)}
+.eslabon p{font-size:14px;line-height:1.7;color:var(--mute)}
+@media(max-width:720px){.linea-combo{grid-template-columns:1fr}
+  .eslabon{padding:18px 18px}}
+
+/* El cierre de cada producto: el mismo par de botones en los tres, para que
+   se lea como una sola oferta y no como tres páginas distintas. El dorado
+   siempre a la izquierda — es el que vende; la demostración al lado. */
+.cierre{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:44px}
+.cierre .btn{min-height:48px}
+@media(max-width:520px){.cierre{flex-direction:column;align-items:stretch}
+  .cierre .btn{width:100%}}
 .btn{-webkit-tap-highlight-color:transparent}
 .btn:active{transform:scale(.975)}
 .trabajo:active .cuerpo-t{transform:translateY(-6px) scale(.99)}
@@ -395,6 +416,8 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .clara .eyebrow{color:var(--oro-hondo)}
 .clara .eyebrow:before{background:var(--oro-hondo)}
 .clara h2 em{color:var(--oro-hondo)}
+.clara .btn-hilo{border-color:var(--oro-hondo);color:#8A6232}   /* 4.86:1 sobre el crema */
+.clara .btn-hilo:hover{border-color:#1A1713;color:#1A1713}
 .incluye{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,.1);
   border:1px solid rgba(0,0,0,.1)}
 /* La tinta va ACÁ, no heredada. La tarjeta clara nació adentro de la
@@ -698,9 +721,9 @@ footer .datos{line-height:1.6}
   <a href="#inicio"><img class="logo" src="marca.webp" alt="Click Eterno"></a>
   <div class="links">
     <a href="#app">Probala</a>
-    <a href="#servicios">Servicios</a>
     <a href="#invitaciones">Invitaciones</a>
-    <a href="#trabajos">Trabajos</a>
+    <a href="#muro">Muro</a>
+    <a href="#rollo">Rollo</a>
     <a href="#preguntas">Preguntas</a>
     <a href="#entrar">Ya contraté</a>
   </div>
@@ -712,6 +735,8 @@ footer .datos{line-height:1.6}
   <a href="#app">Probala</a>
   <a href="#servicios">Servicios</a>
   <a href="#invitaciones">Invitaciones</a>
+  <a href="#muro">Muro en vivo</a>
+  <a href="#rollo">Rollo eterno</a>
   <a href="#trabajos">Trabajos</a>
   <a href="#preguntas">Preguntas</a>
   <a href="#entrar">Ya contraté</a>
@@ -913,20 +938,11 @@ footer .datos{line-height:1.6}
       <div class="inc ap"><i class="estrella"></i><b>Alias para regalos</b><p>Se toca y se copia solo.</p></div>
       <div class="inc ap"><i class="estrella"></i><b>Diseño a medida</b><p>Se diseña para tu fiesta. No se elige de una lista.</p></div>
     </div>
-  </div>
-</section>
 
-<!-- ═══ TRABAJOS ═══ -->
-<section id="trabajos" class="clara" style="padding-top:0">
-  <div class="wrap">
-    <div class="cabeza centrada ap">
-      <p class="eyebrow">Trabajos</p>
-      <h2 class="serif">Tocá un celular<em>y probala de verdad</em></h2>
-      <p>Invitaciones reales, las mismas que recibieron los invitados. Se abren acá: confirmá, mirá la cuenta regresiva, tocá el alias.</p>
+    <div class="cierre ap" style="justify-content:center">
+      <a class="btn btn-oro" href="#contacto" data-wsp="Hola Click Eterno! Quiero una invitación digital para mi fiesta. Es el:">Pedir presupuesto</a>
+      <a class="btn btn-hilo" href="#trabajos">Ver invitaciones reales →</a>
     </div>
-
-    <div class="trabajos" id="galeriaTrabajos"></div>
-    <p class="pista-toque">Tocá cualquiera para abrirla y probarla</p>
   </div>
 </section>
 
@@ -952,10 +968,9 @@ footer .datos{line-height:1.6}
       <div class="inc ap"><i class="estrella"></i><b>Consignas de la noche</b><p>Les proponés qué sacar y la pantalla se los va pidiendo.</p></div>
       <div class="inc ap"><i class="estrella"></i><b>Álbum para descargar</b><p>Todo en un archivo, con las dedicatorias aparte.</p></div>
     </div>
-    <div style="margin-top:44px" class="ap">
-      <a class="btn btn-hilo" href="muro?demo=1" target="_blank">Probar la demostración →</a>
-      <a href="muro#panel" style="display:inline-block;margin-left:18px;font-size:12px;
-        letter-spacing:.16em;text-transform:uppercase;color:var(--oro)">Ya contraté · entrar →</a>
+    <div class="cierre ap">
+      <a class="btn btn-oro" href="#contacto" data-wsp="Hola Click Eterno! Quiero el Muro de fotos en vivo para mi fiesta. Es el:">Pedir presupuesto</a>
+      <a class="btn btn-hilo" href="muro?demo=1" target="_blank" rel="noopener">Probar la demostración →</a>
     </div>
   </div>
 </section>
@@ -977,10 +992,47 @@ footer .datos{line-height:1.6}
       <div class="inc ap"><i class="estrella"></i><b>Te llevás todo</b><p>Las fotos completas en un archivo, con cada nombre.</p></div>
     </div>
 
-    <div style="margin-top:44px" class="ap">
-      <a class="btn btn-hilo" href="rollo?demo=1" target="_blank">Probar la demostración →</a>
-      <a href="rollo" style="display:inline-block;margin-left:18px;font-size:12px;
-        letter-spacing:.16em;text-transform:uppercase;color:var(--oro)">Ya contraté · entrar →</a>
+    <div class="cierre ap">
+      <a class="btn btn-oro" href="#contacto" data-wsp="Hola Click Eterno! Quiero el Rollo eterno para mi fiesta. Es el:">Pedir presupuesto</a>
+      <a class="btn btn-hilo" href="rollo?demo=1" target="_blank" rel="noopener">Probar la demostración →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRABAJOS ═══ -->
+<section id="trabajos" class="clara" style="padding-top:64px">
+  <div class="wrap">
+    <div class="cabeza centrada ap">
+      <p class="eyebrow">Trabajos</p>
+      <h2 class="serif">Tocá un celular<em>y probala de verdad</em></h2>
+      <p>Invitaciones reales, las mismas que recibieron los invitados. Se abren acá: confirmá, mirá la cuenta regresiva, tocá el alias.</p>
+    </div>
+
+    <div class="trabajos" id="galeriaTrabajos"></div>
+    <p class="pista-toque">Tocá cualquiera para abrirla y probarla</p>
+  </div>
+</section>
+
+<!-- ═══ LOS TRES JUNTOS ═══ -->
+<!-- Existe porque "cada pieza va sola o las tres juntas" estaba escrito una
+     vez, arriba, y después no se volvía a mencionar nunca. Un combo sin
+     botón propio no es una oferta: es una aclaración. -->
+<section id="combo">
+  <div class="wrap">
+    <div class="cabeza centrada ap">
+      <p class="eyebrow">Los tres juntos</p>
+      <h2 class="serif">La fiesta entera,<em>de la invitación al recuerdo</em></h2>
+      <p>Los invitan con la invitación, la viven con el muro proyectado y se la llevan en el rollo. Un solo presupuesto, un solo interlocutor, todo con la misma identidad de tu fiesta.</p>
+    </div>
+
+    <div class="linea-combo ap">
+      <div class="eslabon"><span class="paso-n">Antes</span><b>Invitación digital</b><p>Se abre como un sobre y confirma asistencia.</p></div>
+      <div class="eslabon"><span class="paso-n">Durante</span><b>Muro en vivo</b><p>Las fotos de todos, proyectadas en el salón.</p></div>
+      <div class="eslabon"><span class="paso-n">Después</span><b>Rollo eterno</b><p>Las fotos que nadie vio, reveladas al otro día.</p></div>
+    </div>
+
+    <div class="cierre ap" style="justify-content:center">
+      <a class="btn btn-oro" href="#contacto" data-wsp="Hola Click Eterno! Quiero los tres servicios para mi fiesta: invitación, muro y rollo. Es el:">Pedir presupuesto por los tres</a>
     </div>
   </div>
 </section>
@@ -1056,7 +1108,9 @@ footer .datos{line-height:1.6}
     <div class="filete" style="max-width:320px;margin:32px auto"><i class="estrella"></i></div>
     <p class="ap" style="color:#A79E92;font-size:16.5px;line-height:1.85;max-width:46ch;margin:0 auto 40px">
       Decinos la fecha, el tipo de evento y qué te interesa. Te respondemos el mismo día con la propuesta y el precio.</p>
-    <a class="btn btn-oro ap" id="ctaWsp" style="padding:19px 40px;font-size:13px" href="#">Escribinos por WhatsApp</a>
+    <a class="btn btn-oro ap" id="ctaWsp" style="padding:19px 40px;font-size:13px"
+       href="https://wa.me/5493412506451"
+       data-wsp="Hola Click Eterno! Quiero pedir un presupuesto. Mi evento es el:">Escribinos por WhatsApp</a>
     <div><a class="mail" href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a></div>
   </div>
 </section>
@@ -1118,8 +1172,15 @@ document.querySelectorAll('.estrella').forEach(e=>e.innerHTML=SVG_ESTRELLA);
 const TEL='5493412506451';
 const wsp=t=>`https://wa.me/${TEL}?text=${encodeURIComponent(t)}`;
 document.getElementById('wspFlota').href=wsp('Hola! Quiero info para mi evento 🎉');
-document.getElementById('ctaWsp').href=wsp('Hola Click Eterno! Quiero pedir un presupuesto. Mi evento es el:');
-document.getElementById('ctaWsp').target='_blank';
+/* Cada producto manda su propio mensaje: el que escribe ya eligió, y del
+   otro lado se sabe qué pide sin tener que preguntarlo. Un solo camino
+   para todos los botones — el de contacto estaba escrito aparte y por eso
+   se había quedado sin rel="noopener" sin que nadie lo notara.
+   En el HTML los de producto apuntan a #contacto a propósito: si el JS no
+   corre, el botón sigue llevando a algún lado en vez de no hacer nada. */
+document.querySelectorAll('[data-wsp]').forEach(a=>{
+  a.href=wsp(a.dataset.wsp); a.target='_blank'; a.rel='noopener';
+});
 
 /* ═══ medición de Google Ads ═══
    Acá NO hay ninguna etiqueta cargada hasta que ADS_ID tenga un valor.

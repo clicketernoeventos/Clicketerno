@@ -670,6 +670,15 @@ las del cupo?, ¿puede ver las de otro?
   Postgres 16 con el esquema entero; lo cuidan `sql/probar.sql`,
   `pruebas/fakesb.js` y `pruebas/rollo_alta.js`. **No hay SQL que correr.**
 
+- **Si un bloque trae su propio fondo, trae su propia tinta — tercera
+  vez.** Ahora fue `.btn-hilo`, el botón de contorno: nació para la parte
+  negra y su tinta es champán. Puesto en la sección clara del cierre de
+  Invitaciones dio **1.20:1**, o sea que el texto no estaba. En el monitor
+  no se nota porque uno mira el borde, no la letra. Lo agarró
+  `pruebas/contraste.js` y se arregla donde corresponde: la sección clara
+  le da su propia tinta (`.clara .btn-hilo`, 4.86:1). El contraste no se
+  opina, se calcula.
+
 - **Si un bloque trae su propio fondo, trae su propia tinta.** La tarjeta
   `.inc` nació adentro de la sección clara —que pone `color:#1A1713`— y
   después se reusó para el "qué incluye" del muro y del rollo, que están
@@ -1176,6 +1185,21 @@ Y lo que se mide en `pruebas/dispositivos.js`:
   que ese aparato no tiene. Si el navegador no la ofrece, el botón no se
   dibuja.
 
+Y lo que se mide en `pruebas/enlaces.js`, que recorre la parte pública
+—inicio, privacidad, términos y la de 404— con un navegador limpio:
+
+- **Cada enlace llega a algo vivo**: el ancla existe en el documento, o la
+  ruta contesta menos de 400. Un enlace muerto no tira ningún error: la
+  página se queda quieta y el que pagó el clic se va.
+- **Ningún enlace vacío, ningún id repetido, ningún botón sin nombre.** El
+  segundo elemento con el mismo id no se alcanza nunca por su ancla.
+- **Todo lo que abre en otra pestaña lleva `rel="noopener"`.**
+- **Los tres productos tienen su botón de presupuesto** y el mensaje dice
+  de cuál. Esto no es decoración: el muro y el rollo estuvieron meses sin
+  un solo botón de comprar.
+- **La vista previa al compartir**: título, bajada e imagen, y que la
+  imagen no devuelva 404. Un recuadro vacío en WhatsApp no avisa.
+
 Y lo que se mide en `pruebas/contraste.js`:
 
 - **Todo el texto se LEE.** Recorre las pantallas del muro, del rollo y de
@@ -1407,6 +1431,75 @@ pantalla que está mostrando es inventar una falla.
 El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
 igual que las invitaciones. **Sin precios**, por decisión del dueño: el
 presupuesto se cierra hablando.
+
+### Por qué sólo compraban invitaciones
+
+Medido sobre la página, no opinado. El muro y el rollo estaban bien
+explicados y **no los compraba nadie**, y el motivo no era el texto: era
+que la página los escondía.
+
+- **El menú no los nombraba.** Decía Probala · Servicios · *Invitaciones*
+  · Trabajos · Preguntas · Ya contraté. Dos de los tres productos no
+  estaban, y el tercero sí. El que entra y mira arriba entiende que lo que
+  se vende son invitaciones.
+- **Las secciones del muro y del rollo no tenían botón de comprar.**
+  Terminaban en "Probar la demostración" y "Ya contraté · entrar": una es
+  para el que no pagó y la otra para el que ya pagó. El único botón de
+  compra de toda la página era el del menú, y era genérico.
+- **El WhatsApp mandaba siempre el mismo mensaje.** No decía qué producto,
+  así que del otro lado no se sabía qué pedían y el que escribía no había
+  elegido nada — y elegir es la mitad de comprar.
+- **Trabajos partía el bloque de productos** (invitaciones → trabajos →
+  muro → rollo) y Trabajos muestra SOLO invitaciones: justo antes de
+  presentar los otros dos, la página volvía al primero.
+- **El combo no existía como oferta.** "Cada pieza va sola o las tres
+  juntas" estaba escrito una vez, arriba, y no se volvía a mencionar. Un
+  combo sin botón propio no es una oferta: es una aclaración.
+
+Ahora el menú nombra los tres, cada producto cierra con el **mismo par de
+botones** —el dorado de presupuesto primero, la demostración al lado—,
+cada uno con **su** mensaje de WhatsApp prellenado, Trabajos quedó después
+del rollo y hay una sección **`#combo`** con la línea antes / durante /
+después. Los cuatro botones y el de contacto salen del **mismo camino**
+(`[data-wsp]`): el de contacto estaba escrito aparte y por eso se había
+quedado sin `rel="noopener"` sin que nadie lo notara.
+
+En el HTML los botones de producto apuntan a `#contacto` **a propósito**:
+si el JavaScript no corre, el botón sigue llevando a algún lado en vez de
+no hacer nada. Lo mide `pruebas/enlaces.js`, que comprueba que después de
+correr el JS terminen en `wa.me` — un botón que se ve igual y no lleva a
+WhatsApp no da ningún error.
+
+Contra el código anterior esa suite da **7 fallas**.
+
+### La pantalla de 404
+
+No existía. Cualquier dirección mal tipeada caía en la pantalla de error
+de Cloudflare: fondo blanco, tipografía de sistema y un número. Con QR
+impresos y tráfico pagado eso pasa todos los días —una letra de más, un
+link viejo— y el que cae ahí se va, porque parece que el negocio no
+existe.
+
+`404.html` es de la marca y ofrece **las cuatro puertas** más WhatsApp.
+Cloudflare la sirve sola, y **`pruebas/servidor.py` aprendió a servirla
+igual**: antes devolvía la pantalla de Python, así que la nuestra podía
+estar rota y las pruebas seguían en verde. Es la regla de siempre — un
+servidor de pruebas que no se parece al de verdad esconde justo lo que
+hay que ver.
+
+### Cómo se ve el link cuando lo reenvían
+
+`muro.html` y `rollo.html` tenían `noindex` pero **ninguna etiqueta
+`og:`**. El link del rollo se reparte por WhatsApp (el propio CLAUDE.md lo
+dice: "al que le reenviaron el link"), y sin tarjeta llega una dirección
+pelada y gris, que es exactamente lo que parece un link trucho: el
+invitado duda y no lo abre.
+
+Ahora las dos tienen título, bajada e imagen. **La imagen es la de la
+marca a propósito**: nunca el nombre del evento ni nada del cliente, que
+viajaría en la vista previa de cada chat por el que pase el link. El
+`noindex` sigue puesto: esto no lo publica en Google, sólo le pone cara a
+la tarjeta.
 
 ### La página no puede ser infinita
 

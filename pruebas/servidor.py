@@ -74,6 +74,30 @@ class Mano(http.server.SimpleHTTPRequestHandler):
                 return entero + '.html'
         return entero
 
+    def send_error(self, code, message=None, explain=None):
+        """La pantalla de 404 del repo, igual que Cloudflare.
+
+        Cloudflare Pages sirve 404.html solo para cualquier dirección que
+        no exista. El servidor de pruebas devolvía la pantalla de error de
+        Python, así que la nuestra no la miraba nadie: podía estar rota,
+        quedarse sin estilos o apuntar a una sección que ya no existe y
+        las pruebas seguían en verde. Es la regla de siempre — un servidor
+        de pruebas que no se parece al de verdad esconde justo lo que hay
+        que ver.
+        """
+        pagina = os.path.join(RAIZ, '404.html')
+        if code == 404 and os.path.exists(pagina):
+            with open(pagina, 'rb') as f:
+                cuerpo = f.read()
+            self.send_response(404)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', str(len(cuerpo)))
+            self.end_headers()
+            if self.command != 'HEAD':
+                self.wfile.write(cuerpo)
+            return
+        super().send_error(code, message, explain)
+
     def end_headers(self):
         ruta = self.path.split('?')[0]
         for patron, cab in REGLAS:

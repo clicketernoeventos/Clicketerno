@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Esta página no existe · Click Eterno</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="marca.webp" type="image/webp">
+<!-- Cloudflare sirve este archivo solo, para cualquier dirección que no
+     exista. Antes no estaba y lo que se veía era la pantalla de error
+     genérica de Cloudflare: fondo blanco, tipografía de sistema y un
+     número. Con los QR impresos y con tráfico pagado eso pasa seguido —
+     una letra de más en la dirección, un link viejo, un código mal
+     tipeado— y el que cae ahí se va, porque parece que el negocio no
+     existe. Esta pantalla lo devuelve a alguna de las cuatro puertas. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@200;300;400;500&display=swap">
+<style>
+:root{
+  --negro:#000; --crema:#F6F2EA; --oro:#D9AE72; --oro-hondo:#A87B43;
+  --champan:#EFDCBC; --mute:#9B9287; --hilo:rgba(217,174,114,.26);
+  --e:cubic-bezier(.22,.7,.24,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--negro);color:var(--crema);font-family:Jost,system-ui,sans-serif;
+  font-weight:300;line-height:1.7;min-height:100svh;display:grid;place-items:center;
+  padding:48px 20px;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+.caja{width:100%;max-width:620px;text-align:center}
+.marca{width:124px;margin:0 auto 40px;display:block;opacity:.95}
+.num{font-family:'Bodoni Moda',serif;font-size:clamp(58px,15vw,96px);line-height:1;
+  color:var(--oro);letter-spacing:.04em}
+h1{font-family:'Bodoni Moda',serif;font-weight:400;font-size:clamp(25px,6vw,36px);
+  line-height:1.2;margin:18px 0 16px;text-wrap:balance}
+h1 em{font-style:italic;color:var(--oro);display:block}
+.bajada{color:var(--mute);font-size:16px;max-width:46ch;margin:0 auto 38px}
+.puertas{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--hilo);
+  border:1px solid var(--hilo);text-align:left}
+.puerta{background:var(--negro);padding:20px 22px;display:block;text-decoration:none;
+  color:var(--crema);transition:background .35s var(--e)}
+.puerta b{display:block;font-family:'Bodoni Moda',serif;font-size:18px;font-weight:400;
+  margin-bottom:5px}
+.puerta span{display:block;font-size:13.5px;color:var(--mute);line-height:1.55}
+.puerta:hover,.puerta:focus-visible{background:#0F0D0B}
+.puerta:active{transform:scale(.99)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:34px;min-height:48px;padding:15px 30px;font-size:11.5px;letter-spacing:.24em;
+  text-transform:uppercase;text-decoration:none;color:#0A0806;font-weight:600;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
+  transition:transform .4s var(--e),box-shadow .4s var(--e)}
+.pie{margin-top:30px;font-size:12.5px;color:#7E766B}
+.pie a{color:var(--oro);text-decoration:none;border-bottom:1px solid var(--hilo)}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+@media(hover:hover){.btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -18px var(--oro)}}
+@media(max-width:560px){.puertas{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <main class="caja">
+    <img class="marca" src="marca.webp" alt="Click Eterno">
+    <p class="num">404</p>
+    <h1>Esta dirección no existe<em>pero la fiesta sí</em></h1>
+    <p class="bajada">Puede que el link esté viejo o que se haya colado una letra de más.
+    Estas son las cuatro puertas:</p>
+
+    <nav class="puertas">
+      <a class="puerta" href="/#invitaciones"><b>Invitaciones digitales</b>
+        <span>Una web para tu fiesta, que confirma asistencia sola.</span></a>
+      <a class="puerta" href="/#muro"><b>Muro en vivo</b>
+        <span>Las fotos de tus invitados, proyectadas en el salón.</span></a>
+      <a class="puerta" href="/#rollo"><b>Rollo eterno</b>
+        <span>La cámara descartable, en versión digital.</span></a>
+      <a class="puerta" href="/#entrar"><b>Ya contraté</b>
+        <span>Entrá a tu evento con tu código y tu clave.</span></a>
+    </nav>
+
+    <a class="btn" id="wsp" href="https://wa.me/5493412506451" target="_blank" rel="noopener">Escribinos por WhatsApp</a>
+
+    <p class="pie">O volvé a <a href="/">la página de inicio</a>.</p>
+  </main>
+<script>
+/* El mismo número que en el resto del sitio, y dice de dónde viene el
+   mensaje: si alguien escribe desde acá, es que un link se rompió y
+   conviene enterarse. */
+document.getElementById('wsp').href =
+  'https://wa.me/5493412506451?text=' +
+  encodeURIComponent('Hola! Entré a un link de Click Eterno que no existe y quería consultar.');
+</script>
+</body>
+</html>
