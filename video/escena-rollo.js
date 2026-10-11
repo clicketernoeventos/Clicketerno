@@ -30,6 +30,19 @@ const fondo = () => { ctx.fillStyle = NEGRO; ctx.fillRect(0, 0, W, H); };
    ANTES del primer cuadro: una imagen a medio cargar deja el hueco en
    negro y eso no avisa, sale mal y listo. */
 const FOTOS = [];
+/* El orden en que se reparten. Elegir con rnd(semilla) repetía: en la
+   grilla del álbum, que pide nueve seguidas, la misma selfie salía tres
+   veces. Con una permutación fija e índice por semilla, nueve semillas
+   consecutivas dan nueve fotos DISTINTAS, y sigue siendo reproducible. */
+let ORDEN = [];
+function barajar(n) {
+  const a = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(rnd(i * 7.3 + 1.9) * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 async function cargarFotos() {
   const fuentes = (window.__FOTOS || []).slice(0, 40);
   await Promise.all(fuentes.map(src => new Promise(ok => {
@@ -38,6 +51,7 @@ async function cargarFotos() {
     im.onerror = () => ok();
     im.src = src;
   })));
+  ORDEN = barajar(FOTOS.length);
 }
 
 /* Dibuja la foto i recortada a la caja, como `object-fit: cover`. */
@@ -108,7 +122,7 @@ function foto(x, y, w, h, semilla, revelado = 1, redondeo = 10) {
   /* Con fotos de verdad no hace falta inventar nada: se dibuja la foto,
      se le deja el grano y el revelado, y chau. */
   if (FOTOS.length) {
-    const im = FOTOS[Math.floor(rnd(semilla * 3.7) * FOTOS.length) % FOTOS.length];
+    const im = FOTOS[ORDEN[((semilla % FOTOS.length) + FOTOS.length) % FOTOS.length]];
     fotoReal(im, x, y, w, h);
     ctx.fillStyle = `rgba(217,174,114,${.07 * revelado})`;   // el tinte cálido de la marca
     ctx.fillRect(x, y, w, h);
