@@ -7,7 +7,8 @@
   --crema:#F6F2EA; --mute:#A79D90; --hilo:rgba(217,174,114,.3);
 }
 body{width:1080px;height:1920px;background:#000;overflow:hidden;position:relative;
-  font-family:Jost,sans-serif;color:var(--crema);-webkit-font-smoothing:antialiased}
+  font-family:Jost,sans-serif;font-weight:400;color:var(--crema);
+  -webkit-font-smoothing:antialiased}
 .brillo{position:absolute;width:1500px;height:1100px;left:-180px;top:120px;
   background:radial-gradient(ellipse at center,rgba(217,174,114,.20),transparent 62%);
   filter:blur(40px)}
@@ -17,39 +18,41 @@ body{width:1080px;height:1920px;background:#000;overflow:hidden;position:relativ
 .cont{position:relative;padding:72px 70px 0}
 
 /* ── cabecera ── */
-.sobre{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--oro);
-  text-align:center;margin-bottom:26px}
-h1{font-family:'Bodoni Moda',serif;font-weight:400;font-size:82px;line-height:1.02;
-  text-align:center;letter-spacing:-.015em}
-h1 em{font-style:italic;color:var(--oro);display:block;font-size:76px;margin-top:6px}
+.sobre{font-size:24px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--oro);text-align:center;margin-bottom:24px}
+h1{font-family:'Bodoni Moda',serif;font-weight:600;font-size:84px;line-height:1.04;
+  text-align:center;letter-spacing:-.01em}
+h1 em{font-style:italic;font-weight:400;color:var(--oro);display:block;font-size:74px;margin-top:8px}
 
 /* ── los teléfonos ── */
-.fotos{height:706px;position:relative;margin:30px 0 18px}
+.fotos{height:658px;position:relative;margin:26px 0 16px}
 .tel{position:absolute;border-radius:30px;overflow:hidden;border:2px solid rgba(217,174,114,.5);
   box-shadow:0 40px 90px -20px rgba(0,0,0,.95), 0 0 70px -30px rgba(217,174,114,.5)}
 .tel img{display:block;width:100%}
-.t1{width:270px;height:584px;left:40px;top:62px;transform:rotate(-7deg)}
-.t2{width:316px;height:684px;left:382px;top:4px;z-index:3}
-.t3{width:270px;height:584px;right:30px;top:70px;transform:rotate(7deg)}
+.t1{width:252px;height:546px;left:46px;top:58px;transform:rotate(-7deg)}
+.t2{width:296px;height:641px;left:392px;top:4px;z-index:3}
+.t3{width:252px;height:546px;right:36px;top:66px;transform:rotate(7deg)}
 
 /* ── pasos ── */
-.rotulo{font-size:20px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro);
-  margin-bottom:22px;display:flex;align-items:center;gap:18px}
+.rotulo{font-size:24px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:24px;display:flex;align-items:center;gap:18px}
 .rotulo:after{content:'';flex:1;height:1px;background:var(--hilo)}
 .pasos{display:grid;grid-template-columns:1fr 1fr;gap:20px 30px;margin-bottom:36px}
 .paso{display:flex;gap:16px;align-items:flex-start}
-.paso .n{font-family:'Bodoni Moda',serif;font-size:42px;color:var(--oro);line-height:.9;
-  min-width:44px;font-variant-numeric:lining-nums tabular-nums}
-.paso b{display:block;font-weight:400;font-size:29px;line-height:1.15;margin-bottom:3px}
-.paso p{font-size:21px;line-height:1.4;color:var(--mute);font-weight:300}
+.paso .n{font-family:'Bodoni Moda',serif;font-weight:600;font-size:50px;color:var(--oro);
+  line-height:.86;min-width:52px;font-variant-numeric:lining-nums tabular-nums}
+.paso b{display:block;font-weight:500;font-size:36px;line-height:1.1;margin-bottom:5px}
+.paso p{font-size:25px;line-height:1.35;color:#BDB3A5;font-weight:400}
 
 /* ── qué necesito ── */
 .lista{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hilo);
   border:1px solid var(--hilo);margin-bottom:34px}
-.it{background:#000;padding:20px 24px}
-.it b{display:block;font-weight:400;font-size:26px;margin-bottom:2px}
-.it b i{font-style:normal;color:var(--oro);margin-right:9px;font-size:20px}
-.it p{font-size:19px;color:var(--mute);line-height:1.4;font-weight:300}
+.it{background:#000;padding:22px 26px}
+.it b{display:block;font-weight:500;font-size:32px;margin-bottom:3px}
+.it b i{font-style:normal;color:var(--oro);margin-right:11px;font-size:24px}
+.it p{font-size:24px;color:#BDB3A5;line-height:1.35;font-weight:400}
+.it.ancho{grid-column:1 / -1}
+.it.ancho p{color:#BDB3A5}
 .it.op b i{color:var(--oro-h)}
 
 /* ── pie ── */
@@ -58,8 +61,9 @@ h1 em{font-style:italic;color:var(--oro);display:block;font-size:76px;margin-top
   background:#000}
 .pie img{width:168px;opacity:.95}
 .pie .der{margin-left:auto;text-align:right}
-.pie .web{font-family:'Bodoni Moda',serif;font-size:34px;color:var(--champan);line-height:1.2}
-.pie .tel-n{font-size:25px;color:var(--oro);letter-spacing:.07em;margin-top:4px}
+.pie .web{font-family:'Bodoni Moda',serif;font-weight:600;font-size:38px;
+  color:var(--champan);line-height:1.2}
+.pie .tel-n{font-size:29px;font-weight:500;color:var(--oro);letter-spacing:.06em;margin-top:4px}
 </style></head><body>
 <div class="brillo"></div><div class="brillo2"></div>
 <div class="cont">
@@ -91,10 +95,8 @@ h1 em{font-style:italic;color:var(--oro);display:block;font-size:76px;margin-top
     <div class="it"><b><i>✦</i>De 3 a 8 fotos</b><p>Como archivo, no como foto</p></div>
     <div class="it"><b><i>✦</i>Los colores</b><p>O una foto de algo que te guste</p></div>
     <div class="it"><b><i>✦</i>Fecha para confirmar</b><p>Hasta cuándo pueden anotarse</p></div>
-    <div class="it op"><b><i>·</i>Dress code</b><p>Opcional</p></div>
-    <div class="it op"><b><i>·</i>Alias para regalos</b><p>Opcional</p></div>
-    <div class="it op"><b><i>·</i>Una canción</b><p>La que suena al abrirla</p></div>
-    <div class="it op"><b><i>·</i>Unas líneas tuyas</b><p>Para tus invitados</p></div>
+    <div class="it ancho op"><b><i>·</i>Y si querés, también</b>
+      <p>Dress code · alias para regalos · una canción para cuando se abre · unas líneas tuyas</p></div>
   </div>
 
 </div>

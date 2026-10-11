@@ -25,7 +25,11 @@ const SALIDA = __dirname + '/afiche-invitaciones.jpg';
 
   const est = await p.evaluate(() => ({
     familia: getComputedStyle(document.querySelector('h1')).fontFamily,
-    bodoni: document.fonts && document.fonts.check('40px "Bodoni Moda"'),
+    /* Se pregunta por el peso que el afiche USA. Con `40px "Bodoni Moda"`
+       a secas se pregunta por el 400, que desde que el título pasó a 600
+       no lo usa nadie: el navegador no lo baja y el aviso saltaba sin que
+       pasara nada. */
+    bodoni: document.fonts && document.fonts.check('600 40px "Bodoni Moda"'),
     alto: document.body.scrollHeight,
     fotos: [...document.querySelectorAll('.tel img')].filter(i => i.naturalWidth > 0).length,
   }));
