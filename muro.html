@@ -2493,15 +2493,33 @@ async function sembrar(){
     guardarClaveDe(codigo,claveEv);
     if(!HAY_NUBE) await local.set(kIndex(codigo),[]);
     const gente=DEMO_GENTE, frases=DEMO_FRASES;
-    for(let i=0;i<9;i++){
-      const d=fotoDemo(i+1);
-      await sumar(codigo,{id:'d'+i,kind:'foto',data:d,blob:HAY_NUBE?await dataABlob(d):null,
-        autor:gente[i],texto:i%3===0?DEMO_PIES[i%DEMO_PIES.length]:'',
-        ts:Date.now()-(9-i)*60000,estado:'aprobado'});
+    /* MEZCLADOS, no primero las nueve fotos y después los cinco saludos.
+       La proyección va en orden de `ts`, así que sembrados por tanda el
+       que miraba la demostración veía ocho fotos seguidas —casi un
+       minuto— antes del primer saludo escrito, y se iba creyendo que
+       esto es solo para fotos. Un saludo cada dos fotos: es lo que pasa
+       en una fiesta de verdad y es lo que hay que mostrar.
+
+       El `ts` se arma del orden de la lista y no al revés: el orden es
+       la decisión, el `ts` es cómo se escribe. */
+    const sembrado=[]; let m=0;
+    const saludo=()=>{
+      if(m>=frases.length) return;
+      sembrado.push({id:'m'+m,kind:'mensaje',data:'',autor:gente[(m+3)%gente.length],
+        texto:frases[m]}); m++;
+    };
+    for(let f=0;f<9;f++){
+      sembrado.push({id:'d'+f,kind:'foto',data:fotoDemo(f+1),
+        autor:gente[f],texto:f%3===0?DEMO_PIES[f%DEMO_PIES.length]:''});
+      if(f%2===1) saludo();            // después de cada par de fotos, uno escrito
     }
-    for(let i=0;i<frases.length;i++)
-      await sumar(codigo,{id:'m'+i,kind:'mensaje',data:'',autor:gente[i+3],texto:frases[i],
-        ts:Date.now()-(frases.length-i)*30000,estado:'aprobado'});
+    while(m<frases.length) saludo();   // y los que sobren, al final
+    for(let i=0;i<sembrado.length;i++){
+      const it=sembrado[i];
+      await sumar(codigo,{...it,
+        blob:HAY_NUBE&&it.kind==='foto'?await dataABlob(it.data):null,
+        ts:Date.now()-(sembrado.length-i)*45000,estado:'aprobado'});
+    }
     recado(HAY_DEMO?'Ejemplo listo':'Listo · fiesta cargada');
     /* En demostración se entra por donde entra un invitado, no por el panel
        del organizador: lo que se quiere mostrar es cómo se deja una foto o
@@ -4114,7 +4132,7 @@ async function vPantalla(codigo){
     <button class="dejar" id="completa">Pantalla completa</button>
     <!-- En demostración esta pantalla ES la prueba, así que "Salir" no tiene
          sentido: lo que hace falta es invitar a probar el otro lado. -->
-    <button class="dejar${HAY_DEMO?' llamada':''}">${HAY_DEMO?'Probá mandar una foto':'Salir'}</button>
+    <button class="dejar${HAY_DEMO?' llamada':''}">${HAY_DEMO?'Probá mandar una foto o un saludo':'Salir'}</button>
   </div>
   <div class="modos-sala" role="group" aria-label="Qué se muestra"${EN_MARCO?' hidden':''}>
     <button data-modo="cartel" aria-pressed="true">Código</button>

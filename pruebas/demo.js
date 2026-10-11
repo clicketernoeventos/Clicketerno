@@ -418,6 +418,50 @@ async function abrir(ctx) {
       'la pantalla del salón proyecta una foto que cargó',
       sala.length ? sala.filter((i) => !i.w).map((i) => i.src.slice(-14)).join(' · ') : 'ninguna');
 
+    /* ── y que lo ESCRITO se vea, mezclado con las fotos ──
+       El muro no es solo fotos: el invitado puede dejar una dedicatoria
+       y se proyecta igual. Sembrado por tandas —primero las nueve fotos
+       y después los cinco saludos— la proyección mostraba ocho fotos
+       seguidas, casi un minuto, antes del primer texto: el que entra a
+       probar se iba creyendo que esto no escribe.
+
+       Se mide la RACHA MÁS LARGA de fotos seguidas en una vuelta
+       entera, no "si hay un saludo en los primeros cuatro": la
+       proyección puede arrancar en cualquier punto del ciclo, y
+       arrancando justo en el bloque de saludos esa comprobación pasaba
+       también con el orden viejo. La racha no depende de dónde arranque.
+
+       Se avanza con la flecha, no esperando: siete segundos por cuadro
+       son casi dos minutos de suite. */
+    await pg.goto(BASE + '/muro.html?demo=1#pantalla/DEMO-FIESTA', { waitUntil: 'domcontentloaded' });
+    await pg.waitForTimeout(4000);
+    const clases = [];
+    for (let i = 0; i < 14; i++) {
+      clases.push(await pg.evaluate(() => {
+        const v = document.querySelector('.toma.on');
+        return v ? (v.querySelector('.placa') ? 'texto' : 'foto') : '?';
+      }));
+      await pg.keyboard.press('ArrowRight');
+      /* 900 y no 700: el cruce entre cuadro y cuadro dura 1,4 s y con
+         la espera corta se leía dos veces el mismo. */
+      await pg.waitForTimeout(900);
+    }
+    const escritos = clases.filter((c) => c === 'texto').length;
+    let racha = 0, peor = 0;
+    for (const c of clases) { racha = c === 'foto' ? racha + 1 : 0; if (racha > peor) peor = racha; }
+    afirmar(escritos >= 4, 'la fiesta de ejemplo tiene saludos escritos, no solo fotos',
+      `${escritos} de ${clases.length}`);
+    afirmar(peor <= 3, 'y van mezclados: nunca más de tres fotos seguidas sin uno escrito',
+      `la racha más larga fue de ${peor}`);
+    /* Y que el botón de la demostración lo diga: "Probá mandar una
+       foto" es la mitad del producto. */
+    /* `.dejar` lo comparten el botón de pantalla completa y éste: el
+       propio muro lo busca como `:last-child` y acá hay que hacer lo
+       mismo, o se mide el otro. */
+    const BOTON = '.botones-sala .dejar:last-child';
+    afirmar(/foto\s+o\s+un\s+saludo/i.test(await leer(pg, BOTON)),
+      'y el botón invita a las dos cosas', await leer(pg, BOTON));
+
     /* El rollo entra derecho al álbum revelado: es la pantalla que
        vende, y es justo la que mostraba manchas. */
     await pg.goto(BASE + '/rollo.html?demo=1', { waitUntil: 'domcontentloaded' });

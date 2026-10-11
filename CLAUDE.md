@@ -151,6 +151,24 @@ las puede bajar cualquiera y las puede indexar un buscador. Vale lo del
 artículo 53 del Código Civil y Comercial igual que para un cliente, y si
 alguna vez aparece un menor en una, no va.
 
+**Lo escrito va MEZCLADO con las fotos, no después.** La fiesta de
+ejemplo tiene nueve fotos y cinco dedicatorias, y la proyección va en
+orden de `ts`: sembradas por tanda —las nueve fotos primero— el que
+entraba a probar veía ocho fotos seguidas, casi un minuto, antes del
+primer saludo escrito, y se iba creyendo que el muro no escribe. Ahora
+va un saludo cada dos fotos, que además es lo que pasa en una fiesta.
+El orden se decide armando la lista y el `ts` sale de ahí, no al revés.
+Y el botón de la demostración lo dice: *"Probá mandar una foto o un
+saludo"*, que antes era solo la foto.
+
+Lo mide `pruebas/demo.js` por la **racha más larga de fotos seguidas**
+en una vuelta entera (tope: tres), no por "si hay un saludo en los
+primeros cuatro": la proyección arranca en cualquier punto del ciclo y,
+arrancando justo en el bloque de saludos, esa comprobación pasaba
+también con el orden viejo. Contra el código anterior da 7. Ojo con
+`.dejar`: lo comparten el botón de pantalla completa y el de la
+demostración, y el muro mismo lo busca como `:last-child`.
+
 **Se siembra en cada carga, sin preguntar si ya estaba, y la cinta tiene
 "Empezar de nuevo"** (que es una recarga: todo vive en memoria). Es un modo
 prueba: el que entra después no tiene que encontrarse con lo que dejó el
