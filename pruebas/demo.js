@@ -378,6 +378,15 @@ async function abrir(ctx) {
     afirmar(!ignora.some((l) => /^\/?demo\/?$/.test(l) || /^demo\//.test(l)),
       'demo/ se publica (no está en .assetsignore)', ignora.filter((l) => /demo/.test(l)).join(' · '));
 
+    /* Y que no engorden. Las bajan los que llegan del anuncio, en el
+       teléfono: son diez archivos y a 1000px pesan 750 KB. Si alguna
+       vez se reemplazan por las fotos sin achicar, son 13 MB y nadie se
+       entera hasta la factura de datos de otro. */
+    const pesoDemo = fs.readdirSync(path.join(RAIZ_WEB, 'demo'))
+      .reduce((t, f) => t + fs.statSync(path.join(RAIZ_WEB, 'demo', f)).size, 0);
+    afirmar(pesoDemo < 1.6 * 1024 * 1024, 'y pesan lo que tienen que pesar',
+      Math.round(pesoDemo / 1024) + ' KB');
+
     const cargadas = async (sel) => pg.evaluate((s) => Array.from(document.querySelectorAll(s))
       .filter((i) => i.getBoundingClientRect().width > 20)
       .map((i) => ({ w: i.naturalWidth, src: i.currentSrc || i.src })), sel);

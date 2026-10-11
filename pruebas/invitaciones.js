@@ -40,8 +40,11 @@ const NO_PUBLICADAS = fs.readFileSync(path.join(RAIZ, '.assetsignore'), 'utf8')
   .filter(l => l && !l.startsWith('#') && l.endsWith('/'))
   .map(l => l.slice(0, -1));
 /* Estas SÍ se publican y tampoco son invitaciones: lib/ son las
-   librerías del sitio (QR, zip, excel) e iconos/ los del manifiesto. */
-const PUBLICADAS_NO_INVITACION = ['lib', 'iconos', 'node_modules'];
+   librerías del sitio (QR, zip, excel), iconos/ los del manifiesto y
+   demo/ las fotos de la fiesta de ejemplo. Van también en RESERVADOS,
+   que es lo contrario y hace falta igual: acá para que la prueba no las
+   reclame como invitación, allá para que nadie llame así a una. */
+const PUBLICADAS_NO_INVITACION = ['lib', 'iconos', 'node_modules', 'demo'];
 const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')
