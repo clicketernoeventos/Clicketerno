@@ -15,3 +15,9 @@ video/fuentes.css
 # La copia de la raíz es solo para abrirla desde la app; la que vale
 # está en video/DECISIONES.md.
 /DECISIONES.md
+
+# Las fotos que se le ponen al video del rollo. Son de una fiesta de
+# verdad o generadas: pesan, y fotos de gente no tienen por qué quedar
+# versionadas. El LEEME sí, que explica cómo entran y de dónde sacarlas.
+video/fotos/*
+!video/fotos/LEEME.txt

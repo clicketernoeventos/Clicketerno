@@ -24,6 +24,31 @@ function rnd(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x -
 let ctx;
 const fondo = () => { ctx.fillStyle = NEGRO; ctx.fillRect(0, 0, W, H); };
 
+/* Fotos de verdad. montar.py incrusta en window.__FOTOS lo que haya en
+   video/fotos/ (propias o generadas con IA). Si hay, se usan; si no, la
+   escena dibuja la fiesta como siempre y el video sale igual. Se cargan
+   ANTES del primer cuadro: una imagen a medio cargar deja el hueco en
+   negro y eso no avisa, sale mal y listo. */
+const FOTOS = [];
+async function cargarFotos() {
+  const fuentes = (window.__FOTOS || []).slice(0, 40);
+  await Promise.all(fuentes.map(src => new Promise(ok => {
+    const im = new Image();
+    im.onload = () => { FOTOS.push(im); ok(); };
+    im.onerror = () => ok();
+    im.src = src;
+  })));
+}
+
+/* Dibuja la foto i recortada a la caja, como `object-fit: cover`. */
+function fotoReal(im, x, y, w, h) {
+  const ei = im.naturalWidth / im.naturalHeight, ec = w / h;
+  let sw = im.naturalWidth, sh = im.naturalHeight, sx = 0, sy = 0;
+  if (ei > ec) { sw = sh * ec; sx = (im.naturalWidth - sw) / 2; }
+  else { sh = sw / ec; sy = (im.naturalHeight - sh) / 2; }
+  ctx.drawImage(im, sx, sy, sw, sh, x, y, w, h);
+}
+
 function texto(s, x, y, { tam = 48, fam = 'Jost', peso = 300, color = CREMA,
   alfa = 1, esp = 0, cursiva = false, centro = true } = {}) {
   if (alfa <= .002) return;
@@ -79,6 +104,23 @@ function foto(x, y, w, h, semilla, revelado = 1, redondeo = 10) {
   const p = pares[Math.floor(rnd(semilla) * pares.length)];
   ctx.save();
   ctx.beginPath(); ctx.roundRect(x, y, w, h, redondeo); ctx.clip();
+
+  /* Con fotos de verdad no hace falta inventar nada: se dibuja la foto,
+     se le deja el grano y el revelado, y chau. */
+  if (FOTOS.length) {
+    const im = FOTOS[Math.floor(rnd(semilla * 3.7) * FOTOS.length) % FOTOS.length];
+    fotoReal(im, x, y, w, h);
+    ctx.fillStyle = `rgba(217,174,114,${.07 * revelado})`;   // el tinte cálido de la marca
+    ctx.fillRect(x, y, w, h);
+    if (revelado < 1) { ctx.fillStyle = `rgba(6,5,4,${1 - revelado})`; ctx.fillRect(x, y, w, h); }
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = .5 * revelado;
+    ctx.strokeStyle = 'rgba(217,174,114,.35)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x + .75, y + .75, w - 1.5, h - 1.5, redondeo); ctx.stroke();
+    ctx.restore();
+    return;
+  }
+
   const g = ctx.createLinearGradient(x, y, x + w, y + h);
   g.addColorStop(0, p[0]); g.addColorStop(1, p[1]);
   ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
@@ -416,6 +458,8 @@ window.pintar = t => dibujar(t);
   await document.fonts.load('italic 400 62px "Bodoni Moda"');
   await document.fonts.load('300 46px "Jost"');
   await document.fonts.ready;
+  await cargarFotos();
+  if (FOTOS.length) console.log('fotos de verdad: ' + FOTOS.length);
   dibujar(0);
   window.__listo = true;
 })();

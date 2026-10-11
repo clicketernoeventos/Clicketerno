@@ -1,0 +1,26 @@
+Poné acá las fotos que quieras que use el video del rollo.
+
+  · JPG, PNG o WEBP. Verticales se ven mejor, pero sirve cualquiera:
+    se recortan solas al centro.
+  · Entre 8 y 15 alcanza. Más de 40 no se usan.
+  · Cada una, menos de 4 MB.
+  · El orden no importa: cada "foto" del video elige una sola, siempre
+    la misma, así el video se puede volver a generar idéntico.
+
+Con la carpeta vacía el video sale igual, con las fotos dibujadas.
+
+Después:  bash video/armar.sh rollo
+
+De dónde sacarlas, en orden de preferencia:
+
+  1. Fotos de una fiesta tuya, con permiso de quienes aparecen.
+  2. Generadas con IA desde tu teléfono (ChatGPT, Gemini, Copilot).
+     Pedí algo así, una por una y en vertical:
+       "Foto vertical de una fiesta de noche, con flash, gente
+        bailando de contraluz, guirnaldas de luces y papelitos.
+        Estilo cámara descartable, con grano. Sin texto."
+     Nadie que aparezca existe, así que no hay consentimiento que pedir.
+  3. Bancos gratis (Unsplash, Pexels). Ojo: si la foto tiene una cara
+     reconocible y la usás en publicidad paga, hace falta la
+     autorización de esa persona. Para una historia orgánica es
+     distinto, pero conviene elegir fotos sin caras nítidas.
