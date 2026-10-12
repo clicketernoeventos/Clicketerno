@@ -712,7 +712,30 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
     scroll-padding-inline:24px;
     gap:18px;scrollbar-width:none}
   .trabajos::-webkit-scrollbar{display:none}
-  .trabajo{flex:0 0 78%;width:78%;max-width:78%;margin-inline:0;scroll-snap-align:center}
+  /* ── el celular tiene que ENTRAR en la pantalla ──
+     El ancho solo no alcanza: la pantalla del celular es 9/19.5, así que
+     cada píxel de ancho son 2,17 de alto. Con el 78% pelado la tarjeta
+     medía 633px y en un iPhone —donde la barra del navegador se come unos
+     145— el nombre de la fiesta quedaba abajo del borde: se ve medio
+     teléfono cortado, que es lo mismo que no tener la foto entera.
+     Así que el ancho sale del ALTO disponible: lo que mide la tarjeta
+     entera es ancho*2,17 + 56 (el margen y el pie con el nombre), y eso
+     tiene que entrar en el 78% de la pantalla, dejando el resto para el
+     título de arriba. El 78% del ancho sigue siendo el techo: en una
+     pantalla alta manda ése y la tarjeta queda como estaba.
+     `svh` y no `vh` a propósito: `vh` en un iPhone es la pantalla CON las
+     barras escondidas, que es justo el caso que no hay que medir. El
+     `vh` de la primera línea es el respaldo para quien no tenga `svh`. */
+  .trabajo{flex:0 0 auto;margin-inline:0;scroll-snap-align:center;
+    width:min(78%, calc((78vh - 56px) / 2.17));max-width:none}
+  @supports (height:1svh){
+    .trabajo{width:min(78%, calc((78svh - 56px) / 2.17))}
+  }
+  /* El pie se compacta: cada píxel que se lleva el nombre se lo saca al
+     celular, que es lo que hay que mostrar. */
+  .trabajo .pie-t{margin-top:14px}
+  .trabajo .pie-t b{font-size:18px}
+  .trabajo .pie-t span{font-size:9.5px;margin-top:3px}
   /* En el carrusel las tarjetas que esperan están FUERA de la pantalla
      por el costado, así que el IntersectionObserver no se entera nunca de
      ellas: se quedaban en opacidad 0 y al deslizar aparecía una tarjeta

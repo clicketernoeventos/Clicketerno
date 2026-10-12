@@ -151,6 +151,47 @@ async function recorrer(p) {
     await ctx.close();
   }
 
+  titulo('y el celular ENTERO entra en la pantalla');
+  {
+    /* En un iPhone la barra del navegador se come unos 145px, así que la
+       pantalla útil no es 844 sino ~700. Con el ancho fijo en 78% la
+       tarjeta medía 633 y el nombre de la fiesta quedaba abajo del borde:
+       se veía medio teléfono cortado, que es lo mismo que no tener la
+       foto entera. El dueño lo reportó dos veces con la misma palabra.
+       Se mide a 700 y a 667 (un iPhone SE), que es donde pasa; a 844
+       nunca se habría visto. */
+    for (const alto of [700, 667]) {
+      const ctx = await browser.newContext({
+        viewport: { width: 390, height: alto }, isMobile: true, hasTouch: true,
+      });
+      const p = await ctx.newPage();
+      await p.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
+      await p.waitForTimeout(3000);
+      await p.evaluate(() => document.querySelector('.trabajos').scrollIntoView({ block: 'center' }));
+      await p.waitForTimeout(700);
+      const m = await p.evaluate(() => {
+        const t = document.querySelector('.trabajo');
+        if (!t) return null;
+        const r = t.getBoundingClientRect();
+        const otra = document.querySelectorAll('.trabajo')[1];
+        return {
+          alto: Math.round(r.height),
+          asoma: otra ? Math.round(innerWidth - otra.getBoundingClientRect().x) : 0,
+        };
+      });
+      if (!m) { mal('no se dibujó la galería'); await ctx.close(); continue; }
+      /* 88% y no 100%: entrar justo justo no sirve, porque arriba va el
+         título de la sección y abajo el nombre de la invitación. */
+      if (m.alto > alto * 0.88)
+        mal(`en ${alto}px de alto la tarjeta mide ${m.alto}: el celular queda cortado`);
+      else bien(`en ${alto}px entra entera: ${m.alto}px (${Math.round(m.alto / alto * 100)}%)`);
+      /* Achicarla no puede costarle el carrusel. */
+      if (m.asoma < 40) mal(`a ${alto}px dejó de asomar la siguiente (${m.asoma}px)`);
+      else bien(`y sigue asomando ${m.asoma}px de la siguiente`);
+      await ctx.close();
+    }
+  }
+
   titulo('la cinta de abajo pasa despacio y NUNCA se frena');
   {
     /* Hubo una versión que la aceleraba con el scroll. Bajando se apura,
