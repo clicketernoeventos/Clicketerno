@@ -746,7 +746,17 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   overflow:hidden}
 .tab-cola .prox{flex:1;min-height:0;position:relative;border-radius:8px;overflow:hidden;
   border:1px solid var(--gris);background:var(--humo);animation:entraBloque .5s var(--e) both}
-.tab-cola .prox img,.tab-cola .prox video{width:100%;height:100%;object-fit:cover}
+/* CONTAIN, no cover. Las fichas de "entrando ahora" son apaisadas
+   (310x210 en un proyector) y la foto de una fiesta sale del teléfono de
+   alguien, o sea vertical: con `cover` de una foto 9:16 se veía el 38% —
+   una tajada del torso de quien sea— y en un celular el 60%. Medido con
+   fotos de verdad; con las manchas de luz dibujadas que había antes en la
+   demostración esto no se veía, porque eran casi cuadradas.
+   Acá la ficha es un ADELANTO de lo que viene, así que ver la foto entera
+   vale más que llenar el rectángulo; la grande sigue en `cover`, que es
+   como se proyecta. El fondo de la ficha ya es oscuro, así que lo que
+   sobra a los costados no se nota. */
+.tab-cola .prox img,.tab-cola .prox video{width:100%;height:100%;object-fit:contain}
 .tab-cola .prox .nom-p{position:absolute;left:0;right:0;bottom:0;padding:22px 11px 8px;
   font-size:clamp(10px,1.4vh,16px);color:#F3EDE0;font-weight:500;
   background:linear-gradient(transparent,rgba(0,0,0,.85));
