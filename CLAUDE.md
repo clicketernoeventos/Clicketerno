@@ -2093,11 +2093,22 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
-- **El rollo nunca se probó en un teléfono de verdad.** Está repasado línea
-  por línea y tiene 69 comprobaciones de casos feos, pero todo eso corre en
-  un Chromium de escritorio contra un Supabase de mentira. Lo que falta ver
-  en hardware real: la cámara de un iPhone (Safari es donde más se rompió
-  esto), el revelado en una pantalla chica, y el wifi de un salón lleno.
+- ~~**El rollo nunca se probó en un teléfono de verdad.**~~ **Mal escrito, y
+  quedó dando vueltas.** Esta línea sobrevivió a la sesión que la
+  desmintió: el apartado *"Lo que se vio en un iPhone de verdad"*, más
+  arriba, es justamente el dueño probándolo en su iPhone, y de ahí salieron
+  las dos fallas que ninguna suite podía ver (de la cámara no se podía
+  salir, y el revelado se tapaba a sí mismo). Él lo corrigió el 12/10/2026
+  con cuatro palabras: *"pero yo siempre lo probé en iPhone"*.
+  **Un pendiente que ya se hizo y sigue escrito es peor que no tener la
+  lista**: hace tomar decisiones sobre un estado que no existe, y acá
+  estuvo a punto de mandar a repetir una prueba hecha.
+  **Lo que de verdad queda sin ver**, y es lo único:
+  **el wifi de un salón lleno** —doscientos teléfonos colgados del mismo
+  router, subiendo en el minuto del brindis—. Eso no se puede simular: los
+  reintentos, el freno de ráfaga y el tope de cámaras están medidos contra
+  una copia del esquema de producción, pero el router de un salón no se
+  copia. Se ve la primera noche de verdad.
 - ~~**Darle forma a la interfaz del rollo.**~~ **Hecho.** La cámara del
   invitado y el color de la fiesta tienen su apartado más arriba. Lo que
   queda de la referencia (instante.camera) es su "Estudio": generar piezas
