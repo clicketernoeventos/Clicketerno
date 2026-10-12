@@ -1234,6 +1234,60 @@ Y lo que se mide en `pruebas/dispositivos.js`:
   que ese aparato no tiene. Si el navegador no la ofrece, el botón no se
   dibuja.
 
+Y lo que se mide en `pruebas/barrido.js`, que es la revisión que pidió el
+dueño el 12/10/2026 (*"tiene que ser adaptable a iPhone, Android y PC, medí
+minuciosamente, y ya que estamos probá todo lo que se pueda clickear"*).
+`dispositivos.js` mide la FORMA; esto mide otra cosa, y son dos fallas
+distintas que no tiran ningún error:
+
+- **Pasada A, sin tocar nada, en DIEZ aparatos** —cuatro iPhone (320, 375,
+  390, 430), tres Android (360x800, 412x915, 360x640), iPad, notebook y
+  escritorio— y **doce pantallas**: de cada control visible, que llegue a
+  44x44 en un aparato táctil, que no se salga por el costado, y que **no
+  lo tape otra cosa**. Lo del tapado es lo nuevo y se mide con
+  `elementFromPoint`: se le pregunta al navegador **quién atajaría el dedo**
+  en el centro del control. Un botón tapado se dibuja perfecto y no
+  responde; ya pasó dos veces acá.
+- **Pasada B, tocando todo, uno por uno**, en un teléfono y una notebook:
+  **118 controles cada uno**. De cada toque: que no tire un error, que no
+  deje la página desbordada, que no deje una pantalla **sin texto** y que
+  no deje un **callejón sin salida**.
+
+Encontró tres cosas de verdad, y las tres estaban a la vista:
+**"Entrar como administrador"** medía 230x17 —la única puerta al modo
+administrador, imposible de acertar con un pulgar—; el enlace de vuelta de
+la pantalla de 404 medía 99x18 y el teléfono del pie de `empezar`, 87x19;
+y el **aviso emergente del rollo se comía el toque** de lo que quedara
+abajo, que es justamente el disparador de la cámara. Un cartel que aparece
+solo y se va solo no puede atajar un dedo, y encima el que lo toca cree
+que tocó el botón: ahora va con `pointer-events:none`.
+
+Contra el código anterior da **8 fallas**.
+
+**Dos cosas que la primera versión medía mal**, y las dos son la misma
+lección de siempre:
+
+- **Miraba la opacidad del elemento y no la de sus padres.** El visor de
+  invitaciones está cerrado con `opacity:0;pointer-events:none` en el
+  padre, y su botón "Cerrar" sigue midiendo 1 de opacidad: el barrido
+  informaba en los diez aparatos que ese botón estaba tapado. Era verdad y
+  no importaba, porque ese botón no está en la pantalla. Es la regla de la
+  caja de 0x0 al revés: **antes de medir algo, comprobar que ESTÉ**.
+- **Preguntaba sin scrollear.** En una pantalla corta, lo de abajo arranca
+  debajo de la barra fija y se destapa scrolleando — para eso está el
+  `padding-bottom` de esas pantallas. Ahora, si parece tapado, lo trae al
+  medio y vuelve a preguntar; solo cuenta si sigue tapado ahí.
+- **Una `label` no es el blanco: el blanco es su campo.** Pedirle 44px de
+  alto a un rótulo de 14 es meterle aire muerto a todos los formularios.
+  Se exime solo si el campo al que apunta existe, se ve y llega a 44.
+
+**Los aparatos se miden de a cinco a la vez.** En fila son 120 cargas de
+página con sus esperas: más de los diez minutos que `todo.sh` le da a cada
+suite, y una prueba que el corredor mata a mitad no informa nada. En
+paralelo tarda **menos de cinco minutos** y mide lo mismo: cada aparato
+tiene su contexto y no se ven entre ellos. Se informan **en orden**, no
+según quién terminó antes, para que dos corridas se puedan comparar.
+
 Y lo que se mide en `pruebas/enlaces.js`, que recorre la parte pública
 —inicio, privacidad, términos y la de 404— con un navegador limpio:
 
@@ -1849,6 +1903,30 @@ sin moverse y vuelve a mirar: agarrar un bloque a mitad de la aparición no
 es una falla. Se prueba en tres modos —normal, "menos movimiento" y **sin
 JavaScript**—, porque cada uno recorre un camino distinto y en los tres el
 contenido tiene que verse.
+
+## Hacer una invitación nueva: el chat aparte
+
+`invitaciones/COMO-SE-HACE.md` es el manual para un chat dedicado a hacer
+UNA invitación, sin tener que contarle el proyecto entero. Decisión del
+dueño (12/10/2026): *"me gustaría tenerlo en otro chat por la cuestión de
+que acá ajustamos las cosas de la página, así trabajamos prolijo"*.
+
+Lo importante es **el reparto de archivos, por escrito**, que es
+exactamente lo que dice el primer párrafo de este archivo que hay que
+hacer si alguna vez vuelven a ser dos sesiones: ese chat toca **solo**
+`<nombre>/`, y **la invitación no se agrega sola a la galería de
+Trabajos** —eso vive en `index.html`, que es de este chat—. Cuando está
+lista, avisa y acá se suma, con el nombre de la carpeta, el tipo de fiesta
+y los tres colores de la portada dibujada.
+
+El manual lleva lo que no se puede deducir mirando el código: qué permite
+la CSP (ningún CDN, ningún píxel de terceros), los topes de peso, los
+nombres reservados, cómo funciona el RSVP contra Apps Script —y por qué
+después del POST hay que **volver a preguntar** si llegó—, y las reglas
+que ya costaron caro y aplican a una invitación: el `toISOString` en UTC,
+que Safari necesita un gesto para sonar, `svh` y no `vh`, los 44px, el
+hover pegado, el contraste, `prefers-reduced-motion`, y lo legal del
+artículo 53 y de los menores.
 
 ## Invitaciones alojadas en el repo
 

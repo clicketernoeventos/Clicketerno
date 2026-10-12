@@ -217,8 +217,11 @@ footer a{color:var(--oro);text-decoration:none;border-bottom:1px solid var(--hil
 </section>
 
 <footer>
-  <p>Cualquier duda, escribime: <a href="https://wa.me/5493412506451" target="_blank" rel="noopener">341 250-6451</a><br>
-  <a href="/">clicketerno.com.ar</a></p>
+  <!-- Los dos van en `inline-block` con padding: medían 87x19 y 150x19.
+       Es el pie de la pantalla que se le manda a un cliente nuevo, y el
+       teléfono es justamente lo que va a tocar. -->
+  <p>Cualquier duda, escribime: <a href="https://wa.me/5493412506451" target="_blank" rel="noopener" style="display:inline-block;padding:13px 4px">341 250-6451</a><br>
+  <a href="/" style="display:inline-block;padding:13px 4px">clicketerno.com.ar</a></p>
 </footer>
 
 </div>
