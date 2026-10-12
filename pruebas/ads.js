@@ -94,6 +94,12 @@ titulo('la medición está donde tiene que estar y en ningún otro lado');
     ['script-src', 'https://www.googletagmanager.com'],
     ['connect-src', 'https://www.googletagmanager.com'],
     ['img-src', 'https://googleads.g.doubleclick.net'],
+    /* Lo que faltaba: la etiqueta cargaba y el aviso de la conversión
+       salía por fetch a estos dos y se bloqueaba. Google decía
+       "Conversión no verificada" con 18 clics ya pagados. */
+    ['connect-src', 'https://www.google.com'],
+    ['connect-src', 'https://googleads.g.doubleclick.net'],
+    ['frame-src', 'https://www.googletagmanager.com'],
   ];
   for (const [dir, dominio] of necesita) {
     if (!directiva(dir).includes(dominio)) mal(`la CSP no deja ${dominio} en ${dir}: la etiqueta no va a cargar`);
