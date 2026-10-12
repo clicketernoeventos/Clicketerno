@@ -25,11 +25,12 @@ Son los que ya usa la app. Una carpeta con uno de estos nombres tapa la
 aplicación entera:
 
     muro  rollo  app  sql  pruebas  invitaciones  logo  marca  og
-    demo  empezar  404
+    demo  muestra  empezar  404
     privacidad  terminos  .well-known  iconos
 
-`demo` son las fotos de la fiesta de ejemplo: tapada, las dos
-demostraciones quedan con las fotos en blanco y no tiran ningún error.
+`demo` son las fotos de la fiesta de ejemplo y `muestra` las capturas
+del producto que usa la página de inicio: tapadas, quedan huecos en
+blanco y no tiran ningún error.
 
 Los dos últimos de la primera línea y los de la tercera son páginas legales
 y archivos que el sitio tiene que servir sí o sí: una carpeta con uno de

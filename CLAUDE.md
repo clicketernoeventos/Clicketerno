@@ -1530,6 +1530,93 @@ El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
 igual que las invitaciones. **Sin precios**, por decisión del dueño: el
 presupuesto se cierra hablando.
 
+### Las letras, y por qué se cambiaron
+
+**Gloock** para los títulos y **Hanken Grotesk** para el texto. Antes eran
+**Bodoni Moda + Jost**, y el cambio no es de gusto:
+
+- La **Bodoni es una didone**: el contraste entre el trazo grueso y el
+  fino es enorme a propósito. En un cartel es preciosa; en un teléfono a
+  15px los finos **se parten**. El dueño lo dijo mirando el muestrario:
+  *"como que desaparecen"*.
+- La **Jost tiene la equis baja** (es una geométrica tipo Futura), así que
+  el texto chico parece más chico de lo que es.
+- **Gloock mantiene el mismo aire** —es del mismo género— con los finos
+  mucho más gruesos de fábrica, y **Hanken Grotesk** tiene la equis alta.
+
+**Gloock no tiene bastardilla**, y la marca la usaba en todos lados ("en
+*vivo*", "*digitales*"). Pedirla igual hace que el navegador invente una
+oblicua torcida, y eso se nota. **El acento lo hace el oro**, que era la
+otra mitad del recurso igual. Donde hacía falta una cursiva de verdad —el
+nombre dibujado adentro de los celulares de Trabajos, que es el diseño de
+OTRA marca, no la nuestra— va una del sistema (Georgia).
+
+**Las apps siguen en Bodoni.** `muro.html` y `rollo.html` no se tocaron:
+ahí la letra la ve un invitado tres segundos en una pantalla, no alguien
+leyendo una página de venta, y cambiarlas toca las pruebas que cuidan que
+las dedicatorias vayan en Poppins. Si alguna vez se unifican, es una
+pasada aparte.
+
+### Lo que se mueve, y por qué eso
+
+Se eligieron de un muestrario con doce animaciones andando; el dueño pidió
+tres. **Las tres funcionan en el iPhone**, que es donde cae el tráfico
+pago: nada depende de `animation-timeline`, que Safari recién trae en
+versiones nuevas.
+
+- **La barra se esconde al bajar y vuelve al subir** (`nav.oculta`). Nunca
+  arriba de todo, donde no estorba, y **nunca con el menú abierto**, que
+  tiene adentro el botón de cerrar.
+- **Lo que se toca se hunde** (`:active` con `scale(.975)`). En un teléfono
+  el `:hover` no existe: hasta acá tocar un botón no devolvía nada, y con
+  mala señal el que consulta toca tres veces. Va con `!important` porque
+  varios `:hover` también mueven el `transform` y, al soltar el dedo,
+  ganaba el otro. De paso se anula el hover pegado en `@media(hover:none)`.
+- **La cinta de abajo acelera con el scroll.** El bucle vive en `.pista` y
+  el empujón en `.riel`, que es su padre: **las dos cosas en el mismo
+  elemento se pisan el `transform`**. El tope de 48px es lo que entra
+  adentro del degradado de los costados; más que eso y se ve el corte.
+
+**Todo lo que depende del scroll pasa por un solo oyente** con
+`requestAnimationFrame`: tres oyentes sueltos corriendo en cada píxel es
+lo que hace que una página se sienta pesada en un teléfono.
+
+### Que la página se lea en un teléfono
+
+Lo que se arregló cuando el dueño dijo *"mucho texto que no es legible ni
+a palos"*, medido antes y después: **17,5 → 15,4 pantallas** y **1240 →
+973 palabras**.
+
+- **El párrafo de "qué incluye" estaba en 12px** gris, en dos columnas de
+  144px. En el teléfono ahora va **una sola columna en renglones**, con la
+  estrella al costado del título en vez de arriba: 17px el título, 15px el
+  texto. Se puede porque además cada tarjeta dice **una línea**, y de
+  veinte quedaron catorce. `pruebas/largo.js` dejó de exigir dos columnas
+  —era la cuenta vieja— y ahora mide el tamaño de la letra, que es lo que
+  importaba.
+- **Las tres tarjetas de servicio mostraban dibujos hechos con CSS** —un
+  sobre, una pila, una tira de película— que se animaban **sólo con
+  `:hover`**. En un teléfono el hover no existe: eran tres rectángulos
+  marrones quietos, y por eso se leían como una maqueta sin terminar.
+  Ahora son **capturas de la app andando**, en `muestra/`.
+- **En el teléfono los dos celulares de la vitrina van uno al lado del
+  otro.** Apilados, los tres aparatos se llevaban 2,4 pantallas de scroll
+  para mostrar lo mismo.
+
+**`muestra/` son tres capturas del producto** (1040x585, 188 KB en total),
+sacadas a mano y versionadas. La del rollo se saca con **`?demo=1&marco=1`**:
+sin `marco=1` sale la cinta de "la fiesta y las fotos son inventadas"
+arriba de todo, que en la página de venta no puede aparecer. `muestra`
+quedó en la lista de nombres reservados.
+
+Y tres cosas que se veían mal y no daban ningún error: la **burbuja de
+WhatsApp tapaba** el botón "Todo lo que hacemos" de la portada (ahora
+aparece recién pasada la primera pantalla, y **entra con un desplazamiento
+y no con una escala**, porque escalada mide 32px y la prueba del mínimo de
+44 la agarra, con razón); la **barra fija cortaba el título** de la
+sección al saltar desde el menú (`scroll-margin-top`); y el **logo se veía
+dos veces** arriba de todo, el de la barra encima del de la portada.
+
 ### Por qué sólo compraban invitaciones
 
 Medido sobre la página, no opinado. El muro y el rollo estaban bien

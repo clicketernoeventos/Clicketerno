@@ -12,7 +12,7 @@ const RESERVADOS=['muro','rollo','app','sql','pruebas','invitaciones',
                   /* las fotos de la fiesta de ejemplo: una carpeta
                      "demo" las tapa y las dos demostraciones quedan con
                      las fotos en blanco, sin tirar ningún error */
-                  'demo','empezar','404',
+                  'demo','muestra','empezar','404',
                   /* los legales: una carpeta llamada "privacidad" taparía la
                      política de privacidad, que es una obligación legal */
                   'privacidad','terminos','.well-known',
@@ -44,7 +44,7 @@ const NO_PUBLICADAS = fs.readFileSync(path.join(RAIZ, '.assetsignore'), 'utf8')
    demo/ las fotos de la fiesta de ejemplo. Van también en RESERVADOS,
    que es lo contrario y hace falta igual: acá para que la prueba no las
    reclame como invitación, allá para que nadie llame así a una. */
-const PUBLICADAS_NO_INVITACION = ['lib', 'iconos', 'node_modules', 'demo'];
+const PUBLICADAS_NO_INVITACION = ['lib', 'iconos', 'node_modules', 'demo', 'muestra'];
 const esInvitacion=d=>{
   const p=path.join(RAIZ,d);
   return fs.statSync(p).isDirectory() && !d.startsWith('.')

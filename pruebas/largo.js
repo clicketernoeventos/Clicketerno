@@ -93,10 +93,18 @@ async function recorrer(p) {
     const m = await p.evaluate(() => {
       const pant = (n) => +(n.getBoundingClientRect().height / 844).toFixed(2);
       const inc = document.querySelector('.incluye');
-      const cols = inc ? getComputedStyle(inc).gridTemplateColumns.trim().split(/\s+/).length : 0;
+      /* Antes acá se exigían DOS columnas, porque veinte tarjetas en una
+         sola se llevaban 5,8 pantallas. El problema se arregló por el otro
+         lado: son catorce y cada una dice una línea, así que entran en una
+         columna ancha y legible. Lo que se mide ahora es eso — el tamaño
+         de la letra — porque dos columnas de 144px con el texto en 12px
+         era exactamente la queja del dueño: "no se lee ni a palos". */
+      const chico = inc ? Math.min(...[...inc.querySelectorAll('p')]
+        .map((e) => parseFloat(getComputedStyle(e).fontSize))) : 0;
       return {
         total: +(document.body.scrollHeight / 844).toFixed(1),
-        columnas: cols,
+        letraInc: chico,
+        tarjetas: inc ? document.querySelectorAll('.inc').length : 0,
         anchoDeMas: Math.round(document.documentElement.scrollWidth - 390),
         secciones: [...document.querySelectorAll('section')].map((s) => s.id + '=' + pant(s)),
       };
@@ -104,9 +112,9 @@ async function recorrer(p) {
     if (m.total > TOPE_PANTALLAS)
       mal(`la página creció a ${m.total} pantallas de scroll (el tope es ${TOPE_PANTALLAS})`);
     else bien(`${m.total} pantallas de scroll`);
-    if (m.columnas < 2)
-      mal(`el "qué incluye" volvió a una columna en el teléfono (${m.columnas}): son 20 tarjetas`);
-    else bien(`el "qué incluye" va a ${m.columnas} columnas`);
+    if (m.letraInc < 14)
+      mal(`el "qué incluye" tiene el texto en ${m.letraInc}px en un teléfono: no se lee`);
+    else bien(`el "qué incluye" se lee: ${m.letraInc}px en ${m.tarjetas} tarjetas`);
     if (m.anchoDeMas > 1) mal(`algo se sale ${m.anchoDeMas}px por el costado`);
     else bien('y nada se sale por el costado');
     if (errs.length) mal('errores JS: ' + errs[0]);

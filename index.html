@@ -692,7 +692,11 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
   background:linear-gradient(140deg,#2AA84A,#1D8C3A);display:grid;place-items:center;
   box-shadow:0 14px 34px -10px rgba(37,211,102,.5);
   transition:transform .45s var(--e),opacity .45s var(--e);
-  opacity:0;transform:scale(.6) translateY(10px);pointer-events:none}
+  /* Entra con un desplazamiento y NO con una escala: escalada, el botón
+     mide 32px mientras está escondida y la prueba del mínimo de 44 la
+     agarra — con razón, porque durante la transición de verdad hay un
+     momento en que es chiquita. */
+  opacity:0;transform:translateY(16px);pointer-events:none}
 .wsp-flota.ver{opacity:1;transform:none;pointer-events:auto}
 .wsp-flota:hover{transform:scale(1.09)}
 .wsp-flota svg{width:29px;height:29px;fill:#fff}
@@ -864,7 +868,7 @@ footer .datos{line-height:1.6}
            DE VERDAD: decir "inventada" ahí pasa a ser mentira, y justo en la
            frase que promete que no son capturas. El texto lo ajusta el JS
            según qué haya puesto; acá queda la versión sin código. -->
-      <p id="txtVitrina">No son capturas: la pantalla del salón, el álbum del rollo y una invitación, corriendo ahora mismo adentro de esta página. Tocá cualquiera y lo probás entero.</p>
+      <p id="txtVitrina">No son capturas: la pantalla del salón, el álbum del rollo y una invitación, corriendo ahora mismo con una fiesta inventada. Tocá cualquiera y lo probás entero.</p>
     </div>
 
     <div class="vitrina">
