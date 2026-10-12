@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fuentes.css">
+<style>
+/* ── El flyer del Marketplace de Facebook ──
+   1200x1200 porque ahí la grilla recorta todo a cuadrado, y lo que se ve
+   primero es una miniatura de unos 160px entre sillones usados. Eso manda
+   todo el diseño: el título tiene que leerse a ESE tamaño o el flyer no
+   existe. Por eso "Invitaciones digitales" va enorme y arriba —el que
+   mira tiene que saber QUÉ ES en menos de un segundo— y el argumento va
+   abajo, para el que ya abrió el aviso.
+   Los teléfonos son capturas de verdad de pia/nueva, no un mockup
+   dibujado: el producto se vende mostrándolo. */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --oro:#D9AE72; --oro-h:#A87B43; --champan:#EFDCBC;
+  --crema:#F6F2EA; --mute:#A79D90; --hilo:rgba(217,174,114,.3);
+}
+body{width:1200px;height:1200px;background:#000;overflow:hidden;position:relative;
+  font-family:Jost,sans-serif;font-weight:400;color:var(--crema);
+  -webkit-font-smoothing:antialiased}
+/* Las capas decorativas van adentro de una caja recortada: sueltas con
+   un `bottom` negativo estiran el scrollHeight y la comprobación de "no
+   se desbordó nada" avisaba de un desborde que no existía. */
+.fondo{position:absolute;inset:0;overflow:hidden}
+.brillo{position:absolute;width:1500px;height:1000px;left:-200px;top:-180px;
+  background:radial-gradient(ellipse at center,rgba(217,174,114,.20),transparent 62%);
+  filter:blur(40px)}
+.brillo2{position:absolute;width:1000px;height:760px;right:-260px;bottom:-200px;
+  background:radial-gradient(ellipse at center,rgba(217,174,114,.13),transparent 65%);
+  filter:blur(50px)}
+.cont{position:relative;height:1200px;padding:52px 64px 0;display:flex;flex-direction:column}
+
+.sobre{font-size:23px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--oro);text-align:center}
+h1{font-family:'Bodoni Moda',serif;font-weight:600;font-size:112px;line-height:.94;
+  text-align:center;letter-spacing:-.015em;margin-top:12px}
+h1 em{font-style:italic;font-weight:400;color:var(--oro);display:block;font-size:98px;margin-top:2px}
+.bajada{text-align:center;font-size:31px;line-height:1.3;color:var(--crema);margin-top:18px;font-weight:300}
+.bajada b{font-weight:500;color:var(--champan)}
+
+/* ── los teléfonos: capturas de verdad ── */
+/* `flex:1` sin más y los teléfonos `absolute` adentro: si la caja queda
+   más baja que ellos se le montan a las fichas de abajo y le tapan los
+   títulos. Pasó en la primera versión. El alto va escrito y hay una
+   comprobación que mide que los teléfonos entren adentro. */
+.fotos{flex:1;min-height:0;position:relative;margin-top:6px}
+.tel{position:absolute;border-radius:26px;overflow:hidden;border:2px solid rgba(217,174,114,.5);
+  box-shadow:0 36px 80px -18px rgba(0,0,0,.95), 0 0 64px -28px rgba(217,174,114,.55)}
+.tel img{display:block;width:100%}
+.t1{width:184px;height:398px;left:136px;top:50px;transform:rotate(-7deg)}
+.t2{width:214px;height:463px;left:493px;top:4px;z-index:3}
+.t3{width:184px;height:398px;right:126px;top:58px;transform:rotate(7deg)}
+
+/* ── lo que la hace distinta ── */
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hilo);
+  border:1px solid var(--hilo)}
+.chip{background:#000;padding:16px 12px;text-align:center}
+.chip b{display:block;font-family:'Bodoni Moda',serif;font-weight:600;font-size:36px;
+  color:var(--oro);line-height:1;margin-bottom:6px;font-variant-numeric:lining-nums tabular-nums}
+.chip span{display:block;font-size:22px;line-height:1.22;color:#C6BCAE}
+
+/* ── pie ── */
+.pie{display:flex;align-items:center;gap:26px;padding:24px 0 30px;margin-top:22px;
+  border-top:1px solid var(--hilo)}
+.marca{font-family:'Bodoni Moda',serif;font-weight:600;font-size:44px;letter-spacing:.1em;
+  line-height:1.04;color:var(--champan);white-space:nowrap}
+.marca small{display:block;font-family:Jost,sans-serif;font-weight:400;font-size:19px;
+  letter-spacing:.26em;color:var(--mute);margin-top:6px}
+.sep{width:1px;align-self:stretch;background:var(--hilo)}
+.datos{flex:1}
+.wsp{font-size:44px;font-weight:500;color:var(--oro);letter-spacing:.02em;
+  font-variant-numeric:lining-nums tabular-nums;line-height:1.1}
+.web{font-size:26px;color:#C6BCAE;margin-top:4px;letter-spacing:.04em}
+</style></head><body>
+<div class="fondo"><div class="brillo"></div><div class="brillo2"></div></div>
+<div class="cont">
+  <div class="sobre">Quince · Casamientos · Cumpleaños</div>
+  <h1>Invitaciones<em>digitales</em></h1>
+  <p class="bajada">No es una imagen que se pierde en el chat:<br>
+    es <b>una web con la fecha, el mapa y la música</b> de tu fiesta.</p>
+
+  <div class="fotos">
+    <!-- Las tres pantallas van SIN la cara de nadie a propósito. La
+         portada de Pia es la más linda de las capturas, pero es la foto
+         de una clienta menor de edad y esto es una publicación pública:
+         art. 53 del Código Civil y Comercial. Si algún día hay permiso
+         por escrito, se cambia el src del medio por img/portada.full.jpg
+         y listo. De paso el sobre cerrado ilustra justo la frase que
+         más vende, "se abre como un sobre". -->
+    <div class="tel t1"><img src="img/cuenta.full.jpg" alt=""></div>
+    <div class="tel t2"><img src="img/sobre.full.jpg" alt=""></div>
+    <div class="tel t3"><img src="img/rsvp.full.jpg" alt=""></div>
+  </div>
+
+  <div class="chips">
+    <div class="chip"><b>Confirman</b><span>desde el celular,<br>y vos ves la lista</span></div>
+    <div class="chip"><b>A medida</b><span>de tu fiesta,<br>no una plantilla</span></div>
+    <div class="chip"><b>Un link</b><span>por WhatsApp.<br>Nada que imprimir</span></div>
+  </div>
+
+  <div class="pie">
+    <div class="marca">CLICK ETERNO<small>ROSARIO</small></div>
+    <div class="sep"></div>
+    <div class="datos">
+      <div class="wsp">341 250-6451</div>
+      <div class="web">clicketerno.com.ar · probala antes de encargarla</div>
+    </div>
+  </div>
+</div>
+</body></html>
