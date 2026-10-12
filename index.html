@@ -58,6 +58,13 @@ a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 img{max-width:100%;display:block}
 .serif{font-family:'Gloock',Georgia,serif}
+/* <em> viene en bastardilla por defecto del navegador. Gloock no tiene,
+   así que el navegador la INVENTA inclinando la romana — un corte que no
+   existe. Acá el <em> sigue siendo énfasis, pero el énfasis lo hace el
+   oro. Donde sí hace falta una cursiva de verdad (el nombre dibujado
+   adentro de los celulares de Trabajos, que es la marca de otro) se pide
+   aparte, con una tipografía que la tenga. */
+h1 em,h2 em,h3 em,.serif em{font-style:normal}
 .ital{font-family:'Gloock',Georgia,serif;color:var(--oro)}
 .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
 .eyebrow{font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);display:flex;align-items:center;gap:12px}
@@ -66,6 +73,10 @@ section{padding:clamp(70px,10vw,130px) 0;position:relative}
 /* En un teléfono ese clamp se clava en el mínimo —10vw de 390 son 39— así
    que son 70+70 por sección y nueve secciones: 1,5 pantallas de aire. */
 @media(max-width:520px){section{padding:42px 0}
+  /* "INVITACIONES DIGITALES" con .4em de espaciado envuelve a dos
+     renglones y la rayita del principio queda sola arriba. */
+  .eyebrow{letter-spacing:.26em;gap:9px}
+  .eyebrow:before{width:18px}
   .cabeza{margin-bottom:30px}
   .cabeza p{font-size:16px;line-height:1.7;margin-top:16px}}
 
@@ -177,11 +188,21 @@ nav .links a:hover:after{width:100%}
   display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .hero .fino span{display:flex;align-items:center;gap:8px}
 .hero .fino .estrella{width:9px;height:9px}
+
 .bajar{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.3em;
   text-transform:uppercase;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:10px}
 .bajar:after{content:'';width:1px;height:38px;background:linear-gradient(var(--oro),transparent);animation:baja 2.4s var(--e) infinite}
 @keyframes baja{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}
   51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+/* La flecha "Deslizá" se le montaba a la fila de "sin instalar apps":
+   medido, chocaban en 1440x900 y en 1280x720. Bajar la portada no
+   alcanza —está centrada verticalmente, así que la fila baja con ella—,
+   así que en escritorio se corre al costado, abajo del celular, que es
+   donde hay lugar. En el teléfono sigue centrada: ahí no choca con nada.
+   Va DESPUÉS de .bajar y no antes: un @media no sube la especificidad,
+   así que escrito arriba lo pisa la regla de abajo. Es la misma piedra
+   del carrusel de Trabajos. */
+@media(min-width:901px){ .bajar{left:auto;right:16px;transform:none} }
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;text-align:center;padding-top:110px;gap:44px}
   .hero .logo-full{margin:0 auto 28px}
