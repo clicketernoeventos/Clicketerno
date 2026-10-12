@@ -79,7 +79,10 @@ h1 em{color:var(--oro);display:block}
 
     <a class="btn" id="wsp" href="https://wa.me/5493412506451" target="_blank" rel="noopener">Escribinos por WhatsApp</a>
 
-    <p class="pie">O volvé a <a href="/">la página de inicio</a>.</p>
+    <!-- `inline-block` con padding vertical: medía 99x18 y es un enlace de
+         vuelta en una pantalla a la que se llega equivocándose. El texto no
+         cambia de tamaño ni de lugar; lo que crece es lo que ataja el dedo. -->
+    <p class="pie">O volvé a <a href="/" style="display:inline-block;padding:13px 4px">la página de inicio</a>.</p>
   </main>
 <script>
 /* El mismo número que en el resto del sitio, y dice de dónde viene el

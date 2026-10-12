@@ -1356,9 +1356,14 @@ function vError(msg){
 function avisar(msg){
   let n=document.getElementById('aviso-toast');
   if(!n){ n=document.createElement('div'); n.id='aviso-toast';
+    /* `pointer-events:none`: el aviso se corre para no TAPAR el botón
+       grande, pero mientras está puesto igual se comía el toque de lo que
+       quedara abajo. Un cartel que aparece solo y se va solo no puede
+       atajar un dedo — y encima el que lo toca cree que tocó el botón.
+       Lo encontró pruebas/barrido.js sobre el disparador de la cámara. */
     n.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#171310;'
       +'color:#F6F2EA;border:1px solid var(--hilo2);padding:12px 20px;border-radius:30px;font-size:12.5px;'
-      +'z-index:80;max-width:86vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)';
+      +'z-index:80;max-width:86vw;text-align:center;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.5)';
     document.body.appendChild(n);
   }
   /* El aviso vive abajo de todo, que es justo donde está el botón grande
