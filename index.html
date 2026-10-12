@@ -414,39 +414,111 @@ nav .links a:hover:after{width:100%}
 h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .cabeza p,.inc p,.serv p{text-wrap:pretty}
 .ap.ver{opacity:1;transform:none}
+/* "Deslizá para ver las tres" solo tiene sentido donde se desliza */
+.solo-angosto{display:none}
+@media(max-width:640px){.solo-angosto{display:inline}}
 
 /* ═══ servicios ═══ */
+/* ── la tarjeta ──
+   Decisión del dueño mirando el mockup: "en tarjeta, que mejor que como
+   está hoy". De la referencia se toman el radio grande, el ícono en un
+   círculo y la flecha circular. Lo que NO se toma es el ícono SOLO: la
+   referencia es una agencia de marketing y no tiene nada que mostrar, por
+   eso dibuja un ícono. Nosotros tenemos la captura del producto andando,
+   que es lo que vende; el círculo queda de insignia encima de la foto. */
 .servicios{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.serv{border:1px solid var(--gris);padding:34px 28px 30px;position:relative;overflow:hidden;
-  transition:border-color .5s,transform .5s var(--e);background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.serv{--alto-escena:170px;
+  border:1px solid var(--gris);border-radius:26px;padding:0 24px 26px;display:block;
+  position:relative;overflow:hidden;
+  transition:border-color .5s,transform .5s var(--e);background:linear-gradient(158deg,rgba(255,255,255,.05),transparent 72%)}
 .serv:hover{border-color:var(--hilo2);transform:translateY(-6px)}
+/* La tarjeta abierta se queda quieta y marcada: si se sigue levantando con
+   el hover, el panel de abajo baila con el mouse. */
+.serv.abierta{border-color:var(--oro);transform:none}
 /* ── la ventana con el producto de verdad ──
    Acá había tres dibujos hechos con CSS (un sobre, una pila, una tira de
    película) que se animaban SOLO con :hover. En un teléfono el hover no
    existe, así que quedaban tres rectángulos marrones quietos y el dueño
    los leyó como lo que parecían: una maqueta sin terminar. Ahora son
    capturas de la app andando. */
-.serv .escena{height:170px;position:relative;margin:-34px -28px 24px;overflow:hidden;
+.serv .escena{height:var(--alto-escena);position:relative;margin:0 -24px 0;overflow:hidden;
   background:#0E0C0A;border-bottom:1px solid var(--gris)}
 .serv .escena img{width:100%;height:100%;object-fit:cover;object-position:center;
   transition:transform .8s var(--e)}
 .serv .escena:after{content:'';position:absolute;inset:0;
   background:linear-gradient(180deg,transparent 45%,rgba(10,8,6,.85))}
 @media(hover:hover){ .serv:hover .escena img{transform:scale(1.06)} }
+/* el ícono en su círculo, montado sobre el borde de la foto */
+.serv .chip{position:absolute;left:24px;top:calc(var(--alto-escena) - 26px);z-index:3;
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  background:#15110D;border:1px solid var(--hilo);
+  box-shadow:0 10px 24px rgba(0,0,0,.55)}
+.serv .chip svg{width:23px;height:23px;stroke:var(--champan);fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:520px){
-  .serv{padding:26px 20px 24px}
-  .serv .escena{height:132px;margin:-26px -20px 20px}
+  .serv{--alto-escena:132px;padding:0 20px 22px}
+  .serv .escena{margin:0 -20px 0}
+  .serv .chip{left:20px;width:46px;height:46px;top:calc(var(--alto-escena) - 23px)}
+  .serv .chip svg{width:20px;height:20px}
   .serv h3{font-size:24px}
 }
-.serv h3{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:26px;margin-bottom:12px}
+/* El aire entre el ícono y el título es la mitad del patrón de la
+   referencia: sin él la tarjeta vuelve a ser una lista apretada. */
+.serv h3{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:26px;margin:52px 0 10px}
 .serv h3 em{color:var(--oro)}
-.serv p{color:#B3A99C;font-size:15.5px;line-height:1.7;margin-bottom:22px}
+.serv p{color:#B3A99C;font-size:15.5px;line-height:1.7;margin-bottom:0}
+.serv .pie-serv{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px}
 .serv .mas{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--oro);
   display:inline-flex;align-items:center;gap:10px;transition:gap .4s var(--e)}
-.serv:hover .mas{gap:18px}
-.serv .etiq{position:absolute;top:20px;right:20px;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
-  border:1px solid var(--hilo);padding:5px 10px;color:var(--oro);border-radius:2px}
+.serv .flecha{width:40px;height:40px;border-radius:50%;border:1px solid var(--hilo);flex:none;
+  display:grid;place-items:center;color:var(--oro);font-size:15px;
+  transition:background .35s ease,color .35s ease,transform .35s var(--e)}
+@media(hover:hover){ .serv:hover .mas{gap:18px} .serv:hover .flecha{background:var(--oro);color:#241804;transform:translateX(3px)} }
+.serv.abierta .flecha{background:var(--oro);color:#241804;transform:rotate(90deg)}
+.serv .etiq{position:absolute;top:18px;right:18px;z-index:3;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
+  border:1px solid var(--hilo);padding:5px 11px;color:var(--oro);border-radius:999px;background:rgba(10,8,6,.5)}
 @media(max-width:900px){.servicios{grid-template-columns:1fr}}
+
+/* ── la prueba del servicio, abierta en la misma tarjeta ──
+   "Donde dice ver más, que se abra y ahí esté la prueba del servicio. Es
+   lo más importante." (dueño, 12/10/2026). Hasta acá "Ver más" bajaba a
+   un bloque de TEXTO: el que llega de un anuncio quiere ver el producto,
+   no leer sobre él.
+   El marco se enciende recién al abrirse y se APAGA al cerrarse. Tres
+   marcos más en la carga inicial es exactamente lo que ya costó caro en
+   la vitrina: en 4G se estorban y no termina de cargar ninguno. */
+.prueba{grid-column:1 / -1;border:1px solid var(--hilo);border-radius:26px;padding:26px;
+  position:relative;background:linear-gradient(158deg,rgba(217,174,114,.08),transparent 62%);
+  animation:abrirPrueba .5s var(--e) both}
+@keyframes abrirPrueba{from{opacity:0;transform:translateY(-14px)}}
+.pr-caja{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;align-items:center}
+.prueba.tel .pr-caja{grid-template-columns:minmax(0,250px) minmax(0,1fr)}
+/* adentro del panel el aparato no se toca: no se levanta ni invita a nada */
+.prueba .pieza{cursor:default;margin-inline:auto}
+.prueba .pieza:hover .marco-p{transform:none}
+.pr-texto .eyebrow{margin-bottom:10px}
+.pr-texto h3{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(22px,2.4vw,29px);margin-bottom:12px}
+.pr-texto h3 em{color:var(--oro)}
+/* Sin esto el título sale pegado: "se proyectaen el salón". Es lo mismo
+   que ya resuelve .cabeza h2 em. */
+.pr-texto h3 em::before{content:" "}
+.pr-texto>p{color:#B3A99C;font-size:15.5px;line-height:1.7}
+.pr-lista{list-style:none;margin:18px 0 24px;display:grid;gap:9px}
+.pr-lista li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.6;color:#CFC5B7}
+.pr-lista li:before{content:'';position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--oro)}
+.pr-botones{display:flex;gap:12px;flex-wrap:wrap}
+.pr-detalle{display:inline-block;margin-top:18px;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--mute);padding:11px 2px}
+.pr-detalle:hover{color:var(--oro)}
+.pr-cerrar{position:absolute;top:10px;right:10px;z-index:4;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;color:var(--mute);font-size:15px;background:transparent;border:0}
+.pr-cerrar:hover{color:var(--oro)}
+@media(max-width:860px){
+  .prueba{padding:20px 18px 22px}
+  .pr-caja,.prueba.tel .pr-caja{grid-template-columns:1fr;gap:24px}
+  .prueba .pieza.tel{max-width:230px}
+  .pr-cerrar{top:6px;right:6px}
+}
 
 /* ── ya contrataste: por dónde entra el cliente ──
    Faltaba. Había un enlace al panel escondido en el pie, con media
@@ -617,10 +689,17 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    seguía apilada y la medición decía 2,3 pantallas igual que sin tocar
    nada. Dos reglas para lo mismo, gana la última. */
 @media(max-width:640px){
+  /* `width:auto` no es un detalle: la regla de arriba pone width:100%, que
+     es el 100% del .wrap YA descontado su padding. Con los márgenes
+     negativos encima, el carrusel quedaba de 342px en una pantalla de 390 y
+     la tarjeta siguiente se cortaba contra un borde invisible a 48px del
+     costado. Medido en un iPhone: se lee como una foto cortada, no como
+     algo que se desliza. */
   .trabajos{flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;
-    align-items:flex-start;overflow-x:auto;
+    align-items:flex-start;overflow-x:auto;width:auto;
     scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
     margin-inline:-24px;padding-inline:24px;padding-bottom:6px;
+    scroll-padding-inline:24px;
     gap:18px;scrollbar-width:none}
   .trabajos::-webkit-scrollbar{display:none}
   .trabajo{flex:0 0 78%;width:78%;max-width:78%;margin-inline:0;scroll-snap-align:center}
@@ -630,8 +709,19 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
      en blanco. La aparición de a una tiene sentido apiladas, no en una
      fila que se desliza: acá entra la fila entera y listo. */
   .trabajo.ap{opacity:1;transform:none;animation:none}
-  .pista-toque{margin-top:26px}
+  .pista-toque{margin-top:22px}
 }
+/* los puntitos: solo existen donde la galería se desliza.
+   El `display:flex` va en SU PROPIO bloque y DESPUÉS: metido adentro del
+   @media de arriba lo pisaba este mismo `display:none`, que viene después
+   y tiene la misma especificidad. Es la trampa de siempre. */
+.puntos{display:none;justify-content:center;gap:9px;margin-top:22px}
+.puntos span{width:7px;height:7px;border-radius:50%;background:#C9BFB2;opacity:.45;
+  transition:opacity .3s,transform .3s var(--e),background .3s;cursor:pointer;
+  /* el área que ataja el dedo, sin agrandar el punto */
+  box-sizing:content-box;padding:14px 7px;background-clip:content-box}
+.puntos span.hoy{background:var(--oro);opacity:1;transform:scale(1.15)}
+@media(max-width:640px){.puntos{display:flex}}
 
 /* visor */
 .visor{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);
@@ -970,29 +1060,123 @@ footer .datos{line-height:1.6}
       <p>De la invitación al recuerdo. Cada una va sola o las tres juntas.</p>
     </div>
 
+    <!-- Cada tarjeta abre su panel de abajo con el servicio ANDANDO. El
+         href sigue apuntando a la sección de texto a propósito: si el
+         JavaScript no corre, "Ver la prueba" lleva igual a algún lado en
+         vez de no hacer nada. -->
     <div class="servicios">
-      <a class="serv ap" href="#invitaciones">
+      <a class="serv ap" href="#invitaciones" data-prueba="invitaciones">
         <div class="escena"><img src="muestra/invitacion.jpg" alt="La cuenta regresiva de una invitación digital" loading="lazy" width="1040" height="585"></div>
+        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></span>
         <h3 class="serif">Invitaciones <em>digitales</em></h3>
         <p>Una web propia para tu evento. Se abre como un sobre y confirma quién viene.</p>
-        <span class="mas">Ver más →</span>
+        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
       </a>
 
-      <a class="serv ap" href="#muro">
+      <div class="prueba tel" id="pr-invitaciones" data-de="invitaciones" hidden>
+        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
+        <div class="pr-caja">
+          <div class="pieza tel">
+            <div class="marco-p"><div class="chasis"><div class="visor-p">
+              <div class="quieto">Una invitación de verdad</div>
+              <div class="vivo" data-tarde="1" data-vivo="pia/nueva/" data-ancho="390" data-nombre="una invitación digital"></div>
+            </div></div></div>
+          </div>
+          <div class="pr-texto">
+            <p class="eyebrow">Andando ahora mismo</p>
+            <h3 class="serif">Esta es la invitación de Pía,<em>abierta en vivo</em></h3>
+            <p>No es una captura: es la misma web que recibieron sus invitados, corriendo acá adentro.</p>
+            <ul class="pr-lista">
+              <li>Se abre como un sobre, con un gesto.</li>
+              <li>La cuenta regresiva corre sola.</li>
+              <li>Confirman del celular y ves la lista.</li>
+              <li>El alias para regalos se copia de un toque.</li>
+            </ul>
+            <div class="pr-botones">
+              <button class="btn btn-oro" type="button" data-abrir-demo="pia/nueva/" data-nombre-demo="una invitación digital">Abrirla entera</button>
+              <a class="btn btn-hilo" href="#contacto" data-wsp="Hola Click Eterno! Quiero una invitación digital para mi fiesta. Es el:">Pedir presupuesto</a>
+            </div>
+            <a class="pr-detalle" href="#invitaciones">Ver todo lo que incluye →</a>
+          </div>
+        </div>
+      </div>
+
+      <a class="serv ap" href="#muro" data-prueba="muro">
         <span class="etiq">Nuevo</span>
         <div class="escena"><img src="muestra/muro.jpg" alt="La pantalla del salón proyectando las fotos de los invitados" loading="lazy" width="1040" height="585"></div>
+        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10.5" r="2.6"/></svg></span>
         <h3 class="serif">Muro de fotos <em>en vivo</em></h3>
         <p>Sacan la foto y aparece proyectada al instante en el salón.</p>
-        <span class="mas">Ver más →</span>
+        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
       </a>
 
-      <a class="serv ap" href="#rollo">
+      <div class="prueba" id="pr-muro" data-de="muro" hidden>
+        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
+        <div class="pr-caja">
+          <div class="pieza sala">
+            <div class="marco-p">
+              <div class="chasis"><div class="visor-p">
+                <div class="quieto">La pantalla del salón</div>
+                <div class="vivo" data-tarde="1" data-vivo="muro?demo=1&amp;marco=1" data-ancho="1200" data-nombre="el muro en vivo"></div>
+              </div></div>
+              <div class="base"></div><div class="pata"></div>
+            </div>
+          </div>
+          <div class="pr-texto">
+            <p class="eyebrow">Andando ahora mismo</p>
+            <h3 class="serif">Esto es lo que se proyecta<em>en el salón</em></h3>
+            <p>La pantalla va sola toda la noche. Lo que manda un invitado desde su celular aparece ahí en segundos.</p>
+            <ul class="pr-lista">
+              <li>Escanean el código de la mesa. Sin instalar nada.</li>
+              <li>Nada se proyecta sin tu visto bueno.</li>
+              <li>Se actualiza sola: nadie toca la computadora.</li>
+              <li>Al otro día te llevás el álbum completo.</li>
+            </ul>
+            <div class="pr-botones">
+              <button class="btn btn-oro" type="button" data-abrir-demo="muro?demo=1" data-ancho-demo="1" data-nombre-demo="el muro en vivo">Probarlo entero</button>
+              <a class="btn btn-hilo" href="#contacto" data-wsp="Hola Click Eterno! Quiero el Muro de fotos en vivo para mi fiesta. Es el:">Pedir presupuesto</a>
+            </div>
+            <a class="pr-detalle" href="#muro">Ver todo lo que incluye →</a>
+          </div>
+        </div>
+      </div>
+
+      <a class="serv ap" href="#rollo" data-prueba="rollo">
         <span class="etiq">Nuevo</span>
         <div class="escena"><img src="muestra/rollo.jpg" alt="El álbum del rollo eterno, ya revelado" loading="lazy" width="1040" height="585"></div>
+        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5h3l1.6-2.5h8.8L18 8.5h3v10H3z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
         <h3 class="serif">Rollo <em>eterno</em></h3>
         <p>La cámara descartable, digital. Nadie ve nada hasta el revelado.</p>
-        <span class="mas">Ver más →</span>
+        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
       </a>
+
+      <div class="prueba tel" id="pr-rollo" data-de="rollo" hidden>
+        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
+        <div class="pr-caja">
+          <div class="pieza tel">
+            <div class="marco-p"><div class="chasis"><div class="visor-p">
+              <div class="quieto">El álbum, ya revelado</div>
+              <div class="vivo" data-tarde="1" data-vivo="rollo?demo=1&amp;marco=1" data-ancho="390" data-nombre="el álbum del rollo"></div>
+            </div></div></div>
+          </div>
+          <div class="pr-texto">
+            <p class="eyebrow">Andando ahora mismo</p>
+            <h3 class="serif">El álbum del rollo,<em>recién revelado</em></h3>
+            <p>Así lo abre cada invitado al otro día. Antes de la hora que elijas, esta pantalla no existe para nadie.</p>
+            <ul class="pr-lista">
+              <li>Fotos contadas, como una cámara descartable.</li>
+              <li>Cinco filtros, elegidos antes de disparar.</li>
+              <li>Nadie las ve hasta el revelado. Ni nosotros.</li>
+              <li>Te llevás todas las fotos, con cada nombre.</li>
+            </ul>
+            <div class="pr-botones">
+              <button class="btn btn-oro" type="button" data-abrir-demo="rollo?demo=1" data-nombre-demo="el rollo eterno">Probarlo entero</button>
+              <a class="btn btn-hilo" href="#contacto" data-wsp="Hola Click Eterno! Quiero el Rollo eterno para mi fiesta. Es el:">Pedir presupuesto</a>
+            </div>
+            <a class="pr-detalle" href="#rollo">Ver todo lo que incluye →</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1081,7 +1265,8 @@ footer .datos{line-height:1.6}
     </div>
 
     <div class="trabajos" id="galeriaTrabajos"></div>
-    <p class="pista-toque">Tocá cualquiera para abrirla y probarla</p>
+    <div class="puntos" id="puntosTrabajos"></div>
+    <p class="pista-toque"><span class="solo-angosto">Deslizá para ver las tres. </span>Tocá cualquiera para abrirla y probarla</p>
   </div>
 </section>
 
@@ -1590,15 +1775,60 @@ document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
   </div>`).join('');
 document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   io.observe(el);
-  el.onclick=()=>abrirVisor(el.dataset.url,'la invitación de '+el.dataset.nombre);
+  /* ── un deslizado NO puede abrir el visor ──
+     En el teléfono la galería es un carrusel y el dedo arranca ARRIBA de
+     una tarjeta: sin esto, intentar pasar a la invitación siguiente abría
+     la invitación a pantalla completa. Desde afuera eso se lee como "no se
+     mueve", que es exactamente lo que reportó el dueño. Cuando el navegador
+     se queda con el gesto para scrollear manda `pointercancel`, así que
+     también cuenta como arrastre. */
+  let x0=0,y0=0,arrastro=false;
+  el.addEventListener('pointerdown',e=>{ x0=e.clientX; y0=e.clientY; arrastro=false; });
+  el.addEventListener('pointermove',e=>{
+    if(Math.abs(e.clientX-x0)>8||Math.abs(e.clientY-y0)>8) arrastro=true;
+  });
+  el.addEventListener('pointercancel',()=>{ arrastro=true; });
+  el.addEventListener('click',()=>{
+    if(arrastro){ arrastro=false; return; }
+    abrirVisor(el.dataset.url,'la invitación de '+el.dataset.nombre);
+  });
 });
+
+/* ── los puntitos del carrusel ──
+   Un carrusel sin nada que diga cuántos hay parece una tarjeta cortada.
+   Solo se ven abajo de 640px, que es donde la galería se desliza. */
+(function(){
+  const g=document.getElementById('galeriaTrabajos'), ps=document.getElementById('puntosTrabajos');
+  if(!g||!ps) return;
+  const tar=[...g.children];
+  if(tar.length<2) return;
+  ps.innerHTML=tar.map((_,i)=>'<span'+(i?'':' class="hoy"')+'></span>').join('');
+  const puntos=[...ps.children];
+  let pedido=false;
+  const marcar=()=>{
+    pedido=false;
+    const centro=g.scrollLeft+g.clientWidth/2;
+    let mejor=0,cerca=Infinity;
+    tar.forEach((t,i)=>{
+      const d=Math.abs(t.offsetLeft+t.offsetWidth/2-centro);
+      if(d<cerca){ cerca=d; mejor=i; }
+    });
+    puntos.forEach((p,i)=>p.classList.toggle('hoy',i===mejor));
+  };
+  g.addEventListener('scroll',()=>{ if(!pedido){ pedido=true; requestAnimationFrame(marcar); } },{passive:true});
+  puntos.forEach((p,i)=>p.addEventListener('click',()=>{
+    g.scrollTo({left:tar[i].offsetLeft-(g.clientWidth-tar[i].offsetWidth)/2,behavior:'smooth'});
+  }));
+})();
 
 /* ═══ las invitaciones reales, en vivo dentro de cada celular ═══
    Debajo queda siempre la portada dibujada: si un sitio no se deja
    incrustar o tarda, no se ve un hueco en blanco, se ve la portada. */
 (function(){
-  const capas=[...document.querySelectorAll('.vivo')];
-  if(!capas.length) return;
+  /* Los marcados `data-tarde` son los de la prueba de cada servicio: no
+     existen en la pantalla hasta que alguien abre su tarjeta, así que no
+     entran en la fila de la carga inicial. Se prenden con prenderVivo. */
+  const capas=[...document.querySelectorAll('.vivo:not([data-tarde])')];
 
   const encajar=(capa,marco)=>{
     const ancho=capa.clientWidth, alto=capa.clientHeight;
@@ -1668,11 +1898,77 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     });
   };
 
+  /* La prueba de cada servicio se abre después, cuando esto ya corrió:
+     se le deja la puerta para prender su marco en ese momento, con la
+     misma fila y el mismo respaldo. */
+  window.prenderVivo=capa=>enFila(()=>encender(capa));
+
+  if(!capas.length) return;
   if(!('IntersectionObserver' in window)) return capas.forEach(c=>enFila(()=>encender(c)));
   const vigia=new IntersectionObserver(es=>es.forEach(e=>{
     if(e.isIntersecting){ enFila(()=>encender(e.target)); vigia.unobserve(e.target); }
   }),{rootMargin:'400px'});
   capas.forEach(c=>vigia.observe(c));
+})();
+
+/* ═══ la prueba de cada servicio ═══
+   La tarjeta abre el panel de abajo con el servicio andando de verdad.
+   Dos cosas que no son adorno:
+     · El marco se enciende al abrir y se APAGA al cerrar. Dejarlo prendido
+       en un panel escondido es un muro demostración latiendo cada siete
+       segundos abajo de la página, toda la visita.
+     · Si el marco nunca llega —4G, un sitio caído—, abajo queda la portada
+       con la rayita que late, igual que en la vitrina: nunca un hueco. */
+(function(){
+  const paneles=[...document.querySelectorAll('.prueba')];
+  if(!paneles.length) return;
+  let abierto=null;
+
+  const apagar=panel=>{
+    const capa=panel.querySelector('.vivo');
+    if(!capa) return;
+    const marco=capa.querySelector('iframe');
+    if(marco) marco.remove();
+    capa.classList.remove('listo');
+    delete capa.dataset.encendida;
+  };
+
+  const cerrar=()=>{
+    if(!abierto) return;
+    const panel=abierto; abierto=null;
+    panel.hidden=true; apagar(panel);
+    const t=document.querySelector('.serv[data-prueba="'+panel.dataset.de+'"]');
+    if(t) t.classList.remove('abierta');
+  };
+
+  const abrir=tarjeta=>{
+    const panel=document.getElementById('pr-'+tarjeta.dataset.prueba);
+    if(!panel) return;
+    if(abierto===panel) return cerrar();
+    cerrar();
+    panel.hidden=false; abierto=panel; tarjeta.classList.add('abierta');
+    const capa=panel.querySelector('.vivo');
+    if(capa && window.prenderVivo) window.prenderVivo(capa);
+    /* Abierto el panel, el que tocó tiene que VERLO. En un teléfono la
+       tarjeta ocupa la pantalla entera: sin esto el panel se abre abajo
+       del borde y no pasa nada a la vista. */
+    requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}));
+  };
+
+  document.querySelectorAll('.serv[data-prueba]').forEach(t=>{
+    t.addEventListener('click',e=>{ e.preventDefault(); abrir(t); });
+  });
+  paneles.forEach(panel=>{
+    panel.querySelector('.pr-cerrar').addEventListener('click',cerrar);
+  });
+  addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
+
+  /* "Probarlo entero" abre el mismo visor de siempre: ahí adentro se toca,
+     que es lo que el marco del panel no deja hacer. */
+  document.querySelectorAll('[data-abrir-demo]').forEach(b=>{
+    b.addEventListener('click',()=>abrirVisor(b.dataset.abrirDemo,
+      b.dataset.nombreDemo||'la demostración', b.hasAttribute('data-ancho-demo')));
+  });
 })();
 
 /* ═══ las dos piezas de "la app andando" abren la demostración ═══ */

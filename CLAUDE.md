@@ -1532,8 +1532,10 @@ presupuesto se cierra hablando.
 
 ### Las letras, y por qué se cambiaron
 
-**Gloock** para los títulos y **Hanken Grotesk** para el texto. Antes eran
-**Bodoni Moda + Jost**, y el cambio no es de gusto:
+**Una sola familia en todo: Hanken Grotesk**, y la jerarquía la hace el
+PESO, no la fuente. Los títulos en 800 con el interletrado cerrado
+(`-.035em`), el texto en 300. Antes eran **Bodoni Moda + Jost**, y el
+cambio no es de gusto:
 
 - La **Bodoni es una didone**: el contraste entre el trazo grueso y el
   fino es enorme a propósito. En un cartel es preciosa; en un teléfono a
@@ -1541,21 +1543,95 @@ presupuesto se cierra hablando.
   *"como que desaparecen"*.
 - La **Jost tiene la equis baja** (es una geométrica tipo Futura), así que
   el texto chico parece más chico de lo que es.
-- **Gloock mantiene el mismo aire** —es del mismo género— con los finos
-  mucho más gruesos de fábrica, y **Hanken Grotesk** tiene la equis alta.
+- **Hanken Grotesk tiene la equis alta** y bastardilla de verdad.
 
-**Gloock no tiene bastardilla**, y la marca la usaba en todos lados ("en
-*vivo*", "*digitales*"). Pedirla igual hace que el navegador invente una
-oblicua torcida, y eso se nota. **El acento lo hace el oro**, que era la
-otra mitad del recurso igual. Donde hacía falta una cursiva de verdad —el
+En el medio hubo una vuelta por **Gloock** para los títulos, que el dueño
+aprobó y después descartó: *"a mí me gusta eso para todo, que sea canchero
+está bueno"*, mirando el mockup del rollo en grotesca gruesa. Gloock además
+**no tiene bastardilla** y la marca la usa en todos lados ("en *vivo*",
+"*digitales*"): pedirla igual hace que el navegador invente una oblicua
+torcida. Hanken Grotesk la tiene de fábrica, así que el acento vuelve a ser
+el oro **y** la cursiva. Donde hace falta una cursiva de otro género —el
 nombre dibujado adentro de los celulares de Trabajos, que es el diseño de
 OTRA marca, no la nuestra— va una del sistema (Georgia).
+
+**El peso que se pide en el link tiene que ser el que usa el CSS.** Se
+piden 300/400/500/600/700/800 y las dos bastardillas; un `font-weight` que
+no esté pedido se lo inventa el navegador y eso no avisa.
 
 **Las apps siguen en Bodoni.** `muro.html` y `rollo.html` no se tocaron:
 ahí la letra la ve un invitado tres segundos en una pantalla, no alguien
 leyendo una página de venta, y cambiarlas toca las pruebas que cuidan que
 las dedicatorias vayan en Poppins. Si alguna vez se unifican, es una
 pasada aparte.
+
+### Los servicios son tarjetas, y la tarjeta ABRE la prueba
+
+Dos cosas que pidió el dueño el 12/10/2026, mirando la página en su
+iPhone. La segunda la dijo con todas las letras: *"me gustaría que cada
+servicio en donde dice ver más se abra y ahí esté la prueba del servicio.
+**Es lo más importante**"*.
+
+**La forma**, de una referencia de Behance que él eligió (*"en tarjeta,
+que mejor que como está hoy"*): radio grande (26px), el ícono adentro de
+un círculo, aire entre el ícono y el título, y una flecha circular. De la
+referencia **no se toma el ícono SOLO**: es una agencia de marketing y no
+tiene nada que mostrar, por eso dibuja un ícono. Nosotros tenemos la
+captura del producto andando, que es lo que vende; el círculo quedó de
+insignia montada sobre el borde de la foto.
+
+**El fondo**: hasta acá "Ver más" bajaba a un bloque de TEXTO. El que
+llega de un anuncio quiere ver el producto, no leer sobre él. Ahora la
+tarjeta abre, ahí mismo, un panel con **el servicio andando de verdad**:
+la pantalla del salón proyectando, el álbum del rollo revelado, y la
+invitación de Pía. Abajo, cuatro renglones de qué incluye, "Probarlo
+entero" (que abre el visor, donde SÍ se toca) y "Pedir presupuesto".
+
+Tres cosas que no son adorno:
+
+- **El marco se enciende al abrir y se APAGA al cerrar.** Tres marcos más
+  en la carga inicial es exactamente lo que ya costó caro en la vitrina:
+  en 4G se estorban entre ellos y no termina de cargar ninguno. Y un muro
+  demostración latiendo cada siete segundos abajo de un panel cerrado es
+  la visita entera pagando algo que nadie mira. Para prenderlo tarde, el
+  IIFE de los marcos exporta `prenderVivo` y saltea los `.vivo[data-tarde]`.
+- **El `href` sigue apuntando a la sección de texto.** Si el JavaScript no
+  corre, la tarjeta lleva igual a algún lado en vez de no hacer nada. Es
+  la misma razón por la que los botones de producto apuntan a `#contacto`.
+- **El panel ocupa la fila entera** (`grid-column:1/-1`), así que en
+  escritorio se abre debajo de las tres tarjetas y en un teléfono —una
+  columna— queda pegado a la suya. Y al abrirse se trae la pantalla hasta
+  él: abierto abajo del borde, no pasa nada a la vista.
+
+Lo mide `pruebas/servicios.js`. Contra el código anterior da **9 fallas**.
+
+### El carrusel que se veía cortado y no se movía
+
+El mismo reporte, la primera mitad: *"esto se ve cortado y no se mueven
+para las otras invitaciones"*. Eran **dos** fallas que se tapaban entre sí
+y las dos se ven perfectas en un escritorio:
+
+- **El carrusel medía 342px en una pantalla de 390.** La regla base le
+  pone `width:100%`, que es el 100% del `.wrap` **ya descontado su
+  padding**; con los márgenes negativos encima, la galería arrancaba en 0
+  pero terminaba a 48px del borde derecho, y la tarjeta siguiente se
+  cortaba contra un borde invisible. Se arregla con `width:auto` en el
+  bloque del carrusel. Un número que depende del padding de otro no se
+  escribe dos veces.
+- **Y deslizar ABRÍA la invitación a pantalla completa.** El dedo arranca
+  arriba de una tarjeta, que tiene su `click`: el que intentaba pasar a la
+  siguiente se comía el visor. Desde afuera eso es exactamente *"no se
+  mueve"*. Ahora un movimiento de más de 8px —o un `pointercancel`, que es
+  lo que manda el navegador cuando se queda con el gesto para scrollear—
+  cancela el toque.
+
+Se le sumaron **los puntitos**: un carrusel sin nada que diga cuántos hay
+parece una tarjeta recortada. Son tocables (44px de área con `padding` y
+`background-clip:content-box`, sin agrandar el punto) y solo existen abajo
+de 640px. Ojo con dónde se escribe su `display:flex`: metido adentro del
+`@media` de arriba lo pisaba el `display:none` de la regla base, que viene
+después y tiene la misma especificidad. Dos reglas para lo mismo, gana la
+última — por tercera vez en este archivo.
 
 ### Lo que se mueve, y por qué eso
 

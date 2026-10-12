@@ -533,7 +533,7 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(1800);
       const como = cod ? 'con una fiesta de verdad' : 'con la demostración';
-      await p.click('.pieza.sala[data-abrir]').catch(() => {});
+      await p.click('.vitrina .pieza.sala[data-abrir]').catch(() => {});
       await p.waitForTimeout(2600);
       const abrio = await p.evaluate(() =>
         document.getElementById('visor').classList.contains('abierto'));

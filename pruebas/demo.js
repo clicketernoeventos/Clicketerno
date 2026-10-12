@@ -295,7 +295,10 @@ async function abrir(ctx) {
 
     /* Al tocar se agranda ACÁ, no en otra pestaña: el visitante prueba y
        vuelve con la X sin perderse del sitio. */
-    await pg.locator('.pieza.sala').click();
+    /* `.vitrina` adelante: desde que la prueba de cada servicio dibuja su
+       propio aparato, `.pieza.sala` suelto encuentra dos. Un selector que
+       se vuelve ambiguo no falla por lo que mide: revienta. */
+    await pg.locator('.vitrina .pieza.sala').click();
     await pg.waitForTimeout(4000);
     const visor = await pg.evaluate(() => {
       const v = document.getElementById('visor');
