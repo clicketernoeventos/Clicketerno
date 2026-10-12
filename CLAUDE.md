@@ -1625,6 +1625,25 @@ y las dos se ven perfectas en un escritorio:
   lo que manda el navegador cuando se queda con el gesto para scrollear—
   cancela el toque.
 
+**Y seguía cortada, pero por el otro lado: por abajo.** Arreglado el ancho,
+la tarjeta pasó a medir **633px** y el dueño volvió a decir lo mismo: *"está
+queda cortada"*. En un iPhone la barra del navegador se come unos 145, así
+que la pantalla útil no es 844 sino ~700: el nombre de la fiesta quedaba
+debajo del borde y se veía medio teléfono.
+
+**El ancho de una tarjeta de celular no se elige por el ancho.** La pantalla
+es 9/19.5, así que cada píxel de ancho son **2,17 de alto**: poner un
+porcentaje del ancho es decidir el alto sin mirarlo. Ahora el ancho sale del
+alto disponible —`min(78%, calc((78svh - 56px) / 2.17))`— y el 78% del ancho
+queda de techo, así que en una pantalla alta no cambia nada.
+
+**`svh` y no `vh`**: `vh` en un iPhone es la pantalla **con las barras
+escondidas**, que es justo el caso que no hay que medir. El `vh` va de
+respaldo para quien no tenga `svh`.
+
+Lo mide `pruebas/largo.js` **a 700 y a 667** (un iPhone SE), no a 844: a 844
+la falla no existe y la prueba habría pasado con el código roto.
+
 Se le sumaron **los puntitos**: un carrusel sin nada que diga cuántos hay
 parece una tarjeta recortada. Son tocables (44px de área con `padding` y
 `background-clip:content-box`, sin agrandar el punto) y solo existen abajo
