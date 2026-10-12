@@ -1648,10 +1648,23 @@ versiones nuevas.
   mala señal el que consulta toca tres veces. Va con `!important` porque
   varios `:hover` también mueven el `transform` y, al soltar el dedo,
   ganaba el otro. De paso se anula el hover pegado en `@media(hover:none)`.
-- **La cinta de abajo acelera con el scroll.** El bucle vive en `.pista` y
-  el empujón en `.riel`, que es su padre: **las dos cosas en el mismo
-  elemento se pisan el `transform`**. El tope de 48px es lo que entra
-  adentro del degradado de los costados; más que eso y se ve el corte.
+- ~~**La cinta de abajo acelera con el scroll.**~~ **Sacada** (12/10/2026),
+  y la había elegido él del muestrario. En el teléfono quedaba al revés de
+  lo que promete: bajando se apura, pero **subiendo el empujón va CONTRA
+  la animación** y la cinta se queda clavada o retrocede 12px. Eso no se
+  lee como un efecto, se lee como que se colgó: *"el texto que pase que no
+  se frene… queda horrible, que quede como estaba antes, que se iba
+  pasando despacio"*. Vuelve a ser un solo bucle de 42s, siempre a la
+  misma velocidad. De paso se fue un `requestAnimationFrame` que corría
+  para siempre a 60 cuadros por segundo aunque el empujón valiera cero.
+  Lo mide `pruebas/largo.js`: mide la **caja de verdad** de `.pista` —el
+  bucle vive ahí y el empujón vivía en su padre, así que mirar el
+  `transform` de la pista sola no mostraría nada— mientras scrollea hacia
+  arriba, y falla si retrocede. Contra el código anterior da 2 fallas.
+  La lección, que ya está escrita más arriba de otra forma: **una
+  animación elegida mirando un muestrario en un escritorio puede salir
+  distinta en un teléfono**, y acá lo que cambia no es cuánto se ve sino
+  en qué dirección va.
 
 **Todo lo que depende del scroll pasa por un solo oyente** con
 `requestAnimationFrame`: tres oyentes sueltos corriendo en cada píxel es

@@ -341,10 +341,20 @@ nav .links a:hover:after{width:100%}
   overflow:hidden;display:block;
   -webkit-mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
   mask:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
-/* El riel existe para poder empujar la cinta con el scroll SIN pelearse
-   con la animación: el bucle vive en .pista y el empujón en .riel, que es
-   su padre. Las dos en el mismo elemento se pisan el transform. */
-.marquesina .riel{display:flex;transform:translate3d(var(--empuje,0px),0,0);will-change:transform}
+/* ── la cinta corre sola, SIEMPRE a la misma velocidad ──
+   Hubo una versión que la aceleraba con el scroll (el dueño la había
+   elegido de un muestrario). En el teléfono quedó al revés de lo que
+   promete: bajando se apura, pero SUBIENDO el empujón va contra la
+   animación y la cinta se queda clavada o retrocede. Él lo vio y lo dijo
+   con todas las letras: *"el texto que pase que no se frene… queda
+   horrible, que quede como estaba antes, que se iba pasando despacio"*.
+   Una cinta que se frena no parece una decisión, parece que se colgó.
+   De paso se fue un requestAnimationFrame que corría para siempre a 60
+   cuadros por segundo aunque el empujón valiera cero: batería del que
+   está leyendo la página.
+   El riel se queda porque es lo que pone las dos pistas en fila; lo que
+   se fue es su transform. */
+.marquesina .riel{display:flex}
 .marquesina .pista{flex:0 0 auto;min-width:100%;display:flex;align-items:center;gap:46px;padding-right:46px;
   animation:correr 42s linear infinite;will-change:transform}
 .marquesina .mq{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;color:var(--mute);
@@ -975,7 +985,7 @@ footer .datos{line-height:1.6}
 </div>
 
 <div class="marquesina">
-  <div class="riel" id="rielMq">
+  <div class="riel">
     <div class="pista" id="pista1"></div>
     <div class="pista" id="pista2" aria-hidden="true"></div>
   </div>
@@ -1506,9 +1516,9 @@ document.addEventListener('click', e=>{
    requestAnimationFrame: tres oyentes sueltos corriendo en cada píxel es
    lo que hace que una página se sienta pesada en un teléfono. */
 const nav=document.getElementById('nav'), prog=document.getElementById('progreso');
-const burbuja=document.getElementById('wspFlota'), riel=document.getElementById('rielMq');
+const burbuja=document.getElementById('wspFlota');
 const QUIETO=matchMedia('(prefers-reduced-motion:reduce)').matches;
-let ultimoY=scrollY, empuje=0, pedido=false;
+let ultimoY=scrollY, pedido=false;
 
 function alScroll(){
   const y=scrollY;
@@ -1526,11 +1536,6 @@ function alScroll(){
   const h=document.body.scrollHeight-innerHeight;
   prog.style.width=(h>0?y/h*100:0)+'%';
 
-  /* La cinta se apura con el scroll: el empujón se acumula y se apaga
-     solo. El tope de 48px es el que entra adentro del degradado de los
-     costados; más que eso y se ve el corte. */
-  if(!QUIETO) empuje=Math.max(-48,Math.min(48,empuje-(y-ultimoY)*0.55));
-
   ultimoY=y; pedido=false;
 }
 addEventListener('scroll',()=>{
@@ -1538,16 +1543,6 @@ addEventListener('scroll',()=>{
   pedido=true; requestAnimationFrame(alScroll);
 },{passive:true});
 alScroll();
-
-if(riel && !QUIETO){
-  const soltar=()=>{
-    empuje*=0.92;
-    if(Math.abs(empuje)<0.05) empuje=0;
-    riel.style.setProperty('--empuje',empuje.toFixed(2)+'px');
-    requestAnimationFrame(soltar);
-  };
-  requestAnimationFrame(soltar);
-}
 
 /* ── imán en los botones, solo con mouse ──
    En una pantalla táctil no hay puntero al que acercarse, y el hundido

@@ -20,7 +20,7 @@
       y listo.
    ═══════════════════════════════════════════════════════════════ */
 const { chromium } = require('playwright');
-const BASE = 'http://127.0.0.1:8099';
+const BASE = process.env.BASE || 'http://127.0.0.1:8099';
 const TELEFONO = { width: 390, height: 844 };
 
 /* El tope va con aire sobre lo medido (16,6): esto no persigue un número
@@ -148,6 +148,44 @@ async function recorrer(p) {
       if (g.alto > 844 * 1.2) mal(`la galería mide ${(g.alto / 844).toFixed(1)} pantallas`);
       else bien(`mide ${(g.alto / 844).toFixed(1)} pantallas`);
     }
+    await ctx.close();
+  }
+
+  titulo('la cinta de abajo pasa despacio y NUNCA se frena');
+  {
+    /* Hubo una versión que la aceleraba con el scroll. Bajando se apura,
+       pero SUBIENDO el empujón va contra la animación: la cinta se queda
+       clavada o retrocede, y eso no se lee como un efecto, se lee como
+       que se colgó. El dueño lo vio en su iPhone: "el texto que pase que
+       no se frene… queda horrible".
+       Se mide la caja de VERDAD de la pista, que es lo que ve el ojo:
+       el bucle vive en .pista y cualquier empujón vivía en su padre, así
+       que mirar el transform de la pista sola no mostraría nada. */
+    const { ctx, p } = await abrir(browser);
+    await p.evaluate(() => document.querySelector('.marquesina').scrollIntoView({ block: 'center' }));
+    await p.waitForTimeout(600);
+    const donde = () => p.evaluate(() =>
+      document.querySelector('.marquesina .pista').getBoundingClientRect().x);
+
+    const antes = await donde();
+    await p.waitForTimeout(700);
+    const luego = await donde();
+    if (luego >= antes - 5) mal(`la cinta no se mueve sola (${(luego - antes).toFixed(1)}px en 700ms)`);
+    else bien(`la cinta corre sola: ${(luego - antes).toFixed(1)}px en 700ms`);
+
+    /* Subiendo tiene que seguir yendo para el mismo lado. El tope de 1px
+       es para el redondeo, no para un empujón: el empujón de la versión
+       anterior medía DOCE. */
+    const pasos = [];
+    for (let i = 0; i < 10; i++) {
+      await p.evaluate(() => scrollBy(0, -55));
+      await p.waitForTimeout(90);
+      pasos.push(await donde());
+    }
+    const atras = Math.max(...pasos.slice(1).map((v, i) => v - pasos[i]));
+    if (atras > 1)
+      mal(`subiendo, la cinta retrocede ${atras.toFixed(1)}px: se frena y parece colgada`);
+    else bien(`subiendo, la cinta sigue para el mismo lado (lo peor: ${atras.toFixed(1)}px)`);
     await ctx.close();
   }
 
