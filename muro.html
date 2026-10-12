@@ -40,8 +40,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"></noscript>
 <!-- Lo primero que la app consulta de verdad es Supabase: adelantar el
      DNS, el TCP y el TLS le saca medio segundo al primer byte en 4G. -->
 <link rel="preconnect" href="https://kuqlqgrwsospwjexodqa.supabase.co" crossorigin>
@@ -75,7 +75,7 @@
    —la placa del salón, el epígrafe de la foto, las fichas de "entrando
    ahora", la cinta de abajo y el álbum— y si el nombre se escribe cinco
    veces, alguno se va a quedar atrás. */
-:root{--dedi:Poppins,Jost,system-ui,sans-serif}
+:root{--dedi:Poppins,'Hanken Grotesk',system-ui,sans-serif}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 /* foco visible con los colores de la marca (antes quedaba el del navegador) */
@@ -91,13 +91,21 @@
 .aviso-peso{font-size:12.5px;line-height:1.7;color:var(--oro);border:1px solid var(--hilo);
   padding:12px 14px;margin-bottom:18px;border-radius:2px}
 html,body{margin:0;background:var(--negro);color:var(--texto)}
-body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3{margin:0;font-weight:400}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em}
 p{margin:0}
 button,input,textarea,select{font-family:inherit;color:inherit}
 button{border:0;background:none;cursor:pointer}
-.serif{font-family:'Bodoni Moda',serif}
-.ital{font-family:'Bodoni Moda',serif;font-style:italic}
+/* ── el display ──
+   Una sola familia y la jerarquía por PESO: el texto en 300 y los
+   títulos en 800, apretados. Antes el display era Bodoni Moda, una
+   didone: preciosa en grande y rota en un teléfono, porque sus trazos
+   finos desaparecen. Lo que se escribe acá se proyecta a tres metros o
+   se lee con el teléfono en una mano; en los dos casos el peso gana.
+   El nombre .serif quedó de antes: ya no es una serif, es el display.
+   Las que ponen su propio font-weight más abajo siguen mandando. */
+.serif{font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:800;letter-spacing:-.03em}
+.ital{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-weight:800;letter-spacing:-.03em}
 .wrap{max-width:620px;margin:0 auto;padding:0 26px 130px}
 
 /* ── firma tipográfica de la marca ── */
@@ -133,7 +141,7 @@ button{border:0;background:none;cursor:pointer}
 .puertas{display:grid;gap:0;margin-top:14px;text-align:left;border-top:1px solid var(--gris)}
 .puerta{display:flex;align-items:center;gap:18px;width:100%;text-align:left;padding:22px 4px;border-bottom:1px solid var(--gris);transition:padding-left .35s var(--e),color .35s}
 .puerta:hover,.puerta:focus-visible{padding-left:12px}
-.puerta .rom{font-family:'Bodoni Moda',serif;font-style:italic;font-size:22px;color:var(--oro);width:28px;flex:none}
+.puerta .rom{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:22px;color:var(--oro);width:28px;flex:none}
 .puerta b{display:block;font-weight:400;font-size:17px;letter-spacing:.02em}
 .puerta span{display:block;font-size:13.5px;color:var(--mute);margin-top:4px;line-height:1.5}
 .puerta .fl{color:var(--oro);opacity:0;transition:opacity .35s;font-size:15px}
@@ -188,14 +196,14 @@ option{background:#0B0A08}
 .consigna{border:1px solid var(--hilo);border-radius:2px;padding:20px;margin-bottom:26px;text-align:center;background:rgba(217,174,114,.035)}
 .consigna .et{font-size:9.5px;letter-spacing:.34em;color:var(--oro);text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:12px}
 .consigna .et .estrella{width:9px;height:9px}
-.consigna p{font-family:'Bodoni Moda',serif;font-size:19px;line-height:1.45;font-style:italic}
+.consigna p{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:19px;line-height:1.45;font-style:italic}
 
 .lente{display:block;border:1px solid var(--gris);border-radius:2px;padding:52px 22px;text-align:center;
   margin-bottom:24px;transition:border-color .4s,background .4s}
 .lente:hover{border-color:var(--hilo2);background:rgba(217,174,114,.03)}
 .lente .aro{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;border:1px solid var(--hilo);display:grid;place-items:center;color:var(--oro)}
 .lente .aro .estrella{width:17px;height:17px}
-.lente b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;margin-bottom:8px}
+.lente b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;font-weight:400;margin-bottom:8px}
 .lente span{font-size:13.5px;color:var(--mute)}
 .previa{position:relative;overflow:hidden;margin-bottom:24px;border:1px solid var(--gris)}
 /* dvh y no vh: en un teléfono la barra del navegador cuenta como alto
@@ -254,11 +262,11 @@ option{background:#0B0A08}
   color:var(--oro);text-transform:uppercase;margin-bottom:18px}
 .epigrafe .recien .estrella{width:11px;height:11px;animation:gira 3.4s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
-.epigrafe .quien{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(30px,5.6vw,52px);color:var(--champan);line-height:1}
+.epigrafe .quien{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(30px,5.6vw,52px);color:var(--champan);line-height:1}
 .epigrafe .dice{font-family:var(--dedi);font-size:clamp(15px,2.4vw,21px);margin-top:12px;color:#D9D2C6;line-height:1.5;max-width:38ch;font-weight:300}
 .placa{padding:9vh 9vw;text-align:center;max-width:1200px}
 .placa .cita{font-family:var(--dedi);font-size:clamp(28px,4.4vw,54px);line-height:1.3}
-.placa .quien{margin-top:30px;font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(19px,2.4vw,28px);color:var(--oro)}
+.placa .quien{margin-top:30px;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(19px,2.4vw,28px);color:var(--oro)}
 .mosaico{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}
 .mosaico img{width:100%;height:100%;object-fit:cover;opacity:0;animation:asoma .9s var(--e) forwards}
 @keyframes asoma{to{opacity:1}}
@@ -299,11 +307,11 @@ option{background:#0B0A08}
      renglón, que es como se llega a 44px sin desarmar el texto */
   display:inline-block;padding:13px 2px}
 .consola{display:flex;align-items:center;gap:22px;padding:18px 30px;border-top:1px solid var(--gris);background:#000}
-.consola .nom{font-family:'Bodoni Moda',serif;font-style:italic;font-size:23px;flex:1}
+.consola .nom{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:23px;flex:1}
 .envivo{display:flex;align-items:center;gap:9px;font-size:9.5px;letter-spacing:.34em;color:var(--oro);text-transform:uppercase}
 .pulso{width:6px;height:6px;border-radius:50%;background:var(--oro);box-shadow:0 0 10px var(--oro);animation:late 2s infinite}
 @keyframes late{50%{opacity:.25}}
-.cuenta{font-family:'Bodoni Moda',serif;font-size:25px}
+.cuenta{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:25px}
 .cuenta small{font-family:Jost;font-size:9.5px;letter-spacing:.28em;color:var(--mute);margin-left:10px;text-transform:uppercase}
 .qr-sala{background:#fff;padding:6px;line-height:0}
 .qr-sala img,.qr-sala canvas{width:56px;height:56px;display:block}
@@ -322,7 +330,7 @@ option{background:#0B0A08}
 .fila{display:flex;align-items:center;gap:18px;width:100%;text-align:left;padding:20px 2px;border-bottom:1px solid var(--gris);transition:padding-left .35s var(--e)}
 .fila:hover{padding-left:10px}
 .fila .sello{width:44px;height:44px;flex:none;border:1px solid var(--hilo);display:grid;place-items:center;
-  font-family:'Bodoni Moda',serif;font-style:italic;color:var(--oro);font-size:19px;overflow:hidden}
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;color:var(--oro);font-size:19px;overflow:hidden}
 .fila b{font-weight:400;font-size:16px}
 .fila span{display:block;font-size:11px;letter-spacing:.2em;color:var(--mute);margin-top:4px;text-transform:uppercase}
 .clave{font-size:11.5px;letter-spacing:.18em;color:var(--oro)}
@@ -346,19 +354,19 @@ option{background:#0B0A08}
 @media(min-width:470px){.cola{grid-template-columns:1fr 1fr}}
 .espera{border:1px solid var(--gris)}
 .espera img,.espera video{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-.espera .tx{padding:16px;font-size:14px;line-height:1.6;min-height:100px;font-family:'Bodoni Moda',serif;font-style:italic}
+.espera .tx{padding:16px;font-size:14px;line-height:1.6;min-height:100px;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic}
 .espera .par{display:flex;border-top:1px solid var(--gris)}
 .espera .par button{flex:1;min-width:0;padding:13px 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .espera .par button+button{border-left:1px solid var(--gris)}
 .si{color:var(--oro)}.no{color:#8A8177}
 .cierre{text-align:center;padding-top:30px}
 .cierre .filete{max-width:190px;margin:0 auto 20px}
-.cierre-tit{font-family:'Bodoni Moda',serif;font-style:italic;font-weight:400;
+.cierre-tit{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-weight:400;
   font-size:clamp(30px,8.5vw,40px);margin:12px 0 8px;line-height:1.15}
 .cierre-sub{font-size:13.5px;color:#B5AC9E;line-height:1.7}
 .cierre-res{margin-top:20px;padding-top:18px;border-top:1px solid var(--gris);
   font-size:14px;color:#B5AC9E;line-height:1.8}
-.cierre-res b{color:var(--champan);font-weight:400;font-family:'Bodoni Moda',serif;font-size:19px}
+.cierre-res b{color:var(--champan);font-weight:400;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:19px}
 .publicados{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
 .publi{position:relative;border:1px solid var(--gris);overflow:hidden;aspect-ratio:1;
   min-height:0;background:#141210;cursor:pointer}
@@ -366,7 +374,7 @@ option{background:#0B0A08}
    las filas quedan de distinto tamaño */
 .publi img,.publi video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .publi .tx{padding:10px;font-size:11.5px;line-height:1.5;height:100%;overflow:hidden;
-  display:flex;align-items:center;font-family:'Bodoni Moda',serif;font-style:italic;color:#CFC7BA}
+  display:flex;align-items:center;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;color:#CFC7BA}
 .publi .quien{position:absolute;left:0;right:0;bottom:0;padding:14px 7px 5px;font-size:9px;
   letter-spacing:.1em;text-transform:uppercase;color:#E8E2D8;pointer-events:none;
   background:linear-gradient(transparent,rgba(0,0,0,.8));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -384,7 +392,7 @@ option{background:#0B0A08}
 .cifras4{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--gris);border-bottom:1px solid var(--gris);margin:30px 0}
 .cifras4 div{padding:20px 6px;text-align:center;border-right:1px solid var(--gris)}
 .cifras4 div:last-child{border-right:0}
-.cifras4 b{display:block;font-family:'Bodoni Moda',serif;font-size:28px;font-weight:400}
+.cifras4 b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:28px;font-weight:400}
 .cifras4 span{font-size:9px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
 /* ── álbum ── */
@@ -395,25 +403,25 @@ option{background:#0B0A08}
 .tapa .medallon{position:absolute;left:50%;bottom:-62px;transform:translateX(-50%);width:132px;height:132px;
   border-radius:50%;overflow:hidden;border:1px solid var(--hilo2);z-index:3;background:var(--carbon)}
 .tapa .medallon img{width:100%;height:100%;object-fit:cover}
-.album h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(40px,11vw,52px);text-align:center;line-height:1}
+.album h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(40px,11vw,52px);text-align:center;line-height:1}
 .album .fecha{text-align:center;font-size:10.5px;letter-spacing:.42em;color:var(--mute);margin-top:16px}
 .cifras{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--gris);margin:34px 0}
 .cifra{padding:30px 10px;text-align:center;border-bottom:1px solid var(--gris)}
 .cifra:nth-child(odd){border-right:1px solid var(--gris)}
 .cifra span{display:block;font-size:9.5px;letter-spacing:.32em;color:var(--mute);margin-bottom:14px;text-transform:uppercase}
-.cifra b{font-family:'Bodoni Moda',serif;font-size:46px;font-weight:400;line-height:1}
+.cifra b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:46px;font-weight:400;line-height:1}
 .cifra.cero b,.cifra.cero span{color:#3A362F}
 .rejilla{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .rejilla a{aspect-ratio:1;overflow:hidden;background:var(--humo);display:block;position:relative}
 .rejilla img,.rejilla video{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--e),filter .5s}
 .dedicatoria{padding:8px 0 8px 22px;border-left:1px solid var(--hilo);margin:26px 0}
 .dedicatoria p{font-family:var(--dedi);font-size:20px;line-height:1.55;font-style:italic}
-.dedicatoria b{display:block;font-family:'Bodoni Moda',serif;font-weight:400;color:var(--oro);font-size:16px;margin-top:12px}
+.dedicatoria b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:400;color:var(--oro);font-size:16px;margin-top:12px}
 .acciones{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:38px 0 18px}
 .acciones button{border:1px solid var(--hilo);padding:17px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--champan);transition:.3s}
 .acciones button:hover{border-color:var(--oro);color:var(--oro)}
 .sumate{border-top:1px solid var(--gris);margin-top:44px;padding:34px 0 10px;text-align:center}
-.sumate p{font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;line-height:1.45;margin-bottom:20px}
+.sumate p{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:20px;line-height:1.45;margin-bottom:20px}
 .sumate a{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--hilo);
   padding:14px 24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--champan);
   transition:border-color .3s,color .3s;text-decoration:none}
@@ -461,7 +469,7 @@ option{background:#0B0A08}
 .cabecera .atras{color:var(--oro);font-size:20px;line-height:1;padding:0 12px 0 0;flex:none;
   min-width:var(--toque);min-height:var(--toque);display:inline-flex;align-items:center}
 .cabecera .quien-ev{flex:1;min-width:0}
-.cabecera .quien-ev b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-size:21px;
+.cabecera .quien-ev b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:21px;
   font-weight:400;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cabecera .quien-ev span{display:block;font-size:9.5px;letter-spacing:.3em;color:var(--mute);
   text-transform:uppercase;margin-top:5px}
@@ -470,7 +478,7 @@ option{background:#0B0A08}
   max-width:620px;margin:0 auto}
 .pulso-ev div{padding:12px 4px 13px;text-align:center;border-right:1px solid var(--gris)}
 .pulso-ev div:last-child{border-right:0}
-.pulso-ev b{display:block;font-family:'Bodoni Moda',serif;font-size:21px;font-weight:400;line-height:1}
+.pulso-ev b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;font-weight:400;line-height:1}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
 /* ── cinta de la demostración ── */
@@ -568,7 +576,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   background:linear-gradient(transparent 18%,rgba(0,0,0,.5) 58%,#000 96%)}
 .tapa-g .texto{position:relative;z-index:2;padding:0 26px 30px;width:100%;max-width:620px;margin:0 auto}
 .tapa-g .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
-.tapa-g h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(38px,12vw,54px);line-height:1}
+.tapa-g h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(38px,12vw,54px);line-height:1}
 .tapa-g .cuando{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#B5AC9E;margin-top:14px}
 .pastillas{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .pastilla{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hilo);
@@ -641,7 +649,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .cab-inv{position:relative;padding:26px 26px 22px;border-bottom:1px solid var(--gris);
   max-width:620px;margin:0 auto}
 .cab-inv .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:10px}
-.cab-inv h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(28px,8.5vw,38px);line-height:1}
+.cab-inv h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(28px,8.5vw,38px);line-height:1}
 .cab-inv .volver{position:absolute;right:14px;top:12px;font-size:10px;letter-spacing:.22em;
   text-transform:uppercase;color:var(--mute);padding:8px 12px}
 .wrap-inv{max-width:620px;margin:0 auto;padding:26px 26px 150px}
@@ -657,7 +665,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .ev-card .tapa-ev img{width:100%;height:100%;object-fit:cover}
 .ev-card .tapa-ev .estrella{width:19px;height:19px;opacity:.5}
 .ev-card .datos-ev{flex:1;min-width:0}
-.ev-card .datos-ev b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;
+.ev-card .datos-ev b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:20px;
   font-weight:400;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ev-card .datos-ev span{display:block;font-size:10.5px;letter-spacing:.22em;color:var(--mute);
   text-transform:uppercase;margin-top:6px}
@@ -690,7 +698,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .sala-cartel{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:clamp(8px,1.6vh,22px);padding:2.5vh 5vw;text-align:center;position:relative}
 .sala-cartel .marca-c2{width:clamp(96px,9vw,150px);opacity:.7}
-.sala-cartel h1{font-family:'Bodoni Moda',serif;font-style:italic;
+.sala-cartel h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;
   font-size:clamp(38px,6.4vh,92px);line-height:1;color:var(--champan)}
 .sala-cartel .invita{font-size:clamp(15px,2.1vh,28px);color:#D9D2C6;font-weight:200;
   line-height:1.35;max-width:30ch}
@@ -715,14 +723,14 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   /* arriba hay que dejar pasar los botones flotantes de las esquinas */
   padding:62px clamp(14px,2vw,34px) clamp(10px,1.6vh,22px)}
 .tab-cabeza{display:flex;align-items:baseline;gap:clamp(10px,1.4vw,22px);flex-wrap:wrap}
-.tab-cabeza h2{font-family:'Bodoni Moda',serif;font-style:italic;
+.tab-cabeza h2{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;
   font-size:clamp(26px,4.2vh,58px);line-height:1;color:var(--champan);font-weight:400}
 .tab-cabeza .cod{font-size:clamp(10px,1.3vh,16px);letter-spacing:.3em;color:var(--oro)}
 .tab-cabeza .derecha{margin-left:auto;display:flex;align-items:center;gap:clamp(12px,1.6vw,26px)}
 .tab-cabeza .envivo{font-size:clamp(9px,1.1vh,13px)}
 .tab-cabeza .total{font-size:clamp(12px,1.8vh,22px);color:var(--champan);
-  font-family:'Bodoni Moda',serif;font-weight:400}
-.tab-cabeza .total small{font-family:Jost,system-ui,sans-serif;font-size:.52em;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:400}
+.tab-cabeza .total small{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:.52em;
   letter-spacing:.24em;text-transform:uppercase;color:var(--mute);margin-left:8px}
 
 .tab-cuerpo{display:grid;grid-template-columns:minmax(0,1fr) clamp(190px,22vw,310px);
@@ -786,7 +794,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .tab-qr .caja-q canvas,.tab-qr .caja-q img{
   width:clamp(58px,8vh,92px)!important;height:clamp(58px,8vh,92px)!important;display:block}
 .tab-qr b{display:block;font-weight:400;font-size:clamp(12px,1.7vh,19px);color:var(--champan);
-  line-height:1.25;font-family:'Bodoni Moda',serif}
+  line-height:1.25;font-family:'Hanken Grotesk',system-ui,sans-serif}
 .tab-qr span{display:block;font-size:clamp(9px,1.2vh,13px);color:var(--mute);
   line-height:1.45;margin-top:5px}
 
@@ -914,7 +922,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .cuenta-lanza{display:flex;gap:clamp(8px,1vw,16px);justify-content:center;flex-wrap:wrap}
 .cuenta-lanza div{min-width:clamp(62px,7vw,112px);padding:clamp(9px,1vw,18px) clamp(6px,.8vw,14px);
   border:1px solid var(--hilo);border-radius:4px;background:rgba(0,0,0,.3)}
-.cuenta-lanza b{display:block;font-family:'Bodoni Moda',serif;font-weight:400;
+.cuenta-lanza b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:400;
   font-size:clamp(24px,3.4vw,52px);color:var(--champan);line-height:1}
 .cuenta-lanza span{font-size:clamp(8px,.7vw,11px);letter-spacing:.22em;text-transform:uppercase;
   color:var(--mute);margin-top:7px;display:block}
@@ -922,12 +930,12 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 
 /* puerta cerrada para el invitado */
 .espera-lanza{min-height:100svh;display:grid;place-items:center;text-align:center;padding:34px 26px}
-.espera-lanza h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(34px,10vw,48px);
+.espera-lanza h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(34px,10vw,48px);
   line-height:1.05;margin:16px 0 10px}
 .espera-lanza .cuenta-lanza{margin:30px 0 22px}
 
 /* la clave del evento, para mostrarla y para dictarla */
-.clave-grande{font-family:'Bodoni Moda',serif;font-size:clamp(38px,13vw,58px);letter-spacing:.22em;
+.clave-grande{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(38px,13vw,58px);letter-spacing:.22em;
   color:var(--champan);line-height:1;margin:6px 0 4px;word-break:break-all}
 .clave-caja{border:1px solid var(--hilo2);background:rgba(217,174,114,.06);border-radius:4px;
   padding:26px 22px;text-align:center;margin:22px 0}
@@ -937,7 +945,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 /* el código no se puede partir al medio: es lo que la gente copia */
 .clave-fila b{white-space:nowrap}
 .clave-fila span{flex:1 1 auto;min-width:0}
-.clave-fila b{font-family:'Bodoni Moda',serif;font-size:21px;letter-spacing:.2em;color:var(--champan);font-weight:400}
+.clave-fila b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;letter-spacing:.2em;color:var(--champan);font-weight:400}
 .clave-fila span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);display:block;margin-bottom:5px}
 
 /* zona de peligro: rojo apagado, separado del oro de la marca */
@@ -1117,9 +1125,9 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cartel-hoja{max-width:420px;margin:34px auto;border:1px solid var(--hilo);padding:44px 34px;text-align:center;background:#000}
 .cartel-hoja .marca-c{width:150px;opacity:.95;margin-bottom:26px}
-.cartel-hoja .nombre-c{font-family:'Bodoni Moda',serif;font-style:italic;font-size:34px;line-height:1}
+.cartel-hoja .nombre-c{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:34px;line-height:1}
 .cartel-hoja .fecha-c{font-size:10px;letter-spacing:.4em;color:var(--mute);margin-top:12px;text-transform:uppercase}
-.cartel-hoja .pedido{font-family:'Bodoni Moda',serif;font-size:22px;line-height:1.45;margin:30px 0}
+.cartel-hoja .pedido{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:22px;line-height:1.45;margin:30px 0}
 .cartel-hoja .qr-c{background:#fff;padding:14px;display:inline-block;line-height:0}
 .cartel-hoja .qr-c img,.cartel-hoja .qr-c canvas{width:186px;height:186px;display:block}
 .cartel-hoja .instr{font-size:12px;letter-spacing:.16em;color:var(--mute);margin-top:22px;line-height:1.9;text-transform:uppercase}
@@ -1142,9 +1150,9 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
   border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
 .tarjeta-qr .marca-t{width:88px;opacity:.9}
-.tarjeta-qr .nom-t{font-family:'Bodoni Moda',serif;font-style:italic;font-size:24px;line-height:1.1}
+.tarjeta-qr .nom-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:24px;line-height:1.1}
 .tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
-.tarjeta-qr .ped-t{font-family:'Bodoni Moda',serif;font-size:15px;line-height:1.4;margin:6px 0}
+.tarjeta-qr .ped-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;margin:6px 0}
 .tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
 .tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
 .tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}

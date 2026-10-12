@@ -45,8 +45,8 @@
 <link rel="preconnect" href="https://kuqlqgrwsospwjexodqa.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Jost:wght@200;300;400;500;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&display=swap"></noscript>
 <style>
 :root{
   color-scheme: dark;   /* si no, el calendario del teléfono sale blanco sobre negro */
@@ -60,14 +60,22 @@
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--oro);outline-offset:3px}
 html,body{margin:0;background:var(--negro);color:var(--texto)}
-body{font-family:Jost,system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh}
-h1,h2,h3{margin:0;font-weight:400}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.025em}
 p{margin:0}
 button,input{font-family:inherit;color:inherit}
 button{border:0;background:none;cursor:pointer}
 img{max-width:100%;display:block}
-.serif{font-family:'Bodoni Moda',serif}
-.ital{font-family:'Bodoni Moda',serif;font-style:italic}
+/* ── el display ──
+   Una sola familia y la jerarquía por PESO: el texto en 300 y los
+   títulos en 800, apretados. Antes el display era Bodoni Moda, una
+   didone: preciosa en grande y rota en un teléfono, porque sus trazos
+   finos desaparecen. Lo que se escribe acá se proyecta a tres metros o
+   se lee con el teléfono en una mano; en los dos casos el peso gana.
+   El nombre .serif quedó de antes: ya no es una serif, es el display.
+   Las que ponen su propio font-weight más abajo siguen mandando. */
+.serif{font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:800;letter-spacing:-.03em}
+.ital{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-weight:800;letter-spacing:-.03em}
 .wrap{max-width:520px;margin:0 auto;padding:0 22px 60px}
 .espaciado{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
 .estrella{display:inline-block;width:13px;height:13px;vertical-align:middle;color:var(--oro)}
@@ -134,9 +142,9 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
 .tarjeta-qr .marca-t{width:88px;opacity:.9}
-.tarjeta-qr .nom-t{font-family:'Bodoni Moda',serif;font-style:italic;font-size:24px;line-height:1.1}
+.tarjeta-qr .nom-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:24px;line-height:1.1}
 .tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
-.tarjeta-qr .ped-t{font-family:'Bodoni Moda',serif;font-size:15px;line-height:1.4;margin:6px 0}
+.tarjeta-qr .ped-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;margin:6px 0}
 .tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
 .tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
 .tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}
@@ -248,7 +256,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .cab{display:flex;flex-direction:column;align-items:center;text-align:center;padding:34px 22px 8px}
 .cab img{width:82px;opacity:.7;margin-bottom:16px}
-.cab h1{font-family:'Bodoni Moda',serif;font-size:clamp(24px,7vw,30px)}
+.cab h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(24px,7vw,30px)}
 .centro{min-height:80svh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 24px}
 .centro p.info{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:32ch;margin:14px auto 0}
 .oro-btn{width:100%;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
@@ -276,7 +284,7 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .portada-r{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
   padding:56px 26px calc(40px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;text-align:center}
 .portada-r .marca-gr{width:150px;margin:0 auto 26px;opacity:.85}
-.portada-r h1{font-family:'Bodoni Moda',serif;font-size:clamp(30px,9vw,40px);line-height:1.1;margin:10px 0 0}
+.portada-r h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(30px,9vw,40px);line-height:1.1;margin:10px 0 0}
 .portada-r h1 em{display:block;font-style:italic;color:var(--oro)}
 .bajada{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:34ch;margin:16px auto 26px;text-align:center}
 .link-abajo{display:block;width:100%;text-align:center;color:var(--mute);font-size:12.5px;
@@ -289,14 +297,14 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .paso-cab .barra{flex:1;height:2px;background:var(--gris);border-radius:2px;overflow:hidden}
 .paso-cab .barra i{display:block;height:100%;background:var(--oro);transition:width .45s var(--e)}
 .paso-cuerpo{padding-top:44px;padding-bottom:150px;max-width:460px}
-.paso-cuerpo h2{font-family:'Bodoni Moda',serif;font-size:clamp(25px,7.4vw,32px);line-height:1.15;font-weight:400}
+.paso-cuerpo h2{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(25px,7.4vw,32px);line-height:1.15;font-weight:400}
 .paso-cuerpo .sub{color:#B5AC9E;line-height:1.75;font-size:14px;margin:14px 0 30px;max-width:32ch}
 input.grande{font-size:21px;padding:14px 2px}
 .pie-fijo{position:fixed;left:0;right:0;bottom:0;padding:16px 26px calc(20px + env(safe-area-inset-bottom));
   background:linear-gradient(0deg,#000 62%,transparent);max-width:512px;margin:0 auto}
 
 /* la pantalla del rollo */
-.instruccion{font-family:'Bodoni Moda',serif;font-size:clamp(22px,6.4vw,27px);line-height:1.25;
+.instruccion{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(22px,6.4vw,27px);line-height:1.25;
   text-align:center;margin:24px 0 0}
 .qr-caja{display:flex;justify-content:center;margin:30px 0 26px}
 .qr{background:#fff;padding:14px;line-height:0;border-radius:4px}
@@ -341,7 +349,7 @@ input.grande{font-size:21px;padding:14px 2px}
   letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
 .stepper{display:flex;align-items:center;gap:22px}
 .stepper button{width:48px;height:48px;border:1px solid var(--gris);border-radius:50%;font-size:22px;color:var(--oro)}
-.stepper b{font-family:'Bodoni Moda',serif;font-size:36px;min-width:60px;text-align:center}
+.stepper b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:36px;min-width:60px;text-align:center}
 .clave-gr{font-size:25px;letter-spacing:.24em;color:var(--oro)}
 /* Los colores de la fiesta. Mismas medidas que en el muro; el aro del
    elegido va en --texto y no en --oro como allá, porque acá --oro ES el
@@ -376,13 +384,13 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .tapa .arriba img{width:88px;margin:0 auto;opacity:.75}
 .tapa .medio{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
   padding:0 26px 6px;text-align:center}
-.tapa h1{font-family:'Bodoni Moda',serif;font-size:clamp(32px,10vw,46px);line-height:1.05;margin-top:10px}
+.tapa h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(32px,10vw,46px);line-height:1.05;margin-top:10px}
 .tapa .fechita{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--oro);margin-top:14px}
 .tapa .abajo{position:relative;z-index:2;padding:22px 26px calc(30px + env(safe-area-inset-bottom))}
 .promesa{border:1px solid var(--hilo);border-radius:6px;padding:18px 20px;margin-bottom:22px;
   background:rgba(12,10,8,.5);backdrop-filter:blur(10px);text-align:center}
 .promesa b{display:block;font-size:15.5px;font-weight:400;line-height:1.5;margin-bottom:6px}
-.promesa b em{font-family:'Bodoni Moda',serif;font-style:italic;color:var(--oro);font-size:17px}
+.promesa b em{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;color:var(--oro);font-size:17px}
 .promesa span{font-size:13px;color:#B5AC9E;line-height:1.6}
 .tapa .campo{margin:0 0 14px;text-align:left}
 .sin-app{text-align:center;font-size:11.5px;color:var(--mute);margin-top:14px;letter-spacing:.04em}
@@ -450,7 +458,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .cuadros i.gastado{background:rgba(246,242,234,.14);box-shadow:none}
 .rollo-cuenta{margin-top:6px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
   color:rgba(246,242,234,.5);display:flex;align-items:baseline;justify-content:center;gap:7px}
-.rollo-cuenta b{font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;letter-spacing:0;
+.rollo-cuenta b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:30px;line-height:1;letter-spacing:0;
   color:var(--texto);text-transform:none;text-shadow:0 2px 14px rgba(0,0,0,.6)}
 /* cuando quedan pocas, el número lo dice sin que haya que leer */
 .rollo-tira.poquitas .rollo-cuenta b{color:var(--oro)}
@@ -482,7 +490,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 
 /* ── espera / revelado ── */
 .rollo-icono{width:100%;max-width:150px;margin:0 auto}
-.cuenta-rev{font-family:'Bodoni Moda',serif;font-size:clamp(30px,9vw,42px);margin:18px 0 4px;color:var(--oro)}
+.cuenta-rev{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(30px,9vw,42px);margin:18px 0 4px;color:var(--oro)}
 
 /* ── el cuarto de revelado ──
    Luz roja, las copias caen en la bandeja y la imagen sube desde el papel.
@@ -506,7 +514,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .cuarto .rotulo{position:relative;z-index:7;text-align:center;margin-bottom:26px;height:44px}
 .cuarto .rotulo p{font-size:10.5px;letter-spacing:.36em;text-transform:uppercase;
   color:rgba(255,214,206,.75)}
-.cuarto .rotulo b{display:block;font-family:'Bodoni Moda',serif;font-style:italic;font-weight:400;
+.cuarto .rotulo b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-weight:400;
   font-size:23px;color:#FFEDE8;margin-top:8px}
 /* la bandeja donde se apilan las copias */
 .bandeja{position:relative;z-index:5;width:min(70vw,286px);aspect-ratio:3/4}
@@ -585,7 +593,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .visorf .flecha.izq{left:10px} .visorf .flecha.der{right:10px}
 .visorf .pie{text-align:center;padding:14px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));
   font-size:12.5px;color:var(--mute);letter-spacing:.12em}
-.visorf .pie b{display:block;color:var(--texto);font-family:'Bodoni Moda',serif;font-style:italic;
+.visorf .pie b{display:block;color:var(--texto);font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;
   font-size:16px;letter-spacing:0;margin-bottom:4px}
 </style>
 </head>
