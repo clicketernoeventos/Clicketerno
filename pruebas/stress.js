@@ -424,6 +424,11 @@ async function landing(browser) {
       hayWrap: !!(s && s.querySelector('.wrap')),
       hayPista: !!(s && s.querySelector('.pista-toque')),
       tarjetas: s ? s.querySelectorAll('.trabajo').length : 0,
+      /* Cuántas DECLARA el código, para comparar contra cuántas dibujó.
+         Antes acá había un 3 escrito a mano y falló el día que entró la
+         cuarta invitación: no midió la galería, midió que siguieran
+         siendo tres. Lo que importa es que no se pierda ninguna. */
+      declaradas: (typeof TRABAJOS !== 'undefined' && TRABAJOS.length) || 0,
       idsDuplicados: [...document.querySelectorAll('[id]')]
         .map((e) => e.id)
         .filter((id, i, a) => a.indexOf(id) !== i),
@@ -432,7 +437,10 @@ async function landing(browser) {
   if (!secc.hayCabeza) anota('landing', 'trabajos', 'se perdió el título de la sección');
   if (!secc.hayWrap) anota('landing', 'trabajos', 'se perdió el contenedor .wrap');
   if (!secc.hayPista) anota('landing', 'trabajos', 'se perdió el texto "Tocá cualquiera…"');
-  if (secc.tarjetas !== 3) anota('landing', 'trabajos', `se esperaban 3 tarjetas, hay ${secc.tarjetas}`);
+  if (secc.declaradas && secc.tarjetas !== secc.declaradas)
+    anota('landing', 'trabajos', `se declaran ${secc.declaradas} invitaciones y se dibujaron ${secc.tarjetas}`);
+  else if (secc.tarjetas < 3)
+    anota('landing', 'trabajos', `la galería quedó con ${secc.tarjetas} tarjetas`);
   if (secc.idsDuplicados.length) anota('landing', 'ids', 'ids duplicados: ' + secc.idsDuplicados.join(','));
 
   const meta = await page.evaluate(() => ({

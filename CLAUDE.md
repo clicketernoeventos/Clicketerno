@@ -1928,6 +1928,35 @@ que Safari necesita un gesto para sonar, `svh` y no `vh`, los 44px, el
 hover pegado, el contraste, `prefers-reduced-motion`, y lo legal del
 artículo 53 y de los menores.
 
+## La galería de Trabajos: qué se muestra y qué se promete
+
+Cinco fichas. **Tres son de clientes** (Key, Xiomara, Pia) y **dos son
+muestras nuestras de casamiento** (`claraybruno/`, `juliayfranco/`), que
+las hizo el chat aparte de invitaciones.
+
+**La primera es un casamiento, y es la única decisión de orden que
+importa.** Eran tres XV seguidos: el que entra buscando para su boda
+cierra la página creyendo que esto es para quinceañeras. Además
+`claraybruno/` vive en el repo, así que abre siempre — la primera ficha no
+puede depender de que Netlify esté en pie.
+
+**Y se dice que son muestras.** La sección prometía *"Invitaciones reales,
+las mismas que recibieron los invitados"*, y de estas dos eso es mentira:
+la de Julia lo declara en su propia `og:description`. Cuesta un renglón
+(`muestra:true` pinta una píldora "Muestra nuestra" en la ficha) y el
+texto de arriba ahora dice cuántas son de cada cosa. Es la regla de
+siempre: *mostrar una pantalla que no existe como si existiera es
+mentirle al cliente*.
+
+**`sub` es lo que dice la portada DIBUJADA** —la que se ve mientras baja
+el marco, o para siempre si el sitio no responde—. Estaba clavado en "Mis
+quince años" porque hasta acá eran todas de quince: en un casamiento eso
+es un cartel equivocado puesto encima del producto.
+
+`claraybruno/v2/` **no es un sobrante**: es una redirección al link nuevo,
+porque esa dirección ya circuló y un link repartido no puede quedar
+muerto.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:
