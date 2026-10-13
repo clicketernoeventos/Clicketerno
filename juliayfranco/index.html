@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Julia & Franco · 20.11.2027</title>
+<meta name="description" content="Julia y Franco se casan el 20 de noviembre de 2027. Invitación de muestra de Click Eterno.">
+<meta name="theme-color" content="#0B0B0B">
+<meta property="og:title" content="Julia & Franco · 20.11.2027">
+<meta property="og:description" content="Nos casamos. Reservá la fecha.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="fotos/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Montserrat:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   Julia & Franco — invitación de muestra: editorial, en blanco y negro.
+   Fotos a pantalla completa, letras altas, un solo color de acento
+   (el rojo del corazón). La Bodoni va SOLO en tamaños grandes: a
+   15px los trazos finos se parten; el texto corrido es Montserrat.
+   Nada depende de una animación para verse.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --negro:#0B0B0B; --carbon:#161616; --gris:#8A8782; --gris-claro:#C9C5BE;
+  --papel:#F1EDE6; --marfil:#E7E1D6; --blanco:#FAF8F4; --rojo:#8E1E1E;
+  --e:cubic-bezier(.2,.75,.2,1); --rebote:cubic-bezier(.34,1.56,.64,1);
+  --gutter:clamp(20px,6vw,48px);
+  --display:'Bodoni Moda',Didot,'Times New Roman',serif;
+  --script:'Parisienne','Snell Roundhand',cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Montserrat,system-ui,sans-serif;font-weight:400;color:var(--negro);background:var(--negro);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.65}
+body.cerrado{overflow:hidden}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+a{color:inherit}
+.oculto-lector{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
+.centro{max-width:620px;margin:0 auto;text-align:center}
+.chico{font-size:12px;letter-spacing:.36em;text-transform:uppercase;font-weight:500}
+.titulo{font-family:var(--display);font-weight:400;line-height:.95;letter-spacing:-.01em;font-size:clamp(46px,14vw,96px)}
+.titulo em{font-style:italic}
+.bajada{font-size:clamp(15.5px,4vw,17px);line-height:1.8;margin-top:18px}
+
+/* el grano de película: una sola capa fija que tiembla en 8 pasos */
+.grano{position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.07;background-image:var(--tex-grano);animation:grano .9s steps(8) infinite}
+@keyframes grano{0%{transform:translate(0,0)}12%{transform:translate(-4%,3%)}25%{transform:translate(3%,-5%)}37%{transform:translate(-6%,-2%)}50%{transform:translate(5%,4%)}62%{transform:translate(-2%,6%)}75%{transform:translate(6%,-3%)}87%{transform:translate(-5%,-6%)}}
+
+/* el texto que sube desde una ranura (estado por defecto: visible) */
+.ranura{display:block;overflow:hidden;padding-bottom:.06em}
+.ranura>span{display:block}
+.js .ranura>span{transform:translateY(105%);transition:transform 1.2s var(--e)}
+.js .entro .ranura>span,.js .ranura.entro>span{transform:none}
+.js .ap{opacity:0;transform:translateY(24px);transition:opacity 1.1s var(--e),transform 1.2s var(--e)}
+.js .ap.entro{opacity:1;transform:none}
+.d1{transition-delay:.12s!important}.d2{transition-delay:.24s!important}.d3{transition-delay:.36s!important}.d4{transition-delay:.48s!important}
+
+/* botones: texto subrayado que se dibuja, como en una revista */
+.enlace{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 6px;
+  font-size:13px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;text-decoration:none;position:relative}
+.enlace:after{content:'';position:absolute;left:6px;right:6px;bottom:10px;height:1.5px;background:currentColor;transform-origin:0 50%;transition:transform .6s var(--e)}
+.enlace svg{width:18px;height:18px}
+@media(hover:hover) and (pointer:fine){.enlace:hover:after{transform-origin:100% 50%;animation:subraya .8s var(--e)}}
+@keyframes subraya{0%{transform:scaleX(1);transform-origin:100% 50%}49%{transform:scaleX(0);transform-origin:100% 50%}50%{transform:scaleX(0);transform-origin:0 50%}100%{transform:scaleX(1);transform-origin:0 50%}}
+.caja-boton{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border:1.5px solid currentColor;
+  font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;text-decoration:none;position:relative;overflow:hidden;isolation:isolate;
+  transition:color .5s var(--e)}
+.caja-boton:before{content:'';position:absolute;inset:0;z-index:-1;background:currentColor;transform:scaleY(0);transform-origin:50% 100%;transition:transform .5s var(--e)}
+.caja-boton svg{width:18px;height:18px;flex:none}
+@media(hover:hover) and (pointer:fine){
+  .claro .caja-boton:hover{color:var(--blanco)}.claro .caja-boton:hover:before{transform:scaleY(1);background:var(--negro)}
+  .oscuro .caja-boton:hover{color:var(--negro)}.oscuro .caja-boton:hover:before{transform:scaleY(1);background:var(--blanco)}
+}
+.caja-boton:active,.enlace:active,.toque:active{transform:scale(.975)}
+.claro{background:var(--papel);color:var(--negro)}
+.oscuro{background:var(--negro);color:var(--blanco)}
+.botonera{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:34px}
+
+/* ══════════ 0 · el telón: la foto se ve a través de las letras ══════════ */
+#telon{position:fixed;inset:0;z-index:80;display:none;cursor:pointer;touch-action:manipulation}
+.js #telon{display:block}
+#telon svg{position:absolute;inset:0;width:100%;height:100%}
+#telon .tapa-negra{fill:#0B0B0B}
+#telon text{font-family:var(--display);font-weight:400}
+#telon .contorno{fill:none;stroke:rgba(250,248,244,.55);stroke-width:.12}
+.telon-arriba,.telon-abajo{position:absolute;left:0;right:0;text-align:center;color:var(--gris-claro);pointer-events:none;transition:opacity .5s}
+.telon-arriba{top:calc(9svh + env(safe-area-inset-top))}
+.telon-abajo{bottom:calc(9svh + env(safe-area-inset-bottom));display:grid;gap:14px;justify-items:center}
+.telon-abajo i{width:1px;height:46px;background:linear-gradient(var(--gris-claro),transparent);animation:goteo 2.2s var(--e) infinite;transform-origin:50% 0}
+@keyframes goteo{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+#telon.abriendo .telon-arriba,#telon.abriendo .telon-abajo{opacity:0}
+
+/* ══════════ 1 · portada ══════════ */
+#portada{height:100vh;height:100svh;min-height:560px;padding:0;overflow:hidden;color:var(--blanco);background:var(--negro)}
+.portada-foto{position:absolute;inset:-6% 0 0;will-change:transform}
+.portada-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:scale(1.14);transition:transform 9s cubic-bezier(.15,.6,.25,1)}
+.abierta .portada-foto img{transform:scale(1)}
+#portada:after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(11,11,11,.55) 0,rgba(11,11,11,0) 26%,rgba(11,11,11,.12) 48%,rgba(11,11,11,.82) 78%,#0B0B0B 100%)}
+.portada-caja{position:absolute;left:0;right:0;bottom:calc(8svh + env(safe-area-inset-bottom));z-index:2;text-align:center;padding:0 var(--gutter)}
+.portada-caja .chico{color:var(--gris-claro)}
+.nombres{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.92;letter-spacing:.01em;
+  font-size:clamp(54px,17vw,128px);margin-top:14px}
+.nombres .y{font-style:italic;text-transform:none;font-size:.62em;display:inline-block;margin:0 .06em 0 .16em;transform:translateY(-.08em)}
+.nombres .letra{display:inline-block}
+.js .nombres .letra{opacity:0;transform:translateY(.4em);filter:blur(6px);transition:opacity 1s var(--e),transform 1.2s var(--e),filter 1.2s var(--e)}
+.abierta .nombres .letra{opacity:1;transform:none;filter:none}
+.lugar{margin-top:16px;color:var(--gris-claro)}
+.frase{font-family:var(--script);font-size:clamp(26px,7.4vw,40px);line-height:1.2;margin-top:18px;color:var(--blanco)}
+.js .frase{opacity:0;transition:opacity 1.6s var(--e) 2.2s}
+.abierta .frase{opacity:1}
+.hilo-baja{display:block;width:44px;height:52px;margin:22px auto 0;position:relative}
+.hilo-baja:before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--blanco);transform-origin:50% 0;animation:goteo 2.4s var(--e) infinite}
+
+/* ══════════ 2 · reservá la fecha (el calendario) ══════════ */
+#fecha{background:radial-gradient(120% 80% at 50% 0,#1E2533,#0E1218 70%)}
+.calendario{width:min(100%,420px);margin:0 auto;background:var(--papel);background-image:var(--tex-papel);border-radius:28px;
+  padding:34px 26px 30px;color:#1d1b18;text-align:center;position:relative;
+  box-shadow:0 40px 80px -40px rgba(0,0,0,.9),0 2px 0 rgba(255,255,255,.4) inset;transform-style:preserve-3d;transition:transform .5s var(--e)}
+.js .calendario{opacity:0;transform:translateY(60px) rotateX(18deg)}
+.calendario.entro{opacity:1;transform:none;transition:opacity 1s var(--e),transform 1.4s var(--e)}
+.mes{font-family:var(--display);font-size:clamp(26px,7vw,32px);letter-spacing:.06em;text-transform:uppercase}
+.grilla{display:grid;grid-template-columns:repeat(7,1fr);row-gap:6px;margin-top:18px;font-size:clamp(15px,4.2vw,17px);font-variant-numeric:tabular-nums}
+.grilla .dia-sem{font-size:12px;letter-spacing:.12em;font-weight:600;color:#5d5953;padding-bottom:6px}
+.grilla .d{height:40px;display:grid;place-items:center;position:relative;color:#2b2925}
+.js .grilla .d{opacity:0;transform:scale(.6);transition:opacity .5s,transform .6s var(--rebote)}
+.entro .grilla .d{opacity:1;transform:none}
+.grilla .d.marcado{color:var(--blanco);font-weight:600;z-index:1}
+.grilla .corazon{position:absolute;left:50%;top:50%;width:48px;height:48px;transform:translate(-50%,-52%);z-index:-1;overflow:visible}
+.corazon path{fill:var(--rojo);stroke:var(--rojo);stroke-width:1.5}
+.js .grilla .d.marcado{color:#2b2925}
+.js .corazon path{fill-opacity:0;stroke-dasharray:1;stroke-dashoffset:1}
+.latido .grilla .d.marcado{color:var(--blanco);transition:color .5s .9s}
+.latido .corazon path{fill-opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset 1s var(--e),fill-opacity .6s .8s}
+.latido .corazon{animation:late 1.6s ease-in-out 1.6s infinite}
+@keyframes late{0%,100%{transform:translate(-50%,-52%) scale(1)}12%{transform:translate(-50%,-52%) scale(1.14)}24%{transform:translate(-50%,-52%) scale(1)}36%{transform:translate(-50%,-52%) scale(1.08)}}
+/* el troquelado: la línea punteada con dos medias lunas, como un ticket */
+.troquel{position:relative;margin:24px -26px;border-top:1.5px dashed #b9b2a6}
+.troquel:before,.troquel:after{content:'';position:absolute;top:-13px;width:26px;height:26px;border-radius:50%;background:#0E1218}
+.troquel:before{left:-13px}.troquel:after{right:-13px}
+.guarda{font-size:12.5px;letter-spacing:.34em;text-transform:uppercase;font-weight:600;color:#4d4a44}
+.fecha-num{font-family:var(--display);font-size:clamp(40px,12vw,58px);line-height:1.1;margin-top:6px;letter-spacing:.02em}
+.mini-corazon{width:22px;height:22px;margin:10px auto 0;color:#1d1b18}
+.entro .mini-corazon{animation:late2 1.6s ease-in-out infinite 2s}
+@keyframes late2{0%,100%{transform:scale(1)}12%{transform:scale(1.2)}24%{transform:scale(1)}36%{transform:scale(1.1)}}
+#fecha .botonera{color:var(--blanco)}
+
+/* ══════════ 3 · cuenta regresiva: dígitos de aeropuerto ══════════ */
+#cuenta{background:var(--blanco);color:var(--negro);padding-top:0;overflow:hidden}
+.manos{position:relative;height:clamp(240px,62vw,420px);margin:0 calc(var(--gutter)*-1);overflow:hidden}
+.manos img{width:100%;height:100%;object-fit:cover;object-position:52% 63%;transform:scale(2.3);transform-origin:52% 63%}
+.manos:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(250,248,244,0) 55%,var(--blanco))}
+.cuenta-titulo{font-family:var(--display);font-style:italic;font-size:clamp(30px,8.4vw,44px);margin-top:10px}
+.tablero{display:flex;justify-content:center;align-items:flex-start;gap:clamp(3px,1.2vw,10px);margin-top:28px}
+.grupo{display:grid;gap:10px;justify-items:center}
+.digitos{display:flex;gap:clamp(3px,1vw,6px)}
+.grupo span{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#5d5953;font-weight:500}
+.dos-puntos{font-family:var(--display);font-size:clamp(20px,5.6vw,40px);line-height:clamp(44px,11vw,74px);color:#3a3834}
+.flap{--alto:clamp(44px,11vw,74px);position:relative;width:calc(var(--alto)*.64);height:var(--alto);perspective:300px;
+  font-family:Montserrat,sans-serif;font-weight:600;font-size:calc(var(--alto)*.62);line-height:var(--alto);color:#F4F1EC;text-align:center}
+.flap>div{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#1A1A1A;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flap .sup,.flap .h-sup{top:0;border-radius:7px 7px 0 0;background:linear-gradient(#262626,#1c1c1c)}
+.flap .inf,.flap .h-inf{bottom:0;border-radius:0 0 7px 7px}
+.flap .inf b,.flap .h-inf b{display:block;transform:translateY(-50%)}
+.flap b{font-weight:600}
+.flap .h-sup{transform-origin:50% 100%;z-index:2}
+.flap .h-inf{transform-origin:50% 0;z-index:2;transform:rotateX(90deg)}
+.flap.gira .h-sup{animation:caeSup .26s ease-in forwards}
+.flap.gira .h-inf{animation:caeInf .26s ease-out .26s forwards}
+@keyframes caeSup{to{transform:rotateX(-90deg)}}
+@keyframes caeInf{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
+.flap:after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:#000;z-index:3}
+.flap{filter:drop-shadow(0 8px 10px rgba(0,0,0,.22))}
+.hoy{font-family:var(--display);font-size:38px}
+
+/* ══════════ 3b · nuestra historia: el color vuelve cuando llegás ══════════ */
+#historia{background:var(--blanco);color:var(--negro);padding-top:20px}
+.historia-lista{max-width:760px;margin:46px auto 0;display:grid;gap:clamp(56px,10vh,96px)}
+.recuerdo{display:grid;gap:14px}
+.recuerdo .anio{font-family:var(--display);font-size:clamp(64px,20vw,120px);line-height:.8;letter-spacing:-.02em;
+  color:transparent;-webkit-text-stroke:1px var(--negro)}
+.recuerdo figure{position:relative;overflow:hidden;aspect-ratio:1.6;background:#ddd8cf}
+.recuerdo img{width:100%;height:100%;object-fit:cover;filter:grayscale(var(--g,1)) contrast(1.05);transform:scale(calc(1.08 - (1 - var(--g,1))*.08))}
+.js .recuerdo figure{clip-path:inset(0 0 100% 0);transition:clip-path 1.3s var(--e)}
+.recuerdo.entro figure{clip-path:inset(0 0 0 0)}
+.recuerdo p{font-size:15.5px;color:#3a3834;max-width:34ch}
+@media(min-width:760px){
+  .recuerdo{grid-template-columns:1fr 1.6fr;align-items:end;column-gap:28px}
+  .recuerdo .anio{grid-row:1/3}
+  .recuerdo:nth-child(even){grid-template-columns:1.6fr 1fr}
+  .recuerdo:nth-child(even) .anio{grid-column:2;text-align:right}
+  .recuerdo:nth-child(even) figure,.recuerdo:nth-child(even) p{grid-column:1}
+}
+
+/* ══════════ 4 · itinerario ══════════ */
+#itinerario{overflow:hidden;padding-left:0;padding-right:0}
+.marquesina{font-family:var(--display);font-size:clamp(70px,22vw,170px);line-height:1;white-space:nowrap;letter-spacing:.04em;
+  color:transparent;-webkit-text-stroke:1px rgba(250,248,244,.5);will-change:transform;transform:translateX(var(--mx,0))}
+.marquesina b{font-weight:400;color:var(--blanco);-webkit-text-stroke:0}
+.pasos{position:relative;max-width:560px;margin:40px auto 0;padding:0 var(--gutter);text-align:center}
+.paso{position:relative;padding:0 0 18px}
+.paso:before{content:'';display:block;width:1px;height:70px;margin:0 auto 22px;background:linear-gradient(transparent,var(--gris-claro));transform-origin:50% 0}
+.js .paso:before{transform:scaleY(0);transition:transform 1.2s var(--e)}
+.paso.entro:before{transform:none}
+.paso .hora{font-size:13px;letter-spacing:.3em;color:var(--gris-claro);font-weight:500}
+.paso h3{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(40px,12vw,68px);line-height:1;margin-top:8px;letter-spacing:.02em}
+.paso p{color:#BDB9B2;margin-top:10px;font-size:15.5px}
+
+/* ══════════ 5 · la foto que se abre al bajar ══════════ */
+#ventana{padding:0;height:150vh;height:150svh;background:var(--negro)}
+.ventana-fija{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center}
+.ventana-foto{position:absolute;inset:0;clip-path:inset(var(--vy,18%) var(--vx,14%) var(--vy,18%) var(--vx,14%) round var(--vr,14px))}
+.ventana-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 45%;transform:scale(var(--vs,1.25))}
+.ventana-foto:after{content:'';position:absolute;inset:0;background:rgba(11,11,11,calc(.15 + var(--vo,0)*.45))}
+.ventana-texto{position:relative;z-index:2;text-align:center;color:var(--blanco);padding:0 var(--gutter);opacity:var(--vo,0);transform:translateY(calc((1 - var(--vo,0))*20px))}
+.ventana-texto p{font-family:var(--script);font-size:clamp(34px,10vw,64px);line-height:1.2}
+
+/* ══════════ 6 · dress code (bordes de pincel) ══════════ */
+#dress{background:#101512;color:var(--blanco);padding-top:clamp(110px,16vh,170px);padding-bottom:clamp(90px,12vh,130px)}
+.pincel{position:absolute;left:0;right:0;height:46px;pointer-events:none;z-index:2}
+.pincel svg{width:100%;height:100%;display:block}
+.pincel.arriba{top:-1px}.pincel.abajo{bottom:-1px;transform:scaleY(-1)}
+.sub{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris-claro);margin-top:12px}
+.paleta{display:flex;justify-content:center;margin-top:40px;height:96px}
+.color{position:relative;width:86px;height:86px;border-radius:50%;background:var(--c);margin:0 -14px;
+  box-shadow:0 14px 28px -12px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.16);transition:transform .9s var(--e),margin .5s var(--e)}
+.js .color{transform:translateX(var(--desde)) scale(.7)}
+.paleta.entro .color{transform:none;transition-delay:calc(var(--i)*.09s)}
+.paleta.entro .color.alzado{transform:translateY(-12px);z-index:5;transition-delay:0s}
+.color span{position:absolute;left:50%;top:100%;transform:translate(-50%,12px);white-space:nowrap;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+  opacity:0;transition:opacity .3s;color:var(--gris-claro);pointer-events:none}
+.color.alzado span{opacity:1}
+@media(hover:hover) and (pointer:fine){.paleta.entro .color:hover{transform:translateY(-12px);z-index:5;transition-delay:0s}.color:hover span{opacity:1}}
+.dress-nota{margin-top:50px;color:#BDB9B2}
+
+/* ══════════ 7 · dónde (la casona que se prende) ══════════ */
+.casona{width:min(100%,520px);margin:36px auto 0;color:var(--gris-claro)}
+.casona svg{width:100%;height:auto;overflow:visible}
+.casona .linea{fill:none;stroke:currentColor;stroke-width:1.1;stroke-linejoin:round}
+.js .casona .linea{stroke-dasharray:1;stroke-dashoffset:1}
+.casona.entro .linea{stroke-dashoffset:0;transition:stroke-dashoffset 2.6s var(--e)}
+.casona .ven{fill:#2a2a26;transition:fill .6s,filter .6s}
+.casona .ven.luz{fill:#F6D58E;filter:drop-shadow(0 0 5px rgba(246,213,142,.9))}
+.casona .fuente{fill:none;stroke:#F6D58E;stroke-width:1;opacity:0}
+.casona.prendida .fuente{animation:chorro 2.2s ease-out infinite}
+@keyframes chorro{0%{opacity:0;transform:translateY(3px)}30%{opacity:.9}100%{opacity:0;transform:translateY(-6px)}}
+.casona .fuente{transform-box:fill-box;transform-origin:50% 100%}
+.datos-lugar{margin-top:28px;display:grid;gap:4px}
+.datos-lugar b{font-family:var(--display);font-weight:400;font-size:clamp(30px,8vw,42px);line-height:1.1}
+.datos-lugar span{color:#BDB9B2}
+.horarios{display:flex;justify-content:center;gap:clamp(26px,9vw,60px);margin-top:26px}
+.horarios div{display:grid;gap:2px}
+.horarios small{font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gris)}
+.horarios strong{font-family:var(--display);font-weight:400;font-size:32px}
+
+/* ══════════ 8 · regalo ══════════ */
+#regalo .ticket{width:min(100%,420px);margin:34px auto 0;border:1.5px solid var(--negro);padding:26px 22px;position:relative;background:var(--blanco)}
+.ticket:before,.ticket:after{content:'';position:absolute;top:50%;width:24px;height:24px;border-radius:50%;background:var(--papel);border:1.5px solid var(--negro);transform:translateY(-50%)}
+.ticket:before{left:-13px;border-left-color:transparent;border-bottom-color:transparent;transform:translateY(-50%) rotate(45deg)}
+.ticket:after{right:-13px;border-right-color:transparent;border-top-color:transparent;transform:translateY(-50%) rotate(45deg)}
+.ticket small{display:block;font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:#5d5953;font-weight:600}
+.ticket .alias{font-family:var(--display);font-size:clamp(26px,7.6vw,34px);margin:6px 0 4px;word-break:break-all}
+.ticket .titular{color:#5d5953;font-size:14.5px}
+.copiar .tilde{display:none;width:18px;height:18px}
+.copiar.listo .tilde{display:block}
+.copiar.listo .tilde path{stroke-dasharray:1;stroke-dashoffset:1;animation:tilde .5s var(--e) forwards}
+@keyframes tilde{to{stroke-dashoffset:0}}
+
+/* ══════════ 9 · confirmación ══════════ */
+#rsvp{background:var(--blanco);overflow:hidden}
+.manos-rsvp{position:relative;height:clamp(150px,44vw,280px);margin:0 calc(var(--gutter)*-1) 30px;display:none}
+.manos-rsvp.lista{display:block}
+.manos-rsvp i{position:absolute;top:0;bottom:0;width:50%;background-image:var(--foto-manos);background-size:200% 100%;background-repeat:no-repeat}
+.manos-rsvp .izq{left:0;background-position:0 50%;transform:translateX(calc((1 - var(--mp,1))*-38%))}
+.manos-rsvp .der{right:0;background-position:100% 50%;transform:translateX(calc((1 - var(--mp,1))*38%))}
+.eleccion{display:flex;justify-content:center;gap:clamp(18px,8vw,46px);margin-top:30px}
+.eleccion .enlace{font-size:14px}
+.eleccion .enlace:after{transform:scaleX(.18)}
+.eleccion .enlace[aria-pressed="true"]:after{transform:scaleX(1)}
+#form{max-width:460px;margin:24px auto 0;text-align:left;display:none}
+#form.ver{display:block;animation:sube .7s var(--e)}
+@keyframes sube{from{opacity:0;transform:translateY(16px)}}
+.campo{margin-bottom:22px}
+.campo label{display:block;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:#5d5953}
+.campo input,.campo select,.campo textarea{width:100%;min-height:48px;padding:10px 0;border:0;border-bottom:1.5px solid #b9b2a6;border-radius:0;
+  background:transparent;font-size:17px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .3s}
+.campo select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B0B0B' stroke-width='1.6'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 2px center;background-size:18px;padding-right:30px}
+.campo textarea{min-height:90px;resize:vertical}
+.campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--negro)}
+.campo input::placeholder,.campo textarea::placeholder{color:#8a857c}
+.persona{padding:4px 0 2px;margin-bottom:8px}
+.persona .quien{font-family:var(--display);font-style:italic;font-size:24px;margin-bottom:6px}
+.nota-datos{font-size:13px;color:#5d5953;line-height:1.55;margin:4px 0 22px}
+#enviar{width:100%;color:var(--negro)}
+#estado{margin-top:14px;font-size:15px;min-height:22px;text-align:center}
+#estado.mal{color:var(--rojo)}
+#gracias{display:none;max-width:460px;margin:30px auto 0}
+#gracias.ver{display:block;animation:sube .8s var(--e)}
+#gracias .titulo{font-size:clamp(40px,12vw,64px)}
+.muestra-aviso{margin-top:18px;font-size:13.5px;color:#5d5953;border:1px dashed #b9b2a6;padding:12px 14px}
+
+/* ══════════ 10 · cierre ══════════ */
+#cierre{text-align:center;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+.monograma{font-family:var(--display);font-size:clamp(90px,30vw,180px);line-height:1;letter-spacing:-.04em}
+.monograma em{font-style:italic;font-size:.6em;vertical-align:.18em;margin:0 -.04em}
+.ficcion{margin-top:40px;font-size:13.5px;color:var(--gris);line-height:1.6}
+.firma{margin-top:12px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gris)}
+.firma a{display:inline-flex;align-items:center;min-height:44px;color:var(--blanco);text-decoration:none;font-weight:600}
+
+/* ══════════ fijos ══════════ */
+#sonido{position:fixed;right:calc(14px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top));z-index:85;display:none;
+  align-items:center;gap:10px;min-height:44px;padding:0 12px;color:var(--blanco);mix-blend-mode:difference;
+  font-size:11px;letter-spacing:.26em;font-weight:600;text-transform:uppercase}
+#sonido.ver{display:flex}
+#sonido svg{width:34px;height:14px;overflow:hidden}
+#sonido path{fill:none;stroke:currentColor;stroke-width:1.4}
+#sonido .onda{transform:translateX(0)}
+#sonido.sonando .onda{animation:ondea 1.2s linear infinite}
+@keyframes ondea{to{transform:translateX(-16px)}}
+#sonido:not(.sonando) .onda{opacity:.45}
+/* el cursor propio: sólo con mouse */
+#cursor{position:fixed;left:0;top:0;z-index:95;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;mix-blend-mode:difference;
+  pointer-events:none;transition:width .35s var(--e),height .35s var(--e),margin .35s var(--e);display:none}
+#cursor.grande{width:64px;height:64px;margin:-32px 0 0 -32px}
+@media(hover:hover) and (pointer:fine){#cursor.vivo{display:block}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  .js .ranura>span,.js .ap,.js .nombres .letra,.js .frase,.js .calendario,.js .grilla .d,.js .color{opacity:1;transform:none;filter:none}
+  .js .paso:before{transform:none}.js .recuerdo figure{clip-path:none}.js .casona .linea{stroke-dashoffset:0}
+  .js .corazon path{fill-opacity:1;stroke-dashoffset:0}.js .grilla .d.marcado{color:var(--blanco)}
+  #ventana{height:auto}.ventana-fija{position:relative}
+  .grano{display:none}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');document.body.classList.add('cerrado')</script>
+<div class="grano" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"></div>
+
+<!-- ══════════ 0 · el telón ══════════ -->
+<div id="telon" role="button" tabindex="0" aria-label="Entrar a la invitación">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <mask id="agujero" maskUnits="userSpaceOnUse" x="-500" y="-500" width="1100" height="1100">
+        <rect x="-500" y="-500" width="1100" height="1100" fill="#fff"/>
+        <g id="zoom"><text x="50" y="56" text-anchor="middle" font-size="17" fill="#000">J<tspan font-style="italic" font-size="12">&amp;</tspan>F</text></g>
+      </mask>
+    </defs>
+    <rect class="tapa-negra" x="-500" y="-500" width="1100" height="1100" mask="url(#agujero)"/>
+    <g id="zoom-borde"><text class="contorno" x="50" y="56" text-anchor="middle" font-size="17">J<tspan font-style="italic" font-size="12">&amp;</tspan>F</text></g>
+  </svg>
+  <p class="telon-arriba chico">20 · 11 · 2027</p>
+  <div class="telon-abajo"><p class="chico">Tocá para entrar</p><i></i></div>
+</div>
+
+<main id="papel">
+  <!-- ══════════ 1 · portada ══════════ -->
+  <section id="portada">
+    <div class="portada-foto" id="portada-foto"><img src="fotos/pareja.webp" alt="Julia y Franco caminando de la mano por el campo" fetchpriority="high"></div>
+    <div class="portada-caja">
+      <p class="chico" id="fecha-arriba"></p>
+      <h1 class="nombres" id="nombres" aria-label="Julia y Franco"></h1>
+      <p class="chico lugar" id="lugar-arriba"></p>
+      <p class="frase">Nos elegimos sin buscarnos</p>
+      <a href="#fecha" class="hilo-baja" aria-label="Bajar"></a>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · reservá la fecha ══════════ -->
+  <section id="fecha" class="oscuro">
+    <div class="calendario" id="calendario">
+      <p class="mes" id="mes"></p>
+      <div class="grilla" id="grilla" aria-hidden="true"></div>
+      <p class="oculto-lector" id="fecha-lector"></p>
+      <div class="troquel" aria-hidden="true"></div>
+      <p class="guarda">Reservá la fecha</p>
+      <p class="fecha-num" id="fecha-num"></p>
+      <svg class="mini-corazon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11Z"/></svg>
+    </div>
+    <div class="botonera ap">
+      <a class="caja-boton toque" id="cal-google" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5"/><path d="M3.5 10h17M8 3v4m8-4v4"/></svg>Agendar en Google</a>
+      <button class="caja-boton toque" id="cal-ics">iPhone / Outlook</button>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · cuenta regresiva ══════════ -->
+  <section id="cuenta">
+    <div class="manos" aria-hidden="true"><img src="fotos/pareja.webp" alt="" loading="lazy"></div>
+    <div class="centro">
+      <p class="chico ap">Faltan</p>
+      <p class="cuenta-titulo ap d1">para el sí</p>
+      <div class="tablero ap d2" id="tablero" aria-hidden="true"></div>
+      <p class="oculto-lector" id="cuenta-lector"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 3b · nuestra historia ══════════ -->
+  <section id="historia">
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>Nuestra <em>historia</em></span></span></h2>
+    </div>
+    <div class="historia-lista" id="historia-lista"></div>
+  </section>
+
+  <!-- ══════════ 4 · itinerario ══════════ -->
+  <section id="itinerario" class="oscuro">
+    <div class="marquesina" id="marquesina" aria-hidden="true">Itinerario · <b>Itinerario</b> · Itinerario · <b>Itinerario</b></div>
+    <h2 class="oculto-lector">Itinerario</h2>
+    <div class="pasos" id="pasos"></div>
+  </section>
+
+  <!-- ══════════ 5 · la foto que se abre ══════════ -->
+  <section id="ventana" aria-label="Una frase de Julia y Franco">
+    <div class="ventana-fija">
+      <div class="ventana-foto"><img src="fotos/pareja.webp" alt="" loading="lazy"></div>
+      <div class="ventana-texto"><p>Y un día, sin darnos cuenta,<br>ya éramos casa.</p></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · dress code ══════════ -->
+  <section id="dress">
+    <div class="pincel arriba" aria-hidden="true"></div>
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>Dress code</span></span></h2>
+      <p class="sub ap d1" id="dress-sub"></p>
+      <p class="bajada ap d2" id="dress-texto" style="color:#D6D2CB"></p>
+      <div class="paleta" id="paleta" role="list" aria-label="Colores sugeridos"></div>
+      <p class="dress-nota ap" id="dress-nota"></p>
+    </div>
+    <div class="pincel abajo" aria-hidden="true"></div>
+  </section>
+
+  <!-- ══════════ 7 · dónde ══════════ -->
+  <section id="donde" class="oscuro">
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>Dónde</span></span></h2>
+      <p class="sub ap d1">El lugar</p>
+      <div class="casona" id="casona">
+        <svg viewBox="0 0 400 220" role="img" aria-label="Dibujo de la casona de la estancia">
+          <g id="casona-lineas"></g>
+        </svg>
+      </div>
+      <div class="datos-lugar ap"><b id="lugar"></b><span id="direccion"></span></div>
+      <div class="horarios ap d1">
+        <div><small>Ceremonia</small><strong id="h-cer"></strong></div>
+        <div><small>Fiesta</small><strong id="h-fie"></strong></div>
+      </div>
+      <div class="botonera ap d2">
+        <a class="caja-boton toque" id="ir-maps" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Cómo llegar</a>
+        <a class="caja-boton toque" id="ir-waze" target="_blank" rel="noopener">Waze</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · regalo ══════════ -->
+  <section id="regalo" class="claro">
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>Regalos</span></span></h2>
+      <p class="bajada ap d1" id="regalo-texto"></p>
+      <div class="ticket ap d2">
+        <small>Alias</small>
+        <p class="alias" id="alias"></p>
+        <p class="titular" id="titular"></p>
+        <button class="enlace toque copiar" id="copiar" style="margin-top:10px">
+          <svg class="tilde" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path pathLength="1" d="m5 12 5 5 9-10"/></svg>
+          <span>Copiar alias</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 9 · confirmación ══════════ -->
+  <section id="rsvp">
+    <div class="manos-rsvp" id="manos-rsvp" aria-hidden="true"><i class="izq"></i><i class="der"></i></div>
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>¿Venís?</span></span></h2>
+      <p class="bajada ap d1" id="limite"></p>
+      <div class="eleccion ap d2" id="eleccion">
+        <button class="enlace toque" data-va="si" aria-pressed="false">Sí, voy</button>
+        <button class="enlace toque" data-va="no" aria-pressed="false">No puedo</button>
+      </div>
+    </div>
+    <form id="form" novalidate>
+      <input type="hidden" name="asistencia" id="asistencia">
+      <div class="campo" id="campo-personas"><label for="personas">Cuántos van</label><select name="personas" id="personas"></select></div>
+      <div id="gente"></div>
+      <div class="campo" id="campo-cancion"><label for="cancion">La canción que no puede faltar</label>
+        <input type="text" name="cancion" id="cancion" placeholder="Opcional" autocomplete="off"></div>
+      <div class="campo"><label for="mensaje">Un mensaje para los novios</label>
+        <textarea name="mensaje" id="mensaje" placeholder="Opcional"></textarea></div>
+      <p class="nota-datos">Lo que escribas lo ven solo Julia y Franco, para organizar la fiesta. Se borra a los 90 días.
+        Si querés que lo saquemos antes, escribinos.</p>
+      <button type="submit" class="caja-boton toque" id="enviar">Confirmar</button>
+      <p id="estado" role="status" aria-live="polite"></p>
+    </form>
+    <div id="gracias" class="centro" role="status">
+      <h2 class="titulo" id="gracias-titulo"></h2>
+      <p class="bajada" id="gracias-texto"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 10 · cierre ══════════ -->
+  <section id="cierre" class="oscuro">
+    <p class="monograma ap" aria-hidden="true">J<em>&amp;</em>F</p>
+    <p class="titulo ap d1" style="font-size:clamp(34px,10vw,56px);margin-top:18px">Te esperamos</p>
+    <p class="ficcion ap d2">Julia y Franco no existen: esta es una invitación de muestra.<br>Así puede ser la tuya.</p>
+    <p class="firma">Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a></p>
+  </section>
+</main>
+
+<button id="sonido" aria-label="Poner o sacar la música" aria-pressed="false">
+  <span id="sonido-texto">Sonido</span>
+  <svg viewBox="0 0 34 14" aria-hidden="true"><path class="onda" d="M0 7 Q4 1 8 7 T16 7 T24 7 T32 7 T40 7 T48 7 T56 7 T64 7"/></svg>
+</button>
+<audio id="audio" loop preload="none"></audio>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   Lo único que se toca para otra pareja. Horas de Rosario, con la
+   zona escrita: así da lo mismo en cualquier teléfono.
+   ══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  novios: ["Julia", "Franco"],
+  ceremonia: "2027-11-20T18:30:00-03:00",
+  fiesta:    "2027-11-20T20:30:00-03:00",
+  finFiesta: "2027-11-21T05:00:00-03:00",
+  confirmarHasta: "20 de octubre",
+  lugar: "Estancia Los Aromos",
+  ciudad: "Rosario",
+  direccion: "Ruta 34, km 12 · a 25 minutos de Rosario",
+  linkMaps: "https://www.google.com/maps/search/?api=1&query=Ibarlucea%2C%20Santa%20Fe",
+  linkWaze: "https://waze.com/ul?q=Ibarlucea%2C%20Santa%20Fe",
+  historia: [
+    {foto:"fotos/1.webp", anio:"2019", texto:"Un recital, la misma fila, el mismo chiste."},
+    {foto:"fotos/2.webp", anio:"2021", texto:"El primer viaje: Bariloche, con lluvia."},
+    {foto:"fotos/3.webp", anio:"2024", texto:"La casa, el perro y las plantas que no regamos."},
+    {foto:"fotos/4.webp", anio:"2026", texto:"Y en la playa, la pregunta."}
+  ],
+  itinerario: [
+    {hora:"18:30", que:"Ceremonia", detalle:"En la capilla, al atardecer."},
+    {hora:"19:30", que:"Cóctel",    detalle:"En el jardín, con la última luz."},
+    {hora:"21:30", que:"Cena",      detalle:"Bajo los árboles."},
+    {hora:"00:00", que:"Fiesta",    detalle:"Hasta que salga el sol."}
+  ],
+  dressSub: "Elegante",
+  dressTexto: "Nos encantaría que te sumes a la paleta de la noche.",
+  dressColores: [["#0B0B0B","Negro"],["#E7E1D6","Marfil"],["#1F3A2E","Verde inglés"],["#F4F1EA","Perla"],["#4A5A50","Salvia"]],
+  dressNota: "El blanco queda para la novia.",
+  regaloTexto: "Lo más lindo es que estés. Y si querés sumarte a nuestra luna de miel:",
+  alias: "julia.franco.boda",
+  titular: "Julia Medina",
+  cancion: "",          // un .m4a o .mp3 en esta carpeta; vacío = piano sintetizado
+  fotoManos: "",        // "fotos/manos.webp": dos manos sobre fondo blanco; vacío = la sección va sin ellas
+  lugaresPorDefecto: 4,
+  endpoint: ""          // vacío = muestra: no se manda nada, y la pantalla lo dice
+};
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = t => String(t==null?'':t).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+const menosMov = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const conMouse = matchMedia('(hover:hover) and (pointer:fine)').matches;
+const vibrar = ms => { try{ navigator.vibrate && navigator.vibrate(ms); }catch(_){} };
+const ZONA = 'America/Argentina/Buenos_Aires';
+function azar(semilla){ let s = semilla>>>0; return ()=>((s = (s*1664525 + 1013904223)>>>0) / 4294967296); }
+
+/* las texturas, armadas una vez */
+(function(){
+  const grano = `<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(#g)'/></svg>`;
+  const papel = `<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4' stitchTiles='stitch'/><feDiffuseLighting lighting-color='#fff' surfaceScale='1.2'><feDistantLight azimuth='45' elevation='60'/></feDiffuseLighting></filter><rect width='220' height='220' filter='url(#p)' opacity='.3'/></svg>`;
+  const url = s => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+  document.documentElement.style.setProperty('--tex-grano', url(grano));
+  document.documentElement.style.setProperty('--tex-papel', url(papel));
+})();
+
+/* La invitación es la misma para todos: los novios mandan un solo link. */
+const LUGARES = CONFIG.lugaresPorDefecto;
+
+/* ══════════ fechas, desde Rosario ══════════ */
+const tCer = new Date(CONFIG.ceremonia), tFie = new Date(CONFIG.fiesta), tFin = new Date(CONFIG.finFiesta);
+const enRosario = (d, op) => new Intl.DateTimeFormat('es-AR', {timeZone:ZONA, ...op}).format(d);
+const horaDe = d => enRosario(d, {hour:'2-digit', minute:'2-digit', hour12:false});
+const [D, M, A] = enRosario(tCer, {day:'numeric', month:'numeric', year:'numeric'}).split('/').map(Number);
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const dos = n => String(n).padStart(2,'0');
+$('#fecha-arriba').textContent = `${D} ${MESES[M-1]} ${A}`;
+$('#lugar-arriba').textContent = `${CONFIG.lugar} · ${CONFIG.ciudad}`;
+$('#fecha-num').textContent = `${dos(D)}.${dos(M)}.${A}`;
+$('#lugar').textContent = CONFIG.lugar;
+$('#direccion').textContent = CONFIG.direccion;
+$('#h-cer').textContent = horaDe(tCer);
+$('#h-fie').textContent = horaDe(tFie);
+$('#ir-maps').href = CONFIG.linkMaps; $('#ir-waze').href = CONFIG.linkWaze;
+$('#dress-sub').textContent = CONFIG.dressSub;
+$('#dress-texto').textContent = CONFIG.dressTexto;
+$('#dress-nota').textContent = CONFIG.dressNota;
+$('#regalo-texto').textContent = CONFIG.regaloTexto;
+$('#alias').textContent = CONFIG.alias; $('#titular').textContent = CONFIG.titular;
+$('#limite').textContent = `Confirmá antes del ${CONFIG.confirmarHasta}.`;
+
+/* los nombres, letra por letra */
+$('#nombres').innerHTML = CONFIG.novios.map((n,k)=>
+  [...n].map((ch,i)=>`<span class="letra" style="transition-delay:${(.5 + k*.7 + i*.07).toFixed(2)}s">${esc(ch)}</span>`).join('')
+).join(` <span class="letra y" style="transition-delay:1.1s">&amp;</span><br>`);
+
+/* ══════════ el calendario del mes, armado de verdad ══════════
+   Lunes primero, como se usa acá. El día se cuenta en UTC a propósito:
+   es una grilla de calendario, no una hora. */
+(function(){
+  const primero = (new Date(Date.UTC(A, M-1, 1)).getUTCDay() + 6) % 7;
+  const dias = new Date(Date.UTC(A, M, 0)).getUTCDate();
+  $('#mes').textContent = `${MESES[M-1]} ${A}`;
+  let h = ['L','M','M','J','V','S','D'].map(d=>`<span class="dia-sem">${d}</span>`).join('');
+  h += '<span></span>'.repeat(primero);
+  for (let d=1; d<=dias; d++){
+    const k = primero + d - 1;
+    const demora = (k*0.025).toFixed(3);
+    if (d === D) h += `<span class="d marcado" style="transition-delay:${demora}s"><svg class="corazon" viewBox="0 0 48 48"><path pathLength="1" d="M24 42S6 31 6 18a9 9 0 0 1 18-4 9 9 0 0 1 18 4c0 13-18 24-18 24Z"/></svg>${d}</span>`;
+    else h += `<span class="d" style="transition-delay:${demora}s">${d}</span>`;
+  }
+  $('#grilla').innerHTML = h;
+  $('#fecha-lector').textContent = `Sábado ${D} de ${MESES[M-1]} de ${A}`;
+})();
+
+/* agendar */
+const utcIcs = d => d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+const tituloCal = `Casamiento de ${CONFIG.novios.join(' y ')}`;
+$('#cal-google').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+  + '&text=' + encodeURIComponent(tituloCal) + '&dates=' + utcIcs(tCer) + '/' + utcIcs(tFin)
+  + '&location=' + encodeURIComponent(CONFIG.lugar + ', ' + CONFIG.direccion)
+  + '&details=' + encodeURIComponent(location.href.split('?')[0]);
+$('#cal-ics').addEventListener('click', ()=>{
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Click Eterno//Invitacion//ES','BEGIN:VEVENT',
+    'UID:' + utcIcs(tCer) + '-juliayfranco@clicketerno.com.ar','DTSTAMP:' + utcIcs(new Date()),
+    'DTSTART:' + utcIcs(tCer),'DTEND:' + utcIcs(tFin),'SUMMARY:' + tituloCal,
+    'LOCATION:' + (CONFIG.lugar + ', ' + CONFIG.direccion).replace(/,/g,'\\,'),
+    'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:' + tituloCal,'END:VALARM',
+    'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'})); a.download = 'casamiento.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000); vibrar(12);
+});
+
+/* ══════════ la música: un piano suave, sintetizado ══════════
+   Canon de Pachelbel (dominio público), armado acá mismo: no hay archivo
+   que bajar. Si la pareja tiene su canción, va en CONFIG.cancion. */
+const musica = (function(){
+  let ctx = null, salida = null, sonando = false, timer = 0, proxima = 0, paso = 0;
+  const audio = $('#audio');
+  const nota = n => 440 * Math.pow(2, (n-69)/12);
+  const ACORDES = [[50,57,62,66],[45,52,57,61],[47,54,59,62],[42,49,54,57],[43,50,55,59],[38,45,50,54],[43,50,55,59],[45,52,57,61]];
+  const MELODIA = [[78,76],[74,73],[71,69],[71,73],[74,73],[71,69],[67,66],[67,64],[74,0],[73,0],[71,0],[69,0],[67,0],[66,0],[67,0],[69,0]];
+  const NEGRA = 60/58;
+  function ctxDe(){
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    ctx = new AC(); salida = ctx.createGain(); salida.gain.value = 0;
+    const largo = ctx.sampleRate*2.8, ir = ctx.createBuffer(2, largo, ctx.sampleRate);
+    for (let c=0;c<2;c++){ const d = ir.getChannelData(c); for (let i=0;i<largo;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/largo, 2.8); }
+    const sala = ctx.createConvolver(); sala.buffer = ir;
+    const filtro = ctx.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.value = 2600;
+    const seco = ctx.createGain(); seco.gain.value = .7; const mojado = ctx.createGain(); mojado.gain.value = .45;
+    salida.connect(filtro); filtro.connect(seco).connect(ctx.destination); filtro.connect(sala).connect(mojado).connect(ctx.destination);
+    return ctx;
+  }
+  function tecla(n, t, vol){
+    const f = nota(n);
+    [[1,1,'triangle'],[2,.22,'sine'],[3,.08,'sine']].forEach(([k,a,tipo])=>{
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = tipo; o.frequency.value = f*k;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol*a, t + .008);
+      g.gain.exponentialRampToValueAtTime(vol*a*.35, t + .25); g.gain.exponentialRampToValueAtTime(.0001, t + 2.4);
+      o.connect(g).connect(salida); o.start(t); o.stop(t + 2.5);
+    });
+  }
+  function programar(){
+    while (proxima < ctx.currentTime + .25){
+      const compas = Math.floor(paso/8) % 16, corchea = paso % 8, ac = ACORDES[compas % 8];
+      if (corchea === 0) tecla(ac[0] - 12, proxima, .07);
+      tecla(ac[[1,2,3,2,1,2,3,2][corchea]], proxima, .045);
+      if (corchea % 4 === 0){ const m = MELODIA[compas][corchea/4]; if (m) tecla(m, proxima, .1); }
+      proxima += NEGRA/2; paso++;
+    }
+  }
+  const fundir = a => { salida.gain.cancelScheduledValues(ctx.currentTime); salida.gain.setTargetAtTime(a, ctx.currentTime, .7); };
+  const pintar = () => { const b = $('#sonido'); b.classList.toggle('sonando', sonando); b.setAttribute('aria-pressed', String(sonando)); $('#sonido-texto').textContent = sonando ? 'Sonido' : 'Sin sonido'; };
+  return {
+    ctx: ctxDe,
+    despertar(){ const c = ctxDe(); if (c && c.state === 'suspended') c.resume(); },
+    prender(){
+      if (CONFIG.cancion){ audio.src = audio.src || CONFIG.cancion;
+        audio.play().then(()=>{ sonando = true; pintar(); }).catch(()=>{ sonando = false; pintar(); }); return; }
+      if (!ctxDe()) return; ctx.resume();
+      if (!timer){ proxima = ctx.currentTime + .1; timer = setInterval(programar, 90); programar(); }
+      fundir(1); sonando = true; pintar();
+    },
+    apagar(){
+      if (CONFIG.cancion) audio.pause();
+      else if (ctx){ fundir(0); setTimeout(()=>{ if (!sonando){ clearInterval(timer); timer = 0; } }, 2500); }
+      sonando = false; pintar();
+    },
+    alternar(){ sonando ? this.apagar() : (this.despertar(), this.prender()); }
+  };
+})();
+$('#sonido').addEventListener('click', ()=>musica.alternar());
+document.addEventListener('visibilitychange', ()=>{ const c = musica.ctx(); if (!c) return; if (document.hidden) c.suspend(); else if ($('#sonido').classList.contains('sonando')) c.resume(); });
+
+/* ══════════ el telón: las letras se agrandan hasta que la foto ocupa todo ══════════ */
+const telon = $('#telon');
+let abierta = false;
+function entrar(){
+  if (abierta) return; abierta = true;
+  musica.despertar(); musica.prender(); vibrar(14);
+  telon.classList.add('abriendo');
+  document.body.classList.remove('cerrado');
+  document.body.classList.add('abierta');
+  const z1 = $('#zoom'), z2 = $('#zoom-borde'), dur = menosMov ? 0 : 1700, t0 = performance.now();
+  (function cuadro(t){
+    const p = dur ? Math.min(1, Math.max(0, (t - t0)/dur)) : 1;
+    const e = p === 1 ? 1 : 1 - Math.pow(2, -10*p);       // sale rápido y frena
+    const s = 1 + Math.pow(e, 2.2)*70;
+    const tr = `translate(50 47) scale(${s.toFixed(3)}) translate(-50 -47)`;
+    z1.setAttribute('transform', tr); z2.setAttribute('transform', tr);
+    z2.style.opacity = String(Math.max(0, 1 - p*5));     // el filo de las letras se va antes de agrandarse
+    telon.style.opacity = String(Math.max(0, 1 - Math.max(0, p - .45)/.4));
+    if (p < 1) requestAnimationFrame(cuadro);
+    else { telon.remove(); $('#sonido').classList.add('ver'); }
+  })(t0);
+}
+telon.addEventListener('pointerdown', ()=>musica.despertar());
+telon.addEventListener('click', entrar);
+telon.addEventListener('keydown', e=>{ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); entrar(); }});
+
+/* ══════════ la cuenta: dígitos sueltos que dan vuelta ══════════ */
+const flaps = [];
+function armarTablero(digitosDias){
+  const grupos = [['días', digitosDias], ['horas', 2], ['min', 2], ['seg', 2]];
+  $('#tablero').innerHTML = grupos.map(([nombre, n], g)=>
+    (g ? '<span class="dos-puntos">:</span>' : '') +
+    `<div class="grupo"><div class="digitos">${'<div class="flap"><div class="sup"><b></b></div><div class="inf"><b></b></div><div class="h-sup"><b></b></div><div class="h-inf"><b></b></div></div>'.repeat(n)}</div><span>${nombre}</span></div>`
+  ).join('');
+  flaps.length = 0; $$('#tablero .flap').forEach(el=>flaps.push({el, val:null}));
+}
+function poner(f, v){
+  if (f.val === v) return;
+  const [sup, inf, hs, hi] = f.el.querySelectorAll('b');
+  if (f.val === null || menosMov){ sup.textContent = inf.textContent = hs.textContent = hi.textContent = v; f.val = v; return; }
+  hs.textContent = f.val; inf.textContent = f.val; sup.textContent = v; hi.textContent = v;
+  f.el.classList.remove('gira'); void f.el.offsetWidth; f.el.classList.add('gira');
+  clearTimeout(f.t); f.t = setTimeout(()=>{ inf.textContent = hs.textContent = v; f.el.classList.remove('gira'); }, 560);
+  f.val = v;
+}
+let anchoDias = 0;
+function reloj(){
+  const falta = tCer - Date.now();
+  if (falta <= 0){
+    $('#tablero').innerHTML = `<p class="hoy">${Date.now() < tFin ? '¡Es hoy!' : 'Ya nos casamos'}</p>`;
+    return true;
+  }
+  const s = Math.floor(falta/1000), dias = String(Math.floor(s/86400)).padStart(2,'0');
+  if (dias.length !== anchoDias){ anchoDias = dias.length; armarTablero(anchoDias); }
+  const todo = dias + dos(Math.floor(s%86400/3600)) + dos(Math.floor(s%3600/60)) + dos(s%60);
+  [...todo].forEach((c,i)=>poner(flaps[i], c));
+  $('#cuenta-lector').textContent = `Faltan ${+dias} días.`;
+}
+if (!reloj()) { const id = setInterval(()=>{ if (reloj()) clearInterval(id); }, 1000); }
+
+/* ══════════ nuestra historia ══════════ */
+$('#historia-lista').innerHTML = CONFIG.historia.map(h=>`
+  <article class="recuerdo">
+    <p class="anio" aria-hidden="true">${esc(h.anio)}</p>
+    <figure><img src="${esc(h.foto)}" alt="${esc(h.anio + ': ' + h.texto)}" loading="lazy" decoding="async"></figure>
+    <p><b>${esc(h.anio)}.</b> ${esc(h.texto)}</p>
+  </article>`).join('');
+const recuerdos = $$('.recuerdo');
+
+/* ══════════ itinerario ══════════ */
+$('#pasos').innerHTML = CONFIG.itinerario.map(p=>`
+  <div class="paso">
+    <p class="hora">${esc(p.hora)} HS</p>
+    <h3><span class="ranura"><span>${esc(p.que)}</span></span></h3>
+    <p>${esc(p.detalle)}</p>
+  </div>`).join('');
+
+/* ══════════ dress code: los colores se encastran ══════════ */
+const N = CONFIG.dressColores.length;
+$('#paleta').innerHTML = CONFIG.dressColores.map(([c,n],i)=>
+  `<button class="color toque" role="listitem" style="--c:${esc(c)};--i:${i};--desde:${((N-1)/2 - i)*72}px;z-index:${i}" aria-label="${esc(n)}"><span>${esc(n)}</span></button>`).join('');
+$('#paleta').addEventListener('click', e=>{
+  const b = e.target.closest('.color'); if (!b) return;
+  const ya = b.classList.contains('alzado');
+  $$('.color').forEach(c=>c.classList.remove('alzado'));
+  if (!ya){ b.classList.add('alzado'); vibrar(8); }
+});
+/* los bordes de pincel: más rotos y con fibras que el papel de la v1 */
+$$('.pincel').forEach((p,k)=>{
+  const r = azar(70+k); let d = 'M0 0 H1000 V', y = 22;
+  const pts = [];
+  for (let i=0;i<=160;i++){ y = Math.min(40, Math.max(6, y + (r()-.5)*9 + (r()<.08 ? (r()-.3)*16 : 0))); pts.push([1000 - i/160*1000, y]); }
+  d += pts[0][1].toFixed(1) + pts.map(([x,yy])=>` L${x.toFixed(1)} ${yy.toFixed(1)}`).join('') + ' Z';
+  let fibras = '';
+  for (let i=0;i<26;i++){ const x = r()*1000, yy = 30 + r()*14, w = 10 + r()*40; fibras += `<rect x="${x.toFixed(0)}" y="${yy.toFixed(1)}" width="${w.toFixed(0)}" height="${(.8+r()*1.4).toFixed(1)}" rx="1"/>`; }
+  p.innerHTML = `<svg viewBox="0 0 1000 46" preserveAspectRatio="none"><g fill="#0B0B0B"><path d="${d}"/>${fibras}</g></svg>`;
+});
+
+/* ══════════ la casona, dibujada en líneas ══════════ */
+(function(){
+  const L = [];
+  // cuerpo, techo de mansarda y escalinata
+  L.push('M60 190 V110 H340 V190', 'M50 110 H350 L330 84 H70 Z', 'M150 84 V62 H250 V84', 'M140 62 H260 L250 50 H150 Z',
+         'M40 190 H360', 'M170 190 V150 Q200 128 230 150 V190', 'M160 200 H240 M150 210 H250');
+  L.push('M110 84 v-12 h10 v12 M280 84 v-12 h10 v12');   // chimeneas
+  $('#casona-lineas').innerHTML = L.map(d=>`<path class="linea" pathLength="1" d="${d}"/>`).join('') +
+    // fuente de la entrada
+    '<path class="linea" pathLength="1" d="M182 214 Q200 222 218 214"/><path class="fuente" d="M200 212 V200 M196 210 Q194 202 198 198 M204 210 Q206 202 202 198"/>';
+  const vent = [];
+  [[78,124],[108,124],[262,124],[292,124],[78,156],[108,156],[262,156],[292,156],[184,66],[206,66],[140,124],[240,124]].forEach(([x,y])=>{
+    vent.push(`<rect class="ven" x="${x}" y="${y}" width="${y===66?10:16}" height="${y===66?12:20}" rx="${y===66?5:1}"/>`);
+  });
+  $('#casona-lineas').insertAdjacentHTML('beforeend', vent.join(''));
+})();
+function prenderCasona(){
+  const vs = $$('#casona .ven'), r = azar(9), orden = vs.map((_,i)=>i).sort(()=>r()-.5);
+  orden.forEach((i,k)=>setTimeout(()=>vs[i].classList.add('luz'), menosMov ? 0 : 1600 + k*170));
+  setTimeout(()=>$('#casona').classList.add('prendida'), menosMov ? 0 : 1600 + vs.length*170);
+}
+
+/* ══════════ regalo ══════════ */
+$('#copiar').addEventListener('click', async e=>{
+  const b = e.currentTarget, t = b.querySelector('span');
+  try{ await navigator.clipboard.writeText(CONFIG.alias); b.classList.add('listo'); t.textContent = 'Copiado'; vibrar(14); }
+  catch(_){ t.textContent = 'Mantené apretado el alias para copiarlo'; }
+  setTimeout(()=>{ b.classList.remove('listo'); t.textContent = 'Copiar alias'; }, 2600);
+});
+
+/* las manos que se acercan al bajar: una sola foto partida en dos.
+   Si la foto no está, la sección va sin ellas (y no queda un hueco). */
+(function(){
+  if (!CONFIG.fotoManos) return;
+  const img = new Image();
+  img.onload = ()=>{ const m = $('#manos-rsvp'); m.style.setProperty('--foto-manos', `url("${CONFIG.fotoManos}")`); m.classList.add('lista'); };
+  img.src = CONFIG.fotoManos;
+})();
+
+/* ══════════ confirmación ══════════ */
+const form = $('#form'), estado = $('#estado'), enviar = $('#enviar');
+const MENU = ["Sin restricciones","Vegetariano","Vegano","Sin TACC","Otro"];
+$('#personas').innerHTML = Array.from({length:LUGARES},(_,k)=>`<option value="${k+1}">${k+1} ${k?'personas':'persona'}</option>`).join('');
+function bloque(i){
+  return `<div class="persona"><div class="quien">${i===1?'Vos':'Acompañante '+(i-1)}</div>
+    <div class="campo"><label for="p${i}n">Nombre y apellido</label>
+      <input type="text" id="p${i}n" name="persona${i}_nombre" placeholder="Como figura en la invitación" required autocomplete="${i===1?'name':'off'}"></div>
+    <div class="campo menu-campo"><label for="p${i}c">Menú</label>
+      <select id="p${i}c" name="persona${i}_alimentacion" data-persona="${i}">${MENU.map(o=>`<option>${esc(o)}</option>`).join('')}</select>
+      <input type="text" name="persona${i}_alimentacion_otro" data-otro="${i}" placeholder="Contanos cuál" style="display:none"></div></div>`;
+}
+function pintarGente(){
+  const va = $('#asistencia').value === 'si', n = va ? +$('#personas').value : 1;
+  $('#gente').innerHTML = Array.from({length:n},(_,k)=>bloque(k+1)).join('');
+  if (!va) $$('#gente .menu-campo').forEach(c=>c.remove());
+  $('#campo-personas').style.display = va ? '' : 'none';
+  $('#campo-cancion').style.display = va ? '' : 'none';
+  enviar.textContent = va ? 'Confirmar' : 'Avisar que no voy';
+}
+$('#personas').addEventListener('change', pintarGente);
+$('#gente').addEventListener('change', e=>{
+  const i = e.target.dataset.persona; if (!i) return;
+  const otro = $(`#gente [data-otro="${i}"]`);
+  otro.style.display = e.target.value === 'Otro' ? 'block' : 'none';
+  if (e.target.value !== 'Otro') otro.value = '';
+});
+$('#eleccion').addEventListener('click', e=>{
+  const b = e.target.closest('[data-va]'); if (!b) return;
+  $$('#eleccion [data-va]').forEach(o=>o.setAttribute('aria-pressed', String(o === b)));
+  $('#asistencia').value = b.dataset.va; vibrar(10); pintarGente();
+  if (!form.classList.contains('ver')){ form.classList.add('ver');
+    setTimeout(()=>form.scrollIntoView({behavior: menosMov ? 'auto' : 'smooth', block:'start'}), 120); }
+});
+async function llego(nombre){
+  try{ const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre), {cache:'no-store'});
+    const d = await r.json(); return d && typeof d.ok === 'boolean' ? d.ok : null; }
+  catch(_){ return null; }
+}
+function agradecer(va, nota, muestra){
+  form.style.display = 'none'; $('#eleccion').style.display = 'none';
+  $('#gracias-titulo').innerHTML = va ? 'Nos vemos <em>ahí</em>' : 'Te vamos <em>a extrañar</em>';
+  $('#gracias-texto').textContent = muestra ? 'Así se ve cuando un invitado confirma.'
+    : va ? 'Ya estás en la lista. Guardate la fecha.' : 'Gracias por avisarnos. Brindamos por vos igual.';
+  if (nota) $('#gracias').insertAdjacentHTML('beforeend', `<p class="muestra-aviso">${nota}</p>`);
+  $('#gracias').classList.add('ver');
+  $('#gracias').scrollIntoView({behavior: menosMov ? 'auto' : 'smooth', block:'center'});
+  vibrar([20,60,20]);
+}
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if (enviar.disabled || !form.reportValidity()) return;
+  const va = $('#asistencia').value === 'si';
+  enviar.disabled = true; const antes = enviar.textContent; enviar.textContent = 'Enviando…';
+  estado.className = ''; estado.textContent = '';
+  if (!CONFIG.endpoint){ setTimeout(()=>agradecer(va, 'Esto es una invitación de muestra: tu respuesta no se guardó en ningún lado.', true), 700); return; }
+  try{
+    await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:new FormData(form)});
+    const ok = await llego(($('#p1n')||{}).value || '');
+    if (ok === false){ estado.className = 'mal';
+      estado.textContent = 'No nos llegó tu confirmación. Probá de nuevo en un momento, o escribinos y te anotamos a mano.';
+      enviar.disabled = false; enviar.textContent = antes; return; }
+    agradecer(va, ok === null ? 'No pudimos verificarlo del todo. Si dudás, escribinos.' : '');
+  }catch(_){ estado.className = 'mal'; estado.textContent = 'No se pudo enviar. Fijate la conexión y probá de nuevo.';
+    enviar.disabled = false; enviar.textContent = antes; }
+});
+
+/* ══════════ aparecer al llegar ══════════ */
+const mirador = new IntersectionObserver(es=>{
+  for (const e of es) if (e.isIntersecting){
+    const el = e.target; el.classList.add('entro');
+    if (el.id === 'calendario') setTimeout(()=>el.classList.add('latido'), menosMov ? 0 : 1300);
+    if (el.id === 'casona') prenderCasona();
+    mirador.unobserve(el);
+  }
+}, {threshold:.18, rootMargin:'0px 0px -6% 0px'});
+$$('.ap, .ranura, .paso, .recuerdo, #calendario, #paleta, #casona').forEach(e=>mirador.observe(e));
+if (menosMov) $$('.ap,.ranura,.paso,.recuerdo,#calendario,#paleta').forEach(e=>e.classList.add('entro'));
+
+/* ══════════ UN solo oyente de scroll ══════════ */
+const fotoPortada = $('#portada-foto'), marq = $('#marquesina'), itin = $('#itinerario'),
+      ventana = $('#ventana'), vfija = $('.ventana-fija'), manos = $('#manos-rsvp');
+const lim = (x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+let pendiente = false;
+function alScroll(){
+  pendiente = false;
+  if (menosMov) return;
+  const H = innerHeight;
+  if (scrollY < H*1.2) fotoPortada.style.transform = `translate3d(0,${(scrollY*.35).toFixed(1)}px,0)`;
+  const ri = itin.getBoundingClientRect();
+  if (ri.bottom > 0 && ri.top < H) marq.style.setProperty('--mx', `${(-(H - ri.top)*.45).toFixed(1)}px`);
+  const rv = ventana.getBoundingClientRect();
+  if (rv.bottom > 0 && rv.top < H){
+    const p = lim(-rv.top / (rv.height - H));
+    const s = vfija.style;
+    s.setProperty('--vx', ((1-p)*14).toFixed(2)+'%'); s.setProperty('--vy', ((1-p)*18).toFixed(2)+'%');
+    s.setProperty('--vr', ((1-p)*14).toFixed(1)+'px'); s.setProperty('--vs', (1.25 - p*.25).toFixed(3));
+    s.setProperty('--vo', lim((p-.45)/.35).toFixed(3));
+  }
+  for (const r of recuerdos){
+    const b = r.querySelector('figure').getBoundingClientRect();
+    if (b.bottom < 0 || b.top > H) continue;
+    const centro = (b.top + b.height/2 - H/2) / (H/2);          // 0 = justo en el medio
+    r.style.setProperty('--g', lim(Math.abs(centro)*1.6 - .15).toFixed(3));
+  }
+  if (manos.classList.contains('lista')){
+    const rm = manos.getBoundingClientRect();
+    manos.style.setProperty('--mp', lim((H - rm.top)/(H*.75)).toFixed(3));
+  }
+}
+addEventListener('scroll', ()=>{ if (!pendiente){ pendiente = true; requestAnimationFrame(alScroll); } }, {passive:true});
+addEventListener('resize', ()=>requestAnimationFrame(alScroll));
+alScroll();
+
+/* ══════════ el cursor propio (sólo con mouse) ══════════ */
+if (conMouse && !menosMov){
+  const c = $('#cursor'); let x = -100, y = -100, cx = -100, cy = -100, vivo = false;
+  addEventListener('pointermove', e=>{ x = e.clientX; y = e.clientY;
+    if (!vivo){ vivo = true; c.classList.add('vivo'); requestAnimationFrame(seguir); } }, {passive:true});
+  document.addEventListener('pointerover', e=>c.classList.toggle('grande', !!e.target.closest('a,button,[role=button],select,.color')));
+  function seguir(){
+    cx += (x - cx)*.22; cy += (y - cy)*.22;
+    c.style.transform = `translate3d(${cx.toFixed(1)}px,${cy.toFixed(1)}px,0)`;
+    if (Math.abs(x-cx) > .2 || Math.abs(y-cy) > .2) requestAnimationFrame(seguir); else vivo = false;
+  }
+  // la tarjeta del calendario se inclina con el mouse
+  const cal = $('#calendario');
+  cal.addEventListener('pointermove', e=>{ if (!cal.classList.contains('entro')) return;
+    const r = cal.getBoundingClientRect(), px = (e.clientX - r.left)/r.width - .5, py = (e.clientY - r.top)/r.height - .5;
+    cal.style.transform = `perspective(900px) rotateX(${(-py*8).toFixed(2)}deg) rotateY(${(px*10).toFixed(2)}deg)`; });
+  cal.addEventListener('pointerleave', ()=>{ cal.style.transform = ''; });
+}
+</script>
+</body>
+</html>

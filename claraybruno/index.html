@@ -445,7 +445,6 @@ section{position:relative;padding:clamp(72px,11vh,120px) var(--gutter)}
 
 /* ══════════ 10 · confirmación ══════════ */
 #rsvp{color:#E9E2D2}
-.saludo{font-family:var(--script);font-size:clamp(30px,9vw,44px);color:var(--oro-claro);line-height:1.1;margin-bottom:6px}
 .eleccion{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:460px;margin:34px auto 0}
 .opcion{position:relative;border-radius:20px;padding:20px 12px;border:1.5px solid rgba(233,211,160,.28);
   display:grid;justify-items:center;gap:8px;color:#E9E2D2;transition:transform .35s var(--e),border-color .3s,background-color .3s}
@@ -539,7 +538,7 @@ section{position:relative;padding:clamp(72px,11vh,120px) var(--gutter)}
       <div class="sobre-fondo"></div>
       <div class="tarjeta"><div><div class="script">Clara &amp; Bruno</div><small>Nos casamos</small></div></div>
       <div class="sobre-bolsillo"></div>
-      <div class="sobre-para" id="sobre-para"></div>
+      <div class="sobre-para" id="sobre-para">Para vos, con todo nuestro cariño</div>
       <div class="sobre-solapa"></div>
       <div class="lacre" id="lacre" role="button" tabindex="0" aria-label="Romper el lacre y abrir la invitación">
         <svg viewBox="0 0 100 100" aria-hidden="true">
@@ -824,7 +823,6 @@ section{position:relative;padding:clamp(72px,11vh,120px) var(--gutter)}
   <!-- ══════════ 10 · confirmación ══════════ -->
   <section id="rsvp" class="noche" data-rasgado>
     <div class="centro">
-      <p class="saludo ap" id="saludo"></p>
       <h2 class="ap d1">¿Nos <em>acompañás?</em></h2>
       <p class="bajada ap d2" id="limite"></p>
       <div class="eleccion ap d3" id="eleccion">
@@ -840,7 +838,6 @@ section{position:relative;padding:clamp(72px,11vh,120px) var(--gutter)}
     </div>
     <form id="form" novalidate>
       <input type="hidden" name="asistencia" id="asistencia">
-      <input type="hidden" name="invitacion" id="invitacion-para">
       <div class="campo" id="campo-personas">
         <label for="personas">¿Cuántos van a venir?</label>
         <select name="personas" id="personas"></select>
@@ -956,15 +953,9 @@ function azar(semilla){ let s = semilla>>>0; return ()=>((s = (s*1664525 + 10139
   document.documentElement.style.setProperty('--tex-lino', url(lino));
 })();
 
-/* ══════════ la invitación personalizada ══════════
-   ?para=Familia%20Pérez&lugares=3 → el sobre va dirigido y la confirmación
-   ofrece hasta esos lugares. Sin nada, es una invitación general. */
-const qs = new URLSearchParams(location.search);
-const PARA = (qs.get('para')||'').trim().slice(0,60);
-const LUGARES = Math.min(10, Math.max(1, parseInt(qs.get('lugares'),10) || CONFIG.lugaresPorDefecto));
-$('#sobre-para').textContent = PARA ? 'Para ' + PARA : '';
-$('#saludo').textContent = PARA ? PARA + ',' : '';
-$('#invitacion-para').value = PARA;
+/* La invitación es la misma para todos: los novios mandan un solo link,
+   así que el sobre no va dirigido a nadie en particular. */
+const LUGARES = CONFIG.lugaresPorDefecto;
 
 /* ══════════ fechas, siempre pensadas desde Rosario ══════════ */
 const tCer = new Date(CONFIG.ceremonia), tFie = new Date(CONFIG.fiesta), tFin = new Date(CONFIG.finFiesta);
