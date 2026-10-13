@@ -418,10 +418,16 @@ async function landing(browser) {
   await page.waitForTimeout(900);
 
   const secc = await page.evaluate(() => {
+    /* La galería dejó de ser una sección aparte: vive adentro de
+       #invitaciones, pegada a la promesa. Lo que hay que cuidar cambió con
+       eso — ya no tiene cabecera ni .wrap propios, los hereda— así que
+       ahora se comprueba que SIGA ADENTRO de invitaciones, que es lo que
+       se acaba de decidir, y que no se pierda ni la pista ni una tarjeta. */
     const s = document.querySelector('#trabajos');
     return {
-      hayCabeza: !!(s && s.querySelector('.cabeza')),
-      hayWrap: !!(s && s.querySelector('.wrap')),
+      hayCabeza: !!document.querySelector('#invitaciones .cabeza'),
+      hayWrap: !!(s && s.closest('.wrap')),
+      enInvitaciones: !!(s && s.closest('#invitaciones')),
       hayPista: !!(s && s.querySelector('.pista-toque')),
       tarjetas: s ? s.querySelectorAll('.trabajo').length : 0,
       /* Cuántas DECLARA el código, para comparar contra cuántas dibujó.
@@ -436,6 +442,8 @@ async function landing(browser) {
   });
   if (!secc.hayCabeza) anota('landing', 'trabajos', 'se perdió el título de la sección');
   if (!secc.hayWrap) anota('landing', 'trabajos', 'se perdió el contenedor .wrap');
+  if (!secc.enInvitaciones)
+    anota('landing', 'trabajos', 'la galería se fue de la sección de invitaciones: la prueba volvió a quedar lejos de la promesa');
   if (!secc.hayPista) anota('landing', 'trabajos', 'se perdió el texto "Tocá cualquiera…"');
   if (secc.declaradas && secc.tarjetas !== secc.declaradas)
     anota('landing', 'trabajos', `se declaran ${secc.declaradas} invitaciones y se dibujaron ${secc.tarjetas}`);

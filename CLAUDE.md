@@ -1930,6 +1930,23 @@ artículo 53 y de los menores.
 
 ## La galería de Trabajos: qué se muestra y qué se promete
 
+**Ya no es una sección aparte: vive ADENTRO de `#invitaciones`**, entre la
+promesa y el "qué incluye". Medido antes de moverla, en un teléfono: la
+página tenía 15,6 pantallas y **lo que vende las invitaciones —las cinco
+corriendo de verdad— caía en la pantalla 11,1**, después del muro y del
+rollo; el que tocaba "Invitaciones" en el menú llegaba a un párrafo.
+Ahora la prueba queda pegada a la promesa, en la 6,3.
+
+**No rompe el bloque de productos**, que era el motivo por el que Trabajos
+se había ido abajo (*"muestra SOLO invitaciones, y justo antes de
+presentar los otros dos la página volvía al primero"*): si Trabajos **es**
+la sección de invitaciones, no hay a dónde volver.
+
+**El `id="trabajos"` se queda**, ahora en el `div` de la galería: ese ancla
+ya circuló —estaba en el menú y en enlaces de adentro— y un ancla repartida
+no puede quedar muerta. Del menú sí se fue la entrada "Trabajos", que
+llevaba exactamente al mismo lugar que "Invitaciones".
+
 Cinco fichas. **Tres son de clientes** (Key, Xiomara, Pia) y **dos son
 muestras nuestras de casamiento** (`claraybruno/`, `juliayfranco/`), que
 las hizo el chat aparte de invitaciones.
