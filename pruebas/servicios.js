@@ -76,6 +76,10 @@ const aServicios = async (p) => {
       return {
         x: Math.round(r.x), der: Math.round(r.right), ancho: Math.round(r.width),
         pantalla: innerWidth, desplaza: g.scrollWidth > g.clientWidth + 10,
+        /* Un puntito por ficha, no "tres": el día que entró la cuarta
+           invitación esta prueba falló por contar, no por medir. Es la
+           misma lección que la de los clicks del alta del rollo. */
+        fichas: g.children.length,
         puntos: document.querySelectorAll('#puntosTrabajos span').length,
         /* Con `?.` porque contra el código anterior ese elemento no existe:
            una prueba que revienta no informa nada, y lo que hay que ver es
@@ -101,9 +105,9 @@ const aServicios = async (p) => {
       mal(`la segunda tarjeta asoma ${asoma}px: nadie va a saber que hay más`);
     else bien(`la segunda tarjeta asoma ${asoma}px`);
 
-    if (m.puntos !== 3 || !m.puntosSeVen)
-      mal(`los puntitos del carrusel: ${m.puntos}, ¿se ven? ${m.puntosSeVen}`);
-    else bien('los tres puntitos dicen cuántas invitaciones hay');
+    if (m.puntos !== m.fichas || !m.puntosSeVen)
+      mal(`los puntitos no coinciden con las fichas: ${m.puntos} puntos para ${m.fichas} invitaciones (¿se ven? ${m.puntosSeVen})`);
+    else bien(`un puntito por invitación: ${m.puntos}`);
 
     /* ── un deslizado no puede abrir el visor ── */
     const caja = await p.evaluate(() => {

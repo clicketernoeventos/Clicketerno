@@ -689,6 +689,12 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .trabajo .pie-t{margin-top:22px}
 .trabajo .pie-t b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:20px;font-weight:400}
 .trabajo .pie-t span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#8A7F72;margin-top:4px;display:block}
+/* Las dos de casamiento son muestras nuestras, no de un cliente. La
+   sección promete "las mismas que recibieron los invitados": decirlo en
+   la ficha cuesta un renglón, y no decirlo es la mentira de siempre. */
+.trabajo .es-muestra{display:inline-block;margin-top:8px;font-style:normal;
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-hondo);
+  border:1px solid rgba(122,90,38,.35);border-radius:999px;padding:4px 10px}
 .pista-toque{text-align:center;margin-top:46px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A7F72}
 @media(max-width:860px){
   .trabajos{flex-direction:column;flex-wrap:nowrap;gap:48px;align-items:center}
@@ -1294,7 +1300,7 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Trabajos</p>
       <h2 class="serif">Tocá un celular<em>y probala de verdad</em></h2>
-      <p>Invitaciones reales, las mismas que recibieron los invitados. Confirmá, mirá la cuenta regresiva, tocá el alias.</p>
+      <p>Tres de clientes —las mismas que recibieron sus invitados— y dos muestras de casamiento. Confirmá, mirá la cuenta regresiva, tocá el alias.</p>
     </div>
 
     <div class="trabajos" id="galeriaTrabajos"></div>
@@ -1742,9 +1748,27 @@ const MUESTRA_MURO='QUI-XJLJ56';
                 incrustar, o para que la página pese menos).
    captura    → si le ponés el nombre de una imagen que esté al lado de este
                 index.html (ej: 'key.webp'), se usa esa y se ignora lo demás. */
+/* `sub` es lo que dice la portada DIBUJADA —la que se ve mientras baja el
+   marco, o para siempre si el sitio no responde—. Estaba clavado en "Mis
+   quince años" porque hasta acá eran todas de quince: en un casamiento eso
+   es un cartel equivocado puesto encima del producto.
+   `muestra` marca las que NO son de un cliente. La sección promete
+   "las mismas que recibieron los invitados", y eso de estas dos sería
+   mentira: se dice en la ficha, no se esconde. */
 const TRABAJOS=[
+  /* Primera a propósito, y es la única decisión de orden que importa: el
+     que entra ve un CASAMIENTO antes que nada. La galería eran tres XV
+     seguidos y el que busca para su boda cerraba la página creyendo que
+     esto es para quinceañeras. Además vive en el repo, así que abre
+     siempre: la primera ficha no puede depender de que Netlify esté en pie. */
+  {nombre:'Clara & Bruno', tipo:'Casamiento · Olivo y lacre', url:'claraybruno/', captura:'', vivo:true,
+   sub:'Nos casamos', muestra:true,
+   fondo:'radial-gradient(120% 80% at 50% 0,#3B4632,#1C2219 60%,#131811)', tinta:'#F5EFE4', suave:'#B8904F', ad:'✦ 🌿 ✦'},
   {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#25382B,#0F1613 60%,#080B09)', tinta:'#F2EDE1', suave:'#9FC6AC', ad:'🍄 ✦ 🧚'},
+  {nombre:'Julia & Franco', tipo:'Casamiento · Editorial', url:'juliayfranco/', captura:'', vivo:true,
+   sub:'Nos casamos', muestra:true,
+   fondo:'radial-gradient(120% 80% at 50% 0,#1A1A1A,#0B0B0B 60%,#050505)', tinta:'#F1EDE6', suave:'#8A8782', ad:'✦ ✦ ✦'},
   {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)', tinta:'#5A2E3E', suave:'#B9738D', ad:'✦ 💌 ✦'},
   /* Esta vive EN EL REPO (pia/nueva/), no en Netlify: por eso abre siempre
@@ -1777,7 +1801,7 @@ document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
           ? `<img class="captura" src="${t.captura}" alt="Invitación de ${t.nombre}" loading="lazy">`
           : `${t.vivo===false?'':`<div class="vivo" data-vivo="${t.url}" data-nombre="${t.nombre}"></div>`}
         <div class="ad" style="color:${t.suave}">${t.ad}</div>
-        <div class="sb" style="color:${t.suave}">Mis quince años</div>
+        <div class="sb" style="color:${t.suave}">${t.sub||'Mis quince años'}</div>
         <div class="nm">${t.nombre}</div>
         <div class="ln" style="background:${t.suave}"></div>
         <div class="sb" style="color:${t.suave}">Te espero</div>
@@ -1789,7 +1813,8 @@ document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
         <div class="lupa"><span>Ver invitación</span></div>
       </div>
     </div>
-    <div class="pie-t"><b>${t.nombre}</b><span>${t.tipo}</span></div>
+    <div class="pie-t"><b>${t.nombre}</b><span>${t.tipo}</span>${
+      t.muestra?'<i class="es-muestra">Muestra nuestra</i>':''}</div>
   </div>`).join('');
 document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   io.observe(el);
