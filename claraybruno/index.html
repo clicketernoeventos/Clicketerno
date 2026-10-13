@@ -241,6 +241,9 @@ section{position:relative;padding:clamp(72px,11vh,120px) var(--gutter)}
 
 /* ══════════ 4 · el cielo que se pone ══════════ */
 #cielo{height:240vh;height:240svh;padding:0;background:var(--noche)}
+/* el papel se funde en el cielo en vez de cortarse contra él */
+#cielo:before{content:'';position:absolute;left:0;right:0;top:0;height:90px;z-index:2;pointer-events:none;
+  background:linear-gradient(var(--papel-2),rgba(236,227,210,0))}
 .escena{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;
   background:linear-gradient(180deg,var(--c1,#F2C784),var(--c2,#F6DDB0) 55%,var(--c3,#F9EBD0))}
 .sol{position:absolute;left:50%;width:clamp(110px,34vw,190px);aspect-ratio:1;border-radius:50%;

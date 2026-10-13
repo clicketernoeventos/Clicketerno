@@ -177,6 +177,25 @@ section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
 .flap{filter:drop-shadow(0 8px 10px rgba(0,0,0,.22))}
 .hoy{font-family:var(--display);font-size:38px}
 
+/* ══════════ 3b · nuestra historia: el color vuelve cuando llegás ══════════ */
+#historia{background:var(--blanco);color:var(--negro);padding-top:20px}
+.historia-lista{max-width:760px;margin:46px auto 0;display:grid;gap:clamp(56px,10vh,96px)}
+.recuerdo{display:grid;gap:14px}
+.recuerdo .anio{font-family:var(--display);font-size:clamp(64px,20vw,120px);line-height:.8;letter-spacing:-.02em;
+  color:transparent;-webkit-text-stroke:1px var(--negro)}
+.recuerdo figure{position:relative;overflow:hidden;aspect-ratio:1.6;background:#ddd8cf}
+.recuerdo img{width:100%;height:100%;object-fit:cover;filter:grayscale(var(--g,1)) contrast(1.05);transform:scale(calc(1.08 - (1 - var(--g,1))*.08))}
+.js .recuerdo figure{clip-path:inset(0 0 100% 0);transition:clip-path 1.3s var(--e)}
+.recuerdo.entro figure{clip-path:inset(0 0 0 0)}
+.recuerdo p{font-size:15.5px;color:#3a3834;max-width:34ch}
+@media(min-width:760px){
+  .recuerdo{grid-template-columns:1fr 1.6fr;align-items:end;column-gap:28px}
+  .recuerdo .anio{grid-row:1/3}
+  .recuerdo:nth-child(even){grid-template-columns:1.6fr 1fr}
+  .recuerdo:nth-child(even) .anio{grid-column:2;text-align:right}
+  .recuerdo:nth-child(even) figure,.recuerdo:nth-child(even) p{grid-column:1}
+}
+
 /* ══════════ 4 · itinerario ══════════ */
 #itinerario{overflow:hidden;padding-left:0;padding-right:0}
 .marquesina{font-family:var(--display);font-size:clamp(70px,22vw,170px);line-height:1;white-space:nowrap;letter-spacing:.04em;
@@ -201,7 +220,7 @@ section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
 .ventana-texto p{font-family:var(--script);font-size:clamp(34px,10vw,64px);line-height:1.2}
 
 /* ══════════ 6 · dress code (bordes de pincel) ══════════ */
-#dress{background:#101512;color:var(--blanco);padding-top:clamp(110px,16vh,170px);padding-bottom:clamp(110px,16vh,170px)}
+#dress{background:#101512;color:var(--blanco);padding-top:clamp(110px,16vh,170px);padding-bottom:clamp(90px,12vh,130px)}
 .pincel{position:absolute;left:0;right:0;height:46px;pointer-events:none;z-index:2}
 .pincel svg{width:100%;height:100%;display:block}
 .pincel.arriba{top:-1px}.pincel.abajo{bottom:-1px;transform:scaleY(-1)}
@@ -240,8 +259,9 @@ section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
 
 /* ══════════ 8 · regalo ══════════ */
 #regalo .ticket{width:min(100%,420px);margin:34px auto 0;border:1.5px solid var(--negro);padding:26px 22px;position:relative;background:var(--blanco)}
-.ticket:before,.ticket:after{content:'';position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--papel);border:1.5px solid var(--negro);transform:translateY(-50%)}
-.ticket:before{left:-12px;clip-path:inset(0 0 0 50%)}.ticket:after{right:-12px;clip-path:inset(0 50% 0 0)}
+.ticket:before,.ticket:after{content:'';position:absolute;top:50%;width:24px;height:24px;border-radius:50%;background:var(--papel);border:1.5px solid var(--negro);transform:translateY(-50%)}
+.ticket:before{left:-13px;border-left-color:transparent;border-bottom-color:transparent;transform:translateY(-50%) rotate(45deg)}
+.ticket:after{right:-13px;border-right-color:transparent;border-top-color:transparent;transform:translateY(-50%) rotate(45deg)}
 .ticket small{display:block;font-size:11.5px;letter-spacing:.28em;text-transform:uppercase;color:#5d5953;font-weight:600}
 .ticket .alias{font-family:var(--display);font-size:clamp(26px,7.6vw,34px);margin:6px 0 4px;word-break:break-all}
 .ticket .titular{color:#5d5953;font-size:14.5px}
@@ -312,7 +332,7 @@ section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
 @media (prefers-reduced-motion: reduce){
   *,*:before,*:after{animation:none!important;transition:none!important}
   .js .ranura>span,.js .ap,.js .nombres .letra,.js .frase,.js .calendario,.js .grilla .d,.js .color{opacity:1;transform:none;filter:none}
-  .js .paso:before{transform:none}.js .casona .linea{stroke-dashoffset:0}
+  .js .paso:before{transform:none}.js .recuerdo figure{clip-path:none}.js .casona .linea{stroke-dashoffset:0}
   .js .corazon path{fill-opacity:1;stroke-dashoffset:0}.js .grilla .d.marcado{color:var(--blanco)}
   #ventana{height:auto}.ventana-fija{position:relative}
   .grano{display:none}
@@ -380,6 +400,14 @@ section{position:relative;padding:clamp(80px,12vh,140px) var(--gutter)}
       <div class="tablero ap d2" id="tablero" aria-hidden="true"></div>
       <p class="oculto-lector" id="cuenta-lector"></p>
     </div>
+  </section>
+
+  <!-- ══════════ 3b · nuestra historia ══════════ -->
+  <section id="historia">
+    <div class="centro">
+      <h2 class="titulo"><span class="ranura"><span>Nuestra <em>historia</em></span></span></h2>
+    </div>
+    <div class="historia-lista" id="historia-lista"></div>
   </section>
 
   <!-- ══════════ 4 · itinerario ══════════ -->
@@ -511,6 +539,13 @@ const CONFIG = {
   direccion: "Ruta 34, km 12 · a 25 minutos de Rosario",
   linkMaps: "https://www.google.com/maps/search/?api=1&query=Ibarlucea%2C%20Santa%20Fe",
   linkWaze: "https://waze.com/ul?q=Ibarlucea%2C%20Santa%20Fe",
+  /* las mismas fotos de la versión 1: no se duplican, se leen de la carpeta de arriba */
+  historia: [
+    {foto:"../fotos/1.webp", anio:"2019", texto:"Un recital, la misma fila, el mismo chiste."},
+    {foto:"../fotos/2.webp", anio:"2021", texto:"El primer viaje: Bariloche, con lluvia."},
+    {foto:"../fotos/3.webp", anio:"2024", texto:"La casa, el perro y las plantas que no regamos."},
+    {foto:"../fotos/4.webp", anio:"2026", texto:"Y en la playa, la pregunta."}
+  ],
   itinerario: [
     {hora:"18:30", que:"Ceremonia", detalle:"En la capilla, al atardecer."},
     {hora:"19:30", que:"Cóctel",    detalle:"En el jardín, con la última luz."},
@@ -743,6 +778,15 @@ function reloj(){
 }
 if (!reloj()) { const id = setInterval(()=>{ if (reloj()) clearInterval(id); }, 1000); }
 
+/* ══════════ nuestra historia ══════════ */
+$('#historia-lista').innerHTML = CONFIG.historia.map(h=>`
+  <article class="recuerdo">
+    <p class="anio" aria-hidden="true">${esc(h.anio)}</p>
+    <figure><img src="${esc(h.foto)}" alt="${esc(h.anio + ': ' + h.texto)}" loading="lazy" decoding="async"></figure>
+    <p><b>${esc(h.anio)}.</b> ${esc(h.texto)}</p>
+  </article>`).join('');
+const recuerdos = $$('.recuerdo');
+
 /* ══════════ itinerario ══════════ */
 $('#pasos').innerHTML = CONFIG.itinerario.map(p=>`
   <div class="paso">
@@ -887,8 +931,8 @@ const mirador = new IntersectionObserver(es=>{
     mirador.unobserve(el);
   }
 }, {threshold:.18, rootMargin:'0px 0px -6% 0px'});
-$$('.ap, .ranura, .paso, #calendario, #paleta, #casona').forEach(e=>mirador.observe(e));
-if (menosMov) $$('.ap,.ranura,.paso,#calendario,#paleta').forEach(e=>e.classList.add('entro'));
+$$('.ap, .ranura, .paso, .recuerdo, #calendario, #paleta, #casona').forEach(e=>mirador.observe(e));
+if (menosMov) $$('.ap,.ranura,.paso,.recuerdo,#calendario,#paleta').forEach(e=>e.classList.add('entro'));
 
 /* ══════════ UN solo oyente de scroll ══════════ */
 const fotoPortada = $('#portada-foto'), marq = $('#marquesina'), itin = $('#itinerario'),
@@ -909,6 +953,12 @@ function alScroll(){
     s.setProperty('--vx', ((1-p)*14).toFixed(2)+'%'); s.setProperty('--vy', ((1-p)*18).toFixed(2)+'%');
     s.setProperty('--vr', ((1-p)*14).toFixed(1)+'px'); s.setProperty('--vs', (1.25 - p*.25).toFixed(3));
     s.setProperty('--vo', lim((p-.45)/.35).toFixed(3));
+  }
+  for (const r of recuerdos){
+    const b = r.querySelector('figure').getBoundingClientRect();
+    if (b.bottom < 0 || b.top > H) continue;
+    const centro = (b.top + b.height/2 - H/2) / (H/2);          // 0 = justo en el medio
+    r.style.setProperty('--g', lim(Math.abs(centro)*1.6 - .15).toFixed(3));
   }
   if (manos.classList.contains('lista')){
     const rm = manos.getBoundingClientRect();
