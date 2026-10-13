@@ -639,6 +639,13 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
   .inc b,.inc p{grid-column:2}
 }
 
+/* La galería ya no es una sección: vive adentro de Invitaciones, entre la
+   promesa y el "qué incluye". Necesita su propio aire porque perdió el
+   padding que le daba ser una sección. */
+.galeria-invi{margin:clamp(34px,5vw,54px) 0 clamp(40px,6vw,64px)}
+.pista-toque .aclara{display:inline-block;margin-top:8px;font-size:9.5px;
+  letter-spacing:.14em;opacity:.78;text-transform:none}
+
 /* galería de trabajos */
 .trabajos{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
   gap:clamp(30px,4vw,52px);margin-top:64px;width:100%}
@@ -948,7 +955,6 @@ footer .datos{line-height:1.6}
   <a href="#invitaciones">Invitaciones</a>
   <a href="#muro">Muro en vivo</a>
   <a href="#rollo">Rollo eterno</a>
-  <a href="#trabajos">Trabajos</a>
   <a href="#preguntas">Preguntas</a>
   <a href="#entrar">Ya contraté</a>
   <a href="#contacto" style="color:var(--oro)">Pedir presupuesto</a>
@@ -1229,6 +1235,23 @@ footer .datos{line-height:1.6}
       <p>Un link por WhatsApp que se abre en el celular de cada invitado. Con el mapa, el dress code y todo lo que te van a preguntar.</p>
     </div>
 
+    <!-- ── la galería vive ACÁ, no en una sección aparte ──
+         Estaba cinco pantallas más abajo, después del muro y del rollo: lo
+         que vende las invitaciones —las cinco corriendo de verdad— caía en
+         la pantalla 11 de 15, y el que tocaba "Invitaciones" en el menú
+         llegaba a un párrafo. Acá la prueba queda pegada a la promesa.
+         No rompe el bloque de productos, que era el motivo por el que
+         Trabajos se había ido abajo: Trabajos ES invitaciones, así que no
+         hay a dónde volver.
+         El id `trabajos` se queda: ese ancla ya circuló —está en el menú y
+         en enlaces de adentro— y un ancla repartida no puede quedar muerta. -->
+    <div id="trabajos" class="galeria-invi ap">
+      <div class="trabajos" id="galeriaTrabajos"></div>
+      <div class="puntos" id="puntosTrabajos"></div>
+      <p class="pista-toque"><span class="solo-angosto">Deslizá para verlas. </span>Tocá cualquiera para abrirla y probarla<br>
+        <span class="aclara">Tres son de clientes; las dos de casamiento son muestras nuestras.</span></p>
+    </div>
+
     <div class="incluye">
       <div class="inc ap"><i class="estrella"></i><b>Sobre animado</b><p>Se abre con un gesto.</p></div>
       <div class="inc ap"><i class="estrella"></i><b>Cuenta regresiva</b><p>Los días que faltan, corriendo.</p></div>
@@ -1240,7 +1263,7 @@ footer .datos{line-height:1.6}
 
     <div class="cierre ap" style="justify-content:center">
       <a class="btn btn-oro" href="#contacto" data-wsp="Hola Click Eterno! Quiero una invitación digital para mi fiesta. Es el:">Pedir presupuesto</a>
-      <a class="btn btn-hilo" href="#trabajos">Ver invitaciones reales →</a>
+      <a class="btn btn-hilo" href="#trabajos">Volver a las invitaciones ↑</a>
     </div>
   </div>
 </section>
@@ -1295,20 +1318,6 @@ footer .datos{line-height:1.6}
 </section>
 
 <!-- ═══ TRABAJOS ═══ -->
-<section id="trabajos" class="clara" style="padding-top:64px">
-  <div class="wrap">
-    <div class="cabeza centrada ap">
-      <p class="eyebrow">Trabajos</p>
-      <h2 class="serif">Tocá un celular<em>y probala de verdad</em></h2>
-      <p>Tres de clientes —las mismas que recibieron sus invitados— y dos muestras de casamiento. Confirmá, mirá la cuenta regresiva, tocá el alias.</p>
-    </div>
-
-    <div class="trabajos" id="galeriaTrabajos"></div>
-    <div class="puntos" id="puntosTrabajos"></div>
-    <p class="pista-toque"><span class="solo-angosto">Deslizá para ver las tres. </span>Tocá cualquiera para abrirla y probarla</p>
-  </div>
-</section>
-
 <!-- ═══ LOS TRES JUNTOS ═══ -->
 <!-- Existe porque "cada pieza va sola o las tres juntas" estaba escrito una
      vez, arriba, y después no se volvía a mencionar nunca. Un combo sin
