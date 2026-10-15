@@ -1252,11 +1252,11 @@ footer .datos{line-height:1.6}
       <div class="trabajos" id="galeriaTrabajos"></div>
       <div class="puntos" id="puntosTrabajos"></div>
       <p class="pista-toque"><span class="solo-angosto">Deslizá para verlas. </span>Tocá cualquiera para abrirla y probarla<br>
-        <span class="aclara">Tres son de clientes; las dos de casamiento son muestras nuestras.</span></p>
+        <span class="aclara" id="aclaraTrabajos"></span></p>
       <!-- En un teléfono el carrusel muestra una y media por vez: el que
            quiere comparar tiene que deslizar cinco veces y acordarse. Acá
            las ve todas de una. -->
-      <div class="centro-btn"><button class="btn btn-hilo" type="button" id="verTodas">Ver las cinco juntas →</button></div>
+      <div class="centro-btn"><button class="btn btn-hilo" type="button" id="verTodas">Verlas todas juntas →</button></div>
     </div>
 
     <div class="incluye">
@@ -1450,7 +1450,7 @@ footer .datos{line-height:1.6}
      encienden recién al abrir esto. -->
 <div class="todas" id="todas" hidden>
   <div class="todas-barra">
-    <b>Las cinco invitaciones</b>
+    <b id="todasTitulo">Las invitaciones</b>
     <button class="cerrar" type="button" id="cerrarTodas">Cerrar ✕</button>
   </div>
   <div class="todas-scroll"><div class="todas-grilla" id="todasGrilla"></div></div>
@@ -1798,6 +1798,14 @@ const TRABAJOS=[
   {nombre:'Clara & Bruno', tipo:'Casamiento · Olivo y lacre', url:'claraybruno/', captura:'', vivo:true,
    sub:'Nos casamos', muestra:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#3B4632,#1C2219 60%,#131811)', tinta:'#F5EFE4', suave:'#B8904F', ad:'✦ 🌿 ✦'},
+  /* Dibujada entera: no tiene una sola foto, y es a propósito. No se
+     pueden inventar fotos de dos personas que no existen, y poner una de
+     stock como si fueran ellos es mentirle al que mira (más el artículo
+     53). Lo que muestra es que la pieza se sostiene sola: tipografía,
+     dos metales y los anillos. */
+  {nombre:'Mateo & Lucas', tipo:'Casamiento · Dos metales', url:'mateoylucas/', captura:'', vivo:true,
+   sub:'Nos casamos', muestra:true,
+   fondo:'radial-gradient(120% 80% at 50% 0,#1D2531,#0B0E13 60%,#070A0E)', tinta:'#F4F0E8', suave:'#C9A46B', ad:'✦ ✦ ✦'},
   {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'', vivo:true,
    fondo:'radial-gradient(120% 80% at 50% 0,#25382B,#0F1613 60%,#080B09)', tinta:'#F2EDE1', suave:'#9FC6AC', ad:'🍄 ✦ 🧚'},
   {nombre:'Julia & Franco', tipo:'Casamiento · Editorial', url:'juliayfranco/', captura:'', vivo:true,
@@ -1857,6 +1865,22 @@ const fichaTrabajo=(t,i,tarde)=>`
     <div class="pie-t"><b>${t.nombre}</b><span>${t.tipo}</span>${
       t.muestra?'<i class="es-muestra">Muestra nuestra</i>':''}</div>
   </div>`;
+
+/* Cuántas son de un cliente y cuántas son muestras nuestras NO se
+   escribe a mano: se cuenta de la lista. Escrito, el día que entra una
+   invitación más el renglón miente —y la sección promete justamente
+   "las mismas que recibieron los invitados", así que ahí mentir es
+   caro—. Lo mismo el título de la pantalla con todas. */
+(function(){
+  const n=TRABAJOS.length, m=TRABAJOS.filter(t=>t.muestra).length, c=n-m;
+  const pal=['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+  const w=x=>pal[x]||String(x);
+  const a=document.getElementById('aclaraTrabajos');
+  if(a) a.textContent = (c===1?'Una es de un cliente':w(c).replace(/^./,ch=>ch.toUpperCase())+' son de clientes')
+    + '; ' + (m===1?'la otra es una muestra nuestra.':'las otras '+w(m)+' son muestras nuestras.');
+  const t=document.getElementById('todasTitulo');
+  if(t) t.textContent = 'Las '+w(n)+' invitaciones';
+})();
 
 document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>fichaTrabajo(t,i,false)).join('');
 document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
