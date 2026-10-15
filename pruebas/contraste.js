@@ -51,7 +51,23 @@ const MEDIDOR=`(${function(){
     let pila=[];
     for(let e=n; e; e=e.parentElement){
       const cs=getComputedStyle(e);
-      if(cs.backgroundImage && cs.backgroundImage!=='none') return null;
+      const img=cs.backgroundImage;
+      if(img && img!=='none'){
+        /* Un degradé que TERMINA en transparente sí se puede juzgar, y hay
+           que juzgarlo: en su punto más flojo el texto cae sobre el fondo
+           del padre, y es ahí donde se tiene que leer. Se saltea la capa
+           —el peor caso— y se sigue subiendo. Esto no es un detalle: el
+           panel de la prueba de cada servicio tiene su propio degradé
+           terminado en `transparent`, así que TODO su texto se salteaba, y
+           ahí la tinta de la parte negra cayó sobre el crema de `.clara` a
+           1,49:1 con esta suite en verde.
+           Lo que sigue sin juzgarse es una FOTO o un degradé opaco de
+           punta a punta: de esos no sabemos de qué color quedó el piso, y
+           mejor callar que inventar una falla. */
+        const traslucido=/\btransparent\b|rgba\([^)]*,\s*0(?:\.0+)?\s*\)/.test(img);
+        if(!traslucido) return null;
+        continue;
+      }
       let c=num(cs.backgroundColor);
       if(c.length>=3){
         if(c.length===3) c=c.concat(1);
@@ -100,10 +116,17 @@ const MEDIDOR=`(${function(){
 const DESTAPAR=`.ap,.ap *{opacity:1!important;transform:none!important;filter:none!important}
   *{animation-duration:0s!important;transition-duration:0s!important}`;
 
-async function mirar(p, url, nombre, piso){
+async function mirar(p, url, nombre, piso, prep){
   await p.goto(url,{waitUntil:'domcontentloaded'});
   await p.addStyleTag({content:DESTAPAR});
   await p.waitForTimeout(900);
+  /* Lo que nace `hidden` no se mide, y ahí se esconde justo lo que importa:
+     los paneles de prueba de cada servicio y la pantalla con las cinco
+     invitaciones juntas están cerrados al cargar. El panel de la prueba
+     cayó en la sección CLARA con la tinta de la parte negra —1,6:1, las
+     cuatro líneas de "qué incluye" no estaban— y esta suite pasaba en
+     verde. Lo que está cerrado se abre antes de medir. */
+  if(prep){ await prep(p); await p.waitForTimeout(700); }
   const lista=await p.evaluate(MEDIDOR);
   const flojos=lista.filter(x=>x.r<(piso||PISO));
   if(flojos.length){
@@ -137,6 +160,14 @@ async function mirar(p, url, nombre, piso){
       camara:true,cupo_fotos:24,cupo_invitados:100,revelado:true});
 
     await mirar(p, S+'/index.html', 'la página pública');
+    await mirar(p, S+'/index.html', 'la página pública, con las pruebas abiertas', null,
+      async(pg)=>{ await pg.evaluate(()=>{
+        document.querySelectorAll('.prueba').forEach(x=>{ x.hidden=false; });
+      }); });
+    await mirar(p, S+'/index.html', 'las cinco invitaciones juntas', null,
+      async(pg)=>{ await pg.evaluate(()=>{
+        const b=document.getElementById('verTodas'); if(b) b.click();
+      }); });
     await mirar(p, S+'/privacidad', 'la política de privacidad');
     await mirar(p, S+'/terminos', 'los términos y condiciones');
     await mirar(p, S+'/muro.html#panel', 'el panel del muro');

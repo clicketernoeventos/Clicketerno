@@ -1311,8 +1311,39 @@ Y lo que se mide en `pruebas/contraste.js`:
   encima) y el fondo que de verdad quedó atrás —subiendo hasta el primer
   fondo opaco—, y calcula la razón de contraste de la WCAG. Abajo de 3:1
   no es "poco contraste": es que el texto no está. Con `PEORES=1` lista
-  los diez más flojos de cada pantalla aunque pasen. Lo que cae sobre un
-  degradé o una foto no lo juzga: mejor callar que inventar una falla.
+  los diez más flojos de cada pantalla aunque pasen. Lo que cae sobre una
+  FOTO no lo juzga: mejor callar que inventar una falla.
+
+- **Un degradé que termina en transparente SÍ se juzga.** Antes se
+  salteaba cualquier degradé del árbol, y ahí se escondió un error grande:
+  el panel de la prueba de cada servicio traía su propio degradé terminado
+  en `transparent`, así que **todo su texto quedaba sin medir** — y ese
+  panel cayó en la sección clara con la tinta de la parte negra, a
+  **1,49:1**. Las cuatro líneas de "qué incluye", que son lo que el panel
+  vino a mostrar, no estaban, y la suite daba verde. Ahora, si el degradé
+  tiene una parada transparente, se saltea la CAPA y se sigue subiendo: en
+  su punto más flojo el texto cae sobre el fondo del padre, y es ahí donde
+  se tiene que leer. Lo que sigue sin juzgarse es una foto o un degradé
+  opaco de punta a punta. Corolario para el CSS: **un bloque de texto con
+  un fondo en degradé opaco es un bloque que la suite no puede medir**, o
+  sea donde esto va a volver a pasar. Por eso el panel es negro y macizo.
+  Con esa sola corrección el medidor pasó de 150 a 164 textos en la página
+  pública y de 6 a 18 en el panel del muro.
+
+- **Lo que nace `hidden` no se mide.** Los paneles de prueba y la pantalla
+  con las cinco invitaciones juntas están cerrados al cargar, así que la
+  suite no los veía: la página pública se mide **tres veces** —como
+  carga, con las tres pruebas abiertas y con las cinco juntas abiertas—.
+  Es la regla de la caja de 0x0 otra vez: antes de medir, que lo que se
+  mide ESTÉ.
+
+- **Y volvió a aparecer la de siempre, quinta vez**: el acento dorado de
+  los títulos de las tarjetas —"digitales", "en vivo", "eterno"— es
+  `--oro`, que sobre el crema da **1,84:1**. La palabra que remata cada
+  título no estaba. Va en `--oro-hondo` (3,37:1, que para 26px es lo que
+  pide la WCAG). *Si un bloque trae su propio fondo, trae su propia
+  tinta* — y si una sección le cambia el fondo a un bloque que ya existía,
+  es lo mismo al revés.
 
 Y tres reglas de interacción que no se ven pero se sienten:
 
@@ -1549,13 +1580,31 @@ FUNCIONANDO —no una lista de lo que hacemos—. El menú la nombra "Probala" y
 es su primer renglón; la flecha "Deslizá" de la portada apunta ahí.
 `pruebas/movil.js` falla si esa sección se vuelve a ir abajo.
 
-`index.html` tiene el apartado **`#app`**: una notebook con el muro
-proyectándose y dos celulares —el álbum del rollo y una invitación—, los
-tres corriendo de verdad en un marco, no capturas. Reusa la misma maquinaria que la galería
-de Trabajos (`.vivo`, con `IntersectionObserver` y un dibujo de reserva
-debajo por si el marco no carga); ahora `data-ancho` dice a qué ancho se
+`index.html` tiene el apartado **`#app`**, que son las tres tarjetas de
+servicio y, debajo de cada una, su panel con el producto corriendo de
+verdad en un marco, no una captura. Reusa la misma maquinaria que la
+galería de Trabajos (`.vivo`, con `IntersectionObserver` y un dibujo de
+reserva debajo por si el marco no carga); `data-ancho` dice a qué ancho se
 dibuja adentro (1200 la pantalla del salón, 390 el celular) en vez de estar
 clavado en 390.
+
+**Antes eran DOS apartados y mostraban lo mismo.** `#app` era una vitrina
+—una notebook con el muro y dos celulares— y `#servicios` eran las
+tarjetas con sus paneles: los **mismos tres marcos cargando las mismas
+tres direcciones**, a 1,7 pantallas de distancia. El visitante veía el muro
+proyectándose, bajaba, y lo veía otra vez. Es exactamente lo que ya costó
+caro en la vitrina: en 4G seis marcos se estorban entre ellos. Se fundieron
+en uno: **la tarjeta es la vitrina y el panel es la prueba**. Medido:
+15,1 → **13,8 pantallas** y 1015 → **923 palabras**. El id `app` se quedó
+puesto porque lo usan la flecha de la portada, el menú ("Probala") y
+`pruebas/demo.js`; `servicios` pasó a ser el id de la grilla de tarjetas,
+y el menú dejó de nombrarlo dos veces.
+
+**Y la tarjeta trae su propia tinta.** `#app` es `class="clara"`, así que
+hereda `color:#1A1713`; la tarjeta tiene fondo oscuro. Es la regla de
+siempre —*si un bloque trae su propio fondo, trae su propia tinta*, cuarta
+vez— y por eso están `.clara .serv`, `.clara .serv p`, `.clara .serv .chip`,
+`.clara .serv .etiq`, `.clara .serv .mas` y `.clara .serv .flecha`.
 
 Las apps entienden **`?marco=1`**: sin cinta de demostración y sin los
 botones de la pantalla del salón. Es una vidriera, no algo para tocar: se
@@ -1572,13 +1621,36 @@ aparecía y una prueba contra `?demo=1` pasaba con el código viejo también.
 `pruebas/tablero.js` lo mide con una fiesta de verdad servida por el
 Supabase falso.
 
-La notebook proyecta el evento de verdad que diga `MUESTRA_MURO` en
-`index.html`. **Ese código no se lee desde la prueba**: si la prueba mirara
-la constante publicada, fallaría el día que el negocio cambie de fiesta de
-muestra. Y en la vitrina NO se mide cuánto recorta la foto: es una pantalla
-apaisada y `cover` recorta a propósito, igual que el proyector —medido, 43%
-en 1920x1080 y 52% en el marco—, así que exigirle más a la vitrina que a la
-pantalla que está mostrando es inventar una falla.
+El marco de la prueba del muro (`#pr-muro .vivo`) proyecta el evento de
+verdad que diga `MUESTRA_MURO` en `index.html`; con la constante vacía cae
+en la demostración. **Ese código no se lee desde la prueba**: si la prueba
+mirara la constante publicada, fallaría el día que el negocio cambie de
+fiesta de muestra — `pruebas/puertas.js` fuerza las dos ramas
+interceptando el HTML. **El TOQUE sigue abriendo la demostración**, no la
+fiesta de verdad: en una fiesta real no hay nada que probar y a pantalla
+completa expondría las fotos de invitados reales bastante más que un marco
+chico.
+
+**Y el texto del panel dice cuál de las dos está mirando.** Por defecto
+avisa que la fiesta y las fotos son inventadas; con `MUESTRA_MURO` puesto
+lo reemplaza por "es una fiesta nuestra proyectándose ahora mismo". Las
+dos mitades están medidas: decir "inventada" arriba de una fiesta de
+verdad es mentir, y no decirlo arriba de la demostración es lo mismo al
+revés.
+
+**Ese párrafo se agarra por `id` (`#txtMuroPrueba`), no por
+`.pr-texto>p`.** El rótulo de arriba ("Andando ahora mismo") también es un
+`<p>` hijo directo de `.pr-texto`, y es el PRIMERO: con ese selector el
+reemplazo le cambiaba el texto al rótulo y dejaba el párrafo intacto, así
+que arriba de una fiesta de verdad seguía diciendo "inventada" y el rótulo
+decía cualquier cosa. Y la prueba miraba el mismo selector equivocado, o
+sea que medía el rótulo y daba verde: **los dos lados tenían que estar
+mal igual para que no se viera.**
+
+Ahí NO se mide cuánto recorta la foto: es una pantalla apaisada y `cover`
+recorta a propósito, igual que el proyector —medido, 43% en 1920x1080 y 52%
+en el marco—, así que exigirle más al marco que a la pantalla que está
+mostrando es inventar una falla.
 
 El muro y el rollo tienen su lista de **qué incluye** (`.incluye tres`),
 igual que las invitaciones. **Sin precios**, por decisión del dueño: el
@@ -1973,6 +2045,31 @@ es un cartel equivocado puesto encima del producto.
 `claraybruno/v2/` **no es un sobrante**: es una redirección al link nuevo,
 porque esa dirección ya circuló y un link repartido no puede quedar
 muerto.
+
+### Las cinco juntas
+
+El carrusel muestra una invitación y media: está bien para que el que pasa
+entienda que hay más, y mal para el que quiere **comparar**. Pedido del
+dueño: *"me gustaría que tengan la opción de abrir una pantalla donde están
+todas juntas"*. El botón **"Ver las cinco juntas →"** abre `#todas`, una
+capa con las cinco corriendo de verdad en su celular, en grilla.
+
+Cuatro cosas que no son adorno:
+
+- **Se dibuja UNA vez, la primera que se abre.** Cinco fichas en el HTML
+  inicial es peso que casi nadie va a mirar.
+- **Los marcos se encienden al abrir y se APAGAN al cerrar** (se les saca
+  el `<iframe>`), igual que los paneles de los servicios. Cinco
+  invitaciones latiendo detrás de una pantalla cerrada es la visita entera
+  pagando algo que nadie mira. Hay una medición que cuenta los `<iframe>`
+  antes de abrir (0), con la capa abierta (5) y después de cerrar (**0**).
+- **La ficha es la MISMA función** (`fichaTrabajo(t,i,tarde)`) que dibuja
+  el carrusel: dos plantillas para la misma tarjeta es una que se queda
+  atrás. `tarde` le pone `data-tarde` al `.vivo` para que el IIFE de los
+  marcos lo saltee y lo prenda recién `prenderVivo`.
+- **Cierra con el ✕ y con Escape**, y adentro scrollea. En la grilla la
+  ficha no se deriva del alto —no es un carrusel, se scrollea— así que va
+  `width:100%;max-width:252px` con `auto-fit,minmax(230px,1fr)`.
 
 ## Invitaciones alojadas en el repo
 

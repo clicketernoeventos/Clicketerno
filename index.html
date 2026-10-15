@@ -445,6 +445,26 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 /* La tarjeta abierta se queda quieta y marcada: si se sigue levantando con
    el hover, el panel de abajo baila con el mouse. */
 .serv.abierta{border-color:var(--oro);transform:none}
+/* ── la tarjeta en la sección CLARA ──
+   Nació para la parte negra: fondo blanco al 5% y texto crema. Puesta
+   sobre el crema de `.clara` desaparece —es la cuarta vez que aparece la
+   misma trampa en este archivo: si un bloque trae su propio fondo, trae su
+   propia tinta—. Acá el fondo se da vuelta y la tinta también. El panel de
+   la prueba NO: adentro va el producto, que es negro. */
+.clara .serv{background:linear-gradient(158deg,rgba(0,0,0,.035),transparent 72%);
+  border-color:rgba(26,23,19,.14)}
+.clara .serv p{color:#5B534A}
+.clara .serv .chip{background:#1A1713;border-color:rgba(26,23,19,.2)}
+.clara .serv .etiq{background:rgba(255,255,255,.72);color:var(--oro-hondo);
+  border-color:rgba(122,90,38,.3)}
+/* El acento dorado del título —"digitales", "en vivo", "eterno"— es
+   `--oro` (#D9AE72): sobre el crema da 1,84:1, o sea que la palabra que
+   remata cada título NO ESTABA. Va en `--oro-hondo`, 3,37:1, que para un
+   título de 26px es lo que pide la WCAG. */
+.clara .serv h3 em{color:var(--oro-hondo)}
+.clara .serv .mas{color:var(--oro-hondo)}
+.clara .serv .flecha{border-color:rgba(122,90,38,.35);color:var(--oro-hondo)}
+@media(hover:hover){ .clara .serv:hover{border-color:rgba(122,90,38,.45)} }
 /* ── la ventana con el producto de verdad ──
    Acá había tres dibujos hechos con CSS (un sobre, una pila, una tira de
    película) que se animaban SOLO con :hover. En un teléfono el hover no
@@ -496,9 +516,24 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    no leer sobre él.
    El marco se enciende recién al abrirse y se APAGA al cerrarse. Tres
    marcos más en la carga inicial es exactamente lo que ya costó caro en
-   la vitrina: en 4G se estorban y no termina de cargar ninguno. */
-.prueba{grid-column:1 / -1;border:1px solid var(--hilo);border-radius:26px;padding:26px;
-  position:relative;background:linear-gradient(158deg,rgba(217,174,114,.08),transparent 62%);
+   la vitrina: en 4G se estorban y no termina de cargar ninguno.
+
+   ── Y EL FONDO ES NEGRO Y MACIZO, con la sección clara alrededor ──
+   `#app` es `class="clara"`, que pone `color:#1A1713`; la tinta del panel
+   —#B3A99C los párrafos, #CFC5B7 la lista— está escrita para la parte
+   negra. Sin fondo propio caía sobre el crema a **1,49:1**: las cuatro
+   líneas de "qué incluye", que son lo que el panel vino a mostrar, NO
+   ESTABAN. Quinta vez de la misma regla, y acá la respuesta es el fondo y
+   no la tinta: el panel ES el producto, los aparatos dibujados adentro ya
+   son negros, y la pantalla del salón proyectando sobre crema parece un
+   recorte pegado.
+   **Macizo y no un degradé**, que es lo que tenía: `pruebas/contraste.js`
+   no juzga lo que cae sobre un degradé opaco —no sabe de qué color quedó
+   el piso— así que con un degradé acá el panel vuelve a quedar sin medir.
+   Un bloque de texto que la suite no puede medir es un bloque donde esto
+   va a volver a pasar. */
+.prueba{grid-column:1 / -1;border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
+  position:relative;background:#1B1916;color:var(--texto);
   animation:abrirPrueba .5s var(--e) both}
 @keyframes abrirPrueba{from{opacity:0;transform:translateY(-14px)}}
 .pr-caja{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;align-items:center}
@@ -769,6 +804,31 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .puntos span.hoy{background:var(--oro);opacity:1;transform:scale(1.15)}
 @media(max-width:640px){.puntos{display:flex}}
 
+/* ── la pantalla con las cinco juntas ──
+   Es una pantalla, no una maqueta: ocupa todo y scrollea. En un teléfono
+   va de a una por fila y GRANDE —cinco celulares de 70px no se miran, se
+   adivinan—; en escritorio entran de a tres. */
+.centro-btn{display:flex;justify-content:center;margin-top:26px}
+.todas{position:fixed;inset:0;z-index:99;background:var(--negro);
+  display:flex;flex-direction:column}
+.todas[hidden]{display:none}
+.todas-barra{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;
+  border-bottom:1px solid var(--gris);background:#0A0806}
+.todas-barra b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;
+  letter-spacing:-.01em}
+.todas-barra .cerrar{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);
+  border:1px solid var(--gris);padding:0 16px;min-height:var(--toque);border-radius:999px;
+  display:inline-flex;align-items:center}
+.todas-barra .cerrar:hover{border-color:var(--oro);color:var(--oro)}
+.todas-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:26px 20px calc(40px + env(safe-area-inset-bottom))}
+.todas-grilla{display:grid;gap:40px 28px;justify-items:center;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));max-width:1100px;margin:0 auto}
+/* Acá las fichas no están en un carrusel: no se deslizan ni se achican por
+   el alto, se apilan. */
+.todas .trabajo{flex:none;width:100%;max-width:252px;opacity:1;transform:none;animation:none}
+
 /* visor */
 .visor{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;
@@ -951,7 +1011,6 @@ footer .datos{line-height:1.6}
 
 <div class="menu-movil" id="menuMovil">
   <a href="#app">Probala</a>
-  <a href="#servicios">Servicios</a>
   <a href="#invitaciones">Invitaciones</a>
   <a href="#muro">Muro en vivo</a>
   <a href="#rollo">Rollo eterno</a>
@@ -1026,90 +1085,32 @@ footer .datos{line-height:1.6}
   </div>
 </div>
 
-<!-- ═══ LA APP ANDANDO ═══ -->
+<!-- ═══ LO QUE HACEMOS, Y ANDANDO ═══
+     Esta sección era DOS: la vitrina (#app) con los tres aparatos
+     corriendo, y los servicios (#servicios) con tres tarjetas cuyos
+     paneles abren… exactamente esos tres. Las mismas tres direcciones,
+     dos veces, con 1,7 pantallas de distancia: 3,1 pantallas para decir
+     una cosa dos veces. De ahí salía la sensación de "mucha página" —no
+     se lee mucho, se lee lo mismo dos veces—, y la duplicación la metí yo
+     el día que armé los paneles sin sacar la vitrina.
+     Quedan las tarjetas, que son más ricas: explican, PRUEBAN y venden.
+     El id sigue siendo `app` porque la flecha de la portada, el menú y
+     las pruebas apuntan ahí; `servicios` queda de ancla en la grilla,
+     que también circuló. -->
 <section id="app" class="clara">
   <div class="wrap">
     <div class="cabeza centrada ap">
       <p class="eyebrow">Esto es lo que hacemos</p>
       <h2 class="serif">No te lo contamos.<em>Miralo funcionando.</em></h2>
-      <!-- Con MUESTRA_MURO puesto, la pantalla del salón proyecta una fiesta
-           DE VERDAD: decir "inventada" ahí pasa a ser mentira, y justo en la
-           frase que promete que no son capturas. El texto lo ajusta el JS
-           según qué haya puesto; acá queda la versión sin código. -->
-      <p id="txtVitrina">No son capturas: la pantalla del salón, el álbum del rollo y una invitación, corriendo ahora mismo con una fiesta inventada. Tocá cualquiera y lo probás entero.</p>
-    </div>
-
-    <div class="vitrina">
-      <div class="pieza sala ap" role="button" tabindex="0"
-           data-abrir="muro?demo=1" aria-label="Probar el muro en vivo">
-        <div class="marco-p">
-          <div class="chasis">
-            <div class="visor-p">
-              <div class="quieto">La pantalla del salón</div>
-              <!-- La dirección la pone MUESTRA_MURO, más abajo: vacía es la
-                   demostración inventada; con un código es esa fiesta de
-                   verdad. Se deja la demostración escrita acá para que, si
-                   el JS no corre, igual se vea algo. -->
-              <div class="vivo" id="vitrinaMuro" data-vivo="muro?demo=1&amp;marco=1" data-ancho="1200"
-                   data-nombre="el muro en vivo"></div>
-              <div class="lupa"><span>Probar el muro</span></div>
-            </div>
-          </div>
-          <div class="base"></div><div class="pata"></div>
-        </div>
-        <div class="pie-p"><b>Así se ve en el salón</b>
-          <span>Lo que mandan tus invitados, proyectado. Se actualiza solo toda la noche.</span></div>
-      </div>
-
-      <div class="pieza tel ap" role="button" tabindex="0"
-           data-abrir="rollo?demo=1" aria-label="Probar el rollo eterno">
-        <div class="marco-p">
-          <div class="chasis">
-            <div class="visor-p">
-              <div class="quieto">El álbum del rollo</div>
-              <div class="vivo" data-vivo="rollo?demo=1&amp;marco=1" data-ancho="390"
-                   data-nombre="el álbum del rollo"></div>
-              <div class="lupa"><span>Probar el rollo</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="pie-p"><b>Así se revela el rollo</b>
-          <span>Al otro día, cada invitado abre y ve las suyas primero.</span></div>
-      </div>
-
-      <div class="pieza tel ap" role="button" tabindex="0"
-           data-abrir="pia/nueva/" aria-label="Abrir una invitación digital">
-        <div class="marco-p">
-          <div class="chasis">
-            <div class="visor-p">
-              <div class="quieto">Una invitación</div>
-              <div class="vivo" data-vivo="pia/nueva/" data-ancho="390"
-                   data-nombre="una invitación digital"></div>
-              <div class="lupa"><span>Abrir la invitación</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="pie-p"><b>Así llega la invitación</b>
-          <span>Se abre en el celular de cada invitado. Confirman y eligen la canción ahí mismo.</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SERVICIOS ═══ -->
-<section id="servicios">
-  <div class="wrap">
-    <div class="cabeza ap">
-      <p class="eyebrow">Lo que hacemos</p>
-      <h2 class="serif">Todo lo digital de tu fiesta,<em>en un solo lugar</em></h2>
-      <p>De la invitación al recuerdo. Cada una va sola o las tres juntas.</p>
+      <p>De la invitación al recuerdo. Tocá cualquiera y se abre el producto
+         andando de verdad, no una captura. Cada uno va solo o los tres juntos.</p>
     </div>
 
     <!-- Cada tarjeta abre su panel de abajo con el servicio ANDANDO. El
          href sigue apuntando a la sección de texto a propósito: si el
          JavaScript no corre, "Ver la prueba" lleva igual a algún lado en
          vez de no hacer nada. -->
-    <div class="servicios">
+    <div class="servicios" id="servicios">
       <a class="serv ap" href="#invitaciones" data-prueba="invitaciones">
         <div class="escena"><img src="muestra/invitacion.jpg" alt="La cuenta regresiva de una invitación digital" loading="lazy" width="1040" height="585"></div>
         <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></span>
@@ -1170,7 +1171,9 @@ footer .datos{line-height:1.6}
           <div class="pr-texto">
             <p class="eyebrow">Andando ahora mismo</p>
             <h3 class="serif">Esto es lo que se proyecta<em>en el salón</em></h3>
-            <p>La pantalla va sola toda la noche. Lo que manda un invitado desde su celular aparece ahí en segundos.</p>
+            <p id="txtMuroPrueba">La pantalla va sola toda la noche. Lo que manda un
+               invitado desde su celular aparece ahí en segundos. Acá la fiesta y las
+               fotos son inventadas, para probar.</p>
             <ul class="pr-lista">
               <li>Escanean el código de la mesa. Sin instalar nada.</li>
               <li>Nada se proyecta sin tu visto bueno.</li>
@@ -1250,6 +1253,10 @@ footer .datos{line-height:1.6}
       <div class="puntos" id="puntosTrabajos"></div>
       <p class="pista-toque"><span class="solo-angosto">Deslizá para verlas. </span>Tocá cualquiera para abrirla y probarla<br>
         <span class="aclara">Tres son de clientes; las dos de casamiento son muestras nuestras.</span></p>
+      <!-- En un teléfono el carrusel muestra una y media por vez: el que
+           quiere comparar tiene que deslizar cinco veces y acordarse. Acá
+           las ve todas de una. -->
+      <div class="centro-btn"><button class="btn btn-hilo" type="button" id="verTodas">Ver las cinco juntas →</button></div>
     </div>
 
     <div class="incluye">
@@ -1435,6 +1442,19 @@ footer .datos{line-height:1.6}
   </div>
 </div></footer>
 </main>
+
+<!-- ── las cinco juntas ──
+     Pedido del dueño: "me gustaría que tengan la opción de abrir una
+     pantalla donde están todas juntas". Las fichas son las MISMAS del
+     carrusel (`fichaTrabajo`), pero sus marcos nacen apagados y se
+     encienden recién al abrir esto. -->
+<div class="todas" id="todas" hidden>
+  <div class="todas-barra">
+    <b>Las cinco invitaciones</b>
+    <button class="cerrar" type="button" id="cerrarTodas">Cerrar ✕</button>
+  </div>
+  <div class="todas-scroll"><div class="todas-grilla" id="todasGrilla"></div></div>
+</div>
 
 <!-- visor de invitaciones -->
 <div class="visor" id="visor">
@@ -1733,22 +1753,27 @@ addEventListener('load',()=>setTimeout(()=>{
 const MUESTRA_MURO='QUI-XJLJ56';
 
 (function(){
-  const v=document.getElementById('vitrinaMuro');
+  /* Vivía en la vitrina, que ya no está: ahora el marco que proyecta la
+     fiesta de verdad es el de la PRUEBA del muro, que es el mismo lugar
+     donde el visitante lo va a ver.
+     El TOQUE sigue abriendo la demostración, no la fiesta de verdad, y es
+     a propósito: en una fiesta real el visitante no puede probar nada —es
+     una pantalla de solo mirar—; donde sí puede mandar una foto y verla
+     proyectada es en la demostración. Y abrir la fiesta a pantalla
+     completa expone las fotos de invitados reales bastante más que un
+     marco chico. Así que el marco es la vidriera y el botón es la prueba. */
+  const v=document.querySelector('#pr-muro .vivo');
   if(v && MUESTRA_MURO){
     v.dataset.vivo='muro?marco=1#pantalla/'+encodeURIComponent(MUESTRA_MURO);
-    /* El TOQUE sigue abriendo la demostración, no la fiesta de verdad, y
-       es a propósito: la lupa dice "Probar el muro", y en una fiesta real
-       el visitante no puede probar nada —es una pantalla de solo mirar—;
-       donde sí puede mandar una foto y verla proyectada es en la
-       demostración. Y abrir la fiesta a pantalla completa expone las fotos
-       de invitados reales bastante más que una miniatura.
-       Así que el marco es la vidriera y el toque es la prueba. */
-    /* Y el texto deja de decir "una fiesta inventada", que con una fiesta
-       de verdad proyectándose sería mentira — y encima en la frase que
-       promete que no son capturas. */
-    const t=document.getElementById('txtVitrina');
-    if(t) t.textContent='No son capturas: la pantalla del salón está proyectando '
-      +'una fiesta nuestra ahora mismo. Tocá cualquiera y lo probás entero.';
+    /* Y el panel deja de decir "demostración" donde se está proyectando una
+       fiesta de verdad. */
+    /* Por id y no por `.pr-texto>p`: el eyebrow ("Andando ahora mismo")
+       TAMBIÉN es un <p> hijo directo, y es el primero, así que ese
+       selector le cambiaba el texto al rótulo y dejaba el párrafo
+       —el que dice si la fiesta es inventada— intacto. */
+    const t=document.getElementById('txtMuroPrueba');
+    if(t) t.textContent='No es una captura: es una fiesta nuestra proyectándose '
+      +'ahora mismo. La pantalla va sola toda la noche.';
   }
 })();
 
@@ -1801,14 +1826,21 @@ const BARRA_IOS=`<div class="barra-ios"><span class="hora">9:41</span>
   </svg></div>`;
 const LATERALES=`<span class="lateral izq silencio"></span><span class="lateral izq vol1"></span>`+
   `<span class="lateral izq vol2"></span><span class="lateral der power"></span>`;
-document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
+/* La ficha se dibuja en DOS lugares —el carrusel y la pantalla con las
+   cinco juntas— así que es una función y no un bloque suelto: escrita dos
+   veces, la segunda se queda atrás el día que una cambie.
+   `tarde` marca los marcos de la pantalla de todas: ahí el `.vivo` lleva
+   `data-tarde` y no entra en la fila de la carga inicial. Cinco
+   invitaciones más bajando al entrar a la página es exactamente lo que ya
+   costó caro en la vitrina. */
+const fichaTrabajo=(t,i,tarde)=>`
   <div class="trabajo ap" data-url="${t.url}" data-nombre="${t.nombre}" style="transition-delay:${i*.12}s">
     <div class="cuerpo-t chasis">
       ${LATERALES}
       <div class="pantalla-t visor-p" style="background:${t.fondo};color:${t.tinta};--tinta-p:${t.tinta}">
         ${t.captura
           ? `<img class="captura" src="${t.captura}" alt="Invitación de ${t.nombre}" loading="lazy">`
-          : `${t.vivo===false?'':`<div class="vivo" data-vivo="${t.url}" data-nombre="${t.nombre}"></div>`}
+          : `${t.vivo===false?'':`<div class="vivo"${tarde?' data-tarde="1"':''} data-vivo="${t.url}" data-nombre="${t.nombre}"></div>`}
         <div class="ad" style="color:${t.suave}">${t.ad}</div>
         <div class="sb" style="color:${t.suave}">${t.sub||'Mis quince años'}</div>
         <div class="nm">${t.nombre}</div>
@@ -1824,7 +1856,9 @@ document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>`
     </div>
     <div class="pie-t"><b>${t.nombre}</b><span>${t.tipo}</span>${
       t.muestra?'<i class="es-muestra">Muestra nuestra</i>':''}</div>
-  </div>`).join('');
+  </div>`;
+
+document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>fichaTrabajo(t,i,false)).join('');
 document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   io.observe(el);
   /* ── un deslizado NO puede abrir el visor ──
@@ -2023,16 +2057,51 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
   });
 })();
 
-/* ═══ las dos piezas de "la app andando" abren la demostración ═══ */
-document.querySelectorAll('.pieza[data-abrir]').forEach(el=>{
-  /* Se agranda acá mismo en vez de abrir otra pestaña: el visitante prueba
-     y vuelve con la X, sin perderse del sitio. */
-  const ir=()=>abrirVisor(el.dataset.abrir,
-                          el.querySelector('.pie-p b').textContent,
-                          el.classList.contains('sala'));
-  el.addEventListener('click',ir);
-  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); ir(); } });
-});
+/* ═══ las cinco juntas ═══
+   Se dibuja UNA vez, la primera que se abre: el HTML de cinco fichas en la
+   carga inicial es peso que casi nadie va a mirar. Los marcos se encienden
+   al abrir y se APAGAN al cerrar, igual que los de la prueba de cada
+   servicio: cinco invitaciones latiendo atrás de una pantalla cerrada es
+   la visita entera pagando algo que nadie mira. */
+(function(){
+  const capa=document.getElementById('todas'), grilla=document.getElementById('todasGrilla'),
+        abrirB=document.getElementById('verTodas'), cerrarB=document.getElementById('cerrarTodas');
+  if(!capa||!grilla||!abrirB) return;
+  let dibujada=false;
+
+  const apagar=()=>grilla.querySelectorAll('.vivo').forEach(c=>{
+    const m=c.querySelector('iframe'); if(m) m.remove();
+    c.classList.remove('listo'); delete c.dataset.encendida;
+  });
+
+  function abrir(){
+    if(!dibujada){
+      grilla.innerHTML=TRABAJOS.map((t,i)=>fichaTrabajo(t,i,true)).join('');
+      /* Acá un toque SIEMPRE abre: no hay carrusel que deslizar, así que
+         tampoco hace falta distinguir el arrastre. */
+      grilla.querySelectorAll('.trabajo').forEach(el=>{
+        el.addEventListener('click',()=>abrirVisor(el.dataset.url,'la invitación de '+el.dataset.nombre));
+      });
+      dibujada=true;
+    }
+    capa.hidden=false; document.body.style.overflow='hidden';
+    grilla.querySelectorAll('.vivo').forEach(c=>window.prenderVivo&&window.prenderVivo(c));
+    try{ cerrarB.focus({preventScroll:true}); }catch(e){}
+  }
+  function cerrar(){
+    capa.hidden=true; document.body.style.overflow=''; apagar();
+  }
+  abrirB.addEventListener('click',abrir);
+  cerrarB.addEventListener('click',cerrar);
+  /* Si el visor está abierto ENCIMA de esta capa, Escape es suyo: cerrar
+     las dos de un toque deja al que estaba comparando de vuelta en la
+     página, sin haber pedido salir. */
+  addEventListener('keydown',e=>{
+    if(e.key!=='Escape'||capa.hidden) return;
+    if(document.getElementById('visor').classList.contains('abierto')) return;
+    cerrar();
+  });
+})();
 
 /* ═══ visor ═══ */
 const visor=document.getElementById('visor'), marcoV=document.getElementById('marcoV'),
@@ -2078,7 +2147,12 @@ function abrirVisor(url,nombre,ancho){
   };
 }
 function cerrarVisor(){
-  visor.classList.remove('abierto'); document.body.style.overflow='';
+  visor.classList.remove('abierto');
+  /* El scroll vuelve sólo si abajo no quedó otra capa a pantalla completa:
+     desde "las cinco juntas" se toca una invitación y se vuelve, y ahí
+     devolverle el scroll a la página la hace scrollear ATRÁS de la capa. */
+  const todas=document.getElementById('todas');
+  document.body.style.overflow=(todas&&!todas.hidden)?'hidden':'';
   clearTimeout(avisoT);
   setTimeout(()=>{marcoV.src='';},450);
 }
