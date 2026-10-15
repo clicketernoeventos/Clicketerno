@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mateo &amp; Lucas · Nos casamos</title>
+<meta name="description" content="Mateo y Lucas se casan. Sábado 13 de noviembre de 2027. Invitación de muestra de Click Eterno.">
+<meta name="theme-color" content="#0B0E13">
+<meta property="og:title" content="Mateo &amp; Lucas · Nos casamos">
+<meta property="og:description" content="Sábado 13 de noviembre de 2027 · Ceremonia al atardecer, fiesta hasta que aguantemos">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   Mateo & Lucas — invitación de muestra.
+
+   LA IDEA, en una línea: dos metales iguales que se encuentran.
+
+   Todo en esta página va de a dos y del mismo tamaño: los dos
+   nombres, los dos anillos, las dos columnas. En una invitación
+   hétero hay un orden heredado (la novia primero, los padres de
+   cada lado); acá cualquier jerarquía sería una declaración, así
+   que no hay ninguna. Eso es lo simbólico de verdad, y no se ve
+   como un adorno: se ve como que está bien hecha.
+
+   Lo que NO se usa, a propósito:
+   · caligrafía / letra manuscrita — es el registro de la novia.
+     Acá va capitular espaciada y una serif de transición, que es
+     el registro del smoking.
+   · dos smokings dibujados, glitter, corazones. Eso dice "boda
+     gay" como género, igual que un cotillón. La pareja no es una
+     categoría.
+   · la bandera. El espectro aparece UNA sola vez, apagado dentro
+     de la paleta, y debajo de la única sección donde significa
+     algo. Dicho una vez es una caricia; repetido es un disfraz.
+
+   Y no hay NI UNA foto: no se pueden inventar fotos de dos
+   personas que no existen, y poner una de stock como si fueran
+   ellos es mentirle al que mira (y el artículo 53 además). Las
+   fotos están cableadas en CONFIG.historia: el día que la pareja
+   las manda, la sección aparece sola. Vacía, no se dibuja — no
+   quedan huecos.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  /* los dos metales. Mismo peso visual, distinta temperatura. */
+  --oro:#C9A46B;  --oro-hondo:#8A6B35;
+  --plata:#A8B6C2; --plata-honda:#5E6E7C;
+
+  --tinta:#0B0E13; --tinta-2:#141922; --tinta-3:#1D2531;
+  --hueso:#F4F0E8; --hueso-2:#E8E2D6;
+  --texto:#F4F0E8; --texto-suave:#A7AEB8;
+  --oscuro:#13171E;
+
+  --e:cubic-bezier(.22,.7,.24,1);
+  --gutter:clamp(20px,6vw,44px);
+  --toque:44px;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:Figtree,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+body{font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.65;
+  color:var(--texto);background:var(--tinta);overflow-x:hidden;
+  -webkit-font-smoothing:antialiased}
+body.cerrado{overflow:hidden}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+a{color:inherit}
+.solo-lector{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ── el degradé de los dos metales: el oro de uno, la plata del otro ── */
+.union{background:linear-gradient(104deg,var(--oro) 8%,#EADFC8 34%,#E6EBF0 56%,var(--plata) 88%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+/* En la parte clara el mismo degradé tiene que bajar, o no se lee. */
+.claro .union{background:linear-gradient(104deg,var(--oro-hondo) 8%,#7E6A4A 42%,#5E6E7C 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ── piezas comunes ── */
+section{position:relative;padding:clamp(76px,12vh,124px) var(--gutter)}
+.centro{max-width:620px;margin:0 auto;text-align:center}
+.chico{font-size:11.5px;letter-spacing:.34em;text-transform:uppercase;font-weight:600;
+  color:var(--oro)}
+.claro .chico{color:var(--oro-hondo)}
+h2{font-family:var(--serif);font-weight:500;line-height:1.08;
+  font-size:clamp(34px,9.6vw,54px);letter-spacing:-.005em}
+h2 em{font-style:italic}
+h3{font-family:var(--serif);font-weight:500;font-size:clamp(23px,5.6vw,28px);line-height:1.2}
+.bajada{font-size:clamp(15.5px,4.1vw,17.5px);line-height:1.78;margin-top:16px;color:var(--texto-suave)}
+.claro{background:var(--hueso);color:var(--tinta)}
+.claro .bajada{color:#4B5058}
+
+/* los botones: el área llega a 44, la tipografía no se agranda */
+.boton{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:var(--toque);padding:0 25px;border-radius:999px;
+  font-weight:600;font-size:14.5px;letter-spacing:.03em;text-decoration:none;
+  transition:transform .3s var(--e),background-color .3s,border-color .3s,box-shadow .3s}
+.boton svg{width:19px;height:19px;flex:none}
+.boton.lleno{background:linear-gradient(104deg,var(--oro),#D8C49A 52%,var(--plata));color:#15120C;
+  box-shadow:0 12px 30px -16px rgba(201,164,107,.9)}
+.boton.linea{border:1.4px solid rgba(244,240,232,.3);color:var(--texto)}
+.claro .boton.linea{border-color:rgba(11,14,19,.26);color:var(--tinta)}
+@media(hover:hover) and (pointer:fine){
+  .boton.lleno:hover{transform:translateY(-2px);box-shadow:0 18px 38px -16px rgba(201,164,107,.95)}
+  .boton.linea:hover{border-color:var(--oro);color:var(--oro)}
+  .claro .boton.linea:hover{border-color:var(--oro-hondo);color:var(--oro-hondo)}
+}
+.boton:active,.toque:active{transform:scale(.975)}
+
+/* la regla fina de los dos metales, que separa las secciones */
+.hilo{height:1px;width:min(220px,52vw);margin:0 auto;
+  background:linear-gradient(90deg,transparent,var(--oro) 22%,var(--plata) 78%,transparent)}
+.claro .hilo{background:linear-gradient(90deg,transparent,var(--oro-hondo) 22%,var(--plata-honda) 78%,transparent)}
+
+/* aparecer al llegar.
+   EL ESTADO POR DEFECTO ES VISIBLE. Lo esconde el JS, y solo si va a
+   poder mostrarlo: sin JS, o con "menos movimiento", la invitación se
+   ve entera. Una animación que esconde contenido no tira ningún error:
+   se ve en blanco y listo. */
+.js .ap{opacity:0;transform:translateY(24px);
+  transition:opacity .95s var(--e),transform 1.05s var(--e)}
+.js .ap.entro{opacity:1;transform:none}
+.js .ap.d1{transition-delay:.1s} .js .ap.d2{transition-delay:.2s}
+.js .ap.d3{transition-delay:.3s} .js .ap.d4{transition-delay:.4s}
+@media(prefers-reduced-motion:reduce){
+  .js .ap{opacity:1;transform:none;transition:none}
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+}
+
+/* ══════════ 0 · el sobre ══════════
+   El primer toque del invitado es además el permiso que pide el
+   navegador para que suene la música: Safari no deja sonar nada sin
+   un gesto. Si no se aprovecha acá, después hay que pedirlo de nuevo
+   y queda una invitación muda. */
+#sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;
+  background:radial-gradient(130% 100% at 50% 0%,var(--tinta-3),var(--tinta) 62%);
+  padding:var(--gutter);text-align:center;
+  transition:opacity .9s var(--e),visibility .9s}
+#sobre.abierto{opacity:0;visibility:hidden;pointer-events:none}
+.sobre-caja{max-width:420px;display:grid;gap:26px;justify-items:center}
+.sobre-caja .chico{color:var(--texto-suave)}
+.sello{width:clamp(132px,38vw,170px);height:clamp(132px,38vw,170px);
+  display:grid;place-items:center;border-radius:50%;
+  border:1px solid rgba(201,164,107,.3);background:rgba(244,240,232,.025);
+  min-width:var(--toque);min-height:var(--toque);
+  transition:transform .4s var(--e),border-color .4s}
+.sello svg{width:72%;height:72%}
+@media(hover:hover) and (pointer:fine){ .sello:hover{transform:scale(1.04);border-color:rgba(201,164,107,.6)} }
+.sello:active{transform:scale(.96)}
+/* El latido va en un HALO alrededor, no en el botón.
+   Escalando el botón mismo la caja nunca se queda quieta: Playwright
+   no lo puede tocar nunca ("element is not stable") y la prueba se
+   cuelga treinta segundos contra un botón que está perfecto. Un
+   control que se mueve para siempre tampoco es cómodo para el dedo. */
+.sello{position:relative}
+.sello:after{content:'';position:absolute;inset:-9px;border-radius:50%;
+  border:1px solid rgba(201,164,107,.42);pointer-events:none;
+  animation:late 2.8s ease-in-out infinite}
+@keyframes late{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.06);opacity:0}}
+.sobre-nombres{font-family:var(--serif);font-size:clamp(30px,8.4vw,42px);line-height:1.15;font-weight:500}
+
+/* ══════════ 1 · portada ══════════ */
+#portada{min-height:100vh;min-height:100svh;display:grid;place-items:center;
+  padding-top:calc(var(--gutter) + 12px);padding-bottom:calc(var(--gutter) + 12px);
+  background:radial-gradient(120% 86% at 50% 8%,var(--tinta-3),var(--tinta) 66%)}
+.port{display:grid;gap:clamp(20px,5vh,34px);justify-items:center;text-align:center}
+/* Los dos nombres, del MISMO tamaño y del mismo peso. Es la decisión
+   que más dice de toda la pieza, y es una línea de CSS. */
+.nombres{font-family:var(--serif);font-weight:500;line-height:1.02;
+  font-size:clamp(46px,15.5vw,96px);letter-spacing:-.012em;
+  display:grid;gap:clamp(2px,1.2vh,8px);justify-items:center}
+.nombres .amp{font-size:.62em;font-style:italic;line-height:1;padding:.06em 0}
+.anillos-port{width:clamp(74px,20vw,104px);height:auto}
+.fecha-port{font-family:var(--sans);font-size:12px;letter-spacing:.3em;
+  text-transform:uppercase;font-weight:600;color:var(--texto-suave)}
+.baja{display:grid;gap:8px;justify-items:center;color:var(--texto-suave);
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;font-weight:600}
+.baja .flecha{width:17px;height:17px;animation:flota 2.4s ease-in-out infinite}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ══════════ 2 · la frase ══════════ */
+#frase{background:var(--oscuro)}
+/* Los versos van cortados a mano, y por eso el tamaño tiene que
+   garantizar que NINGUNO envuelva: un verso partido al medio
+   ("más precioso que el / dinero") se lee como un error de maqueta,
+   no como un poema. Hay una medición que entra a 320, 360 y 390 y
+   comprueba que cada verso siga siendo UNA línea. */
+.cita{font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(19px,5.1vw,30px);line-height:1.5}
+.cita span{display:block}
+.firma{margin-top:22px;font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;
+  font-weight:600;color:var(--oro)}
+
+/* ══════════ 3 · la cuenta ══════════ */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2.6vw,16px);
+  margin-top:34px}
+.casilla{border:1px solid rgba(244,240,232,.14);border-radius:14px;
+  padding:clamp(14px,3.4vw,20px) 4px;background:rgba(244,240,232,.02)}
+.casilla b{display:block;font-family:var(--serif);font-weight:500;
+  font-size:clamp(28px,8vw,42px);line-height:1;font-variant-numeric:tabular-nums}
+.casilla small{display:block;margin-top:7px;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--texto-suave);font-weight:600}
+
+/* ══════════ 4 · no siempre se pudo ══════════
+   La única sección donde el espectro significa algo, y por eso es la
+   única donde aparece. */
+#pudimos{background:var(--oscuro)}
+#pudimos .bajada{max-width:33em;margin-left:auto;margin-right:auto}
+/* El espectro, apagado dentro de la paleta y UNA sola vez en toda la
+   invitación. Más saturado sería una bandera y la pieza pasaría a ser
+   sobre el tema en vez de sobre ellos dos; más apagado se leía como
+   una línea marrón sucia y no se entendía qué era. */
+.espectro{height:3px;width:min(280px,66vw);margin:30px auto 0;border-radius:3px;
+  background:linear-gradient(90deg,#A8524F,#B07C3E,#A79A46,#4E8A63,#4572A0,#74528E)}
+.fecha-ley{margin-top:16px;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;
+  font-weight:600;color:var(--texto-suave)}
+
+/* ══════════ 5 · nuestra historia ══════════ */
+.linea{display:grid;gap:0;margin-top:40px;text-align:left}
+.hito{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,4.4vw,24px);
+  padding-bottom:30px;position:relative}
+.hito:last-child{padding-bottom:0}
+.hito .marca{width:13px;display:grid;grid-template-rows:auto 1fr;justify-items:center;gap:6px}
+.hito .punto{width:9px;height:9px;border-radius:50%;margin-top:9px;
+  background:linear-gradient(135deg,var(--oro),var(--plata))}
+.hito .tallo{width:1px;height:100%;background:linear-gradient(180deg,rgba(201,164,107,.5),rgba(168,182,194,.12))}
+.hito:last-child .tallo{display:none}
+.hito .anio{font-family:var(--serif);font-size:clamp(21px,5.2vw,25px);font-weight:500;line-height:1.1}
+.hito p{margin-top:5px;color:var(--texto-suave);font-size:15.5px;line-height:1.7}
+.claro .hito p{color:#4B5058}
+.hito figure{margin-top:12px;border-radius:12px;overflow:hidden}
+
+/* ══════════ 6 · cuándo y dónde ══════════
+   Dos columnas iguales, como todo lo demás. */
+.par{display:grid;gap:clamp(18px,4vw,26px);margin-top:38px;
+  grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.ficha{border:1px solid rgba(244,240,232,.13);border-radius:18px;
+  padding:clamp(24px,5.4vw,32px);background:rgba(244,240,232,.02);
+  display:grid;gap:10px;justify-items:center;text-align:center}
+.ficha .ic{width:36px;height:36px;color:var(--oro);margin-bottom:2px}
+.ficha .hora{font-family:var(--serif);font-size:clamp(28px,7vw,34px);font-weight:500;line-height:1}
+.ficha p{color:var(--texto-suave);font-size:15px;line-height:1.65}
+.ficha .boton{margin-top:8px}
+/* La ficha nació para la parte oscura: borde claro al 13% y fondo claro
+   al 2%. Puesta sobre el crema los dos desaparecen —la tarjeta deja de
+   existir— y la dirección, que va en el gris de la parte oscura, cae a
+   2:1. Si un bloque trae su propio fondo, trae su propia tinta: acá es
+   al revés, la sección le cambia el fondo al bloque y es lo mismo. */
+.claro .ficha{border-color:rgba(11,14,19,.14);background-color:rgba(255,255,255,.5)}
+.claro .ficha p{color:#4B5058}
+.claro .ficha .ic{color:var(--oro-hondo)}
+
+/* ══════════ 7 · la noche ══════════ */
+.agenda{display:grid;gap:0;margin-top:38px;text-align:left}
+.tramo{display:grid;grid-template-columns:clamp(58px,15vw,74px) 1fr;gap:clamp(14px,4vw,22px);
+  padding:18px 0;border-top:1px solid rgba(244,240,232,.1)}
+.claro .tramo{border-top-color:rgba(11,14,19,.1)}
+.tramo:first-child{border-top:0}
+.tramo .h{font-family:var(--serif);font-size:clamp(20px,5vw,24px);font-weight:500;
+  line-height:1.25;font-variant-numeric:tabular-nums}
+.tramo b{display:block;font-weight:600;font-size:16px}
+.tramo span{display:block;color:var(--texto-suave);font-size:14.5px;line-height:1.6;margin-top:2px}
+.claro .tramo span{color:#4B5058}
+
+/* ══════════ 8 · dress code ══════════ */
+.monos{display:flex;justify-content:center;gap:clamp(18px,5vw,30px);margin-top:30px}
+.monos svg{width:clamp(56px,15vw,74px);height:auto}
+.paleta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
+.paleta i{width:34px;height:34px;border-radius:50%;display:block;
+  border:1px solid rgba(11,14,19,.12)}
+
+/* ══════════ 9 · la canción ══════════ */
+/* ══════════ 10 · regalo ══════════ */
+.alias{margin-top:28px;border:1px dashed rgba(244,240,232,.28);border-radius:16px;
+  padding:22px;display:grid;gap:14px;justify-items:center}
+.claro .alias{border-color:rgba(11,14,19,.24)}
+.alias small{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  font-weight:600;color:var(--texto-suave)}
+.claro .alias small{color:#5B606A}
+.alias b{font-family:var(--sans);font-size:clamp(18px,5vw,22px);font-weight:600;
+  letter-spacing:.02em;word-break:break-all}
+
+/* ══════════ 11 · confirmación ══════════ */
+form{display:grid;gap:16px;margin-top:34px;text-align:left}
+label{display:grid;gap:7px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:600;color:var(--texto-suave)}
+.claro label{color:#5B606A}
+/* OJO con `background` a secas acá: es el ATAJO, y resetea
+   background-repeat, -position y -size a su valor inicial. El
+   <select> dibuja su flecha con una imagen de fondo y
+   `background-repeat:no-repeat`; con el atajo puesto después, la
+   flecha pasaba a repetirse SEIS VECES encima del texto de la
+   opción. Se ve como un formulario roto y no tira ningún error.
+   Va `background-color`, que toca solo el color. */
+input,select,textarea{width:100%;min-height:var(--toque);padding:12px 15px;
+  border-radius:12px;border:1px solid rgba(244,240,232,.2);
+  background-color:rgba(244,240,232,.04);color:var(--texto);font-size:16px;
+  font-family:var(--sans);transition:border-color .25s}
+.claro input,.claro select,.claro textarea{border-color:rgba(11,14,19,.2);
+  background-color:rgba(255,255,255,.6);color:var(--tinta)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--oro);outline-offset:1px;border-color:transparent}
+textarea{min-height:92px;resize:vertical;line-height:1.6}
+select{appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A7AEB8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;background-size:18px;padding-right:42px}
+/* la misma flecha, en oscuro: sobre la sección clara la gris no se ve */
+.claro select{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B606A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radios label{display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:var(--toque);padding:0 14px;border-radius:12px;cursor:pointer;
+  border:1px solid rgba(244,240,232,.2);background-color:rgba(244,240,232,.04);
+  letter-spacing:.06em;text-transform:none;font-size:14.5px;color:var(--texto);
+  transition:border-color .25s,background-color .25s}
+.claro .radios label{border-color:rgba(11,14,19,.2);background-color:rgba(255,255,255,.6);color:var(--tinta)}
+.radios input{position:absolute;opacity:0;width:0;height:0;min-height:0}
+.radios label:has(input:checked),.radios label.elegida{border-color:var(--oro);background-color:rgba(201,164,107,.18)}
+.radios label:has(input:focus-visible){outline:2px solid var(--oro);outline-offset:2px}
+form .boton{justify-self:center;margin-top:6px;width:100%;max-width:300px}
+.aviso{margin-top:14px;font-size:13.5px;line-height:1.6;min-height:1.2em;text-align:center}
+.aviso.bien{color:#8FC7A3}
+.aviso.mal{color:#E79A94}
+.claro .aviso.bien{color:#2E6B45}
+.claro .aviso.mal{color:#9B332B}
+.dato-legal{margin-top:20px;font-size:12.5px;line-height:1.6;color:var(--texto-suave)}
+.claro .dato-legal{color:#5B606A}
+
+/* ══════════ 12 · cierre ══════════ */
+#cierre{text-align:center;padding-bottom:clamp(60px,10vh,90px)}
+#cierre .anillos-port{width:clamp(62px,16vw,82px)}
+.pie{margin-top:40px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--texto-suave);font-weight:600}
+.pie a{text-decoration:none;display:inline-block;padding:10px 6px;min-height:var(--toque);
+  line-height:24px}
+@media(hover:hover) and (pointer:fine){ .pie a:hover{color:var(--oro)} }
+
+/* ══════════ la barra de avance ══════════ */
+#avance{position:fixed;top:0;left:0;height:2px;width:0;z-index:50;pointer-events:none;
+  background:linear-gradient(90deg,var(--oro),var(--plata))}
+</style>
+</head>
+<body>
+
+<div id="avance" aria-hidden="true"></div>
+
+<!-- Los dos metales y el cruce de los anillos viven ACÁ, sueltos y para
+     siempre. Estaban adentro del SVG del sobre, que se remueve al abrir:
+     con eso los anillos de la portada y del cierre se quedaban sin
+     pintura y desaparecían, sin un solo error en la consola. -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="gOro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8A6B35"/><stop offset=".45" stop-color="#EBD8AE"/>
+      <stop offset="1" stop-color="#B08D4E"/>
+    </linearGradient>
+    <linearGradient id="gPlata" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5E6E7C"/><stop offset=".45" stop-color="#E6EDF2"/>
+      <stop offset="1" stop-color="#8E9EAC"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ══════════ 0 · el sobre ══════════ -->
+<div id="sobre" role="dialog" aria-label="Invitación cerrada">
+  <div class="sobre-caja">
+    <p class="chico">Nos casamos</p>
+    <p class="sobre-nombres"><span class="union">Mateo &amp; Lucas</span></p>
+    <button class="sello late toque" id="abrir" aria-label="Abrir la invitación">
+      <svg viewBox="0 0 120 80" aria-hidden="true">
+        <!-- Dos anillos IGUALES, entrelazados. Uno de cada metal.
+             No son un anillo de compromiso y una alianza: son dos
+             alianzas, y ésa es toda la idea de la pieza. -->
+        <circle cx="46" cy="40" r="26" fill="none" stroke="url(#gOro)" stroke-width="3.4"/>
+        <circle cx="74" cy="40" r="26" fill="none" stroke="url(#gPlata)" stroke-width="3.4"/>
+        <!-- El trocito del anillo de oro que vuelve a pasar POR ENCIMA en el
+             cruce de arriba. Eso es lo que los deja entrelazados de verdad:
+             con una máscara el arco que se recortaba era el equivocado y la
+             plata quedaba mordida, como una medialuna. -->
+        <path d="M52.7 14.9 A26 26 0 0 1 65.9 23.3" fill="none" stroke="url(#gOro)" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <p class="chico">Tocá para abrir</p>
+  </div>
+</div>
+
+<main id="papel">
+
+  <!-- ══════════ 1 · portada ══════════ -->
+  <section id="portada">
+    <div class="port">
+      <p class="chico ap">Sábado 13 de noviembre · 2027</p>
+      <h1 class="nombres ap d1">
+        <span class="union">Mateo</span>
+        <span class="amp union">&amp;</span>
+        <span class="union">Lucas</span>
+      </h1>
+      <svg class="anillos-port ap d2" viewBox="0 0 120 80" aria-hidden="true">
+        <circle cx="46" cy="40" r="26" fill="none" stroke="url(#gOro)" stroke-width="3.4"/>
+        <circle cx="74" cy="40" r="26" fill="none" stroke="url(#gPlata)" stroke-width="3.4"/>
+        <!-- El trocito del anillo de oro que vuelve a pasar POR ENCIMA en el
+             cruce de arriba. Eso es lo que los deja entrelazados de verdad:
+             con una máscara el arco que se recortaba era el equivocado y la
+             plata quedaba mordida, como una medialuna. -->
+        <path d="M52.7 14.9 A26 26 0 0 1 65.9 23.3" fill="none" stroke="url(#gOro)" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+      <p class="fecha-port ap d3">Rosario · Santa Fe</p>
+      <div class="baja ap d4" aria-hidden="true">
+        <span>Deslizá</span>
+        <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M12 5v14M6 13l6 6 6-6"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · la frase ══════════
+       Whitman, "Canto del camino abierto", 1856. Es de dominio
+       público (murió en 1892) y la traducción es nuestra, así que
+       no hay derechos de nadie en el medio. Y es EL poeta del amor
+       entre hombres: la frase no está elegida por bonita.
+       El verso que importa es el tercero. -->
+  <section id="frase">
+    <div class="centro">
+      <div class="hilo ap" aria-hidden="true"></div>
+      <blockquote class="cita ap d1" style="margin-top:30px">
+        <span>Compañero, te doy mi mano.</span>
+        <span>Te doy mi amor,</span>
+        <span>más precioso que el dinero;</span>
+        <span>me doy entero,</span>
+        <span>antes que cualquier sermón</span>
+        <span>y cualquier ley.</span>
+        <span>¿Vos te darás a mí?</span>
+      </blockquote>
+      <p class="firma ap d2">Walt Whitman</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · la cuenta ══════════ -->
+  <section id="cuenta">
+    <div class="centro">
+      <p class="chico ap">Falta poco</p>
+      <h2 class="ap d1" style="margin-top:12px">Ya casi <em>es el día</em></h2>
+      <div class="reloj ap d2" id="reloj" aria-live="off">
+        <div class="casilla"><b id="cD">—</b><small>Días</small></div>
+        <div class="casilla"><b id="cH">—</b><small>Horas</small></div>
+        <div class="casilla"><b id="cM">—</b><small>Minutos</small></div>
+        <div class="casilla"><b id="cS">—</b><small>Segundos</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · no siempre se pudo ══════════ -->
+  <section id="pudimos">
+    <div class="centro">
+      <p class="chico ap">Antes de la fiesta</p>
+      <h2 class="ap d1" style="margin-top:12px">No siempre <em>se pudo</em></h2>
+      <p class="bajada ap d2">
+        En Argentina, hasta el 15 de julio de 2010, dos personas como nosotros
+        no se podían casar. Hubo gente que dio esa pelea sin conocernos, para
+        que hoy esto sea, simplemente, una fiesta.
+      </p>
+      <p class="bajada ap d3">Vení a festejarla con nosotros.</p>
+      <div class="espectro ap d4" aria-hidden="true"></div>
+      <p class="fecha-ley ap d4">Ley 26.618 · 15 de julio de 2010</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · nuestra historia ══════════ -->
+  <section id="historia" class="claro" hidden>
+    <div class="centro">
+      <p class="chico ap">Cómo llegamos acá</p>
+      <h2 class="ap d1" style="margin-top:12px">Nuestra <em>historia</em></h2>
+      <div class="linea ap d2" id="linea"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · cuándo y dónde ══════════ -->
+  <section id="donde" class="claro">
+    <div class="centro">
+      <p class="chico ap">Sábado 13 de noviembre de 2027</p>
+      <h2 class="ap d1" style="margin-top:12px">Cuándo <em>y dónde</em></h2>
+      <div class="par">
+        <div class="ficha ap d2">
+          <svg class="ic" viewBox="0 0 48 32" aria-hidden="true">
+            <circle cx="19" cy="16" r="10.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="29" cy="16" r="10.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
+          </svg>
+          <p class="chico">Ceremonia</p>
+          <p class="hora">19:00</p>
+          <h3 id="lugar1">—</h3>
+          <p id="dir1">—</p>
+          <a class="boton linea toque" id="mapa1" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Cómo llegar</span>
+          </a>
+        </div>
+        <div class="ficha ap d3">
+          <svg class="ic" viewBox="0 0 48 32" aria-hidden="true">
+            <path d="M14 6h8l-4 10zM26 6h8l-4 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M18 16v9M30 16v9M14 26h8M26 26h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <p class="chico">Fiesta</p>
+          <p class="hora">21:00</p>
+          <h3 id="lugar2">—</h3>
+          <p id="dir2">—</p>
+          <a class="boton linea toque" id="mapa2" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Cómo llegar</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 · la noche, hora por hora ══════════ -->
+  <section id="noche">
+    <div class="centro">
+      <p class="chico ap">El plan</p>
+      <h2 class="ap d1" style="margin-top:12px">La noche, <em>hora por hora</em></h2>
+      <div class="agenda ap d2" id="agenda"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · dress code ══════════ -->
+  <section id="dress" class="claro">
+    <div class="centro">
+      <p class="chico ap">Cómo vamos</p>
+      <h2 class="ap d1" style="margin-top:12px">Elegante, <em>y cómodo</em></h2>
+      <div class="monos ap d2" aria-hidden="true">
+        <svg viewBox="0 0 80 46"><path d="M8 10 36 23 8 36z" fill="none" stroke="#8A6B35" stroke-width="2" stroke-linejoin="round"/><path d="M72 10 44 23 72 36z" fill="none" stroke="#8A6B35" stroke-width="2" stroke-linejoin="round"/><rect x="34" y="17" width="12" height="12" rx="3" fill="none" stroke="#8A6B35" stroke-width="2"/></svg>
+        <svg viewBox="0 0 80 46"><path d="M8 10 36 23 8 36z" fill="none" stroke="#5E6E7C" stroke-width="2" stroke-linejoin="round"/><path d="M72 10 44 23 72 36z" fill="none" stroke="#5E6E7C" stroke-width="2" stroke-linejoin="round"/><rect x="34" y="17" width="12" height="12" rx="3" fill="none" stroke="#5E6E7C" stroke-width="2"/></svg>
+      </div>
+      <p class="bajada ap d3" id="dressTexto">—</p>
+      <div class="paleta ap d4" id="paleta" aria-label="Colores sugeridos"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 9 · regalo ══════════ -->
+  <section id="regalo">
+    <div class="centro">
+      <p class="chico ap">Si querés</p>
+      <h2 class="ap d1" style="margin-top:12px">Un <em>regalo</em></h2>
+      <p class="bajada ap d2" id="regaloTexto">—</p>
+      <div class="alias ap d3">
+        <small>Alias</small>
+        <b id="alias">—</b>
+        <small id="titular">—</small>
+        <button class="boton linea toque" id="copiar" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+          </svg>
+          <span id="copiarTxt">Copiar alias</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 10 · confirmación ══════════ -->
+  <section id="confirmar" class="claro">
+    <div class="centro">
+      <p class="chico ap">Te esperamos</p>
+      <h2 class="ap d1" style="margin-top:12px">¿Venís?</h2>
+      <p class="bajada ap d2" id="hasta">—</p>
+      <form id="rsvp" class="ap d3" novalidate>
+        <label>Tu nombre y apellido
+          <input name="nombre" id="fNombre" type="text" autocomplete="name" required>
+        </label>
+        <div class="radios">
+          <label><input type="radio" name="asiste" value="si" checked><span>Ahí estoy</span></label>
+          <label><input type="radio" name="asiste" value="no"><span>No voy a poder</span></label>
+        </div>
+        <label>Cuántos son
+          <select name="lugares" id="fLugares">
+            <option value="1">1 persona</option>
+            <option value="2" selected>2 personas</option>
+            <option value="3">3 personas</option>
+            <option value="4">4 personas</option>
+          </select>
+        </label>
+        <label>La canción que no puede faltar
+          <input name="cancion" type="text" placeholder="Artista — tema">
+        </label>
+        <label>Algo que tengamos que saber
+          <textarea name="nota" placeholder="Alguna alergia, si venís con chicos, lo que quieras"></textarea>
+        </label>
+        <button class="boton lleno toque" type="submit" id="enviar">Confirmar</button>
+      </form>
+      <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+      <p class="dato-legal">
+        Lo que dejás acá lo usamos para organizar la fiesta y nada más.
+        Si querés que lo borremos, escribinos.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════ 11 · cierre ══════════ -->
+  <section id="cierre">
+    <div class="centro">
+      <svg class="anillos-port ap" viewBox="0 0 120 80" aria-hidden="true" style="margin:0 auto">
+        <circle cx="46" cy="40" r="26" fill="none" stroke="url(#gOro)" stroke-width="3.4"/>
+        <circle cx="74" cy="40" r="26" fill="none" stroke="url(#gPlata)" stroke-width="3.4"/>
+        <!-- El trocito del anillo de oro que vuelve a pasar POR ENCIMA en el
+             cruce de arriba. Eso es lo que los deja entrelazados de verdad:
+             con una máscara el arco que se recortaba era el equivocado y la
+             plata quedaba mordida, como una medialuna. -->
+        <path d="M52.7 14.9 A26 26 0 0 1 65.9 23.3" fill="none" stroke="url(#gOro)" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+      <h2 class="ap d1" style="margin-top:26px"><span class="union">Mateo &amp; Lucas</span></h2>
+      <p class="bajada ap d2">13 de noviembre de 2027 · Rosario</p>
+      <p class="pie ap d3">
+        Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   Todo lo que cambia de una fiesta a otra está acá arriba y en
+   ningún otro lado. Para hacer otra invitación con este diseño se
+   tocan estas veinte líneas.
+   ══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  novios: "Mateo & Lucas",
+  /* Con la hora LOCAL explícita (-03:00). Mandar una fecha sin zona a
+     una cuenta regresiva la corre tres horas, y eso acá ya costó caro. */
+  ceremonia: "2027-11-13T19:00:00-03:00",
+  fiesta:    "2027-11-13T21:00:00-03:00",
+  confirmarHasta: "10 de octubre",
+
+  lugarCeremonia: "Jardín de la Quinta",
+  dirCeremonia: "Av. del Rosario 2140 · Funes",
+  mapaCeremonia: "https://www.google.com/maps/search/?api=1&query=Funes%2C%20Santa%20Fe",
+
+  lugarFiesta: "Salón La Terraza",
+  dirFiesta: "Mismo predio · se pasa caminando",
+  mapaFiesta: "https://www.google.com/maps/search/?api=1&query=Funes%2C%20Santa%20Fe",
+
+  /* Vacío = no se dibuja la sección. No se inventan fotos de nadie:
+     el día que lleguen las de ellos, se agregan acá y aparece sola.
+       {anio:"2018", texto:"…", foto:"fotos/1.webp"}                  */
+  historia: [],
+
+  cronograma: [
+    {hora:"19:00", que:"Ceremonia",     detalle:"En el jardín, con la última luz."},
+    {hora:"20:00", que:"Brindis",       detalle:"Afuera, mientras se hace de noche."},
+    {hora:"21:00", que:"Cena",          detalle:"A la mesa, todos juntos."},
+    {hora:"23:30", que:"El primer baile", detalle:"Y la torta."},
+    {hora:"00:30", que:"Fiesta",        detalle:"Hasta que aguantemos."},
+    {hora:"04:00", que:"Trasnoche",     detalle:"Algo rico para el final."}
+  ],
+
+  dressTexto: "Elegante. Vení como te sientas mejor: no hay un código para cada uno. Es en pasto hasta la cena, así que ojo con los tacos finos.",
+  dressColores: ["#0B0E13","#3B4350","#6E7B88","#C9A46B","#A8B6C2","#EFE9DD"],
+
+  regaloTexto: "Lo más lindo es que estés. Y si además querés regalarnos algo, nos ayudás con el viaje.",
+  alias: "mateo.lucas.boda",
+  titular: "Mateo Sosa",
+
+  lugaresPorDefecto: 2,
+
+  /* El Apps Script de la planilla. VACÍO = es una muestra: la
+     confirmación se ve entera, se puede completar, y la pantalla
+     dice con todas las letras que no se mandó a ningún lado.
+     Decir "listo" sin haber guardado nada es la mentira de siempre. */
+  endpoint: ""
+};
+
+/* ── atajos ── */
+const $  = (s,c)=>(c||document).querySelector(s);
+const $$ = (s,c)=>[...(c||document).querySelectorAll(s)];
+const esc = t => String(t==null?'':t).replace(/[&<>"']/g,
+  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* La clase .js marca que el JS CORRE. Recién con ella el CSS esconde
+   los bloques que van a aparecer al bajar: sin esto, con el JS caído
+   la invitación quedaría en blanco y no tiraría ningún error. */
+document.documentElement.classList.add('js');
+
+/* ══════════ el sobre ══════════ */
+(function(){
+  const sobre = $('#sobre'), boton = $('#abrir');
+  if(!sobre || !boton) return;
+  document.body.classList.add('cerrado');
+  const abrir = () => {
+    sobre.classList.add('abierto');
+    document.body.classList.remove('cerrado');
+    /* El foco entra a la invitación: si se queda en un botón que ya no
+       está, el que navega con teclado se queda sin punto de partida. */
+    setTimeout(()=>{ try{ $('#portada').setAttribute('tabindex','-1'); $('#portada').focus({preventScroll:true}); }catch(e){} }, 60);
+    setTimeout(()=>{ try{ sobre.remove(); }catch(e){} }, 1000);
+  };
+  boton.addEventListener('click', abrir);
+})();
+
+/* ══════════ lo que sale de CONFIG ══════════ */
+(function(){
+  $('#lugar1').textContent = CONFIG.lugarCeremonia;
+  $('#dir1').textContent   = CONFIG.dirCeremonia;
+  $('#mapa1').href         = CONFIG.mapaCeremonia;
+  $('#lugar2').textContent = CONFIG.lugarFiesta;
+  $('#dir2').textContent   = CONFIG.dirFiesta;
+  $('#mapa2').href         = CONFIG.mapaFiesta;
+  $('#dressTexto').textContent  = CONFIG.dressTexto;
+  $('#regaloTexto').textContent = CONFIG.regaloTexto;
+  $('#alias').textContent   = CONFIG.alias;
+  $('#titular').textContent = CONFIG.titular;
+  $('#hasta').textContent   = 'Avisanos antes del ' + CONFIG.confirmarHasta + '. Con eso cerramos las mesas.';
+
+  $('#paleta').innerHTML = (CONFIG.dressColores||[])
+    .map(c => '<i style="background:' + esc(c) + '"></i>').join('');
+
+  $('#agenda').innerHTML = (CONFIG.cronograma||[]).map(t =>
+    '<div class="tramo"><div class="h">' + esc(t.hora) + '</div>' +
+    '<div><b>' + esc(t.que) + '</b><span>' + esc(t.detalle) + '</span></div></div>').join('');
+
+  /* La historia solo existe si hay algo que contar. Una sección vacía
+     se dibuja perfecta y no dice nada: peor que no estar. */
+  const h = CONFIG.historia || [];
+  if (h.length){
+    $('#historia').hidden = false;
+    $('#linea').innerHTML = h.map(x =>
+      '<div class="hito"><div class="marca"><span class="punto"></span><span class="tallo"></span></div>' +
+      '<div><div class="anio">' + esc(x.anio) + '</div><p>' + esc(x.texto) + '</p>' +
+      (x.foto ? '<figure><img src="' + esc(x.foto) + '" alt="" loading="lazy"></figure>' : '') +
+      '</div></div>').join('');
+  }
+
+  const sel = $('#fLugares');
+  if (sel) sel.value = String(CONFIG.lugaresPorDefecto || 1);
+})();
+
+/* ══════════ la cuenta regresiva ══════════
+   Los días se cuentan en DÍAS DE CALENDARIO de acá, no restando
+   milisegundos: "falta un día" y "faltan 23 horas" no son lo mismo
+   para el que lee, y con toISOString de por medio, pasadas las nueve
+   de la noche en Rosario ya era mañana. */
+(function(){
+  const fin = new Date(CONFIG.ceremonia).getTime();
+  if (isNaN(fin)) return;
+  const d=$('#cD'), h=$('#cH'), m=$('#cM'), s=$('#cS');
+  const dos = n => String(n).padStart(2,'0');
+  function pintar(){
+    let falta = Math.max(0, fin - Date.now());
+    const seg = Math.floor(falta/1000);
+    d.textContent = dos(Math.floor(seg/86400));
+    h.textContent = dos(Math.floor(seg/3600) % 24);
+    m.textContent = dos(Math.floor(seg/60) % 60);
+    s.textContent = dos(seg % 60);
+  }
+  pintar();
+  setInterval(pintar, 1000);
+})();
+
+/* ══════════ aparecer al llegar, y la barra de avance ══════════
+   UN solo oyente de scroll con requestAnimationFrame. Tres oyentes
+   sueltos corriendo en cada píxel es lo que hace que una página se
+   sienta pesada en un teléfono. */
+(function(){
+  const aps = $$('.ap');
+  const menos = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if (menos || !('IntersectionObserver' in window)){
+    aps.forEach(n=>n.classList.add('entro'));
+  } else {
+    const io = new IntersectionObserver((es)=>{
+      es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('entro'); io.unobserve(e.target); } });
+    }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
+    aps.forEach(n=>io.observe(n));
+  }
+
+  const barra = $('#avance');
+  let pedido = false;
+  function alScroll(){
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(()=>{
+      pedido = false;
+      const alto = document.documentElement.scrollHeight - innerHeight;
+      barra.style.width = (alto > 0 ? Math.min(100, (scrollY/alto)*100) : 0) + '%';
+    });
+  }
+  addEventListener('scroll', alScroll, {passive:true});
+  alScroll();
+})();
+
+/* ══════════ copiar el alias ══════════ */
+(function(){
+  const b = $('#copiar'), t = $('#copiarTxt');
+  if(!b) return;
+  b.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(CONFIG.alias);
+      t.textContent = 'Copiado';
+    }catch(e){
+      /* Si el navegador no deja copiar, no se miente: se dice qué hacer. */
+      t.textContent = 'Mantené apretado el alias';
+    }
+    setTimeout(()=>{ t.textContent = 'Copiar alias'; }, 2600);
+  });
+})();
+
+/* ══════════ marcar la opción elegida ══════════
+   El CSS lo hace con :has(), que Safari trae recién desde 2022. En uno
+   más viejo la opción elegida no se marcaba y el invitado no sabía qué
+   había tocado: eso no tira ningún error. La clase lo arregla en todos. */
+(function(){
+  const ls = $$('.radios label');
+  const pintar = () => ls.forEach(l => {
+    const i = $('input', l);
+    l.classList.toggle('elegida', !!(i && i.checked));
+  });
+  ls.forEach(l => $('input', l) && $('input', l).addEventListener('change', pintar));
+  pintar();
+})();
+
+/* ══════════ la confirmación ══════════
+   El POST va en mode:'no-cors', así que NO se puede leer la respuesta.
+   Por eso se vuelve a preguntar: GET ?confirmado=NOMBRE, que contesta
+   sí o no, y recién ahí la pantalla dice "listo".
+   Es la regla más vieja del proyecto: si algo no se guardó, el mensaje
+   no puede decir que sí. */
+(function(){
+  const form = $('#rsvp'), aviso = $('#aviso'), boton = $('#enviar');
+  if(!form) return;
+
+  const decir = (txt, clase) => {
+    aviso.textContent = txt;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  async function llego(nombre){
+    try{
+      const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre), {cache:'no-store'});
+      if(!r.ok) return false;
+      const t = (await r.text()).trim().toLowerCase();
+      return t === 'si' || t === 'sí' || t === 'true' || t === '1';
+    }catch(e){ return false; }
+  }
+
+  form.addEventListener('submit', async (ev)=>{
+    ev.preventDefault();
+    const nombre = ($('#fNombre').value || '').trim();
+    if (nombre.length < 3){ decir('Escribí tu nombre y apellido.', 'mal'); $('#fNombre').focus(); return; }
+
+    if (!CONFIG.endpoint){
+      /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
+      decir('Esto es una invitación de muestra: la confirmación no se manda a ningún lado. En la de verdad, acá te decimos que llegó.', 'bien');
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Mandando…');
+    try{
+      await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:new FormData(form)});
+      await new Promise(r=>setTimeout(r, 1200));
+      if (await llego(nombre)) decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el 13.', 'bien');
+      else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }catch(e){
+      decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }
+    boton.disabled = false;
+  });
+})();
+</script>
+</body>
+</html>
