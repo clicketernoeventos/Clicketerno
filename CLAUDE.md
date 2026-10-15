@@ -2019,9 +2019,15 @@ ya circuló —estaba en el menú y en enlaces de adentro— y un ancla repartid
 no puede quedar muerta. Del menú sí se fue la entrada "Trabajos", que
 llevaba exactamente al mismo lugar que "Invitaciones".
 
-Cinco fichas. **Tres son de clientes** (Key, Xiomara, Pia) y **dos son
-muestras nuestras de casamiento** (`claraybruno/`, `juliayfranco/`), que
-las hizo el chat aparte de invitaciones.
+Seis fichas. **Tres son de clientes** (Key, Xiomara, Pia) y **tres son
+muestras nuestras de casamiento** (`claraybruno/`, `juliayfranco/`,
+`mateoylucas/`).
+
+**Los números NO se escriben a mano.** El renglón que dice cuántas son de
+cada cosa y el título de la pantalla con todas se cuentan de `TRABAJOS`.
+Escritos decían "cinco" el día que pasaron a ser seis — y la sección
+promete *"las mismas que recibieron los invitados"*, así que ahí un número
+que miente es caro. El botón dice "Verlas todas juntas", sin número.
 
 **La primera es un casamiento, y es la única decisión de orden que
 importa.** Eran tres XV seguidos: el que entra buscando para su boda
@@ -2045,6 +2051,91 @@ es un cartel equivocado puesto encima del producto.
 `claraybruno/v2/` **no es un sobrante**: es una redirección al link nuevo,
 porque esa dirección ya circuló y un link repartido no puede quedar
 muerto.
+
+### `mateoylucas/`: la boda de dos hombres
+
+Pedido del dueño (15/10/2026): *"una invitación para una boda gay, que sea
+emotiva y que se trate el tema con emoción y respeto"*, con algo simbólico
+de dos hombres y una frase de amor. Mandó dos referencias: una foto de dos
+novios en blanco y negro, y una tarjeta de stock con dos smokings
+dibujados sobre glitter.
+
+**De las dos, la segunda NO.** Dos smokings dibujados dicen "boda gay" como
+*género*, igual que un cotillón: reemplazan a la pareja por el símbolo de
+la categoría. La foto dice "estos dos". Tratar el tema con respeto es
+exactamente eso, y es la misma regla de siempre dicha de otra forma: el
+cliente no es una categoría.
+
+**La idea, en una línea: dos metales iguales que se encuentran.** Uno es
+oro, el otro plata, y **todo va de a dos y del mismo tamaño** — los
+nombres, los anillos, las columnas de "cuándo y dónde"—. En una invitación
+hétero hay un orden heredado (la novia primero, los padres de cada lado);
+acá cualquier jerarquía sería una declaración, así que no hay ninguna.
+**Eso es lo simbólico de verdad**, cuesta una línea de CSS, y no se lee
+como un adorno: se lee como que está bien hecha.
+
+Lo simbólico, concreto: **dos alianzas idénticas entrelazadas** —no un
+anillo de compromiso y una alianza—, el `&` en el degradé de los dos
+metales, dos moños (uno de cada metal) en el dress code, y **el espectro
+una sola vez**, apagado dentro de la paleta. Dicho una vez es una caricia;
+repetido es un disfraz.
+
+**Lo que NO tiene, a propósito**: caligrafía —es el registro de la novia;
+acá va capitular espaciada y una serif de transición, que es el registro
+del smoking— y **ninguna foto**. No se pueden inventar fotos de dos
+personas que no existen, y poner una de stock como si fueran ellos es
+mentirle al que mira, más el artículo 53. Los huecos quedan cableados en
+`CONFIG.historia`: vacío no dibuja la sección —nada de huecos en blanco— y
+el día que llegan las fotos de una pareja real, aparece sola. **Que la
+pieza se sostenga sin una sola foto es lo que demuestra**: se vende antes
+de que el cliente mande nada.
+
+**La frase es de Walt Whitman** (*Canto del camino abierto*, 1856) y no
+está elegida por bonita: es el poeta del amor entre hombres, murió en 1892
+—así que es de dominio público— y **la traducción es nuestra**, con lo que
+no hay derechos de nadie en el medio (las traducciones publicadas tienen
+los suyos). El verso que importa es el tercero: *"me doy entero, antes que
+cualquier sermón y cualquier ley"*.
+
+**Y tiene una sección que es el corazón de la pieza: "No siempre se
+pudo".** Hasta el 15 de julio de 2010 (Ley 26.618) dos personas como ellos
+no se podían casar en Argentina. Tres renglones, dichos por ellos, sin
+bajada de línea, y termina en *"Vení a festejarla con nosotros"*. Es la
+única sección donde el espectro significa algo y por eso es la única donde
+aparece. **Para una pareja de verdad es opcional**: se saca borrando el
+bloque, y hay que preguntarlo — a algunas les va a encantar y otras van a
+querer que su invitación no hable de eso.
+
+Cuatro cosas que se rompieron armándola, y **ninguna tiraba un error**:
+
+- **Los `<defs>` vivían adentro del SVG del sobre, que se REMUEVE al
+  abrir.** Los anillos de la portada y del cierre apuntan a `url(#gOro)`:
+  se quedaban sin pintura y desaparecían. Un degradé compartido va en un
+  SVG suelto que no se saca nunca.
+- **Los anillos no estaban entrelazados.** La máscara recortaba el arco
+  equivocado —el de un círculo que no era ninguno de los dos— y la plata
+  quedaba mordida como una medialuna. Se arregla sin máscara: los dos
+  círculos enteros y **encima el trocito del de oro** que vuelve a pasar
+  por delante en el cruce de arriba.
+- **El `<select>` repetía la flecha SEIS VECES** encima del texto de la
+  opción. `background` es el ATAJO y resetea `background-repeat`,
+  `-position` y `-size`: la regla de la sección clara, que viene después,
+  le borraba el `no-repeat` a la de arriba. Va `background-color`.
+  Es la enésima versión de *dos reglas para lo mismo, gana la última*.
+- **El botón del sobre latía con un `scale`** y Playwright no lo podía
+  tocar nunca: *"element is not stable"*, treinta segundos colgada contra
+  un botón que está perfecto. El latido va en un halo alrededor
+  (`:after`), no en la caja que se toca.
+
+Medido, no a ojo: **85 textos y ninguno abajo de 3:1** (el peor, 4,24),
+nada abajo de 44px, nada se sale de ancho, la consola limpia —o sea que la
+CSP no bloqueó nada— y **los siete versos entran en una línea a 320, 360,
+390 y 430**. Eso último tiene su propia medición porque los versos van
+cortados a mano: uno partido al medio (*"más precioso que el / dinero"*)
+se lee como un error de maqueta, no como un poema.
+
+Pesa **67 KB entera**, con la imagen de la vista previa incluida, que se
+renderiza con el navegador y no se dibuja a mano.
 
 ### Las cinco juntas
 
