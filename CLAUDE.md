@@ -2134,8 +2134,75 @@ CSP no bloqueó nada— y **los siete versos entran en una línea a 320, 360,
 cortados a mano: uno partido al medio (*"más precioso que el / dinero"*)
 se lee como un error de maqueta, no como un poema.
 
-Pesa **67 KB entera**, con la imagen de la vista previa incluida, que se
-renderiza con el navegador y no se dibuja a mano.
+Pesa **76 KB entera**, con la imagen de la vista previa incluida.
+
+#### Después: la foto, el salón y el calendario
+
+El dueño mandó la foto que había usado de referencia y pidió ponerla, con
+**La Mansión del Rey** de Rosario como lugar y un calendario de "guardá la
+fecha" para 2027.
+
+**La foto se puso y después se SACÓ, y el motivo queda escrito.** Son dos
+personas reales e identificables, sacadas de una captura, y la invitación
+vive en una dirección pública que cualquiera baja y un buscador indexa:
+es el artículo 53, el que está escrito en nuestros propios Términos, y si
+además es de un banco de imágenes, la licencia casi nunca cubre usarla
+como si fueran los novios. Se le dijo al dueño las dos veces que lo pidió
+y la tercera contestó *"sacala entonces"*.
+
+**Lo que NO se tiró es el camino.** La portada con foto quedó entera,
+apagada detrás de `CONFIG.portada`: vacío es la portada tipográfica —que
+se sostiene sola— y con un archivo la portada pasa a ser la foto a
+pantalla completa, con los nombres abajo y su velo. **Es una línea.** El
+`<img>` lo crea el JS y no el HTML: un `<img>` con `src` vacío le pide al
+servidor la página entera de nuevo, y eso no avisa.
+
+**La dirección del salón NO se escribió.** La única fuente que apareció
+era un directorio sin confirmar. Va el nombre y "Rosario · Santa Fe", y el
+mapa busca el salón por su nombre: mandar a los invitados a una calle
+sacada de un directorio dudoso no se arregla la noche de la fiesta.
+
+**El calendario sale de la CADENA de `CONFIG.ceremonia`, no de
+`new Date(...)`.** `new Date("2027-11-13T19:00:00-03:00").getDate()`
+devuelve el día **en el reloj del que mira**: un invitado en Madrid veía
+marcado el 14. La fecha de una fiesta es la del lugar de la fiesta y de
+nadie más. Las cuentas del mes se hacen con `new Date(anio, mes-1, 1)`,
+que se construye por componentes y no mete zona horaria. La semana
+arranca el lunes. El día va marcado con los dos metales y **no con un
+corazón rojo** como la referencia: sería el único rojo de la pieza, y lo
+que la sostiene es que todo va de a dos.
+
+Y tres cosas más que no tiraban ningún error. **Las tres eran de
+medición, no de código**, que es lo que las hace peligrosas:
+
+- **La portada no puede pasar por el observador.** El `IntersectionObserver`
+  descuenta un 12% abajo (`rootMargin`) para que un bloque entre cuando ya
+  se ve bien. La portada mide exactamente una pantalla y su texto quedó
+  abajo: "Rosario · Santa Fe" y "Deslizá" caían DEBAJO de esa raya y no
+  intersecaban nunca — **opacidad 0 para siempre**, y justo "Deslizá" es lo
+  único que avisa que hay más abajo. Lo que ya está en la primera pantalla
+  entra solo, sin esperar a que alguien scrollee.
+- **`visibility:hidden` en el padre esconde también su `::before`.** Para
+  medir el contraste sobre una foto hay que fotografiar el fondo SIN el
+  texto; escondiendo `.port` se escondía además el velo que es justamente
+  lo que hace que el texto se lea. Resultado: el medidor decía 1,09:1
+  sobre un fondo que el visitante no ve nunca, y **cambiar el velo no
+  movía un solo número**. Se esconden los HIJOS. Corregido, los cinco
+  renglones dan entre 6,0 y 8,6:1 en teléfono y en escritorio.
+- **Comparar el ancho del documento contra `innerWidth` no mide nada.** El
+  velo se desborda 60vw por lado a propósito y, sin `overflow:hidden`, la
+  página pasó a medir **578px en vez de 390**: ahí el navegador del
+  teléfono se aleja solo para que entre todo y la invitación entera se ve
+  más chica. Como `innerWidth` ya viene achicado, `ancho == innerWidth` y
+  la comprobación pasaba en verde con la página rota. **Se compara contra
+  el ancho PEDIDO.** Es la regla de la caja de 0x0 otra vez, con el zoom
+  del navegador en el medio.
+
+**El velo del texto va atado al TEXTO, no a un porcentaje de la
+pantalla.** Medido en porcentajes, el renglón de la fecha caía sobre la
+camisa blanca y daba 2,36:1 en el teléfono y 1,29:1 en escritorio: el
+alto del bloque cambia con la pantalla y la raya del degradé no. Pegado al
+bloque (`.port:before`), el piso es el mismo en cualquier aparato.
 
 ### Las cinco juntas
 

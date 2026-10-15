@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mateo &amp; Lucas · Nos casamos</title>
-<meta name="description" content="Mateo y Lucas se casan. Sábado 13 de noviembre de 2027. Invitación de muestra de Click Eterno.">
+<meta name="description" content="Mateo y Lucas se casan. Sábado 13 de noviembre de 2027, en La Mansión del Rey, Rosario. Invitación de muestra de Click Eterno.">
 <meta name="theme-color" content="#0B0E13">
 <meta property="og:title" content="Mateo &amp; Lucas · Nos casamos">
-<meta property="og:description" content="Sábado 13 de noviembre de 2027 · Ceremonia al atardecer, fiesta hasta que aguantemos">
+<meta property="og:description" content="Sábado 13 de noviembre de 2027 · La Mansión del Rey, Rosario">
 <meta property="og:type" content="website">
 <meta property="og:image" content="og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -165,11 +165,60 @@ h3{font-family:var(--serif);font-weight:500;font-size:clamp(23px,5.6vw,28px);lin
 @keyframes late{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.06);opacity:0}}
 .sobre-nombres{font-family:var(--serif);font-size:clamp(30px,8.4vw,42px);line-height:1.15;font-weight:500}
 
-/* ══════════ 1 · portada ══════════ */
+/* ══════════ 1 · portada ══════════
+   La foto manda y el texto va ABAJO, no encima de las caras: eso es lo
+   que separa una portada de una captura con letras puestas arriba.
+   El velo no es decoración, es lo que hace que el texto se LEA: sobre
+   una foto el contraste no se puede calcular como sobre un color, así
+   que hay una medición que le pregunta a los píxeles de verdad qué
+   quedó atrás de cada letra. */
+/* `overflow:hidden` NO es cosmético: el velo del texto se desborda a
+   los costados a propósito (para que no se le vea el borde de la caja)
+   y sin recortarlo la PÁGINA pasa a medir 578px de ancho en vez de 390.
+   Ahí el teléfono se aleja solo para que entre todo y la invitación
+   entera se ve más chica — sin ningún error, y el chequeo de "nada se
+   sale de ancho" lo daba por bueno porque comparaba el ancho del
+   documento contra un innerWidth que ya venía achicado. */
 #portada{min-height:100vh;min-height:100svh;display:grid;place-items:center;
+  position:relative;isolation:isolate;overflow:hidden;
   padding-top:calc(var(--gutter) + 12px);padding-bottom:calc(var(--gutter) + 12px);
   background:radial-gradient(120% 86% at 50% 8%,var(--tinta-3),var(--tinta) 66%)}
-.port{display:grid;gap:clamp(20px,5vh,34px);justify-items:center;text-align:center}
+
+/* ── y la portada CON foto ──
+   Nace apagada. Se enciende sola si `CONFIG.portada` trae un archivo, y
+   entonces el texto se va abajo para no taparle la cara a nadie.
+   Está cableada y sin foto a propósito: la que se había puesto eran dos
+   personas reales sacadas de una captura, y la invitación vive en una
+   dirección pública que cualquiera baja y un buscador indexa (artículo
+   53, el que está escrito en nuestros propios Términos). El día que haya
+   una foto de los novios, o una con licencia, es UNA línea. */
+#portada.con-foto{align-items:end;justify-items:center;background:var(--tinta)}
+.foto-port,.velo-port{display:none}
+#portada.con-foto .foto-port,#portada.con-foto .velo-port{display:block}
+.foto-port{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.foto-port img{width:100%;height:100%;object-fit:cover;
+  /* Las caras están arriba: en una pantalla ancha `cover` recorta por
+     arriba y por abajo, y sin esto les corta la frente. */
+  object-position:50% 22%}
+/* El velo de la pantalla entera es para el clima: baja la foto y la
+   funde con el negro de la sección siguiente. */
+.velo-port{position:absolute;inset:0;z-index:-1;background:
+  linear-gradient(180deg,rgba(11,14,19,.5) 0%,rgba(11,14,19,.1) 26%,
+    rgba(11,14,19,.5) 58%,rgba(11,14,19,.78) 82%,var(--tinta) 100%)}
+.port{display:grid;gap:clamp(13px,2.6vh,22px);justify-items:center;text-align:center;
+  position:relative}
+/* Y ÉSTE es el que hace que se lea, y va atado al TEXTO y no a un
+   porcentaje de la pantalla. Con el velo medido en porcentajes, el
+   renglón de la fecha caía sobre la camisa blanca —2,36:1 en el
+   teléfono y 1,29:1 en escritorio, o sea que no estaba— porque el alto
+   del bloque cambia con la pantalla y la raya del degradé no. Pegado al
+   bloque, el piso es el mismo en cualquier aparato. Se desborda para
+   los costados para que no se vea el borde de una caja. */
+.port:before{content:'';position:absolute;z-index:-1;pointer-events:none;
+  display:none;left:-60vw;right:-60vw;top:-170px;bottom:-240px;
+  background:linear-gradient(180deg,transparent 0%,rgba(11,14,19,.5) 11%,
+    rgba(11,14,19,.9) 21%,rgba(11,14,19,.97) 46%,var(--tinta) 100%)}
+#portada.con-foto .port:before{display:block}
 /* Los dos nombres, del MISMO tamaño y del mismo peso. Es la decisión
    que más dice de toda la pieza, y es una línea de CSS. */
 .nombres{font-family:var(--serif);font-weight:500;line-height:1.02;
@@ -197,7 +246,31 @@ h3{font-family:var(--serif);font-weight:500;font-size:clamp(23px,5.6vw,28px);lin
 .firma{margin-top:22px;font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;
   font-weight:600;color:var(--oro)}
 
-/* ══════════ 3 · la cuenta ══════════ */
+/* ══════════ 3 · guardá la fecha: el calendario ══════════
+   Una tarjeta de papel sobre el negro. El día va marcado con los dos
+   metales y no con un corazón rojo: el rojo sería el único de toda la
+   pieza, y lo que la sostiene es que todo va de a dos. */
+.calen{background:var(--hueso);color:var(--tinta);border-radius:16px;
+  padding:clamp(18px,5vw,26px) clamp(14px,4vw,22px);
+  max-width:340px;margin:32px auto 0;font-family:var(--serif)}
+.calen .mes{text-align:center;font-size:clamp(16px,4.4vw,19px);letter-spacing:.2em;
+  text-transform:uppercase;font-weight:500}
+.calen table{width:100%;border-collapse:collapse;margin-top:14px}
+.calen th{font-size:clamp(10.5px,2.9vw,12px);font-weight:500;padding:4px 0 8px;
+  color:#5B606A;letter-spacing:.06em;text-transform:uppercase;font-family:var(--sans)}
+.calen td{text-align:center;padding:clamp(3px,1.1vw,6px) 0;
+  font-size:clamp(14px,3.9vw,16.5px);font-variant-numeric:tabular-nums;line-height:1}
+.calen td i{display:inline-grid;place-items:center;font-style:normal;
+  width:clamp(26px,7.2vw,32px);height:clamp(26px,7.2vw,32px)}
+.calen .elDia i{border-radius:50%;font-weight:600;color:#15120C;
+  background:linear-gradient(135deg,var(--oro),#E6D8BC 52%,var(--plata))}
+.calen .corte{border:0;border-top:1px dashed rgba(11,14,19,.3);margin:16px 0 14px}
+.calen .guarda{text-align:center;font-family:var(--sans);font-size:10.5px;
+  letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:#5B606A}
+.calen .dia-largo{text-align:center;font-size:clamp(22px,6vw,27px);
+  letter-spacing:.04em;margin-top:7px;font-weight:500}
+
+/* ══════════ 3b · la cuenta ══════════ */
 .reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2.6vw,16px);
   margin-top:34px}
 .casilla{border:1px solid rgba(244,240,232,.14);border-radius:14px;
@@ -391,6 +464,8 @@ form .boton{justify-self:center;margin-top:6px;width:100%;max-width:300px}
 
   <!-- ══════════ 1 · portada ══════════ -->
   <section id="portada">
+    <div class="foto-port"></div>
+    <div class="velo-port" aria-hidden="true"></div>
     <div class="port">
       <p class="chico ap">Sábado 13 de noviembre · 2027</p>
       <h1 class="nombres ap d1">
@@ -442,9 +517,10 @@ form .boton{justify-self:center;margin-top:6px;width:100%;max-width:300px}
   <!-- ══════════ 3 · la cuenta ══════════ -->
   <section id="cuenta">
     <div class="centro">
-      <p class="chico ap">Falta poco</p>
+      <p class="chico ap">Guardá la fecha</p>
       <h2 class="ap d1" style="margin-top:12px">Ya casi <em>es el día</em></h2>
-      <div class="reloj ap d2" id="reloj" aria-live="off">
+      <div class="calen ap d2" id="calendario"></div>
+      <div class="reloj ap d3" id="reloj" aria-live="off">
         <div class="casilla"><b id="cD">—</b><small>Días</small></div>
         <div class="casilla"><b id="cH">—</b><small>Horas</small></div>
         <div class="casilla"><b id="cM">—</b><small>Minutos</small></div>
@@ -637,13 +713,27 @@ const CONFIG = {
   fiesta:    "2027-11-13T21:00:00-03:00",
   confirmarHasta: "10 de octubre",
 
-  lugarCeremonia: "Jardín de la Quinta",
-  dirCeremonia: "Av. del Rosario 2140 · Funes",
-  mapaCeremonia: "https://www.google.com/maps/search/?api=1&query=Funes%2C%20Santa%20Fe",
+  /* La ceremonia y la fiesta son en el MISMO lugar, así que el invitado
+     no tiene que moverse. La calle y el número van cuando los tengamos
+     confirmados: una dirección sacada de un directorio dudoso manda a
+     los invitados a cualquier parte, y eso no se arregla el día de la
+     fiesta. El mapa, mientras tanto, busca el salón por su nombre. */
+  lugarCeremonia: "La Mansión del Rey",
+  dirCeremonia: "Rosario · Santa Fe",
+  mapaCeremonia: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Rosario%2C%20Santa%20Fe",
 
-  lugarFiesta: "Salón La Terraza",
-  dirFiesta: "Mismo predio · se pasa caminando",
-  mapaFiesta: "https://www.google.com/maps/search/?api=1&query=Funes%2C%20Santa%20Fe",
+  lugarFiesta: "La Mansión del Rey",
+  dirFiesta: "En el mismo salón · no hay que moverse",
+  mapaFiesta: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Rosario%2C%20Santa%20Fe",
+
+  /* La foto de la portada. VACÍA = portada tipográfica, que es como está
+     hoy y se sostiene sola. Con un archivo de esta carpeta
+     (ej: "fotos/ellos.webp") la portada pasa a ser la foto a pantalla
+     completa, con los nombres abajo. No se pone una foto de stock como si
+     fueran los novios: son personas reales, esto queda publicado, y es el
+     artículo 53. */
+  portada: "",
+  portadaAlt: "",
 
   /* Vacío = no se dibuja la sección. No se inventan fotos de nadie:
      el día que lleguen las de ellos, se agregan acá y aparece sola.
@@ -704,6 +794,16 @@ document.documentElement.classList.add('js');
 
 /* ══════════ lo que sale de CONFIG ══════════ */
 (function(){
+  /* La portada con foto se enciende sola. El <img> se crea acá y no en el
+     HTML: un <img> con src vacío le pide al servidor la página entera de
+     nuevo, y eso no avisa. */
+  if (CONFIG.portada){
+    $('#portada').classList.add('con-foto');
+    $('.foto-port').innerHTML =
+      '<img src="' + esc(CONFIG.portada) + '" alt="' + esc(CONFIG.portadaAlt || '') +
+      '" fetchpriority="high">';
+  }
+
   $('#lugar1').textContent = CONFIG.lugarCeremonia;
   $('#dir1').textContent   = CONFIG.dirCeremonia;
   $('#mapa1').href         = CONFIG.mapaCeremonia;
@@ -739,6 +839,53 @@ document.documentElement.classList.add('js');
   if (sel) sel.value = String(CONFIG.lugaresPorDefecto || 1);
 })();
 
+/* ══════════ el calendario de "guardá la fecha" ══════════
+   El día y el mes salen de la CADENA de CONFIG, no de `new Date(...)`.
+   Un `new Date("2027-11-13T19:00:00-03:00").getDate()` devuelve el día
+   EN EL RELOJ DEL QUE MIRA: un invitado en Madrid veía marcado el 14.
+   La fecha de una fiesta es la del lugar de la fiesta y de nadie más.
+   La semana arranca el lunes, como el calendario de la pared de acá. */
+(function(){
+  const caja = $('#calendario');
+  if(!caja) return;
+  const m = String(CONFIG.ceremonia).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m){ caja.remove(); return; }
+  const anio = +m[1], mes = +m[2], dia = +m[3];
+
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio',
+                 'Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DIAS  = ['L','M','M','J','V','S','D'];
+
+  /* Cuentas de calendario puras: se construye con componentes, así que
+     no hay zona horaria de por medio. getDay() da 0=domingo; se corre
+     para que la columna 0 sea el lunes. */
+  const primero = (new Date(anio, mes-1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(anio, mes, 0).getDate();
+
+  let celdas = [];
+  for(let i=0;i<primero;i++) celdas.push('');
+  for(let d=1;d<=cuantos;d++) celdas.push(d);
+  while(celdas.length % 7) celdas.push('');
+
+  let filas = '';
+  for(let i=0;i<celdas.length;i+=7){
+    filas += '<tr>' + celdas.slice(i,i+7).map(d =>
+      d === '' ? '<td></td>'
+               : '<td' + (d===dia ? ' class="elDia"' : '') + '><i>' + d + '</i></td>'
+    ).join('') + '</tr>';
+  }
+
+  const dd = String(dia).padStart(2,'0'), mm = String(mes).padStart(2,'0');
+  caja.innerHTML =
+    '<p class="mes">' + MESES[mes-1] + ' ' + anio + '</p>' +
+    '<table role="presentation"><thead><tr>' +
+      DIAS.map(d => '<th>' + d + '</th>').join('') +
+    '</tr></thead><tbody>' + filas + '</tbody></table>' +
+    '<hr class="corte">' +
+    '<p class="guarda">Guardá la fecha</p>' +
+    '<p class="dia-largo">' + dd + '.' + mm + '.' + anio + '</p>';
+})();
+
 /* ══════════ la cuenta regresiva ══════════
    Los días se cuentan en DÍAS DE CALENDARIO de acá, no restando
    milisegundos: "falta un día" y "faltan 23 horas" no son lo mismo
@@ -771,10 +918,25 @@ document.documentElement.classList.add('js');
   if (menos || !('IntersectionObserver' in window)){
     aps.forEach(n=>n.classList.add('entro'));
   } else {
+    /* ── LA PORTADA NO PASA POR EL OBSERVADOR ──
+       El observador descuenta un 12% abajo (rootMargin), o sea unos 100px
+       en un teléfono, para que un bloque entre cuando ya se ve bien y no
+       asomando. Pero la portada mide exactamente una pantalla y su texto
+       va abajo: "Rosario · Santa Fe" y "Deslizá" caían DEBAJO de esa raya
+       y no intersecaban nunca. Quedaban en opacidad 0 para siempre, sin
+       un solo error — y justo "Deslizá" es lo único que avisa que hay más
+       abajo. Lo que ya está en la primera pantalla no tiene que esperar a
+       que alguien scrollee: entra solo. */
     const io = new IntersectionObserver((es)=>{
       es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('entro'); io.unobserve(e.target); } });
     }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
-    aps.forEach(n=>io.observe(n));
+    const portada = document.getElementById('portada');
+    aps.forEach(n=>{
+      if (portada && portada.contains(n)) return;
+      io.observe(n);
+    });
+    /* En el cuadro siguiente, para que la transición se vea igual. */
+    requestAnimationFrame(()=>$$('#portada .ap').forEach(n=>n.classList.add('entro')));
   }
 
   const barra = $('#avance');
