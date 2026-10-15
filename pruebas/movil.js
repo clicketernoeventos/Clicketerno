@@ -165,16 +165,22 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     if(orden[0]!=='app')
       mal('la presentación no es lo primero: '+orden.slice(0,3).join(' · '));
     else bien('los tres andando son la primera sección');
-    const piezas=await p.$$eval('#app .pieza',ns=>ns.map(n=>
-      (n.querySelector('.pie-p b')||{}).textContent||'?'));
-    if(piezas.length!==3) mal(`la presentación tiene ${piezas.length} piezas, no 3`);
-    else bien('están las tres: '+piezas.join(' · '));
-    /* Que cada una se toque y abra su demostración. */
-    const abren=await p.$$eval('#app .pieza[data-abrir]',ns=>ns.map(n=>n.dataset.abrir));
-    if(abren.length!==3) mal('alguna pieza no abre nada: '+abren.join(', '));
-    else bien('las tres abren su prueba: '+abren.join(' · '));
+    const tarjetas=await p.$$eval('.servicios .serv[data-prueba]',
+      ns=>ns.map(n=>n.dataset.prueba));
+    if(tarjetas.length!==3) mal(`la presentación tiene ${tarjetas.length} tarjetas, no 3`);
+    else bien('están las tres: '+tarjetas.join(' · '));
+    /* Que cada tarjeta tenga su panel con el servicio ANDANDO. Una tarjeta
+       que abre un panel de texto no es la prueba del servicio. */
+    for(const cual of tarjetas){
+      const hay=await p.locator('#pr-'+cual+' .vivo[data-vivo]').count();
+      if(!hay) mal(`la tarjeta de ${cual} no tiene su prueba andando`);
+      else bien(`${cual} abre su prueba`);
+    }
+    /* Y que lo que cada prueba carga exista: un marco que da 404 se queda
+       en la portada dibujada y el cliente ve un dibujo, sin ningún error. */
+    const abren=await p.$$eval('.prueba .vivo[data-vivo]',ns=>ns.map(n=>n.dataset.vivo));
     for(const d of abren){
-      const r=await p.request.get(BASE+'/'+d.split('?')[0].replace(/\/$/,'/'));
+      const r=await p.request.get(BASE+'/'+d.split('?')[0]);
       if(!r.ok()) mal(`${d} da ${r.status()}`);
       else bien(`${d} abre (${r.status()})`);
     }
@@ -183,17 +189,19 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     if(anchoDoc>TELEFONO.width+1)
       mal(`la página se va de ancho: ${anchoDoc}px en ${TELEFONO.width}`);
     else bien('nada se sale de ancho');
-    for(const sel of ['#app .pieza.sala','#app .pieza.tel']){
-      const c=await caja(p,sel);
-      if(!dentro({...c,y:0,y2:1},TELEFONO)) mal(`${sel} se sale de la pantalla`);
-      else bien(`${sel} entra a lo ancho`);
+    for(const cual of tarjetas){
+      const c=await caja(p,'.servicios .serv[data-prueba="'+cual+'"]');
+      if(!dentro({...c,y:0,y2:1},TELEFONO)) mal(`la tarjeta de ${cual} se sale de la pantalla`);
+      else bien(`la tarjeta de ${cual} entra a lo ancho`);
     }
     /* ── y al tocarlas, que se vean ──
        El visor abría la demostración adentro de una maqueta apaisada de
        367x206 en un iPhone: la app de adentro creía que ESE era el tamaño
        de la pantalla y se le apilaba todo encima, ilegible. En un teléfono
        el visor tiene que ser la pantalla entera. */
-    await p.evaluate(()=>document.querySelectorAll('#app .pieza')[0].click());
+    await p.evaluate(()=>document.querySelector('.serv[data-prueba="muro"]').click());
+    await p.waitForTimeout(500);
+    await p.locator('#pr-muro [data-abrir-demo]').click();
     await p.waitForTimeout(2500);
     /* No se llama "caja": así se llama la función que mide, y el nombre la
        tapaba entera ("Cannot access 'caja' before initialization"). */

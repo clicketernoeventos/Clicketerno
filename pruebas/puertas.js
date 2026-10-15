@@ -471,14 +471,14 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     await p.close(); await ctx4.close();
   }
 
-  /* ══ LA VITRINA DEL INICIO ══
-     Decisión del dueño: la vitrina puede proyectar una fiesta de verdad en
+  /* ══ EL MURO ANDANDO EN EL INICIO ══
+     Decisión del dueño: el marco de la prueba del muro puede proyectar una fiesta de verdad en
      vez de la demostración inventada. Se controla con una sola constante,
      MUESTRA_MURO. Lo que se mide es que esa constante mande de verdad —en
      las dos direcciones— y que lo que se VE y lo que se ABRE al tocar sean
      la misma fiesta: si no, el cliente toca lo que le gustó y le abre otra
      cosa. */
-  titulo('la vitrina del inicio');
+  titulo('el muro andando en el inicio');
   {
     /* Las DOS ramas se fuerzan interceptando el HTML. Leer el valor que hoy
        está publicado sería atar la prueba a una decisión comercial: el día
@@ -496,10 +496,15 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(1200);
       const v = await p.evaluate(() => {
-        const n = document.getElementById('vitrinaMuro');
-        const pieza = n && n.closest('[data-abrir]');
-        const t = document.getElementById('txtVitrina');
-        return n ? { vivo: n.dataset.vivo, abre: pieza ? pieza.dataset.abrir : '',
+        /* La vitrina se fundió con los servicios: el marco que proyecta la
+           fiesta de verdad es el de la PRUEBA del muro, y lo que se abre al
+           tocar es su botón "Probarlo entero". */
+        const n = document.querySelector('#pr-muro .vivo');
+        const b = document.querySelector('#pr-muro [data-abrir-demo]');
+        /* Por id: el eyebrow también es un <p> hijo directo de .pr-texto y
+           es el primero, así que `.pr-texto>p` medía el rótulo. */
+        const t = document.getElementById('txtMuroPrueba');
+        return n ? { vivo: n.dataset.vivo, abre: b ? b.dataset.abrirDemo : '',
                      texto: t ? t.textContent : '' } : null;
       });
       await ctx.close();
@@ -507,10 +512,10 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     };
 
     const solo = await conCodigo('');
-    if (!solo) mal('no encontré la vitrina del muro en el inicio');
+    if (!solo) mal('no encontré el marco del muro en la prueba del servicio');
     else if (!/demo=1/.test(solo.vivo))
-      mal(`sin código, la vitrina no cae en la demostración: "${solo.vivo}"`);
-    else bien('sin código puesto, la vitrina muestra la demostración');
+      mal(`sin código, el marco no cae en la demostración: "${solo.vivo}"`);
+    else bien('sin código puesto, el marco muestra la demostración');
     if (solo && !/inventada/i.test(solo.texto || ''))
       mal('sin código, el texto dejó de avisar que la fiesta es inventada');
     else if (solo) bien('y el texto avisa que la fiesta es inventada');
@@ -533,7 +538,10 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       await p.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(1800);
       const como = cod ? 'con una fiesta de verdad' : 'con la demostración';
-      await p.click('.vitrina .pieza.sala[data-abrir]').catch(() => {});
+      await p.evaluate(() =>
+        document.querySelector('.serv[data-prueba="muro"]').click()).catch(() => {});
+      await p.waitForTimeout(600);
+      await p.click('#pr-muro [data-abrir-demo]').catch(() => {});
       await p.waitForTimeout(2600);
       const abrio = await p.evaluate(() =>
         document.getElementById('visor').classList.contains('abierto'));
@@ -554,13 +562,13 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
     }
 
     const real = await conCodigo('QUI-MUESTRA');
-    if (!real) mal('no encontré la vitrina con el código puesto');
+    if (!real) mal('no encontré el marco con el código puesto');
     else {
       if (!/pantalla\/QUI-MUESTRA/.test(real.vivo) || /demo=1/.test(real.vivo))
-        mal(`con el código puesto la vitrina no proyecta esa fiesta: "${real.vivo}"`);
-      else bien('con el código puesto, la vitrina proyecta esa fiesta');
+        mal(`con el código puesto el marco no proyecta esa fiesta: "${real.vivo}"`);
+      else bien('con el código puesto, el marco proyecta esa fiesta');
       if (!/marco=1/.test(real.vivo))
-        mal('la vitrina no va en modo marco: le van a aparecer los botones de la sala');
+        mal('el marco no va en modo marco=1: le van a aparecer los botones de la sala');
       else bien('y va en modo marco, sin los botones de la sala');
       /* El toque abre la DEMOSTRACIÓN aunque el marco muestre una fiesta de
          verdad: la lupa dice "Probar el muro" y en una fiesta real no hay

@@ -260,15 +260,44 @@ async function abrir(ctx) {
 
   /* ── 4 ter · la app andando adentro de la página de inicio ── */
   {
-    console.log('\n── la vitrina de la página de inicio ──');
+    console.log('\n── la prueba de cada servicio en la página de inicio ──');
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const { pg, espia } = await abrir(ctx);
+    /* El marco del muro proyecta la fiesta de verdad que diga MUESTRA_MURO,
+       y acá lo que se mide es la DEMOSTRACIÓN. Se vacía la constante
+       interceptando el HTML, igual que en puertas.js: leer el valor
+       publicado sería atar esta suite a una decisión comercial — el día
+       que el negocio cambia de fiesta de muestra, el marco apunta a
+       producción, que desde acá no responde, y esto fallaría sin que nada
+       se haya roto. */
+    await pg.route(`${BASE}/index.html`, async (r) => {
+      const res = await r.fetch();
+      const html = (await res.text())
+        .replace(/const MUESTRA_MURO='[^']*';/, "const MUESTRA_MURO='';");
+      await r.fulfill({ response: res, body: html });
+    });
     await pg.goto(`${BASE}/index.html`, { waitUntil: 'domcontentloaded' });
     await pg.waitForTimeout(800);
-    await pg.evaluate(() => document.querySelector('.vitrina').scrollIntoView({ block: 'center' }));
-    await pg.waitForTimeout(12000);
+    /* La vitrina ya no existe: mostraba los mismos tres productos que
+       abren las tarjetas de servicio, con 1,7 pantallas de distancia. Lo
+       que se mide sigue siendo lo mismo —que los tres marcos traigan la
+       app de verdad y no un 404— pero ahora hay que ABRIR cada tarjeta,
+       porque sus marcos nacen apagados a propósito. */
+    await pg.evaluate(() => document.querySelector('.servicios').scrollIntoView({ block: 'center' }));
+    await pg.waitForTimeout(600);
+    for (const cual of ['muro', 'rollo', 'invitaciones']) {
+      await pg.evaluate((c) => document.querySelector(`.serv[data-prueba="${c}"]`).click(), cual);
+      await pg.waitForTimeout(300);
+    }
+    await pg.evaluate(() => document.querySelectorAll('.prueba').forEach((x) => { x.hidden = false; }));
+    await pg.evaluate(() => document.querySelectorAll('.prueba .vivo')
+      .forEach((c) => window.prenderVivo && window.prenderVivo(c)));
+    await pg.waitForTimeout(14000);
 
-    const marcos = await pg.evaluate(() => [...document.querySelectorAll('#app .vivo')].map(v => {
+    const marcos = await pg.evaluate(() => ['muro', 'rollo', 'invitaciones']
+      .map((c) => document.querySelector('#pr-' + c + ' .vivo'))
+      .map(v => {
+      if (!v) return { falta: true };
       const f = v.querySelector('iframe');
       if (!f) return { falta: true };
       let dentro = '';
@@ -279,26 +308,23 @@ async function abrir(ctx) {
                alto: Math.round(f.getBoundingClientRect().height) };
     }));
     afirmar(marcos.length === 3 && marcos.every(m => !m.falta && m.listo),
-      'los tres marcos de la vitrina se encienden (muro, rollo e invitación)',
+      'los tres marcos de las pruebas se encienden (muro, rollo e invitación)',
       JSON.stringify(marcos.map(m => m.src)));
     afirmar(marcos.every(m => !/404|File not found|Error code/i.test(m.dentro)),
       'y traen la app, no un 404',
       'ojo: /muro y /rollo son direcciones limpias; el servidor de pruebas tiene que resolverlas como Cloudflare');
-    afirmar((marcos[0] || {}).dentro && /delfina/i.test(marcos[0].dentro),
-      'en la notebook se ve el muro proyectado', (marcos[0] || {}).dentro);
+    afirmar((marcos[0] || {}).dentro && /delfina|15 de/i.test(marcos[0].dentro),
+      'en la prueba del muro se ve la pantalla del salón proyectando', (marcos[0] || {}).dentro);
     afirmar((marcos[1] || {}).dentro && /revel/i.test(marcos[1].dentro),
-      'en el primer celular se ve el álbum del rollo', (marcos[1] || {}).dentro);
+      'en la del rollo, el álbum', (marcos[1] || {}).dentro);
     afirmar((marcos[2] || {}).dentro && /invitad/i.test(marcos[2].dentro),
-      'y en el segundo, una invitación', (marcos[2] || {}).dentro);
+      'y en la de invitaciones, una invitación', (marcos[2] || {}).dentro);
     afirmar(marcos.every(m => m.cinta === 0),
       'adentro del marco no va la cinta de demostración: es una vidriera, no algo para tocar');
 
     /* Al tocar se agranda ACÁ, no en otra pestaña: el visitante prueba y
        vuelve con la X sin perderse del sitio. */
-    /* `.vitrina` adelante: desde que la prueba de cada servicio dibuja su
-       propio aparato, `.pieza.sala` suelto encuentra dos. Un selector que
-       se vuelve ambiguo no falla por lo que mide: revienta. */
-    await pg.locator('.vitrina .pieza.sala').click();
+    await pg.locator('#pr-muro [data-abrir-demo]').click();
     await pg.waitForTimeout(4000);
     const visor = await pg.evaluate(() => {
       const v = document.getElementById('visor');
