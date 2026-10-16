@@ -6,11 +6,13 @@
 #     bash video/armar.sh muro           -> video/muro-en-vivo.mp4
 #     bash video/armar.sh invitaciones   -> video/invitaciones.mp4
 #     bash video/armar.sh reel           -> video/reel-invitaciones.mp4
-#     bash video/armar.sh                -> los cuatro
+#     bash video/armar.sh vivo           -> video/muro-vivo-comercial.mp4
+#     bash video/armar.sh                -> los cinco
 #
-# El reel es el unico con musica: se compone y se sintetiza con
-# video/musica.py, sin samples, y dura exactamente lo mismo que el
-# video (8 compases a 128 BPM = 15,000 s).
+# El reel y el comercial del muro llevan musica: se compone y se
+# sintetiza sin samples (video/musica.py y video/musica-vivo.py), y dura
+# exactamente lo mismo que el video — el reel 8 compases a 128 BPM
+# (15,000 s) y el comercial 13 compases a 120 BPM (26,000 s).
 #
 # El de invitaciones usa capturas de pia/nueva, la invitacion de verdad
 # que esta en el repo, asi que primero levanta el servidor de pruebas y
@@ -84,6 +86,27 @@ if [ "$QUE" = "muro" ] || [ "$QUE" = "todos" ]; then
   BASE="http://127.0.0.1:$PUERTO" node capturar-muro.js
   if [ -n "$LEVANTE" ]; then pkill -f "servidor.py $PUERTO" 2>/dev/null || true; fi
   armar_uno muro muro-en-vivo.mp4
+fi
+
+if [ "$QUE" = "vivo" ] || [ "$QUE" = "todos" ]; then
+  # El comercial del Muro en vivo. El contenido son las DIEZ fotos de
+  # demo/ —las mismas que ya se publican con el sitio— y las pantallas
+  # de app son capturas de verdad sacadas por capturar-muro.js, igual
+  # que el video del muro. Las dos cosas las incrusta montar.py.
+  PUERTO=8097
+  LEVANTE=""
+  if ! (command -v ss >/dev/null && ss -ltn 2>/dev/null | grep -q ":$PUERTO "); then
+    (cd .. && python3 pruebas/servidor.py "$PUERTO" >/dev/null 2>&1 &)
+    sleep 2
+    LEVANTE="si"
+  fi
+  if [ ! -f img-muro/sala.ancha.full.jpg ]; then
+    echo "  capturando las pantallas del muro..."
+    BASE="http://127.0.0.1:$PUERTO" node capturar-muro.js
+  fi
+  if [ -n "$LEVANTE" ]; then pkill -f "servidor.py $PUERTO" 2>/dev/null || true; fi
+  python3 musica-vivo.py musica-vivo.wav
+  CRF=21 armar_uno vivo muro-vivo-comercial.mp4 musica-vivo.wav
 fi
 
 if [ "$QUE" = "reel" ] || [ "$QUE" = "todos" ]; then

@@ -45,6 +45,31 @@ for ruta in sorted(glob.glob('fotos/*')):
 js = 'window.__FOTOS=' + json.dumps(fotos) + ';\n' + js
 if fotos:
     print(f'  {len(fotos)} foto(s) de verdad incrustadas')
+
+# Las DIEZ fotos de demo/, que son las que ya se publican con el sitio y
+# las que ve cualquiera que entre a "Probar la demostración". El
+# comercial del muro las usa como contenido: son fotos de verdad de una
+# fiesta de verdad, no stock. Van aparte de window.__FOTOS —que es la
+# carpeta privada video/fotos/, gitignoreada— porque son dos conjuntos
+# con dos permisos distintos y mezclarlos sería perder cuál es cuál.
+demo = []
+for ruta in sorted(glob.glob('../demo/*')):
+    ext = os.path.splitext(ruta)[1].lower()
+    if ext not in TIPOS:
+        continue
+    with open(ruta, 'rb') as f:
+        demo.append(f'data:image/{TIPOS[ext]};base64,' + base64.b64encode(f.read()).decode())
+js = 'window.__DEMO=' + json.dumps(demo) + ';\n' + js
+if demo:
+    print(f'  {len(demo)} foto(s) de demo/ incrustadas')
+
+# La marca, para el cierre. Incrustada y no por ruta porque render.js
+# abre la pagina con file:// y una relativa a veces no resuelve.
+marca = ''
+if os.path.exists('../marca.webp'):
+    with open('../marca.webp', 'rb') as f:
+        marca = 'data:image/webp;base64,' + base64.b64encode(f.read()).decode()
+js = 'window.__MARCA=' + json.dumps(marca) + ';\n' + js
 open('escena.html', 'w', encoding='utf-8').write(
     '<!doctype html><meta charset="utf-8"><title>Click Eterno</title>\n'
     '<style>' + css + '\n'
