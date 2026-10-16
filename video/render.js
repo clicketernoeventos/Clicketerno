@@ -33,7 +33,12 @@ const AUDIO = process.argv[3] || '';
   const args = ['-y', '-f', 'image2pipe', '-framerate', String(fps), '-i', 'pipe:0'];
   if (AUDIO) args.push('-i', AUDIO);
   args.push(
-    '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
+    /* El CRF se puede subir por pieza (CRF=21 en el entorno). El
+       comercial del muro lleva grano en todos los cuadros y el grano es
+       ruido: con el 18 de siempre salia de 21 MB, y WhatsApp —que es por
+       donde se manda— no pasa de 16. El resto de las piezas se queda en
+       18, que es donde estan medidas. */
+    '-c:v', 'libx264', '-preset', 'medium', '-crf', String(process.env.CRF || 18),
     '-pix_fmt', 'yuv420p',                 // sin esto no se ve en iPhone
     '-movflags', '+faststart');            // arranca antes al subirlo
   if (AUDIO) args.push('-c:a', 'aac', '-b:a', '256k', '-shortest');

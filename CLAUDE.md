@@ -1523,6 +1523,7 @@ Se rehacen con `bash video/armar.sh <cual>` y tardan uno o dos minutos.
 | `muro` | `muro-en-vivo.mp4` | el muro en vivo, 28 s |
 | `invitaciones` | `invitaciones.mp4` | la invitación digital, 24 s |
 | `reel` | `reel-invitaciones.mp4` | el reel con música, 15 s (ver `video/DECISIONES.md`) |
+| `vivo` | `muro-vivo-comercial.mp4` | el comercial del muro, vertical, 26 s con música |
 
 **Las pantallas no se dibujan: se capturan de la app de verdad.** Mostrar
 una pantalla que no existe como si existiera es mentirle al cliente.
@@ -1559,6 +1560,74 @@ verdad. Esa carpeta está en `.gitignore` —fotos de gente no se versionan—
 y si está vacía las dos escenas dibujan manchas de luz y la pieza se arma
 igual, más fea. No confundirla con `demo/`, que sí se publica y es otra
 cosa.
+
+### El comercial del muro (`vivo`)
+
+Pedido del dueño: una pieza **premium y de ritmo rápido**, vertical, para
+Reels, TikTok y las pantallas de los salones, con las fotos **de verdad
+que ya están en la demostración del sitio** — con todas las letras: *"no
+las reemplaces por stock"*.
+
+Son 26 s exactos (13 compases a 120 BPM) y el guion va en escenas con sus
+tiempos escritos arriba en `escena-vivo.js`: negro total y un pulso, las
+primeras fotos entrando de a una, la pantalla del invitado, la **captura
+de verdad de la pantalla del salón**, el mosaico armándose, el riser, el
+golpe —*"Tus momentos. En vivo."* y *"Todos comparten. Todos lo viven."*—
+y la marca centrada con *"El muro en vivo de tu evento."* y el llamado
+*"Vivilo en tiempo real."*
+
+**El contenido son las diez fotos de `demo/`, no las de `video/fotos/`.**
+Son dos conjuntos con dos permisos distintos y por eso viajan por dos
+variables distintas (`window.__DEMO` y `window.__FOTOS`): `demo/` ya se
+publica con el sitio y es lo que ve cualquiera que entre a "Probar la
+demostración"; `video/fotos/` es una fiesta de un cliente y está en
+`.gitignore`. Mezclarlas en una sola lista sería perder cuál es cuál, y
+el día que una pieza de venta saliera con las fotos del cliente de al
+lado nadie se enteraría hasta verla publicada.
+
+Cuatro cosas que costaron una vuelta cada una:
+
+- **El fantasma.** `fondo()` tenía la primera parada de su degradé en
+  `rgba(42,33,24,.55)`: el centro de la pantalla **no se tapaba nunca**,
+  así que cada cuadro se dibujaba encima del anterior y las fotos dejaban
+  estelas. Todas las paradas van opacas, y `dibujar()` arranca
+  devolviendo el contexto a cero (`setTransform`, `globalAlpha`,
+  `globalCompositeOperation`, `filter`) y limpiando el lienzo: en una
+  escena de cuatrocientas líneas alcanza con un `return` adentro de un
+  `save()` sin su `restore()` para arrastrar un alfa al cuadro siguiente.
+  Medido: **0 px de diferencia con el arreglo, 589.592 contra el código
+  anterior.**
+- **Y la primera medición del fantasma no medía el fantasma.** Contaba
+  los píxeles donde domina el rojo y daba **el mismo número antes y
+  después**, porque lo que contaba eran los corazones y el punto de EN
+  VIVO. Se mide pintando el cuadro **solo** y después pintándolo
+  **detrás del anterior**, y comparando los dos. Es la regla de siempre:
+  una prueba que da igual de los dos lados no mide tu cambio.
+- **Un cierre que crece mientras el cuadro se va a negro no se lee.** La
+  cascada de la marca llegaba a opacidad plena a los 25,75 y la dirección
+  a los 25,85, con el fundido de salida ya empezado a los 25,55: la
+  bajada, el llamado y la dirección **nunca se veían enteros**. Ahora
+  todo entra antes de los 25,55 y el fundido se acortó a 0,32 s.
+- **La pieza se vende en Rosario, así que está en castellano.** La
+  primera versión tenía los rótulos de la interfaz en inglés —`LIVE
+  WALL`, `LIVE`, `EVENT`, `MEMORIES`, `NEW PHOTO`, `REAL TIME`— arriba
+  de frases en castellano y de una captura de la app de verdad, que dice
+  *"EN VIVO · 13 EN EL MURO"*. Eso no es un bilingüismo elegante: es la
+  pieza contándole al cliente que el producto no es el que va a recibir.
+  Y el servicio se llama **Muro en vivo**, no Live Wall.
+- **El grano es ruido y el ruido no comprime.** Con el CRF 18 de las
+  demás piezas el comercial salía de **21 MB** y WhatsApp —que es por
+  donde se manda— no pasa de 16. El CRF se puede subir por pieza
+  (`CRF=21` en el entorno de `render.js`); las otras cuatro se quedan en
+  18, que es donde están medidas.
+
+La música se sintetiza sin samples igual que la del reel
+(`video/musica-vivo.py`) y **comparte las constantes de tiempo con la
+escena**: el riser, el golpe y la marca caen en el mismo milisegundo en
+los dos archivos. Si se mueve un tiempo, se mueve en los dos. La primera
+versión daba 0,080 de RMS entre el segundo 4 y el 18 —o sea, plana justo
+en el medio— y se arregló con una curva de forma (`forma()`) y aflojando
+el compresor.
 
 ## El Apps Script de las invitaciones
 
