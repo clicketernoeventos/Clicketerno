@@ -1608,6 +1608,13 @@ Cuatro cosas que costaron una vuelta cada una:
   a los 25,85, con el fundido de salida ya empezado a los 25,55: la
   bajada, el llamado y la dirección **nunca se veían enteros**. Ahora
   todo entra antes de los 25,55 y el fundido se acortó a 0,32 s.
+- **La pieza se vende en Rosario, así que está en castellano.** La
+  primera versión tenía los rótulos de la interfaz en inglés —`LIVE
+  WALL`, `LIVE`, `EVENT`, `MEMORIES`, `NEW PHOTO`, `REAL TIME`— arriba
+  de frases en castellano y de una captura de la app de verdad, que dice
+  *"EN VIVO · 13 EN EL MURO"*. Eso no es un bilingüismo elegante: es la
+  pieza contándole al cliente que el producto no es el que va a recibir.
+  Y el servicio se llama **Muro en vivo**, no Live Wall.
 - **El grano es ruido y el ruido no comprime.** Con el CRF 18 de las
   demás piezas el comercial salía de **21 MB** y WhatsApp —que es por
   donde se manda— no pasa de 16. El CRF se puede subir por pieza

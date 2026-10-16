@@ -390,7 +390,7 @@ function escPulso(t) {
     /* el destello del obturador */
     const d = 1 - inv(t, T_FOTO1, T_FOTO1 + .18);
     if (d > 0) { ctx.save(); ctx.globalAlpha = d * .5; ctx.fillStyle = '#FFF'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
-    chip('NEW PHOTO', W / 2, H * .5 + CH * .95, { alfa: inv(t, T_FOTO1 + .25, T_FOTO1 + .6), punto: ORO });
+    chip('FOTO NUEVA', W / 2, H * .5 + CH * .95, { alfa: inv(t, T_FOTO1 + .25, T_FOTO1 + .6), punto: ORO });
   }
 }
 
@@ -421,7 +421,7 @@ function escEntran(t) {
     });
   }
   /* la interfaz que acompaña */
-  chip('LIVE', 150, 190, { alfa: inv(t, 2.3, 2.8), punto: VIVO, fuerte: false });
+  chip('EN VIVO', 150, 190, { alfa: inv(t, 2.3, 2.8), punto: VIVO, fuerte: false });
   const c = inv(t, 2.6, 5.8);
   contador(2 + c * 126, W - 180, 196, { alfa: inv(t, 2.6, 3.0), rot: 'FOTOS' });
   /* los "+1" que suben */
@@ -479,9 +479,9 @@ function escInvitado(t) {
     ctx.restore();
   }
 
-  chip('LIVE', 150, 190, { alfa: 1, punto: VIVO });
+  chip('EN VIVO', 150, 190, { alfa: 1, punto: VIVO });
   contador(128 + inv(t, 6, 10) * 61, W - 180, 196, { alfa: 1, rot: 'FOTOS' });
-  chip('REAL TIME', 190, H - 210, { alfa: inv(t, 8.2, 8.7), tam: 22 });
+  chip('TIEMPO REAL', 190, H - 210, { alfa: inv(t, 8.2, 8.7), tam: 22 });
 
   /* reacciones que suben */
   for (let k = 0; k < 7; k++) {
@@ -524,7 +524,7 @@ function escSala(t) {
   const d = pulso(t, T_SALA - .05, T_SALA + .35);
   if (d > .01) { ctx.save(); ctx.globalAlpha = d * .3; ctx.fillStyle = CHAMPAN; ctx.fillRect(0, 0, W, H); ctx.restore(); }
 
-  chip('LIVE WALL', W / 2, H * .46 - 320 - 40 * (1 - inv(t, T_SALA + .9, T_SALA + 1.4)),
+  chip('MURO EN VIVO', W / 2, H * .46 - 320 - 40 * (1 - inv(t, T_SALA + .9, T_SALA + 1.4)),
     { alfa: inv(t, T_SALA + .9, T_SALA + 1.4), punto: VIVO, tam: 28 });
   texto('La pantalla del salón', W / 2, H * .72,
     { tam: 40, peso: 300, color: CREMA, alfa: inv(t, T_SALA + 1.3, T_SALA + 1.9) });
@@ -535,7 +535,7 @@ function escSala(t) {
     { alfa: inv(t, T_SALA + 1.8, T_SALA + 2.3), rot: 'RECUERDOS' });
 
   /* avisos que entran por el costado */
-  for (const [ti, txt] of [[11.6, 'NEW PHOTO'], [12.8, 'SHARED']]) {
+  for (const [ti, txt] of [[11.6, 'FOTO NUEVA'], [12.8, 'EN LA PANTALLA']]) {
     const v = inv(t, ti, ti + 1.3);
     if (v <= 0 || v >= 1) continue;
     const s = Math.min(1, v * 5) * (1 - inv(t, ti + .95, ti + 1.3));
@@ -569,8 +569,8 @@ function escMosaico(t) {
       CW * .9, CH * .62, { alfa: .9, radio: 14 });
   }
   ctx.restore();
-  chip('MEMORIES', W / 2, H * .70 - 54, { alfa: inv(t, T_MOSAICO + .3, T_MOSAICO + .8), tam: 22 });
-  chip('LIVE', 150, 190, { alfa: 1, punto: VIVO });
+  chip('RECUERDOS', W / 2, H * .70 - 54, { alfa: inv(t, T_MOSAICO + .3, T_MOSAICO + .8), tam: 22 });
+  chip('EN VIVO', 150, 190, { alfa: 1, punto: VIVO });
   contador(263 + inv(t, T_MOSAICO, T_RISER) * 97, W - 180, 196, { alfa: 1, rot: 'FOTOS' });
   /* destellos en cada corte */
   const d = 1 - clamp(f * 9, 0, 1);
@@ -636,8 +636,8 @@ function escGolpe(t) {
   if (d > .01) { ctx.save(); ctx.globalAlpha = d * .85; ctx.fillStyle = CHAMPAN; ctx.fillRect(0, 0, W, H); ctx.restore(); }
 
   /* la interfaz viva alrededor */
-  chip('LIVE', 150, 190, { alfa: inv(t, T_GOLPE + .3, T_GOLPE + .6), punto: VIVO });
-  chip('EVENT', W - 170, 190, { alfa: inv(t, T_GOLPE + .4, T_GOLPE + .7), tam: 22 });
+  chip('EN VIVO', 150, 190, { alfa: inv(t, T_GOLPE + .3, T_GOLPE + .6), punto: VIVO });
+  chip('TU FIESTA', W - 170, 190, { alfa: inv(t, T_GOLPE + .4, T_GOLPE + .7), tam: 22 });
   for (let k = 0; k < 14; k++) {
     const ti = T_GOLPE + .4 + k * .22;
     const v = inv(t, ti, ti + 1.6);
