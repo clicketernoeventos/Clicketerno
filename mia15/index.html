@@ -5,56 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mia · Mis quince años</title>
 <meta name="description" content="Mia cumple quince. Sábado 29 de enero de 2028, en La Mansión del Rey, Vera Mujica 68, Rosario.">
-<meta name="theme-color" content="#0C0B0A">
+<meta name="theme-color" content="#FBF8F2">
 <meta property="og:title" content="Mia · Mis quince años">
 <meta property="og:description" content="Sábado 29 de enero de 2028 · La Mansión del Rey · Rosario">
 <meta property="og:type" content="website">
 <meta property="og:image" content="og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Prata&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════
    MIA · quince años — 29 de enero de 2028
 
-   LA IDEA: art déco de salón. Oro sobre negro, el blanco de
-   respiro, y el "15" como protagonista.
+   QUÉ PIDIÓ ELLA: blanco, dorado y negro. Elegante o formal.
 
-   La primera versión era correcta y aburrida — "muy básica", dicho
-   por el dueño. Lo que la cambia no es más color: es que tenga
-   MOMENTOS. El sello que se abre, el 15 enorme detrás del nombre,
-   el brillo que barre las letras, el polvo de oro que flota, el
-   marco déco en las esquinas, la línea de tiempo de la noche y el
-   monograma del cierre. Son siete y ninguno pesa un kilobyte: todo
-   es CSS y SVG en línea.
+   La versión anterior era NEGRA con oro, que es la paleta de Click
+   Eterno — y se notaba: parecía hecha por nosotros y no para ella.
+   Dicho por el dueño con todas las letras. El blanco estaba de
+   relleno cuando era uno de los tres colores que pidió.
 
-   LAS REGLAS DE COLOR QUE YA COSTARON CARO, respetadas:
-   · El oro claro (--oro) SOLO sobre negro. Sobre el crema da 1,84:1
-     y el texto deja de existir. En la parte clara va --oro-hondo.
-   · Cada bloque con su propio fondo trae su propia tinta.
-   · Ningún degradé opaco DETRÁS de un texto: el medidor de
-     contraste no lo puede juzgar, y donde no puede medir es donde
-     esto vuelve a pasar. Los degradés son de adorno y van en capas
-     aparte, con pointer-events:none.
+   Esta da vuelta la proporción: PAPEL de base, tipografía NEGRA, y
+   el oro solo de filete. Eso es lo que quiere decir "formal" en una
+   tarjeta: una invitación grabada, no una pantalla de fiesta. El
+   negro queda para dos momentos —la cuenta regresiva y el cierre—,
+   que así pesan.
 
-   Y TODO LO QUE SE MUEVE SE APAGA con prefers-reduced-motion. Un
-   adorno que se mueve no puede ser la única forma de ver algo.
+   Lo que se fue a propósito, y no por falta de ganas:
+   · el abanico de rayos, que es un gesto nuestro y está en la
+     pantalla del salón;
+   · el polvo de oro flotando, que sobre papel no se ve y sobre
+     negro era otra vez lo mismo;
+   · los horarios y las pastillas de color del dress code, que los
+     sacó el dueño.
+
+   LAS REGLAS DE COLOR, al revés que antes pero las mismas:
+   · Sobre el papel, el oro de TEXTO es --oro (4,5:1). El --oro-luz
+     es para filetes y dibujos y NUNCA para una letra.
+   · Cada bloque con su propio fondo trae su propia tinta: las dos
+     secciones negras redefinen todo lo suyo.
    ══════════════════════════════════════════════════════════════ */
 
 :root{
-  --negro:#0C0B0A;
-  --negro2:#15130F;
-  --negro3:#1D1A14;
-  --oro:#D4AF6A;          /* 9,5:1 sobre el negro */
-  --oro-claro:#F0DCAE;
-  --oro-hondo:#8A6A2F;    /* 4,5:1 sobre el crema — para la parte clara */
-  --crema:#F4F1EA;
-  --mute:#A9A094;         /* 7,7:1 sobre el negro */
-  --tinta:#1A1713;
-  --tinta2:#51493D;
-  --display:'Marcellus',Georgia,serif;
-  --texto:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --papel:#FBF8F2;
+  --papel2:#F4EFE5;
+  --tinta:#141211;        /* 17:1 sobre el papel */
+  --gris:#6B635A;         /* 5,6:1 sobre el papel */
+  --oro:#8F6E26;          /* 4,5:1 sobre el papel — el oro que se LEE */
+  --oro-luz:#C9A961;      /* filetes y dibujos, nunca una letra sobre papel */
+  --negro:#141211;
+  --crema:#F6F2EA;        /* la tinta de las secciones negras */
+  --crema2:#B9B0A2;
+  --oro-neg:#D8B877;      /* el oro de las secciones negras */
+  --display:'Prata',Georgia,serif;
+  --texto:'Mulish',system-ui,-apple-system,'Segoe UI',sans-serif;
   --e:cubic-bezier(.22,.75,.3,1);
 }
 
@@ -63,117 +67,86 @@ html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
 
 body{
-  margin:0;
-  /* A propósito: los abanicos, los marcos y el polvo se desbordan y
-     se recortan. Sin esto la página mide más que la pantalla, el
-     navegador del teléfono se aleja solo y la invitación entera se
-     ve más chica. */
-  overflow-x:hidden;
-  background:var(--negro);
-  color:var(--crema);
+  margin:0;overflow-x:hidden;
+  background:var(--papel);
+  color:var(--tinta);
   font-family:var(--texto);
-  font-weight:300;
-  font-size:17px;
-  line-height:1.65;
+  font-weight:300;font-size:17px;line-height:1.7;
   -webkit-font-smoothing:antialiased;
 }
 body.cerrado{overflow:hidden;height:100%}
 img{max-width:100%;display:block}
 a{color:inherit}
 
-/* ══════════ el polvo de oro ══════════
-   Nueve motas que flotan despacio. Van en una capa fija detrás de
-   todo, sin atajar el dedo: un adorno que se come un toque es un
-   botón que no responde, y eso ya pasó dos veces en este proyecto. */
-#polvo{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-#polvo i{
-  position:absolute;display:block;width:3px;height:3px;border-radius:50%;
-  background:var(--oro);opacity:0;
-  animation:flotar linear infinite;
-}
-@keyframes flotar{
-  0%  {transform:translateY(12vh) scale(.5);opacity:0}
-  12% {opacity:.5}
-  88% {opacity:.35}
-  100%{transform:translateY(-104vh) scale(1.15);opacity:0}
-}
-@media (prefers-reduced-motion:reduce){ #polvo{display:none} }
-
-/* ── la barra de avance ── */
-#avance{
-  position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
-  background:linear-gradient(90deg,var(--oro-hondo),var(--oro),var(--oro-claro));
-  transition:width .12s linear;
-}
+#avance{position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
+  background:var(--oro);transition:width .12s linear}
 
 /* ── tipografía ── */
-h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.12}
-.rotulo{
-  font-family:var(--texto);font-weight:500;
-  font-size:11px;letter-spacing:.42em;text-transform:uppercase;
-  color:var(--oro);margin:0 0 14px;
-}
-.clara .rotulo{color:var(--oro-hondo)}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.16;color:var(--tinta)}
 p{margin:0 0 1em}
-.titulo{font-size:clamp(27px,8vw,40px);letter-spacing:.02em}
+.ante{
+  font-family:var(--texto);font-weight:500;
+  font-size:10.5px;letter-spacing:.46em;text-transform:uppercase;
+  color:var(--oro);margin:0 0 18px;
+}
+.titulo{font-size:clamp(26px,7.4vw,38px);letter-spacing:.01em}
+.bajada{color:var(--gris);font-size:16px}
 
 /* ── el armazón ── */
-.seccion{padding:90px 24px;position:relative;z-index:1}
-.caja{max-width:620px;margin:0 auto;position:relative}
+.seccion{padding:82px 26px;position:relative}
+.caja{max-width:560px;margin:0 auto;position:relative}
 .centro{text-align:center}
-.clara{background:var(--crema);color:var(--tinta)}
-.clara h1,.clara h2,.clara h3{color:var(--tinta)}
-.clara p{color:var(--tinta2)}
 
-/* ══════════ el marco déco ══════════
-   Cuatro esquinas de filete doble. Es lo que convierte un bloque
-   de texto en una tarjeta impresa. */
-.marco{position:relative;padding:40px 26px}
-.marco:before,.marco:after{
-  content:'';position:absolute;width:42px;height:42px;pointer-events:none;
-  border-color:var(--oro);opacity:.55;
-}
-.marco:before{top:0;left:0;border-top:1px solid;border-left:1px solid}
-.marco:after{bottom:0;right:0;border-bottom:1px solid;border-right:1px solid}
-.marco > .esq{position:absolute;width:42px;height:42px;pointer-events:none;border-color:var(--oro);opacity:.55}
-.marco > .esq.a{top:0;right:0;border-top:1px solid;border-right:1px solid}
-.marco > .esq.b{bottom:0;left:0;border-bottom:1px solid;border-left:1px solid}
-.clara .marco:before,.clara .marco:after,.clara .marco > .esq{border-color:var(--oro-hondo);opacity:.5}
+/* Las dos secciones negras traen su propia tinta, toda. */
+.noche{background:var(--negro);color:var(--crema)}
+.noche h1,.noche h2,.noche h3{color:var(--crema)}
+.noche p{color:var(--crema2)}
+.noche .ante{color:var(--oro-neg)}
 
-/* ══════════ el divisor déco ══════════ */
-.div-deco{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto;padding:0;max-width:300px}
-.div-deco i{display:block;height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--oro));opacity:.7}
-.div-deco i:last-child{background:linear-gradient(90deg,var(--oro),transparent)}
-.div-deco svg{width:34px;height:12px;fill:var(--oro);flex:none}
-.clara .div-deco i{background:linear-gradient(90deg,transparent,var(--oro-hondo))}
-.clara .div-deco i:last-child{background:linear-gradient(90deg,var(--oro-hondo),transparent)}
-.clara .div-deco svg{fill:var(--oro-hondo)}
+/* ══════════ el filete grabado ══════════
+   Dos rayas finas con un rombo al medio. Es el gesto de una tarjeta
+   impresa, y reemplaza a los adornos de pantalla. */
+.filete{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto;max-width:260px}
+.filete i{display:block;height:1px;flex:1;background:var(--oro-luz)}
+.filete b{display:block;width:5px;height:5px;background:var(--oro);transform:rotate(45deg)}
+.noche .filete i{background:rgba(216,184,119,.55)}
+.noche .filete b{background:var(--oro-neg)}
 
-/* ══════════ el medallón del monograma ══════════ */
-.medallon{width:112px;height:112px;margin:0 auto;position:relative}
-.medallon svg{width:100%;height:100%;display:block}
-.medallon .ini{
+/* ══════════ el sello XV ══════════ */
+.sello{width:94px;height:94px;margin:0 auto;position:relative}
+.sello svg{width:100%;height:100%;display:block}
+.sello span{
   position:absolute;inset:0;display:grid;place-items:center;
-  font-family:var(--display);font-size:40px;color:var(--oro-claro);
-  letter-spacing:.06em;text-indent:.06em;
+  font-family:var(--display);font-size:25px;color:var(--oro);
+  letter-spacing:.1em;text-indent:.1em;
 }
+.noche .sello span{color:var(--oro-neg)}
 
 /* ══════════ el sobre ══════════ */
 #sobre{
   position:fixed;inset:0;z-index:50;
-  display:grid;place-items:center;padding:24px;
-  background:radial-gradient(130% 92% at 50% 24%,#221E16 0%,#0C0B0A 62%);
+  display:grid;place-items:center;padding:28px;
+  background:var(--papel);
   transition:opacity .8s var(--e),visibility .8s;
 }
 #sobre.abierto{opacity:0;visibility:hidden;pointer-events:none}
-.sobre-caja{text-align:center;max-width:400px;width:100%}
+/* El doble filete de la tarjeta, pegado al borde. */
+#sobre:before{
+  content:'';position:absolute;inset:18px;pointer-events:none;
+  border:1px solid var(--oro-luz);
+}
+#sobre:after{
+  content:'';position:absolute;inset:25px;pointer-events:none;
+  border:1px solid rgba(201,169,97,.4);
+}
+.sobre-caja{text-align:center;max-width:380px;width:100%;position:relative}
 .sobre-caja .nom{
-  font-family:var(--display);font-size:clamp(40px,14vw,58px);
-  letter-spacing:.16em;color:var(--oro-claro);margin:22px 0 4px;text-indent:.16em;
+  font-family:var(--display);font-size:clamp(42px,15vw,60px);
+  letter-spacing:.1em;color:var(--tinta);margin:24px 0 6px;text-indent:.1em;
 }
 .sobre-caja .sub{
-  font-size:11px;letter-spacing:.36em;text-transform:uppercase;
-  color:var(--mute);margin:0 0 28px;
+  font-size:10.5px;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--gris);margin:0 0 30px;
 }
 /* El latido va en un HALO alrededor, no en la caja que se toca: con
    un `scale` en el botón, Playwright no lo puede tocar nunca
@@ -181,323 +154,196 @@ p{margin:0 0 1em}
    contra un botón que está perfecto. */
 #abrir{
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  min-height:54px;min-width:220px;padding:0 32px;
-  border:1px solid var(--oro);border-radius:999px;
-  background-color:transparent;color:var(--oro-claro);
-  font-family:var(--texto);font-size:13px;font-weight:500;
-  letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
-  transition:background-color .3s var(--e),color .3s var(--e);
+  min-height:54px;min-width:226px;padding:0 32px;
+  border:1px solid var(--tinta);border-radius:0;
+  background-color:transparent;color:var(--tinta);
+  font-family:var(--texto);font-size:11.5px;font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;cursor:pointer;
+  transition:background-color .35s var(--e),color .35s var(--e);
 }
 #abrir:after{
-  content:'';position:absolute;inset:-8px;border-radius:999px;
-  border:1px solid var(--oro);opacity:.3;animation:latir 2.8s var(--e) infinite;
+  content:'';position:absolute;inset:-7px;border:1px solid var(--oro-luz);
+  opacity:.45;animation:latir 3s var(--e) infinite;
 }
-@keyframes latir{0%{transform:scale(.97);opacity:.34}70%{transform:scale(1.12);opacity:0}100%{opacity:0}}
-@media (hover:hover){ #abrir:hover{background-color:var(--oro);color:var(--negro)} }
-#abrir:active{transform:scale(.975)}
+@keyframes latir{0%{transform:scale(.99);opacity:.5}70%{transform:scale(1.05);opacity:0}100%{opacity:0}}
+@media (hover:hover){ #abrir:hover{background-color:var(--tinta);color:var(--papel)} }
+#abrir:active{transform:scale(.98)}
 @media (prefers-reduced-motion:reduce){ #abrir:after{animation:none} }
 
 /* ══════════ la portada ══════════ */
 #portada{
   min-height:100svh;min-height:100vh;
   display:grid;place-items:center;text-align:center;
-  padding:52px 22px;position:relative;overflow:hidden;
+  padding:60px 26px;position:relative;overflow:hidden;
+  background:var(--papel);
 }
-/* El abanico de rayos. En una capa propia para poder moverlo con el
-   scroll sin tocar el texto. */
-#rayos{
-  position:absolute;left:50%;top:-14%;
-  width:min(170vw,1180px);aspect-ratio:1;transform:translateX(-50%);
-  background:repeating-conic-gradient(from 0deg at 50% 50%,
-    rgba(212,175,106,.085) 0deg 2.2deg, transparent 2.2deg 11deg);
-  -webkit-mask-image:radial-gradient(closest-side,#000 8%,transparent 70%);
-          mask-image:radial-gradient(closest-side,#000 8%,transparent 70%);
-  pointer-events:none;
-}
-/* El 15 enorme, en contorno. Es lo que faltaba: una invitación de
-   quince sin el número es una invitación de cualquier cosa. */
-/* La marca de agua va DETRÁS DEL NOMBRE, no atravesando la portada
-   entera. A 78vw y centrada en la pantalla le pasaba por encima a
-   "Quince años", a la fecha, a "Rosario" y a "Deslizá": no se leía
-   como una filigrana, se leía como un tachón. */
-#quinceGrande{
-  position:absolute;left:50%;top:41%;transform:translate(-50%,-50%);
-  font-family:var(--display);
-  font-size:min(46vw,250px);line-height:1;
-  color:transparent;
-  -webkit-text-stroke:1px rgba(212,175,106,.22);
-  pointer-events:none;user-select:none;
-}
-/* El marco déco de la portada, pegado al borde de la pantalla. */
-#marcoPort{position:absolute;inset:16px;pointer-events:none}
-#marcoPort span{position:absolute;width:34px;height:34px;border-color:rgba(212,175,106,.5)}
-#marcoPort span:nth-child(1){top:0;left:0;border-top:1px solid;border-left:1px solid}
-#marcoPort span:nth-child(2){top:0;right:0;border-top:1px solid;border-right:1px solid}
-#marcoPort span:nth-child(3){bottom:0;left:0;border-bottom:1px solid;border-left:1px solid}
-#marcoPort span:nth-child(4){bottom:0;right:0;border-bottom:1px solid;border-right:1px solid}
+/* El marco grabado: doble filete a todo el alto. */
+#marco1,#marco2{position:absolute;pointer-events:none;border:1px solid var(--oro-luz)}
+#marco1{inset:18px}
+#marco2{inset:25px;border-color:rgba(201,169,97,.4)}
+/* NO hay marca de agua detrás del nombre. La hubo: un XV dibujado a
+   62vw, y a ese tamaño las dos letras se leían como tres rayas
+   sueltas cruzando la M — un error de maqueta, no una filigrana. En
+   una tarjeta formal el aire ES el adorno; lo que equilibra la
+   composición es el sello arriba, no una mancha atrás. */
 
 .port-in{position:relative;z-index:2}
-.port-sup{font-size:11px;letter-spacing:.44em;text-transform:uppercase;color:var(--mute);margin:0 0 18px}
+.port-sup{font-size:10.5px;letter-spacing:.44em;text-transform:uppercase;color:var(--gris);margin:0 0 22px}
 .nombre{
   font-family:var(--display);
-  font-size:clamp(58px,23vw,142px);
-  letter-spacing:.1em;line-height:.96;
-  color:var(--oro-claro);margin:0;
-  text-indent:.1em;
-  position:relative;display:inline-block;
+  font-size:clamp(54px,21vw,128px);
+  letter-spacing:.06em;line-height:1;
+  color:var(--tinta);margin:0;text-indent:.06em;
+  display:inline-block;
 }
-/* Las letras entran de a una. */
-/* Guardado con .js: sin el script, las letras tienen que verse. Un
-   estado por defecto invisible deja el nombre en blanco y eso no
-   tira ningún error — es el mismo agujero de siempre. */
 .nombre b{display:inline-block;font-weight:400}
-.js .nombre b{opacity:0;transform:translateY(.22em)}
-.js .nombre.entro b{opacity:1;transform:none;transition:opacity .7s var(--e),transform .7s var(--e)}
-.nombre.entro b:nth-child(2){transition-delay:.11s}
-.nombre.entro b:nth-child(3){transition-delay:.22s}
-/* El brillo que barre las letras. Va ENCIMA, translúcido y sin
-   atajar el dedo; el color del texto no lo toca, así que el medidor
-   de contraste sigue midiendo el oro de verdad. */
-/* EL BRILLO LO HACEN LAS LETRAS, no una capa encima.
-   La primera versión era un degradé blanco con `mix-blend-mode:screen`
-   sobre el nombre, y dejaba un RECTÁNGULO GRIS con los bordes duros
-   al costado de la A: el blend aísla el grupo y la caja del degradé
-   se dibuja. Se ve perfecto en el código y espantoso en la pantalla,
-   y no tira ningún error.
-   Así, cada letra se aclara por turno: el mismo efecto, sin ninguna
-   capa que pueda dejar un borde, y el color que mide el medidor de
-   contraste sigue siendo el de verdad en los dos extremos. */
-.nombre b{animation:destello 6.5s var(--e) infinite}
-.nombre b:nth-child(2){animation-delay:.16s}
-.nombre b:nth-child(3){animation-delay:.32s}
-@keyframes destello{
-  0%,86%,100%{color:var(--oro-claro)}
-  91%{color:#FFFBF0;text-shadow:0 0 22px rgba(255,245,215,.45)}
-}
-@media (prefers-reduced-motion:reduce){
-  .nombre b{animation:none}
-  .js .nombre b{opacity:1;transform:none}
-}
+.js .nombre b{opacity:0;transform:translateY(.18em)}
+.js .nombre.entro b{opacity:1;transform:none;transition:opacity .8s var(--e),transform .8s var(--e)}
+.nombre.entro b:nth-child(2){transition-delay:.12s}
+.nombre.entro b:nth-child(3){transition-delay:.24s}
 .quince{
-  font-size:clamp(12px,3.4vw,15px);letter-spacing:.42em;
-  text-transform:uppercase;color:var(--crema);margin:14px 0 0;
+  font-size:clamp(11px,3.2vw,13.5px);letter-spacing:.46em;
+  text-transform:uppercase;color:var(--gris);margin:18px 0 0;
 }
 .port-fecha{
-  font-family:var(--display);font-size:clamp(18px,4.8vw,24px);
-  letter-spacing:.2em;color:var(--oro);margin:22px 0 0;
+  font-family:var(--display);font-size:clamp(17px,4.4vw,22px);
+  letter-spacing:.16em;color:var(--oro);margin:0;
 }
-.port-donde{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:9px 0 0}
-/* Pegada al borde de abajo, no colgando del bloque: centrado con el
-   resto dejaba media pantalla vacía debajo, y "Deslizá" es justo lo
-   único que avisa que hay más. */
-.deslizar{position:absolute;left:0;right:0;bottom:30px;margin:0;
-  font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute)}
-.deslizar span{display:block;width:1px;height:38px;margin:11px auto 0;
-  background:linear-gradient(var(--oro),transparent)}
+.port-donde{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gris);margin:12px 0 0}
+.deslizar{position:absolute;left:0;right:0;bottom:46px;margin:0;
+  font-size:9.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--gris)}
+.deslizar span{display:block;width:1px;height:32px;margin:11px auto 0;
+  background:linear-gradient(var(--oro-luz),transparent)}
 
 /* ══════════ la frase ══════════ */
-#frase{background:var(--negro2)}
-.frase-t{
-  font-family:var(--display);font-size:clamp(21px,5.8vw,30px);
-  line-height:1.52;color:var(--crema);margin:0;
-}
-.frase-f{margin-top:22px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro)}
+#frase{background:var(--papel2)}
+.frase-t{font-family:var(--display);font-size:clamp(20px,5.4vw,27px);line-height:1.6;color:var(--tinta);margin:0}
 
-/* ══════════ la cuenta regresiva ══════════ */
-.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:30px 0 0}
-.reloj div{
-  position:relative;padding:20px 4px 16px;
-  background:linear-gradient(180deg,rgba(212,175,106,.10),rgba(212,175,106,.03));
-  border:1px solid rgba(212,175,106,.3);border-radius:4px;
-}
-/* Tildes en las esquinas de arriba: el detalle que lo vuelve déco. */
-.reloj div:before,.reloj div:after{
-  content:'';position:absolute;top:5px;width:7px;height:7px;
-  border-top:1px solid var(--oro);opacity:.75;
-}
-.reloj div:before{left:5px;border-left:1px solid}
-.reloj div:after{right:5px;border-right:1px solid}
-.reloj b{
-  display:block;font-family:var(--display);font-weight:400;
-  font-size:clamp(28px,9vw,44px);color:var(--oro-claro);line-height:1;
-  font-variant-numeric:tabular-nums;
-}
-.reloj span{display:block;margin-top:9px;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+/* ══════════ la cuenta regresiva — en negro ══════════ */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:34px 0 0;
+  border-top:1px solid rgba(216,184,119,.4);border-bottom:1px solid rgba(216,184,119,.4)}
+.reloj div{padding:22px 4px;position:relative}
+.reloj div + div:before{content:'';position:absolute;left:0;top:18%;bottom:18%;width:1px;background:rgba(216,184,119,.3)}
+.reloj b{display:block;font-family:var(--display);font-weight:400;
+  font-size:clamp(26px,8.5vw,40px);color:var(--crema);line-height:1;font-variant-numeric:tabular-nums}
+.reloj span{display:block;margin-top:10px;font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--crema2)}
 
 /* ── el calendario ── */
-.calen{margin:44px auto 0;max-width:330px}
-.calen .mes{font-family:var(--display);font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro);margin:0 0 14px}
+.calen{margin:46px auto 0;max-width:320px}
+.calen .mes{font-family:var(--display);font-size:14px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro-neg);margin:0 0 16px}
 .calen table{width:100%;border-collapse:collapse}
-.calen th{font-size:10px;letter-spacing:.14em;color:var(--mute);font-weight:500;padding-bottom:8px}
+.calen th{font-size:9.5px;letter-spacing:.14em;color:var(--crema2);font-weight:500;padding-bottom:10px}
 .calen td{padding:5px 0;text-align:center}
-.calen td i{
-  font-style:normal;display:inline-flex;align-items:center;justify-content:center;
-  width:30px;height:30px;border-radius:50%;font-size:14px;color:var(--mute);
-}
-.calen td.elDia i{background-color:var(--oro);color:var(--negro);font-weight:600;box-shadow:0 0 0 4px rgba(212,175,106,.18)}
-.calen .corte{border:0;border-top:1px solid rgba(212,175,106,.22);margin:18px 0 14px}
-.calen .guarda{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);margin:0}
-.calen .dia-largo{font-family:var(--display);font-size:26px;letter-spacing:.14em;color:var(--oro-claro);margin:6px 0 0}
+.calen td i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;font-size:13.5px;color:var(--crema2)}
+.calen td.elDia i{border:1px solid var(--oro-neg);color:var(--oro-neg)}
+.calen .corte{border:0;border-top:1px solid rgba(216,184,119,.3);margin:20px 0 14px}
+.calen .guarda{font-size:9.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--crema2);margin:0}
+.calen .dia-largo{font-family:var(--display);font-size:24px;letter-spacing:.12em;color:var(--crema);margin:8px 0 0}
 
-/* ══════════ dónde — la parte clara ══════════ */
-#donde{overflow:hidden}
-/* El abanico también acá, pero en oro hondo y muy bajo: ata las dos
-   mitades de la invitación sin ensuciar la lectura. */
-#donde:before{
-  content:'';position:absolute;left:50%;top:-40%;
-  width:min(150vw,900px);aspect-ratio:1;transform:translateX(-50%);
-  background:repeating-conic-gradient(from 0deg at 50% 50%,
-    rgba(138,106,47,.07) 0deg 2.2deg, transparent 2.2deg 11deg);
-  -webkit-mask-image:radial-gradient(closest-side,#000 8%,transparent 70%);
-          mask-image:radial-gradient(closest-side,#000 8%,transparent 70%);
-  pointer-events:none;
+/* ══════════ dónde ══════════ */
+.tarjeta{border:1px solid var(--oro-luz);padding:38px 26px;position:relative;background-color:#FFFDF9}
+.tarjeta:before{content:'';position:absolute;inset:6px;border:1px solid rgba(201,169,97,.35);pointer-events:none}
+.salon{font-family:var(--display);font-size:clamp(24px,6.4vw,32px);color:var(--tinta);margin:0 0 8px}
+.calle{font-size:15.5px;color:var(--gris);margin:0}
+.hora{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--oro);margin:18px 0 0}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:50px;padding:0 30px;margin-top:24px;
+  border:1px solid var(--tinta);background-color:transparent;color:var(--tinta);
+  font-family:var(--texto);font-size:11.5px;font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;text-decoration:none;cursor:pointer;
+  transition:background-color .35s var(--e),color .35s var(--e);
 }
-#donde .tarj{background-color:#FFFDF8;border-radius:3px;box-shadow:0 18px 50px rgba(26,23,19,.09)}
-#donde .salon{font-family:var(--display);font-size:clamp(25px,6.6vw,34px);color:var(--tinta);margin:0 0 7px}
-#donde .calle{font-size:15.5px;color:var(--tinta2);margin:0 0 2px}
-#donde .hora{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-hondo);margin:16px 0 0}
-.btn-mapa{
-  display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  min-height:50px;padding:0 28px;margin-top:22px;
-  border:1px solid var(--oro-hondo);border-radius:999px;
-  background-color:transparent;color:var(--oro-hondo);
-  font-size:12.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
-  text-decoration:none;transition:background-color .3s var(--e),color .3s var(--e);
-}
-@media (hover:hover){ .btn-mapa:hover{background-color:var(--oro-hondo);color:#fff} }
-.btn-mapa:active{transform:scale(.975)}
-
-/* ══════════ la noche — línea de tiempo ══════════ */
-.agenda{margin-top:30px;position:relative;padding-left:28px}
-/* El hilo de oro que une la noche entera. */
-.agenda:before{
-  content:'';position:absolute;left:5px;top:10px;bottom:10px;width:1px;
-  background:linear-gradient(180deg,transparent,rgba(212,175,106,.55) 12%,rgba(212,175,106,.55) 88%,transparent);
-}
-.tramo{position:relative;padding:0 0 30px}
-.tramo:last-child{padding-bottom:0}
-.tramo .rombo{
-  position:absolute;left:-28px;top:7px;width:11px;height:11px;
-  background:var(--oro);transform:rotate(45deg);
-  box-shadow:0 0 0 4px var(--negro);
-}
-.tramo .h{font-family:var(--display);font-size:16px;color:var(--oro);letter-spacing:.14em}
-.tramo b{display:block;font-weight:500;font-size:17px;color:var(--crema);margin-top:1px}
-.tramo span{display:block;font-size:14.5px;color:var(--mute);margin-top:2px}
-
-/* ══════════ dress code ══════════ */
-.paleta{display:flex;justify-content:center;gap:26px;margin-top:30px}
-.paleta figure{margin:0;text-align:center}
-.paleta i{
-  width:52px;height:52px;border-radius:50%;display:block;margin:0 auto 10px;
-  border:1px solid rgba(26,23,19,.18);box-shadow:0 6px 16px rgba(26,23,19,.12);
-}
-.paleta figcaption{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta2)}
+@media (hover:hover){ .btn:hover{background-color:var(--tinta);color:var(--papel)} }
+.btn:active{transform:scale(.98)}
 
 /* ══════════ la confirmación ══════════ */
-#confirmar{background:var(--negro2)}
-.campo{margin-bottom:18px;text-align:left}
-.campo label{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
-.campo input,.campo select,.campo textarea{
-  width:100%;min-height:52px;padding:14px 15px;
-  border:1px solid rgba(212,175,106,.3);border-radius:4px;
-  background-color:rgba(12,11,10,.6);color:var(--crema);
+.campo{margin-bottom:20px;text-align:left}
+.campo label{display:block;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gris);margin-bottom:9px}
+.campo input,.campo select{
+  width:100%;min-height:52px;padding:14px 0;
+  border:0;border-bottom:1px solid rgba(20,18,17,.22);border-radius:0;
+  background-color:transparent;color:var(--tinta);
   font-family:var(--texto);font-size:16px;  /* 16 o iOS hace zoom al tocar */
 }
-.campo input:focus,.campo select:focus,.campo textarea:focus{outline:2px solid var(--oro);outline-offset:1px}
-.radios{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.campo input:focus,.campo select:focus{outline:0;border-bottom-color:var(--oro)}
+.campo input::placeholder{color:#A79E92}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .radios label{
   display:flex;align-items:center;justify-content:center;
   min-height:54px;padding:0 10px;cursor:pointer;
-  border:1px solid rgba(212,175,106,.3);border-radius:4px;
-  font-size:14.5px;color:var(--crema);letter-spacing:.04em;
-  transition:border-color .25s var(--e),background-color .25s var(--e);
+  border:1px solid rgba(20,18,17,.22);
+  font-size:13.5px;letter-spacing:.08em;color:var(--tinta);
+  transition:border-color .25s var(--e),background-color .25s var(--e),color .25s var(--e);
 }
 .radios label input{position:absolute;opacity:0;width:1px;height:1px}
-.radios label.elegida{border-color:var(--oro);background-color:rgba(212,175,106,.16);color:var(--oro-claro)}
-@media (hover:hover){ .radios label:hover{border-color:rgba(212,175,106,.6)} }
-.radios label:active{transform:scale(.975)}
+.radios label.elegida{border-color:var(--tinta);background-color:var(--tinta);color:var(--papel)}
+@media (hover:hover){ .radios label:hover{border-color:var(--tinta)} }
+.radios label:active{transform:scale(.98)}
 
-.aviso-datos{margin:4px 0 20px;border-top:1px solid rgba(212,175,106,.16);padding-top:12px}
-.aviso-datos summary{
-  cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
-  font-size:12.5px;letter-spacing:.08em;color:var(--mute);
-}
+.aviso-datos{margin:6px 0 24px;border-top:1px solid rgba(20,18,17,.14);padding-top:12px}
+.aviso-datos summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
+  font-size:12px;letter-spacing:.08em;color:var(--gris)}
 .aviso-datos summary::-webkit-details-marker{display:none}
 .aviso-datos summary:before{content:'＋';margin-right:9px;color:var(--oro)}
 .aviso-datos[open] summary:before{content:'－'}
-.aviso-datos p{font-size:13.5px;line-height:1.6;color:var(--mute);margin:4px 0 0}
-.aviso-datos b{color:var(--crema);font-weight:500}
+.aviso-datos p{font-size:13px;line-height:1.65;color:var(--gris);margin:4px 0 0}
+.aviso-datos b{color:var(--tinta);font-weight:500}
 .aviso-datos a{color:var(--oro);display:inline-block;padding:14px 2px;
   text-decoration:underline;text-underline-offset:3px}
 
-#enviar{
-  width:100%;min-height:56px;margin-top:8px;
-  border:0;border-radius:999px;cursor:pointer;
-  background:linear-gradient(135deg,var(--oro-claro),var(--oro) 58%,#BE9752);
-  color:#241B09;
-  font-family:var(--texto);font-size:13px;font-weight:600;
-  letter-spacing:.22em;text-transform:uppercase;
-}
-#enviar[disabled]{opacity:.55;cursor:default}
-#enviar:active{transform:scale(.985)}
-.aviso{margin-top:16px;font-size:14.5px;min-height:1.3em;color:var(--mute)}
-.aviso.bien{color:var(--oro-claro)}
-.aviso.mal{color:#F0A6A0}
+#enviar{width:100%;min-height:56px;margin-top:4px;
+  border:1px solid var(--tinta);background-color:var(--tinta);color:var(--papel);
+  font-family:var(--texto);font-size:11.5px;font-weight:600;letter-spacing:.26em;
+  text-transform:uppercase;cursor:pointer}
+#enviar[disabled]{opacity:.5;cursor:default}
+#enviar:active{transform:scale(.99)}
+.aviso{margin-top:18px;font-size:14.5px;min-height:1.3em;color:var(--gris)}
+.aviso.bien{color:var(--oro)}
+.aviso.mal{color:#9B2C22}
 
-/* ══════════ el cierre ══════════ */
-#cierre{padding-bottom:100px}
-.cierre-n{font-family:var(--display);font-size:clamp(38px,13vw,60px);letter-spacing:.16em;color:var(--oro-claro);margin:26px 0 0;text-indent:.16em}
-.firma{margin-top:34px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute)}
-.firma a{color:var(--oro);display:inline-block;padding:13px 10px;
-  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;
-  text-decoration-color:rgba(212,175,106,.5)}
+/* ══════════ el cierre — en negro ══════════ */
+#cierre{padding-bottom:92px}
+.cierre-n{font-family:var(--display);font-size:clamp(36px,12vw,56px);letter-spacing:.12em;color:var(--crema);margin:26px 0 0;text-indent:.12em}
+.firma{margin-top:36px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--crema2)}
+.firma a{color:var(--oro-neg);display:inline-block;padding:15px 10px;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 
 /* ══════════ aparecer al bajar ══════════
    El estado por defecto es VISIBLE. Recién con la clase .js —que
    pone el propio script— el CSS los esconde: si el JS no corre, la
-   página se ve entera en vez de quedar en blanco, y quedarse en
+   invitación se ve entera en vez de quedar en blanco, y quedarse en
    blanco no tira ningún error. */
-.js .ap{opacity:0;transform:translateY(18px)}
-/* El nombre no se desplaza como bloque: lo que se mueve son sus
-   letras, una por una. Las dos cosas juntas se leen como un temblor. */
-.js .nombre.ap{transform:none}
+.js .ap{opacity:0;transform:translateY(16px)}
 .js .ap.entro{opacity:1;transform:none;transition:opacity .9s var(--e),transform .9s var(--e)}
+.js .nombre.ap{transform:none}
 @media (prefers-reduced-motion:reduce){
   .js .ap{opacity:1;transform:none}
   .js .ap.entro{transition:none}
 }
 
-/* ── pantallas chicas ── */
 @media (max-width:420px){
-  .seccion{padding:72px 20px}
-  .marco{padding:34px 20px}
-  .reloj{gap:6px}
-  .reloj div{padding:16px 2px 13px}
-  .paleta{gap:18px}
-  .paleta i{width:44px;height:44px}
+  .seccion{padding:66px 22px}
+  .tarjeta{padding:32px 20px}
+  .reloj div{padding:18px 2px}
 }
 </style>
 </head>
 <body>
 
 <div id="avance"></div>
-<div id="polvo" aria-hidden="true"></div>
 
 <!-- ══════════ el sobre ══════════ -->
 <div id="sobre">
   <div class="sobre-caja">
-    <div class="medallon">
-      <svg viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="56" fill="none" stroke="#D4AF6A" stroke-width="1" opacity=".55"/>
-        <circle cx="60" cy="60" r="48" fill="none" stroke="#D4AF6A" stroke-width=".6" opacity=".4"/>
-        <g stroke="#D4AF6A" stroke-width=".6" opacity=".5">
-          <path d="M60 4v10M60 106v10M4 60h10M106 60h10"/>
-        </g>
-        <path d="M60 10 63 16 60 22 57 16Z" fill="#D4AF6A" opacity=".8"/>
-        <path d="M60 98 63 104 60 110 57 104Z" fill="#D4AF6A" opacity=".8"/>
+    <div class="sello">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#C9A961" stroke-width="1"/>
+        <circle cx="50" cy="50" r="39" fill="none" stroke="#C9A961" stroke-width=".5" opacity=".65"/>
+        <path d="M50 4v8M50 88v8M4 50h8M88 50h8" stroke="#C9A961" stroke-width=".8"/>
       </svg>
-      <span class="ini">M</span>
+      <span>XV</span>
     </div>
     <p class="nom">Mia</p>
     <p class="sub">Mis quince años</p>
@@ -507,37 +353,41 @@ p{margin:0 0 1em}
 
 <!-- ══════════ la portada ══════════ -->
 <header id="portada">
-  <div id="rayos" aria-hidden="true"></div>
-  <div id="quinceGrande" aria-hidden="true">15</div>
-  <div id="marcoPort" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <div id="marco1" aria-hidden="true"></div>
+  <div id="marco2" aria-hidden="true"></div>
   <div class="port-in">
-    <p class="port-sup ap">Te invito a mis</p>
-    <h1 class="nombre ap" id="elNombre"><b>M</b><b>I</b><b>A</b></h1>
-    <p class="quince ap">Quince años</p>
-    <div class="div-deco ap" style="margin-top:20px"><i></i><svg viewBox="0 0 34 12" aria-hidden="true"><path d="M17 0l5 6-5 6-5-6z"/><path d="M5 4l2 2-2 2-2-2z" opacity=".7"/><path d="M29 4l2 2-2 2-2-2z" opacity=".7"/></svg><i></i></div>
-    <p class="port-fecha ap">29 · 01 · 2028</p>
-    <p class="port-donde ap">Rosario · Santa Fe</p>
+    <div class="sello ap" style="margin-bottom:30px">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#C9A961" stroke-width="1"/>
+        <circle cx="50" cy="50" r="39" fill="none" stroke="#C9A961" stroke-width=".5" opacity=".65"/>
+        <path d="M50 4v8M50 88v8M4 50h8M88 50h8" stroke="#C9A961" stroke-width=".8"/>
+      </svg>
+      <span>XV</span>
     </div>
+    <p class="port-sup ap">Te invito a mis</p>
+    <h1 class="nombre ap" id="elNombre"><b>M</b><b>i</b><b>a</b></h1>
+    <p class="quince ap">Quince años</p>
+    <div class="filete ap"><i></i><b></b><i></i></div>
+    <p class="port-fecha ap">29 de enero de 2028</p>
+    <p class="port-donde ap">Rosario · Santa Fe</p>
+  </div>
   <p class="deslizar ap">Deslizá<span></span></p>
 </header>
 
 <!-- ══════════ la frase ══════════ -->
 <section class="seccion centro" id="frase">
   <div class="caja">
-    <div class="marco ap">
-      <span class="esq a"></span><span class="esq b"></span>
-      <p class="frase-t">Hay noches que se eligen<br>para no olvidarse.</p>
-      <p class="frase-f">Y quiero que estés en la mía</p>
-    </div>
+    <p class="frase-t ap">Hay noches que se eligen<br>para no olvidarse.</p>
+    <div class="filete ap"><i></i><b></b><i></i></div>
+    <p class="ap bajada" style="margin:0">Y quiero que estés en la mía.</p>
   </div>
 </section>
 
 <!-- ══════════ la cuenta regresiva ══════════ -->
-<section class="seccion centro" id="cuenta">
+<section class="seccion centro noche" id="cuenta">
   <div class="caja">
-    <p class="rotulo ap">Falta</p>
+    <p class="ante ap">Falta</p>
     <h2 class="titulo ap">Para la noche</h2>
-    <div class="div-deco ap" style="margin-top:18px"><i></i><svg viewBox="0 0 34 12" aria-hidden="true"><path d="M17 0l5 6-5 6-5-6z"/><path d="M5 4l2 2-2 2-2-2z" opacity=".7"/><path d="M29 4l2 2-2 2-2-2z" opacity=".7"/></svg><i></i></div>
     <div class="reloj ap">
       <div><b id="cD">00</b><span>Días</span></div>
       <div><b id="cH">00</b><span>Horas</span></div>
@@ -549,49 +399,37 @@ p{margin:0 0 1em}
 </section>
 
 <!-- ══════════ dónde ══════════ -->
-<section class="seccion centro clara" id="donde">
+<section class="seccion centro" id="donde">
   <div class="caja">
-    <p class="rotulo ap">Dónde y cuándo</p>
-    <div class="div-deco ap" style="margin-bottom:26px"><i></i><svg viewBox="0 0 34 12" aria-hidden="true"><path d="M17 0l5 6-5 6-5-6z"/><path d="M5 4l2 2-2 2-2-2z" opacity=".7"/><path d="M29 4l2 2-2 2-2-2z" opacity=".7"/></svg><i></i></div>
-    <div class="tarj marco ap">
-      <span class="esq a"></span><span class="esq b"></span>
+    <p class="ante ap">Dónde</p>
+    <div class="tarjeta ap">
       <p class="salon" id="lugar">La Mansión del Rey</p>
       <p class="calle" id="calle">Vera Mujica 68 · Rosario</p>
-      <p class="hora" id="hora">Sábado 29 de enero · 21:00</p>
-      <a class="btn-mapa" id="mapa" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+      <p class="hora" id="hora">Sábado 29 de enero</p>
+      <a class="btn" id="mapa" href="#" target="_blank" rel="noopener">Cómo llegar</a>
     </div>
   </div>
 </section>
 
-<!-- ══════════ la noche ══════════ -->
-<section class="seccion" id="noche">
-  <div class="caja">
-    <p class="rotulo centro ap">La noche</p>
-    <h2 class="centro titulo ap">Cómo viene la mano</h2>
-    <div class="agenda ap" id="agenda"></div>
-  </div>
-</section>
-
 <!-- ══════════ dress code ══════════ -->
-<section class="seccion centro clara" id="dress">
+<section class="seccion centro" id="dress">
   <div class="caja">
-    <p class="rotulo ap">Dress code</p>
+    <p class="ante ap">Dress code</p>
     <h2 class="titulo ap">Elegante o formal</h2>
-    <p class="ap" id="dressTexto"></p>
-    <div class="paleta ap" id="paleta"></div>
+    <div class="filete ap"><i></i><b></b><i></i></div>
+    <p class="ap bajada" id="dressTexto" style="margin:0"></p>
   </div>
 </section>
 
 <!-- ══════════ el regalo · solo si hay alias ══════════ -->
 <section class="seccion centro" id="regalo" hidden>
   <div class="caja">
-    <div class="marco ap">
-      <span class="esq a"></span><span class="esq b"></span>
-      <p class="rotulo">Regalo</p>
-      <p id="regaloTexto"></p>
-      <p style="font-family:var(--display);font-size:23px;letter-spacing:.1em;color:var(--oro-claro);margin:20px 0 4px" id="alias"></p>
-      <p style="font-size:13px;color:var(--mute)" id="titular"></p>
-      <button class="btn-mapa" id="copiar" type="button" style="border-color:var(--oro);color:var(--oro)"><span id="copiarTxt">Copiar alias</span></button>
+    <p class="ante">Regalo</p>
+    <p class="bajada" id="regaloTexto"></p>
+    <div class="tarjeta" style="margin-top:22px">
+      <p style="font-family:var(--display);font-size:22px;letter-spacing:.08em;color:var(--tinta);margin:0 0 4px" id="alias"></p>
+      <p style="font-size:13px;color:var(--gris);margin:0" id="titular"></p>
+      <button class="btn" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
     </div>
   </div>
 </section>
@@ -599,11 +437,12 @@ p{margin:0 0 1em}
 <!-- ══════════ la confirmación ══════════ -->
 <section class="seccion" id="confirmar">
   <div class="caja">
-    <p class="rotulo centro ap">Confirmación</p>
+    <p class="ante centro ap">Confirmación</p>
     <h2 class="centro titulo ap">¿Venís?</h2>
-    <p class="centro ap" id="hasta" style="color:var(--mute);font-size:15px"></p>
+    <div class="filete ap"><i></i><b></b><i></i></div>
+    <p class="centro ap bajada" id="hasta"></p>
 
-    <form id="rsvp" class="ap" novalidate>
+    <form id="rsvp" class="ap" novalidate style="margin-top:14px">
       <div class="campo">
         <label for="fNombre">Nombre y apellido</label>
         <input id="fNombre" name="Nombre" type="text" autocomplete="name" required>
@@ -654,21 +493,18 @@ p{margin:0 0 1em}
 </section>
 
 <!-- ══════════ el cierre ══════════ -->
-<section class="seccion centro" id="cierre">
+<section class="seccion centro noche" id="cierre">
   <div class="caja">
-    <div class="div-deco ap" style="margin-bottom:30px"><i></i><svg viewBox="0 0 34 12" aria-hidden="true"><path d="M17 0l5 6-5 6-5-6z"/><path d="M5 4l2 2-2 2-2-2z" opacity=".7"/><path d="M29 4l2 2-2 2-2-2z" opacity=".7"/></svg><i></i></div>
-    <div class="medallon ap">
-      <svg viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="56" fill="none" stroke="#D4AF6A" stroke-width="1" opacity=".55"/>
-        <circle cx="60" cy="60" r="48" fill="none" stroke="#D4AF6A" stroke-width=".6" opacity=".4"/>
-        <g stroke="#D4AF6A" stroke-width=".6" opacity=".5"><path d="M60 4v10M60 106v10M4 60h10M106 60h10"/></g>
-        <path d="M60 10 63 16 60 22 57 16Z" fill="#D4AF6A" opacity=".8"/>
-        <path d="M60 98 63 104 60 110 57 104Z" fill="#D4AF6A" opacity=".8"/>
+    <div class="sello ap">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#D8B877" stroke-width="1" opacity=".7"/>
+        <circle cx="50" cy="50" r="39" fill="none" stroke="#D8B877" stroke-width=".5" opacity=".45"/>
+        <path d="M50 4v8M50 88v8M4 50h8M88 50h8" stroke="#D8B877" stroke-width=".8" opacity=".7"/>
       </svg>
-      <span class="ini">M</span>
+      <span>XV</span>
     </div>
     <p class="cierre-n ap">Mia</p>
-    <p class="ap" style="color:var(--mute);margin-top:16px">Te espero.</p>
+    <p class="ap" style="margin-top:14px">Te espero.</p>
     <p class="firma ap">Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a></p>
   </div>
 </section>
@@ -684,10 +520,14 @@ const CONFIG = {
   /* Con la hora LOCAL explícita (-03:00). Una fecha sin zona mandada
      a una cuenta regresiva la corre tres horas, y eso acá ya costó
      caro una vez.
-     ⚠ LA HORA ES UNA SUPOSICIÓN: la cumpleañera mandó el día, no la
-     hora. 21:00 es lo habitual en Rosario; se cambia acá y se mueven
-     solas la cuenta regresiva, el cronograma y la tarjeta de dónde. */
+     ⚠ LA HORA TODAVÍA NO LA SABEMOS: la cumpleañera mandó el día.
+     Las 21:00 están acá SOLO para que la cuenta regresiva tenga de
+     dónde contar, y por eso la invitación NO MUESTRA ninguna hora:
+     una hora inventada en una invitación manda a la gente a la hora
+     equivocada. Cuando llegue la de verdad se pone acá y
+     `mostrarHora` pasa a true. */
   fiesta: "2028-01-29T21:00:00-03:00",
+  mostrarHora: false,
   confirmarHasta: "29 de diciembre",
 
   lugar: "La Mansión del Rey",
@@ -698,18 +538,10 @@ const CONFIG = {
   calle: "Vera Mujica 68 · Rosario",
   mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
 
-  cronograma: [
-    {hora:"21:00", que:"Recepción",     detalle:"Llegada y primer brindis."},
-    {hora:"21:45", que:"La entrada",    detalle:"El momento de Mia."},
-    {hora:"22:15", que:"Cena",          detalle:"A la mesa, todos juntos."},
-    {hora:"00:00", que:"El vals",       detalle:"Y después, la torta."},
-    {hora:"00:30", que:"Fiesta",        detalle:"Hasta que aguantemos."},
-    {hora:"04:00", que:"Trasnoche",     detalle:"Algo rico para el final."}
-  ],
-
-  dressTexto: "Elegante o formal. Es una noche para ponerse lindos.",
-  /* Los tres que eligió ella: blanco, dorado y negro. */
-  dressColores: ["#F4F1EA","#D4AF6A","#0C0B0A"],
+  /* Sin cronograma y sin pastillas de color en el dress code: los
+     sacó el dueño. Los horarios además los había inventado yo, que
+     es peor que no tenerlos. */
+  dressTexto: "Es una noche para ponerse lindos.",
 
   /* ⚠ VACÍO A PROPÓSITO. "Ceci.montenegro.11" puede ser un alias para
      transferir o un usuario de Instagram, y no es lo mismo: publicar
@@ -764,12 +596,6 @@ document.documentElement.classList.add('js');
   $('#dressTexto').textContent = CONFIG.dressTexto;
   $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta + '. Con eso cerramos las mesas.';
 
-  $('#paleta').innerHTML = (CONFIG.dressColores||[])
-    .map(c => '<i style="background-color:' + esc(c) + '"></i>').join('');
-
-  $('#agenda').innerHTML = (CONFIG.cronograma||[]).map(t =>
-    '<div class="tramo"><div class="h">' + esc(t.hora) + '</div>' +
-    '<div><b>' + esc(t.que) + '</b><span>' + esc(t.detalle) + '</span></div></div>').join('');
 
   /* El regalo solo existe si hay un alias. Una sección vacía se
      dibuja perfecta y no dice nada: peor que no estar. Y un alias
@@ -795,7 +621,8 @@ document.documentElement.classList.add('js');
     const d = new Date(+m[1], +m[2]-1, +m[3]);   /* por componentes: sin zona de por medio */
     const nom = DIAS[d.getDay()];
     $('#hora').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) +
-      ' ' + (+m[3]) + ' de ' + MESES[+m[2]-1] + ' · ' + m[4] + ':' + m[5];
+      ' ' + (+m[3]) + ' de ' + MESES[+m[2]-1] +
+      (CONFIG.mostrarHora ? ' · ' + m[4] + ':' + m[5] : '');
   }
 })();
 
@@ -898,10 +725,6 @@ document.documentElement.classList.add('js');
       pedido = false;
       const alto = document.documentElement.scrollHeight - innerHeight;
       barra.style.width = (alto > 0 ? Math.min(100, (scrollY/alto)*100) : 0) + '%';
-      /* Un solo oyente para todo lo que depende del scroll. Tres
-         sueltos corriendo en cada píxel es lo que hace que una
-         página se sienta pesada en un teléfono. */
-      if (window.__parallax) window.__parallax(scrollY);
     });
   }
   addEventListener('scroll', alScroll, {passive:true});
@@ -1005,44 +828,6 @@ document.documentElement.classList.add('js');
     }
     boton.disabled = false;
   });
-})();
-
-/* ══════════ el polvo de oro ══════════
-   Nueve motas, cada una con su carril, su tamaño y su demora. Van en
-   una capa fija SIN pointer-events: un adorno que se come un toque
-   es un botón que no responde, y eso ya pasó dos veces acá. */
-(function(){
-  const caja = $('#polvo');
-  if(!caja) return;
-  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  let html = '';
-  for (let i=0;i<9;i++){
-    const x = 6 + i*11 + (i%3)*4;          /* repartidas, no al azar: así no se amontonan */
-    const dur = 17 + (i%4)*6;
-    const dem = i*2.4;
-    const tam = i%3 === 0 ? 4 : 2.5;
-    html += '<i style="left:' + x + '%;width:' + tam + 'px;height:' + tam +
-            'px;animation-duration:' + dur + 's;animation-delay:-' + dem + 's"></i>';
-  }
-  caja.innerHTML = html;
-})();
-
-/* ══════════ el fondo de la portada se mueve menos que el texto ══════════
-   Es lo que da profundidad: el abanico y el 15 se quedan atrás
-   mientras el nombre sube. Va colgado del MISMO oyente de scroll que
-   la barra de avance —no de uno nuevo—, y solo mientras la portada
-   está a la vista: mover una capa que ya no se ve es batería del
-   invitado a cambio de nada. */
-window.__parallax = (function(){
-  const rayos = $('#rayos'), quince = $('#quinceGrande');
-  if (!rayos || !quince) return function(){};
-  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return function(){};
-  const alto = () => (document.getElementById('portada')||{}).offsetHeight || innerHeight;
-  return function(y){
-    if (y > alto()) return;
-    rayos.style.transform  = 'translateX(-50%) translateY(' + (y*.18) + 'px)';
-    quince.style.transform = 'translate(-50%,-52%) translateY(' + (y*.09) + 'px)';
-  };
 })();
 </script>
 </body>
