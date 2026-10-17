@@ -1631,15 +1631,122 @@ el compresor.
 
 ## El Apps Script de las invitaciones
 
-La planilla de confirmaciones vive en Google, no acá. El `doGet` está en
-`apps-script/listado.gs.txt` y se pega a mano en el editor de Apps Script:
-el repo no puede tocarlo. Dos puertas, ninguna abre de más: `?clave=` (la
-lista, para el panel) y `?confirmado=NOMBRE` (sí o no, para la invitación).
-La clave vive en las propiedades del proyecto, no en el código ni en
-ninguna página: **una página pública no puede guardar un secreto.** El
-portón anterior comparaba contra un correo escrito en el propio HTML.
+La planilla de confirmaciones vive en Google, no acá, y **cada evento
+necesita la suya**. Son dos archivos y no son lo mismo:
+
+- **`apps-script/evento-nuevo.gs.txt`** · el script COMPLETO de una
+  invitación nueva: el `doPost` (lo que escribe el formulario) y el
+  `doGet` con sus dos puertas. Es el que se usa de ahora en adelante.
+- **`apps-script/listado.gs.txt`** · solo el `doGet`. Es el parche para
+  la planilla de **Pía**, que ya tiene su `doPost` andando y a la que
+  únicamente hay que cambiarle quién puede LEER.
+
+Dos puertas y ninguna abre de más: `?clave=` (la lista, para el
+listado) y `?confirmado=NOMBRE` (sí o no, para la invitación). La clave
+vive en las propiedades del proyecto, no en el código ni en ninguna
+página: **una página pública no puede guardar un secreto.** El portón
+anterior comparaba contra un correo escrito en el propio HTML.
+
+**La clave la inventa la planilla, no una persona.** `preparar()` se
+corre una vez desde el editor: escribe los títulos, genera la clave, la
+guarda y la muestra. Pensada a mano termina siendo el nombre de la
+fiesta y el año, y además ahorra el paso de ir a buscar el panel de
+propiedades, que es donde se abandona el trámite.
+Son **16 dígitos hexadecimales de dos uuid**, no un pedazo de un
+base64: el principio de un base64 depende del principio del texto de
+adentro, así que dos claves hechas igual arrancaban iguales — lo agarró
+la prueba, que pedía que dos eventos no compartieran clave. Hexadecimal
+además se dicta por teléfono sin pifiar: no tiene o ni l.
+
+**Los campos del formulario son los títulos de las columnas**, y el
+`doPost` crea la columna sola la primera vez que llega uno que no
+conocía. Así cada invitación pregunta lo suyo sin tocar el script. Van
+con candado (`LockService`): dos confirmaciones en el mismo segundo
+—que es lo que pasa cuando se reparte el link por WhatsApp— leerían las
+dos la misma última fila y una pisaría a la otra.
+
+**Confirmar dos veces NO deja dos filas.** El que toca de nuevo porque
+el wifi tardó y el que cambia el "no" por un "sí" son los dos casos que
+pasan de verdad; con filas nuevas el cliente cuenta de más y encarga
+comida para gente que no existe. Se le pisa la fila.
 
 `apps-script/` va en `.assetsignore`: no se publica.
+
+### El listado: cómo lee el cliente quiénes confirmaron
+
+`clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó
+`preparar()`— y ve los tres números (en total · confirmados · no
+asisten), la tabla y **"Descargar Excel"**, que es para lo que de
+verdad entra: armar las mesas. La clave se guarda en ese aparato, así
+que la escribe una sola vez.
+
+**Es una sola plantilla** (`invitaciones/plantilla-listado/index.html`)
+y cada evento es una copia con su `CONFIG` —dos líneas— y nada más.
+`pruebas/invitaciones.js` falla si alguna copia se separó: dos
+versiones de la misma pantalla es una que se queda atrás, y la que se
+queda atrás es la del cliente que ya pagó.
+
+Cuatro cosas que esto costó, y **ninguna tiraba un error**:
+
+- **Las columnas estaban escritas a mano**, y eran las del formulario
+  de Pía (`Persona 1 - Nombre`, `¿Confirma?`, `Canción pedida`…). Con
+  cualquier otra invitación la tabla salía con **todas las filas
+  vacías**: las seis filas ahí, cada celda en blanco, y la consola
+  limpia. Ahora las columnas salen de los datos que manda la planilla,
+  que es la única lista que no miente.
+- **El resumen lo cuenta la PLANILLA, no la página.** Contado de los
+  dos lados, el día que una columna se llame distinto el listado dice
+  "0 confirmaron" con la planilla llena. El `doGet` manda el resumen
+  ya hecho y de paso dice con qué columnas contó.
+- **Y cuando hay que adivinar la columna, se adivina por palabra
+  entera.** Con el Apps Script viejo no hay quién diga los nombres, así
+  que se busca. Buscando por "contiene", `confirma` matcheaba primero
+  **"Fecha y hora de la confirmaCIÓN"** —la del reloj— y el sí/no se
+  pintaba contra una fecha: cero confirmados, todo verde apagado,
+  ningún error. Se saca el acento y la puntuación y se compara palabra
+  por palabra, así "¿Confirma?" cuenta y "confirmación" no.
+- **Una columna vacía en todas las filas se muestra apagada.** Un
+  formulario que admite cinco acompañantes trae veinte columnas que no
+  llenó nadie, y con todas puestas la tabla no se lee.
+
+**La clave guardada va por evento.** Era una sola (`ce:listado:clave`)
+para todos: con dos eventos, el segundo listado que abrís en el mismo
+aparato arranca mandando la clave del primero y te dice "esa clave no
+es" sin que hayas escrito nada.
+
+**"Falta llenar el CONFIG" y "se cortó internet" no son lo mismo.** Las
+dos terminan sin datos, pero una la arregla quien publicó la página y
+la otra se arregla sola. Una plantilla copiada y sin llenar decía "no
+se pudo conectar con la planilla", echándole la culpa a la conexión.
+
+Lo mide todo `pruebas/listado.js` (la pantalla, con el Apps Script
+reemplazado por interceptación) y `pruebas/rsvp.js` (el Apps Script,
+corrido en un `vm` con una planilla de mentira). Contra el código
+anterior el primero da **8 fallas**.
+
+**`rsvp.js` corre el .gs.txt de verdad, sin Google.** Ese código vive
+en los servidores de Google y el que lo estrena es el invitado la noche
+de la fiesta: no hay ninguna pantalla donde mirarlo, llega un "no anda"
+al otro día con la planilla ya sucia. Así que se le arma una planilla
+falsa con las cinco cosas que usa de `SpreadsheetApp` y se lo ataca
+como lo haría una fiesta. Está verificada rompiendo a propósito cada
+decisión: agregar fila en vez de pisar → 4 fallas, que "no voy" cuente
+como sí → 2, la hora en UTC → 2, que la puerta del invitado devuelva la
+lista → 2, que no pida la clave → 3.
+
+**Y el reloj de la prueba va DENTRO del `vm`.** Pisar el `Date` de
+afuera no toca el del contexto, así que la comprobación de que la hora
+es la de Rosario pasaba midiendo la hora de hoy. Es la regla de la caja
+de 0x0 otra vez: antes de medir, comprobar que lo que se mide ESTÉ.
+
+**Lo que NO se puede hacer desde acá.** Crear el proyecto, correr
+`preparar()` y publicar la implementación son tres pasos en la interfaz
+de Apps Script. No hay conector de Google autorizado en esta sesión, y
+aunque lo hubiera, el de Drive no despliega una aplicación web: eso es
+la API de Apps Script, que hay que habilitar aparte y con su propio
+OAuth. Sale más caro de configurar que los seis clics. Lo que sí se
+hace desde acá es que esos clics sean los menos posibles y que el
+código llegue medido.
 
 ## La app andando adentro de la web
 

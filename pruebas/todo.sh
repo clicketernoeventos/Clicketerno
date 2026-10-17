@@ -21,7 +21,7 @@ cd "$(dirname "$0")/.."
 RAIZ="$(pwd)"
 QUE="${1:-todo}"
 
-MURO=(stress tablero largo enlaces servicios barrido ads extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste dispositivos legales tarjetas miniaturas interfaz red puertas recorrido invitaciones)
+MURO=(stress tablero largo enlaces servicios barrido ads extras nuevas borrar xss hostil diagnostico demo seguridad vencimiento movil contraste dispositivos legales tarjetas miniaturas interfaz red puertas recorrido invitaciones listado rsvp)
 # Mide lo que baja un invitado en las DOS apps, así que necesita los dos
 # puertos levantados. Por eso tiene bloque propio y no vive en ninguna lista.
 AMBAS=(arranque)
@@ -167,7 +167,10 @@ case "$QUE" in
   ambas) azul "── las dos juntas (8099 y 8890) ──"
          servidor 8099 && servidor 8890 && for t in "${AMBAS[@]}"; do correr "$t"; done ;;
   sql)   sql ;;
-  inv)   azul "── las invitaciones ──"; correr invitaciones ;;   # suelta: no necesita servidor
+  inv)   azul "── las invitaciones ──"
+         # `rsvp` no necesita servidor (el Apps Script se corre en un vm);
+         # `listado` sí, que abre la pantalla en un navegador.
+         correr invitaciones; correr rsvp; servidor 8099 && correr listado ;;
   todo)
     azul "── el muro (puerto 8099) ──";  servidor 8099 && for t in "${MURO[@]}";  do correr "$t"; done
     azul "── el rollo (puerto 8890) ──"; servidor 8890 && for t in "${ROLLO[@]}"; do correr "$t"; done
