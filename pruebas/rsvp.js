@@ -136,6 +136,25 @@ console.log('\n─── preparar(): deja la planilla y la clave listas ──�
   es(b.preparar() !== clave, 'dos eventos distintos no comparten clave');
 }
 
+console.log('\n─── la clave elegida a mano ───');
+{
+  /* Se puede elegir la clave en vez de dejar que la invente la
+     planilla. No es lo recomendado —un correo es público y
+     adivinable, y esa clave abre la lista entera— pero es decisión
+     de quien vende, y si está puesta tiene que ANDAR: una clave que
+     se acepta a medias es peor que no tenerla. */
+  const a = cargar();
+  a.caja.CLAVE_ELEGIDA = 'Gabimontenegro1103@gmail.com';
+  const clave = a.preparar();
+  es(clave === 'Gabimontenegro1103@gmail.com', 'preparar() usa la que se eligió');
+  es(a.props.CLAVE_LISTADO === clave, 'y la guarda en las propiedades');
+  es(a.get({ clave }).error === undefined, 'y con ella se entra al listado');
+  es(a.get({ clave: 'otra' }).error === 'clave', 'con otra, no');
+  /* Correrla de nuevo no puede cambiarla. */
+  a.preparar();
+  es(a.props.CLAVE_LISTADO === clave, 'corrida dos veces sigue siendo la misma');
+}
+
 console.log('\n─── el invitado confirma ───');
 {
   const a = cargar(); a.preparar();

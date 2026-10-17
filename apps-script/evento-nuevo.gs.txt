@@ -65,6 +65,16 @@ var COL_CUANDO   = 'Cuándo';    // lo pone la planilla, no el formulario
    noche quedaría fechada al día siguiente. */
 var ZONA = 'America/Argentina/Cordoba';
 
+/* La clave del listado, si querés elegirla vos.
+   VACÍO = la inventa la planilla y te la muestra, que es lo
+   recomendado: una clave pensada a mano termina siendo el nombre de
+   la fiesta y el año, o un correo, y un correo es público y
+   adivinable — y esa clave abre la lista entera de invitados.
+   Si igual querés poner una, va ACÁ, en TU copia del editor de Apps
+   Script. Nunca en el repositorio: ahí quedaría versionada y a la
+   vista de cualquiera que tenga acceso al código. */
+var CLAVE_ELEGIDA = '';
+
 
 /* ── Paso 3: preparar ──────────────────────────────────────────
    Se corre UNA vez, a mano, desde el editor. Es lo que evita tener
@@ -80,7 +90,10 @@ function preparar() {
 
   var props = PropertiesService.getScriptProperties();
   var clave = props.getProperty('CLAVE_LISTADO');
-  if (!clave) {
+  if (CLAVE_ELEGIDA) {
+    clave = String(CLAVE_ELEGIDA);
+    props.setProperty('CLAVE_LISTADO', clave);
+  } else if (!clave) {
     /* La inventa la planilla, no una persona: una clave pensada a
        mano termina siendo el nombre de la fiesta y el año.
        Son los 16 dígitos de DOS uuid pegados, no un pedazo de algo

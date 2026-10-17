@@ -80,6 +80,18 @@ const MEDIDOR=`(${function(){
     if(!propio) continue;
     if(!visible(e)) continue;
     const cs=getComputedStyle(e);
+    /* La DECORACIÓN no se juzga, y "decoración" tiene una definición
+       estricta: escondida del lector de pantalla (aria-hidden) Y que
+       no ataja el dedo (pointer-events:none). Las dos juntas, no una.
+       Con esa regla queda afuera lo que de verdad es un adorno —el
+       "15" en contorno de la portada de mia15, que es una marca de
+       agua y se mide como 1,00:1 porque su color ES transparente— y
+       no puede quedar afuera ningún texto que alguien tenga que
+       leer: un texto que importa no se esconde del lector de
+       pantalla.
+       Es el mismo criterio que ya vale para lo que cae sobre una
+       foto: mejor callar que inventar una falla. */
+    if(e.getAttribute('aria-hidden')==='true' && cs.pointerEvents==='none') continue;
     const fondo=fondoDe(e); if(!fondo) continue;
     let tinta=num(cs.color); if(tinta.length===3) tinta=tinta.concat(1);
     const op=opacidadDe(e);
