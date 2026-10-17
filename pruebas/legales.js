@@ -35,6 +35,17 @@ const path = require('path');
 const RAIZ = path.join(__dirname, '..');
 const S = 'http://127.0.0.1:8099';
 const COD='QUI-7FCE64', CLAVE='ABC123';
+/* El dígito verificador de un CUIT: los diez primeros por 5,4,3,2,7,6,5,4,3,2,
+   el resto de dividir por once, y once menos eso (con 11→0 y 10→9). */
+function cuitValido(txt){
+  const d=String(txt).replace(/\D/g,'');
+  if(d.length!==11) return false;
+  const peso=[5,4,3,2,7,6,5,4,3,2];
+  let suma=0; for(let i=0;i<10;i++) suma+=Number(d[i])*peso[i];
+  let v=11-(suma%11); if(v===11) v=0; if(v===10) v=9;
+  return v===Number(d[10]);
+}
+
 const fallas=[]; const mal=m=>{fallas.push(m);console.log('  ✗ '+m);};
 const bien=m=>console.log('  ✓ '+m);
 const nota=m=>console.log('  · salteada · '+m);
@@ -303,10 +314,20 @@ const ART6=[
        "[PENDIENTE: …]" entre corchetes publicado en una página legal es
        peor que no tener la línea. El recordatorio sigue saliendo en cada
        corrida igual. */
-    if(/FALTA COMPLETAR: razon-social-cuit/.test(t))
-      nota(`${q} todavía no tiene la identificación fiscal (razón social y CUIT): hay que completarla`);
+    if(/FALTA COMPLETAR: titular/.test(t))
+      nota(`${q} tiene el CUIT pero todavía no el nombre del titular: hay que completarlo`);
     if(/\[PENDIENTE/.test(t))
       mal(`${q} tiene un "[PENDIENTE…]" a la vista del cliente`);
+
+    /* El CUIT, y que sea UN CUIT. Un dígito cambiado en una página
+       legal no tira ningún error y no lo nota nadie hasta que alguien
+       lo va a buscar a ARCA y no existe: ahí el que mira es un cliente
+       con un problema, o alguien de Defensa del Consumidor. El dígito
+       verificador lo agarra, que es justamente para lo que está. */
+    const cuit=(t.match(/\b(\d{2}-\d{8}-\d)\b/)||[])[1];
+    if(!cuit) mal(`${q} no muestra el CUIT`);
+    else if(!cuitValido(cuit)) mal(`${q} muestra un CUIT que no cierra: ${cuit}`);
+    else bien(`${q} identifica al vendedor con su CUIT (${cuit})`);
   }
 
   if(errs.length) mal('errores de JavaScript: '+errs.slice(0,2).join(' | '));

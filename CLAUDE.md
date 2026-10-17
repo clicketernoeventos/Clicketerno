@@ -2556,9 +2556,18 @@ dejaría peor parados.
    sirve de nada acá, porque con el correo se resetean las otras dos.
 2. **Respaldo del contenido.** Hoy las fotos están en un solo lugar.
 3. **Inscribir la base en el Registro Nacional de Bases de Datos** (AAIP).
-4. **Razón social y CUIT** para las dos páginas legales. Mientras falten,
+4. **El nombre del titular** para las dos páginas legales. El **CUIT ya
+   está** (17/10/2026): `20-38900666-2`, en `privacidad.html#responsable`
+   y en `terminos.html#quienes`. Empieza en 20, o sea que es una persona
+   física, y ahí la "razón social" es el nombre y apellido del titular
+   — eso es lo único que falta. Con el CUIT solo el vendedor ya queda
+   identificado: el que lo busca en ARCA lo encuentra.
    `pruebas/legales.js` lo informa como "salteada" en cada corrida: no
    rompe la suite, pero no deja olvidarse.
+   **Y comprueba que el CUIT sea un CUIT**, con su dígito verificador.
+   Un dígito cambiado en una página legal no tira ningún error y no lo
+   nota nadie hasta que alguien lo va a buscar y no existe — y el que
+   mira ahí es un cliente con un problema, o Defensa del Consumidor.
 5. **Rotar la clave maestra**, que nunca se cambió.
 
 ## Lo que no se toca sin permiso
