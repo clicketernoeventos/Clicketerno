@@ -2405,6 +2405,101 @@ Cuatro cosas que no son adorno:
   ficha no se deriva del alto —no es un carrusel, se scrollea— así que va
   `width:100%;max-width:252px` con `auto-fit,minmax(230px,1fr)`.
 
+### `mia15/`: la primera invitación de un cliente de verdad
+
+29 de enero de 2028, La Mansión del Rey (Vera Mujica 68, Rosario).
+Lo que mandó la cumpleañera fue corto: **blanco, dorado y negro**,
+*"elegante o formal"*, que se marque si asisten y que tenga cuenta
+regresiva.
+
+**Se armó SIN publicar**, a pedido del dueño: vive en la rama de
+trabajo hasta que el cliente la apruebe. Cloudflare publica `main`,
+así que mientras no se mergee no existe en el sitio. Y el
+`CONFIG.endpoint` va vacío a propósito: la confirmación se ve y se
+completa entera y **dice con todas las letras que no se mandó a
+ningún lado**, así la tarjeta se revisa antes de que exista la
+planilla.
+
+**Hubo cuatro versiones y las tres primeras se tiraron.** Vale
+anotar por qué, porque es la misma lección tres veces:
+
+1. Negra con oro. *"Parece hecha a lo Click Eterno y no al pedido
+   de la quinceañera"*, y tenía razón: **esa es NUESTRA paleta** —la
+   del muro, la del rollo, la del sitio— y el blanco, que era uno de
+   los tres colores que ella pidió, había quedado de relleno.
+2. Papel marfil con tipografía negra. Correcta y sosa.
+3. Con la referencia que eligió él (BOMA): tipografía gigante como
+   gráfico, títulos manuscritos y una línea vertical al costado.
+4. Con la segunda referencia: **bandas que alternan blanco y negro
+   con el borde RASGADO**, que es lo que usa el blanco y el negro
+   como estructura y no como detalle.
+
+**El atajo para elegir tipografía: mostrarla, no describirla.** Tres
+veces se cambió la familia por descripción y tres veces no era. A la
+cuarta se montó la MISMA portada con siete tipografías y se le
+mandaron las siete capturas. Eligió mirando. Está en
+`pruebas/invitacion_mirar.js` la forma de hacerlo: interceptar el
+HTML y cambiarle el `<link>` y la variable, igual que hace
+`puertas.js` con `MUESTRA_MURO`.
+
+**Los bordes rasgados se ponen SOLOS**, y solo donde cambia el
+color. Escritos a mano en el HTML, el día que una sección se
+esconda —el regalo se esconde si no hay alias— quedarían dos bandas
+del mismo color pegadas con un rasgado en el medio. Los caminos SVG
+se generan con la fecha de la fiesta de semilla, así salen iguales
+en cada armado.
+
+**Lo que NO se escribió, y es lo importante:** la hora (la mandó sin
+hora, y una hora inventada manda a la gente a la hora equivocada —
+queda en `CONFIG.mostrarHora`, apagada) y el alias del regalo
+(`Ceci.montenegro.11` puede ser un alias para transferir o un
+usuario de Instagram, y publicar el equivocado manda la plata de los
+invitados a cualquier parte).
+
+**Es la primera invitación con el aviso del artículo 6** adentro del
+formulario. Acá hace falta de verdad: se piden nombres de invitados
+y comidas especiales, que es información de salud.
+
+### Medir una invitación: `pruebas/invitacion_mirar.js <carpeta>`
+
+Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
+abierto, que son dos pantallas distintas. Contraste, 44px, desborde,
+consola, CSP, y después las piezas: que la cuenta regresiva corra,
+que el calendario marque un solo día, que ningún enlace quede en
+`#`, que el sí/no no venga preseleccionado y que la confirmación no
+mienta. No está en `todo.sh` porque toma un argumento: se corre
+después de tocar una invitación.
+
+**Tres cosas que esa suite midió mal y cómo se arreglaron**, que son
+las tres la misma lección —*antes de creerle a una medición,
+rompela a propósito y mirá si falla*—:
+
+- **`scrollWidth` contra el ancho pedido no mide el desborde.** El
+  `overflow-x:hidden` del body —que está puesto a propósito— hace
+  que devuelva el ancho de la pantalla igual. Medido: con un bloque
+  de 900px metido adentro seguía diciendo "320 contra 320". Se miden
+  las CAJAS de verdad, y con el mismo bloque da 1 salido.
+- **Que dos cajas no se superpongan no es que el texto no se pise.**
+  La cuenta regresiva con los días en tres dígitos pintaba "469"
+  ENCIMA del dos puntos de al lado y se leía `46904`. Las cajas no
+  se tocaban —esa comprobación daba verde con el bug puesto—: lo que
+  se desbordaba era la TINTA. Se mide con `scrollWidth` contra
+  `clientWidth` de cada elemento con texto propio.
+- **El medidor de contraste tiene que saltear la decoración**, con
+  una definición estricta: `aria-hidden` Y `pointer-events:none`,
+  las dos juntas. Sin eso un "15" dibujado en contorno se mide como
+  texto a 1,00:1 —su color ES transparente— y la suite informa una
+  falla que no existe. Comprobado que no la deja ciega: 2098 textos
+  medidos en el producto con el filtro y sin él.
+
+**Y una de CSS que no da ningún error: una variable que no existe.**
+Al rehacer la paleta se fueron `--crema`, `--crema2` y `--oro-neg`
+de `:root`, pero las bandas negras las seguían usando. Una `var()`
+sin definir **no es un error**: la declaración se descarta y la
+propiedad hereda. Resultado, negro sobre negro en trece textos —
+1,00:1— y en el navegador una banda negra vacía que parece un error
+de carga. Lo agarró el medidor de contraste.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:

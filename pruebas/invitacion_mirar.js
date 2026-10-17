@@ -172,6 +172,34 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     es(/^\d+$/.test(dias) && +dias > 0, 'y cuenta días de verdad (' + dias + ')');
   }
 
+  /* NINGÚN TEXTO SE SALE DE SU CAJA.
+     Pasó con la cuenta regresiva: los días en tres dígitos no
+     entraban en su casilla y las cifras pintaban ENCIMA del dos
+     puntos de al lado — "469" y "04" se leían como 46904.
+     Y no lo agarraba nada: las cajas no se superponen (eso lo
+     comprobé y daba verde con el bug puesto), nada se sale de la
+     pantalla, y el contraste de cada pieza es perfecto. Lo que se
+     desborda es la TINTA, no la caja, y eso se mide con
+     scrollWidth contra clientWidth. */
+  const derramados = await pag.evaluate(() => {
+    const malos = [];
+    for (const n of document.querySelectorAll('body *')){
+      const propio = [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+      if (!propio) continue;
+      const cs = getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      if (cs.overflowX !== 'visible') continue;        /* recortar a propósito no es derramar */
+      if (cs.writingMode !== 'horizontal-tb') continue; /* el renglón vertical se mide al revés */
+      if (n.scrollWidth > n.clientWidth + 1)
+        malos.push('"' + n.textContent.trim().slice(0,14) + '" ' +
+                   n.scrollWidth + ' en ' + n.clientWidth);
+    }
+    return malos;
+  });
+  es(derramados.length === 0, derramados.length
+    ? 'texto que se sale de su caja: ' + derramados.slice(0,3).join(' · ')
+    : 'ningún texto se sale de su caja');
+
   const cal = await pag.locator('#calendario .elDia').count();
   if (await pag.locator('#calendario').count())
     es(cal === 1, 'el calendario marca un solo día (marcó ' + cal + ')');
