@@ -129,6 +129,48 @@ for(const c of carpetas){
 }
 
 /* Y que la app siga estando donde tiene que estar */
+/* ─── los listados son TODOS la misma plantilla ───────────────────
+   El listado de cada evento es una copia de
+   `invitaciones/plantilla-listado/index.html` con su CONFIG llenado y
+   nada más. Dos copias que se tocan por separado es una que se queda
+   atrás, y la que se queda atrás es la del cliente que ya pagó: el
+   panel de Pía tenía las columnas de SU formulario escritas a mano,
+   así que cualquier otro evento abría la tabla con las filas vacías y
+   sin un solo error. */
+console.log('\n─── los listados salen de la plantilla ───');
+{
+  const rutaPlantilla = path.join(RAIZ, 'invitaciones', 'plantilla-listado', 'index.html');
+  if (!fs.existsSync(rutaPlantilla)) mal('falta invitaciones/plantilla-listado/index.html');
+  else {
+    /* Se comparan sin el CONFIG, que es lo único que cambia por evento. */
+    const sinConfig = t => t.replace(/const CONFIG = \{[\s\S]*?\n\};/, 'CONFIG')
+                            /* [\s\S]*? y no [^>]*: el comentario tiene un
+                               "<evento>" adentro, así que cortado en el
+                               primer ">" no lo saca entero. */
+                            .replace(/<!-- PLANTILLA\.[\s\S]*?-->\n?/, '');
+    const patron = sinConfig(fs.readFileSync(rutaPlantilla, 'utf8'));
+    let hubo = 0;
+    for (const c of carpetas) {
+      const f = path.join(RAIZ, c, 'listado', 'index.html');
+      if (!fs.existsSync(f)) continue;
+      hubo++;
+      const txt = fs.readFileSync(f, 'utf8');
+      if (sinConfig(txt) !== patron)
+        mal(`"${c}/listado" se separó de la plantilla: hay dos versiones de la misma pantalla`);
+      else bien(`"${c}/listado" es la plantilla`);
+      /* Una plantilla copiada y no llenada se ve perfecta y no trae
+         ni un dato. */
+      const url = (txt.match(/appsScriptUrl:\s*"([^"]*)"/) || [])[1];
+      if (!url) mal(`"${c}/listado" tiene el appsScriptUrl vacío: no va a traer nada`);
+      else if (!/^https:\/\/script\.google\.com\//.test(url))
+        mal(`"${c}/listado" apunta a algo que no es un Apps Script: ${url}`);
+      const nom = (txt.match(/nombreEvento:\s*"([^"]*)"/) || [])[1];
+      if (!nom) mal(`"${c}/listado" no tiene nombre de evento: el título sale vacío`);
+    }
+    if (!hubo) console.log('  (todavía ningún listado)');
+  }
+}
+
 console.log('\n─── las direcciones de la app siguen libres ───');
 for(const r of ['muro.html','rollo.html','app.html','index.html']){
   if(!fs.existsSync(path.join(RAIZ,r))) mal(`falta ${r}`);

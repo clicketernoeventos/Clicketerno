@@ -1,0 +1,291 @@
+/* ═══════════════════════════════════════════════════════════════
+   CLICK ETERNO · el Apps Script COMPLETO de una invitación nueva
+   ═══════════════════════════════════════════════════════════════
+
+   Esto es todo lo que necesita una planilla de confirmaciones nueva:
+   la puerta de ESCRITURA (doPost, lo que manda el formulario de la
+   invitación) y las dos de LECTURA (doGet).
+
+   No confundir con `listado.gs.txt`, que es otra cosa: aquel es el
+   parche para la planilla de Pía, que YA tiene su doPost andando y a
+   la que solo hay que cambiarle el doGet. Para una invitación nueva
+   no hay nada hecho, así que va este archivo entero.
+
+   ── QUÉ HAY QUE HACER, UNA VEZ, POR CADA EVENTO ──
+
+   1. Planilla nueva en Google Sheets. Ponele el nombre del evento.
+   2. Extensiones → Apps Script. Se abre el editor con un archivo
+      vacío: BORRÁ lo que haya y pegá TODO esto.
+   3. Arriba, donde dice la función a ejecutar, elegí `preparar` y
+      tocá ▷ Ejecutar. La primera vez te va a pedir permiso sobre tu
+      propia planilla: aceptalo.
+      Eso hace tres cosas solo: escribe los títulos de las columnas,
+      INVENTA LA CLAVE del listado y te la muestra. Copiala y
+      guardala: es la que le vas a pasar al cliente.
+   4. Implementar → Nueva implementación → engranaje → Aplicación web.
+         Ejecutar como:   Yo
+         Quién tiene acceso:   CUALQUIER PERSONA
+      Implementar, y copiá la dirección que termina en `/exec`.
+   5. Esa dirección va en dos lugares de la web: el `CONFIG.endpoint`
+      de la invitación y el `CONFIG.appsScriptUrl` de su listado.
+
+   Si algún día tocás este código, acordate del paso que no se ve:
+   Implementar → Administrar implementaciones → editar la que existe
+   → Versión: nueva → Implementar. Sin eso sigue corriendo la
+   versión vieja y parece que el cambio no entró. Y OJO: si en vez de
+   editar creás una implementación NUEVA, cambia la dirección y hay
+   que cambiarla en las dos páginas.
+
+   ── POR QUÉ "CUALQUIER PERSONA" NO ES UN AGUJERO ──
+
+   Tiene que serlo: el que confirma es un invitado sin cuenta de
+   Google. Lo que cierra la puerta es la clave, y la clave no está en
+   ninguna página: vive en las propiedades de ESTE proyecto. Una
+   página pública no puede guardar un secreto.
+   Sin clave, desde afuera solo se puede preguntar "¿llegó lo mío?"
+   y la respuesta es sí o no. Ni un nombre ni un teléfono.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── Lo único que se toca ──────────────────────────────────────
+
+   Los títulos de las columnas. El formulario de la invitación manda
+   los campos con ESTOS nombres, y la planilla los usa de encabezado.
+
+   Si la invitación pregunta algo más (menú, canción, alergias), NO
+   hace falta tocar nada acá: el doPost agrega la columna sola la
+   primera vez que llega ese campo. Estos dos están escritos porque
+   son los que el resumen necesita entender. */
+
+var COL_NOMBRE   = 'Nombre';    // con esto se responde "¿llegó mi confirmación?"
+var COL_CONFIRMA = 'Confirma';  // vale 'Sí' o 'No'
+var COL_CUANDO   = 'Cuándo';    // lo pone la planilla, no el formulario
+
+/* Rosario. Si esto dijera UTC, una confirmación de las diez de la
+   noche quedaría fechada al día siguiente. */
+var ZONA = 'America/Argentina/Cordoba';
+
+
+/* ── Paso 3: preparar ──────────────────────────────────────────
+   Se corre UNA vez, a mano, desde el editor. Es lo que evita tener
+   que ir a buscar el panel de propiedades del proyecto. */
+function preparar() {
+  var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow([COL_CUANDO, COL_NOMBRE, COL_CONFIRMA]);
+    hoja.setFrozenRows(1);
+    hoja.getRange(1, 1, 1, 3).setFontWeight('bold');
+  }
+
+  var props = PropertiesService.getScriptProperties();
+  var clave = props.getProperty('CLAVE_LISTADO');
+  if (!clave) {
+    /* La inventa la planilla, no una persona: una clave pensada a
+       mano termina siendo el nombre de la fiesta y el año.
+       Son los 16 dígitos de DOS uuid pegados, no un pedazo de algo
+       codificado: el principio de un base64 depende del principio
+       del texto de adentro, así que dos claves hechas igual
+       arrancaban iguales. Hexadecimal además se dicta por teléfono
+       sin pifiar: no tiene o ni l, que son las que se confunden con
+       el cero y el uno. */
+    clave = (Utilities.getUuid() + Utilities.getUuid())
+              .replace(/[^0-9a-f]/gi, '').toLowerCase().slice(0, 16);
+    props.setProperty('CLAVE_LISTADO', clave);
+  }
+
+  Logger.log('═══════════════════════════════════════');
+  Logger.log('  LA CLAVE DEL LISTADO ES:   ' + clave);
+  Logger.log('  (copiala: es la que se le pasa al cliente)');
+  Logger.log('═══════════════════════════════════════');
+  Logger.log('Ahora: Implementar → Nueva implementación →');
+  Logger.log('Aplicación web → acceso: CUALQUIER PERSONA.');
+  return clave;
+}
+
+
+/* ── La escritura: lo que manda el formulario ──────────────────
+
+   Llega como FormData, así que los campos vienen en e.parameter.
+   Cualquier campo que no tenga columna se la crea: así la
+   invitación puede preguntar lo que quiera sin tocar esto.
+
+   Va con candado (LockService) porque dos confirmaciones en el mismo
+   segundo —que es exactamente lo que pasa cuando se reparte el link
+   por WhatsApp— leerían las dos la misma última fila y una pisaría a
+   la otra. */
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(25000);
+  } catch (err) {
+    return json({ ok: false, error: 'ocupado' });
+  }
+
+  try {
+    var campos = (e && e.parameter) || {};
+    /* Por si alguna vez se manda como JSON en vez de FormData. */
+    if (!campos[COL_NOMBRE] && e && e.postData && e.postData.contents) {
+      try { campos = JSON.parse(e.postData.contents) || campos; } catch (err2) {}
+    }
+
+    var nombre = String(campos[COL_NOMBRE] || '').trim();
+    if (!nombre) return json({ ok: false, error: 'sin_nombre' });
+
+    var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    if (hoja.getLastRow() === 0) {
+      hoja.appendRow([COL_CUANDO, COL_NOMBRE, COL_CONFIRMA]);
+      hoja.setFrozenRows(1);
+    }
+
+    var titulos = hoja.getRange(1, 1, 1, Math.max(1, hoja.getLastColumn()))
+                      .getValues()[0].map(function (t) { return String(t || '').trim(); });
+
+    /* Columnas nuevas para los campos que no estaban. */
+    for (var k in campos) {
+      if (!campos.hasOwnProperty(k)) continue;
+      var nom = String(k).trim();
+      if (!nom || nom === COL_CUANDO) continue;
+      if (titulos.indexOf(nom) === -1) {
+        titulos.push(nom);
+        hoja.getRange(1, titulos.length).setValue(nom).setFontWeight('bold');
+      }
+    }
+
+    campos[COL_CUANDO] = Utilities.formatDate(new Date(), ZONA, 'yyyy-MM-dd HH:mm');
+
+    var fila = titulos.map(function (t) {
+      var v = campos[t];
+      if (v === undefined || v === null) return '';
+      return Array.isArray(v) ? v.join(', ') : String(v);
+    });
+
+    /* ¿Ya había confirmado? Se le PISA la fila en vez de agregar otra.
+       Un invitado que toca dos veces porque el wifi tardó, o que
+       vuelve a cambiar el "no" por un "sí", son los dos casos que
+       pasan de verdad; con filas nuevas el cliente cuenta de más y
+       encarga comida para gente que no existe. */
+    var dondeNombre = titulos.indexOf(COL_NOMBRE) + 1;
+    var yaEsta = filaDe_(hoja, dondeNombre, nombre);
+    if (yaEsta > 0) hoja.getRange(yaEsta, 1, 1, fila.length).setValues([fila]);
+    else            hoja.appendRow(fila);
+
+    return json({ ok: true });
+  } catch (err3) {
+    return json({ ok: false, error: String(err3) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+
+/* ── La lectura: dos puertas y ninguna abre de más ───────────── */
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+
+  /* Puerta 1 · ¿llegó mi confirmación? Sí o no, y nada más. Es lo
+     único que necesita saber el invitado y lo único que puede
+     averiguar: la dirección la tiene a mano cualquiera que abra el
+     link de la invitación. */
+  if (p.confirmado) {
+    return json({ ok: estaConfirmado_(p.confirmado) });
+  }
+
+  /* Puerta 2 · la lista entera, con la clave. La usa el listado. */
+  var esperada = PropertiesService.getScriptProperties().getProperty('CLAVE_LISTADO');
+  if (!esperada) {
+    return json({ error: 'sin_clave_configurada',
+                  mensaje: 'Falta correr la función preparar() una vez.' });
+  }
+  if (!p.clave || !igualesSinApuro_(String(p.clave), String(esperada))) {
+    return json({ error: 'clave', mensaje: 'Clave incorrecta.' });
+  }
+
+  var lista = filas_();
+  /* El resumen lo cuenta la PLANILLA, no la página.
+     Contado de los dos lados, el día que una columna se llame
+     distinto el listado muestra "0 confirmaron" con la planilla
+     llena y no hay ningún error a la vista. Acá están los títulos
+     de verdad, así que acá se cuenta. */
+  var si = 0;
+  for (var i = 0; i < lista.length; i++) {
+    if (esSi_(lista[i][COL_CONFIRMA])) si++;
+  }
+  return json({
+    invitados: lista,
+    resumen: { total: lista.length, confirmados: si, no: lista.length - si },
+    columnas: { nombre: COL_NOMBRE, confirma: COL_CONFIRMA }
+  });
+}
+
+
+/* ── lo de abajo no hace falta tocarlo ───────────────────────── */
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* "Sí", "si", "SI", "Confirmo", "sí, voy" — todas son un sí. Lo que
+   NO puede pasar es que un "No" cuente como sí, así que se descarta
+   primero. */
+function esSi_(v) {
+  var s = String(v == null ? '' : v).trim().toLowerCase();
+  if (!s) return false;
+  if (s.indexOf('no') === 0) return false;
+  return s.indexOf('s') === 0 || s.indexOf('confirm') !== -1 || s.indexOf('voy') !== -1;
+}
+
+/* Lee la planilla usando la PRIMERA FILA como nombres de columna.
+   Así sirve igual aunque se agreguen o se muevan columnas: no hay
+   ninguna posición escrita a mano. */
+function filas_() {
+  var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var datos = hoja.getDataRange().getDisplayValues();
+  if (datos.length < 2) return [];
+  var titulos = datos[0];
+  var salida = [];
+  for (var i = 1; i < datos.length; i++) {
+    var fila = {}, vacia = true;
+    for (var j = 0; j < titulos.length; j++) {
+      var t = String(titulos[j] || '').trim();
+      if (!t) continue;
+      fila[t] = datos[i][j];
+      if (String(datos[i][j] || '').trim() !== '') vacia = false;
+    }
+    if (!vacia) salida.push(fila);
+  }
+  return salida;
+}
+
+/* En qué fila está ese nombre, o 0. Se mira una sola columna. */
+function filaDe_(hoja, col, nombre) {
+  if (col < 1 || hoja.getLastRow() < 2) return 0;
+  var valores = hoja.getRange(2, col, hoja.getLastRow() - 1, 1).getDisplayValues();
+  var buscado = String(nombre || '').trim().toLowerCase();
+  for (var i = 0; i < valores.length; i++) {
+    if (String(valores[i][0] || '').trim().toLowerCase() === buscado) return i + 2;
+  }
+  return 0;
+}
+
+function estaConfirmado_(nombre) {
+  var buscado = String(nombre || '').trim().toLowerCase();
+  if (!buscado) return false;
+  var lista = filas_();
+  for (var i = 0; i < lista.length; i++) {
+    if (String(lista[i][COL_NOMBRE] || '').trim().toLowerCase() === buscado) return true;
+  }
+  return false;
+}
+
+/* Compara sin apurarse: siempre recorre todo, gane o pierda. Si
+   cortara en la primera letra distinta, el tiempo que tarda en
+   contestar iría contando cuántas letras acertó quien prueba. */
+function igualesSinApuro_(a, b) {
+  if (a.length !== b.length) return false;
+  var dif = 0;
+  for (var i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return dif === 0;
+}

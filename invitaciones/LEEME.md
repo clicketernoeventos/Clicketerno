@@ -19,6 +19,30 @@ Este archivo es solo la explicación; las carpetas van afuera.
    dirección de Netlify.
 4. Subila y esperá un minuto: Cloudflare publica solo.
 
+## Las confirmaciones (el listado)
+
+La planilla vive en Google, no acá, y **cada evento necesita la suya**.
+Son tres pasos y el orden importa:
+
+1. **Planilla nueva** en Google Sheets → Extensiones → Apps Script →
+   pegar `apps-script/evento-nuevo.gs.txt` entero.
+2. En el editor, correr la función **`preparar`** una vez: escribe los
+   títulos, **inventa la clave** del listado y te la muestra. Después,
+   Implementar → Nueva implementación → Aplicación web → acceso
+   **Cualquier persona**, y copiar la dirección que termina en `/exec`.
+3. Copiar `invitaciones/plantilla-listado/index.html` a
+   **`<evento>/listado/index.html`** y llenarle las dos líneas de
+   `CONFIG`: el nombre del evento y esa dirección. La misma dirección
+   va en el `CONFIG.endpoint` de la invitación.
+
+El cliente entra a `clicketerno.com.ar/<evento>/listado`, escribe la
+clave una vez y ve los tres números, la tabla y el botón de Excel.
+
+**El listado no se edita por evento.** Es la plantilla con su `CONFIG`
+y nada más; `pruebas/invitaciones.js` falla si alguna copia se separó.
+Dos versiones de la misma pantalla es una que se queda atrás, y la que
+se queda atrás es la del cliente que ya pagó.
+
 ## Nombres que NO se pueden usar
 
 Son los que ya usa la app. Una carpeta con uno de estos nombres tapa la

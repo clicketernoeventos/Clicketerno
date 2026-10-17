@@ -201,16 +201,34 @@ endpoint: "https://script.google.com/macros/s/AKfy…/exec"
 ```
 
 **Cada invitación nueva necesita su propio Apps Script y su propia
-planilla.** El `doGet` que hay que pegar está en
-`apps-script/listado.gs.txt` y tiene dos puertas: `?clave=` (la lista
-entera, para el panel del organizador) y `?confirmado=NOMBRE` (sí o no,
-para la invitación). **La clave va en las propiedades del proyecto de
-Apps Script, nunca en el HTML**: una página pública no puede guardar un
-secreto. El portón anterior comparaba contra un correo escrito en el
-propio HTML, que cualquiera leía con "ver código fuente".
+planilla.** Lo que hay que pegar está entero en
+`apps-script/evento-nuevo.gs.txt`: trae el `doPost` (la escritura) y el
+`doGet` con sus dos puertas —`?clave=`, la lista entera para el
+listado, y `?confirmado=NOMBRE`, que contesta sí o no y nada más—.
 
-Hasta que el `doGet` nuevo no esté pegado, cualquiera con el link de la
-invitación se baja la lista entera de invitados.
+No confundirlo con `apps-script/listado.gs.txt`, que es otra cosa: el
+parche para la planilla de Pía, que ya tiene su `doPost` andando.
+
+**La clave va en las propiedades del proyecto de Apps Script, nunca en
+el HTML**: una página pública no puede guardar un secreto. No hay que
+inventarla ni ir a buscar el panel de propiedades — la función
+`preparar()`, que se corre una vez desde el editor, la inventa, la
+guarda y te la muestra. El portón anterior comparaba contra un correo
+escrito en el propio HTML, que cualquiera leía con "ver código fuente".
+
+**Los campos del formulario son los títulos de las columnas.** El
+`doPost` crea la columna sola la primera vez que llega un campo que no
+conocía, así que la invitación pregunta lo que quiera sin tocar el
+script. Dos nombres sí están fijos y son los que el resumen entiende:
+`Nombre` y `Confirma` (que vale `Sí` o `No`).
+
+**Y el `fetch` no se puede cambiar por un `<form action>`.** Acá hay
+CSP y dice `form-action 'self'`: un formulario que postea derecho a
+`script.google.com` lo frena el navegador. En Netlify no había CSP y
+andaba. Va por `fetch`, como está escrito arriba.
+
+La lógica del Apps Script está medida sin Google en
+`pruebas/rsvp.js`, y la pantalla del listado en `pruebas/listado.js`.
 
 ---
 
