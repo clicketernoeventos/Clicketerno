@@ -2449,12 +2449,78 @@ del mismo color pegadas con un rasgado en el medio. Los caminos SVG
 se generan con la fecha de la fiesta de semilla, así salen iguales
 en cada armado.
 
-**Lo que NO se escribió, y es lo importante:** la hora (la mandó sin
+**Lo que NO se escribió, y es lo importante:** la hora. La mandó sin
 hora, y una hora inventada manda a la gente a la hora equivocada —
-queda en `CONFIG.mostrarHora`, apagada) y el alias del regalo
-(`Ceci.montenegro.11` puede ser un alias para transferir o un
-usuario de Instagram, y publicar el equivocado manda la plata de los
-invitados a cualquier parte).
+queda en `CONFIG.mostrarHora`, apagada. El alias del regalo estuvo en
+la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
+está puesto, con el rótulo "Alias para transferir" arriba, porque
+`Ceci.montenegro.11` se lee igual como usuario de Instagram y el que
+pega el alias equivocado manda la plata a cualquier parte. El
+**titular** —el nombre que le va a mostrar el banco al pegarlo— sigue
+sin saberse y por eso no se escribe nada: un nombre inventado al lado
+de un alias es peor que ninguno.
+
+#### Las cuatro fotos
+
+**La primera va en la portada, a sangre, y las otras tres pasan
+solas** en un marco con sus puntitos. Tres decisiones que no son de
+gusto:
+
+- **El "15" no se encima a la foto.** La foto va arriba y la
+  tipografía abajo, sobre el papel, separadas por el MISMO borde
+  rasgado que separa las bandas. Un número negro encima de la foto
+  apuesta el contraste a lo que haya salido en la imagen —una pared
+  clara, un reflejo— y eso cambia con cada foto que mande la clienta.
+  Sobre el papel se lee siempre, y de paso la foto queda como una
+  hoja rasgada pegada arriba, que es el lenguaje de toda la pieza.
+- **Van en blanco y negro, y el grayscale está en el CSS.** La
+  paleta que pidió son tres colores; cuatro fotos a color meten los
+  suyos —el beige del salón, el amarillo de un vestido de princesa—
+  y la tarjeta deja de ser blanca, dorada y negra. En el CSS y no
+  quemado en el archivo: el original queda entero por si algún día
+  se quiere a color.
+- **Las cuatro se recortaron, y eso es la mitad del trabajo.** La
+  de la portada era la captura de una historia, con el marco, el
+  globo de respuesta y la foto de perfil pegados abajo; las dos de
+  Mia chiquita traían las franjas negras y la marca de agua de la
+  app con que se sacaron. Puesto tal cual, eso dice que la tarjeta
+  se hizo con lo que había. Las cuatro quedaron en `mia15/fotos/`,
+  en `.webp`, 240 KB las cuatro juntas.
+
+**Tres cosas que se rompieron poniéndolas**, y ninguna tiraba un
+error:
+
+- **El marco de las fotos no tomaba el CSS.** El contenedor se
+  llamaba `.fotos` de cuando eran dos encimadas y las reglas nuevas
+  son `.pase`: las tres fotos salieron apiladas, a color y a ancho
+  completo. Se ve enseguida en una captura y no se ve nunca mirando
+  el código.
+- **"Deslizá" es `position:absolute` y una capa absoluta no empuja
+  a nadie.** Con la foto arriba, el bloque de texto creció hacia
+  abajo y en una pantalla de 568 "ROSARIO · SANTA FE" quedó con
+  "DESLIZÁ" montado encima. El lugar se lo tiene que dejar el
+  `padding-bottom`, y abajo de 620 de alto además se achican la foto
+  y el 15 — si no, la portada se pasa 40px del borde y lo que queda
+  cortado es justamente lo único que avisa que la invitación sigue.
+- **El color del titular estaba escrito en el propio tag.** Un
+  estilo en línea le gana a `.oscura`, así que ese renglón sobre la
+  banda negra daba 1,6:1. Vacío no se notaba; el día que llegue el
+  nombre del titular, sí. Es *si un bloque trae su propio fondo,
+  trae su propia tinta* otra vez, por el lado del estilo en línea.
+
+**Con "menos movimiento" las fotos no pasan solas, pero se llega a
+las tres con los puntitos**: apagar el movimiento no puede esconder
+contenido. Y al tocar un punto el pase **se detiene**: si sigue
+corriendo, la foto que eligió el invitado se le va sola a los tres
+segundos y parece que el toque no entró.
+
+**Lleva `noindex`, y es la primera invitación que lo lleva.** Son
+fotos de una menor en una dirección pública. El `noindex` no la
+esconde —el que tiene el link entra igual— pero la saca de los
+buscadores, que es por donde llega el que no fue invitado. La imagen
+de la vista previa sigue siendo la tipográfica: la cara de Mia
+viajaría en cada chat por el que pase el link, que es la misma
+decisión ya escrita para `muro.html` y `rollo.html`.
 
 **Es la primera invitación con el aviso del artículo 6** adentro del
 formulario. Acá hace falta de verdad: se piden nombres de invitados
