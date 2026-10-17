@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mia · Mis quince años</title>
+<meta name="description" content="Mia cumple quince. Sábado 29 de enero de 2028, en La Mansión del Rey, Vera Mujica 68, Rosario.">
+<meta name="theme-color" content="#0C0B0A">
+<meta property="og:title" content="Mia · Mis quince años">
+<meta property="og:description" content="Sábado 29 de enero de 2028 · La Mansión del Rey · Rosario">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   MIA · quince años — 29 de enero de 2028
+
+   LA IDEA, en una línea: oro sobre negro, y el blanco como respiro.
+
+   Los tres colores los eligió ella (blanco, dorado y negro) y el
+   encargo fue "elegante o formal". Así que el registro es art déco
+   contenido: capitular romana espaciada, filetes finos de oro y un
+   abanico de rayos. NADA de caligrafía ni de rosa: eso es el otro
+   registro de quinces y no es el que pidió.
+
+   Las tres reglas de color que ya costaron caro acá, respetadas:
+   · El oro claro (--oro) SOLO sobre negro. Sobre el crema da 1,84:1
+     y el texto deja de existir. En la sección clara va --oro-hondo.
+   · Cada bloque que trae su propio fondo trae su propia tinta.
+   · Nada de degradé opaco detrás de un texto: el medidor de
+     contraste no lo puede juzgar, y donde no puede medir es donde
+     esto vuelve a pasar. Los degradés son de adorno, en SVG.
+   ══════════════════════════════════════════════════════════════ */
+
+:root{
+  --negro:#0C0B0A;
+  --negro2:#15130F;
+  --oro:#D4AF6A;          /* 9,5:1 sobre el negro */
+  --oro-claro:#EBD5A4;
+  --oro-hondo:#8A6A2F;    /* 4,5:1 sobre el crema — para la parte clara */
+  --crema:#F4F1EA;
+  --mute:#A9A094;         /* 7,7:1 sobre el negro */
+  --tinta:#1A1713;        /* la tinta de la parte clara */
+  --tinta2:#51493D;
+  --display:'Marcellus',Georgia,serif;
+  --texto:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --e:cubic-bezier(.22,.75,.3,1);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+
+body{
+  margin:0;
+  /* overflow-x oculto a propósito: los abanicos y los velos se
+     desbordan por el costado. Sin esto la página mide más que la
+     pantalla, el navegador del teléfono se aleja solo y la
+     invitación entera se ve más chica. */
+  overflow-x:hidden;
+  background:var(--negro);
+  color:var(--crema);
+  font-family:var(--texto);
+  font-weight:300;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+body.cerrado{overflow:hidden;height:100%}
+
+img{max-width:100%;display:block}
+a{color:inherit}
+
+/* ── la barra de avance ── */
+#avance{
+  position:fixed;top:0;left:0;height:2px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--oro-hondo),var(--oro),var(--oro-claro));
+  transition:width .12s linear;
+}
+
+/* ── tipografía ── */
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.12}
+.rotulo{
+  font-family:var(--texto);font-weight:500;
+  font-size:11px;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--oro);margin:0 0 14px;
+}
+.clara .rotulo{color:var(--oro-hondo)}
+p{margin:0 0 1em}
+
+/* ── el armazón ── */
+.seccion{padding:84px 24px;position:relative}
+.caja{max-width:620px;margin:0 auto}
+.centro{text-align:center}
+
+/* La sección clara trae su propio fondo, así que trae su propia
+   tinta — y la de sus hijos, uno por uno. Heredar el crema del
+   negro sobre un fondo crema da 1,00:1: el texto no está. */
+.clara{background:var(--crema);color:var(--tinta)}
+.clara h1,.clara h2,.clara h3{color:var(--tinta)}
+.clara p{color:var(--tinta2)}
+.clara .filete i{background:var(--oro-hondo)}
+.clara .filete svg{fill:var(--oro-hondo)}
+
+/* ── el filete: dos rayas y un rombo ── */
+.filete{display:flex;align-items:center;justify-content:center;gap:12px;margin:22px 0}
+.filete i{display:block;height:1px;width:52px;background:var(--oro);opacity:.75}
+.filete svg{width:9px;height:9px;fill:var(--oro)}
+
+/* ══════════ el sobre ══════════ */
+#sobre{
+  position:fixed;inset:0;z-index:50;
+  display:grid;place-items:center;padding:24px;
+  background:radial-gradient(130% 90% at 50% 20%,#1B1813 0%,#0C0B0A 60%);
+  transition:opacity .75s var(--e),visibility .75s;
+}
+#sobre.abierto{opacity:0;visibility:hidden;pointer-events:none}
+.sobre-caja{text-align:center;max-width:380px}
+.sobre-caja .nom{
+  font-family:var(--display);font-size:clamp(46px,17vw,74px);
+  letter-spacing:.14em;color:var(--oro-claro);margin:0 0 6px;
+}
+.sobre-caja .sub{
+  font-size:12px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 30px;
+}
+/* El latido va en un HALO alrededor, no en la caja que se toca:
+   con un `scale` en el botón, Playwright no lo puede tocar nunca
+   ("element is not stable") y la prueba se cuelga treinta segundos
+   contra un botón que está perfecto. */
+#abrir{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  min-height:52px;min-width:210px;padding:0 30px;
+  border:1px solid var(--oro);border-radius:999px;
+  background-color:transparent;color:var(--oro-claro);
+  font-family:var(--texto);font-size:13px;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+  transition:background-color .3s var(--e),color .3s var(--e);
+}
+#abrir:after{
+  content:'';position:absolute;inset:-7px;border-radius:999px;
+  border:1px solid var(--oro);opacity:.3;animation:latir 2.8s var(--e) infinite;
+}
+@keyframes latir{0%{transform:scale(.97);opacity:.34}70%{transform:scale(1.1);opacity:0}100%{opacity:0}}
+@media (hover:hover){ #abrir:hover{background-color:var(--oro);color:var(--negro)} }
+#abrir:active{transform:scale(.975)}
+@media (prefers-reduced-motion:reduce){ #abrir:after{animation:none} }
+
+/* ══════════ la portada ══════════ */
+#portada{
+  min-height:100svh;min-height:100vh;
+  display:grid;place-items:center;text-align:center;
+  padding:64px 24px;position:relative;overflow:hidden;
+}
+/* El abanico de rayos. Va en un pseudo-elemento y no en el fondo del
+   bloque de texto: un degradé opaco detrás de un texto es un bloque
+   que el medidor de contraste no puede juzgar. */
+#portada:before{
+  content:'';position:absolute;left:50%;top:-18%;
+  width:min(160vw,1100px);aspect-ratio:1;transform:translateX(-50%);
+  background:
+    repeating-conic-gradient(from 0deg at 50% 50%,
+      rgba(212,175,106,.075) 0deg 2.2deg, transparent 2.2deg 11deg);
+  -webkit-mask-image:radial-gradient(closest-side,#000 10%,transparent 72%);
+          mask-image:radial-gradient(closest-side,#000 10%,transparent 72%);
+  pointer-events:none;
+}
+.port-in{position:relative;z-index:1}
+.port-sup{font-size:11px;letter-spacing:.44em;text-transform:uppercase;color:var(--mute);margin:0 0 20px}
+.nombre{
+  font-family:var(--display);
+  font-size:clamp(62px,25vw,152px);
+  letter-spacing:.1em;line-height:.94;
+  color:var(--oro-claro);margin:0;
+  text-indent:.1em;     /* compensa el espaciado de la última letra */
+}
+.quince{
+  font-size:clamp(12px,3.4vw,15px);letter-spacing:.42em;
+  text-transform:uppercase;color:var(--crema);margin:16px 0 0;
+}
+.port-fecha{
+  font-family:var(--display);font-size:clamp(17px,4.6vw,22px);
+  letter-spacing:.2em;color:var(--oro);margin:26px 0 0;
+}
+.port-donde{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:10px 0 0}
+.deslizar{
+  margin-top:44px;font-size:10px;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--mute);
+}
+.deslizar span{display:block;width:1px;height:34px;margin:12px auto 0;
+  background:linear-gradient(var(--oro),transparent)}
+
+/* ══════════ la frase ══════════ */
+#frase{background:var(--negro2)}
+.frase-t{
+  font-family:var(--display);font-size:clamp(21px,5.6vw,29px);
+  line-height:1.5;color:var(--crema);margin:0;
+}
+.frase-f{margin-top:20px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro)}
+
+/* ══════════ la cuenta regresiva ══════════ */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0 0}
+.reloj div{
+  border:1px solid rgba(212,175,106,.26);border-radius:10px;
+  padding:16px 4px;background-color:rgba(212,175,106,.045);
+}
+.reloj b{
+  display:block;font-family:var(--display);font-weight:400;
+  font-size:clamp(26px,8vw,38px);color:var(--oro-claro);line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.reloj span{display:block;margin-top:8px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+
+/* ── el calendario ── */
+.calen{margin:40px auto 0;max-width:330px}
+.calen .mes{font-family:var(--display);font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro);margin:0 0 14px}
+.calen table{width:100%;border-collapse:collapse}
+.calen th{font-size:10px;letter-spacing:.14em;color:var(--mute);font-weight:500;padding-bottom:8px}
+.calen td{padding:5px 0;text-align:center}
+.calen td i{
+  font-style:normal;display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;font-size:14px;color:var(--mute);
+}
+.calen td.elDia i{background-color:var(--oro);color:var(--negro);font-weight:600}
+.calen .corte{border:0;border-top:1px solid rgba(212,175,106,.22);margin:18px 0 14px}
+.calen .guarda{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--mute);margin:0}
+.calen .dia-largo{font-family:var(--display);font-size:24px;letter-spacing:.14em;color:var(--oro-claro);margin:6px 0 0}
+
+/* ══════════ dónde — la sección clara ══════════ */
+#donde .tarj{
+  border:1px solid rgba(138,106,47,.26);border-radius:14px;
+  padding:26px 22px;background-color:#FFFDF8;margin-top:8px;
+}
+#donde .salon{font-family:var(--display);font-size:clamp(23px,6vw,30px);color:var(--tinta);margin:0 0 6px}
+#donde .calle{font-size:15px;color:var(--tinta2);margin:0 0 4px}
+#donde .hora{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-hondo);margin:14px 0 0}
+.btn-mapa{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:48px;padding:0 26px;margin-top:20px;
+  border:1px solid var(--oro-hondo);border-radius:999px;
+  background-color:transparent;color:var(--oro-hondo);
+  font-size:12.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+  text-decoration:none;transition:background-color .3s var(--e),color .3s var(--e);
+}
+@media (hover:hover){ .btn-mapa:hover{background-color:var(--oro-hondo);color:#fff} }
+.btn-mapa:active{transform:scale(.975)}
+
+/* ══════════ el cronograma ══════════ */
+.agenda{margin-top:12px}
+.tramo{display:grid;grid-template-columns:76px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid rgba(212,175,106,.16)}
+.tramo:last-child{border-bottom:0}
+.tramo .h{font-family:var(--display);font-size:17px;color:var(--oro);letter-spacing:.06em}
+.tramo b{display:block;font-weight:500;font-size:16px;color:var(--crema)}
+.tramo span{display:block;font-size:14.5px;color:var(--mute);margin-top:2px}
+
+/* ══════════ dress code ══════════ */
+.paleta{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.paleta i{width:34px;height:34px;border-radius:50%;display:block;border:1px solid rgba(244,241,234,.22)}
+
+/* ══════════ la confirmación ══════════ */
+#confirmar{background:var(--negro2)}
+.campo{margin-bottom:18px;text-align:left}
+.campo label{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+.campo input,.campo select,.campo textarea{
+  width:100%;min-height:50px;padding:13px 15px;
+  border:1px solid rgba(212,175,106,.3);border-radius:10px;
+  background-color:rgba(12,11,10,.6);color:var(--crema);
+  font-family:var(--texto);font-size:16px;  /* 16 o iOS hace zoom al tocar */
+}
+.campo textarea{min-height:92px;resize:vertical;line-height:1.5}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:2px solid var(--oro);outline-offset:1px}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.radios label{
+  display:flex;align-items:center;justify-content:center;
+  min-height:52px;padding:0 10px;cursor:pointer;
+  border:1px solid rgba(212,175,106,.3);border-radius:10px;
+  font-size:14.5px;color:var(--crema);letter-spacing:.04em;
+  transition:border-color .25s var(--e),background-color .25s var(--e);
+}
+.radios label input{position:absolute;opacity:0;width:1px;height:1px}
+.radios label.elegida{border-color:var(--oro);background-color:rgba(212,175,106,.14);color:var(--oro-claro)}
+@media (hover:hover){ .radios label:hover{border-color:rgba(212,175,106,.6)} }
+.radios label:active{transform:scale(.975)}
+/* El aviso del artículo 6 de la Ley 25.326 va DONDE se pide el dato,
+   no en un enlace al pie. Plegado no es escondido; debajo de una capa
+   fija sí lo sería, y acá no hay ninguna. */
+.aviso-datos{margin:4px 0 20px;border-top:1px solid rgba(212,175,106,.16);padding-top:14px}
+.aviso-datos summary{
+  cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
+  font-size:12.5px;letter-spacing:.08em;color:var(--mute);
+}
+.aviso-datos summary::-webkit-details-marker{display:none}
+.aviso-datos summary:before{content:'＋';margin-right:9px;color:var(--oro)}
+.aviso-datos[open] summary:before{content:'－'}
+.aviso-datos p{font-size:13.5px;line-height:1.6;color:var(--mute);margin:4px 0 0}
+.aviso-datos b{color:var(--crema);font-weight:500}
+.aviso-datos a{color:var(--oro);display:inline-block;padding:14px 2px;
+  text-decoration:underline;text-underline-offset:3px}
+
+#enviar{
+  width:100%;min-height:54px;margin-top:8px;
+  border:0;border-radius:999px;cursor:pointer;
+  background-color:var(--oro);color:var(--negro);
+  font-family:var(--texto);font-size:13px;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;
+  transition:background-color .3s var(--e);
+}
+#enviar[disabled]{opacity:.55;cursor:default}
+@media (hover:hover){ #enviar:not([disabled]):hover{background-color:var(--oro-claro)} }
+#enviar:active{transform:scale(.985)}
+.aviso{margin-top:16px;font-size:14.5px;min-height:1.3em;color:var(--mute)}
+.aviso.bien{color:var(--oro-claro)}
+.aviso.mal{color:#F0A6A0}
+
+/* ══════════ el cierre ══════════ */
+#cierre{padding-bottom:96px}
+.cierre-n{font-family:var(--display);font-size:clamp(40px,14vw,64px);letter-spacing:.14em;color:var(--oro-claro);margin:0}
+.firma{margin-top:30px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute)}
+/* El área llega a 44, la letra no cambia. El subrayado va con
+   `text-underline-offset` y no con un borde: con padding, un
+   border-bottom se despega catorce píxeles del texto. */
+.firma a{color:var(--oro);display:inline-block;padding:13px 10px;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;
+  text-decoration-color:rgba(212,175,106,.5)}
+
+/* ══════════ aparecer al bajar ══════════
+   El estado por defecto es VISIBLE. Recién con la clase .js —que
+   pone el propio script— el CSS los esconde: si el JS no corre, la
+   página se ve entera en vez de quedar en blanco, y quedarse en
+   blanco no tira ningún error. */
+.js .ap{opacity:0;transform:translateY(16px)}
+.js .ap.entro{opacity:1;transform:none;transition:opacity .85s var(--e),transform .85s var(--e)}
+@media (prefers-reduced-motion:reduce){
+  .js .ap{opacity:1;transform:none}
+  .js .ap.entro{transition:none}
+}
+
+/* ── pantallas chicas ── */
+@media (max-width:420px){
+  .seccion{padding:68px 20px}
+  .reloj{gap:7px}
+  .reloj div{padding:13px 2px}
+  .tramo{grid-template-columns:62px 1fr;gap:12px}
+}
+</style>
+</head>
+<body>
+
+<div id="avance"></div>
+
+<!-- ══════════ el sobre ══════════ -->
+<div id="sobre">
+  <div class="sobre-caja">
+    <p class="nom">Mia</p>
+    <p class="sub">Mis quince años</p>
+    <button id="abrir" type="button">Abrir la invitación</button>
+  </div>
+</div>
+
+<!-- ══════════ la portada ══════════ -->
+<header id="portada">
+  <div class="port-in">
+    <p class="port-sup ap">Te invito a mis</p>
+    <h1 class="nombre ap">MIA</h1>
+    <p class="quince ap">Quince años</p>
+    <div class="filete ap"><i></i><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z"/></svg><i></i></div>
+    <p class="port-fecha ap">29 · 01 · 2028</p>
+    <p class="port-donde ap">Rosario · Santa Fe</p>
+    <p class="deslizar ap">Deslizá<span></span></p>
+  </div>
+</header>
+
+<!-- ══════════ la frase ══════════ -->
+<section class="seccion centro" id="frase">
+  <div class="caja">
+    <p class="frase-t ap">Hay noches que se eligen para no olvidarse.<br>Esta es la mía, y te quiero adentro.</p>
+    <p class="frase-f ap">Mia</p>
+  </div>
+</section>
+
+<!-- ══════════ la cuenta regresiva ══════════ -->
+<section class="seccion centro" id="cuenta">
+  <div class="caja">
+    <p class="rotulo ap">Falta</p>
+    <h2 class="ap" style="font-size:clamp(25px,7vw,34px)">Para la noche</h2>
+    <div class="reloj ap">
+      <div><b id="cD">00</b><span>Días</span></div>
+      <div><b id="cH">00</b><span>Horas</span></div>
+      <div><b id="cM">00</b><span>Min</span></div>
+      <div><b id="cS">00</b><span>Seg</span></div>
+    </div>
+    <div class="calen ap" id="calendario"></div>
+  </div>
+</section>
+
+<!-- ══════════ dónde ══════════ -->
+<section class="seccion centro clara" id="donde">
+  <div class="caja">
+    <p class="rotulo ap">Dónde y cuándo</p>
+    <div class="filete ap"><i></i><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z"/></svg><i></i></div>
+    <div class="tarj ap">
+      <p class="salon" id="lugar">La Mansión del Rey</p>
+      <p class="calle" id="calle">Vera Mujica 68 · Rosario</p>
+      <p class="hora" id="hora">Sábado 29 de enero · 21:00</p>
+      <a class="btn-mapa" id="mapa" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ el cronograma ══════════ -->
+<section class="seccion" id="noche">
+  <div class="caja">
+    <p class="rotulo centro ap">La noche</p>
+    <h2 class="centro ap" style="font-size:clamp(25px,7vw,34px)">Cómo viene la mano</h2>
+    <div class="agenda ap" id="agenda"></div>
+  </div>
+</section>
+
+<!-- ══════════ dress code ══════════ -->
+<section class="seccion centro clara" id="dress">
+  <div class="caja">
+    <p class="rotulo ap">Dress code</p>
+    <h2 class="ap" style="font-size:clamp(25px,7vw,34px)">Elegante o formal</h2>
+    <p class="ap" id="dressTexto"></p>
+    <div class="paleta ap" id="paleta"></div>
+  </div>
+</section>
+
+<!-- ══════════ el regalo · solo si hay alias ══════════ -->
+<section class="seccion centro" id="regalo" hidden>
+  <div class="caja">
+    <p class="rotulo ap">Regalo</p>
+    <p class="ap" id="regaloTexto"></p>
+    <p class="ap" style="font-family:var(--display);font-size:22px;letter-spacing:.1em;color:var(--oro-claro);margin:18px 0 4px" id="alias"></p>
+    <p class="ap" style="font-size:13px;color:var(--mute)" id="titular"></p>
+    <button class="btn-mapa ap" id="copiar" type="button" style="border-color:var(--oro);color:var(--oro)"><span id="copiarTxt">Copiar alias</span></button>
+  </div>
+</section>
+
+<!-- ══════════ la confirmación ══════════ -->
+<section class="seccion" id="confirmar">
+  <div class="caja">
+    <p class="rotulo centro ap">Confirmación</p>
+    <h2 class="centro ap" style="font-size:clamp(25px,7vw,34px)">¿Venís?</h2>
+    <p class="centro ap" id="hasta" style="color:var(--mute);font-size:15px"></p>
+
+    <form id="rsvp" class="ap" novalidate>
+      <div class="campo">
+        <label for="fNombre">Nombre y apellido</label>
+        <input id="fNombre" name="Nombre" type="text" autocomplete="name" required>
+      </div>
+
+      <div class="campo">
+        <label id="lblAsiste">¿Vas a asistir?</label>
+        <div class="radios" role="radiogroup" aria-labelledby="lblAsiste">
+          <label><input type="radio" name="Confirma" value="Sí"> Sí, ahí voy</label>
+          <label><input type="radio" name="Confirma" value="No"> No voy a poder</label>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="fLugares">¿Cuántos son?</label>
+        <select id="fLugares" name="Cuántos">
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="fComida">¿Alguna comida que no puedas?</label>
+        <input id="fComida" name="Comida" type="text" placeholder="Celíaco, vegetariano, alergias…">
+      </div>
+
+      <div class="campo">
+        <label for="fTema">Un tema que no puede faltar</label>
+        <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
+      </div>
+
+      <details class="aviso-datos">
+        <summary>Qué pasa con lo que escribís acá</summary>
+        <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
+        son, armar las mesas y pasarle al salón las comidas especiales.
+        La lista la tiene <b>la familia de Mia</b>, que es quien organiza;
+        Click Eterno solo la guarda por su cuenta y orden.
+        Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
+        comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
+        Si querés que borremos lo tuyo antes, escribinos a
+        <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
+      </details>
+
+      <button id="enviar" type="submit">Confirmar</button>
+      <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ══════════ el cierre ══════════ -->
+<section class="seccion centro" id="cierre">
+  <div class="caja">
+    <div class="filete ap"><i></i><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 10 5 5 10 0 5Z"/></svg><i></i></div>
+    <p class="cierre-n ap">Mia</p>
+    <p class="ap" style="color:var(--mute);margin-top:14px">Te espero.</p>
+    <p class="firma ap">Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a></p>
+  </div>
+</section>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   LO ÚNICO QUE SE TOCA
+   ══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  quien: "Mia",
+
+  /* Con la hora LOCAL explícita (-03:00). Una fecha sin zona mandada
+     a una cuenta regresiva la corre tres horas, y eso acá ya costó
+     caro una vez.
+     ⚠ LA HORA ES UNA SUPOSICIÓN: la cumpleañera mandó el día, no la
+     hora. 21:00 es lo habitual en Rosario; se cambia acá y se mueven
+     solas la cuenta regresiva, el cronograma y la tarjeta de dónde. */
+  fiesta: "2028-01-29T21:00:00-03:00",
+  confirmarHasta: "29 de diciembre",
+
+  lugar: "La Mansión del Rey",
+  /* La dirección la dio la clienta, que es quien reservó el salón —
+     no un directorio—. Igual conviene que la confirme con el salón:
+     un número mal escrito manda cien personas a otra cuadra, y eso
+     no se arregla esa noche. */
+  calle: "Vera Mujica 68 · Rosario",
+  mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
+
+  cronograma: [
+    {hora:"21:00", que:"Recepción",     detalle:"Llegada y primer brindis."},
+    {hora:"21:45", que:"La entrada",    detalle:"El momento de Mia."},
+    {hora:"22:15", que:"Cena",          detalle:"A la mesa, todos juntos."},
+    {hora:"00:00", que:"El vals",       detalle:"Y después, la torta."},
+    {hora:"00:30", que:"Fiesta",        detalle:"Hasta que aguantemos."},
+    {hora:"04:00", que:"Trasnoche",     detalle:"Algo rico para el final."}
+  ],
+
+  dressTexto: "Elegante o formal. Es una noche para ponerse lindos.",
+  /* Los tres que eligió ella: blanco, dorado y negro. */
+  dressColores: ["#F4F1EA","#D4AF6A","#0C0B0A"],
+
+  /* ⚠ VACÍO A PROPÓSITO. "Ceci.montenegro.11" puede ser un alias para
+     transferir o un usuario de Instagram, y no es lo mismo: publicar
+     un alias equivocado manda la plata de los invitados a cualquier
+     parte. Con el alias confirmado, se escribe acá y la sección
+     aparece sola. */
+  alias: "",
+  titular: "",
+  regaloTexto: "Lo más lindo es que estés. Y si además querés regalarme algo, acá va.",
+
+  lugaresPorDefecto: 2,
+
+  /* El Apps Script de la planilla. VACÍO = es una muestra: la
+     confirmación se ve entera, se puede completar, y la pantalla
+     dice con todas las letras que no se mandó a ningún lado.
+     Decir "listo" sin haber guardado nada es la mentira de siempre. */
+  endpoint: ""
+};
+
+/* ── atajos ── */
+const $  = (s,c)=>(c||document).querySelector(s);
+const $$ = (s,c)=>[...(c||document).querySelectorAll(s)];
+const esc = t => String(t==null?'':t).replace(/[&<>"']/g,
+  c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* La clase .js marca que el JS CORRE. Recién con ella el CSS esconde
+   lo que va a aparecer al bajar: sin esto, con el JS caído la
+   invitación quedaría en blanco y no tiraría ningún error. */
+document.documentElement.classList.add('js');
+
+/* ══════════ el sobre ══════════ */
+(function(){
+  const sobre = $('#sobre'), boton = $('#abrir');
+  if(!sobre || !boton) return;
+  document.body.classList.add('cerrado');
+  boton.addEventListener('click', ()=>{
+    sobre.classList.add('abierto');
+    document.body.classList.remove('cerrado');
+    /* El foco entra a la invitación: si se queda en un botón que ya
+       no está, el que navega con teclado se queda sin punto de
+       partida. */
+    setTimeout(()=>{ try{ const p=$('#portada'); p.setAttribute('tabindex','-1'); p.focus({preventScroll:true}); }catch(e){} }, 60);
+    setTimeout(()=>{ try{ sobre.remove(); }catch(e){} }, 1000);
+  });
+})();
+
+/* ══════════ lo que sale de CONFIG ══════════ */
+(function(){
+  $('#lugar').textContent = CONFIG.lugar;
+  $('#calle').textContent = CONFIG.calle;
+  $('#mapa').href = CONFIG.mapa;
+  $('#dressTexto').textContent = CONFIG.dressTexto;
+  $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta + '. Con eso cerramos las mesas.';
+
+  $('#paleta').innerHTML = (CONFIG.dressColores||[])
+    .map(c => '<i style="background-color:' + esc(c) + '"></i>').join('');
+
+  $('#agenda').innerHTML = (CONFIG.cronograma||[]).map(t =>
+    '<div class="tramo"><div class="h">' + esc(t.hora) + '</div>' +
+    '<div><b>' + esc(t.que) + '</b><span>' + esc(t.detalle) + '</span></div></div>').join('');
+
+  /* El regalo solo existe si hay un alias. Una sección vacía se
+     dibuja perfecta y no dice nada: peor que no estar. Y un alias
+     equivocado es peor todavía. */
+  if (CONFIG.alias){
+    $('#regalo').hidden = false;
+    $('#regaloTexto').textContent = CONFIG.regaloTexto;
+    $('#alias').textContent = CONFIG.alias;
+    $('#titular').textContent = CONFIG.titular;
+  }
+
+  const sel = $('#fLugares');
+  if (sel) sel.value = String(CONFIG.lugaresPorDefecto || 1);
+
+  /* La hora de la tarjeta sale de la MISMA cadena que la cuenta
+     regresiva: escrita aparte, el día que se corra la hora quedan
+     dos horarios distintos en la misma invitación. */
+  const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (m){
+    const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                   'agosto','septiembre','octubre','noviembre','diciembre'];
+    const d = new Date(+m[1], +m[2]-1, +m[3]);   /* por componentes: sin zona de por medio */
+    const nom = DIAS[d.getDay()];
+    $('#hora').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) +
+      ' ' + (+m[3]) + ' de ' + MESES[+m[2]-1] + ' · ' + m[4] + ':' + m[5];
+  }
+})();
+
+/* ══════════ el calendario de "guardá la fecha" ══════════
+   El día y el mes salen de la CADENA de CONFIG, no de `new Date(...)`.
+   Un `new Date("2028-01-29T21:00:00-03:00").getDate()` devuelve el día
+   EN EL RELOJ DEL QUE MIRA: un invitado en Madrid vería marcado el 30.
+   La fecha de una fiesta es la del lugar de la fiesta y de nadie más.
+   La semana arranca el lunes, como el calendario de la pared de acá. */
+(function(){
+  const caja = $('#calendario');
+  if(!caja) return;
+  const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m){ caja.remove(); return; }
+  const anio = +m[1], mes = +m[2], dia = +m[3];
+
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio',
+                 'Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DIAS  = ['L','M','M','J','V','S','D'];
+
+  /* Cuentas puras, construidas por componentes: no hay zona horaria
+     de por medio. getDay() da 0=domingo; se corre para que la
+     columna 0 sea el lunes. */
+  const primero = (new Date(anio, mes-1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(anio, mes, 0).getDate();
+
+  let celdas = [];
+  for(let i=0;i<primero;i++) celdas.push('');
+  for(let d=1;d<=cuantos;d++) celdas.push(d);
+  while(celdas.length % 7) celdas.push('');
+
+  let filas = '';
+  for(let i=0;i<celdas.length;i+=7){
+    filas += '<tr>' + celdas.slice(i,i+7).map(d =>
+      d === '' ? '<td></td>'
+               : '<td' + (d===dia ? ' class="elDia"' : '') + '><i>' + d + '</i></td>'
+    ).join('') + '</tr>';
+  }
+
+  const dd = String(dia).padStart(2,'0'), mm = String(mes).padStart(2,'0');
+  caja.innerHTML =
+    '<p class="mes">' + MESES[mes-1] + ' ' + anio + '</p>' +
+    '<table role="presentation"><thead><tr>' +
+      DIAS.map(d => '<th>' + d + '</th>').join('') +
+    '</tr></thead><tbody>' + filas + '</tbody></table>' +
+    '<hr class="corte">' +
+    '<p class="guarda">Guardá la fecha</p>' +
+    '<p class="dia-largo">' + dd + '.' + mm + '.' + anio + '</p>';
+})();
+
+/* ══════════ la cuenta regresiva ══════════ */
+(function(){
+  const fin = new Date(CONFIG.fiesta).getTime();
+  if (isNaN(fin)) return;
+  const d=$('#cD'), h=$('#cH'), m=$('#cM'), s=$('#cS');
+  const dos = n => String(n).padStart(2,'0');
+  function pintar(){
+    const falta = Math.max(0, fin - Date.now());
+    const seg = Math.floor(falta/1000);
+    d.textContent = dos(Math.floor(seg/86400));
+    h.textContent = dos(Math.floor(seg/3600) % 24);
+    m.textContent = dos(Math.floor(seg/60) % 60);
+    s.textContent = dos(seg % 60);
+  }
+  pintar();
+  setInterval(pintar, 1000);
+})();
+
+/* ══════════ aparecer al llegar, y la barra de avance ══════════
+   UN solo oyente de scroll con requestAnimationFrame. Tres oyentes
+   sueltos corriendo en cada píxel es lo que hace que una página se
+   sienta pesada en un teléfono. */
+(function(){
+  const aps = $$('.ap');
+  const menos = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if (menos || !('IntersectionObserver' in window)){
+    aps.forEach(n=>n.classList.add('entro'));
+  } else {
+    /* ── LA PORTADA NO PASA POR EL OBSERVADOR ──
+       El observador descuenta un 12% abajo para que un bloque entre
+       cuando ya se ve bien y no asomando. Pero la portada mide
+       exactamente una pantalla y su texto va abajo: "Deslizá" caería
+       DEBAJO de esa raya y no intersecaría nunca — opacidad 0 para
+       siempre, sin un solo error, y justo eso es lo único que avisa
+       que hay más abajo. */
+    const io = new IntersectionObserver((es)=>{
+      es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('entro'); io.unobserve(e.target); } });
+    }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
+    const portada = document.getElementById('portada');
+    aps.forEach(n=>{ if (portada && portada.contains(n)) return; io.observe(n); });
+    requestAnimationFrame(()=>$$('#portada .ap').forEach(n=>n.classList.add('entro')));
+  }
+
+  const barra = $('#avance');
+  let pedido = false;
+  function alScroll(){
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(()=>{
+      pedido = false;
+      const alto = document.documentElement.scrollHeight - innerHeight;
+      barra.style.width = (alto > 0 ? Math.min(100, (scrollY/alto)*100) : 0) + '%';
+    });
+  }
+  addEventListener('scroll', alScroll, {passive:true});
+  alScroll();
+})();
+
+/* ══════════ copiar el alias ══════════ */
+(function(){
+  const b = $('#copiar'), t = $('#copiarTxt');
+  if(!b) return;
+  b.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(CONFIG.alias);
+      t.textContent = 'Copiado';
+    }catch(e){
+      /* Si el navegador no deja copiar, no se miente: se dice qué hacer. */
+      t.textContent = 'Mantené apretado el alias';
+    }
+    setTimeout(()=>{ t.textContent = 'Copiar alias'; }, 2600);
+  });
+})();
+
+/* ══════════ marcar la opción elegida ══════════
+   El CSS lo haría con :has(), que Safari trae recién desde 2022. En
+   uno más viejo la opción elegida no se marcaba y el invitado no
+   sabía qué había tocado: eso no tira ningún error. */
+(function(){
+  const ls = $$('.radios label');
+  const pintar = () => ls.forEach(l => {
+    const i = $('input', l);
+    l.classList.toggle('elegida', !!(i && i.checked));
+  });
+  ls.forEach(l => { const i = $('input', l); if(i) i.addEventListener('change', pintar); });
+  pintar();
+})();
+
+/* ══════════ la confirmación ══════════
+   El POST va en mode:'no-cors', así que NO se puede leer la
+   respuesta. Por eso se vuelve a preguntar: GET ?confirmado=NOMBRE,
+   que contesta sí o no, y recién ahí la pantalla dice "listo".
+   Es la regla más vieja del proyecto: si algo no se guardó, el
+   mensaje no puede decir que sí. */
+(function(){
+  const form = $('#rsvp'), aviso = $('#aviso'), boton = $('#enviar');
+  if(!form) return;
+
+  const decir = (txt, clase) => {
+    aviso.textContent = txt;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  /* El Apps Script nuevo contesta JSON: {"ok":true}. El viejo
+     contestaba el texto "si". Se aceptan los dos, porque leerlo mal
+     no se ve como un error: se ve como "no pudimos confirmar" arriba
+     de una confirmación que SÍ se guardó, y el invitado la manda de
+     nuevo. */
+  async function llego(nombre){
+    try{
+      const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre), {cache:'no-store'});
+      if(!r.ok) return false;
+      const t = (await r.text()).trim();
+      try{
+        const d = JSON.parse(t);
+        if (d && typeof d.ok === 'boolean') return d.ok;
+      }catch(e){}
+      const p = t.toLowerCase();
+      return p === 'si' || p === 'sí' || p === 'true' || p === '1';
+    }catch(e){ return false; }
+  }
+
+  form.addEventListener('submit', async (ev)=>{
+    ev.preventDefault();
+    const nombre = ($('#fNombre').value || '').trim();
+    if (nombre.length < 3){ decir('Escribí tu nombre y apellido.', 'mal'); $('#fNombre').focus(); return; }
+
+    /* Nada viene preseleccionado y hay que elegir. Con el "Sí" puesto
+       de fábrica, el que toca Confirmar sin leer manda un sí que no
+       quiso decir — y eso se paga en comida encargada para gente que
+       no va. */
+    if (!$('input[name="Confirma"]:checked')){
+      decir('Decinos si venís o no.', 'mal');
+      $('.radios').scrollIntoView({block:'center'});
+      return;
+    }
+
+    if (!CONFIG.endpoint){
+      /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
+      decir('Esto todavía es una muestra: la confirmación no se manda a ningún lado. En la de verdad, acá te decimos que llegó.', 'bien');
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Mandando…');
+    try{
+      await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:new FormData(form)});
+      await new Promise(r=>setTimeout(r, 1200));
+      if (await llego(nombre)) decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el 29.', 'bien');
+      else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }catch(e){
+      decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }
+    boton.disabled = false;
+  });
+})();
+</script>
+</body>
+</html>

@@ -28,93 +28,13 @@ const bien=m=>console.log('  ✓ '+m);
    venimos a que no haya texto invisible. Lo que baja de 3 está roto. */
 const PISO=3;
 
-const MEDIDOR=`(${function(){
-  const num=s=>{ const m=String(s).match(/[\d.]+/g)||[]; return m.map(Number); };
-  const mezclar=(fr,at)=>{ // fr con alfa sobre at, opaco
-    const a=fr[3]===undefined?1:fr[3];
-    return [0,1,2].map(i=>fr[i]*a + at[i]*(1-a)).concat(1);
-  };
-  const luz=c=>{ const f=c.slice(0,3).map(v=>{ const s=v/255;
-      return s<=0.03928 ? s/12.92 : Math.pow((s+0.055)/1.055,2.4); });
-    return 0.2126*f[0]+0.7152*f[1]+0.0722*f[2]; };
-  const razon=(a,b)=>{ const l1=luz(a), l2=luz(b);
-    return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05); };
-  /* el fondo que de verdad queda atrás: el primer ancestro que pinte */
-  const fondoDe=n=>{
-    /* Se sube hasta el primer fondo OPACO: ese es el piso que pinta.
-       Si antes de llegar aparece un degradé o una foto, no sabemos de
-       qué color quedó y no lo juzgamos (mejor callar que inventar una
-       falla). Antes se cortaba con CUALQUIER degradé del árbol, aunque
-       estuviera por encima de un fondo opaco, y así se salteaba media
-       página: por eso la primera corrida decía "41 textos" en una
-       página que tiene cientos. */
-    let pila=[];
-    for(let e=n; e; e=e.parentElement){
-      const cs=getComputedStyle(e);
-      const img=cs.backgroundImage;
-      if(img && img!=='none'){
-        /* Un degradé que TERMINA en transparente sí se puede juzgar, y hay
-           que juzgarlo: en su punto más flojo el texto cae sobre el fondo
-           del padre, y es ahí donde se tiene que leer. Se saltea la capa
-           —el peor caso— y se sigue subiendo. Esto no es un detalle: el
-           panel de la prueba de cada servicio tiene su propio degradé
-           terminado en `transparent`, así que TODO su texto se salteaba, y
-           ahí la tinta de la parte negra cayó sobre el crema de `.clara` a
-           1,49:1 con esta suite en verde.
-           Lo que sigue sin juzgarse es una FOTO o un degradé opaco de
-           punta a punta: de esos no sabemos de qué color quedó el piso, y
-           mejor callar que inventar una falla. */
-        const traslucido=/\btransparent\b|rgba\([^)]*,\s*0(?:\.0+)?\s*\)/.test(img);
-        if(!traslucido) return null;
-        continue;
-      }
-      let c=num(cs.backgroundColor);
-      if(c.length>=3){
-        if(c.length===3) c=c.concat(1);
-        if(c[3]>0) pila.push(c);
-        if(c[3]>=1){ let sobre=pila.pop();
-          for(let i=pila.length-1;i>=0;i--) sobre=mezclar(pila[i],sobre);
-          return sobre; }
-      }
-    }
-    let sobre=[255,255,255,1];
-    for(let i=pila.length-1;i>=0;i--) sobre=mezclar(pila[i],sobre);
-    return sobre;
-  };
-  const visible=e=>{
-    const cs=getComputedStyle(e);
-    if(cs.display==='none'||cs.visibility==='hidden') return false;
-    const r=e.getBoundingClientRect();
-    return r.width>2 && r.height>2;
-  };
-  /* la opacidad que le cae encima por herencia */
-  const opacidadDe=n=>{ let o=1; for(let e=n;e;e=e.parentElement){
-      const v=parseFloat(getComputedStyle(e).opacity); if(!isNaN(v)) o*=v; } return o; };
-  const salida=[];
-  for(const e of document.querySelectorAll('body *')){
-    const propio=[...e.childNodes].some(n=>n.nodeType===3 && n.textContent.trim().length>1);
-    if(!propio) continue;
-    if(!visible(e)) continue;
-    const cs=getComputedStyle(e);
-    const fondo=fondoDe(e); if(!fondo) continue;
-    let tinta=num(cs.color); if(tinta.length===3) tinta=tinta.concat(1);
-    const op=opacidadDe(e);
-    if(op<0.08) continue;               // está apagado a propósito
-    tinta=[tinta[0],tinta[1],tinta[2], (tinta[3]===undefined?1:tinta[3])*op];
-    const r=razon(mezclar(tinta,fondo), fondo);
-    salida.push({ r:Math.round(r*100)/100,
-      que:(e.tagName.toLowerCase()+(e.className&&typeof e.className==='string'?'.'+e.className.trim().split(/\s+/).join('.'):'')).slice(0,70),
-      txt:e.textContent.trim().replace(/\s+/g,' ').slice(0,42) });
-  }
-  return salida.sort((a,b)=>a.r-b.r);
-}})()`;
+const { MEDIDOR, DESTAPAR } = require('./contraste_medidor');
 
 /* La página pública revela cada bloque al bajar (.ap). Sin esto, todo lo
    que está abajo del primer pantallazo tiene opacidad 0 y la prueba lo
    daba por "apagado a propósito": se medían 41 textos de una página que
    tiene cientos, y el error que la trajo quedaba justo afuera. */
-const DESTAPAR=`.ap,.ap *{opacity:1!important;transform:none!important;filter:none!important}
-  *{animation-duration:0s!important;transition-duration:0s!important}`;
+
 
 async function mirar(p, url, nombre, piso, prep){
   await p.goto(url,{waitUntil:'domcontentloaded'});
