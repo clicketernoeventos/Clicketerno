@@ -211,6 +211,20 @@ quede a medio hacer.
   archivo adjunto, nunca "corré esto" sin el bloque a mano.
 - **Cuando hay opciones, dar la más simple.** Lo dijo con todas las letras:
   *"no quiero renegar"*. Una recomendación, no un menú.
+- **Un pedido termina PUBLICADO, no "listo para publicar".** Dicho el
+  18/10/2026: *"siempre que te pida algo dale hasta que esté publicado"*.
+  O sea que el camino completo —cambio, pruebas, commit, merge a `main`—
+  va de corrido y no hay que pedirle permiso en el último paso. Antes
+  cada cosa quedaba esperando un "mandalo" suyo, y eso lo convertía en el
+  que tiene que acordarse de apretar el botón. **Lo que sigue necesitando
+  su decisión no es la publicación, es el CONTENIDO**: un dato que no
+  mandó el cliente —una hora, una fecha de cierre, el titular de una
+  cuenta— no se inventa para poder terminar.
+- **No explicarle el cómo.** *"No me des mucho detalle que yo no sé
+  programación."* El informe es: qué cambió, qué se ve distinto, y qué
+  falta de su lado. Los nombres de archivos, los selectores y los
+  números de las pruebas no le dicen nada; si algo salió mal, eso sí se
+  dice, en castellano.
 - **Del otro lado no se depura.** Si algo falla en el teléfono, lo que
   llega es "no anda" o una captura. La prueba tiene que existir antes de
   que la pruebe una persona.
@@ -2512,13 +2526,19 @@ especial para mí."* — lo único que se tocó fue no repetir "noche" dos
 veces en la misma frase. **Esa línea no se mejora**: es la voz de la que
 invita, no la nuestra.
 El alias del regalo estuvo en
-la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
-está puesto, con el rótulo "Alias para transferir" arriba, porque
-`Ceci.montenegro.11` se lee igual como usuario de Instagram y el que
-pega el alias equivocado manda la plata a cualquier parte. El
-**titular** —el nombre que le va a mostrar el banco al pegarlo— sigue
-sin saberse y por eso no se escribe nada: un nombre inventado al lado
-de un alias es peor que ninguno.
+la misma lista hasta que el dueño lo confirmó (17/10/2026), y
+**cambió al día siguiente**: era `Ceci.montenegro.11` y pasó a ser
+`Aneley.1974`, de otra cuenta. Va con el rótulo "Alias para
+transferir" arriba, y ese rótulo hace falta por los dos lados: los
+dos se leen igual que un usuario de Instagram, y el dueño lo pasó
+diciendo *"es el cbu para regalos"* —no es un CBU, es un alias, y
+pegar un alias donde el banco pide un CBU no entra—. El que pega el
+dato equivocado manda la plata a cualquier parte. El **titular** —el
+nombre que le va a mostrar el banco al pegarlo— sigue sin saberse y
+por eso no se escribe nada: un nombre inventado al lado de un alias
+es peor que ninguno. **Y ahora hay que preguntarlo de nuevo**: la
+cuenta no es la misma, así que el titular tampoco tiene por qué
+serlo.
 
 #### Las cuatro fotos
 
