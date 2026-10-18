@@ -393,8 +393,60 @@ body.cerrado .port-foto img{transform:scale(1.07)}
   font-family:var(--display);font-weight:400;font-optical-sizing:auto;
   font-size:min(44vw,230px);display:inline-block;
 }
-.quince-big span:last-child{margin-left:-.09em}
+/* `span + span` y no `span:last-child`: la capa de tinta se agrega
+   como último hijo del h1, así que con `:last-child` el "5" de
+   ABAJO dejaba de matchear y perdía su margen negativo — las dos
+   capas quedaban corridas 8px una de otra. Medido. Es la trampa de
+   siempre: agregar un nodo cambia a quién le pega un selector. */
+.quince-big span + span{margin-left:-.09em}
 .port-sub{font-family:var(--mano);font-size:clamp(28px,8vw,40px);color:var(--oro);margin:2px 0 0;line-height:1.1}
+
+/* ══════════ EL 15 SE LLENA DE TINTA ══════════
+   La portada volvió a ser tipográfica y el 15 es lo único que hay:
+   que aparezca y se quede quieto es correcto y es soso. Acá entra
+   dibujado en ORO y la tinta negra lo va llenando de abajo hacia
+   arriba, como un sello que se apoya en el papel. Dura casi dos
+   segundos, pasa UNA vez y después no se mueve nada más.
+
+   Son DOS capas y no un color que cambia, y el motivo no es de
+   gusto: con `background-clip:text` el relleno viaja en el fondo y
+   el `color` del texto queda en `transparent` PARA SIEMPRE — el
+   medidor de contraste lee el color, no lo que se ve, así que
+   informaría el "15" a 1,00:1 y tendría razón según lo que mide.
+   Es la misma trampa del "15" en contorno de `mateoylucas`.
+   Con dos capas cada una tiene su color de verdad: la de abajo es
+   el oro que SE LEE (4,6:1 sobre el papel) y la de arriba es la
+   tinta, recortada con `clip-path` y declarada decoración
+   (`aria-hidden` + `pointer-events:none`), que es como el medidor
+   saltea un adorno sin quedarse ciego.
+
+   El oro de la capa de abajo lo pone el JS al armar la de arriba:
+   sin JS no hay animación y el 15 es negro, que es el estado
+   bueno. */
+.quince-big{position:relative}
+/* `> span` y no `span`: el oro de la capa de abajo le llegaba
+   también a las cifras de la capa de arriba —son descendientes del
+   mismo h1— y la tinta nunca se veía. La animación corría perfecta
+   y el 15 quedaba dorado de principio a fin. */
+.quince-big.con-tinta > span{color:var(--oro)}
+.quince-big .tinta{
+  position:absolute;left:0;right:0;top:0;
+  font-style:normal;color:var(--tinta);pointer-events:none;
+  clip-path:inset(100% 0 0 0);
+}
+.quince-big.con-tinta.llena .tinta{
+  animation:subeTinta 1.8s cubic-bezier(.4,0,.15,1) .35s forwards;
+}
+@keyframes subeTinta{ to{ clip-path:inset(0 0 0 0) } }
+/* El manuscrito entra con el interletrado cerrándose: la misma
+   idea de que algo se ASIENTA, en el renglón de al lado. */
+.js #portada .port-sub{letter-spacing:.08em}
+.js #portada .port-sub.entro{letter-spacing:0;transition:opacity .9s var(--e),transform .9s var(--e),letter-spacing 1.4s var(--e)}
+@media (prefers-reduced-motion:reduce){
+  .quince-big.con-tinta > span{color:var(--tinta)}
+  .quince-big .tinta{display:none}
+  .js #portada .port-sub,.js #portada .port-sub.entro{letter-spacing:0;transition:none}
+}
 
 /* LA FECHA APILADA. Estaba en la portada y ahí, abajo del 15, eran
    cuatro grupos de cifras enormes seguidos: la portada se volvía un
@@ -803,7 +855,11 @@ const CONFIG = {
      el marco, el globo de respuesta y la foto de perfil pegados
      abajo. Eso en la portada de una invitación se lee como que la
      tarjeta se hizo con lo que había. */
-  portada: "fotos/portada.webp",
+  /* VACÍO: la clienta no quiso la foto de portada (18/10/2026), así
+     que vuelve la portada tipográfica, que para eso se dejó entera.
+     El camino con foto queda completo y probado: con un archivo acá,
+     la portada pasa a ser la foto a pantalla completa otra vez. */
+  portada: "",
 
   /* LAS QUE PASAN, en un solo marco y fundiéndose una en otra.
      VACÍO = la sección no se dibuja: un hueco gris con forma de
@@ -811,7 +867,11 @@ const CONFIG = {
      carpeta, máximo 1600px y 300 KB cada una. A las dos de chiquita
      les sacamos la marca de agua de la app con que las sacaron y
      las franjas negras de arriba y abajo. */
-  fotos: ["fotos/1.webp", "fotos/2.webp", "fotos/3.webp"],
+  /* Las dos de Mia chiquita. La tercera era de ella más grande y
+     salió junto con la de la portada: sin esa, la sección entera
+     dice una sola cosa —"la que era"— y eso es más fuerte que tres
+     fotos sueltas. */
+  fotos: ["fotos/2.webp", "fotos/3.webp"],
 
   /* Confirmado por el dueño el 17/10/2026: es el alias para
      transferir, no un usuario de Instagram. Vacío, la sección
@@ -975,6 +1035,32 @@ function rasgo(d, color){
   svg.appendChild(path);
   return svg;
 }
+/* ══════════ el 15 se llena de tinta ══════════
+   La capa de arriba la crea el JS clonando las cifras: escrita en
+   el HTML, un lector de pantalla leería "15" dos veces y el que
+   entra sin JS vería una encima de la otra. */
+(function(){
+  const h = $('#portada .quince-big');
+  if (!h || CONFIG.portada) return;          /* con foto, el 15 ya tiene su borde de oro */
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const capa = document.createElement('i');
+  capa.className = 'tinta';
+  capa.setAttribute('aria-hidden','true');
+  capa.innerHTML = h.innerHTML;
+  h.appendChild(capa);
+  h.classList.add('con-tinta');
+  /* Arranca cuando la portada entra, no al cargar: con el sobre
+     encima no la ve nadie. Y si por lo que sea nunca entrara, un
+     respaldo a los 4 s la llena igual — un 15 a medio llenar para
+     siempre es peor que uno sin animación. */
+  const arrancar = () => h.classList.add('llena');
+  const boton = $('#abrir');
+  if (boton && document.body.classList.contains('cerrado'))
+    boton.addEventListener('click', ()=>setTimeout(arrancar, 180), {once:true});
+  else requestAnimationFrame(arrancar);
+  setTimeout(arrancar, 4000);
+})();
+
 /* ══════════ la foto de la portada ══════════
    El <img> lo crea el JS y no el HTML: un <img> con el src vacío
    le pide al servidor la página entera de nuevo, y eso no avisa.
