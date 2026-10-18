@@ -2608,6 +2608,46 @@ En una pantalla ancha la foto queda como una columna centrada con
 negro a los costados. Es lo que pasa cuando se muestra entera una
 foto vertical en un monitor apaisado, y se ve editorial.
 
+#### El pie es la puerta de entrada del próximo cliente
+
+*"Cuando toquen Click Eterno que vayan directo al WhatsApp y que me
+diga de qué invitación viene"* (18/10/2026). Es el único renglón
+nuestro en toda la invitación y es por donde entra el que la recibe
+y le gusta. Llevaba a la página de inicio: de ahí hay que encontrar
+el botón, elegir el servicio y recién entonces escribir. Ahora abre
+el chat con el mensaje puesto —*"Vi la invitación de Mia y quiero
+consultar por una invitación para mi fiesta"*— y el nombre sale de
+`CONFIG.quien`, no escrito a mano: la próxima invitación que se
+copie de ésta lo trae bien sin que nadie se acuerde de cambiarlo.
+Es la misma decisión que ya estaba tomada en los botones de la
+página pública: *el que escribe ya eligió, y del otro lado se sabe
+qué pide sin tener que preguntarlo.*
+
+El `href` del HTML sigue apuntando al sitio a propósito —si el JS no
+corre, el enlace lleva igual a algún lado— y **el logo de WhatsApp se
+pone en el mismo lugar donde se arma el enlace**: sin JS el enlace va
+al sitio, y ahí un logo de WhatsApp sería una promesa que no se
+cumple.
+
+#### Tocar un punto NO detiene el pase de fotos
+
+*"Que la foto vaya pasando sola así la gente no tiene que clickear
+en vano."* La primera versión paraba el pase al tocar un punto, y el
+motivo parecía bueno: que la foto elegida no se fuera a los tres
+segundos. El resultado fue el contrario. El que toca un punto —y el
+dueño fue el primero— deja la cinta clavada para siempre y se va
+creyendo que **las fotos no pasan solas**; y el que no toca nada,
+que es casi todo el mundo, nunca se entera de que podía tocar. Ahora
+el toque lleva a esa foto y **reprograma** el pase con una espera más
+larga (7 s en vez de 4,2).
+Va con un `setTimeout` que se vuelve a programar y no con un
+`setInterval`: la espera larga vale una vez y vuelve sola al ritmo
+de siempre. Con un intervalo habría que tirarlo y crear otro, y el
+largo quedaría puesto para siempre.
+Medido: entra en la 1, a los 4,6 s está en la 2, a los 9 en la 3;
+tocando la 1 sigue en la 1 a los 4 s y **a los 8 ya pasó sola**.
+Contra el código anterior, ese último paso no ocurría nunca.
+
 #### El borde dorado de los títulos
 
 Pedido del dueño: *"a las letras le pones borde dorado, a todas las

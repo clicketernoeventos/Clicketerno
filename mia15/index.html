@@ -541,6 +541,7 @@ p{margin:0 0 1em}
 #cierre{padding-bottom:96px}
 .cierre-n{font-family:var(--mano);font-size:clamp(58px,19vw,88px);color:var(--tinta);margin:0;line-height:1}
 .firma{margin-top:38px;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris)}
+.firma .ico-wsp{width:1.25em;height:1.25em;vertical-align:-.22em;margin-right:.45em;fill:currentColor}
 .firma a{color:var(--oro);display:inline-block;padding:15px 10px;
   text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 
@@ -832,9 +833,14 @@ document.documentElement.classList.add('js');
 
   /* Las fotos: solo si hay. Van pasando solas en un marco y se
      puede ir a cualquiera con los puntitos.
-     El pase se DETIENE cuando el invitado toca un punto: si sigue
-     corriendo, la foto que eligió se le va sola a los tres
-     segundos y parece que el toque no entró. */
+     TOCAR UN PUNTO NO DETIENE EL PASE, le da más tiempo: la primera
+     versión lo paraba —para que la foto elegida no se fuera a los
+     tres segundos— y el resultado fue el contrario del que buscaba.
+     El que toca un punto deja la cinta clavada para siempre y se
+     va creyendo que las fotos no pasan solas; y el que no toca
+     nada, que es casi todo el mundo, nunca se entera de que podía
+     tocar. Ahora el toque lleva a esa foto y reprograma el pase con
+     una espera más larga. */
   const fs = CONFIG.fotos || [];
   if (fs.length){
     $('#galeria').hidden = false;
@@ -849,6 +855,11 @@ document.documentElement.classList.add('js');
 
     if (fs.length > 1){
       const imgs = $$('img', pase), pts = $$('button', pase);
+      const PASO = 4200, TRAS_TOCAR = 7000;
+      /* Con "menos movimiento" no pasan solas: se llega a las tres
+         con los puntitos, que es contenido alcanzable y no
+         movimiento. */
+      const anda = !matchMedia('(prefers-reduced-motion:reduce)').matches;
       let i = 0, reloj = 0;
       const ir = n => {
         i = (n + imgs.length) % imgs.length;
@@ -856,11 +867,16 @@ document.documentElement.classList.add('js');
         pts.forEach((b,k) => k === i ? b.setAttribute('aria-current','true')
                                      : b.removeAttribute('aria-current'));
       };
-      const andar = () => { clearInterval(reloj); reloj = setInterval(()=>ir(i+1), 4200); };
-      pts.forEach((b,k) => b.addEventListener('click', ()=>{ ir(k); clearInterval(reloj); }));
-      /* Con "menos movimiento" no pasan solas: se llega a las tres
-         con los puntitos, que es contenido alcanzable y no movimiento. */
-      if (!matchMedia('(prefers-reduced-motion:reduce)').matches) andar();
+      /* Un `setTimeout` que se vuelve a programar y no un
+         `setInterval`: después de un toque la espera es más larga
+         una sola vez y vuelve sola al ritmo de siempre. Con un
+         intervalo habría que tirarlo y crear otro, y el más largo
+         quedaría puesto para siempre. */
+      const programar = ms => { clearTimeout(reloj);
+        reloj = setTimeout(()=>{ ir(i+1); programar(PASO); }, ms); };
+      pts.forEach((b,k) => b.addEventListener('click', ()=>{
+        ir(k); if (anda) programar(TRAS_TOCAR); }));
+      if (anda) programar(PASO);
     }
   }
 
@@ -1116,6 +1132,40 @@ function rasgo(d, color){
   }
   addEventListener('scroll', alScroll, {passive:true});
   alScroll();
+})();
+
+/* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════
+   Es el único renglón nuestro en toda la invitación y es por donde
+   entra el próximo cliente: el que la recibe y le gusta toca ahí.
+   Hasta acá llevaba a la página de inicio, y de ahí hay que
+   encontrar el botón, elegir el servicio y recién entonces
+   escribir. Ahora abre el chat con el mensaje puesto, y el mensaje
+   DICE DE QUÉ INVITACIÓN VIENE: del otro lado se sabe qué está
+   mirando el que escribe sin tener que preguntarlo, que es la
+   misma decisión que ya está tomada en los botones de la página.
+
+   El nombre sale de `CONFIG.quien`, no escrito a mano: la próxima
+   invitación que se copie de ésta lo trae bien sin que nadie se
+   acuerde de cambiarlo.
+
+   El `href` del HTML sigue apuntando al sitio a propósito: si el JS
+   no corre, el enlace lleva igual a algún lado en vez de no hacer
+   nada. Y el logo de WhatsApp se pone ACÁ, en el mismo lugar donde
+   se arma el enlace: sin JS el enlace va al sitio, y ahí un logo de
+   WhatsApp sería una promesa que no se cumple. */
+(function(){
+  const a = $('.firma a');
+  if (!a) return;
+  const TEL = '5493412506451';   /* 341 250-6451, el del negocio */
+  const quien = CONFIG.quien || '';
+  const texto = 'Hola Click Eterno! Vi la invitación de ' + quien +
+                ' y quiero consultar por una invitación para mi fiesta.';
+  a.href = 'https://wa.me/' + TEL + '?text=' + encodeURIComponent(texto);
+  /* fill-rule evenodd: sin eso el globo y el auricular se rellenan
+     los dos y queda una mancha en vez de un logo. */
+  a.insertAdjacentHTML('afterbegin',
+    '<svg class="ico-wsp" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true">' +
+    '<path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>');
 })();
 
 /* ══════════ copiar el alias ══════════ */
