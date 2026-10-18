@@ -222,53 +222,71 @@ p{margin:0 0 1em}
 .port-nom{font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--tinta);margin:0 0 6px;text-indent:.5em}
 
 /* ── LA FOTO DE LA PORTADA ──
-   Va ARRIBA y a sangre, con la tipografía abajo sobre el papel.
-   Encimar el "15" negro sobre la foto sería apostarle el contraste
-   a lo que haya salido en la imagen —una pared clara, un reflejo— y
-   eso cambia con cada foto que mande la clienta. Acá el número cae
-   siempre sobre el papel y se lee siempre.
-   El borde rasgado de abajo es EL MISMO que separa las bandas del
-   resto de la tarjeta, dado vuelta: la foto queda como una hoja
-   rasgada pegada arriba. */
-/* El padding de abajo le deja el lugar a "Deslizá", que es
-   `position:absolute` abajo de todo: con el 74 de antes, en una
-   pantalla de 568 el renglón del lugar le caía justo encima y se
-   leía "ROSARIO · SANTA FE" con "DESLIZÁ" montado. Una capa
-   absoluta no empuja a nadie: el lugar se lo tiene que dejar el
-   padding. */
-#portada.con-foto{--foto-alto:clamp(180px,36svh,420px);
-  padding-top:calc(var(--foto-alto) + 22px);padding-bottom:104px}
-.port-foto{position:absolute;top:0;left:0;right:0;height:var(--foto-alto);
-  overflow:hidden;background:var(--papel2)}
-.port-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;filter:grayscale(1)}
-/* El rasgado de la foto cuelga de ABAJO y espejado: el de las
-   secciones está dibujado para colgar de arriba. */
-.port-foto .rasgo{top:auto;bottom:-1px;transform:scaleY(-1)}
-/* El 15 se achica cuando hay foto: con la foto arriba, el número a
-   44vw y la fecha abajo no entran juntos en una pantalla de 568 —
-   y lo que se iba abajo del borde era "Deslizá", que es lo único
-   que avisa que la invitación sigue. */
-#portada.con-foto .quince-big span{font-size:min(33vw,160px)}
-#portada.con-foto .port-sub{font-size:clamp(23px,6.4vw,31px)}
-/* Las dos líneas verticales están centradas en la portada, o sea
-   justo encima de la foto. Con foto cuelgan de abajo, sobre el
-   papel, que es donde el oro se lee. */
-#portada.con-foto .vert{top:auto;bottom:16px;transform:rotate(180deg)}
-/* En una pantalla baja —un iPhone SE, o cualquiera acostado— la
-   foto, el 15 y la fecha no entran juntos: la portada se pasaba
-   40px del borde y "Deslizá" quedaba cortado abajo, que es lo
-   único que avisa que la invitación sigue. */
-@media (max-height:620px){
-  #portada.con-foto{--foto-alto:clamp(150px,29svh,420px);padding-bottom:92px}
-  #portada.con-foto .quince-big span{font-size:min(28vw,130px)}
+   A PANTALLA COMPLETA, con la tipografía encima y abajo. Es la
+   forma que eligió el dueño mirando la de Julia y Franco: la foto
+   ES la portada, no un recuadro arriba de ella.
+
+   La primera versión ponía la foto arriba y el texto abajo sobre el
+   papel, justamente para no apostarle el contraste de un "15" negro
+   a lo que hubiera salido en la imagen. Eso sigue siendo cierto y
+   por eso acá la tinta se DA VUELTA: sobre la foto el texto va en
+   crema y el acento en el oro de las bandas negras, con un velo que
+   hace de piso. El velo no es decoración: es lo que hace que estos
+   cinco renglones se lean sobre cualquier foto.
+
+   Y el velo TERMINA en la tinta, que es el color de la banda que
+   sigue: la foto se funde con la sección de abajo, así que ahí no va
+   ningún borde rasgado —el rasgado separa papel de tinta, y acá no
+   hay papel—. Lo saltea el bloque de los bordes. */
+#portada.con-foto{
+  /* El padding de abajo le deja el lugar a "Deslizá", que es una
+     capa absoluta y no empuja a nadie: con menos, el renglón del
+     lugar le queda montado encima. */
+  padding:0 26px calc(100px + env(safe-area-inset-bottom));
+  justify-content:flex-end;
+  background-color:var(--tinta);color:var(--crema);
 }
-/* En una pantalla ancha, una foto vertical estirada a 1280 y
-   recortada a 360 de alto es una franja: se ve la pared del salón y
-   no la cara. Ahí la foto es una columna centrada, con su rasgado. */
-@media (min-width:700px){
-  .port-foto{left:50%;right:auto;transform:translateX(-50%);
-    width:min(380px,42vw);height:clamp(300px,44svh,460px)}
-  #portada.con-foto{padding-top:calc(clamp(300px,44svh,460px) + 34px)}
+.port-foto{position:absolute;inset:0;overflow:hidden;background-color:var(--papel2);z-index:0}
+.port-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;filter:grayscale(1)}
+#portada.con-foto:after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,
+    rgba(17,16,16,.55) 0,
+    rgba(17,16,16,.14) 24%,
+    rgba(17,16,16,.34) 46%,
+    rgba(17,16,16,.88) 76%,
+    var(--tinta) 100%);
+}
+/* Todo lo que no es la foto va ARRIBA del velo. Sin esto el velo se
+   dibuja encima del texto y el texto se apaga con él.
+   Y "Deslizá" vuelve a su `position:absolute`: este selector le gana
+   en especificidad y lo había pasado a `relative`, donde su
+   `bottom:30px` deja de anclarlo abajo y lo SUBE 30px — o sea
+   encima del renglón de arriba, que es justo lo que se veía. */
+#portada.con-foto > :not(.port-foto){position:relative;z-index:2}
+#portada.con-foto > .deslizar{position:absolute}
+/* La tinta de la portada con foto, toda. Es la regla de siempre:
+   si un bloque trae su propio fondo, trae su propia tinta. */
+#portada.con-foto .port-nom,
+#portada.con-foto .quince-big,
+#portada.con-foto .port-fecha{color:var(--crema)}
+#portada.con-foto .port-sub{color:var(--oro-neg)}
+#portada.con-foto .port-donde,
+#portada.con-foto .deslizar{color:var(--crema2)}
+#portada.con-foto .deslizar span{background:linear-gradient(var(--crema2),transparent)}
+/* Las dos líneas verticales dicen "Mis quince años" y la fecha, que
+   es exactamente lo que ya dicen dos renglones del medio. Sobre el
+   papel eran un adorno al costado; encima de la foto son dos textos
+   más tapando la cara. */
+#portada.con-foto .vert{display:none}
+/* El 15 se achica sobre la foto: a 44vw, con la fecha y el lugar
+   abajo, el bloque entero se come la imagen y no se ve de quién es
+   la fiesta. */
+#portada.con-foto .quince-big span{font-size:min(36vw,180px)}
+#portada.con-foto .port-sub{font-size:clamp(24px,6.8vw,33px)}
+@media (max-height:620px){
+  #portada.con-foto{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  #portada.con-foto .quince-big span{font-size:min(30vw,140px)}
 }
 
 /* EL 15 GIGANTE. Las dos cifras se enciman, como el LOVE de la
@@ -815,9 +833,9 @@ function rasgo(d, color){
 /* ══════════ la foto de la portada ══════════
    El <img> lo crea el JS y no el HTML: un <img> con el src vacío
    le pide al servidor la página entera de nuevo, y eso no avisa.
-   Va después del helper del rasgado porque lo usa — un `const` de
-   más abajo llamado desde arriba tira "Cannot access before
-   initialization" y la invitación no arranca. */
+   Va ANTES del bloque de los bordes rasgados porque le pone la
+   clase `con-foto`, que es la que ese bloque mira para saltearse el
+   rasgado del pie de la portada. */
 (function(){
   if (!CONFIG.portada) return;
   const port = $('#portada');
@@ -827,7 +845,6 @@ function rasgo(d, color){
   img.src = CONFIG.portada;
   img.alt = '';
   caja.appendChild(img);
-  caja.appendChild(rasgo(BORDES[0], 'var(--papel)'));
   port.insertBefore(caja, port.firstChild);
   port.classList.add('con-foto');
 })();
@@ -839,6 +856,11 @@ function rasgo(d, color){
     const antes = secs[k-1].classList.contains('oscura');
     const esta  = secs[k].classList.contains('oscura');
     if (antes === esta) continue;           /* mismo color: no hay nada que rasgar */
+    /* La portada con foto termina en tinta (el velo se funde con la
+       banda de abajo), así que ahí tampoco hay nada que rasgar: un
+       rasgado de papel arriba del negro sería una hoja color crema
+       pegada al pie de la foto. */
+    if (secs[k-1].classList.contains('con-foto')) continue;
     const color = antes ? 'var(--tinta)' : 'var(--papel)';
     secs[k].insertBefore(rasgo(BORDES[i++ % BORDES.length], color), secs[k].firstChild);
   }

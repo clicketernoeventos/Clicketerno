@@ -2466,13 +2466,24 @@ de un alias es peor que ninguno.
 solas** en un marco con sus puntitos. Tres decisiones que no son de
 gusto:
 
-- **El "15" no se encima a la foto.** La foto va arriba y la
-  tipografía abajo, sobre el papel, separadas por el MISMO borde
-  rasgado que separa las bandas. Un número negro encima de la foto
-  apuesta el contraste a lo que haya salido en la imagen —una pared
-  clara, un reflejo— y eso cambia con cada foto que mande la clienta.
-  Sobre el papel se lee siempre, y de paso la foto queda como una
-  hoja rasgada pegada arriba, que es el lenguaje de toda la pieza.
+- **La portada es la foto, a pantalla completa.** La primera
+  versión la puso arriba, en una franja, con la tipografía abajo
+  sobre el papel — justamente para no apostarle el contraste de un
+  "15" negro a lo que hubiera salido en la imagen. El dueño mandó la
+  de Julia y Franco: *"algo así hace"*. Ahí la foto ES la portada y
+  el texto va encima. Lo que lo hace posible es dar vuelta la tinta:
+  crema para el texto, el oro de las bandas negras para el acento, y
+  **un velo** que hace de piso. El velo no es un adorno, es lo único
+  que sostiene la promesa de que esos cinco renglones se leen.
+  **Y el velo TERMINA en la tinta**, que es el color de la banda que
+  sigue: la foto se funde con la sección de abajo, así que ahí no va
+  ningún borde rasgado —el rasgado separa papel de tinta y acá no
+  hay papel—. Lo saltea solo el bloque de los bordes, mirando la
+  clase `con-foto`.
+  **Las dos líneas verticales se esconden**: dicen "Mis quince años"
+  y la fecha, que es exactamente lo que dicen dos renglones del
+  medio. Al costado del papel eran un adorno; encima de la foto son
+  dos textos más tapando la cara.
 - **Van en blanco y negro, y el grayscale está en el CSS.** La
   paleta que pidió son tres colores; cuatro fotos a color meten los
   suyos —el beige del salón, el amarillo de un vestido de princesa—
@@ -2496,12 +2507,17 @@ error:
   completo. Se ve enseguida en una captura y no se ve nunca mirando
   el código.
 - **"Deslizá" es `position:absolute` y una capa absoluta no empuja
-  a nadie.** Con la foto arriba, el bloque de texto creció hacia
-  abajo y en una pantalla de 568 "ROSARIO · SANTA FE" quedó con
-  "DESLIZÁ" montado encima. El lugar se lo tiene que dejar el
-  `padding-bottom`, y abajo de 620 de alto además se achican la foto
-  y el 15 — si no, la portada se pasa 40px del borde y lo que queda
-  cortado es justamente lo único que avisa que la invitación sigue.
+  a nadie.** Con el bloque de texto abajo de todo, "ROSARIO · SANTA
+  FE" quedó con "DESLIZÁ" montado encima. El lugar se lo tiene que
+  dejar el `padding-bottom` de la portada, y en una pantalla baja
+  además se achica el 15.
+  **Y la segunda vuelta de lo mismo fue peor**: la regla que sube el
+  texto por encima del velo (`#portada.con-foto > :not(.port-foto)`)
+  le pone `position:relative` a TODO, "Deslizá" incluido — y le gana
+  en especificidad. Un `bottom:30px` en `relative` no ancla abajo:
+  **sube el elemento 30px**, o sea justo encima del renglón de
+  arriba. Se arregla devolviéndole el `absolute` en una regla
+  posterior. Dos reglas para lo mismo, gana la última, otra vez.
 - **El color del titular estaba escrito en el propio tag.** Un
   estilo en línea le gana a `.oscura`, así que ese renglón sobre la
   banda negra daba 1,6:1. Vacío no se notaba; el día que llegue el
@@ -2513,6 +2529,33 @@ las tres con los puntitos**: apagar el movimiento no puede esconder
 contenido. Y al tocar un punto el pase **se detiene**: si sigue
 corriendo, la foto que eligió el invitado se le va sola a los tres
 segundos y parece que el toque no entró.
+
+**El texto sobre una foto NO lo mide el medidor de contraste, y da
+verde igual.** Es la trampa más cara de todo este archivo puesta en
+una pantalla nueva: el medidor sube por el árbol buscando el primer
+fondo opaco, y en una portada a sangre ese fondo es el
+`background-color` del contenedor —no la foto—. Informa "crema
+sobre tinta, 14:1" mientras el renglón puede estar cayendo sobre una
+pared blanca. Lo midió igual de bien con velo y sin velo.
+Por eso `invitacion_mirar.js` tiene ahora una medición aparte, y es
+**con el píxel, que es lo único que no miente**: esconde los HIJOS
+de la portada —no la portada, que se llevaría puesto el velo, que es
+su `::after`—, saca una captura y busca el píxel **MÁS CLARO** abajo
+de cada renglón. El más claro y no el promedio: el promedio esconde
+justo el reflejo que se come la letra. La captura se lee con
+`pruebas/png.js`, un lector de PNG de setenta líneas sin
+dependencias (zlib de Node y los cinco filtros), porque en este
+proyecto no hay `npm install`.
+Verificada rompiendo a propósito: **sacado el velo da 16 fallas**
+(el "15" a 1,53:1 y el manuscrito a 1,08:1) y con el velo puesto el
+peor renglón da 3,26:1 en un iPhone SE.
+**Y encontró una falla de verdad en una invitación publicada**: en
+`juliayfranco/`, "20 NOVIEMBRE 2027" cae sobre el vestido blanco de
+la novia y da **1,15:1 en un teléfono de 390** — o sea que la fecha
+de la boda no está. Se ve en la captura que mandó el dueño y nadie
+lo había notado. Esa invitación tiene además otras fallas de la
+misma suite (desborde y los años de la línea de tiempo a 1,00:1):
+le falta una pasada entera, que es un trabajo aparte.
 
 **Lleva `noindex`, y es la primera invitación que lo lleva.** Son
 fotos de una menor en una dirección pública. El `noindex` no la
@@ -2530,11 +2573,12 @@ y comidas especiales, que es información de salud.
 
 Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
 abierto, que son dos pantallas distintas. Contraste, 44px, desborde,
-consola, CSP, y después las piezas: que la cuenta regresiva corra,
-que el calendario marque un solo día, que ningún enlace quede en
-`#`, que el sí/no no venga preseleccionado y que la confirmación no
-mienta. No está en `todo.sh` porque toma un argumento: se corre
-después de tocar una invitación.
+consola, CSP, **el texto que cae sobre la foto de la portada —medido
+con el píxel, ver `mia15/` más arriba—**, y después las piezas: que
+la cuenta regresiva corra, que el calendario marque un solo día, que
+ningún enlace quede en `#`, que el sí/no no venga preseleccionado y
+que la confirmación no mienta. No está en `todo.sh` porque toma un
+argumento: se corre después de tocar una invitación.
 
 **Tres cosas que esa suite midió mal y cómo se arreglaron**, que son
 las tres la misma lección —*antes de creerle a una medición,

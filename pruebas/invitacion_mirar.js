@@ -19,6 +19,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const { MEDIDOR, DESTAPAR } = require('./contraste_medidor');
+const { leerPNG, masClaro, razon } = require('./png');
 
 const CARPETA = process.argv[2];
 if (!CARPETA){ console.log('uso: node pruebas/invitacion_mirar.js <carpeta>'); process.exit(2); }
@@ -148,7 +149,80 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       if (peor) console.log('      · el más flojo: ' + peor.r.toFixed(2) + ':1  "' + peor.txt.slice(0,40) + '"');
     }
 
-    /* ── 5 · la consola ── */
+    /* ── 5 · el texto que cae SOBRE LA FOTO de la portada ──
+       El medidor de arriba no puede medir esto y no avisa: sube por
+       el árbol buscando el primer fondo opaco, y en una portada a
+       sangre ese fondo es el `background-color` del contenedor, no
+       la foto. Da un número perfecto —crema sobre tinta— y el texto
+       puede estar cayendo sobre una pared blanca.
+
+       Se mide con el píxel, que es lo único que no miente: se
+       esconden los HIJOS de la portada (no la portada, que se
+       llevaría puesto el velo —su ::before y su ::after— que es
+       justamente lo que hace que el texto se lea), se saca una
+       captura y se busca el píxel MÁS CLARO debajo de cada renglón.
+       El más claro y no el promedio: el promedio esconde justo el
+       reflejo que se come la letra. */
+    const conFoto = await pag.evaluate(() => {
+      const port = document.querySelector('#portada, header');
+      return !!(port && port.querySelector('img'));
+    });
+    if (conFoto){
+      const renglones = await pag.evaluate(() => {
+        const port = document.querySelector('#portada, header');
+        const out = [];
+        for (const n of port.querySelectorAll('*')){
+          if (n.closest('img') || n.tagName === 'IMG' || n.tagName === 'SVG') continue;
+          const propio = [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+          if (!propio) continue;
+          const cs = getComputedStyle(n);
+          if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+          /* La decoración no se juzga, con la definición estricta:
+             aria-hidden Y pointer-events:none, las dos juntas. */
+          if (n.getAttribute('aria-hidden') === 'true' && cs.pointerEvents === 'none') continue;
+          const r = n.getBoundingClientRect();
+          if (r.width < 2 || r.height < 2) continue;
+          if (r.bottom < 0 || r.top > innerHeight) continue;
+          out.push({ txt:(n.textContent||'').trim().replace(/\s+/g,' ').slice(0,28), color:cs.color,
+                     x:r.left, y:r.top, w:r.width, h:r.height });
+        }
+        return out;
+      });
+      const dpr = await pag.evaluate(() => devicePixelRatio || 1);
+      await pag.evaluate(() => {
+        const port = document.querySelector('#portada, header');
+        port.__guardado = [];
+        for (const n of port.children){
+          if (n.querySelector && n.querySelector('img')) continue;
+          if (n.tagName === 'IMG') continue;
+          port.__guardado.push([n, n.style.visibility]);
+          n.style.visibility = 'hidden';
+        }
+      });
+      await pag.waitForTimeout(150);
+      const img = leerPNG(await pag.screenshot());
+      await pag.evaluate(() => {
+        const port = document.querySelector('#portada, header');
+        (port.__guardado||[]).forEach(([n,v]) => n.style.visibility = v);
+      });
+      const malos = [];
+      let peorFoto = null;
+      for (const t of renglones){
+        const fondo = masClaro(img, t.x*dpr, t.y*dpr, t.w*dpr, t.h*dpr);
+        if (!fondo) continue;
+        const tinta = (t.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+        if (tinta.length < 3) continue;
+        const r = razon(tinta, fondo);
+        if (!peorFoto || r < peorFoto.r) peorFoto = { r, txt:t.txt };
+        if (r < PISO) malos.push(r.toFixed(2) + ':1 "' + t.txt + '"');
+      }
+      es(malos.length === 0,
+         malos.length ? 'sobre la foto no se leen: ' + malos.slice(0,4).join(' · ')
+                      : renglones.length + ' renglones sobre la foto, el peor ' +
+                        (peorFoto ? peorFoto.r.toFixed(2) + ':1 "' + peorFoto.txt + '"' : '—'));
+    }
+
+    /* ── 6 · la consola ── */
     es(errores.length === 0, errores.length ? 'errores de JavaScript: ' + errores[0] : 'sin errores de JavaScript');
     es(bloqueos.length === 0, bloqueos.length ? 'la CSP bloqueó algo: ' + bloqueos[0].slice(0,90) : 'la CSP no bloqueó nada');
 
