@@ -2512,13 +2512,19 @@ especial para mí."* — lo único que se tocó fue no repetir "noche" dos
 veces en la misma frase. **Esa línea no se mejora**: es la voz de la que
 invita, no la nuestra.
 El alias del regalo estuvo en
-la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
-está puesto, con el rótulo "Alias para transferir" arriba, porque
-`Ceci.montenegro.11` se lee igual como usuario de Instagram y el que
-pega el alias equivocado manda la plata a cualquier parte. El
-**titular** —el nombre que le va a mostrar el banco al pegarlo— sigue
-sin saberse y por eso no se escribe nada: un nombre inventado al lado
-de un alias es peor que ninguno.
+la misma lista hasta que el dueño lo confirmó (17/10/2026), y
+**cambió al día siguiente**: era `Ceci.montenegro.11` y pasó a ser
+`Aneley.1974`, de otra cuenta. Va con el rótulo "Alias para
+transferir" arriba, y ese rótulo hace falta por los dos lados: los
+dos se leen igual que un usuario de Instagram, y el dueño lo pasó
+diciendo *"es el cbu para regalos"* —no es un CBU, es un alias, y
+pegar un alias donde el banco pide un CBU no entra—. El que pega el
+dato equivocado manda la plata a cualquier parte. El **titular** —el
+nombre que le va a mostrar el banco al pegarlo— sigue sin saberse y
+por eso no se escribe nada: un nombre inventado al lado de un alias
+es peor que ninguno. **Y ahora hay que preguntarlo de nuevo**: la
+cuenta no es la misma, así que el titular tampoco tiene por qué
+serlo.
 
 #### Las cuatro fotos
 
