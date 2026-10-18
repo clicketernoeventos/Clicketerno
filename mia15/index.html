@@ -438,12 +438,35 @@ body.cerrado .port-foto img{transform:scale(1.07)}
   animation:subeTinta 1.8s cubic-bezier(.4,0,.15,1) .35s forwards;
 }
 @keyframes subeTinta{ to{ clip-path:inset(0 0 0 0) } }
+/* ══ CON FOTO NO HAY DOS COLORES: EL 15 SE REVELA ══
+   Sobre el papel el 15 entra en oro y la tinta lo llena. Sobre la
+   foto eso no se puede, y no es una opinión: el fondo que queda
+   debajo del 15 cambia con la pantalla —gris medio (121,120,120)
+   en un iPhone SE, casi negro en un Max— y MEDIDO contra el píxel
+   más claro, el oro da 2,31:1 en el SE, el crema2 2,05 y la tinta
+   2,32 en el Max. El único color que pasa de 3:1 en los cuatro
+   aparatos es la crema, o sea el color con el que el 15 TERMINA.
+   Dos colores que se lean no existen acá.
+   Así que sobre la foto no cambia de color: se REVELA de abajo
+   hacia arriba, en su crema de siempre y con su borde de oro, con
+   el mismo recorte y el mismo tiempo. Es el mismo gesto —algo que
+   sube y se asienta— y es el único que no le apuesta la
+   legibilidad a dos segundos.
+   La capa de arriba no se crea en este caso: lo que se anima es el
+   `clip-path` de las propias cifras, así que el color que mide el
+   medidor es el de verdad y no hay ningún adorno de por medio. */
+#portada.con-foto .quince-big.anima > span{clip-path:inset(100% 0 0 0)}
+#portada.con-foto .quince-big.anima.llena > span{
+  animation:subeTinta 1.8s cubic-bezier(.4,0,.15,1) .35s forwards;
+}
 /* El manuscrito entra con el interletrado cerrándose: la misma
    idea de que algo se ASIENTA, en el renglón de al lado. */
 .js #portada .port-sub{letter-spacing:.08em}
 .js #portada .port-sub.entro{letter-spacing:0;transition:opacity .9s var(--e),transform .9s var(--e),letter-spacing 1.4s var(--e)}
 @media (prefers-reduced-motion:reduce){
   .quince-big.con-tinta > span{color:var(--tinta)}
+  .quince-big.anima > span,
+  .quince-big.anima.llena > span{clip-path:none;animation:none}
   .quince-big .tinta{display:none}
   .js #portada .port-sub,.js #portada .port-sub.entro{letter-spacing:0;transition:none}
 }
@@ -855,11 +878,11 @@ const CONFIG = {
      el marco, el globo de respuesta y la foto de perfil pegados
      abajo. Eso en la portada de una invitación se lee como que la
      tarjeta se hizo con lo que había. */
-  /* VACÍO: la clienta no quiso la foto de portada (18/10/2026), así
-     que vuelve la portada tipográfica, que para eso se dejó entera.
-     El camino con foto queda completo y probado: con un archivo acá,
-     la portada pasa a ser la foto a pantalla completa otra vez. */
-  portada: "",
+  /* La clienta la sacó el 18/10/2026 y el mismo día se arrepintió:
+     vuelve. El camino tipográfico queda entero detrás de esta línea
+     —vaciarla es volver— y está medido igual, así que ir y venir no
+     cuesta nada. */
+  portada: "fotos/portada.webp",
 
   /* LAS QUE PASAN, en un solo marco y fundiéndose una en otra.
      VACÍO = la sección no se dibuja: un hueco gris con forma de
@@ -1079,14 +1102,20 @@ function rasgo(d, color){
    entra sin JS vería una encima de la otra. */
 (function(){
   const h = $('#portada .quince-big');
-  if (!h || CONFIG.portada) return;          /* con foto, el 15 ya tiene su borde de oro */
+  if (!h) return;
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  const capa = document.createElement('i');
-  capa.className = 'tinta';
-  capa.setAttribute('aria-hidden','true');
-  capa.innerHTML = h.innerHTML;
-  h.appendChild(capa);
-  h.classList.add('con-tinta');
+  /* Con foto el 15 no cambia de color —no hay dos que se lean sobre
+     una foto, está medido arriba—: se revela. Sin capa de arriba,
+     entonces, y sin ningún nodo clonado. */
+  if (CONFIG.portada) h.classList.add('anima');
+  else {
+    const capa = document.createElement('i');
+    capa.className = 'tinta';
+    capa.setAttribute('aria-hidden','true');
+    capa.innerHTML = h.innerHTML;
+    h.appendChild(capa);
+    h.classList.add('con-tinta');
+  }
   /* Arranca cuando la portada entra, no al cargar: con el sobre
      encima no la ve nadie. Y si por lo que sea nunca entrara, un
      respaldo a los 4 s la llena igual — un 15 a medio llenar para
