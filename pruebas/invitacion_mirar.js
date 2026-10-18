@@ -292,6 +292,25 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   titulo('las piezas');
   const ctx = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
   const pag = await ctx.newPage();
+  /* ══ LA PRUEBA NO ESCRIBE EN LA PLANILLA DE UN CLIENTE ══
+     Acá abajo se completa la confirmación y se toca Confirmar. Con
+     el `CONFIG.endpoint` puesto, eso es un POST al Apps Script DE
+     VERDAD: cada corrida le metería un "Juan Pérez" inventado en la
+     planilla de la clienta, y lo vería cuando cuenta los invitados
+     para las mesas. Es la misma regla que ya está escrita para la
+     demostración —lo que escribe en producción no es una prueba—,
+     que acá no estaba porque hasta hoy ninguna invitación tenía
+     planilla.
+     No se BLOQUEA y listo: se contesta como contestaría el Apps
+     Script, así el recorrido se mide entero. El `?confirmado=` dice
+     que no hasta que llega el POST, y que sí después — que es
+     exactamente lo que hace la planilla. */
+  let seMando = false;
+  await pag.route('**/script.google.com/**', r => {
+    if (r.request().method() === 'POST'){ seMando = true; return r.fulfill({status:200, body:'{"ok":true}'}); }
+    return r.fulfill({status:200, contentType:'application/json',
+                      body: JSON.stringify({ ok: seMando })});
+  });
   await pag.goto(URL, {waitUntil:'domcontentloaded'});
   if (await pag.locator('#abrir').count()){ await pag.click('#abrir'); await pag.waitForTimeout(1200); }
 
