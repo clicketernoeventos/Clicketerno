@@ -950,31 +950,69 @@ document.documentElement.classList.add('js');
         '<button type="button" aria-label="Foto ' + (i+1) + ' de ' + fs.length + '"' +
         (i ? '' : ' aria-current="true"') + '><i></i></button>').join('') + '</div>' : '');
 
-    if (fs.length > 1){
-      const imgs = $$('img', pase), pts = $$('button', pase);
-      const PASO = 4200, TRAS_TOCAR = 7000;
-      /* Con "menos movimiento" no pasan solas: se llega a las tres
-         con los puntitos, que es contenido alcanzable y no
-         movimiento. */
-      const anda = !matchMedia('(prefers-reduced-motion:reduce)').matches;
-      let i = 0, reloj = 0;
-      const ir = n => {
-        i = (n + imgs.length) % imgs.length;
-        imgs.forEach((im,k) => im.classList.toggle('on', k === i));
-        pts.forEach((b,k) => k === i ? b.setAttribute('aria-current','true')
-                                     : b.removeAttribute('aria-current'));
-      };
-      /* Un `setTimeout` que se vuelve a programar y no un
-         `setInterval`: después de un toque la espera es más larga
-         una sola vez y vuelve sola al ritmo de siempre. Con un
-         intervalo habría que tirarlo y crear otro, y el más largo
-         quedaría puesto para siempre. */
-      const programar = ms => { clearTimeout(reloj);
-        reloj = setTimeout(()=>{ ir(i+1); programar(PASO); }, ms); };
-      pts.forEach((b,k) => b.addEventListener('click', ()=>{
-        ir(k); if (anda) programar(TRAS_TOCAR); }));
-      if (anda) programar(PASO);
-    }
+    const imgs = $$('img', pase), pts = $$('button', pase);
+    const PASO = 4200, TRAS_TOCAR = 7000;
+    /* Con "menos movimiento" no pasan solas: se llega a las tres
+       con los puntitos, que es contenido alcanzable y no
+       movimiento. */
+    const anda = !matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let i = 0, reloj = 0;
+    const ir = n => {
+      if (!imgs.length) return;
+      i = ((n % imgs.length) + imgs.length) % imgs.length;
+      imgs.forEach((im,k) => im.classList.toggle('on', k === i));
+      pts.forEach((b,k) => k === i ? b.setAttribute('aria-current','true')
+                                   : b.removeAttribute('aria-current'));
+    };
+    /* Un `setTimeout` que se vuelve a programar y no un
+       `setInterval`: después de un toque la espera es más larga
+       una sola vez y vuelve sola al ritmo de siempre. Con un
+       intervalo habría que tirarlo y crear otro, y el más largo
+       quedaría puesto para siempre. */
+    const programar = ms => { clearTimeout(reloj);
+      reloj = setTimeout(()=>{ ir(i+1); programar(PASO); }, ms); };
+
+    /* UNA FOTO QUE NO CARGA SE VA, en vez de dejar el cuadrado roto
+       del navegador adentro del pasepartú dorado. No es un caso
+       inventado: el día que se saca una foto, el que ya tenía la
+       invitación abierta sigue corriendo el HTML viejo un rato
+       contra el servidor nuevo y le pide un archivo que ese mismo
+       deploy borró. Un `?` gris en el medio del marco se lee como
+       que la invitación está rota.
+       Se va la foto Y SU PUNTITO: un punto que no lleva a ninguna
+       foto es la misma mentira, más chica. Si no queda ninguna, la
+       sección entera se esconde — que es exactamente lo que hace
+       `CONFIG.fotos` vacío. */
+    const sacar = im => {
+      const k = imgs.indexOf(im);
+      if (k < 0) return;
+      imgs.splice(k, 1); im.remove();
+      const b = pts.splice(k, 1)[0]; if (b) b.remove();
+      if (!imgs.length){ clearTimeout(reloj); $('#galeria').hidden = true; return; }
+      if (imgs.length === 1){
+        clearTimeout(reloj);
+        const caja = $('.pase-puntos', pase); if (caja) caja.remove();
+        pts.length = 0;
+      } else {
+        pts.forEach((p,n) => p.setAttribute('aria-label',
+          'Foto ' + (n+1) + ' de ' + imgs.length));
+      }
+      ir(Math.min(i, imgs.length - 1));
+    };
+    imgs.forEach(im => {
+      im.addEventListener('error', () => sacar(im));
+      /* La que YA falló antes de que llegáramos a escuchar no vuelve
+         a disparar el evento nunca: hay que preguntarle. */
+      if (im.complete && !im.naturalWidth) sacar(im);
+    });
+
+    /* Qué foto es cada punto se pregunta al TOCAR y no se captura al
+       dibujar: si una se cayó, las de atrás se corrieron un lugar y
+       el número guardado señalaría la equivocada. */
+    pts.forEach(b => b.addEventListener('click', ()=>{
+      const k = pts.indexOf(b); if (k < 0) return;
+      ir(k); if (anda && imgs.length > 1) programar(TRAS_TOCAR); }));
+    if (anda && imgs.length > 1) programar(PASO);
   }
 
   /* El regalo solo existe si hay un alias. Una sección vacía se
@@ -1075,12 +1113,26 @@ function rasgo(d, color){
   const img = document.createElement('img');
   img.src = CONFIG.portada;
   img.alt = '';
+  /* Si la foto no está, se vuelve a la portada TIPOGRÁFICA —que se
+     sostiene sola, para eso se dejó entera— en vez de dejar el
+     cuadrado roto arriba de todo, que es lo primero que ve el que
+     abre el link. Y hay que VOLVER A RASGAR: el borde del pie de la
+     portada se saltea justamente cuando hay foto, así que sacada la
+     clase quedaría una juntura recta entre el negro y el papel. */
+  img.addEventListener('error', ()=>{
+    caja.remove(); port.classList.remove('con-foto'); rasgar();
+  });
   caja.appendChild(img);
   port.insertBefore(caja, port.firstChild);
   port.classList.add('con-foto');
 })();
 
-(function(){
+/* Función y no IIFE porque se vuelve a correr si la foto de la
+   portada no cargó: ahí la portada deja de ser `con-foto` y le toca
+   su rasgado. Lo primero es borrar los que ya estaban — corrida dos
+   veces sin eso, quedan dos rasgados pegados. */
+function rasgar(){
+  $$('svg.rasgo').forEach(n => n.remove());
   const secs = $$('section.seccion, header#portada').filter(n => !n.hidden);
   let i = 0;
   for (let k = 1; k < secs.length; k++){
@@ -1095,7 +1147,8 @@ function rasgo(d, color){
     const color = antes ? 'var(--tinta)' : 'var(--papel)';
     secs[k].insertBefore(rasgo(BORDES[i++ % BORDES.length], color), secs[k].firstChild);
   }
-})();
+}
+rasgar();
 
 /* ══════════ los iconos de cada sección ══════════
    Dibujados acá y no escritos ocho veces en el HTML: ocho SVG a

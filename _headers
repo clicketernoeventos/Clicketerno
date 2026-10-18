@@ -51,9 +51,18 @@
   # rollo, y el invitado abre la pantalla más de una vez en la noche. Con
   # esto el navegador se lo guarda un minuto y después REVALIDA, así que
   # nunca queda una versión vieja pegada — que es justo el motivo por el
-  # que a propósito no hay service worker. El stale-while-revalidate hace
-  # que la segunda visita sea instantánea mientras chequea por atrás.
-  Cache-Control: public, max-age=60, stale-while-revalidate=86400
+  # que a propósito no hay service worker.
+  #
+  # ACÁ HABÍA UN `stale-while-revalidate=86400` Y COSTÓ CARO. Quiere decir
+  # "serví la copia vieja y andá a buscar la nueva por atrás", así que el
+  # que entraba veía el HTML de hasta VEINTICUATRO HORAS antes y lo nuevo
+  # recién en la visita SIGUIENTE. Se publicó una invitación con una foto
+  # sacada y un texto corregido, el cliente abrió el link que ya tenía, y
+  # vio el texto viejo y DOS CUADRADOS ROTOS: el HTML viejo pidiendo las
+  # fotos que ese mismo deploy había borrado. Un `max-age` corto no sirve
+  # de nada si después se sirve lo viejo igual. Sin esto la segunda visita
+  # cuesta una revalidación —un 304, sin cuerpo— y muestra lo que hay.
+  Cache-Control: public, max-age=60
 
 # Lo de /lib no cambia nunca (son versiones fijas): que el navegador se lo
 # guarde y no lo vuelva a pedir en cada pantalla.

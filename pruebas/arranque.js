@@ -124,8 +124,19 @@ const pidio = (pedidos, que) => pedidos.some((u) => u.includes(que));
        vieja se queda pegada, que es justo lo que no queremos sin SW. */
     const bloque = h.split(/^\/\S*$/m).find((b, i) => i === 1) || '';
     const cc = (bloque.match(/^\s*Cache-Control:\s*(.+)$/m) || [])[1];
+    /* `stale-while-revalidate` grande es la MISMA falla que
+       `immutable`, con fecha de vencimiento: quiere decir "serví la
+       copia vieja y buscá la nueva por atrás", así que el que entra
+       ve el HTML de hace horas y lo nuevo recién la visita siguiente.
+       Con 86400 puestos, un cliente abrió su invitación recién
+       publicada y vio el texto anterior y dos fotos rotas —el HTML
+       viejo pidiendo archivos que ese deploy había borrado—. El tope
+       va en cinco minutos: alcanza para que dos pantallas seguidas no
+       vuelvan a pedir, y no para publicar algo y que no se vea. */
+    const swr = +((cc || '').match(/stale-while-revalidate\s*=\s*(\d+)/) || [])[1] || 0;
     if (!cc) mal('el HTML no tiene Cache-Control: se baja entero en cada visita');
     else if (/immutable/.test(cc)) mal(`el HTML quedó inmutable ("${cc}"): una versión vieja se pega para siempre`);
+    else if (swr > 300) mal(`el HTML se sirve viejo hasta ${swr}s después ("${cc.trim()}"): se publica algo y no se ve`);
     else bien(`el HTML se puede guardar un rato sin quedar pegado: ${cc.trim()}`);
   }
 

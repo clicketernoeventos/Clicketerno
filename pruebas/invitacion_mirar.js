@@ -373,6 +373,143 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   }
   await ctx.close();
 
+  /* ── 7 · una foto que no está ──
+     No es un caso inventado. El día que se saca una foto de una
+     invitación ya publicada, el que la tenía abierta sigue corriendo
+     el HTML viejo un rato contra el servidor nuevo y le pide un
+     archivo que ese deploy borró. Pasó con mia15: dos cuadrados
+     grises con un `?`, uno en la portada y otro adentro del marco
+     dorado. No tira NINGÚN error de JavaScript y la suite daba
+     verde: una imagen rota es un dibujo, no una excepción. */
+  titulo('una foto que no carga');
+  {
+    /* Cuántas fotos declara esta invitación, para saber contra qué
+       comparar. Sin fotos no hay nada que medir. */
+    const ctxL = await navegador.newContext({viewport:{width:390,height:844}});
+    const pagL = await ctxL.newPage();
+    await pagL.goto(URL, {waitUntil:'domcontentloaded'});
+    /* `CONFIG` es un `const` de script: NO cuelga de `window`, así que
+       preguntando por `window.CONFIG` da 0 y la prueba se saltea sola
+       informando "no tiene fotos" — verde midiendo la nada. */
+    const cuantas = await pagL.evaluate(
+      () => (typeof CONFIG !== 'undefined' && CONFIG.fotos || []).length);
+    await ctxL.close();
+
+    if (!cuantas) bien('esta invitación no tiene fotos: nada que medir');
+    else {
+      /* a · se cae UNA: se va ella y se va su puntito */
+      const ctx1 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+      const pag1 = await ctx1.newPage();
+      let primera = null;
+      await pag1.route('**/*', r => {
+        const u = r.request().url();
+        if (r.request().resourceType() === 'image' && /\/fotos\//.test(u)){
+          if (!primera) primera = u;
+          if (u === primera) return r.fulfill({status:404, body:''});
+        }
+        return r.continue();
+      });
+      await pag1.goto(URL, {waitUntil:'domcontentloaded'});
+      if (await pag1.locator('#abrir').count()){ await pag1.click('#abrir'); await pag1.waitForTimeout(900); }
+      await pag1.waitForTimeout(1200);
+      const g = await pag1.evaluate(() => {
+        const sec = document.querySelector('#galeria');
+        const imgs = [...document.querySelectorAll('#fotos img')];
+        return { hay: !!sec, escondida: !!(sec && sec.hidden),
+                 rotas: imgs.filter(im => im.complete && !im.naturalWidth).length,
+                 fotos: imgs.length,
+                 puntos: document.querySelectorAll('#fotos .pase-puntos button').length };
+      });
+      if (!g.hay) bien('esta invitación no tiene galería');
+      else {
+        es(g.rotas === 0, g.rotas
+          ? `quedó ${g.rotas} cuadrado(s) roto(s) dibujado(s) en el pase`
+          : 'la foto que no cargó se va, no deja el cuadrado roto');
+        if (cuantas > 1)
+          es(g.fotos === cuantas - 1,
+             g.fotos === cuantas - 1 ? `quedan las otras ${g.fotos}`
+                                     : `quedaron ${g.fotos} fotos de las ${cuantas - 1} que tenían que quedar`);
+        const esperados = g.fotos > 1 ? g.fotos : 0;
+        es(g.puntos === esperados,
+           g.puntos === esperados ? `y los puntitos son ${esperados}, uno por foto que existe`
+                                  : `hay ${g.puntos} puntitos para ${g.fotos} foto(s): alguno no lleva a ninguna`);
+      }
+      await ctx1.close();
+
+      /* b · se caen TODAS: la sección entera se esconde, que es lo
+             mismo que hace `CONFIG.fotos` vacío. Un marco dorado
+             alrededor de nada es peor que no estar. */
+      const ctx2 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+      const pag2 = await ctx2.newPage();
+      await pag2.route('**/*', r => (r.request().resourceType() === 'image' && /\/fotos\//.test(r.request().url()))
+        ? r.fulfill({status:404, body:''}) : r.continue());
+      await pag2.goto(URL, {waitUntil:'domcontentloaded'});
+      if (await pag2.locator('#abrir').count()){ await pag2.click('#abrir'); await pag2.waitForTimeout(900); }
+      await pag2.waitForTimeout(1200);
+      const vacia = await pag2.evaluate(() => {
+        const sec = document.querySelector('#galeria');
+        if (!sec) return {hay:false};
+        const r = sec.getBoundingClientRect();
+        return {hay:true, escondida: sec.hidden || (r.width === 0 && r.height === 0)};
+      });
+      if (vacia.hay)
+        es(vacia.escondida, vacia.escondida
+          ? 'sin ninguna foto que cargue, la sección entera se esconde'
+          : 'sin ninguna foto, la sección queda dibujada vacía');
+      await ctx2.close();
+    }
+  }
+
+  /* ── 8 · la foto de la PORTADA que no está ──
+     La portada con foto está apagada en mia15 (`CONFIG.portada`
+     vacío) y volver a prenderla es una línea, así que el camino
+     tiene que seguir medido. Se enciende interceptando el HTML,
+     igual que `puertas.js` con MUESTRA_MURO: mirar la constante
+     publicada haría que la prueba dependa de lo que hoy está
+     elegido. */
+  titulo('la foto de la portada que no está');
+  {
+    const ctx3 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pag3 = await ctx3.newPage();
+    let pudo = false;
+    await pag3.route('**/*', async r => {
+      const u = r.request().url();
+      if (r.request().resourceType() === 'image' && /no-esta-esta-foto/.test(u))
+        return r.fulfill({status:404, body:''});
+      if (r.request().resourceType() === 'document' && u.replace(/[?#].*/,'').replace(/\/$/,'') === URL.replace(/\/$/,'')){
+        const res = await r.fetch();
+        let html = await res.text();
+        const antes = html;
+        html = html.replace(/portada: *"[^"]*"/, 'portada: "fotos/no-esta-esta-foto.webp"');
+        pudo = html !== antes;
+        return r.fulfill({response:res, body:html});
+      }
+      return r.continue();
+    });
+    await pag3.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pag3.locator('#abrir').count()){ await pag3.click('#abrir'); await pag3.waitForTimeout(900); }
+    await pag3.waitForTimeout(1200);
+    if (!pudo) bien('esta invitación no tiene portada con foto');
+    else {
+      const port = await pag3.evaluate(() => {
+        const p = document.querySelector('#portada');
+        const im = document.querySelector('.port-foto img');
+        return { conFoto: p.classList.contains('con-foto'),
+                 rota: !!(im && im.complete && !im.naturalWidth),
+                 rasgos: document.querySelectorAll('svg.rasgo').length };
+      });
+      es(!port.rota, port.rota ? 'la portada quedó con el cuadrado roto arriba de todo'
+                               : 'la foto que no cargó no deja un cuadrado roto en la portada');
+      es(!port.conFoto, port.conFoto
+        ? 'la portada se quedó en modo foto sin ninguna foto'
+        : 'vuelve a la portada tipográfica, que se sostiene sola');
+      es(port.rasgos > 0, port.rasgos
+        ? `y los bordes rasgados se rehacen (${port.rasgos})`
+        : 'quedó sin bordes rasgados: juntura recta entre el negro y el papel');
+    }
+    await ctx3.close();
+  }
+
   await navegador.close();
   console.log(fallas.length ? '\n' + fallas.length + ' FALLAS' : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);
