@@ -211,6 +211,20 @@ quede a medio hacer.
   archivo adjunto, nunca "corré esto" sin el bloque a mano.
 - **Cuando hay opciones, dar la más simple.** Lo dijo con todas las letras:
   *"no quiero renegar"*. Una recomendación, no un menú.
+- **Un pedido termina PUBLICADO, no "listo para publicar".** Dicho el
+  18/10/2026: *"siempre que te pida algo dale hasta que esté publicado"*.
+  O sea que el camino completo —cambio, pruebas, commit, merge a `main`—
+  va de corrido y no hay que pedirle permiso en el último paso. Antes
+  cada cosa quedaba esperando un "mandalo" suyo, y eso lo convertía en el
+  que tiene que acordarse de apretar el botón. **Lo que sigue necesitando
+  su decisión no es la publicación, es el CONTENIDO**: un dato que no
+  mandó el cliente —una hora, una fecha de cierre, el titular de una
+  cuenta— no se inventa para poder terminar.
+- **No explicarle el cómo.** *"No me des mucho detalle que yo no sé
+  programación."* El informe es: qué cambió, qué se ve distinto, y qué
+  falta de su lado. Los nombres de archivos, los selectores y los
+  números de las pruebas no le dicen nada; si algo salió mal, eso sí se
+  dice, en castellano.
 - **Del otro lado no se depura.** Si algo falla en el teléfono, lo que
   llega es "no anda" o una captura. La prueba tiene que existir antes de
   que la pruebe una persona.
