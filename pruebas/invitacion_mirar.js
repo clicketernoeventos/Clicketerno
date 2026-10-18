@@ -510,6 +510,74 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctx3.close();
   }
 
+  /* ── 9 · con foto, el 15 SIGUE animándose ──
+     La animación del 15 nació para la portada tipográfica y estaba
+     apagada en cuanto había foto (`if (!h || CONFIG.portada) return`).
+     El día que el cliente pidió la foto de vuelta, eso quería decir
+     perder la animación sin que nada lo avisara: la portada se
+     dibuja perfecta y queda quieta.
+     Se mide con el PÍXEL y no con una clase ni con el `clip-path`:
+     así da igual cómo esté hecha —sobre el papel son dos capas de
+     color, sobre la foto es un recorte que revela— y lo que se
+     comprueba es lo único que importa, que el 15 ENTRE. */
+  titulo('el 15 de la portada entra animado');
+  {
+    const ctx4 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pag4 = await ctx4.newPage();
+    let conFoto = false;
+    await pag4.route('**/*', async r => {
+      const u = r.request().url();
+      if (r.request().resourceType() === 'document' && u.replace(/[?#].*/,'').replace(/\/$/,'') === URL.replace(/\/$/,'')){
+        const res = await r.fetch();
+        let html = await res.text();
+        /* La foto se fuerza para que esto mida el camino CON foto
+           aunque hoy la portada esté tipográfica: si mirara la
+           constante publicada, el día que se vacíe dejaría de medir
+           y nadie se enteraría. */
+        const m = html.match(/portada: *"([^"]*)"/);
+        if (m){ conFoto = true; html = html.replace(m[0], 'portada: "' + (m[1] || 'fotos/portada.webp') + '"'); }
+        return r.fulfill({response:res, body:html});
+      }
+      return r.continue();
+    });
+    await pag4.goto(URL, {waitUntil:'domcontentloaded'});
+    const hay = await pag4.locator('#portada .quince-big').count();
+    if (!hay || !conFoto) bien('esta invitación no tiene el 15 de portada');
+    else {
+      if (await pag4.locator('#abrir').count()) await pag4.click('#abrir');
+      const caja = await pag4.$eval('#portada .quince-big', el => {
+        const r = el.getBoundingClientRect();
+        return {x:Math.max(0,r.left), y:Math.max(0,r.top), width:r.width, height:r.height};
+      });
+      const dpr = await pag4.evaluate(() => devicePixelRatio || 1);
+      /* Cuánta "tinta clara" hay dibujada: el 15 terminado es crema
+         maciza, así que contar píxeles claros dentro de su caja dice
+         cuánto entró, sin saber nada de cómo está hecho. */
+      const claros = async () => {
+        const im = leerPNG(await pag4.screenshot({clip:caja}));
+        let n = 0;
+        for (let y = 0; y < im.alto; y++)
+          for (let x = 0; x < im.ancho; x++){
+            const o = (y*im.ancho + x) * im.canales;
+            if (im.pix[o] > 200 && im.pix[o+1] > 195) n++;
+          }
+        return n;
+      };
+      await pag4.waitForTimeout(700);
+      const antes = await claros();
+      await pag4.waitForTimeout(2600);
+      const despues = await claros();
+      const total = (caja.width*dpr) * (caja.height*dpr);
+      es(despues > antes * 1.35 && despues > total * 0.08,
+         despues > antes * 1.35 && despues > total * 0.08
+           ? `el 15 entra animado (${antes} → ${despues} píxeles dibujados)`
+           : `el 15 NO se anima con foto: ${antes} → ${despues} píxeles, no se movió`);
+      es(despues > total * 0.08,
+         despues > total * 0.08 ? 'y termina entero' : 'y quedó a medio dibujar');
+    }
+    await ctx4.close();
+  }
+
   await navegador.close();
   console.log(fallas.length ? '\n' + fallas.length + ' FALLAS' : '\n✓ Sin fallas');
   process.exit(fallas.length ? 1 : 0);

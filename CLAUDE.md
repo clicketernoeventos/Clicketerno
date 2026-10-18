@@ -2775,8 +2775,10 @@ segundo toque— corre contra un Apps Script interceptado, igual que
 #### La portada volvió a ser tipográfica, y el 15 se llena de tinta
 
 A la clienta **no le gustó la foto de portada** (18/10/2026), así que
-`CONFIG.portada` volvió a quedar vacío y con eso vuelve la portada
-tipográfica — que para esto se dejó entera y probada: el camino con
+`CONFIG.portada` quedó vacío un rato y con eso volvió la portada
+tipográfica — **el mismo día se arrepintió y la foto está de vuelta**
+(ver más abajo); lo de acá queda escrito porque el camino tipográfico
+sigue entero y vaciar esa línea es volver a él — que para esto se dejó entera y probada: el camino con
 foto sigue completo, es una línea volver. De la galería salió además
 **la foto de Mia más grande**: quedaron las dos de chiquita, y así la
 sección entera dice una sola cosa —"la que era"— en vez de tres fotos
@@ -2871,6 +2873,55 @@ saber cuántas fotos declara la invitación, y `CONFIG` es un `const` de
 script: **no cuelga de `window`**. Daba 0, la prueba se salteaba sola
 informando *"esta invitación no tiene fotos: nada que medir"* y la suite
 quedaba verde. La caja de 0x0 otra vez, disfrazada de atajo amable.
+
+#### Volvió la foto de portada, y la animación tuvo que cambiar
+
+La clienta la sacó el 18/10/2026 y el mismo día se arrepintió. La foto
+**se recuperó del historial** (`git show 11335bc~1:mia15/fotos/portada.webp`)
+en vez de recortarla de nuevo de la captura: es el mismo archivo que ya
+estaba recortado —sin el marco de la historia, sin el globo de respuesta y
+sin la foto de perfil— y ya medido. Recortar otra vez era rehacer a mano un
+trabajo que estaba hecho, y con el riesgo de que saliera distinto.
+
+**Y el pedido era que la animación del 15 se mantuviera.** Estaba apagada
+justo en ese caso: `if (!h || CONFIG.portada) return`. O sea que poner la
+foto la perdía sin que nada avisara.
+
+**Encenderla tal cual no servía, y el motivo es de medición.** Sobre el
+papel el 15 entra en ORO y la tinta lo llena; sobre la foto el 15 termina
+en CREMA con borde de oro, así que el relleno habría sido negro sobre un
+15 claro: no lo llena, lo borra. Y el camino obvio —oro abajo, crema
+llenando— **falla de verdad**: medido con el píxel más claro debajo del
+15, el fondo cambia con la pantalla (gris medio `121,120,120` en un iPhone
+SE, casi negro en un Max) y ahí el oro da **2,31:1**. La suite lo agarró
+sola: *"sobre la foto no se leen: 2,96:1 «1» · 2,93:1 «5»"*.
+
+Probados los seis colores de la paleta contra ese fondo, **el único que
+pasa de 3:1 en los cuatro aparatos es la crema** — o sea el color con el
+que el 15 TERMINA. Sobre esta foto no existen dos colores que se lean.
+
+Así que sobre la foto **el 15 no cambia de color: se revela** de abajo
+hacia arriba, en su crema de siempre y con su borde de oro, con el mismo
+recorte y el mismo tiempo. Es el mismo gesto —algo que sube y se asienta—
+y es el único que no le apuesta la legibilidad a dos segundos. De paso no
+crea ninguna capa: lo que se anima es el `clip-path` de las propias
+cifras, así que el color que mide el medidor es el de verdad.
+
+**La tentación que había que esquivar**: dejar la crema abajo (que mide
+7,31:1) y poner el oro de capa de ARRIBA, declarada decoración. El
+medidor habría dado verde y el que mira habría visto igual dos segundos
+de oro a 2,31:1. Esconderle un color al medidor no es arreglarlo — es la
+misma trampa que este archivo ya tiene escrita tres veces.
+
+Lo mide `pruebas/invitacion_mirar.js`, **con el píxel y no con una clase**:
+cuenta cuánta tinta clara hay dibujada adentro de la caja del 15 a los 0,7 s
+y a los 3,3 s. Así da igual cómo esté hecha la animación —dos capas de
+color o un recorte— y lo que se comprueba es lo único que importa: que el
+15 entre y termine entero. La foto se **fuerza interceptando el HTML**, no
+se lee de `CONFIG.portada`: si mirara la constante publicada, el día que
+se vacíe la prueba dejaría de medir y nadie se enteraría. Contra el código
+publicado da **1 falla**: *"el 15 NO se anima con foto: 4268 → 4312
+píxeles, no se movió"*.
 
 #### El pie es la puerta de entrada del próximo cliente
 
