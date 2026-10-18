@@ -2567,6 +2567,47 @@ lo había notado. Esa invitación tiene además otras fallas de la
 misma suite (desborde y los años de la línea de tiempo a 1,00:1):
 le falta una pasada entera, que es un trabajo aparte.
 
+#### Los iconos, y la foto entera
+
+Dos pedidos del dueño del 18/10/2026: *"que haya iconos aesthetic
+para cada cosa, que sea súper lujosa"* y *"la foto de portada que
+esté entera"*.
+
+**Ocho iconos de línea, dibujados en el JS y no escritos ocho veces
+en el HTML**: una tiara (te invito), una cámara (las fotos), un
+reloj de arena (cuánto falta), un pin con un rombo adentro (el
+lugar), un vestido largo (dress code), una caja con moño (el
+regalo), un sobre (¿venís?) y un destello (el cierre). Son SVG de
+24×24 con `stroke:currentColor`, así que **el color lo pone la
+banda**: `--oro` sobre el papel (4,6:1) y `--oro-neg` sobre el negro
+(10:1). Es *cada bloque con su propia tinta* aplicado a un dibujo.
+Van con `aria-hidden` y `pointer-events:none`, que es la definición
+estricta con la que el medidor saltea un adorno.
+Nada de una librería de iconos: la CSP no deja bajar un CDN, y acá
+no hay build. Un `stroke` y listo.
+**La galería no tiene `.caja`**, así que el icono va en la sección y
+no en el primer hijo — metido ahí quedaría ENCIMA de la foto.
+
+**La foto de la portada va `contain`, no `cover`.** `cover` llenaba
+la pantalla recortándole los costados: en un teléfono le comía el
+13% del ancho. Ahora se ve entera, apoyada arriba, y lo que sobra
+abajo es negro — que es justo donde cae el texto. Dos cosas que
+hubo que arreglar para que eso no se note:
+
+- **El fondo de la caja de la foto es la TINTA y no el papel.** Lo
+  que sobra es ese fondo, y el velo lo deja ver a un 12%: un papel
+  crema ahí es una banda más clara pegada al pie de la foto, una
+  juntura a lo ancho de toda la pantalla.
+- **El velo se hace macizo en el 86% y no recién en el 100%.** Con
+  la foto entera, su borde de abajo cae en un punto distinto en
+  cada pantalla (el 79% de un iPhone, el 96% de un SE), y un velo
+  que todavía deja pasar un 10% ahí dibuja una raya. De paso el
+  texto sobre la foto pasó de 3,26:1 a **7,31:1** en el peor caso.
+
+En una pantalla ancha la foto queda como una columna centrada con
+negro a los costados. Es lo que pasa cuando se muestra entera una
+foto vertical en un monitor apaisado, y se ve editorial.
+
 #### El borde dorado de los títulos
 
 Pedido del dueño: *"a las letras le pones borde dorado, a todas las
