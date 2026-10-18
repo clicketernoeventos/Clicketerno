@@ -2449,9 +2449,19 @@ del mismo color pegadas con un rasgado en el medio. Los caminos SVG
 se generan con la fecha de la fiesta de semilla, así salen iguales
 en cada armado.
 
-**Lo que NO se escribió, y es lo importante:** la hora. La mandó sin
-hora, y una hora inventada manda a la gente a la hora equivocada —
-queda en `CONFIG.mostrarHora`, apagada. El alias del regalo estuvo en
+**Lo que NO se escribió hasta tenerlo confirmado.** La cumpleañera
+mandó el día y no la hora, y una hora inventada manda a la gente a
+la hora equivocada: quedó apagada en `CONFIG.mostrarHora` hasta que
+el dueño la pasó el 18/10/2026 — **de 21 a 4**. Va como un RANGO
+(`CONFIG.hastaHora`), y el final es una hora suelta y no una fecha a
+propósito: las 4 son del día siguiente, y escribirlas como fecha
+completa haría que la invitación dijera "30 de enero" en algún
+lado — la fiesta es el 29 y eso es lo que tiene que leer el
+invitado. Se escribe como se dice: *"de 21 a 4 h"*, sin los
+`:00` que nadie pronuncia.
+**Y Mia va sin apellido**, dicho por el dueño el mismo día: no es un
+dato que falte, es una decisión.
+El alias del regalo estuvo en
 la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
 está puesto, con el rótulo "Alias para transferir" arriba, porque
 `Ceci.montenegro.11` se lee igual como usuario de Instagram y el que
@@ -2588,6 +2598,13 @@ donde hay: que el trazo resuelto llegue a 0,8px —abajo de eso es una
 declaración que no hace nada— y que haya `paint-order:stroke`.
 Verificada rompiendo las dos cosas a propósito: el borde en el `h1`
 da 4 fallas (una por aparato) y sin `paint-order` da 8.
+
+**El grosor se subió una vez** (18/10/2026): *"es muy sutil, ponele
+un poquitito más"*. De `.05em` a `.072em` en los títulos y de
+`.022em` a `.033em` en el "15" — en pantalla, de 1,25px a 1,80 y de
+3,1 a 4,6. El manuscrito del cierre va aparte y más fino
+(`.026em`): la Pinyon tiene hairlines de un píxel y el mismo grosor
+que en una capitular se las come.
 
 **Lleva `noindex`, y es la primera invitación que lo lleva.** Son
 fotos de una menor en una dirección pública. El `noindex` no la

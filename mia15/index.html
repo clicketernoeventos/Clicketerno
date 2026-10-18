@@ -213,13 +213,13 @@ p{margin:0 0 1em}
   .oscura .cierre-n{
     paint-order:stroke fill;
     -webkit-text-stroke-color:var(--oro-neg);
-    -webkit-text-stroke-width:.05em;
+    -webkit-text-stroke-width:.072em;
   }
   /* El tamaño del "15" vive en el SPAN, no en el h1: un grosor en
      `em` puesto en el padre se resuelve contra los 32px del h1 y
      sale un hilo de 0,8px en un número de 140. */
-  #portada.con-foto .quince-big span{-webkit-text-stroke-width:.022em}
-  .oscura .cierre-n{-webkit-text-stroke-width:.018em}
+  #portada.con-foto .quince-big span{-webkit-text-stroke-width:.033em}
+  .oscura .cierre-n{-webkit-text-stroke-width:.026em}
 }
 
 /* ══════════ el filete ══════════ */
@@ -696,14 +696,16 @@ const CONFIG = {
   /* Con la hora LOCAL explícita (-03:00). Una fecha sin zona mandada
      a una cuenta regresiva la corre tres horas, y eso acá ya costó
      caro una vez.
-     ⚠ LA HORA TODAVÍA NO LA SABEMOS: la cumpleañera mandó el día.
-     Las 21:00 están acá SOLO para que la cuenta regresiva tenga de
-     dónde contar, y por eso la invitación NO MUESTRA ninguna hora:
-     una hora inventada manda a la gente a la hora equivocada.
-     Cuando llegue la de verdad se pone acá y `mostrarHora` pasa a
-     true. */
+     La hora la confirmó el dueño el 18/10/2026: de 21 a 4. */
   fiesta: "2028-01-29T21:00:00-03:00",
-  mostrarHora: false,
+  mostrarHora: true,
+
+  /* Hasta qué hora. VACÍO = se muestra solo la de empezar.
+     Es una hora suelta y no una fecha a propósito: las 4 son del día
+     SIGUIENTE, y escribirla como fecha completa haría que la
+     invitación dijera "30 de enero" en algún lado — la fiesta es el
+     29 y eso es lo que tiene que leer el invitado. */
+  hastaHora: "04:00",
   confirmarHasta: "29 de diciembre",
 
   lugar: "La Mansión del Rey",
@@ -838,6 +840,11 @@ document.documentElement.classList.add('js');
   /* La hora de la tarjeta sale de la MISMA cadena que la cuenta
      regresiva: escrita aparte, el día que se corra la hora quedan
      dos horarios distintos en la misma invitación. */
+  /* "21:00" se escribe 21 y "04:00" se escribe 4: nadie dice "de
+     veintiuna cero cero a cero cuatro cero cero". Los minutos
+     aparecen solo si los hay. */
+  const hs = t => { const q = String(t).match(/^(\d{1,2}):(\d{2})/); if (!q) return '';
+    return (+q[1]) + (q[2] === '00' ? '' : ':' + q[2]); };
   const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (m){
     const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -845,9 +852,10 @@ document.documentElement.classList.add('js');
                    'agosto','septiembre','octubre','noviembre','diciembre'];
     const d = new Date(+m[1], +m[2]-1, +m[3]);   /* por componentes: sin zona de por medio */
     const nom = DIAS[d.getDay()];
+    const hasta = CONFIG.hastaHora ? ' a ' + hs(CONFIG.hastaHora) : '';
     $('#hora').textContent = nom.charAt(0).toUpperCase() + nom.slice(1) +
       ' ' + (+m[3]) + ' de ' + MESES[+m[2]-1] +
-      (CONFIG.mostrarHora ? ' · ' + m[4] + ':' + m[5] : '');
+      (CONFIG.mostrarHora ? ' · de ' + hs(m[4] + ':' + m[5]) + hasta + ' h' : '');
   }
 })();
 
