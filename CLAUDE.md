@@ -1497,6 +1497,28 @@ pruebas **se sirven con esas cabeceras puestas** (`pruebas/servidor.py`), así
 que si la CSP bloquea algo que la app necesita, salta acá y no en la fiesta
 de un cliente.
 
+**`stale-while-revalidate` es "publicá, que no se va a ver".** El HTML iba
+con `max-age=60, stale-while-revalidate=86400`, y el comentario decía que
+así "nunca queda una versión vieja pegada". Dice lo contrario de lo que
+hace: quiere decir *serví la copia vieja y andá a buscar la nueva por
+atrás*, así que el que entra ve el HTML de hasta **veinticuatro horas**
+antes y lo nuevo recién en la visita SIGUIENTE. Se publicó la invitación
+de Mia con la foto de portada sacada y el texto corregido, el cliente
+abrió el link que ya tenía, y vio **el texto viejo y dos cuadrados
+rotos** — el HTML viejo pidiendo las fotos que ese mismo deploy había
+borrado. Un `max-age` corto no sirve de nada si después se sirve lo viejo
+igual. Quedó en `max-age=60` pelado: la segunda visita cuesta una
+revalidación —un 304, sin cuerpo— y muestra lo que hay.
+`pruebas/arranque.js` ya miraba que el HTML no fuera `immutable`, que es
+la misma falla sin fecha de vencimiento, y no miraba ésta: ahora corta
+arriba de 300 s. Contra el `_headers` anterior da 1 falla.
+
+**Y la lección de arriba, dicha para cualquier publicación: borrar un
+archivo que el HTML ya publicado nombra deja una imagen rota en todo el
+que tenga ese HTML guardado.** No es lo mismo sacar una foto de la
+invitación que borrarla del servidor; lo segundo se nota en el navegador
+del cliente y no en el nuestro.
+
 Las librerías (QR, zip, excel) viven en `lib/`, en el repo. Antes venían de
 cdnjs: eso es darle a un tercero permiso para correr código en la página que
 tiene a mano la clave del evento y la maestra. De paso, el QR y el zip ahora
@@ -2801,6 +2823,54 @@ selector*—:
 Y el manuscrito de abajo entra con el **interletrado cerrándose**
 (.08em → 0 en 1,4 s): la misma idea de que algo se asienta, en el
 renglón de al lado.
+
+#### Una foto que no carga se va, no deja el cuadrado roto
+
+Lo reportó el dueño con una captura, y es lo que se ve cuando chocan las
+dos cosas de arriba: el HTML viejo, servido por el
+`stale-while-revalidate`, pidiendo `fotos/portada.webp` y `fotos/1.webp`,
+que ese deploy había borrado. **Dos cuadrados grises con un `?`**, uno
+arriba de todo en la portada y otro adentro del pasepartú dorado.
+
+**No tiraba ningún error de JavaScript y las pruebas daban verde**: una
+imagen rota es un dibujo del navegador, no una excepción. Es la familia de
+siempre —*se dibuja perfecto y está mal*— y por eso ahora se mide.
+
+Arreglado el caché, esto no debería volver a pasar; se pone igual porque
+**la próxima vez que se saque una foto va a volver a pasar durante el
+minuto del `max-age`**, y porque un archivo puede faltar por cualquier
+otro motivo.
+
+- En el pase, la foto que no carga **se saca, y se saca su puntito**: un
+  punto que no lleva a ninguna foto es la misma mentira más chica. Si no
+  queda ninguna, se esconde la sección entera, que es exactamente lo que
+  ya hacía `CONFIG.fotos` vacío — un marco dorado alrededor de nada es
+  peor que no estar.
+- **Qué foto es cada punto se pregunta al TOCAR**, no se captura al
+  dibujar: sacada una, las de atrás se corren un lugar y el número
+  guardado señalaría la equivocada.
+- **A la que ya falló hay que preguntarle.** Si la imagen se cayó antes de
+  que llegáramos a escuchar, el evento `error` no vuelve a dispararse
+  nunca: se mira `complete && !naturalWidth`.
+- En la portada, si falta la foto se vuelve a la **portada tipográfica**,
+  que se sostiene sola. Y hay que **volver a rasgar**: el borde del pie de
+  la portada se saltea justamente cuando hay foto, así que sacada la clase
+  `con-foto` quedaría una juntura recta entre el negro y el papel. Por eso
+  ese bloque dejó de ser un IIFE y es `rasgar()`, que **primero borra los
+  rasgados que ya estaban** — corrido dos veces sin eso, quedan dos
+  pegados.
+
+Lo mide `pruebas/invitacion_mirar.js` haciendo que el servidor conteste
+404: una foto, después todas, y después la de la portada (encendida
+interceptando el HTML, igual que `puertas.js` con `MUESTRA_MURO`, porque
+mirar la constante publicada ataría la prueba a lo que hoy está elegido).
+Contra el código anterior da **5 fallas**.
+
+**Y esa prueba primero no medía nada.** Preguntaba `window.CONFIG` para
+saber cuántas fotos declara la invitación, y `CONFIG` es un `const` de
+script: **no cuelga de `window`**. Daba 0, la prueba se salteaba sola
+informando *"esta invitación no tiene fotos: nada que medir"* y la suite
+quedaba verde. La caja de 0x0 otra vez, disfrazada de atajo amable.
 
 #### El pie es la puerta de entrada del próximo cliente
 
