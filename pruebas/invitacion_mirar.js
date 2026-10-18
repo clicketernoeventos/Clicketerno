@@ -292,6 +292,25 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   titulo('las piezas');
   const ctx = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
   const pag = await ctx.newPage();
+  /* ══ LA PRUEBA NO ESCRIBE EN LA PLANILLA DE UN CLIENTE ══
+     Acá abajo se completa la confirmación y se toca Confirmar. Con
+     el `CONFIG.endpoint` puesto, eso es un POST al Apps Script DE
+     VERDAD: cada corrida le metería un "Juan Pérez" inventado en la
+     planilla de la clienta, y lo vería cuando cuenta los invitados
+     para las mesas. Es la misma regla que ya está escrita para la
+     demostración —lo que escribe en producción no es una prueba—,
+     que acá no estaba porque hasta hoy ninguna invitación tenía
+     planilla.
+     No se BLOQUEA y listo: se contesta como contestaría el Apps
+     Script, así el recorrido se mide entero. El `?confirmado=` dice
+     que no hasta que llega el POST, y que sí después — que es
+     exactamente lo que hace la planilla. */
+  let seMando = false;
+  await pag.route('**/script.google.com/**', r => {
+    if (r.request().method() === 'POST'){ seMando = true; return r.fulfill({status:200, body:'{"ok":true}'}); }
+    return r.fulfill({status:200, contentType:'application/json',
+                      body: JSON.stringify({ ok: seMando })});
+  });
   await pag.goto(URL, {waitUntil:'domcontentloaded'});
   if (await pag.locator('#abrir').count()){ await pag.click('#abrir'); await pag.waitForTimeout(1200); }
 
@@ -508,6 +527,56 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
         : 'quedó sin bordes rasgados: juntura recta entre el negro y el papel');
     }
     await ctx3.close();
+  }
+
+  /* ── 8b · el que NO viene no llena lo que no es suyo ──
+     Un campo escondido igual VIAJA: `new FormData(form)` manda todo
+     lo que esté en el formulario. Así que esto se mide por las dos
+     mitades —que no se vea Y que no se mande—, porque esconderlo
+     solo arregla la pantalla y deja la planilla diciendo "no viene"
+     al lado de "Cuántos: 4", que es la columna de las mesas. */
+  titulo('el que no viene no llena lo que no es suyo');
+  {
+    const ctxN = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagN = await ctxN.newPage();
+    await pagN.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagN.locator('#abrir').count()){ await pagN.click('#abrir'); await pagN.waitForTimeout(900); }
+    const hayNo = await pagN.locator('input[name="Confirma"][value="No"]').count();
+    const haySel = await pagN.locator('#fLugares').count();
+    if (!hayNo || !haySel) bien('esta invitación no pregunta cuántos son');
+    else {
+      const mirar = () => pagN.evaluate(() => {
+        const f = document.querySelector('#rsvp');
+        const ve = s => { const n = document.querySelector(s); if (!n) return false;
+          const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+        return { lugares: ve('#fLugares'),
+                 manda: [...new FormData(f).keys()] };
+      });
+      await pagN.fill('#fNombre', 'Juan Pérez');
+      await pagN.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagN.selectOption('#fLugares', '3');
+      await pagN.waitForTimeout(250);
+      const si = await mirar();
+      await pagN.locator('input[name="Confirma"][value="No"]').check();
+      await pagN.waitForTimeout(350);
+      const no = await mirar();
+      es(!no.lugares, no.lugares
+        ? 'al decir que no viene se le sigue preguntando cuántos son'
+        : 'al decir que no viene, "cuántos son" se va de la pantalla');
+      es(!no.manda.includes('Cuántos'), no.manda.includes('Cuántos')
+        ? 'y la fila igual llega a la planilla con un número en "Cuántos"'
+        : 'y tampoco viaja: a la planilla no le llega un número de mesas');
+      /* Volver al "sí" tiene que devolver todo: si no, el que se
+         equivocó de botón ya no puede decir con cuántos viene. */
+      await pagN.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagN.waitForTimeout(350);
+      const vuelta = await mirar();
+      es(vuelta.lugares && vuelta.manda.length === si.manda.length,
+         vuelta.lugares && vuelta.manda.length === si.manda.length
+           ? 'y volviendo al "sí" vuelven todos los campos'
+           : 'volviendo al "sí" no vuelven todos los campos');
+    }
+    await ctxN.close();
   }
 
   /* ── 9 · con foto, el 15 SIGUE animándose ──

@@ -860,7 +860,14 @@ const CONFIG = {
      invitación dijera "30 de enero" en algún lado — la fiesta es el
      29 y eso es lo que tiene que leer el invitado. */
   hastaHora: "04:00",
-  confirmarHasta: "29 de diciembre",
+  /* VACÍO a propósito. Había un "29 de diciembre" puesto por mí, y
+     la familia nunca pidió una fecha de cierre: "no es algo que me
+     pidieron ellos" (18/10/2026). Un dato inventado que el invitado
+     lee como de la quinceañera y que decide algo real —después de
+     esa fecha se cree que ya no puede avisar— no va. Vacío, el
+     renglón no se dibuja; el día que digan hasta cuándo, se escribe
+     acá y aparece solo. */
+  confirmarHasta: "",
 
   lugar: "La Mansión del Rey",
   /* La dirección la dio la clienta, que es quien reservó el salón —
@@ -913,7 +920,7 @@ const CONFIG = {
      confirmación se ve entera, se puede completar, y la pantalla
      dice con todas las letras que no se mandó a ningún lado.
      Decir "listo" sin haber guardado nada es la mentira de siempre. */
-  endpoint: ""
+  endpoint: "https://script.google.com/macros/s/AKfycbxAtFottjVlzwvtvgBRw2qmdyKWc2Hf_6ok2Y_vowN0AWrn4Ey0PBfORsWzcbPcXdOYxA/exec"
 };
 
 /* ── atajos ── */
@@ -949,7 +956,12 @@ document.documentElement.classList.add('js');
   $('#calle').textContent = CONFIG.calle;
   $('#mapa').href = CONFIG.mapa;
   $('#dressTexto').textContent = CONFIG.dressTexto;
-  $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta + '. Con eso cerramos las mesas.';
+  /* Sin fecha NO se escribe una inventada: es la misma regla que
+     dejó la hora apagada hasta que el dueño la pasó. Una fecha
+     puesta a ojo le cierra las mesas al invitado el día que no es. */
+  if (CONFIG.confirmarHasta)
+    $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta + '. Con eso cerramos las mesas.';
+  else $('#hasta').hidden = true;
 
   /* Las fotos: solo si hay. Van pasando solas en un marco y se
      puede ir a cualquiera con los puntitos.
@@ -1542,13 +1554,31 @@ rasgar();
     /* Si contestó que no viene, no se le piden nombres. */
     const viene = () => { const r = $('input[name="Confirma"]:checked');
       return !r || r.value === 'Sí'; };
+    /* Y TAMPOCO lo demás. Al elegir "No voy a poder" se le seguía
+       preguntando cuántos son, qué no come y qué tema quiere: tres
+       renglones después de haber dicho que no puede ir. Desde afuera
+       eso se lee como que la pantalla no lo escuchó.
+       Pero lo caro no es cómo se ve: `new FormData(form)` manda todo
+       lo que esté en el formulario, así que a la planilla le llegaba
+       una fila que dice NO VIENE y "Cuántos: 4" — y esa es
+       exactamente la columna con la que se arman las mesas. Por eso
+       no alcanza con esconderlos: van DESHABILITADOS, que es lo que
+       hace que no viajen. */
+    const soloSiViene = ['#fLugares', '#fComida', '#fTema'];
     /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el
        único caso que importa: contestar "no voy a poder" borra los
        renglones, y al volver al "sí" ya no había de dónde leerlos.
        Medido: cuatro nombres puestos volvían en blanco. */
     const tenia = {};
     const pintar = () => {
-      const n = viene() ? Math.max(1, +sel.value || 1) : 1;
+      const va = viene();
+      soloSiViene.forEach(q => {
+        const nodo = $(q); if (!nodo) return;
+        const campo = nodo.closest('.campo');
+        if (campo) campo.hidden = !va;
+        nodo.disabled = !va;
+      });
+      const n = va ? Math.max(1, +sel.value || 1) : 1;
       $$('input', caja).forEach(i => { tenia[i.name] = i.value; });
       let h = '';
       for (let k = 2; k <= n; k++){
