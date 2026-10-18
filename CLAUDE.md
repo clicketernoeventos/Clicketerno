@@ -2782,6 +2782,39 @@ contra el código anterior, porque antes nadie había medido esto. Lo
 que la hace valer es que está atada al formulario y no a una lista
 escrita a mano.
 
+#### La clave del tablero de Mia es un correo, y es una excepción
+
+La regla de este archivo es que **la clave la inventa la planilla**, y
+el `.gs.txt` explica por qué: *"un correo es público y adivinable — y
+esa clave abre la lista entera de invitados"*. Para mia15 **no se
+cumple, y es decisión del dueño**: la cumpleañera mandó un correo de
+la familia como contraseña para ver las confirmaciones y él lo pidió
+dos veces. Se le dijo el riesgo las dos y lo sostuvo.
+
+Quedó anotado acá para que nadie —yo el mes que viene incluido— lo
+"arregle" volviéndolo a generar al azar.
+
+**El valor NO se escribe en el repo**, que es la otra mitad de la
+regla y ésa sigue en pie: vive en `CLAVE_ELEGIDA`, en la copia del
+editor de Apps Script del dueño, y en las propiedades de ese
+proyecto. El `.gs.txt` versionado sigue con la cadena vacía.
+
+Tres cosas medidas corriendo el `.gs.txt` de verdad, porque del otro
+lado no se depura:
+
+- Poner `CLAVE_ELEGIDA` y volver a correr `preparar()` **pisa la
+  clave que se había inventado**, y la vieja deja de servir.
+- **No hace falta volver a implementar.** La clave vive en las
+  propiedades del proyecto, que la implementación lee en cada
+  pedido; lo que queda congelado al implementar es el CÓDIGO. La
+  dirección `/exec` no cambia.
+- **La comparación distingue mayúsculas** (`igualesSinApuro_` compara
+  byte a byte, que es lo que la hace no filtrar cuántas letras
+  acertaste). Medido: con la clave guardada en `Gabi…`, escribir
+  `gabi…` **no abre**. Por eso se guarda toda en minúscula: el campo
+  es `type="password"`, que en iPhone no autocapitaliza, así que lo
+  que se escribe es lo que se guardó.
+
 #### El tablero no puede existir antes que el Apps Script
 
 `pruebas/invitaciones.js` falla si una carpeta `<evento>/listado/`
