@@ -2692,6 +2692,56 @@ nombres en total con el suyo.
   dónde leerlos. Medido: cuatro nombres puestos volvían en blanco.
   El guardado vive afuera.
 
+#### El que ya confirmó
+
+*"Si Juan Pérez se registró, que no pueda volver a registrarse. Más
+que nada para no llenarle de duplicados el formulario a quien lo
+chequea."* Son **dos puertas** y hacen falta las dos, porque tapan
+agujeros distintos:
+
+1. **En ese aparato.** El caso que de verdad llena la planilla es el
+   mismo invitado volviendo a abrir el link de WhatsApp dos días
+   después y completando todo otra vez. Confirmado una vez, la
+   pantalla le muestra un cartel con su nombre **en lugar del
+   formulario**: dejarlo abierto abajo es invitarlo a llenarlo de
+   nuevo. Queda el botón "Cambiar mi respuesta", que es el otro caso
+   real —el que pasó de "no" a "sí"— y ésa no se puede cerrar.
+   **Se guarda solo cuando la confirmación llegó de verdad**:
+   guardarlo en la muestra sería decirle "ya confirmaste" cuando no
+   se mandó a ningún lado.
+2. **En la planilla.** Antes de mandar se pregunta si ese nombre ya
+   está (`?confirmado=`, la puerta que ya existía). Si está, **no se
+   manda**: se lo dice y recién el segundo toque actualiza la fila.
+   Esto agarra lo que la memoria del aparato no ve — el que confirma
+   desde el teléfono de la madre, o el que borró los datos del
+   navegador.
+
+**La comparación es la MISMA que usa el Apps Script**:
+`trim().toLowerCase()`, sin tocar los acentos. Si la pantalla
+normalizara más que la planilla, diría "ya estás anotado" y la
+planilla igual crearía una segunda fila — justo lo que se vino a
+evitar. Si alguna vez cambia de un lado, cambia en los dos.
+
+**Si la pregunta falla, se manda igual.** Sin señal o con el
+servidor caído, bloquear por no haber podido preguntar sería perder
+una confirmación de verdad para evitar un duplicado que **la
+planilla ya no hace**: el `doPost` pisa la fila del mismo nombre
+desde siempre. Esto es para que el invitado se entere, no para tapar
+un agujero de la planilla.
+
+**Y el formulario escondido vuelve invisible.** `#rsvp` tiene `.ap`:
+escondido nunca interseca, así que el observador no le pone `.entro`
+y al mostrarlo de nuevo aparece en opacidad 0 — sin un solo error.
+Se lo deja entrar a mano, igual que al cartel, que lo dibuja el JS
+cuando el observador ya pasó.
+
+Medido contra el código publicado, que es el que no lo tenía: con el
+nombre ya anotado **manda igual y contesta "¡Listo, Juan!"**; con
+esto, no manda nada y lo dice. Y el recorrido entero —primera vez,
+recarga, cambiar la respuesta, otro aparato con `"  juan pérez  "`,
+segundo toque— corre contra un Apps Script interceptado, igual que
+`pruebas/listado.js`.
+
 #### El pie es la puerta de entrada del próximo cliente
 
 *"Cuando toquen Click Eterno que vayan directo al WhatsApp y que me

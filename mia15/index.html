@@ -513,6 +513,12 @@ body.cerrado .port-foto img{transform:scale(1.07)}
 
 /* ══════════ la confirmación ══════════ */
 #confirmar{background:var(--papel2)}
+/* El cartel del que ya confirmó. Reemplaza al formulario entero:
+   dejarlo abierto abajo es invitarlo a llenarlo de nuevo. */
+.ya-fue{text-align:center;margin-top:26px;padding:26px 20px;
+  border:1px solid rgba(201,169,97,.55);background-color:var(--papel)}
+.ya-fue .ya-nom{font-family:var(--display);font-size:clamp(20px,5.4vw,26px);
+  color:var(--tinta);margin:10px 0 12px}
 .campo{margin-bottom:22px;text-align:left}
 .campo label{display:block;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
 .campo input,.campo select{
@@ -689,6 +695,10 @@ body.cerrado .port-foto img{transform:scale(1.07)}
     <h2 class="tit centro ap">¿Venís?</h2>
     <p class="mano centro ap">avisame</p>
     <p class="cuerpo centro ap" id="hasta"></p>
+
+    <!-- El cartel del que ya confirmó en este aparato. Lo llena el
+         JS; vacío no ocupa nada. -->
+    <div class="ya-fue ap" id="yaFue" hidden></div>
 
     <form id="rsvp" class="ap" novalidate style="margin-top:26px">
       <div class="campo">
@@ -1386,6 +1396,78 @@ function rasgo(d, color){
     pintar();
   })();
 
+  /* ══════════ el que ya confirmó ══════════
+     Dos puertas contra los duplicados, y hacen falta las dos porque
+     tapan agujeros distintos.
+
+     1 · EN ESTE APARATO. El caso que de verdad llena la planilla es
+     el mismo invitado volviendo a abrir el link de WhatsApp dos
+     días después y completando todo otra vez. Confirmado una vez,
+     la pantalla le muestra un cartel con su nombre EN LUGAR del
+     formulario: dejarlo abierto abajo es invitarlo a llenarlo de
+     nuevo. Queda el botón para cambiar la respuesta, que es el otro
+     caso real —el que pasó de "no" a "sí"— y ésa no se puede
+     cerrar.
+     Se guarda SOLO cuando la confirmación llegó de verdad. Guardar
+     en la muestra sería decirle "ya confirmaste" cuando no se mandó
+     a ningún lado.
+
+     2 · EN LA PLANILLA. Antes de mandar se pregunta si ese nombre
+     ya está (`?confirmado=`, la puerta que ya existía). Si está, no
+     se manda: se lo dice y recién el segundo toque actualiza la
+     fila. Esto agarra lo que la memoria del aparato no ve — el que
+     confirma desde el teléfono de la madre, o el que borró los
+     datos del navegador.
+     **La comparación es la MISMA que usa el Apps Script**:
+     `trim().toLowerCase()`, sin tocar los acentos. Si acá se
+     normalizara más que allá, la pantalla diría "ya estás anotado"
+     y la planilla igual crearía una segunda fila — que es
+     exactamente lo que se vino a evitar.
+
+     La fila NO se duplica aunque todo esto falle: el `doPost` pisa
+     la fila del mismo nombre. Esto es para que el invitado se
+     entere, no para tapar un agujero de la planilla. */
+  const LLAVE = 'ce:rsvp:' + location.pathname;
+  const mismo = t => String(t||'').trim().toLowerCase();
+  const leerYa = () => { try{ return JSON.parse(localStorage.getItem(LLAVE) || 'null'); }
+                         catch(e){ return null; } };
+  const guardarYa = (nombre, confirma) => { try{
+    localStorage.setItem(LLAVE, JSON.stringify({nombre, confirma}));
+  }catch(e){} };
+
+  const cartel = $('#yaFue');
+  function pintarYa(){
+    const y = leerYa();
+    if (!y || !y.nombre){ cartel.hidden = true; form.hidden = false; return; }
+    cartel.hidden = false;
+    form.hidden = true;
+    cartel.innerHTML =
+      '<p class="ante" style="margin:0">Ya confirmaste</p>' +
+      '<p class="ya-nom">' + esc(y.nombre) + '</p>' +
+      '<p class="cuerpo" style="margin-bottom:0">' +
+      (y.confirma === 'No' ? 'Nos avisaste que no vas a poder venir. Gracias por decirlo.'
+                           : 'Te esperamos el 29 de enero.') + '</p>' +
+      '<button class="btn" type="button" id="cambiarYa">Cambiar mi respuesta</button>';
+    /* El cartel nace con `.ap`, o sea invisible hasta que el
+       observador lo deja entrar — y lo acaba de dibujar el JS, así
+       que puede haberse perdido la vuelta. Se lo deja entrar a mano. */
+    cartel.classList.add('entro');
+    $('#cambiarYa').addEventListener('click', ()=>{
+      cartel.hidden = true;
+      form.hidden = false;
+      /* Escondido, el formulario nunca intersecó: sin esto vuelve a
+         aparecer en opacidad 0 y no hay ningún error que lo diga. */
+      form.classList.add('entro');
+      $('#fNombre').value = y.nombre;
+      $('#fNombre').focus();
+    });
+  }
+  pintarYa();
+
+  /* El nombre que ya se avisó que estaba anotado: el segundo toque
+     con ese mismo nombre es "sí, quiero actualizarlo". */
+  let avisado = '';
+
   form.addEventListener('submit', async (ev)=>{
     ev.preventDefault();
     const nombre = ($('#fNombre').value || '').trim();
@@ -1408,11 +1490,31 @@ function rasgo(d, color){
     }
 
     boton.disabled = true;
+
+    /* ¿Ese nombre ya está en la planilla? Si la pregunta falla —sin
+       señal, el servidor caído— sigue de largo y manda: bloquear por
+       no haber podido preguntar sería perder una confirmación de
+       verdad para evitar un duplicado que la planilla ya no hace. */
+    if (avisado !== mismo(nombre)){
+      decir('Revisando…');
+      if (await llego(nombre)){
+        avisado = mismo(nombre);
+        decir('«' + nombre + '» ya está anotado. Si sos vos y querés cambiar lo que pusiste, tocá Confirmar otra vez y lo actualizamos.', 'mal');
+        boton.disabled = false;
+        return;
+      }
+    }
+
     decir('Mandando…');
     try{
       await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:new FormData(form)});
       await new Promise(r=>setTimeout(r, 1200));
-      if (await llego(nombre)) decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el 29.', 'bien');
+      if (await llego(nombre)){
+        const r = $('input[name="Confirma"]:checked');
+        guardarYa(nombre, r ? r.value : '');
+        decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el 29.', 'bien');
+        pintarYa();
+      }
       else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
     }catch(e){
       decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
