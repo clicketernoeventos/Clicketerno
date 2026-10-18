@@ -2461,6 +2461,14 @@ invitado. Se escribe como se dice: *"de 21 a 4 h"*, sin los
 `:00` que nadie pronuncia.
 **Y Mia va sin apellido**, dicho por el dueño el mismo día: no es un
 dato que falte, es una decisión.
+
+**El "Te invito" lo escribió la clienta.** Pidió por WhatsApp (18/10/2026)
+que dijera *"me encantaría que formes parte de esta noche tan especial
+para mi"* en lugar de lo que había. Va casi literal: *"Vengo esperando
+este día hace mucho. Me encantaría que formes parte de esta noche tan
+especial para mí."* — lo único que se tocó fue no repetir "noche" dos
+veces en la misma frase. **Esa línea no se mejora**: es la voz de la que
+invita, no la nuestra.
 El alias del regalo estuvo en
 la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
 está puesto, con el rótulo "Alias para transferir" arriba, porque
@@ -2741,6 +2749,58 @@ esto, no manda nada y lo dice. Y el recorrido entero —primera vez,
 recarga, cambiar la respuesta, otro aparato con `"  juan pérez  "`,
 segundo toque— corre contra un Apps Script interceptado, igual que
 `pruebas/listado.js`.
+
+#### La portada volvió a ser tipográfica, y el 15 se llena de tinta
+
+A la clienta **no le gustó la foto de portada** (18/10/2026), así que
+`CONFIG.portada` volvió a quedar vacío y con eso vuelve la portada
+tipográfica — que para esto se dejó entera y probada: el camino con
+foto sigue completo, es una línea volver. De la galería salió además
+**la foto de Mia más grande**: quedaron las dos de chiquita, y así la
+sección entera dice una sola cosa —"la que era"— en vez de tres fotos
+sueltas. Los dos archivos se borraron del repo: una foto de una menor
+que ya no se usa, sentada en una dirección pública, es peso y es
+exposición sin nada a cambio.
+
+**La animación de portada**, pedida con esas palabras: *"qué idea
+podemos hacer para alguna animación de portada, así ponemos algo con
+onda"*. El 15 entra **dibujado en oro** y la tinta negra lo llena **de
+abajo hacia arriba** en 1,8 s, como un sello que se apoya en el papel.
+Pasa una vez y después no se mueve nada.
+
+**Son DOS capas y no un color que cambia**, y el motivo no es de
+gusto. Con `background-clip:text` —que es la forma obvia de hacer que
+un relleno suba por adentro de una letra— el relleno viaja en el
+fondo y el `color` del texto queda en `transparent` **para siempre**:
+el medidor de contraste lee el color, no lo que se ve, así que
+informaría el "15" a 1,00:1 y tendría razón según lo que mide. Es la
+misma trampa del "15" en contorno de `mateoylucas`. Con dos capas
+cada una tiene su color de verdad: la de abajo es el oro que SE LEE
+(4,6:1 sobre el papel) y la de arriba es la tinta, recortada con
+`clip-path` y declarada decoración (`aria-hidden` +
+`pointer-events:none`), que es como el medidor saltea un adorno sin
+quedarse ciego. La suite sigue midiendo 85 textos.
+
+El oro de la capa de abajo **lo pone el JS** al armar la de arriba:
+sin JS no hay animación y el 15 es negro, que es el estado bueno. Con
+"menos movimiento" tampoco se crea la capa.
+
+**Dos selectores que se rompieron solos al agregar esa capa**, y las
+dos son la misma lección —*agregar un nodo cambia a quién le pega un
+selector*—:
+
+- **`.quince-big span:last-child`** dejó de matchear el "5": la capa
+  de tinta es el último hijo del `h1`, así que el "5" de abajo perdió
+  su margen negativo y **las dos capas quedaron corridas 8px** una de
+  otra. Va `span + span`.
+- **`.quince-big.con-tinta span{color:var(--oro)}`** le llegaba
+  también a las cifras de ARRIBA —son descendientes del mismo `h1`—
+  y la tinta no se veía nunca: la animación corría perfecta y el 15
+  quedaba dorado de principio a fin. Va `> span`.
+
+Y el manuscrito de abajo entra con el **interletrado cerrándose**
+(.08em → 0 en 1,4 s): la misma idea de que algo se asienta, en el
+renglón de al lado.
 
 #### El pie es la puerta de entrada del próximo cliente
 
