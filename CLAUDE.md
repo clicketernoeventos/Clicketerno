@@ -2656,6 +2656,42 @@ las secciones 22** abajo de 400px de ancho. Cuatro píxeles no se
 ven de a uno; se ven al scrollear, porque el texto de la portada
 arranca más adentro que todo el resto.
 
+#### El marco de la foto, y los nombres de los que vienen
+
+Lo primero que reportó el dueño con la invitación ya publicada, y
+las dos son de producto, no de diseño:
+
+**El marco estaba mal, y el motivo es de bulto.** Era un filete
+corrido dibujado con un `:before` de `.pase` — y `.pase` no es la
+foto: es la foto **más los puntitos**. El filete terminaba 14px
+abajo de los puntitos y asomaba por la derecha de la imagen, así
+que no se leía como un marco sino como un rectángulo suelto mal
+puesto. En una captura de escritorio pasa por una decisión de
+diseño; en un teléfono se ve que está roto. Ahora el marco es una
+caja de verdad alrededor del `figure` (`.pase-marco`, un pasepartú
+de 10px con su filete) y **lo que mide es lo que encierra**.
+Hay una medición que exige las tres cosas: que rodee la foto, que
+sea simétrico y que no se coma los puntitos.
+
+**"¿Cuántos son?" decía cuántos y no quiénes.** Para lo único que
+entra el que organiza —armar las mesas— un número no sirve: al otro
+día hay que escribirle a cada uno preguntándole con quién viene.
+Eligiendo 5 se abren los otros cuatro renglones, así son cinco
+nombres en total con el suyo.
+
+- **No son obligatorios, a propósito.** El que no se acuerda del
+  apellido de uno abandona la pantalla, y una confirmación sin un
+  nombre vale más que ninguna confirmación.
+- **El nombre del campo ES el título de la columna**, y el Apps
+  Script crea la columna sola la primera vez que llega una que no
+  conocía: del otro lado no hay nada que configurar.
+- **Lo escrito se conserva al cambiar el número**, y el caso que
+  importa no es bajar de 5 a 3: es contestar **"no voy a poder"**,
+  que borra los renglones, y volver al "sí". Con el guardado
+  adentro de la función que redibuja, al volver ya no había de
+  dónde leerlos. Medido: cuatro nombres puestos volvían en blanco.
+  El guardado vive afuera.
+
 #### El pie es la puerta de entrada del próximo cliente
 
 *"Cuando toquen Click Eterno que vayan directo al WhatsApp y que me

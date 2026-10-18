@@ -430,10 +430,16 @@ body.cerrado .port-foto img{transform:scale(1.07)}
 .pase img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   filter:grayscale(1);opacity:0;transition:opacity 1.1s var(--e)}
 .pase img.on{opacity:1}
-/* El filete de oro corrido, como el marco de una foto apoyada. Es
-   decoración y va detrás: no ataja el dedo. */
-.pase:before{content:'';position:absolute;left:14px;top:14px;right:-14px;bottom:-14px;
-  border:1px solid rgba(201,169,97,.55);pointer-events:none}
+/* EL MARCO. Un filete de oro alrededor de la foto, con su aire,
+   como el pasepartú de un cuadro.
+   La primera versión era un filete CORRIDO, dibujado con un
+   `:before` de `.pase` — y `.pase` no es la foto: es la foto MÁS
+   los puntitos. El filete terminaba 14px abajo de los puntitos y
+   asomaba por la derecha de la foto, así que no se leía como un
+   marco sino como un rectángulo suelto mal puesto. Ahora el marco
+   es una caja de verdad alrededor del `figure`, y lo que mide es
+   lo que encierra. */
+.pase-marco{position:relative;padding:10px;border:1px solid rgba(201,169,97,.5)}
 /* Los puntitos: el punto sigue midiendo 7px y lo que mide 44 es el
    área, con el relleno. Agrandar el punto sería otra cosa. */
 .pase-puntos{display:flex;justify-content:center;margin-top:26px}
@@ -706,6 +712,10 @@ body.cerrado .port-foto img{transform:scale(1.07)}
         </select>
       </div>
 
+      <!-- Los nombres de los que vienen con él. Los dibuja el JS
+           según "¿Cuántos son?": vacío no ocupa nada. -->
+      <div id="acomp"></div>
+
       <div class="campo">
         <label for="fComida">¿Alguna comida que no puedas?</label>
         <input id="fComida" name="Comida" type="text" placeholder="Celíaco, vegetariano, alergias…">
@@ -863,9 +873,9 @@ document.documentElement.classList.add('js');
     $('#galeria').hidden = false;
     const pase = $('#fotos');
     pase.innerHTML =
-      '<figure>' + fs.map((f,i) =>
+      '<div class="pase-marco"><figure>' + fs.map((f,i) =>
         '<img src="' + esc(f) + '" alt=""' + (i ? ' loading="lazy"' : '') +
-        (i ? '' : ' class="on"') + '>').join('') + '</figure>' +
+        (i ? '' : ' class="on"') + '>').join('') + '</figure></div>' +
       (fs.length > 1 ? '<div class="pase-puntos">' + fs.map((f,i) =>
         '<button type="button" aria-label="Foto ' + (i+1) + ' de ' + fs.length + '"' +
         (i ? '' : ' aria-current="true"') + '><i></i></button>').join('') + '</div>' : '');
@@ -1328,6 +1338,53 @@ function rasgo(d, color){
       return p === 'si' || p === 'sí' || p === 'true' || p === '1';
     }catch(e){ return false; }
   }
+
+  /* ══════════ los nombres de los que vienen ══════════
+     "¿Cuántos son?" decía cuántos y no quiénes, y para lo único que
+     entra el que organiza —armar las mesas— un número no sirve: al
+     otro día hay que escribirle a cada uno preguntándole con quién
+     viene. Eligiendo 5 se abren los otros cuatro renglones, así son
+     cinco nombres en total con el suyo.
+
+     NO son obligatorios a propósito: el que no se acuerda del
+     apellido de uno abandona la pantalla, y una confirmación sin un
+     nombre sigue valiendo más que ninguna confirmación.
+
+     Lo escrito se CONSERVA al cambiar el número: si puso cuatro
+     nombres y después corrige a cinco, volver a dibujar sin guardar
+     se los borraría todos.
+
+     El nombre del campo ES el título de la columna de la planilla, y
+     el Apps Script crea la columna sola la primera vez que llega una
+     que no conocía. Por eso acá no hay nada que configurar del otro
+     lado. */
+  (function(){
+    const sel = $('#fLugares'), caja = $('#acomp');
+    if (!sel || !caja) return;
+    /* Si contestó que no viene, no se le piden nombres. */
+    const viene = () => { const r = $('input[name="Confirma"]:checked');
+      return !r || r.value === 'Sí'; };
+    /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el
+       único caso que importa: contestar "no voy a poder" borra los
+       renglones, y al volver al "sí" ya no había de dónde leerlos.
+       Medido: cuatro nombres puestos volvían en blanco. */
+    const tenia = {};
+    const pintar = () => {
+      const n = viene() ? Math.max(1, +sel.value || 1) : 1;
+      $$('input', caja).forEach(i => { tenia[i.name] = i.value; });
+      let h = '';
+      for (let k = 2; k <= n; k++){
+        const nom = 'Invitado ' + k;   /* es el título de la columna */
+        h += '<div class="campo"><label for="fInv' + k + '">Nombre del invitado ' + k + '</label>' +
+             '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
+             ' value="' + esc(tenia[nom] || '') + '"></div>';
+      }
+      caja.innerHTML = h;
+    };
+    sel.addEventListener('change', pintar);
+    $$('input[name="Confirma"]').forEach(r => r.addEventListener('change', pintar));
+    pintar();
+  })();
 
   form.addEventListener('submit', async (ev)=>{
     ev.preventDefault();
