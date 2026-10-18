@@ -510,6 +510,56 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctx3.close();
   }
 
+  /* ── 8b · el que NO viene no llena lo que no es suyo ──
+     Un campo escondido igual VIAJA: `new FormData(form)` manda todo
+     lo que esté en el formulario. Así que esto se mide por las dos
+     mitades —que no se vea Y que no se mande—, porque esconderlo
+     solo arregla la pantalla y deja la planilla diciendo "no viene"
+     al lado de "Cuántos: 4", que es la columna de las mesas. */
+  titulo('el que no viene no llena lo que no es suyo');
+  {
+    const ctxN = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagN = await ctxN.newPage();
+    await pagN.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagN.locator('#abrir').count()){ await pagN.click('#abrir'); await pagN.waitForTimeout(900); }
+    const hayNo = await pagN.locator('input[name="Confirma"][value="No"]').count();
+    const haySel = await pagN.locator('#fLugares').count();
+    if (!hayNo || !haySel) bien('esta invitación no pregunta cuántos son');
+    else {
+      const mirar = () => pagN.evaluate(() => {
+        const f = document.querySelector('#rsvp');
+        const ve = s => { const n = document.querySelector(s); if (!n) return false;
+          const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+        return { lugares: ve('#fLugares'),
+                 manda: [...new FormData(f).keys()] };
+      });
+      await pagN.fill('#fNombre', 'Juan Pérez');
+      await pagN.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagN.selectOption('#fLugares', '3');
+      await pagN.waitForTimeout(250);
+      const si = await mirar();
+      await pagN.locator('input[name="Confirma"][value="No"]').check();
+      await pagN.waitForTimeout(350);
+      const no = await mirar();
+      es(!no.lugares, no.lugares
+        ? 'al decir que no viene se le sigue preguntando cuántos son'
+        : 'al decir que no viene, "cuántos son" se va de la pantalla');
+      es(!no.manda.includes('Cuántos'), no.manda.includes('Cuántos')
+        ? 'y la fila igual llega a la planilla con un número en "Cuántos"'
+        : 'y tampoco viaja: a la planilla no le llega un número de mesas');
+      /* Volver al "sí" tiene que devolver todo: si no, el que se
+         equivocó de botón ya no puede decir con cuántos viene. */
+      await pagN.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagN.waitForTimeout(350);
+      const vuelta = await mirar();
+      es(vuelta.lugares && vuelta.manda.length === si.manda.length,
+         vuelta.lugares && vuelta.manda.length === si.manda.length
+           ? 'y volviendo al "sí" vuelven todos los campos'
+           : 'volviendo al "sí" no vuelven todos los campos');
+    }
+    await ctxN.close();
+  }
+
   /* ── 9 · con foto, el 15 SIGUE animándose ──
      La animación del 15 nació para la portada tipográfica y estaba
      apagada en cuanto había foto (`if (!h || CONFIG.portada) return`).

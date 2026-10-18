@@ -264,5 +264,71 @@ console.log('\n─── el resumen lo cuenta la planilla ───');
      'y dice con qué columna contó, para que el listado no adivine');
 }
 
+console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ───');
+/* El Apps Script crea cada columna con el nombre del campo que le
+   llega, así que lo que decide si la planilla sale bien es cómo se
+   llaman los `name=` del formulario. Acá no se escriben a mano: se
+   LEEN del HTML y se postean ESOS. Escritos a mano, el día que el
+   formulario renombre un campo la prueba seguiría verde posteando
+   un nombre que ya no existe — comprobado rompiéndolo a propósito:
+   con la primera versión, renombrar el campo no la hacía fallar. */
+{
+  const html = fs.readFileSync(path.join(__dirname, '..', 'mia15', 'index.html'), 'utf8');
+  const form = (html.match(/<form id="rsvp"[\s\S]*?<\/form>/) || [''])[0];
+  const campos = [...form.matchAll(/name="([^"]+)"/g)].map(m => m[1])
+                   .filter((v, i, a) => a.indexOf(v) === i);
+  /* Los acompañantes no están en el HTML: los dibuja el JS con el
+     nombre de columna adentro. Se lee de ahí por el mismo motivo. */
+  const plantillaInv = (html.match(/const nom = '([^']+)' \+ k;/) || [])[1];
+
+  /* Estos dos el Apps Script los busca POR NOMBRE para contar y para
+     contestarle al invitado si ya está. Renombrarlos no rompe nada a
+     la vista: la planilla se llena igual y el resumen da cero. */
+  const campoNombre = campos.find(c => /nombre/i.test(c));
+  const campoSiNo   = campos.find(c => /confirma/i.test(c));
+  es(!!campoNombre && !!campoSiNo,
+     `el formulario manda ${campos.length} campos: ${campos.join(', ')}`);
+  es(!!plantillaInv, `y arma los acompañantes como "${plantillaInv}N"`);
+
+  const a = cargar();
+  const clave = a.preparar();
+  /* Uno que viene, con TODOS los campos que el formulario manda. */
+  const viene = {};
+  for (const c of campos) viene[c] = 'algo';
+  viene[campoNombre] = 'Juan Pérez';
+  viene[campoSiNo] = 'Sí';
+  if (plantillaInv){ viene[plantillaInv + '2'] = 'Ana Pérez'; viene[plantillaInv + '3'] = 'Luz Pérez'; }
+  a.post(viene);
+  /* Y uno que NO viene: desde que el formulario deshabilita lo que
+     no es suyo, de éste llegan SOLO el nombre y el sí/no. */
+  a.post({ [campoNombre]: 'Carla Gómez', [campoSiNo]: 'No' });
+
+  const titulos = a.hoja.datos[0];
+  const faltan = campos.filter(c => !titulos.includes(c));
+  es(faltan.length === 0, faltan.length
+    ? `la planilla no creó la(s) columna(s): ${faltan.join(', ')}`
+    : `la planilla creó sola las ${campos.length} columnas del formulario`);
+  if (plantillaInv)
+    es(titulos.includes(plantillaInv + '2') && titulos.includes(plantillaInv + '3'),
+       `y las de los acompañantes ("${plantillaInv}2", "${plantillaInv}3")`);
+
+  const d = a.get({ clave });
+  es(d.resumen.total === 2 && d.resumen.confirmados === 1 && d.resumen.no === 1,
+     `el resumen da 2 · 1 confirmado · 1 que no (dio ${d.resumen.total} · ${d.resumen.confirmados} · ${d.resumen.no})`);
+  es(d.columnas.confirma === campoSiNo,
+     `y cuenta por la columna "${campoSiNo}", no por "Cuándo"`);
+  const carla = d.invitados.find(i => i[campoNombre] === 'Carla Gómez');
+  const campoCuantos = campos.find(c => /cu[aá]nt/i.test(c));
+  if (campoCuantos)
+    es(carla && !String(carla[campoCuantos] || '').trim(),
+       `el que no viene NO deja un número en "${campoCuantos}": esa es la columna de las mesas`);
+  const juan = d.invitados.find(i => i[campoNombre] === 'Juan Pérez');
+  if (plantillaInv)
+    es(juan && juan[plantillaInv + '2'] === 'Ana Pérez' && juan[plantillaInv + '3'] === 'Luz Pérez',
+       'y los acompañantes llegan con nombre y apellido, no como un número');
+  es(a.get({ confirmado: '  juan pérez  ' }).ok === true,
+     'y la puerta del invitado lo reconoce con espacios y en minúscula');
+}
+
 console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');
 process.exit(fallas.length ? 1 : 0);

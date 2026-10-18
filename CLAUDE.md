@@ -2474,7 +2474,12 @@ en cada armado.
 **Lo que NO se escribió hasta tenerlo confirmado.** La cumpleañera
 mandó el día y no la hora, y una hora inventada manda a la gente a
 la hora equivocada: quedó apagada en `CONFIG.mostrarHora` hasta que
-el dueño la pasó el 18/10/2026 — **de 21 a 4**. Va como un RANGO
+el dueño la pasó el 18/10/2026 — **de 21 a 4**. **La fecha para
+confirmar NO tuvo ese cuidado y debería haberlo tenido**: salió
+publicada con un "29 de diciembre" que puse yo y que la clienta nunca
+mandó. Ahora `CONFIG.confirmarHasta` vacío **no dibuja el renglón**
+en vez de inventar una fecha, que es lo mismo que hace la hora; el
+valor sigue puesto y está preguntado. Va como un RANGO
 (`CONFIG.hastaHora`), y el final es una hora suelta y no una fecha a
 propósito: las 4 son del día siguiente, y escribirlas como fecha
 completa haría que la invitación dijera "30 de enero" en algún
@@ -2721,6 +2726,71 @@ nombres en total con el suyo.
   adentro de la función que redibuja, al volver ya no había de
   dónde leerlos. Medido: cuatro nombres puestos volvían en blanco.
   El guardado vive afuera.
+
+#### El que dice que NO no llena lo que no es suyo
+
+Al elegir *"No voy a poder"* desaparecían los renglones de los
+acompañantes —eso ya estaba— pero la pantalla **seguía preguntando
+cuántos son, qué comida no puede y qué tema quiere**: tres renglones
+después de haber dicho que no va. Desde afuera se lee como que la
+pantalla no lo escuchó.
+
+**Y lo caro no es cómo se ve.** `new FormData(form)` manda **todo lo
+que esté en el formulario**, esté a la vista o no, así que a la
+planilla le llegaba una fila que dice NO VIENE con **"Cuántos: 4"** —
+y ésa es exactamente la columna con la que el que organiza arma las
+mesas. Medido: con "No", antes viajaban `Nombre, Confirma, Cuántos,
+Comida, Canción`; ahora viajan `Nombre, Confirma`.
+
+Por eso **no alcanza con esconderlos**: van `hidden` *y*
+`disabled`, que es lo único que hace que no viajen. Y volviendo al
+"sí" vuelve todo, con los nombres de los acompañantes ya escritos —
+el mismo caso que ya había costado una vuelta.
+
+Lo mide `pruebas/invitacion_mirar.js` por **las dos mitades**: que no
+se vea Y que no se mande. Esconder sin deshabilitar arregla la
+pantalla y deja la planilla mintiendo, y una prueba que sólo mirara
+la pantalla daría verde. Contra el código publicado da **2 fallas**.
+
+#### Que los campos del formulario encajen en la planilla
+
+El Apps Script crea cada columna **con el nombre del campo que le
+llega**, así que lo que decide si la planilla sale bien es cómo se
+llaman los `name=` del formulario — y eso no lo mira nadie hasta que
+el cliente abre la planilla después de la fiesta.
+
+`pruebas/rsvp.js` corre el `.gs.txt` de verdad con los campos de
+mia15 **leídos del HTML publicado** y comprueba que la planilla cree
+sola las columnas (`Nombre`, `Confirma`, `Cuántos`, `Comida`,
+`Canción` y los `Invitado N` que arma el JS), que el resumen cuente
+bien, que el que no viene no deje número en "Cuántos" y que la puerta
+`?confirmado=` reconozca el nombre con espacios y en minúscula.
+
+**La primera versión no medía nada y hay que decir por qué**, porque
+es una trampa nueva: posteaba los nombres **escritos a mano** en la
+prueba y aparte comprobaba que el formulario tuviera dos de ellos.
+Renombrar un campo la dejaba en VERDE, porque la prueba seguía
+posteando el nombre viejo contra un Apps Script que lo aceptaba
+igual. Ahora postea **los que lee del HTML**. Verificada rompiéndola
+a propósito: renombrar `Confirma` da **3 fallas**, y el síntoma que
+destapa es el que importa — *"2 invitados · 0 confirmados"* con la
+planilla llena, que es la misma falla que ya está escrita para el
+listado.
+
+**Es una verificación, no un guardián de regresión**: pasa igual
+contra el código anterior, porque antes nadie había medido esto. Lo
+que la hace valer es que está atada al formulario y no a una lista
+escrita a mano.
+
+#### El tablero no puede existir antes que el Apps Script
+
+`pruebas/invitaciones.js` falla si una carpeta `<evento>/listado/`
+tiene el `appsScriptUrl` vacío: *"no va a traer nada"*. Está bien que
+falle. Quiere decir que **`mia15/listado/` no se crea por adelantado**
+— se crea el día que existe la dirección `/exec`, y es copiar la
+plantilla con sus dos líneas de `CONFIG`. **No se le cambia el
+estilo** para que combine con la invitación: la plantilla es una sola
+y la prueba falla si una copia se separa.
 
 #### El que ya confirmó
 
