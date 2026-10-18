@@ -1413,6 +1413,21 @@ fallaba en la fiesta. Para probar el camino viejo a propósito:
   "barra o punto", no "dígito". No matcheaba nada, todas las razones daban
   `NaN`, y `NaN < 3` es falso: la prueba pasaba entera sin medir un solo
   color. Escapes simples adentro del `${}`, dobles solo en una cadena.
+- **Un dato de prueba que es el de un cliente deja de ser de prueba el
+  día que ese cliente lo usa.** `pruebas/rsvp.js` comprobaba que se
+  pueda ELEGIR la clave del listado, y como dato usaba el correo de
+  verdad de la familia de una clienta. Era feo y no era grave. Pasó a
+  ser grave el día que el dueño decidió que ESE correo fuera la clave
+  de verdad de ese listado: quedó versionada en el repo la llave que
+  abre la lista entera de invitados de esa fiesta, con sus nombres y
+  sus comidas. Lo agarró un `git grep` al verificar lo publicado, no
+  una prueba. Los datos de prueba se inventan
+  (`clave.de.prueba@ejemplo.com`), aunque en el momento parezca que
+  no importa.
+  **Y sacarlo del archivo no lo saca del historial**: sigue estando
+  en los commits viejos. Lo único que lo saca de verdad es cambiar la
+  clave — que acá es justo lo que el dueño no quiere, y es otra forma
+  de ver por qué un correo es una clave floja.
 - **Nunca una ruta de tu carpeta de borradores.** Una prueba tenía
   `/tmp/qa/jszip.min.js` escrito a mano. En esa máquina pasaba; en
   cualquier otra decía `ZIP → NO bajó`, que suena a producto roto y no lo
