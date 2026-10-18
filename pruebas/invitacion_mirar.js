@@ -89,8 +89,35 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
        "320 contra 320". Una comprobación que no puede fallar no es
        una comprobación.
        Lo decorativo que se desborda a propósito no cuenta: lleva
-       pointer-events:none, y los pseudo-elementos no están en el DOM. */
+       pointer-events:none, y los pseudo-elementos no están en el DOM.
+       Y TAMPOCO cuenta UNA FOTO que un padre recorta. Una imagen
+       con un `scale` de zoom adentro de un `overflow:hidden` mide
+       más que la pantalla y no se sale de ningún lado: el navegador
+       la corta en el borde del padre, que es para lo que está el
+       `object-fit`. Es la misma exención que la marquesina de la
+       página pública, que corre 1400px de texto adentro de su caja.
+
+       LA EXENCIÓN ES SOLO PARA MEDIOS —img, svg, video, canvas— y
+       no para cualquier cosa recortada, y eso no es un detalle:
+       `.seccion` entera lleva `overflow:hidden`, así que perdonar
+       todo lo recortado perdonaría la invitación completa. Medido:
+       con la exención ancha, un bloque de 900px metido adentro de
+       una sección NO se informaba. Una prueba que no puede fallar
+       no es una prueba. El padre que recorta tiene que entrar ÉL en
+       la pantalla, si no se estaría perdonando un desborde de
+       verdad escondido detrás de otro. */
     const salidos = await pag.evaluate((W) => {
+      const MEDIO = /^(IMG|SVG|VIDEO|CANVAS|PICTURE)$/;
+      const recortado = (n) => {
+        if (!MEDIO.test(n.tagName)) return false;
+        for (let q = n.parentElement; q && q !== document.body; q = q.parentElement){
+          const c = getComputedStyle(q);
+          if (!/hidden|clip/.test(c.overflowX)) continue;
+          const b = q.getBoundingClientRect();
+          if (b.left >= -1 && b.right <= W + 1) return true;
+        }
+        return false;
+      };
       const out = [];
       for (const n of document.querySelectorAll('body *')){
         const cs = getComputedStyle(n);
@@ -98,6 +125,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
         if (cs.pointerEvents === 'none') continue;
         const r = n.getBoundingClientRect();
         if (r.width === 0 || r.height === 0) continue;
+        if ((r.right > W + 1 || r.left < -1) && recortado(n)) continue;
         if (r.right > W + 1 || r.left < -1)
           out.push((n.id ? '#'+n.id : n.tagName.toLowerCase() +
                    (n.className && typeof n.className === 'string' ? '.'+n.className.trim().split(/\s+/)[0] : '')) +

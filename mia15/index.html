@@ -320,7 +320,16 @@ p{margin:0 0 1em}
    pegada al pie de la foto, una juntura visible a lo ancho de toda
    la pantalla. En tinta no hay juntura. */
 .port-foto{position:absolute;inset:0;overflow:hidden;background-color:var(--tinta);z-index:0}
+/* EL ZOOM LENTO. La foto entra apenas agrandada y se va acomodando
+   sola durante nueve segundos: es lo primero que se ve al abrir el
+   sobre y es lo que hace que la portada se sienta viva en vez de
+   una imagen pegada. Nueve segundos es a propósito — un zoom que se
+   nota es un zoom molesto; éste se percibe sin poder señalarlo.
+   El estado agrandado cuelga de `body.cerrado`, que es una clase
+   que pone el JS: si el JS no corre no hay zoom y la foto está
+   entera desde el principio, que es el estado bueno. */
 .port-foto img{width:100%;height:100%;filter:grayscale(1);
+  transition:transform 9s cubic-bezier(.15,.6,.25,1);
   /* ENTERA, no recortada: `cover` llenaba la pantalla cortándole los
      costados —en un teléfono le comía el 13% del ancho—. `contain`
      la muestra completa y la apoya ARRIBA; lo que sobra abajo es
@@ -349,6 +358,10 @@ p{margin:0 0 1em}
    encima del renglón de arriba, que es justo lo que se veía. */
 #portada.con-foto > :not(.port-foto){position:relative;z-index:2}
 #portada.con-foto > .deslizar{position:absolute}
+body.cerrado .port-foto img{transform:scale(1.07)}
+@media (prefers-reduced-motion:reduce){
+  .port-foto img,body.cerrado .port-foto img{transition:none;transform:none}
+}
 /* La tinta de la portada con foto, toda. Es la regla de siempre:
    si un bloque trae su propio fondo, trae su propia tinta. */
 #portada.con-foto .port-nom,
@@ -563,6 +576,10 @@ p{margin:0 0 1em}
 
 @media (max-width:400px){
   .seccion{padding:74px 22px}
+  /* El mismo borde que las secciones. Con 26 acá y 22 abajo, el
+     texto de la portada arranca cuatro píxeles más adentro que todo
+     el resto: no se ve de a uno, se ve al scrollear. */
+  #portada,#portada.con-foto{padding-left:22px;padding-right:22px}
   .caja{padding:0 14px}
 }
 </style>
@@ -1011,6 +1028,33 @@ function rasgo(d, color){
     destello:'<path d="m12 3.2 1.9 5.9 5.9 1.9-5.9 1.9-1.9 5.9-1.9-5.9-5.9-1.9 5.9-1.9Z"/>' +
              '<path d="m19.4 16.6.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>'
   };
+  /* LOS ICONOS SE DIBUJAN SOLOS al entrar en pantalla: el trazo
+     sale de la nada y se completa en un segundo. Es un detalle que
+     se ve una vez por sección y nunca se repite, que es la
+     diferencia entre "copado" y "molesto".
+     Se hace con el largo REAL de cada trazo (`getTotalLength`), no
+     con un número a ojo: con un largo inventado el dibujo arranca
+     por la mitad o termina antes. El navegador que no tenga
+     `getTotalLength` se queda con el icono dibujado, que es el
+     estado bueno. */
+  const menosMov = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const dibujar = caja => {
+    for (const f of caja.querySelectorAll('path,circle')){
+      let L = 0;
+      try { L = f.getTotalLength(); } catch(e){}
+      if (!L) continue;
+      f.style.strokeDasharray = L;
+      f.style.strokeDashoffset = L;
+      f.getBoundingClientRect();                 /* que el navegador lo aplique antes de la transición */
+      f.style.transition = 'stroke-dashoffset 1.15s cubic-bezier(.4,0,.2,1)';
+      f.style.strokeDashoffset = '0';
+    }
+  };
+  const ojo = (!menosMov && 'IntersectionObserver' in window)
+    ? new IntersectionObserver((es,o)=>{ es.forEach(e=>{ if(e.isIntersecting){ dibujar(e.target); o.unobserve(e.target); } }); },
+                               {rootMargin:'0px 0px -10% 0px', threshold:.5})
+    : null;
+
   for (const sec of $$('[data-ico]')){
     const d = ICONOS[sec.dataset.ico];
     if (!d) continue;
@@ -1024,6 +1068,7 @@ function rasgo(d, color){
     const caja = $('.caja', sec);
     if (caja) caja.insertBefore(sp, caja.firstChild);
     else sec.insertBefore(sp, sec.firstChild);
+    if (ojo) ojo.observe(sp);
   }
 })();
 
@@ -1116,7 +1161,25 @@ function rasgo(d, color){
     }, {rootMargin:'0px 0px -12% 0px', threshold:.08});
     const portada = document.getElementById('portada');
     aps.forEach(n=>{ if (portada && portada.contains(n)) return; io.observe(n); });
-    requestAnimationFrame(()=>$$('#portada .ap').forEach(n=>n.classList.add('entro')));
+
+    /* LA CASCADA DE LA PORTADA. Los renglones entran de a uno, con
+       160 ms entre cada uno: el nombre, el 15, el manuscrito, la
+       fecha, el lugar, "Deslizá".
+       Y entra CUANDO SE ABRE EL SOBRE, no al cargar: con el sobre
+       encima, una cascada que corre detrás no la ve nadie — se
+       gasta el único momento de sorpresa que tiene la pieza contra
+       una capa opaca. Sin sobre (o sin JS) entra enseguida. */
+    const cascada = () => $$('#portada .ap').forEach((n,k)=>{
+      n.style.transitionDelay = (k * .16).toFixed(2) + 's';
+      n.classList.add('entro');
+      /* El retardo se saca cuando terminó: si queda puesto, lo
+         hereda cualquier transición futura de ese elemento. */
+      setTimeout(()=>{ n.style.transitionDelay = ''; }, 2600);
+    });
+    const boton = $('#abrir');
+    if (boton && document.body.classList.contains('cerrado'))
+      boton.addEventListener('click', ()=>setTimeout(cascada, 140), {once:true});
+    else requestAnimationFrame(cascada);
   }
 
   const barra = $('#avance');
@@ -1132,6 +1195,40 @@ function rasgo(d, color){
   }
   addEventListener('scroll', alScroll, {passive:true});
   alScroll();
+})();
+
+/* ══════════ la foto de la portada se queda atrás ══════════
+   Al bajar, la foto se mueve a un quinto de la velocidad de la
+   página: la portada se despide en vez de irse de golpe. Es el
+   efecto más barato que existe —una línea de transform— y el que
+   más hace sentir que la pieza está hecha.
+
+   Se mueve la CAJA y no la imagen: la imagen ya tiene su propio
+   `transform` con el zoom de nueve segundos, y dos cosas peleando
+   por la misma propiedad es una que gana y otra que desaparece.
+   El velo se queda quieto, que es justamente lo que hace que se
+   note el desplazamiento.
+
+   Un solo oyente con `requestAnimationFrame` y `passive:true`: un
+   listener de scroll que trabaja en cada píxel es lo que hace que
+   una página se sienta pesada en un teléfono. Y se corta apenas la
+   portada sale de pantalla: mover algo que nadie ve es batería del
+   invitado. */
+(function(){
+  const caja = $('.port-foto');
+  if (!caja || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  let pedido = false;
+  const mover = () => {
+    pedido = false;
+    const y = scrollY;
+    if (y > innerHeight * 1.1) return;
+    caja.style.transform = 'translate3d(0,' + (y * .22).toFixed(1) + 'px,0)';
+  };
+  addEventListener('scroll', () => {
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(mover);
+  }, {passive:true});
 })();
 
 /* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════

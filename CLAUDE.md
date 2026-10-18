@@ -2608,6 +2608,54 @@ En una pantalla ancha la foto queda como una columna centrada con
 negro a los costados. Es lo que pasa cuando se muestra entera una
 foto vertical en un monitor apaisado, y se ve editorial.
 
+#### Lo que se mueve, y los márgenes
+
+*"Fíjate de poner animaciones o transiciones copadas para que se
+sorprendan pero que tampoco sea muy molesto."* Son cuatro, y la
+regla que las separa de lo molesto es la misma en todas: **cada una
+pasa una sola vez, o va atada al scroll.** Nada que se repita solo
+delante de los ojos.
+
+- **El zoom lento de la portada.** La foto entra 7% agrandada y se
+  acomoda sola en **nueve segundos**. Nueve es a propósito: un zoom
+  que se nota es un zoom molesto; éste se percibe sin poder
+  señalarlo. El estado agrandado cuelga de `body.cerrado`, la clase
+  que pone el JS al dibujar el sobre: **sin JS no hay zoom y la foto
+  está entera desde el principio**, que es el estado bueno.
+- **La cascada de la portada**, 160 ms entre renglón y renglón:
+  el nombre, el 15, el manuscrito, la fecha, el lugar, "Deslizá".
+  Y entra **cuando se abre el sobre, no al cargar**: con el sobre
+  encima, una cascada que corre detrás no la ve nadie — se gasta el
+  único momento de sorpresa que tiene la pieza contra una capa
+  opaca. El retardo se saca cuando terminó: dejado puesto, lo
+  hereda cualquier transición futura de ese elemento.
+- **Los iconos se dibujan solos** al entrar en pantalla, en 1,15 s.
+  Con el largo REAL de cada trazo (`getTotalLength`), no con un
+  número a ojo: con un largo inventado el dibujo arranca por la
+  mitad o termina antes. El navegador que no tenga `getTotalLength`
+  se queda con el icono dibujado, que es el estado bueno.
+- **La foto de la portada se queda atrás al bajar**, a un quinto de
+  la velocidad de la página. Se mueve la CAJA y no la imagen: la
+  imagen ya tiene su propio `transform` con el zoom, y dos cosas
+  peleando por la misma propiedad es una que gana y otra que
+  desaparece. El velo se queda quieto, que es lo que hace que se
+  note. Un solo oyente con `requestAnimationFrame` y `passive`, y
+  se corta apenas la portada sale de pantalla: mover algo que nadie
+  ve es batería del invitado.
+
+Las cuatro están medidas (el zoom de 1,07 a 1 en 9 s; la cascada
+con "MIA" en 0,42 de opacidad y el resto en 0 a los 260 ms; el
+trazo del icono de 6,7 a 0; el paralaje en 22, 66, 132 y 198 px a
+100, 300, 600 y 900 de scroll) y **las cuatro se apagan con "menos
+movimiento"**.
+
+**Los márgenes, medidos con las cajas de verdad en tres aparatos**:
+simétricos en todas las secciones, 36px de borde a 320 y 390, 360 a
+1280. Lo único que estaba flojo: **la portada tenía 26px de borde y
+las secciones 22** abajo de 400px de ancho. Cuatro píxeles no se
+ven de a uno; se ven al scrollear, porque el texto de la portada
+arranca más adentro que todo el resto.
+
 #### El pie es la puerta de entrada del próximo cliente
 
 *"Cuando toquen Click Eterno que vayan directo al WhatsApp y que me
@@ -2732,6 +2780,20 @@ rompela a propósito y mirá si falla*—:
   texto a 1,00:1 —su color ES transparente— y la suite informa una
   falla que no existe. Comprobado que no la deja ciega: 2098 textos
   medidos en el producto con el filtro y sin él.
+
+**Y la exención que dejó la prueba sin poder fallar.** El zoom de
+la portada hace que la foto mida más que la pantalla —está adentro
+de un `overflow:hidden` y el navegador la corta—, así que la
+comprobación del desborde la informaba en los cuatro aparatos. La
+primera corrección fue perdonar **todo lo que un padre recorte**, y
+eso la rompió entera: `.seccion` lleva `overflow:hidden`, o sea que
+perdonaba la invitación completa. Medido: con la exención ancha, un
+bloque de 900px metido adentro de una sección **no se informaba**.
+La exención correcta es solo para **medios** —`img`, `svg`,
+`video`, `canvas`—, que es lo que el `object-fit` está hecho para
+recortar, y el padre que recorta tiene que entrar él en la
+pantalla. Con eso: la página limpia, y el bloque de 900px vuelve a
+informarse.
 
 **Y una de CSS que no da ningún error: una variable que no existe.**
 Al rehacer la paleta se fueron `--crema`, `--crema2` y `--oro-neg`
