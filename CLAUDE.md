@@ -2461,6 +2461,14 @@ invitado. Se escribe como se dice: *"de 21 a 4 h"*, sin los
 `:00` que nadie pronuncia.
 **Y Mia va sin apellido**, dicho por el dueño el mismo día: no es un
 dato que falte, es una decisión.
+
+**El "Te invito" lo escribió la clienta.** Pidió por WhatsApp (18/10/2026)
+que dijera *"me encantaría que formes parte de esta noche tan especial
+para mi"* en lugar de lo que había. Va casi literal: *"Vengo esperando
+este día hace mucho. Me encantaría que formes parte de esta noche tan
+especial para mí."* — lo único que se tocó fue no repetir "noche" dos
+veces en la misma frase. **Esa línea no se mejora**: es la voz de la que
+invita, no la nuestra.
 El alias del regalo estuvo en
 la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
 está puesto, con el rótulo "Alias para transferir" arriba, porque
