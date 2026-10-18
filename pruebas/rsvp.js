@@ -142,11 +142,21 @@ console.log('\n─── la clave elegida a mano ───');
      planilla. No es lo recomendado —un correo es público y
      adivinable, y esa clave abre la lista entera— pero es decisión
      de quien vende, y si está puesta tiene que ANDAR: una clave que
-     se acepta a medias es peor que no tenerla. */
+     se acepta a medias es peor que no tenerla.
+
+     EL DATO DE PRUEBA ES INVENTADO, y no es un detalle de estilo.
+     Acá estaba el correo de verdad de la familia de un cliente, de
+     cuando esto se escribió. El día que ese correo pasó a ser la
+     clave de verdad de su listado —decisión del dueño, 18/10/2026—
+     quedó versionada en el repo la llave que abre la lista entera de
+     invitados de esa fiesta, con sus nombres y sus comidas.
+     Un dato de prueba que es el de un cliente deja de ser de prueba
+     el día que ese cliente lo usa. */
   const a = cargar();
-  a.caja.CLAVE_ELEGIDA = 'Gabimontenegro1103@gmail.com';
+  const CLAVE_DE_MENTIRA = 'clave.de.prueba@ejemplo.com';
+  a.caja.CLAVE_ELEGIDA = CLAVE_DE_MENTIRA;
   const clave = a.preparar();
-  es(clave === 'Gabimontenegro1103@gmail.com', 'preparar() usa la que se eligió');
+  es(clave === CLAVE_DE_MENTIRA, 'preparar() usa la que se eligió');
   es(a.props.CLAVE_LISTADO === clave, 'y la guarda en las propiedades');
   es(a.get({ clave }).error === undefined, 'y con ella se entra al listado');
   es(a.get({ clave: 'otra' }).error === 'clave', 'con otra, no');
