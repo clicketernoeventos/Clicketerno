@@ -2405,6 +2405,404 @@ Cuatro cosas que no son adorno:
   ficha no se deriva del alto —no es un carrusel, se scrollea— así que va
   `width:100%;max-width:252px` con `auto-fit,minmax(230px,1fr)`.
 
+### `mia15/`: la primera invitación de un cliente de verdad
+
+29 de enero de 2028, La Mansión del Rey (Vera Mujica 68, Rosario).
+Lo que mandó la cumpleañera fue corto: **blanco, dorado y negro**,
+*"elegante o formal"*, que se marque si asisten y que tenga cuenta
+regresiva.
+
+**Se armó SIN publicar**, a pedido del dueño: vive en la rama de
+trabajo hasta que el cliente la apruebe. Cloudflare publica `main`,
+así que mientras no se mergee no existe en el sitio. Y el
+`CONFIG.endpoint` va vacío a propósito: la confirmación se ve y se
+completa entera y **dice con todas las letras que no se mandó a
+ningún lado**, así la tarjeta se revisa antes de que exista la
+planilla.
+
+**Hubo cuatro versiones y las tres primeras se tiraron.** Vale
+anotar por qué, porque es la misma lección tres veces:
+
+1. Negra con oro. *"Parece hecha a lo Click Eterno y no al pedido
+   de la quinceañera"*, y tenía razón: **esa es NUESTRA paleta** —la
+   del muro, la del rollo, la del sitio— y el blanco, que era uno de
+   los tres colores que ella pidió, había quedado de relleno.
+2. Papel marfil con tipografía negra. Correcta y sosa.
+3. Con la referencia que eligió él (BOMA): tipografía gigante como
+   gráfico, títulos manuscritos y una línea vertical al costado.
+4. Con la segunda referencia: **bandas que alternan blanco y negro
+   con el borde RASGADO**, que es lo que usa el blanco y el negro
+   como estructura y no como detalle.
+
+**El atajo para elegir tipografía: mostrarla, no describirla.** Tres
+veces se cambió la familia por descripción y tres veces no era. A la
+cuarta se montó la MISMA portada con siete tipografías y se le
+mandaron las siete capturas. Eligió mirando. Está en
+`pruebas/invitacion_mirar.js` la forma de hacerlo: interceptar el
+HTML y cambiarle el `<link>` y la variable, igual que hace
+`puertas.js` con `MUESTRA_MURO`.
+
+**Los bordes rasgados se ponen SOLOS**, y solo donde cambia el
+color. Escritos a mano en el HTML, el día que una sección se
+esconda —el regalo se esconde si no hay alias— quedarían dos bandas
+del mismo color pegadas con un rasgado en el medio. Los caminos SVG
+se generan con la fecha de la fiesta de semilla, así salen iguales
+en cada armado.
+
+**Lo que NO se escribió hasta tenerlo confirmado.** La cumpleañera
+mandó el día y no la hora, y una hora inventada manda a la gente a
+la hora equivocada: quedó apagada en `CONFIG.mostrarHora` hasta que
+el dueño la pasó el 18/10/2026 — **de 21 a 4**. Va como un RANGO
+(`CONFIG.hastaHora`), y el final es una hora suelta y no una fecha a
+propósito: las 4 son del día siguiente, y escribirlas como fecha
+completa haría que la invitación dijera "30 de enero" en algún
+lado — la fiesta es el 29 y eso es lo que tiene que leer el
+invitado. Se escribe como se dice: *"de 21 a 4 h"*, sin los
+`:00` que nadie pronuncia.
+**Y Mia va sin apellido**, dicho por el dueño el mismo día: no es un
+dato que falte, es una decisión.
+El alias del regalo estuvo en
+la misma lista hasta que el dueño lo confirmó (17/10/2026): ahora
+está puesto, con el rótulo "Alias para transferir" arriba, porque
+`Ceci.montenegro.11` se lee igual como usuario de Instagram y el que
+pega el alias equivocado manda la plata a cualquier parte. El
+**titular** —el nombre que le va a mostrar el banco al pegarlo— sigue
+sin saberse y por eso no se escribe nada: un nombre inventado al lado
+de un alias es peor que ninguno.
+
+#### Las cuatro fotos
+
+**La primera va en la portada, a sangre, y las otras tres pasan
+solas** en un marco con sus puntitos. Tres decisiones que no son de
+gusto:
+
+- **La portada es la foto, a pantalla completa.** La primera
+  versión la puso arriba, en una franja, con la tipografía abajo
+  sobre el papel — justamente para no apostarle el contraste de un
+  "15" negro a lo que hubiera salido en la imagen. El dueño mandó la
+  de Julia y Franco: *"algo así hace"*. Ahí la foto ES la portada y
+  el texto va encima. Lo que lo hace posible es dar vuelta la tinta:
+  crema para el texto, el oro de las bandas negras para el acento, y
+  **un velo** que hace de piso. El velo no es un adorno, es lo único
+  que sostiene la promesa de que esos cinco renglones se leen.
+  **Y el velo TERMINA en la tinta**, que es el color de la banda que
+  sigue: la foto se funde con la sección de abajo, así que ahí no va
+  ningún borde rasgado —el rasgado separa papel de tinta y acá no
+  hay papel—. Lo saltea solo el bloque de los bordes, mirando la
+  clase `con-foto`.
+  **Las dos líneas verticales se esconden**: dicen "Mis quince años"
+  y la fecha, que es exactamente lo que dicen dos renglones del
+  medio. Al costado del papel eran un adorno; encima de la foto son
+  dos textos más tapando la cara.
+- **Van en blanco y negro, y el grayscale está en el CSS.** La
+  paleta que pidió son tres colores; cuatro fotos a color meten los
+  suyos —el beige del salón, el amarillo de un vestido de princesa—
+  y la tarjeta deja de ser blanca, dorada y negra. En el CSS y no
+  quemado en el archivo: el original queda entero por si algún día
+  se quiere a color.
+- **Las cuatro se recortaron, y eso es la mitad del trabajo.** La
+  de la portada era la captura de una historia, con el marco, el
+  globo de respuesta y la foto de perfil pegados abajo; las dos de
+  Mia chiquita traían las franjas negras y la marca de agua de la
+  app con que se sacaron. Puesto tal cual, eso dice que la tarjeta
+  se hizo con lo que había. Las cuatro quedaron en `mia15/fotos/`,
+  en `.webp`, 240 KB las cuatro juntas.
+
+**Tres cosas que se rompieron poniéndolas**, y ninguna tiraba un
+error:
+
+- **El marco de las fotos no tomaba el CSS.** El contenedor se
+  llamaba `.fotos` de cuando eran dos encimadas y las reglas nuevas
+  son `.pase`: las tres fotos salieron apiladas, a color y a ancho
+  completo. Se ve enseguida en una captura y no se ve nunca mirando
+  el código.
+- **"Deslizá" es `position:absolute` y una capa absoluta no empuja
+  a nadie.** Con el bloque de texto abajo de todo, "ROSARIO · SANTA
+  FE" quedó con "DESLIZÁ" montado encima. El lugar se lo tiene que
+  dejar el `padding-bottom` de la portada, y en una pantalla baja
+  además se achica el 15.
+  **Y la segunda vuelta de lo mismo fue peor**: la regla que sube el
+  texto por encima del velo (`#portada.con-foto > :not(.port-foto)`)
+  le pone `position:relative` a TODO, "Deslizá" incluido — y le gana
+  en especificidad. Un `bottom:30px` en `relative` no ancla abajo:
+  **sube el elemento 30px**, o sea justo encima del renglón de
+  arriba. Se arregla devolviéndole el `absolute` en una regla
+  posterior. Dos reglas para lo mismo, gana la última, otra vez.
+- **El color del titular estaba escrito en el propio tag.** Un
+  estilo en línea le gana a `.oscura`, así que ese renglón sobre la
+  banda negra daba 1,6:1. Vacío no se notaba; el día que llegue el
+  nombre del titular, sí. Es *si un bloque trae su propio fondo,
+  trae su propia tinta* otra vez, por el lado del estilo en línea.
+
+**Con "menos movimiento" las fotos no pasan solas, pero se llega a
+las tres con los puntitos**: apagar el movimiento no puede esconder
+contenido. Y al tocar un punto el pase **se detiene**: si sigue
+corriendo, la foto que eligió el invitado se le va sola a los tres
+segundos y parece que el toque no entró.
+
+**El texto sobre una foto NO lo mide el medidor de contraste, y da
+verde igual.** Es la trampa más cara de todo este archivo puesta en
+una pantalla nueva: el medidor sube por el árbol buscando el primer
+fondo opaco, y en una portada a sangre ese fondo es el
+`background-color` del contenedor —no la foto—. Informa "crema
+sobre tinta, 14:1" mientras el renglón puede estar cayendo sobre una
+pared blanca. Lo midió igual de bien con velo y sin velo.
+Por eso `invitacion_mirar.js` tiene ahora una medición aparte, y es
+**con el píxel, que es lo único que no miente**: esconde los HIJOS
+de la portada —no la portada, que se llevaría puesto el velo, que es
+su `::after`—, saca una captura y busca el píxel **MÁS CLARO** abajo
+de cada renglón. El más claro y no el promedio: el promedio esconde
+justo el reflejo que se come la letra. La captura se lee con
+`pruebas/png.js`, un lector de PNG de setenta líneas sin
+dependencias (zlib de Node y los cinco filtros), porque en este
+proyecto no hay `npm install`.
+Verificada rompiendo a propósito: **sacado el velo da 16 fallas**
+(el "15" a 1,53:1 y el manuscrito a 1,08:1) y con el velo puesto el
+peor renglón da 3,26:1 en un iPhone SE.
+**Y encontró una falla de verdad en una invitación publicada**: en
+`juliayfranco/`, "20 NOVIEMBRE 2027" cae sobre el vestido blanco de
+la novia y da **1,15:1 en un teléfono de 390** — o sea que la fecha
+de la boda no está. Se ve en la captura que mandó el dueño y nadie
+lo había notado. Esa invitación tiene además otras fallas de la
+misma suite (desborde y los años de la línea de tiempo a 1,00:1):
+le falta una pasada entera, que es un trabajo aparte.
+
+#### Los iconos, y la foto entera
+
+Dos pedidos del dueño del 18/10/2026: *"que haya iconos aesthetic
+para cada cosa, que sea súper lujosa"* y *"la foto de portada que
+esté entera"*.
+
+**Ocho iconos de línea, dibujados en el JS y no escritos ocho veces
+en el HTML**: una tiara (te invito), una cámara (las fotos), un
+reloj de arena (cuánto falta), un pin con un rombo adentro (el
+lugar), un vestido largo (dress code), una caja con moño (el
+regalo), un sobre (¿venís?) y un destello (el cierre). Son SVG de
+24×24 con `stroke:currentColor`, así que **el color lo pone la
+banda**: `--oro` sobre el papel (4,6:1) y `--oro-neg` sobre el negro
+(10:1). Es *cada bloque con su propia tinta* aplicado a un dibujo.
+Van con `aria-hidden` y `pointer-events:none`, que es la definición
+estricta con la que el medidor saltea un adorno.
+Nada de una librería de iconos: la CSP no deja bajar un CDN, y acá
+no hay build. Un `stroke` y listo.
+**La galería no tiene `.caja`**, así que el icono va en la sección y
+no en el primer hijo — metido ahí quedaría ENCIMA de la foto.
+
+**La foto de la portada va `contain`, no `cover`.** `cover` llenaba
+la pantalla recortándole los costados: en un teléfono le comía el
+13% del ancho. Ahora se ve entera, apoyada arriba, y lo que sobra
+abajo es negro — que es justo donde cae el texto. Dos cosas que
+hubo que arreglar para que eso no se note:
+
+- **El fondo de la caja de la foto es la TINTA y no el papel.** Lo
+  que sobra es ese fondo, y el velo lo deja ver a un 12%: un papel
+  crema ahí es una banda más clara pegada al pie de la foto, una
+  juntura a lo ancho de toda la pantalla.
+- **El velo se hace macizo en el 86% y no recién en el 100%.** Con
+  la foto entera, su borde de abajo cae en un punto distinto en
+  cada pantalla (el 79% de un iPhone, el 96% de un SE), y un velo
+  que todavía deja pasar un 10% ahí dibuja una raya. De paso el
+  texto sobre la foto pasó de 3,26:1 a **7,31:1** en el peor caso.
+
+En una pantalla ancha la foto queda como una columna centrada con
+negro a los costados. Es lo que pasa cuando se muestra entera una
+foto vertical en un monitor apaisado, y se ve editorial.
+
+#### Lo que se mueve, y los márgenes
+
+*"Fíjate de poner animaciones o transiciones copadas para que se
+sorprendan pero que tampoco sea muy molesto."* Son cuatro, y la
+regla que las separa de lo molesto es la misma en todas: **cada una
+pasa una sola vez, o va atada al scroll.** Nada que se repita solo
+delante de los ojos.
+
+- **El zoom lento de la portada.** La foto entra 7% agrandada y se
+  acomoda sola en **nueve segundos**. Nueve es a propósito: un zoom
+  que se nota es un zoom molesto; éste se percibe sin poder
+  señalarlo. El estado agrandado cuelga de `body.cerrado`, la clase
+  que pone el JS al dibujar el sobre: **sin JS no hay zoom y la foto
+  está entera desde el principio**, que es el estado bueno.
+- **La cascada de la portada**, 160 ms entre renglón y renglón:
+  el nombre, el 15, el manuscrito, la fecha, el lugar, "Deslizá".
+  Y entra **cuando se abre el sobre, no al cargar**: con el sobre
+  encima, una cascada que corre detrás no la ve nadie — se gasta el
+  único momento de sorpresa que tiene la pieza contra una capa
+  opaca. El retardo se saca cuando terminó: dejado puesto, lo
+  hereda cualquier transición futura de ese elemento.
+- **Los iconos se dibujan solos** al entrar en pantalla, en 1,15 s.
+  Con el largo REAL de cada trazo (`getTotalLength`), no con un
+  número a ojo: con un largo inventado el dibujo arranca por la
+  mitad o termina antes. El navegador que no tenga `getTotalLength`
+  se queda con el icono dibujado, que es el estado bueno.
+- **La foto de la portada se queda atrás al bajar**, a un quinto de
+  la velocidad de la página. Se mueve la CAJA y no la imagen: la
+  imagen ya tiene su propio `transform` con el zoom, y dos cosas
+  peleando por la misma propiedad es una que gana y otra que
+  desaparece. El velo se queda quieto, que es lo que hace que se
+  note. Un solo oyente con `requestAnimationFrame` y `passive`, y
+  se corta apenas la portada sale de pantalla: mover algo que nadie
+  ve es batería del invitado.
+
+Las cuatro están medidas (el zoom de 1,07 a 1 en 9 s; la cascada
+con "MIA" en 0,42 de opacidad y el resto en 0 a los 260 ms; el
+trazo del icono de 6,7 a 0; el paralaje en 22, 66, 132 y 198 px a
+100, 300, 600 y 900 de scroll) y **las cuatro se apagan con "menos
+movimiento"**.
+
+**Los márgenes, medidos con las cajas de verdad en tres aparatos**:
+simétricos en todas las secciones, 36px de borde a 320 y 390, 360 a
+1280. Lo único que estaba flojo: **la portada tenía 26px de borde y
+las secciones 22** abajo de 400px de ancho. Cuatro píxeles no se
+ven de a uno; se ven al scrollear, porque el texto de la portada
+arranca más adentro que todo el resto.
+
+#### El pie es la puerta de entrada del próximo cliente
+
+*"Cuando toquen Click Eterno que vayan directo al WhatsApp y que me
+diga de qué invitación viene"* (18/10/2026). Es el único renglón
+nuestro en toda la invitación y es por donde entra el que la recibe
+y le gusta. Llevaba a la página de inicio: de ahí hay que encontrar
+el botón, elegir el servicio y recién entonces escribir. Ahora abre
+el chat con el mensaje puesto —*"Vi la invitación de Mia y quiero
+consultar por una invitación para mi fiesta"*— y el nombre sale de
+`CONFIG.quien`, no escrito a mano: la próxima invitación que se
+copie de ésta lo trae bien sin que nadie se acuerde de cambiarlo.
+Es la misma decisión que ya estaba tomada en los botones de la
+página pública: *el que escribe ya eligió, y del otro lado se sabe
+qué pide sin tener que preguntarlo.*
+
+El `href` del HTML sigue apuntando al sitio a propósito —si el JS no
+corre, el enlace lleva igual a algún lado— y **el logo de WhatsApp se
+pone en el mismo lugar donde se arma el enlace**: sin JS el enlace va
+al sitio, y ahí un logo de WhatsApp sería una promesa que no se
+cumple.
+
+#### Tocar un punto NO detiene el pase de fotos
+
+*"Que la foto vaya pasando sola así la gente no tiene que clickear
+en vano."* La primera versión paraba el pase al tocar un punto, y el
+motivo parecía bueno: que la foto elegida no se fuera a los tres
+segundos. El resultado fue el contrario. El que toca un punto —y el
+dueño fue el primero— deja la cinta clavada para siempre y se va
+creyendo que **las fotos no pasan solas**; y el que no toca nada,
+que es casi todo el mundo, nunca se entera de que podía tocar. Ahora
+el toque lleva a esa foto y **reprograma** el pase con una espera más
+larga (7 s en vez de 4,2).
+Va con un `setTimeout` que se vuelve a programar y no con un
+`setInterval`: la espera larga vale una vez y vuelve sola al ritmo
+de siempre. Con un intervalo habría que tirarlo y crear otro, y el
+largo quedaría puesto para siempre.
+Medido: entra en la 1, a los 4,6 s está en la 2, a los 9 en la 3;
+tocando la 1 sigue en la 1 a los 4 s y **a los 8 ya pasó sola**.
+Contra el código anterior, ese último paso no ocurría nunca.
+
+#### El borde dorado de los títulos
+
+Pedido del dueño: *"a las letras le pones borde dorado, a todas las
+que tengan fuente blanca y sean títulos"*. Son los que caen sobre
+negro —el "15" y la fecha de la portada, los títulos de las bandas
+oscuras, el salón, el alias y el "Mia" manuscrito del cierre—; los
+que están sobre el papel ya son negros y no llevan nada.
+
+Dos cosas que no son opcionales, y las dos dejan la pantalla sin un
+solo error:
+
+- **`paint-order:stroke fill`, o el borde se come la letra.** Sin
+  eso el trazo va CENTRADO sobre el contorno y se mete la mitad para
+  adentro: en una Yeseva, que ya tiene partes finas, los finos se
+  cierran y la palabra se empasta. Por eso todo vive adentro de un
+  `@supports (paint-order: stroke)`: el navegador que no lo tenga se
+  queda con la letra crema de siempre —que se lee perfecta— en vez
+  de con una letra empastada. Es la regla del `animation-timeline`
+  otra vez: **el estado por defecto tiene que ser el bueno.**
+- **El grosor va en `em`, y el `em` es el del ELEMENTO.** El tamaño
+  del "15" no vive en el `h1`, vive en el `span` de adentro: puesto
+  en el padre, `.022em` se resuelve contra los 32px del `h1` y sale
+  un hilo de **0,70px en un número de 140**. Se ve igual que si el
+  borde no se hubiera puesto, y en una captura chica no se nota.
+  Pasó, y lo agarró la prueba.
+
+Por eso `invitacion_mirar.js` mide ahora los bordes de letra, y solo
+donde hay: que el trazo resuelto llegue a 0,8px —abajo de eso es una
+declaración que no hace nada— y que haya `paint-order:stroke`.
+Verificada rompiendo las dos cosas a propósito: el borde en el `h1`
+da 4 fallas (una por aparato) y sin `paint-order` da 8.
+
+**El grosor se subió una vez** (18/10/2026): *"es muy sutil, ponele
+un poquitito más"*. De `.05em` a `.072em` en los títulos y de
+`.022em` a `.033em` en el "15" — en pantalla, de 1,25px a 1,80 y de
+3,1 a 4,6. El manuscrito del cierre va aparte y más fino
+(`.026em`): la Pinyon tiene hairlines de un píxel y el mismo grosor
+que en una capitular se las come.
+
+**Lleva `noindex`, y es la primera invitación que lo lleva.** Son
+fotos de una menor en una dirección pública. El `noindex` no la
+esconde —el que tiene el link entra igual— pero la saca de los
+buscadores, que es por donde llega el que no fue invitado. La imagen
+de la vista previa sigue siendo la tipográfica: la cara de Mia
+viajaría en cada chat por el que pase el link, que es la misma
+decisión ya escrita para `muro.html` y `rollo.html`.
+
+**Es la primera invitación con el aviso del artículo 6** adentro del
+formulario. Acá hace falta de verdad: se piden nombres de invitados
+y comidas especiales, que es información de salud.
+
+### Medir una invitación: `pruebas/invitacion_mirar.js <carpeta>`
+
+Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
+abierto, que son dos pantallas distintas. Contraste, 44px, desborde,
+consola, CSP, **el texto que cae sobre la foto de la portada —medido
+con el píxel, ver `mia15/` más arriba—**, **los bordes de letra que
+no se ven**, y después las piezas: que
+la cuenta regresiva corra, que el calendario marque un solo día, que
+ningún enlace quede en `#`, que el sí/no no venga preseleccionado y
+que la confirmación no mienta. No está en `todo.sh` porque toma un
+argumento: se corre después de tocar una invitación.
+
+**Tres cosas que esa suite midió mal y cómo se arreglaron**, que son
+las tres la misma lección —*antes de creerle a una medición,
+rompela a propósito y mirá si falla*—:
+
+- **`scrollWidth` contra el ancho pedido no mide el desborde.** El
+  `overflow-x:hidden` del body —que está puesto a propósito— hace
+  que devuelva el ancho de la pantalla igual. Medido: con un bloque
+  de 900px metido adentro seguía diciendo "320 contra 320". Se miden
+  las CAJAS de verdad, y con el mismo bloque da 1 salido.
+- **Que dos cajas no se superpongan no es que el texto no se pise.**
+  La cuenta regresiva con los días en tres dígitos pintaba "469"
+  ENCIMA del dos puntos de al lado y se leía `46904`. Las cajas no
+  se tocaban —esa comprobación daba verde con el bug puesto—: lo que
+  se desbordaba era la TINTA. Se mide con `scrollWidth` contra
+  `clientWidth` de cada elemento con texto propio.
+- **El medidor de contraste tiene que saltear la decoración**, con
+  una definición estricta: `aria-hidden` Y `pointer-events:none`,
+  las dos juntas. Sin eso un "15" dibujado en contorno se mide como
+  texto a 1,00:1 —su color ES transparente— y la suite informa una
+  falla que no existe. Comprobado que no la deja ciega: 2098 textos
+  medidos en el producto con el filtro y sin él.
+
+**Y la exención que dejó la prueba sin poder fallar.** El zoom de
+la portada hace que la foto mida más que la pantalla —está adentro
+de un `overflow:hidden` y el navegador la corta—, así que la
+comprobación del desborde la informaba en los cuatro aparatos. La
+primera corrección fue perdonar **todo lo que un padre recorte**, y
+eso la rompió entera: `.seccion` lleva `overflow:hidden`, o sea que
+perdonaba la invitación completa. Medido: con la exención ancha, un
+bloque de 900px metido adentro de una sección **no se informaba**.
+La exención correcta es solo para **medios** —`img`, `svg`,
+`video`, `canvas`—, que es lo que el `object-fit` está hecho para
+recortar, y el padre que recorta tiene que entrar él en la
+pantalla. Con eso: la página limpia, y el bloque de 900px vuelve a
+informarse.
+
+**Y una de CSS que no da ningún error: una variable que no existe.**
+Al rehacer la paleta se fueron `--crema`, `--crema2` y `--oro-neg`
+de `:root`, pero las bandas negras las seguían usando. Una `var()`
+sin definir **no es un error**: la declaración se descarta y la
+propiedad hereda. Resultado, negro sobre negro en trece textos —
+1,00:1— y en el navegador una banda negra vacía que parece un error
+de carga. Lo agarró el medidor de contraste.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:
