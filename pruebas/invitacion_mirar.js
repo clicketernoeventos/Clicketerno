@@ -222,7 +222,38 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
                         (peorFoto ? peorFoto.r.toFixed(2) + ':1 "' + peorFoto.txt + '"' : '—'));
     }
 
-    /* ── 6 · la consola ── */
+    /* ── 6 · un borde de letra que no se ve ──
+       `-webkit-text-stroke-width` en `em` se resuelve contra el
+       font-size DEL ELEMENTO, y el tamaño de un número gigante
+       suele vivir en el `span` de adentro y no en el `h1`: puesto
+       en el padre sale un hilo de 0,8px en una letra de 140 y
+       parece que el borde no se hubiera puesto. No tira ningún
+       error y en una captura chica tampoco se nota.
+       Y sin `paint-order:stroke` el trazo va CENTRADO sobre el
+       contorno y se le come la mitad a la letra para adentro.
+       Las dos cosas se miden acá, y solo donde hay borde: la
+       invitación que no usa ninguno no informa nada. */
+    const bordes = await pag.evaluate(() => {
+      const malos = [];
+      for (const n of document.querySelectorAll('*')){
+        const cs = getComputedStyle(n);
+        const w = parseFloat(cs.webkitTextStrokeWidth) || 0;
+        if (!w) continue;
+        if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+        const propio = [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+        if (!propio) continue;
+        const txt = (n.textContent||'').trim().replace(/\s+/g,' ').slice(0,18);
+        if (w < 0.8) malos.push('"' + txt + '" ' + w.toFixed(2) + 'px de borde en una letra de ' + cs.fontSize);
+        else if (!/stroke/.test(cs.paintOrder)) malos.push('"' + txt + '" sin paint-order:stroke');
+      }
+      return malos;
+    });
+    if (bordes.length || await pag.evaluate(() => CSS.supports('paint-order','stroke') &&
+          [...document.querySelectorAll('*')].some(n => parseFloat(getComputedStyle(n).webkitTextStrokeWidth) > 0)))
+      es(bordes.length === 0, bordes.length ? 'bordes de letra que no se ven: ' + bordes.slice(0,3).join(' · ')
+                                            : 'los bordes de letra se ven y van detrás del relleno');
+
+    /* ── 7 · la consola ── */
     es(errores.length === 0, errores.length ? 'errores de JavaScript: ' + errores[0] : 'sin errores de JavaScript');
     es(bloqueos.length === 0, bloqueos.length ? 'la CSP bloqueó algo: ' + bloqueos[0].slice(0,90) : 'la CSP no bloqueó nada');
 

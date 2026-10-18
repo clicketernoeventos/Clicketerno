@@ -179,6 +179,49 @@ p{margin:0 0 1em}
 .vert.der{left:auto;right:10px}
 @media (max-width:400px){ .vert{font-size:17px} }
 
+/* ══════════ EL BORDE DORADO DE LOS TÍTULOS ══════════
+   Pedido del dueño: los títulos que están en blanco llevan borde de
+   oro. Son los que caen sobre negro —sobre la foto de la portada y
+   sobre las bandas oscuras—; los que están sobre el papel ya son
+   negros y no llevan nada.
+
+   DOS COSAS QUE NO SON OPCIONALES:
+
+   · `paint-order:stroke fill` pinta el borde DETRÁS del relleno. Sin
+     eso el trazo va centrado sobre el contorno de la letra y se le
+     come la mitad para adentro: en una Yeseva, que ya tiene partes
+     finas, los finos se cierran y la palabra se empasta. Por eso
+     todo esto vive adentro de un `@supports`: el navegador que no lo
+     tenga se queda con la letra crema de siempre, que se lee
+     perfecta, en vez de con una letra empastada. Es la misma regla
+     del `animation-timeline`: el estado por defecto tiene que ser el
+     bueno.
+   · El grosor va en `em` y no en píxeles. El mismo 1px que en el
+     "15" de 140px es un hilo, en un título de 23px es un cuarto del
+     trazo: con un número fijo, o no se ve arriba o se empasta abajo.
+
+   Lo que NO lleva borde, a propósito: "MIA" de la portada (12px con
+   medio em de interletrado — un borde ahí es una mancha, no un
+   borde), los números de la cuenta regresiva y los títulos de las
+   secciones claras, que son negros. */
+@supports (paint-order: stroke){
+  #portada.con-foto .quince-big span,
+  #portada.con-foto .port-fecha,
+  .oscura .tit,
+  .oscura .salon,
+  .oscura .alias-big,
+  .oscura .cierre-n{
+    paint-order:stroke fill;
+    -webkit-text-stroke-color:var(--oro-neg);
+    -webkit-text-stroke-width:.05em;
+  }
+  /* El tamaño del "15" vive en el SPAN, no en el h1: un grosor en
+     `em` puesto en el padre se resuelve contra los 32px del h1 y
+     sale un hilo de 0,8px en un número de 140. */
+  #portada.con-foto .quince-big span{-webkit-text-stroke-width:.022em}
+  .oscura .cierre-n{-webkit-text-stroke-width:.018em}
+}
+
 /* ══════════ el filete ══════════ */
 .filete{display:flex;align-items:center;justify-content:center;gap:13px;margin:26px auto;max-width:230px}
 .filete i{display:block;height:1px;flex:1;background:var(--oro-luz)}

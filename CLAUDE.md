@@ -2557,6 +2557,38 @@ lo había notado. Esa invitación tiene además otras fallas de la
 misma suite (desborde y los años de la línea de tiempo a 1,00:1):
 le falta una pasada entera, que es un trabajo aparte.
 
+#### El borde dorado de los títulos
+
+Pedido del dueño: *"a las letras le pones borde dorado, a todas las
+que tengan fuente blanca y sean títulos"*. Son los que caen sobre
+negro —el "15" y la fecha de la portada, los títulos de las bandas
+oscuras, el salón, el alias y el "Mia" manuscrito del cierre—; los
+que están sobre el papel ya son negros y no llevan nada.
+
+Dos cosas que no son opcionales, y las dos dejan la pantalla sin un
+solo error:
+
+- **`paint-order:stroke fill`, o el borde se come la letra.** Sin
+  eso el trazo va CENTRADO sobre el contorno y se mete la mitad para
+  adentro: en una Yeseva, que ya tiene partes finas, los finos se
+  cierran y la palabra se empasta. Por eso todo vive adentro de un
+  `@supports (paint-order: stroke)`: el navegador que no lo tenga se
+  queda con la letra crema de siempre —que se lee perfecta— en vez
+  de con una letra empastada. Es la regla del `animation-timeline`
+  otra vez: **el estado por defecto tiene que ser el bueno.**
+- **El grosor va en `em`, y el `em` es el del ELEMENTO.** El tamaño
+  del "15" no vive en el `h1`, vive en el `span` de adentro: puesto
+  en el padre, `.022em` se resuelve contra los 32px del `h1` y sale
+  un hilo de **0,70px en un número de 140**. Se ve igual que si el
+  borde no se hubiera puesto, y en una captura chica no se nota.
+  Pasó, y lo agarró la prueba.
+
+Por eso `invitacion_mirar.js` mide ahora los bordes de letra, y solo
+donde hay: que el trazo resuelto llegue a 0,8px —abajo de eso es una
+declaración que no hace nada— y que haya `paint-order:stroke`.
+Verificada rompiendo las dos cosas a propósito: el borde en el `h1`
+da 4 fallas (una por aparato) y sin `paint-order` da 8.
+
 **Lleva `noindex`, y es la primera invitación que lo lleva.** Son
 fotos de una menor en una dirección pública. El `noindex` no la
 esconde —el que tiene el link entra igual— pero la saca de los
@@ -2574,7 +2606,8 @@ y comidas especiales, que es información de salud.
 Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
 abierto, que son dos pantallas distintas. Contraste, 44px, desborde,
 consola, CSP, **el texto que cae sobre la foto de la portada —medido
-con el píxel, ver `mia15/` más arriba—**, y después las piezas: que
+con el píxel, ver `mia15/` más arriba—**, **los bordes de letra que
+no se ven**, y después las piezas: que
 la cuenta regresiva corra, que el calendario marque un solo día, que
 ningún enlace quede en `#`, que el sí/no no venga preseleccionado y
 que la confirmación no mienta. No está en `todo.sh` porque toma un
