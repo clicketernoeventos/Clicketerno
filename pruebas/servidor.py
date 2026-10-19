@@ -69,8 +69,17 @@ class Mano(http.server.SimpleHTTPRequestHandler):
         exactamente lo que hay que ver.
         """
         entero = super().translate_path(path)
-        if not os.path.exists(entero) and not os.path.splitext(entero)[1]:
-            if os.path.exists(entero + '.html'):
+        if not os.path.splitext(entero)[1] and os.path.exists(entero + '.html'):
+            # Una carpeta SIN index.html no es una dirección: en producción
+            # ni siquiera existe, porque .assetsignore deja afuera carpetas
+            # como invitaciones/ (ahí sólo viven el LEEME y la plantilla del
+            # listado). Acá sí está en el disco, así que sin esta línea
+            # /invitaciones mostraba el listado de archivos de la carpeta
+            # mientras en producción sirve invitaciones.html: la página de
+            # venta no se podía probar, que es justo lo que hay que ver.
+            if not os.path.exists(entero) or (
+                    os.path.isdir(entero)
+                    and not os.path.exists(os.path.join(entero, 'index.html'))):
                 return entero + '.html'
         return entero
 

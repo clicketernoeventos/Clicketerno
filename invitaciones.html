@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Invitaciones digitales · Click Eterno · Rosario</title>
+<meta name="description" content="Las invitaciones digitales que hicimos, andando de verdad. Abrí cualquiera y mirala como la ve un invitado. Click Eterno, Rosario.">
+<link rel="canonical" href="https://clicketerno.com.ar/invitaciones">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="apple-touch-icon" href="marca.webp">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="Click Eterno">
+<meta property="og:url" content="https://clicketerno.com.ar/invitaciones">
+<meta property="og:title" content="Nuestras invitaciones digitales, andando">
+<meta property="og:description" content="Abrí cualquiera y mirala como la ve un invitado. Click Eterno, Rosario.">
+<meta property="og:image" content="https://clicketerno.com.ar/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Click Eterno · Invitaciones digitales">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nuestras invitaciones digitales, andando">
+<meta name="twitter:description" content="Abrí cualquiera y mirala como la ve un invitado.">
+<meta name="twitter:image" content="https://clicketerno.com.ar/og.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&display=swap"></noscript>
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   /invitaciones · el link que se le manda a un cliente que
+   todavía no compró.
+
+   Es una página aparte y no una sección más del inicio a
+   propósito: el que recibe este link por WhatsApp quiere ver
+   invitaciones, no bajar dieciséis pantallas de sitio. Acá entra
+   y ya están, andando.
+
+   La LISTA sale de lib/trabajos.js, que es la misma que usa la
+   galería del inicio: una invitación nueva se agrega en un solo
+   lugar. Lo que no se comparte es cómo se dibuja la ficha —acá
+   va grande y sola, allá adentro de un celular dibujado— porque
+   son dos trabajos distintos y no hay nada que se pueda quedar
+   atrás entre ellos.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --negro:#000; --carbon:#0A0908; --humo:#131110;
+  --crema:#F6F2EA; --crema2:#EDE6DA;
+  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
+  --texto:#F6F2EA; --mute:#9B9287;
+  --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26); --hilo2:rgba(217,174,114,.55);
+  --e:cubic-bezier(.22,.7,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html{overflow-x:hidden}
+body{background:var(--negro);color:var(--texto);line-height:1.5;overflow-x:hidden;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ── la cabecera ── */
+header{padding:54px 0 0;text-align:center}
+.marca{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--texto);
+  min-height:44px;padding:5px 8px}
+.marca img{width:34px;height:34px;border-radius:50%;display:block}
+.marca span{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
+h1{margin:30px 0 0;font-size:clamp(32px,7.6vw,58px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+h1 i{font-style:italic;color:var(--oro)}
+.bajada{margin:18px auto 0;max-width:46ch;font-size:clamp(15px,3.9vw,18px);color:var(--crema2)}
+.aclara{margin:14px auto 0;max-width:46ch;font-size:13px;color:var(--mute)}
+
+/* ── la grilla de invitaciones ── */
+.grilla{display:grid;gap:46px 28px;justify-items:center;margin:48px 0 0;
+  grid-template-columns:repeat(auto-fit,minmax(252px,1fr))}
+.ficha{width:100%;max-width:300px;text-align:center}
+.marco{position:relative;width:100%;aspect-ratio:9/19.5;border-radius:30px;overflow:hidden;
+  border:1px solid var(--hilo);background:var(--carbon);
+  box-shadow:0 26px 60px rgba(0,0,0,.55);container-type:inline-size}
+/* El dibujo de reserva: lo que se ve mientras el marco baja, y para
+   siempre si esa invitación no responde. Un rectángulo negro y quieto
+   parece un producto roto. */
+.dibujo{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3.4cqw;padding:10cqw 7cqw}
+.dibujo .ad{font-size:5.6cqw;letter-spacing:.42em;opacity:.85}
+.dibujo .sb{font-size:3.7cqw;letter-spacing:.36em;text-transform:uppercase;opacity:.85}
+.dibujo .nm{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14.5cqw;line-height:1}
+.dibujo .ln{width:15%;height:1px;opacity:.45}
+.late{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);z-index:2;
+  width:26%;height:2px;border-radius:2px;background:currentColor;opacity:.3;
+  animation:latir 1.5s var(--e) infinite}
+@keyframes latir{0%,100%{opacity:.14;transform:translateX(-50%) scaleX(.5)}
+  50%{opacity:.45;transform:translateX(-50%) scaleX(1)}}
+.vivo{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:inherit;
+  opacity:0;transition:opacity .5s var(--e)}
+.vivo.listo{opacity:1}
+.vivo iframe{position:absolute;top:0;left:0;width:390px;border:0;transform-origin:0 0;
+  pointer-events:none}
+.tapa{position:absolute;inset:0;z-index:4;border-radius:inherit}
+.pie{margin-top:18px}
+.pie b{display:block;font-size:19px;font-weight:400}
+.pie span{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:#8A7F72}
+.pie .muestra{display:inline-block;margin-top:9px;font-size:9.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--oro-hondo);border:1px solid var(--hilo);
+  border-radius:999px;padding:4px 10px}
+.abrir{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  margin-top:14px;padding:11px 20px;border:1px solid var(--hilo2);border-radius:999px;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--champan);
+  text-decoration:none;transition:border-color .25s,color .25s,transform .12s}
+.abrir:active{transform:scale(.975)}
+@media(hover:hover){.abrir:hover{border-color:var(--oro);color:var(--oro)}}
+
+/* ── el cierre ── */
+/* `margin:72px auto 0` y no `72px 0 0`: esta caja también es `.wrap`, y
+   un margen de cuatro valores pisa el `auto` que la centra — la sección
+   entera quedaba corrida a la izquierda en una pantalla ancha. Dos reglas
+   para lo mismo, gana la última. */
+.cierre{margin:72px auto 0;padding:44px 26px;border-top:1px solid var(--gris);text-align:center}
+.cierre h2{font-size:clamp(23px,5.4vw,34px);font-weight:800;letter-spacing:-.03em}
+.cierre p{margin:14px auto 0;max-width:42ch;color:var(--crema2);font-size:15px}
+.incluye{display:grid;gap:10px 26px;margin:28px auto 0;max-width:620px;text-align:left;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.incluye li{list-style:none;font-size:15px;color:var(--crema2);padding-left:20px;position:relative}
+.incluye li:before{content:'✦';position:absolute;left:0;color:var(--oro-hondo);font-size:11px;top:3px}
+.botones{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:34px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;
+  padding:14px 26px;border-radius:999px;text-decoration:none;font-size:12px;
+  letter-spacing:.18em;text-transform:uppercase;transition:transform .12s,filter .25s}
+.btn:active{transform:scale(.975)}
+.btn-oro{background:linear-gradient(135deg,var(--oro),var(--oro-hondo));color:#1A1713;font-weight:600}
+.btn-hilo{border:1px solid var(--hilo2);color:var(--champan)}
+@media(hover:hover){.btn-oro:hover{filter:brightness(1.08)}
+  .btn-hilo:hover{border-color:var(--oro);color:var(--oro)}}
+footer{padding:30px 0 46px;text-align:center;font-size:12px;color:var(--mute)}
+/* El área se agranda, no la letra: el mínimo de 44px es para el dedo.
+   `inline-block` con padding y el subrayado pegado al texto
+   (`box-decoration-break`) para que no se despegue del renglón. */
+footer a{display:inline-block;min-height:44px;padding:13px 8px;color:var(--mute);text-decoration:none}
+footer a span{border-bottom:1px solid var(--gris)}
+@media(hover:hover){footer a:hover{color:var(--oro)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="marca" href="/"><img src="marca.webp" alt=""><span>Click Eterno</span></a>
+    <h1>Nuestras invitaciones, <i>andando</i></h1>
+    <p class="bajada">No son capturas: son las invitaciones de verdad, corriendo acá
+      adentro. Abrí cualquiera y mirala como la ve un invitado.</p>
+    <p class="aclara" id="aclara"></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grilla" id="grilla"></div>
+</main>
+
+<section class="cierre wrap">
+  <h2>Así queda la tuya</h2>
+  <p>La armamos con tus fotos, tus colores y lo que quieras preguntarle a tus
+    invitados. Se manda por WhatsApp y se abre en cualquier teléfono, sin
+    instalar nada.</p>
+  <ul class="incluye">
+    <li>Diseño propio, no una plantilla</li>
+    <li>Cuenta regresiva hasta tu fiesta</li>
+    <li>Confirmación de asistencia, con los nombres de los que vienen</li>
+    <li>Mapa del salón, dress code y alias para el regalo</li>
+    <li>Tu música, si querés</li>
+    <li>Un tablero para ver quién confirmó y bajarlo a Excel</li>
+  </ul>
+  <div class="botones">
+    <a class="btn btn-oro" id="pedir" rel="noopener"
+       href="https://wa.me/5493412506451">Pedir presupuesto</a>
+    <a class="btn btn-hilo" href="/">Ver todo lo que hacemos</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Click Eterno · Rosario ·
+    <a href="/privacidad"><span>Privacidad</span></a> ·
+    <a href="/terminos"><span>Términos</span></a>
+  </div>
+</footer>
+
+<script src="lib/trabajos.js"></script>
+<script>
+const TEL = '5493412506451';
+const TRABAJOS = window.TRABAJOS || [];
+
+/* El mensaje de WhatsApp dice de qué viene. El que escribe ya eligió, y
+   del otro lado se sabe qué pide sin tener que preguntarlo. El href del
+   HTML ya apunta a wa.me: si el JS no corre, el botón lleva igual. */
+document.getElementById('pedir').href =
+  'https://wa.me/' + TEL + '?text=' +
+  encodeURIComponent('Hola Click Eterno! Vi sus invitaciones y quiero una para mi fiesta. Es el:');
+
+/* Cuántas son de un cliente y cuántas son muestras nuestras NO se escribe
+   a mano: se cuenta de la lista. Escrito, el día que entra una invitación
+   más el renglón miente — y acá se promete que son las que recibieron los
+   invitados, así que mentir es caro. */
+(function(){
+  const n = TRABAJOS.length, m = TRABAJOS.filter(t => t.muestra).length, c = n - m;
+  const pal = ['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+  const w = x => pal[x] || String(x);
+  const el = document.getElementById('aclara');
+  if (!el) return;
+  el.textContent = 'Son ' + w(n) + '. ' +
+    (c === 1 ? 'Una es de un cliente' : w(c).replace(/^./, ch => ch.toUpperCase()) + ' son de clientes') +
+    '; ' + (m === 1 ? 'la otra es una muestra nuestra.' : 'las otras ' + w(m) + ' son muestras nuestras.');
+})();
+
+const ficha = t => `
+  <div class="ficha">
+    <div class="marco" style="background:${t.fondo};color:${t.tinta}">
+      <div class="dibujo">
+        <div class="ad" style="color:${t.suave}">${t.ad}</div>
+        <div class="sb" style="color:${t.suave}">${t.sub || 'Mis quince años'}</div>
+        <div class="nm">${t.nombre}</div>
+        <div class="ln" style="background:${t.suave}"></div>
+        <div class="sb" style="color:${t.suave}">Te espero</div>
+      </div>
+      <div class="late"></div>
+      <div class="vivo" data-vivo="${t.url}" data-nombre="${t.nombre}"></div>
+      <a class="tapa" href="${t.url}" target="_blank" rel="noopener"
+         aria-label="Abrir la invitación de ${t.nombre}"></a>
+    </div>
+    <div class="pie">
+      <b>${t.nombre}</b><span>${t.tipo}</span>
+      ${t.muestra ? '<i class="muestra">Muestra nuestra</i>' : ''}
+      <a class="abrir" href="${t.url}" target="_blank" rel="noopener">Abrirla entera</a>
+    </div>
+  </div>`;
+
+document.getElementById('grilla').innerHTML = TRABAJOS.map(ficha).join('');
+
+/* ── los marcos, de a uno ──
+   Seis invitaciones arrancando juntas en 4G se estorban entre ellas y no
+   termina de cargar ninguna: ya costó caro en la vitrina del inicio. Van
+   en fila, con un tope de 12 s para dejar pasar a la siguiente — que no
+   cancela a la que quedó bajando: si llega tarde, aparece igual.
+   Y no se saca nada por lento: medido con la red frenada, una invitación
+   tarda doce segundos. Sólo se saca si el navegador avisa que falló, y
+   entonces queda la portada dibujada, que se sostiene sola. */
+(function(){
+  const capas = [...document.querySelectorAll('.vivo')];
+  let i = 0, andando = false;
+
+  const encender = capa => new Promise(listo => {
+    const marco = document.createElement('iframe');
+    marco.src = capa.dataset.vivo;
+    marco.title = 'Invitación de ' + (capa.dataset.nombre || '');
+    marco.loading = 'lazy';
+    marco.setAttribute('tabindex', '-1');
+    marco.setAttribute('aria-hidden', 'true');
+    marco.setAttribute('scrolling', 'no');
+    let salio = false;
+    const seguir = () => { if (!salio) { salio = true; listo(); } };
+    marco.addEventListener('load', () => { capa.classList.add('listo'); seguir(); });
+    marco.addEventListener('error', () => { marco.remove(); seguir(); });
+    capa.appendChild(marco);
+    medir(capa, marco);
+    setTimeout(seguir, 12000);
+  });
+
+  /* El marco corre a 390 de ancho —que es para lo que están medidas— y se
+     achica con un `scale`. El alto hay que dárselo en el ancho de verdad,
+     si no la invitación cree que la pantalla mide lo que mide la tarjeta y
+     se le apila todo encima. */
+  function medir(capa, marco){
+    const caja = capa.getBoundingClientRect();
+    if (!caja.width) return;
+    const k = caja.width / 390;
+    marco.style.height = (caja.height / k) + 'px';
+    marco.style.transform = 'scale(' + k + ')';
+  }
+
+  const siguiente = () => {
+    if (andando || i >= capas.length) return;
+    andando = true;
+    encender(capas[i++]).then(() => { andando = false; siguiente(); });
+  };
+
+  /* No se prende lo que todavía no se ve: el que entra y no baja no paga
+     las seis. */
+  if ('IntersectionObserver' in window){
+    const vistas = new Set();
+    const ob = new IntersectionObserver(es => {
+      es.forEach(e => { if (e.isIntersecting){ vistas.add(e.target); ob.unobserve(e.target); } });
+      if (vistas.size) siguiente();
+    }, {rootMargin:'200px 0px'});
+    capas.forEach(c => ob.observe(c));
+  }
+  siguiente();
+
+  addEventListener('resize', () => {
+    capas.forEach(c => { const m = c.querySelector('iframe'); if (m) medir(c, m); });
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>

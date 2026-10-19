@@ -1256,7 +1256,12 @@ footer .datos{line-height:1.6}
       <!-- En un teléfono el carrusel muestra una y media por vez: el que
            quiere comparar tiene que deslizar cinco veces y acordarse. Acá
            las ve todas de una. -->
-      <div class="centro-btn"><button class="btn btn-hilo" type="button" id="verTodas">Verlas todas juntas →</button></div>
+      <!-- Dos puertas para lo mismo y no son la misma cosa: el botón abre
+           las invitaciones acá sin sacar al visitante de la página, y el
+           enlace lleva a /invitaciones, que es la dirección que se manda
+           por WhatsApp a alguien que todavía no entró al sitio. -->
+      <div class="centro-btn"><button class="btn btn-hilo" type="button" id="verTodas">Verlas todas juntas →</button>
+        <a class="btn btn-hilo" href="/invitaciones">Abrirlas en su página</a></div>
     </div>
 
     <div class="incluye">
@@ -1483,6 +1488,7 @@ footer .datos{line-height:1.6}
 
 <a class="wsp-flota" id="wspFlota" href="#" aria-label="Escribinos por WhatsApp" target="_blank" rel="noopener"></a>
 
+<script src="lib/trabajos.js"></script>
 <script>
 /* ═══ estrellas ═══ */
 const SVG_ESTRELLA = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c.9 8.2 2.9 11.1 12 12-9.1.9-11.1 3.8-12 12-.9-8.2-2.9-11.1-12-12C9.1 11.1 11.1 8.2 12 0z"/></svg>`;
@@ -1789,38 +1795,7 @@ const MUESTRA_MURO='QUI-XJLJ56';
    `muestra` marca las que NO son de un cliente. La sección promete
    "las mismas que recibieron los invitados", y eso de estas dos sería
    mentira: se dice en la ficha, no se esconde. */
-const TRABAJOS=[
-  /* Primera a propósito, y es la única decisión de orden que importa: el
-     que entra ve un CASAMIENTO antes que nada. La galería eran tres XV
-     seguidos y el que busca para su boda cerraba la página creyendo que
-     esto es para quinceañeras. Además vive en el repo, así que abre
-     siempre: la primera ficha no puede depender de que Netlify esté en pie. */
-  {nombre:'Clara & Bruno', tipo:'Casamiento · Olivo y lacre', url:'claraybruno/', captura:'', vivo:true,
-   sub:'Nos casamos', muestra:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#3B4632,#1C2219 60%,#131811)', tinta:'#F5EFE4', suave:'#B8904F', ad:'✦ 🌿 ✦'},
-  /* Dibujada entera: no tiene una sola foto, y es a propósito. No se
-     pueden inventar fotos de dos personas que no existen, y poner una de
-     stock como si fueran ellos es mentirle al que mira (más el artículo
-     53). Lo que muestra es que la pieza se sostiene sola: tipografía,
-     dos metales y los anillos. */
-  {nombre:'Mateo & Lucas', tipo:'Casamiento · Dos metales', url:'mateoylucas/', captura:'', vivo:true,
-   sub:'Nos casamos', muestra:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#1D2531,#0B0E13 60%,#070A0E)', tinta:'#F4F0E8', suave:'#C9A46B', ad:'✦ ✦ ✦'},
-  {nombre:'Key', tipo:'XV años · Bosque encantado', url:'https://keyxv.netlify.app', captura:'', vivo:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#25382B,#0F1613 60%,#080B09)', tinta:'#F2EDE1', suave:'#9FC6AC', ad:'🍄 ✦ 🧚'},
-  {nombre:'Julia & Franco', tipo:'Casamiento · Editorial', url:'juliayfranco/', captura:'', vivo:true,
-   sub:'Nos casamos', muestra:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#1A1A1A,#0B0B0B 60%,#050505)', tinta:'#F1EDE6', suave:'#8A8782', ad:'✦ ✦ ✦'},
-  {nombre:'Xiomara', tipo:'XV años · Rosa y blanco', url:'https://xiomarazalazar.netlify.app/', captura:'', vivo:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)', tinta:'#5A2E3E', suave:'#B9738D', ad:'✦ 💌 ✦'},
-  /* Esta vive EN EL REPO (pia/nueva/), no en Netlify: por eso abre siempre
-     y al toque. Las otras dos siguen afuera, así que dependen de que
-     Netlify esté en pie y de que el navegador las deje incrustar; cuando no,
-     queda la portada dibujada. Cuando tengamos sus archivos acá, pasan a ser
-     un camino local como este y dejan de depender de nadie. */
-  {nombre:'Pia', tipo:'XV años · Clásica', url:'pia/nueva/', captura:'', vivo:true,
-   fondo:'radial-gradient(120% 80% at 50% 0,#241C14,#100E0B 60%,#080706)', tinta:'#EFDCBC', suave:'#C9A063', ad:'✦ ✦ ✦'}
-];
+const TRABAJOS=window.TRABAJOS;
 const BARRA_IOS=`<div class="barra-ios"><span class="hora">9:41</span>
   <svg viewBox="0 0 80 24" fill="currentColor" aria-hidden="true">
     <rect x="0" y="13" width="3.4" height="6" rx="1"/><rect x="5.6" y="10" width="3.4" height="9" rx="1"/>
