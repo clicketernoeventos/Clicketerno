@@ -2959,7 +2959,13 @@ deja leerla, cae al camino viejo. Medido en el navegador: **un viaje y
 **Lo que no cambia es la regla más vieja**: si no sabemos que llegó, la
 pantalla no dice que llegó.
 
-**4 · El alias.** Ver más arriba: lo que está escrito es `Aneley.1974`.
+**4 · El alias le faltaba el punto del final.** Es `Aneley.1974.`, con
+punto, y estaba escrito `Aneley.1974`. **El punto es parte del alias**:
+copiado sin él, la transferencia del invitado va a otra cuenta o no
+encuentra ninguna. Se le preguntó cuál de los dos era antes de tocarlo
+—un alias no se adivina— y avisándole que la mayoría de los bancos no
+aceptan uno que termine en punto; lo confirmó igual. Queda anotado para
+que nadie lo "arregle" sacándoselo.
 
 Lo miden `pruebas/rsvp.js` (las columnas por persona y el resumen en
 personas: **2 fallas** contra el código anterior),
