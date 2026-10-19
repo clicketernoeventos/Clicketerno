@@ -289,7 +289,12 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
                    .filter((v, i, a) => a.indexOf(v) === i);
   /* Los acompañantes no están en el HTML: los dibuja el JS con el
      nombre de columna adentro. Se lee de ahí por el mismo motivo. */
-  const plantillaInv = (html.match(/const nom = '([^']+)' \+ k;/) || [])[1];
+  const plantillaInv = (html.match(/const nom = '([^']+)' \+ k/) || [])[1];
+  /* Y desde que cada acompañante elige SU comida, hay una columna por
+     persona. Antes era una sola para todos: eligiendo "Celíaco" con
+     cinco invitados, la planilla decía que los cinco eran celíacos —y
+     eso se le pasa al salón tal cual. */
+  const plantillaCom = (html.match(/, com = '([^']+)' \+ k/) || [])[1];
 
   /* Estos dos el Apps Script los busca POR NOMBRE para contar y para
      contestarle al invitado si ya está. Renombrarlos no rompe nada a
@@ -299,6 +304,7 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
   es(!!campoNombre && !!campoSiNo,
      `el formulario manda ${campos.length} campos: ${campos.join(', ')}`);
   es(!!plantillaInv, `y arma los acompañantes como "${plantillaInv}N"`);
+  es(!!plantillaCom, `y la comida de cada uno como "${plantillaCom}N"`);
 
   const a = cargar();
   const clave = a.preparar();
@@ -308,6 +314,11 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
   viene[campoNombre] = 'Juan Pérez';
   viene[campoSiNo] = 'Sí';
   if (plantillaInv){ viene[plantillaInv + '2'] = 'Ana Pérez'; viene[plantillaInv + '3'] = 'Luz Pérez'; }
+  if (plantillaCom){ viene[plantillaCom + '2'] = 'Vegetariano'; viene[plantillaCom + '3'] = 'Celíaco'; }
+  /* Tres personas en una sola respuesta: lo que el resumen tiene que
+     contar como TRES y no como una. */
+  const campoCuantos = campos.find(c => /cu[aá]nt/i.test(c));
+  if (campoCuantos) viene[campoCuantos] = '3';
   a.post(viene);
   /* Y uno que NO viene: desde que el formulario deshabilita lo que
      no es suyo, de éste llegan SOLO el nombre y el sí/no. */
@@ -328,7 +339,6 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
   es(d.columnas.confirma === campoSiNo,
      `y cuenta por la columna "${campoSiNo}", no por "Cuándo"`);
   const carla = d.invitados.find(i => i[campoNombre] === 'Carla Gómez');
-  const campoCuantos = campos.find(c => /cu[aá]nt/i.test(c));
   if (campoCuantos)
     es(carla && !String(carla[campoCuantos] || '').trim(),
        `el que no viene NO deja un número en "${campoCuantos}": esa es la columna de las mesas`);
@@ -336,6 +346,22 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
   if (plantillaInv)
     es(juan && juan[plantillaInv + '2'] === 'Ana Pérez' && juan[plantillaInv + '3'] === 'Luz Pérez',
        'y los acompañantes llegan con nombre y apellido, no como un número');
+  if (plantillaCom)
+    es(juan && juan[plantillaCom + '2'] === 'Vegetariano' && juan[plantillaCom + '3'] === 'Celíaco',
+       'y cada uno con SU comida, no la del primero repetida');
+
+  /* ── el número que mira el que arma las mesas ──
+     Una respuesta que dice "somos 3" son tres personas. Contada como
+     una, el cliente encarga comida para menos gente de la que va: lo
+     reportó el dueño con la planilla en la mano —"confirmaron dos
+     personas y figura como 1"—. */
+  if (campoCuantos){
+    const r2 = a.get({ clave }).resumen;
+    es(r2.personas === 3,
+       `y el resumen dice cuánta GENTE viene, no cuántas respuestas (dio ${r2.personas} de 3)`);
+    es(r2.total === 2 && r2.confirmados === 1,
+       'sin perder las respuestas: 2 contestaron, 1 viene');
+  }
   es(a.get({ confirmado: '  juan pérez  ' }).ok === true,
      'y la puerta del invitado lo reconoce con espacios y en minúscula');
 }

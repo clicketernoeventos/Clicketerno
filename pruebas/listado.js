@@ -273,6 +273,69 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     await pag.close();
   }
 
+  /* ══════════ el número grande son PERSONAS ══════════
+     Lo reportó el dueño con la planilla en la mano: «confirmaron dos
+     personas pero en la cuenta figura como 1». El tablero contaba
+     RESPUESTAS, y una respuesta que dice "Cuántos: 4" es una familia
+     de cuatro. Contada como una, el cliente encarga comida para menos
+     gente de la que va a ir, y eso se descubre la noche de la fiesta.
+
+     Se mide con las dos mitades: que el número de arriba sume la
+     gente, y que el de las respuestas siga siendo el de las
+     respuestas — si se arregla uno y se rompe el otro, el cliente
+     deja de saber cuántas familias le contestaron. */
+  {
+    const titulo2 = (t) => console.log('\n─── ' + t + ' ───');
+    /* La clave se guarda en el aparato, así que a la segunda pantalla
+       ya entra sola y el campo ni se dibuja: pedírselo la cuelga
+       esperando un campo que no existe. */
+    const entrar = async (pg) => {
+      if (await pg.locator('#clave-input').isVisible().catch(() => false)){
+        await pg.fill('#clave-input', 'la-clave');
+        await pg.keyboard.press('Enter');
+      }
+      await pg.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    };
+    titulo2('cuánta gente viene, no cuántas respuestas');
+    const conCuantos = { invitados: [
+      { 'Cuándo': '2028-01-02 13:00', Nombre: 'Jere Arone', Confirma: 'Sí', 'Cuántos': '2' },
+      { 'Cuándo': '2028-01-02 13:02', Nombre: 'Aquiles',    Confirma: 'Sí', 'Cuántos': '4' },
+      { 'Cuándo': '2028-01-02 13:05', Nombre: 'Carla',      Confirma: 'No', 'Cuántos': '' }
+    ], columnas: { nombre: 'Nombre', confirma: 'Confirma' } };
+
+    /* Sin resumen: lo cuenta la pantalla con las filas que ya tiene.
+       Es el caso de HOY, con el Apps Script que ya está publicado y
+       sin volver a pegar nada. */
+    const { pag, errores } = await abrir(ctx, { responde: conCuantos });
+    await pag.fill('#clave-input', 'la-clave');
+    await pag.keyboard.press('Enter');
+    await pag.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    es(await txt(pag, '#stat-confirmados') === '6',
+       `vienen 6 personas (2 + 4), no 2 respuestas (dio ${await txt(pag, '#stat-confirmados')})`);
+    es(await txt(pag, '#stat-total') === '3', 'y siguen siendo 3 respuestas');
+    es(await txt(pag, '#stat-no') === '1', 'y una que no viene');
+    es(errores.length === 0, 'sin errores de JavaScript');
+    await pag.close();
+
+    /* Y con el resumen de la planilla, que es quien tiene los títulos
+       de verdad: gana el suyo. */
+    const { pag: pag2 } = await abrir(ctx, { responde: Object.assign({}, conCuantos, {
+      resumen: { total: 3, confirmados: 2, no: 1, personas: 6 } }) });
+    await entrar(pag2);
+    es(await txt(pag2, '#stat-confirmados') === '6', 'y con el resumen de la planilla, lo mismo');
+    await pag2.close();
+
+    /* Un "no" con un número escrito antes de cambiar la respuesta no
+       puede sumar gente que no va. */
+    const { pag: pag3 } = await abrir(ctx, { responde: { invitados: [
+      { 'Cuándo': '2028-01-02 13:00', Nombre: 'Carla', Confirma: 'No', 'Cuántos': '4' }
+    ], columnas: { nombre: 'Nombre', confirma: 'Confirma' } } });
+    await entrar(pag3);
+    es(await txt(pag3, '#stat-confirmados') === '0',
+       'y el que dijo que no, no suma su número');
+    await pag3.close();
+  }
+
   await navegador.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : `\n✓ Sin fallas`);
   process.exit(fallas.length ? 1 : 0);

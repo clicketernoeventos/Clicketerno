@@ -575,6 +575,45 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
          vuelta.lugares && vuelta.manda.length === si.manda.length
            ? 'y volviendo al "sí" vuelven todos los campos'
            : 'volviendo al "sí" no vuelven todos los campos');
+
+      /* ── una comida POR PERSONA ──
+         Lo reportó el dueño: «si elegís 5 personas no sale la opción
+         para elegir la alimentación de las 5; te toma solo 1 y te
+         pone 5 celiacos». Una sola columna de comida para toda la
+         mesa es lo que se le pasa al salón tal cual, así que el día
+         de la fiesta hay cinco platos sin TACC y cuatro personas que
+         no los pidieron.
+         Se mide por lo que VIAJA, no por lo que se ve: esconder bien
+         y mandar mal es la mitad del problema y da verde igual. */
+      if (await pagN.locator('#fComida').count()){
+        const tipo = await pagN.evaluate(() =>
+          document.querySelector('#fComida').tagName.toLowerCase());
+        es(tipo === 'select', tipo === 'select'
+          ? 'la comida se elige de una lista, no se escribe a mano'
+          : `la comida es un <${tipo}>: escrita a mano llegan "celiaco", "CELÍACA" y "sin tacc" en la misma columna`);
+
+        await pagN.selectOption('#fLugares', '5');
+        await pagN.waitForTimeout(300);
+        const cuantas = await pagN.locator('#rsvp select[name^="Comida"]').count();
+        es(cuantas === 5, cuantas === 5
+          ? 'con 5 personas hay 5 comidas para elegir, una por cada una'
+          : `con 5 personas hay ${cuantas} comida(s) para elegir: a las otras se les pone la del primero`);
+
+        if (cuantas === 5){
+          const nombres = ['Celíaco','Vegetariano','Diabético','Hipertenso','Ninguno'];
+          const ids = await pagN.evaluate(() => [...document.querySelectorAll('#rsvp select[name^="Comida"]')].map(s => s.id));
+          for (let k = 0; k < ids.length; k++) await pagN.selectOption('#' + ids[k], nombres[k]);
+          const viaja = await pagN.evaluate(() => {
+            const fd = new FormData(document.querySelector('#rsvp'));
+            const o = {}; for (const [k, v] of fd) if (/^Comida/.test(k)) o[k] = v; return o;
+          });
+          const valores = Object.values(viaja);
+          es(valores.length === 5 && new Set(valores).size === 5,
+             valores.length === 5 && new Set(valores).size === 5
+               ? 'y a la planilla llega la de cada uno: ' + valores.join(', ')
+               : 'y a la planilla llega una sola repetida: ' + JSON.stringify(viaja));
+        }
+      }
     }
     await ctxN.close();
   }

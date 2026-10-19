@@ -85,10 +85,13 @@
       <p id="panel-subtitle"></p>
     </header>
 
+    <!-- El número grande son PERSONAS, no respuestas. Una fila que dice
+         "Cuántos: 4" es una familia de cuatro: contada como 1, el que
+         arma las mesas encarga comida para menos gente de la que va. -->
     <div class="stats">
-      <div class="stat"><div class="n" id="stat-total">–</div><div class="lbl">En total</div></div>
-      <div class="stat confirmados"><div class="n" id="stat-confirmados">–</div><div class="lbl">Confirmados</div></div>
-      <div class="stat no-asisten"><div class="n" id="stat-no">–</div><div class="lbl">No asisten</div></div>
+      <div class="stat confirmados"><div class="n" id="stat-confirmados">–</div><div class="lbl">Vienen</div></div>
+      <div class="stat no-asisten"><div class="n" id="stat-no">–</div><div class="lbl">No vienen</div></div>
+      <div class="stat"><div class="n" id="stat-total">–</div><div class="lbl">Respuestas</div></div>
     </div>
 
     <div class="columnas">
@@ -305,13 +308,34 @@ function esSi(v){
   if (t.indexOf('no') === 0) return false;   // "no voy" no es un sí
   return t[0] === 's' || t.includes('confirm') || t.includes('voy');
 }
+/* Cuánta GENTE viene, que es lo único con lo que se arman las mesas.
+   Cada respuesta trae su "Cuántos": una fila que dice 4 son cuatro
+   personas, no una. Vacío o sin esa columna, vale 1 — el que contestó
+   viene él. Y se cuenta SÓLO en las que dijeron que sí: un "no" con
+   "Cuántos: 4" escrito antes de cambiar la respuesta sumaría cuatro
+   personas que no van a ir. */
+function personasDe(filas){
+  const col = buscarCol(columnasDe(filas), 'cuantos');
+  return filas.reduce((suma, f) => {
+    if (!esSi(f[COL_CONFIRMA])) return suma;
+    const n = col ? parseInt(String(f[col] || '').replace(/[^0-9]/g, ''), 10) : 1;
+    return suma + (n > 0 ? n : 1);
+  }, 0);
+}
 function actualizarStats(){
   const total = resumen ? resumen.total : invitados.length;
-  const confirmados = resumen ? resumen.confirmados
-                              : invitados.filter(i => esSi(i[COL_CONFIRMA])).length;
-  const noAsisten = resumen ? resumen.no : total - confirmados;
+  const respondieronSi = resumen ? resumen.confirmados
+                                 : invitados.filter(i => esSi(i[COL_CONFIRMA])).length;
+  const noAsisten = resumen ? resumen.no : total - respondieronSi;
+  /* La planilla manda el número de personas cuando su Apps Script ya lo
+     sabe calcular; si todavía es el de antes, se cuenta acá con las
+     mismas filas que ya están en pantalla. Así esto anda sin tener que
+     volver a pegar el script, y cuando se pegue manda el de la planilla,
+     que es la que tiene los títulos de verdad. */
+  const vienen = (resumen && typeof resumen.personas === 'number')
+    ? resumen.personas : personasDe(invitados);
   document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-confirmados').textContent = confirmados;
+  document.getElementById('stat-confirmados').textContent = vienen;
   document.getElementById('stat-no').textContent = noAsisten;
 }
 
