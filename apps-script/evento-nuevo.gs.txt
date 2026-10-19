@@ -220,15 +220,44 @@ function doGet(e) {
      distinto el listado muestra "0 confirmaron" con la planilla
      llena y no hay ningún error a la vista. Acá están los títulos
      de verdad, así que acá se cuenta. */
-  var si = 0;
+  var si = 0, personas = 0;
+  var colCuantos = columnaCuantos_(lista);
   for (var i = 0; i < lista.length; i++) {
-    if (esSi_(lista[i][COL_CONFIRMA])) si++;
+    if (!esSi_(lista[i][COL_CONFIRMA])) continue;
+    si++;
+    /* Y cuánta GENTE viene, que es lo único con lo que se arman las
+       mesas. Una fila que dice "Cuántos: 4" es una familia de cuatro:
+       contada como una, el cliente encarga comida para menos gente de
+       la que va a ir. Vacío o sin esa columna vale 1 — el que contestó
+       viene él. Se cuenta sólo en las que dijeron que sí. */
+    var n = colCuantos ? parseInt(String(lista[i][colCuantos] || '').replace(/[^0-9]/g, ''), 10) : 1;
+    personas += (n > 0) ? n : 1;
   }
   return json({
     invitados: lista,
-    resumen: { total: lista.length, confirmados: si, no: lista.length - si },
-    columnas: { nombre: COL_NOMBRE, confirma: COL_CONFIRMA }
+    resumen: { total: lista.length, confirmados: si, no: lista.length - si,
+               personas: personas },
+    columnas: { nombre: COL_NOMBRE, confirma: COL_CONFIRMA, cuantos: colCuantos || '' }
   });
+}
+
+
+/* La columna de cuántos son la crea el formulario, no este archivo, así
+   que acá se la busca — y por PALABRA ENTERA, no por "contiene": con
+   "contiene", una columna que dijera "cuantos chicos" o "de cuantos es
+   la mesa" matchearía primero y la cuenta saldría de otro lado. Es la
+   misma trampa que ya costó una vuelta con "confirmación". */
+function columnaCuantos_(lista) {
+  if (!lista.length) return '';
+  var claves = Object.keys(lista[0]);
+  for (var i = 0; i < claves.length; i++) {
+    var limpio = String(claves[i]).toLowerCase()
+      .replace(/[áà]/g, 'a').replace(/[éè]/g, 'e').replace(/[íì]/g, 'i')
+      .replace(/[óò]/g, 'o').replace(/[úùü]/g, 'u')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+    if (limpio.split(' ').indexOf('cuantos') !== -1) return claves[i];
+  }
+  return '';
 }
 
 

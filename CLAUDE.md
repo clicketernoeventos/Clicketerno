@@ -2910,6 +2910,70 @@ recarga, cambiar la respuesta, otro aparato con `"  juan pérez  "`,
 segundo toque— corre contra un Apps Script interceptado, igual que
 `pruebas/listado.js`.
 
+#### Lo que se rompió la primera noche que lo usó gente de verdad
+
+El dueño repartió el link, entraron las primeras confirmaciones y
+aparecieron **cuatro cosas**, todas en la misma pantalla. Ninguna tiraba
+un error: las cuatro se dibujaban perfecto.
+
+**1 · La cuenta contaba RESPUESTAS y no PERSONAS.** Dos filas que decían
+"Cuántos: 2" y "Cuántos: 4" son seis personas y el tablero marcaba 2.
+Dicho por él: *"confirmaron dos personas pero en la cuenta figura como
+1"*. Para lo único que el cliente entra al tablero —saber cuánta gente
+va— el número estaba mal, y el error se descubre el día de la fiesta con
+comida encargada de menos. Ahora el número grande son **personas**
+(suma de "Cuántos" en las que dijeron que sí, 1 si está vacía) y al lado
+quedan "No vienen" y "Respuestas", que es el dato viejo sin perderse.
+Lo cuenta la planilla (`resumen.personas`, en `evento-nuevo.gs.txt`) y,
+**si el Apps Script publicado todavía es el de antes, lo cuenta la
+pantalla con las filas que ya tiene**: así se arregló sin que el dueño
+tuviera que volver a pegar nada esa misma noche.
+**El "no" no suma su número**: alguien que eligió 4 y después cambió la
+respuesta dejaba cuatro personas escritas en una fila que dice que no va.
+
+**2 · La comida era un campo libre y era UNA SOLA para toda la mesa.**
+Dicho por él: *"si elegís 5 personas no sale la opción para elegir la
+alimentación de las 5; te toma solo 1 y te pone 5 celiacos"*. Esa columna
+se le pasa al salón tal cual, así que eso son cinco platos sin TACC y
+cuatro personas que no los pidieron. Ahora cada acompañante es un
+**bloque con su nombre y su comida**, elegida de la lista de siempre
+(Ninguno · Vegetariano · Celíaco · Diabético · Hipertenso · No tolerante
+a la lactosa · Otro), que es la que ya usaban `pia/nueva` y
+`juliayfranco`. Las columnas son `Comida 2`…`Comida 5` y **las crea sola
+la planilla**: del otro lado no hay nada que configurar.
+Y **"Otro" manda lo que escribieron**, no la palabra "Otro": el que le
+pasa las comidas al salón necesita leer *"sin frutos secos"*.
+
+**3 · Tardaba una eternidad.** Eran **tres viajes al Apps Script** por
+confirmación —preguntar si ese nombre ya estaba, mandar, y volver a
+preguntar si llegó— más una espera fija de 1,2 s. Cada viaje a Google es
+uno o dos segundos: seis u ocho en total, y *"la gente no es de esperar
+mucho las cargas"*. Se fue la pregunta de "¿ya estaba?", que **no
+protegía de nada**: el `doPost` pisa la fila del mismo nombre desde
+siempre, así que el duplicado no existe; lo único que hacía era cobrar un
+viaje antes de cada envío. Y el POST ahora se manda **pidiendo leer la
+respuesta**: el Apps Script contesta `{"ok":true}` con los permisos
+puestos, así que en un solo viaje ya se sabe si entró. Si el navegador no
+deja leerla, cae al camino viejo. Medido en el navegador: **un viaje y
+~1,5 s** contra tres viajes.
+**Lo que no cambia es la regla más vieja**: si no sabemos que llegó, la
+pantalla no dice que llegó.
+
+**4 · El alias.** Ver más arriba: lo que está escrito es `Aneley.1974`.
+
+Lo miden `pruebas/rsvp.js` (las columnas por persona y el resumen en
+personas: **2 fallas** contra el código anterior),
+`pruebas/listado.js` (el tablero, con la planilla contándolo y sin
+contarlo: **2 fallas**, y la que importa decía *"dio 2"*) y
+`pruebas/invitacion_mirar.js` (que la comida sea una lista y que haya una
+por persona, medido por **lo que viaja** y no por lo que se ve: **2
+fallas**).
+
+**La lección, y es la de siempre dicha de otra forma**: las cuatro
+estaban a la vista y ninguna rompía nada. Las agarró una persona
+repartiendo el link de verdad, no una suite — igual que las dos del
+iPhone. Lo que una suite no puede medir es si algo SIRVE.
+
 #### La portada volvió a ser tipográfica, y el 15 se llena de tinta
 
 A la clienta **no le gustó la foto de portada** (18/10/2026), así que

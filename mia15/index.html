@@ -596,6 +596,14 @@ body.cerrado .port-foto img{transform:scale(1.07)}
   color:var(--tinta);margin:10px 0 12px}
 .campo{margin-bottom:22px;text-align:left}
 .campo label{display:block;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
+/* Cada acompañante es un bloque y no dos campos sueltos: con cinco
+   personas, un nombre y una comida mezclados en la misma columna no
+   dejan ver de quién es cada cosa. */
+.persona{border-top:1px solid var(--linea,rgba(0,0,0,.12));margin-top:22px;padding-top:18px}
+.persona .quien{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:14px}
+.oscura .persona .quien{color:var(--oro-neg,#E7C98F)}
+.oscura .persona{border-top-color:rgba(255,255,255,.16)}
 .campo input,.campo select{
   width:100%;min-height:52px;padding:14px 0;
   border:0;border-bottom:1px solid rgba(17,16,16,.2);border-radius:0;
@@ -797,14 +805,17 @@ body.cerrado .port-foto img{transform:scale(1.07)}
         </select>
       </div>
 
-      <!-- Los nombres de los que vienen con él. Los dibuja el JS
-           según "¿Cuántos son?": vacío no ocupa nada. -->
-      <div id="acomp"></div>
-
       <div class="campo">
-        <label for="fComida">¿Alguna comida que no puedas?</label>
-        <input id="fComida" name="Comida" type="text" placeholder="Celíaco, vegetariano, alergias…">
+        <label for="fComida">¿Algún requerimiento en tu comida?</label>
+        <select id="fComida" name="Comida"></select>
+        <input id="fComidaOtro" type="text" placeholder="Contanos cuál"
+               style="margin-top:10px;display:none" aria-label="Qué comida">
       </div>
+
+      <!-- Los que vienen con él: uno por uno, con su nombre y su
+           comida. Los dibuja el JS según "¿Cuántos son?"; vacío no
+           ocupa nada. -->
+      <div id="acomp"></div>
 
       <div class="campo">
         <label for="fTema">Un tema que no puede faltar</label>
@@ -1569,6 +1580,14 @@ rasgar();
        no alcanza con esconderlos: van DESHABILITADOS, que es lo que
        hace que no viajen. */
     const soloSiViene = ['#fLugares', '#fComida', '#fTema'];
+    /* La lista de siempre, la misma que venimos usando en las otras
+       invitaciones. Es una ELECCIÓN y no un campo libre: escrito a
+       mano llegan "celiaco", "CELÍACA", "sin tacc" y "no como gluten"
+       en la misma columna, y el que le pasa las comidas al salón las
+       tiene que ordenar a mano. */
+    const COMIDAS = ['Ninguno','Vegetariano','Celíaco','Diabético','Hipertenso',
+                     'No tolerante a la lactosa','Otro'];
+    const opciones = () => COMIDAS.map(o => '<option value="' + esc(o) + '">' + esc(o) + '</option>').join('');
     /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el
        único caso que importa: contestar "no voy a poder" borra los
        renglones, y al volver al "sí" ya no había de dónde leerlos.
@@ -1583,16 +1602,51 @@ rasgar();
         nodo.disabled = !va;
       });
       const n = va ? Math.max(1, +sel.value || 1) : 1;
-      $$('input', caja).forEach(i => { tenia[i.name] = i.value; });
+      $$('input,select', caja).forEach(i => { if (i.name) tenia[i.name] = i.value; });
       let h = '';
       for (let k = 2; k <= n; k++){
-        const nom = 'Invitado ' + k;   /* es el título de la columna */
-        h += '<div class="campo"><label for="fInv' + k + '">Nombre del invitado ' + k + '</label>' +
-             '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
-             ' value="' + esc(tenia[nom] || '') + '"></div>';
+        /* Los nombres de los campos SON los títulos de las columnas, y
+           el Apps Script crea la columna sola la primera vez que llega
+           una que no conocía: del otro lado no hay nada que tocar. */
+        const nom = 'Invitado ' + k, com = 'Comida ' + k;
+        h += '<div class="persona">' +
+               '<div class="quien">Invitado ' + k + '</div>' +
+               '<div class="campo"><label for="fInv' + k + '">Nombre y apellido</label>' +
+                 '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
+                 ' value="' + esc(tenia[nom] || '') + '"></div>' +
+               '<div class="campo"><label for="fCom' + k + '">¿Algún requerimiento en su comida?</label>' +
+                 '<select id="fCom' + k + '" name="' + com + '">' + opciones() + '</select>' +
+                 '<input id="fCom' + k + 'Otro" type="text" placeholder="Contanos cuál"' +
+                 ' style="margin-top:10px;display:none" aria-label="Qué comida">' +
+               '</div>' +
+             '</div>';
       }
       caja.innerHTML = h;
+      /* Lo elegido se conserva al cambiar el número, igual que los
+         nombres: bajar de 5 a 3 y volver a 5 no puede borrar lo que
+         ya habían puesto. */
+      $$('select', caja).forEach(se => { if (tenia[se.name]) se.value = tenia[se.name]; });
+      $$('select', caja).forEach(verOtro);
     };
+    /* "Otro" abre su campito y lo cierra al cambiar de opción. El
+       campo NO tiene `name`: lo que viaja es la columna de la comida,
+       con el texto adentro (lo reemplaza el envío). Dos columnas para
+       lo mismo serían dos lugares donde mirar. */
+    function verOtro(se){
+      const otro = document.getElementById(se.id + 'Otro');
+      if (!otro) return;
+      const hay = se.value === 'Otro';
+      otro.style.display = hay ? 'block' : 'none';
+      if (!hay) otro.value = '';
+    }
+    caja.addEventListener('change', e => { if (e.target.tagName === 'SELECT') verOtro(e.target); });
+
+    const comida1 = $('#fComida');
+    if (comida1){
+      comida1.innerHTML = opciones();
+      comida1.addEventListener('change', () => verOtro(comida1));
+    }
+
     sel.addEventListener('change', pintar);
     $$('input[name="Confirma"]').forEach(r => r.addEventListener('change', pintar));
     pintar();
@@ -1666,10 +1720,6 @@ rasgar();
   }
   pintarYa();
 
-  /* El nombre que ya se avisó que estaba anotado: el segundo toque
-     con ese mismo nombre es "sí, quiero actualizarlo". */
-  let avisado = '';
-
   form.addEventListener('submit', async (ev)=>{
     ev.preventDefault();
     const nombre = ($('#fNombre').value || '').trim();
@@ -1692,26 +1742,61 @@ rasgar();
     }
 
     boton.disabled = true;
-
-    /* ¿Ese nombre ya está en la planilla? Si la pregunta falla —sin
-       señal, el servidor caído— sigue de largo y manda: bloquear por
-       no haber podido preguntar sería perder una confirmación de
-       verdad para evitar un duplicado que la planilla ya no hace. */
-    if (avisado !== mismo(nombre)){
-      decir('Revisando…');
-      if (await llego(nombre)){
-        avisado = mismo(nombre);
-        decir('«' + nombre + '» ya está anotado. Si sos vos y querés cambiar lo que pusiste, tocá Confirmar otra vez y lo actualizamos.', 'mal');
-        boton.disabled = false;
-        return;
-      }
-    }
-
     decir('Mandando…');
+
+    /* ══════════ lo que viaja ══════════
+       Donde eligieron "Otro", lo que va a la planilla es lo que
+       escribieron, no la palabra "Otro": el que le pasa las comidas
+       al salón necesita leer "sin frutos secos", no "Otro". */
+    const fd = new FormData(form);
+    $$('select', form).forEach(se => {
+      if (se.name && se.value === 'Otro'){
+        const otro = document.getElementById(se.id + 'Otro');
+        const txt = otro && otro.value.trim();
+        fd.set(se.name, txt ? txt : 'Otro (sin detalle)');
+      }
+    });
+
+    /* ══════════ y por qué ahora tarda menos ══════════
+       Antes esto eran TRES viajes al Apps Script —preguntar si ya
+       estaba, mandar, y volver a preguntar si llegó— más una espera
+       fija de 1,2 s. Cada viaje a Google tarda uno o dos segundos,
+       así que confirmar se iba a seis u ocho: el invitado toca de
+       nuevo, o se va.
+
+       Primero: la pregunta de "¿ya estaba?" se fue. No protegía de
+       nada que la planilla no resuelva sola —el doPost PISA la fila
+       del mismo nombre desde siempre, así que un duplicado no se
+       crea— y costaba un viaje entero antes de cada envío.
+
+       Segundo: el POST ahora se manda pidiendo leer la respuesta. El
+       Apps Script contesta {"ok":true} y deja leerlo desde otro
+       dominio, así que en un solo viaje ya sabemos si entró. Si el
+       navegador no lo deja —que es lo que pasaba antes—, se cae al
+       camino viejo: mandar a ciegas y preguntar si llegó.
+
+       Lo que NO cambia es la regla más vieja: si no sabemos que
+       llegó, la pantalla no dice que llegó. */
     try{
-      await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:new FormData(form)});
-      await new Promise(r=>setTimeout(r, 1200));
-      if (await llego(nombre)){
+      let entro = false;
+      try{
+        const r = await fetch(CONFIG.endpoint, {method:'POST', body:fd});
+        if (r.ok){
+          const t = (await r.text()).trim();
+          try{ const d = JSON.parse(t); entro = !!(d && d.ok); }catch(e){ entro = /ok/i.test(t); }
+        }
+      }catch(e){
+        /* Sin permiso para leer la respuesta: se manda a ciegas y se
+           pregunta. Dos intentos cortos en vez de una espera fija
+           larga: casi siempre contesta en el primero. */
+        await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:fd});
+        for (let i = 0; i < 2 && !entro; i++){
+          await new Promise(r=>setTimeout(r, i ? 1500 : 500));
+          entro = await llego(nombre);
+        }
+      }
+
+      if (entro){
         const r = $('input[name="Confirma"]:checked');
         guardarYa(nombre, r ? r.value : '');
         decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el 29.', 'bien');
