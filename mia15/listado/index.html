@@ -300,14 +300,15 @@ function porPersona(filas){
     const quien = String(f[COL_NOMBRE] == null ? '' : f[COL_NOMBRE]).trim();
     for (let k = 1; k <= cuantos; k++){
       const fila = {};
-      /* El nombre primero y al lado el grupo: así la lista impresa se
-         lee de corrido y se ve de un vistazo qué personas vienen
-         juntas. Dice "Grupo" y no "Vino con" porque va en TODAS las
-         filas del grupo, la del que contestó incluida — y "Cris vino
-         con Cris" no se entiende. Si vino solo no dice nada, y
-         entonces la columna ni se dibuja. */
+      /* El nombre primero y al lado la mesa: así la lista impresa se
+         lee de corrido y se ve de un vistazo quiénes tienen que quedar
+         juntos. Se llama "Mesa sugerida" porque eso es lo que dice —no
+         es una mesa asignada, es que estos vinieron juntos y conviene
+         sentarlos juntos— y va en TODAS las filas del grupo, la del
+         que contestó incluida, para que se pueda ordenar por ella. Si
+         vino solo no dice nada, y entonces la columna ni se dibuja. */
       fila[COL_NOMBRE] = '';
-      if (cuantos > 1) fila['Grupo'] = quien || SIN_NOMBRE;
+      if (cuantos > 1) fila['Mesa sugerida'] = quien || SIN_NOMBRE;
       Object.keys(base).forEach(c => { fila[c] = base[c]; });
       if (k > 1){
         /* Los campos de esta persona pisan a los de la primera. */

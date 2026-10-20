@@ -396,12 +396,12 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     es(comidas.join(',') === 'Diabético,Vegetariano,Ninguno',
        iCom < 0 ? 'no hay columna de comida' : `cada fila lleva su comida: ${comidas.join(' · ')}`);
 
-    /* El grupo, para armar las mesas y para que la lista impresa se
-       lea de corrido. */
-    const iGru = cols.indexOf('Grupo');
+    /* La mesa sugerida: para armar las mesas y para que la lista
+       impresa se lea de corrido. */
+    const iGru = cols.indexOf('Mesa sugerida');
     es(iGru >= 0 && filas.slice(0, 3).every(f => f[iGru] === 'Cris'),
-       iGru < 0 ? 'no dice de qué grupo es cada persona'
-                : 'y dice de qué grupo es cada una, para armar las mesas');
+       iGru < 0 ? 'no dice qué personas conviene sentar juntas'
+                : 'y las tres caen en la misma mesa sugerida');
 
     es(await txt(pag, '#stat-confirmados') === '3', 'arriba siguen siendo 3 los que vienen');
     es(await txt(pag, '#stat-total') === '2', 'y 2 las respuestas');

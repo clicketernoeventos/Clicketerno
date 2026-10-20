@@ -3014,10 +3014,14 @@ nombres que ese número, mandan los nombres — hay gente escrita que si no
 no aparecería. Tope de 20, por si alguien tipea 999. El que dijo que
 **no** es siempre una sola fila.
 
-**La columna nueva se llama `Grupo` y no "Vino con".** Va en TODAS las
-filas del grupo, la del que contestó incluida, así se ordena y se ve de
-un vistazo quiénes se sientan juntos; *"Cris vino con Cris"* no se
-entiende. Si vino solo no dice nada y la columna ni se dibuja.
+**La columna nueva se llama `Mesa sugerida`.** Primero fue "Vino con"
+y el dueño la corrigió: *"que diga algo como mesa sugerida, como que se
+sugiere que esos integrantes estén en la misma mesa"* — y es más exacto,
+porque eso es justo lo que el dato dice: no es una mesa asignada, es que
+vinieron juntos y conviene sentarlos juntos. Va en TODAS las filas del
+grupo, la del que contestó incluida, así se puede ordenar por ella;
+*"Cris vino con Cris"* no se entendía. Si vino solo no dice nada y la
+columna ni se dibuja.
 
 **Y los dos números de arriba salen de listas distintas a propósito**:
 "Respuestas" cuenta familias (las filas de la planilla) y "Vienen" cuenta
