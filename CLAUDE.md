@@ -3441,6 +3441,55 @@ código anterior da **11 fallas**. El contraste lo mide
 `pruebas/contraste.js`, que ahora recorre también esta página (38
 textos).
 
+## `/guia-listado`: la hoja que se le manda al cliente con su tablero
+
+Pedido del dueño (20/10/2026): *"un flyer con todo lo que contiene ese
+Dashboard y cómo entenderlo y manejarlo. Hacelo GENÉRICO así ya lo tengo
+para todos los que hagan invitación. ¿A qué me refiero con genérico? Que
+a la hora de poner la contraseña diga «el correo que nos enviaste para
+usar como contraseña» y cosas así"*.
+
+Es una página sola en `clicketerno.com.ar/guia-listado`, se manda por
+WhatsApp como link y **se imprime o se guarda en PDF** desde el mismo
+teléfono. Explica las siete cosas del tablero en el orden en que las ve
+el cliente: qué es, cómo entrar, los tres números, la lista persona por
+persona, las columnas visibles, el Excel y la impresión, y las dudas que
+aparecen siempre.
+
+**Lo genérico es el pedido entero, y por eso es lo que se mide.** Una
+guía con el nombre de una fiesta adentro deja de servir para la
+siguiente — y el que la recibe ve el nombre de otra clienta. Donde iría
+un dato de cada evento, la guía lo NOMBRA como se lo dice por WhatsApp:
+*"el correo que nos mandaste para usar como contraseña"*, *"la dirección
+de tu listado, que te pasamos nosotros y termina en /listado"*.
+`pruebas/guia.js` falla si aparece el nombre de cualquier carpeta de
+invitación del repo, una dirección de listado concreta o un correo que
+no sea el nuestro. **Los nombres los saca del repo, no escritos a mano**:
+escritos, la prueba se queda corta sola el día que entra una invitación
+nueva, que es justo el día en que alguien podría meterle el nombre a la
+guía. Verificada poniéndole `mia15` a propósito: da 3 fallas.
+
+**Y lo que explica también se mide.** Una guía a la que le falta una
+parte es peor que no tenerla: el cliente la lee entera, no encuentra lo
+que busca y escribe igual. La prueba exige que estén las nueve cosas
+—los tres números, la diferencia entre gente y respuestas, la fila por
+persona, las columnas visibles, el Excel, imprimir, el PDF, la comida de
+cada uno y qué pasa si confirman dos veces—.
+
+**En papel la hoja va en milímetros y los contenedores se resetean**, y
+los botones no se imprimen: en papel un botón es una mancha que no hace
+nada. Es la lección de las tarjetas para cortar, donde el `padding` de
+la pantalla corría la hoja 113px y la mitad se iba fuera del papel.
+
+**No está enlazada desde la página pública, a propósito.** Es una hoja
+de post-venta: el que todavía no compró no tiene nada que hacer ahí, y
+en el menú sería una entrada más que no le sirve a nadie. Se manda con
+el link del listado, juntos.
+
+El contraste lo mide `pruebas/contraste.js`, que ahora la recorre (98
+textos) — y le agarró dos grises que no llegaban a 3:1 apenas escrita:
+el "(sin nombre)" de la tabla de ejemplo y la firma del pie.
+
 ## Invitaciones alojadas en el repo
 
 Cada invitación es una carpeta con su `index.html` en la **raíz**:

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tu listado de confirmaciones · Click Eterno</title>
+<meta name="description" content="Cómo ver quién confirmó a tu fiesta: entrar, leer los números, la lista persona por persona, bajarla a Excel e imprimirla.">
+<link rel="canonical" href="https://clicketerno.com.ar/guia-listado">
+<meta name="theme-color" content="#F6F2EA">
+<link rel="icon" href="marca.webp" type="image/webp">
+<link rel="apple-touch-icon" href="marca.webp">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="Click Eterno">
+<meta property="og:url" content="https://clicketerno.com.ar/guia-listado">
+<meta property="og:title" content="Tu listado de confirmaciones">
+<meta property="og:description" content="Cómo ver quién confirmó a tu fiesta, bajar la lista a Excel e imprimirla.">
+<meta property="og:image" content="https://clicketerno.com.ar/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Click Eterno">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tu listado de confirmaciones">
+<meta name="twitter:description" content="Cómo ver quién confirmó a tu fiesta.">
+<meta name="twitter:image" content="https://clicketerno.com.ar/og.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap"></noscript>
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   LA GUÍA DEL LISTADO · /guia-listado
+
+   Es la pieza que se le manda al cliente el día que se le entrega
+   la invitación, y sirve para TODOS: acá no se nombra ninguna
+   fiesta. Donde iría un dato de cada evento va dicho como se lo
+   dice por WhatsApp —"el correo que nos mandaste para usar como
+   contraseña"—, así no hay que rehacerla por cliente.
+   Hay una prueba que falla si aparece el nombre de un evento.
+
+   Se manda como link y también se imprime o se guarda en PDF, así
+   que la hoja está medida en milímetros y los contenedores se
+   resetean: el `padding` de la pantalla corre la hoja y la mitad
+   se va fuera del papel. Ya pasó con las tarjetas para cortar.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --papel:#F6F2EA; --papel2:#EDE6DA; --tinta:#14110F;
+  --oro:#A87B43; --oro-claro:#D9AE72; --gris:#6B6258; --linea:rgba(20,17,15,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--oro);outline-offset:3px}
+html{overflow-x:hidden}
+body{background:var(--papel);color:var(--tinta);line-height:1.55;overflow-x:hidden;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
+.hoja{max-width:720px;margin:0 auto;padding:40px 24px 60px}
+
+header{text-align:center;padding-bottom:26px;border-bottom:1px solid var(--linea)}
+.marca{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--gris);
+  min-height:44px;padding:5px 8px}
+.marca img{width:30px;height:30px;border-radius:50%;display:block}
+.marca span{font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+h1{margin:16px 0 0;font-size:clamp(27px,6.4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.06}
+.bajada{margin:12px auto 0;max-width:46ch;color:var(--gris);font-size:clamp(14px,3.8vw,16px)}
+
+section{margin:34px 0 0}
+h2{font-size:clamp(18px,4.6vw,23px);font-weight:700;letter-spacing:-.02em;
+  display:flex;align-items:baseline;gap:10px}
+h2 i{font-style:normal;font-size:12px;font-weight:700;color:var(--oro);
+  letter-spacing:.14em;flex:0 0 auto}
+section p{margin:10px 0 0;font-size:clamp(14px,3.9vw,16px)}
+section p.chico{font-size:14px;color:var(--gris)}
+b{font-weight:600}
+
+.caja{margin:16px 0 0;padding:16px 18px;background:#fff;border:1px solid var(--linea);border-radius:12px}
+.caja + .caja{margin-top:12px}
+.caja h3{font-size:15px;font-weight:700;margin:0 0 4px}
+.caja p{margin:0;font-size:14.5px;color:var(--gris)}
+
+.cuenta{display:grid;gap:12px;margin:16px 0 0;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.cuenta div{padding:14px 16px;background:#fff;border:1px solid var(--linea);border-radius:12px}
+.cuenta b{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--oro)}
+.cuenta span{display:block;margin-top:6px;font-size:14.5px;color:var(--gris)}
+
+table{width:100%;border-collapse:collapse;margin:16px 0 0;font-size:13.5px;background:#fff;
+  border:1px solid var(--linea);border-radius:12px;overflow:hidden}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--linea)}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--oro);background:var(--papel2)}
+tr:last-child td{border-bottom:0}
+.si{color:#2e7d4f;font-weight:600}
+.no{color:#A33;font-weight:600}
+.vacio{color:#8A8278}
+.envuelve{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+ul{margin:12px 0 0;padding:0;list-style:none}
+ul li{position:relative;padding-left:20px;margin-top:8px;font-size:clamp(14px,3.9vw,16px)}
+ul li:before{content:'✦';position:absolute;left:0;top:2px;color:var(--oro);font-size:10px}
+
+.ojo{margin:18px 0 0;padding:15px 18px;border-left:3px solid var(--oro-claro);
+  background:var(--papel2);border-radius:0 10px 10px 0;font-size:14.5px}
+
+footer{margin:44px 0 0;padding-top:24px;border-top:1px solid var(--linea);text-align:center}
+footer p{font-size:14px;color:var(--gris)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;margin:16px 6px 0;
+  padding:13px 24px;border-radius:999px;text-decoration:none;font-size:12px;
+  letter-spacing:.16em;text-transform:uppercase;transition:transform .12s,filter .25s,border-color .25s}
+.btn:active{transform:scale(.975)}
+.btn-oro{background:linear-gradient(135deg,var(--oro-claro),var(--oro));color:#17130F;font-weight:600}
+.btn-hilo{border:1px solid var(--oro);color:var(--oro)}
+@media(hover:hover){.btn-oro:hover{filter:brightness(1.06)}
+  .btn-hilo:hover{background:var(--papel2)}}
+.firma{margin-top:26px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#8A8278}
+
+/* ── en papel ──
+   La hoja en MILÍMETROS y los contenedores reseteados: con el
+   padding de la pantalla puesto, la hoja arranca corrida y lo de la
+   derecha se va afuera. Y los botones no se imprimen: en papel un
+   botón es una mancha que no hace nada. */
+@media print{
+  @page{size:210mm 297mm;margin:14mm}
+  body,.hoja{margin:0;padding:0;background:#fff}
+  .caja,.cuenta div,table{break-inside:avoid}
+  section{break-inside:avoid}
+  .no-papel{display:none}
+  a[href^="http"]{text-decoration:none;color:inherit}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+<header>
+  <a class="marca" href="/"><img src="marca.webp" alt=""><span>Click Eterno</span></a>
+  <h1>Tu listado de confirmaciones</h1>
+  <p class="bajada">Dónde ver quién confirmó a tu fiesta, cómo leerlo y cómo
+    bajarlo para armar las mesas. Te alcanza con el teléfono.</p>
+</header>
+
+<section>
+  <h2><i>01</i> Qué es</h2>
+  <p>Es una página tuya, privada, donde se va armando sola la lista de los que
+    confirmaron. Cada vez que un invitado completa el <b>¿Venís?</b> de la
+    invitación, aparece ahí. No tenés que hacer nada ni avisarnos: se actualiza
+    sola cada vez que la abrís.</p>
+  <p class="chico">No es la misma dirección que la invitación. La invitación la
+    ve todo el mundo; este listado lo ves solo vos, con tu contraseña.</p>
+</section>
+
+<section>
+  <h2><i>02</i> Cómo entrar</h2>
+  <p>Abrís <b>la dirección de tu listado</b> —te la pasamos nosotros junto con la
+    invitación, y termina en <b>/listado</b>— y escribís la contraseña.</p>
+  <div class="caja">
+    <h3>¿Cuál es la contraseña?</h3>
+    <p>Es <b>el correo que nos mandaste para usar como contraseña</b>, escrito
+      igual, todo en minúscula y sin espacios.</p>
+  </div>
+  <div class="caja">
+    <h3>Se escribe una sola vez</h3>
+    <p>Queda guardada en ese teléfono o computadora, así que la próxima vez entrás
+      directo. Si entrás desde otro aparato, te la vuelve a pedir.</p>
+  </div>
+  <div class="ojo">Guardá la dirección en favoritos o mandátela a vos misma por
+    WhatsApp: es la forma más rápida de volver a entrar.</div>
+</section>
+
+<section>
+  <h2><i>03</i> Los tres números de arriba</h2>
+  <p>Son lo primero que vas a ver y <b>no dicen lo mismo</b>. La diferencia
+    importa, porque con uno encargás la comida y con el otro sabés a quién te
+    falta.</p>
+  <div class="cuenta">
+    <div><b>Vienen</b><span>Cuántas <b>personas</b> van a la fiesta. Si una
+      respuesta dice que son cuatro, suma cuatro.</span></div>
+    <div><b>No vienen</b><span>Cuántos avisaron que no van a poder.</span></div>
+    <div><b>Respuestas</b><span>Cuántos <b>contestaron</b> la invitación. Una
+      familia de cuatro es una sola respuesta.</span></div>
+  </div>
+  <div class="ojo"><b>Para el salón usá «Vienen».</b> Es la cantidad de gente,
+    que es con lo que se encarga la comida y se arman las mesas.</div>
+</section>
+
+<section>
+  <h2><i>04</i> La lista, persona por persona</h2>
+  <p>Abajo está la lista. <b>Cada persona es un renglón</b>, no cada respuesta:
+    si alguien confirmó por cuatro, vas a ver los cuatro, uno debajo del otro.
+    Así se imprime y se cuenta sin tener que leer para el costado.</p>
+  <div class="envuelve">
+    <table>
+      <tr><th>Nombre</th><th>Confirma</th><th>Cuándo</th><th>Comida</th><th>Mensaje</th></tr>
+      <tr><td>Carla Gómez</td><td class="si">Sí</td><td>12/01 21:04</td><td>Celíaca</td><td>¡No veo la hora!</td></tr>
+      <tr><td>Diego Gómez</td><td class="si">Sí</td><td class="vacio">—</td><td>Ninguno</td><td class="vacio">—</td></tr>
+      <tr><td class="vacio">(sin nombre)</td><td class="si">Sí</td><td class="vacio">—</td><td>Vegetariano</td><td class="vacio">—</td></tr>
+      <tr><td>Juan Pérez</td><td class="no">No</td><td>12/01 22:30</td><td class="vacio">—</td><td>Me lo pierdo, abrazo</td></tr>
+    </table>
+  </div>
+  <p class="chico">En el ejemplo, los tres primeros son una misma familia: Carla
+    contestó por ella y por dos más.</p>
+  <ul>
+    <li><b>Nombre</b> · cada persona que va. Si dice <b>(sin nombre)</b>, quien
+      confirmó no escribió cómo se llama el acompañante: la persona cuenta igual.</li>
+    <li><b>Confirma</b> · si va o no. Está en todos los renglones de la familia,
+      porque vienen o no vienen todos.</li>
+    <li><b>Cuándo</b> · el día y la hora en que contestaron. Aparece una sola vez
+      por respuesta, en el renglón del que la completó.</li>
+    <li><b>Comida</b> · lo que no puede comer cada uno. <b>Es de cada persona</b>,
+      así que en la misma familia puede decir algo distinto en cada renglón.</li>
+    <li><b>Mensaje</b> · lo que te escribieron, si el formulario lo pregunta.</li>
+  </ul>
+  <p class="chico">Las columnas dependen de lo que pregunte tu invitación: si
+    pedimos la canción, vas a tener también esa columna.</p>
+</section>
+
+<section>
+  <h2><i>05</i> Mostrar menos columnas</h2>
+  <p>Arriba de la lista está <b>Columnas visibles</b>, con una casilla por
+    columna. Destildando las que no te interesan, la lista queda más corta y se
+    lee mejor — y así sale también al imprimir y al bajar el Excel.</p>
+  <p class="chico">Las columnas que nadie contestó vienen apagadas de entrada,
+    para que no llenen la pantalla de espacios vacíos.</p>
+</section>
+
+<section>
+  <h2><i>06</i> Bajarla e imprimirla</h2>
+  <div class="caja">
+    <h3>Descargar Excel</h3>
+    <p>Te baja la lista como planilla, con las columnas que tengas tildadas. Es lo
+      que le vas a pasar al salón y con lo que vas a armar las mesas.</p>
+  </div>
+  <div class="caja">
+    <h3>Imprimir listado</h3>
+    <p>Sale en papel tal como se ve. Desde el teléfono, en la misma pantalla de
+      impresión podés elegir <b>Guardar como PDF</b> y mandarlo por WhatsApp.</p>
+  </div>
+</section>
+
+<section>
+  <h2><i>07</i> Dudas que aparecen siempre</h2>
+  <ul>
+    <li><b>Alguien confirmó dos veces.</b> No pasa nada: se guarda una sola vez.
+      La segunda respuesta reemplaza a la primera.</li>
+    <li><b>Dijo que no y después que sí.</b> Vuelve a entrar a la invitación y
+      confirma de nuevo; en la lista queda su última respuesta.</li>
+    <li><b>Falta alguien.</b> Si no está, todavía no confirmó. La lista muestra
+      solo a los que contestaron.</li>
+    <li><b>Me equivoqué al cargar algo.</b> Escribinos y lo corregimos nosotros.</li>
+    <li><b>¿Lo puede ver otro?</b> Solo quien tenga la dirección y la contraseña.
+      No la compartas con los invitados.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>¿Algo no te cierra o querés que te lo mostremos?<br>Escribinos y lo vemos juntos.</p>
+  <div class="no-papel">
+    <a class="btn btn-oro" id="wsp" rel="noopener" href="https://wa.me/5493412506451">Escribinos por WhatsApp</a>
+    <a class="btn btn-hilo" href="/">Ver todo lo que hacemos</a>
+  </div>
+  <p class="firma">Click Eterno · Rosario</p>
+</footer>
+
+</div>
+
+<script>
+/* El mensaje dice de dónde viene: del otro lado se sabe qué pregunta sin
+   tener que averiguarlo. El href del HTML ya apunta a wa.me, así que sin
+   JavaScript el botón lleva igual. */
+document.getElementById('wsp').href =
+  'https://wa.me/5493412506451?text=' +
+  encodeURIComponent('Hola Click Eterno! Tengo una duda con el listado de confirmaciones de mi fiesta.');
+</script>
+</body>
+</html>
