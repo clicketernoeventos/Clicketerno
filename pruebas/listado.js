@@ -396,12 +396,18 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     es(comidas.join(',') === 'Diabético,Vegetariano,Ninguno',
        iCom < 0 ? 'no hay columna de comida' : `cada fila lleva su comida: ${comidas.join(' · ')}`);
 
-    /* La mesa sugerida: para armar las mesas y para que la lista
-       impresa se lea de corrido. */
-    const iGru = cols.indexOf('Mesa sugerida');
-    es(iGru >= 0 && filas.slice(0, 3).every(f => f[iGru] === 'Cris'),
-       iGru < 0 ? 'no dice qué personas conviene sentar juntas'
-                : 'y las tres caen en la misma mesa sugerida');
+    /* Y NINGUNA columna que repita con quién vino cada uno. Hubo una
+       —"Grupo", después "Mesa sugerida"— y el dueño la sacó: «va a ser
+       mucho relleno». Esto es una lista para imprimir, y un renglón
+       repetido en cada fila es una columna más que no se lee. Las
+       personas de una misma respuesta salen una debajo de la otra, así
+       que el grupo se ve por el orden. */
+    const relleno = cols.filter(c => /grupo|mesa|vino con/i.test(c));
+    es(relleno.length === 0, relleno.length === 0
+      ? 'y no se agrega ninguna columna de relleno'
+      : `volvió una columna de relleno: ${relleno.join(', ')}`);
+    es(filas[0][0] === 'Cris' && filas[1][0] === 'Nicki',
+       'y los del mismo grupo salen uno debajo del otro');
 
     es(await txt(pag, '#stat-confirmados') === '3', 'arriba siguen siendo 3 los que vienen');
     es(await txt(pag, '#stat-total') === '2', 'y 2 las respuestas');
