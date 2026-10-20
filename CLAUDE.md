@@ -2980,6 +2980,106 @@ estaban a la vista y ninguna rompía nada. Las agarró una persona
 repartiendo el link de verdad, no una suite — igual que las dos del
 iPhone. Lo que una suite no puede medir es si algo SIRVE.
 
+#### Una fila por PERSONA, no una por respuesta
+
+Lo siguiente que reportó el dueño, probando él mismo: la cuenta ya daba
+bien, pero *"esas personas no forman parte de una misma columna sino que
+cada una sea una fila diferente. Que no estén todos juntos, ya que hace
+más difícil contabilizar quién respondió y es más difícil para imprimir
+la lista"*.
+
+Tenía razón y es de producto: una respuesta que dice "somos 3" llegaba
+como **una** fila con los otros dos metidos en columnas de al costado
+—`Invitado 2`, `Comida 2`, `Invitado 3`, `Comida 3`—, así que para saber
+quién va a la fiesta había que leer **a lo ancho**. Y lo que se imprime y
+se le pasa al salón es una lista de GENTE.
+
+**La planilla NO cambia.** Sigue guardando una fila por respuesta, que es
+lo que hace que confirmar dos veces no deje dos filas y lo que usa la
+puerta `?confirmado=`. Lo que se abre es la PANTALLA: `porPersona()`
+toma cada respuesta y la parte en una fila por persona, con su nombre y
+su comida. Por eso esto no necesitó volver a pegar el Apps Script.
+
+**Funciona sin saber cómo se llaman las columnas de esa invitación.** Se
+buscan las que terminan en un número (`Comida 2`) y se las entiende como
+la misma pregunta hecha a la persona 2; el nombre es el caso especial,
+porque en la persona 1 la columna se llama distinto (`Nombre` contra
+`Invitado 2`). Una invitación que no pregunta por acompañantes no tiene
+ninguna columna así y **queda exactamente igual que antes** — hay una
+comprobación para eso, porque el listado de Pía ya anda y no se puede
+romper.
+
+**Cuántas filas salen**: lo que diga "Cuántos", y si escribieron más
+nombres que ese número, mandan los nombres — hay gente escrita que si no
+no aparecería. Tope de 20, por si alguien tipea 999. El que dijo que
+**no** es siempre una sola fila.
+
+**No se agrega ninguna columna que diga con quién vino cada uno**, y
+quedó escrito porque se probaron dos. Primero `Vino con`, que no se
+entendía en la fila del que contestó (*"Cris vino con Cris"*); después
+`Mesa sugerida`, que el dueño pidió con esas palabras y al verla sacó:
+*"va a ser mucho relleno"*. Tiene razón para lo que esto es —una lista
+para imprimir y pasarle al salón, donde cada renglón repetido en todas
+las filas es una columna más que no se lee—. **El grupo se ve por el
+orden**: las personas de una misma respuesta salen una debajo de la
+otra. Y en la planilla sigue entero, porque allá cada respuesta es una
+sola fila. Hay una comprobación que falla si vuelve a aparecer una
+columna así.
+
+**Y "Cuántos" tampoco se muestra**, por lo mismo: con una fila por
+persona ese número ya está contado —son las filas— y repetido en cada
+renglón del grupo es una columna más que no se lee. Sigue entero en la
+planilla, y los números de arriba lo siguen usando cuando el listado es
+de una invitación que no se abre por persona.
+
+**Y los dos números de arriba salen de listas distintas a propósito**:
+"Respuestas" cuenta familias (las filas de la planilla) y "Vienen" cuenta
+**las filas dibujadas** que dicen que sí — así el número de arriba es
+exactamente lo que se ve abajo. Si dijera otra cosa que lo que está
+dibujado, el que mira no sabe a cuál creerle.
+
+Lo mide `pruebas/listado.js`: que dos respuestas (3 personas + 1) den
+**4 filas**, que no quede ninguna columna "Invitado 2 / Comida 2" a lo
+ancho, que cada fila lleve SU comida, que diga el grupo, que los tres
+números sigan separando gente de respuestas, y que **el Excel se baje con
+esas mismas filas** — medido interceptando el archivo, no contando otra
+vez las filas de la tabla, que daría verde con el Excel roto porque
+estaría midiendo dos veces lo mismo. Contra el código publicado da
+**6 fallas**.
+
+#### Un mensaje para Mia
+
+Pedido del dueño: *"estaría bueno que le pongas mensaje, una pestaña
+para escribirle un mensaje o deseo"*. Es un `textarea` al final del
+formulario, opcional, con tope de 500 caracteres.
+
+**NO se apaga al contestar que no viene**, que es lo contrario de lo que
+hace el resto del formulario: el que no llega es justamente el que más
+quiere dejar escrito algo, y esconderle el campo ahí es perder el
+saludo. Por eso no está en `soloSiViene`, y hay una comprobación para
+las dos mitades —que se vea Y que viaje— porque esconder bien y mandar
+mal da verde igual.
+
+**En el tablero aparece UNA sola vez**, en la fila del que contestó. Con
+una fila por persona, un mensaje largo repetido en las de sus
+acompañantes son tres párrafos iguales uno abajo del otro — el mismo
+relleno que el dueño ya había sacado. La regla quedó general: lo que
+contestó la respuesta (cuándo, el tema, el mensaje) va solo en su fila;
+**el sí/no es la excepción** y va en todas, porque vienen o no vienen
+todos.
+
+**Y el aviso del artículo 6 tuvo que cambiar con el campo.** Decía que
+lo que se escribe se usa "solo para organizar la fiesta: saber cuántos
+son, armar las mesas y pasarle al salón las comidas especiales" — un
+mensaje para la cumpleañera no es ninguna de esas tres. Ahora lo dice.
+Si se agrega una pregunta, ese párrafo se mira: es lo que convierte al
+aviso en verdadero o en una formalidad que miente.
+
+**La del tablero es un guardián de regresión** (contra el código
+anterior da 1 falla: el mensaje repetido en las tres filas). **La de la
+invitación es una verificación**: si el campo no está, lo dice y no
+mide — vale para mia15, no impide que alguien lo saque.
+
 #### La portada volvió a ser tipográfica, y el 15 se llena de tinta
 
 A la clienta **no le gustó la foto de portada** (18/10/2026), así que
@@ -3340,6 +3440,74 @@ que se toca llegue a 44x44 y que la consola quede limpia. Contra el
 código anterior da **11 fallas**. El contraste lo mide
 `pruebas/contraste.js`, que ahora recorre también esta página (38
 textos).
+
+## El flyer del listado: `bash flyer/armar.sh`
+
+Pedido del dueño (20/10/2026): *"un flyer con todo lo que contiene ese
+Dashboard y cómo entenderlo y manejarlo. Hacelo GENÉRICO así ya lo tengo
+para todos los que hagan invitación. ¿A qué me refiero con genérico? Que
+a la hora de poner la contraseña diga «el correo que nos enviaste para
+usar como contraseña» y cosas así"*.
+
+**La primera versión salió mal y vale anotar por qué**: se armó como una
+página del sitio, en `/guia-listado`. Él lo corrigió en una línea —*"yo
+quería un flyer, no armarla en la página"*— y tenía razón: lo que se
+manda por WhatsApp es un **archivo**, no un link más que el cliente
+tiene que abrir. Un link se pierde en el chat; un PDF queda en
+"Documentos" y una imagen se ve sin tocar nada.
+
+**Sale de un HTML igual, y eso no es un rodeo.** `flyer/listado.html` es
+la fuente y `bash flyer/armar.sh` escupe `listado.pdf` (A4, para mandar
+o imprimir) y `listado-1.png` / `listado-2.png` (las hojas en imagen,
+que es lo que se ve en el chat sin abrir nada). Es la misma decisión que
+las piezas de video: **el día que el tablero cambie, el flyer se rehace
+con un comando** en vez de volver a dibujarlo — y así lo puede medir una
+prueba, que a un PDF dibujado a mano no se le puede preguntar nada.
+
+**`flyer/` está en `.assetsignore` y los archivos armados en
+`.gitignore`.** Si se cayera del `.assetsignore`, Cloudflare lo subiría
+y quedaría una página suelta en el sitio sin que nadie se entere — y
+**eso no se nota mirando la pantalla**, porque el servidor de pruebas lo
+sirve igual. Por eso hay una comprobación que lo lee.
+
+**Las imágenes se cortan POR SECCIÓN**, no en pedazos iguales: cortar
+cada N píxeles parte un renglón al medio y el que lo recibe ve media
+palabra arriba y media abajo. Se le pregunta al navegador dónde termina
+cada bloque y se corta ahí; y si lo que sobra al final es poco, se le
+suma a la hoja anterior — una última hoja de dos dedos es un recorte,
+no una hoja.
+
+**Lo genérico es el pedido entero, y por eso es lo que se mide.** Un
+flyer con el nombre de una fiesta adentro deja de servir para la
+siguiente — y el que lo recibe ve el nombre de otra clienta. Donde iría
+un dato de cada evento, el flyer lo NOMBRA como se lo dice por WhatsApp:
+*"el correo que nos mandaste para usar como contraseña"*, *"la dirección
+de tu listado, que te pasamos nosotros y termina en /listado"*.
+`pruebas/guia.js` falla si aparece el nombre de cualquier carpeta de
+invitación del repo, una dirección de listado concreta o un correo que
+no sea el nuestro. **Los nombres los saca del repo, no escritos a mano**:
+escritos, la prueba se queda corta sola el día que entra una invitación
+nueva, que es justo el día en que alguien podría meterle el nombre.
+Verificada poniéndole `mia15` a propósito: da 3 fallas.
+
+**Y lo que explica también se mide.** Un flyer al que le falta una parte
+es peor que no tenerlo: el cliente lo lee entero, no encuentra lo que
+busca y escribe igual. La prueba exige que estén las nueve cosas —los
+tres números, la diferencia entre gente y respuestas, la fila por
+persona, las columnas visibles, el Excel, imprimir, el PDF, la comida de
+cada uno y qué pasa si confirman dos veces—. Y que los archivos estén
+armados y no pesen casi nada, porque si el armador se rompe el dueño se
+entera recién cuando va a mandarlo.
+
+**El logo va con `../marca.webp`.** Vive en la raíz y esto está en
+`flyer/`: sin el `../` sale el cuadradito roto, y es lo primero que se
+ve. Lo agarró una captura, no una prueba.
+
+En papel la hoja va en milímetros, los contenedores se resetean y los
+botones no se imprimen: en papel un botón es una mancha que no hace
+nada. Es la lección de las tarjetas para cortar. El contraste lo mide
+`pruebas/contraste.js`, que recorre la fuente (98 textos) — y le agarró
+dos grises que no llegaban a 3:1 apenas escrita.
 
 ## Invitaciones alojadas en el repo
 

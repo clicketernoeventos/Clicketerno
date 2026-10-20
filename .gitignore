@@ -22,3 +22,7 @@ video/fuentes.css
 # versionadas. El LEEME sí, que explica cómo entran y de dónde sacarlas.
 video/fotos/*
 !video/fotos/LEEME.txt
+
+# Lo que escupe flyer/armar.sh: se rehace con un comando.
+flyer/*.pdf
+flyer/*.png

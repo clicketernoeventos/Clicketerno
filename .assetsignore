@@ -11,6 +11,9 @@ invitaciones/
 *.md
 wrangler.json
 .assetsignore
+# El flyer del listado: es la FUENTE de un archivo que se manda por
+# WhatsApp, no una página del sitio. Se arma con flyer/armar.sh.
+flyer/
 video/
 *.mp4
 ads/
