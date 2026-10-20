@@ -3026,6 +3026,12 @@ otra. Y en la planilla sigue entero, porque allá cada respuesta es una
 sola fila. Hay una comprobación que falla si vuelve a aparecer una
 columna así.
 
+**Y "Cuántos" tampoco se muestra**, por lo mismo: con una fila por
+persona ese número ya está contado —son las filas— y repetido en cada
+renglón del grupo es una columna más que no se lee. Sigue entero en la
+planilla, y los números de arriba lo siguen usando cuando el listado es
+de una invitación que no se abre por persona.
+
 **Y los dos números de arriba salen de listas distintas a propósito**:
 "Respuestas" cuenta familias (las filas de la planilla) y "Vienen" cuenta
 **las filas dibujadas** que dicen que sí — así el número de arriba es

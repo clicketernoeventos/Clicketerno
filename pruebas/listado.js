@@ -406,6 +406,14 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     es(relleno.length === 0, relleno.length === 0
       ? 'y no se agrega ninguna columna de relleno'
       : `volvió una columna de relleno: ${relleno.join(', ')}`);
+
+    /* Y tampoco "Cuántos": con una fila por persona ese número ya está
+       contado —son las filas— y repetido en cada renglón es una
+       columna más que no se lee. */
+    const cuantos = cols.filter(c => /cu[aá]nt/i.test(c));
+    es(cuantos.length === 0, cuantos.length === 0
+      ? 'y "Cuántos" tampoco, que ya lo dicen las filas'
+      : `volvió la columna "${cuantos[0]}", que repite en cada fila el número del grupo`);
     es(filas[0][0] === 'Cris' && filas[1][0] === 'Nicki',
        'y los del mismo grupo salen uno debajo del otro');
 

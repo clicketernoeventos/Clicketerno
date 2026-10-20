@@ -279,8 +279,12 @@ function porPersona(filas){
 
   const fuera = [];
   filas.forEach(f => {
+    /* "Cuántos" tampoco va: con una fila por persona, el número del
+       grupo repetido en cada renglón es un dato que ya está contado
+       —son las filas— y una columna más que no se lee en la lista
+       impresa. Sigue entero en la planilla. */
     const base = {};
-    claves.forEach(c => { if (!conNumero[c]) base[c] = f[c]; });
+    claves.forEach(c => { if (!conNumero[c] && c !== colCuantos) base[c] = f[c]; });
 
     /* El que dijo que no viene es uno solo: sus campos de acompañantes
        ni siquiera viajan. */
