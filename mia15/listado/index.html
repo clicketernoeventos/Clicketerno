@@ -156,7 +156,13 @@ let TODAS_LAS_COLUMNAS = [];
 document.getElementById('panel-title').textContent = CONFIG.nombreEvento;
 document.getElementById('panel-subtitle').textContent = "Listado en tiempo real";
 
+/* `respuestas` es lo que mandó la planilla —una por respuesta— e
+   `invitados` es lo que se DIBUJA: una por persona. Los dos números de
+   arriba salen de listas distintas a propósito: "Respuestas" cuenta
+   familias y "Vienen" cuenta gente. */
+let respuestas = [];
 let invitados = [];
+let explotado = false;
 let resumen = null;
 let COL_CONFIRMA = 'Confirma';
 let COL_NOMBRE = 'Nombre';
@@ -218,6 +224,104 @@ function buscarCol(claves, palabra){
   return claves.find(c => limpiar(c).split(' ').includes(palabra));
 }
 
+/* ══════════ una fila por PERSONA, no una por respuesta ══════════
+   Una respuesta que dice "somos 3" llegaba como UNA fila con los otros
+   dos metidos en columnas de al costado: "Invitado 2", "Comida 2",
+   "Invitado 3", "Comida 3". Pedido del dueño con la planilla en la
+   mano: «que cada una sea una fila diferente, así no es tan difícil
+   contabilizar quién respondió y es más fácil para imprimir la lista».
+   Tiene razón: lo que se imprime y se le pasa al salón es una lista de
+   GENTE, y en la otra forma el que arma las mesas tiene que leer a lo
+   ancho para encontrar a los acompañantes.
+
+   La planilla NO cambia: sigue guardando una fila por respuesta, que es
+   lo que hace que confirmar dos veces no deje dos filas. Lo que se abre
+   es la pantalla.
+
+   Funciona para cualquier invitación, sin saber cómo se llaman sus
+   columnas: se buscan las que terminan en un número ("Comida 2") y se
+   las entiende como la misma pregunta hecha a la persona 2. Una
+   invitación que no pregunta por acompañantes no tiene ninguna, y
+   entonces esto no toca nada. */
+const SIN_NOMBRE = '(sin nombre)';
+function porPersona(filas){
+  const claves = [];
+  filas.forEach(f => Object.keys(f).forEach(k => { if (!claves.includes(k)) claves.push(k); }));
+
+  const limpiar = t => String(t).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ').trim();
+
+  /* Las columnas con número al final, agrupadas por ese número. */
+  const porNumero = {};
+  claves.forEach(c => {
+    const m = String(c).match(/^(.+?)\s+(\d{1,2})$/);
+    if (!m) return;
+    const k = +m[2];
+    if (k < 2 || k > 20) return;
+    (porNumero[k] = porNumero[k] || []).push({ col: c, base: m[1].trim() });
+  });
+  const numeros = Object.keys(porNumero).map(Number).sort((a, b) => a - b);
+  if (!numeros.length) return { filas, explotado: false };
+
+  /* A qué columna de la persona 1 corresponde cada una. "Comida 2" es
+     la "Comida" de la segunda persona; "Invitado 2" es su NOMBRE, que
+     en la persona 1 se llama distinto. */
+  const destino = base => {
+    const b = limpiar(base);
+    if (['invitado','invitada','persona','acompanante','nombre'].indexOf(b) !== -1) return COL_NOMBRE;
+    const igual = claves.find(c => limpiar(c) === b);
+    return igual || base;
+  };
+  const conNumero = {};
+  numeros.forEach(k => porNumero[k].forEach(x => { conNumero[x.col] = true; }));
+  const colCuantos = buscarCol(claves, 'cuantos');
+
+  const fuera = [];
+  filas.forEach(f => {
+    const base = {};
+    claves.forEach(c => { if (!conNumero[c]) base[c] = f[c]; });
+
+    /* El que dijo que no viene es uno solo: sus campos de acompañantes
+       ni siquiera viajan. */
+    let cuantos = 1;
+    if (esSi(f[COL_CONFIRMA])){
+      const n = colCuantos ? parseInt(String(f[colCuantos] || '').replace(/[^0-9]/g, ''), 10) : 0;
+      cuantos = n > 0 ? n : 1;
+      /* Y si escribieron más nombres que el número que eligieron, mandan
+         los nombres: hay gente escrita que si no no aparecería. */
+      numeros.forEach(k => {
+        const hay = porNumero[k].some(x => String(f[x.col] == null ? '' : f[x.col]).trim() !== '');
+        if (hay && k > cuantos) cuantos = k;
+      });
+      if (cuantos > 20) cuantos = 20;
+    }
+
+    const quien = String(f[COL_NOMBRE] == null ? '' : f[COL_NOMBRE]).trim();
+    for (let k = 1; k <= cuantos; k++){
+      const fila = {};
+      /* El nombre primero y al lado el grupo: así la lista impresa se
+         lee de corrido y se ve de un vistazo qué personas vienen
+         juntas. Dice "Grupo" y no "Vino con" porque va en TODAS las
+         filas del grupo, la del que contestó incluida — y "Cris vino
+         con Cris" no se entiende. Si vino solo no dice nada, y
+         entonces la columna ni se dibuja. */
+      fila[COL_NOMBRE] = '';
+      if (cuantos > 1) fila['Grupo'] = quien || SIN_NOMBRE;
+      Object.keys(base).forEach(c => { fila[c] = base[c]; });
+      if (k > 1){
+        /* Los campos de esta persona pisan a los de la primera. */
+        fila[COL_NOMBRE] = '';
+        porNumero[k].forEach(x => { fila[destino(x.base)] = f[x.col]; });
+      }
+      const nom = String(fila[COL_NOMBRE] == null ? '' : fila[COL_NOMBRE]).trim();
+      fila[COL_NOMBRE] = nom || (k === 1 ? (quien || SIN_NOMBRE) : SIN_NOMBRE);
+      fuera.push(fila);
+    }
+  });
+  return { filas: fuera, explotado: true };
+}
+
 function columnasDe(filas){
   const vistas = [];
   filas.forEach(f => Object.keys(f).forEach(k => { if (!vistas.includes(k)) vistas.push(k); }));
@@ -260,7 +364,8 @@ async function cargarDatos(clave){
   if (data && data.error) return 'clave';
   if (!data || !Array.isArray(data.invitados)) return 'red';
 
-  invitados = data.invitados;
+  respuestas = data.invitados;
+  invitados = respuestas;
   /* El resumen y el nombre de la columna los manda la planilla, que es
      la que tiene los títulos de verdad. Contados también acá, el día
      que la columna se llame distinto esta pantalla diría "0
@@ -275,9 +380,14 @@ async function cargarDatos(clave){
      Esto es adivinar, y adivinar se hace SOLO con el Apps Script
      viejo: con el nuevo, la planilla dice los nombres y no hay nada
      que buscar. */
-  const claves = invitados.length ? Object.keys(invitados[0]) : [];
+  const claves = respuestas.length ? Object.keys(respuestas[0]) : [];
   if (!claves.includes(COL_CONFIRMA)) COL_CONFIRMA = buscarCol(claves, 'confirma') || COL_CONFIRMA;
   if (!claves.includes(COL_NOMBRE))   COL_NOMBRE   = buscarCol(claves, 'nombre')   || COL_NOMBRE;
+  /* Se abre DESPUÉS de saber cómo se llama la columna del nombre: sin
+     eso no se sabe dónde poner el nombre de cada acompañante. */
+  const abierto = respuestas.length ? porPersona(respuestas) : { filas: respuestas, explotado: false };
+  invitados = abierto.filas;
+  explotado = abierto.explotado;
   TODAS_LAS_COLUMNAS = columnasDe(invitados);
   /* Se muestran las que alguien contestó. Una columna vacía en TODAS
      las filas es una pregunta que no usó nadie —o la "Persona 4" de un
@@ -321,20 +431,27 @@ function personasDe(filas){
     return suma + (n > 0 ? n : 1);
   }, 0);
 }
+/* Con la lista abierta por persona, "Vienen" es la cantidad de FILAS
+   que dicen que sí — y así el número de arriba es exactamente lo que se
+   ve en la tabla. Si dijera otra cosa que lo que está dibujado abajo,
+   el que mira no sabe a cuál creerle. */
+function vienen(){
+  if (explotado) return invitados.filter(i => esSi(i[COL_CONFIRMA])).length;
+  if (resumen && typeof resumen.personas === 'number') return resumen.personas;
+  return personasDe(invitados);
+}
 function actualizarStats(){
-  const total = resumen ? resumen.total : invitados.length;
+  const total = resumen ? resumen.total : respuestas.length;
   const respondieronSi = resumen ? resumen.confirmados
-                                 : invitados.filter(i => esSi(i[COL_CONFIRMA])).length;
+                                 : respuestas.filter(i => esSi(i[COL_CONFIRMA])).length;
   const noAsisten = resumen ? resumen.no : total - respondieronSi;
   /* La planilla manda el número de personas cuando su Apps Script ya lo
      sabe calcular; si todavía es el de antes, se cuenta acá con las
      mismas filas que ya están en pantalla. Así esto anda sin tener que
      volver a pegar el script, y cuando se pegue manda el de la planilla,
      que es la que tiene los títulos de verdad. */
-  const vienen = (resumen && typeof resumen.personas === 'number')
-    ? resumen.personas : personasDe(invitados);
   document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-confirmados').textContent = vienen;
+  document.getElementById('stat-confirmados').textContent = vienen();
   document.getElementById('stat-no').textContent = noAsisten;
 }
 

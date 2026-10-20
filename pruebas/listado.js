@@ -336,6 +336,112 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     await pag3.close();
   }
 
+  /* ══════════ una fila por PERSONA ══════════
+     Pedido del dueño con la planilla en la mano: «que cada una sea una
+     fila diferente, así no es tan difícil contabilizar quién respondió
+     y es más fácil para imprimir la lista». Una respuesta que dice
+     "somos 3" llegaba como UNA fila con los otros dos metidos en
+     columnas de al costado, así que para saber quién va a la fiesta
+     había que leer a lo ancho.
+
+     Se mide por las dos mitades: que haya una fila por persona CON SU
+     comida, y que los números de arriba sigan separando gente de
+     respuestas. */
+  {
+    const titulo3 = (t) => console.log('\n─── ' + t + ' ───');
+    titulo3('una fila por persona');
+    const grupo = { invitados: [
+      { 'Cuándo': '2028-01-02 13:00', Nombre: 'Cris', Confirma: 'Sí', 'Cuántos': '3',
+        Comida: 'Diabético', 'Invitado 2': 'Nicki', 'Comida 2': 'Vegetariano',
+        'Invitado 3': '', 'Comida 3': 'Ninguno' },
+      { 'Cuándo': '2028-01-02 13:10', Nombre: 'Carla', Confirma: 'No', 'Cuántos': '',
+        Comida: '', 'Invitado 2': '', 'Comida 2': '', 'Invitado 3': '', 'Comida 3': '' }
+    ], columnas: { nombre: 'Nombre', confirma: 'Confirma' } };
+
+    const entrar2 = async (pg) => {
+      if (await pg.locator('#clave-input').isVisible().catch(() => false)){
+        await pg.fill('#clave-input', 'la-clave');
+        await pg.keyboard.press('Enter');
+      }
+      await pg.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    };
+
+    const { pag, errores } = await abrir(ctx, { responde: grupo });
+    await entrar2(pag);
+
+    const filas = await pag.evaluate(() => [...document.querySelectorAll('#tabla-body tr')]
+      .map(tr => [...tr.querySelectorAll('td')].map(td => td.textContent)));
+    es(filas.length === 4, filas.length === 4
+      ? 'dos respuestas (3 personas + 1) dan 4 filas'
+      : `dos respuestas dan ${filas.length} filas y tendrían que dar 4`);
+
+    const cols = await pag.evaluate(() => [...document.querySelectorAll('#tabla-head th')]
+      .map(t => t.textContent));
+    /* Las columnas de al costado desaparecen: ahora cada acompañante
+       tiene SU fila, así que "Invitado 2" repetido a lo ancho es
+       exactamente lo que se vino a sacar. */
+    const alCostado = cols.filter(c => /\s\d+$/.test(c));
+    es(alCostado.length === 0, alCostado.length === 0
+      ? 'y ya no hay columnas "Invitado 2 / Comida 2" a lo ancho'
+      : `quedaron columnas al costado: ${alCostado.join(', ')}`);
+
+    const texto = filas.map(f => f.join(' ')).join(' | ');
+    es(/Cris/.test(texto) && /Nicki/.test(texto),
+       'cada acompañante aparece con su nombre en su propia fila');
+
+    /* Y con SU comida: si la de uno se copia a los demás, el salón
+       recibe tres platos iguales. */
+    const iCom = cols.indexOf('Comida');
+    const comidas = iCom >= 0 ? filas.slice(0, 3).map(f => f[iCom]) : [];
+    es(comidas.join(',') === 'Diabético,Vegetariano,Ninguno',
+       iCom < 0 ? 'no hay columna de comida' : `cada fila lleva su comida: ${comidas.join(' · ')}`);
+
+    /* El grupo, para armar las mesas y para que la lista impresa se
+       lea de corrido. */
+    const iGru = cols.indexOf('Grupo');
+    es(iGru >= 0 && filas.slice(0, 3).every(f => f[iGru] === 'Cris'),
+       iGru < 0 ? 'no dice de qué grupo es cada persona'
+                : 'y dice de qué grupo es cada una, para armar las mesas');
+
+    es(await txt(pag, '#stat-confirmados') === '3', 'arriba siguen siendo 3 los que vienen');
+    es(await txt(pag, '#stat-total') === '2', 'y 2 las respuestas');
+    es(await txt(pag, '#stat-no') === '1', 'y 1 la que no viene');
+    es(errores.length === 0, 'sin errores de JavaScript');
+
+    /* Lo que se baja a Excel tiene que ser lo mismo que está en
+       pantalla: es de donde el cliente imprime, y recibir otra lista es
+       peor que no tenerla. Se mide INTERCEPTANDO el archivo, no
+       contando otra vez las filas de la tabla — eso daría verde con el
+       Excel roto, porque estaría midiendo dos veces lo mismo. */
+    const excel = await pag.evaluate(() => new Promise((listo) => {
+      const antes = XLSX.writeFile;
+      XLSX.writeFile = (wb) => {
+        XLSX.writeFile = antes;
+        listo(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' }));
+      };
+      document.getElementById('btn-excel').click();
+    }));
+    es(excel.length === 4, excel.length === 4
+      ? 'y el Excel se baja con esas mismas 4 filas'
+      : `el Excel se baja con ${excel.length} filas y la pantalla muestra 4`);
+    es(excel.some(f => f.Nombre === 'Nicki' && f.Comida === 'Vegetariano'),
+       'con el acompañante y su comida adentro del archivo');
+    await pag.close();
+
+    /* Una invitación que NO pregunta por acompañantes no se toca: sus
+       filas siguen siendo una por respuesta. */
+    const { pag: pagS } = await abrir(ctx, { responde: { invitados: [
+      { 'Cuándo': '2028-01-02 13:00', Nombre: 'Ana', Confirma: 'Sí' },
+      { 'Cuándo': '2028-01-02 13:01', Nombre: 'Beto', Confirma: 'Sí' }
+    ], columnas: { nombre: 'Nombre', confirma: 'Confirma' } } });
+    await entrar2(pagS);
+    const n2 = await pagS.locator('#tabla-body tr').count();
+    es(n2 === 2, n2 === 2
+      ? 'y una invitación sin acompañantes queda igual que antes'
+      : `una invitación sin acompañantes pasó de 2 filas a ${n2}`);
+    await pagS.close();
+  }
+
   await navegador.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : `\n✓ Sin fallas`);
   process.exit(fallas.length ? 1 : 0);

@@ -2980,6 +2980,60 @@ estaban a la vista y ninguna rompía nada. Las agarró una persona
 repartiendo el link de verdad, no una suite — igual que las dos del
 iPhone. Lo que una suite no puede medir es si algo SIRVE.
 
+#### Una fila por PERSONA, no una por respuesta
+
+Lo siguiente que reportó el dueño, probando él mismo: la cuenta ya daba
+bien, pero *"esas personas no forman parte de una misma columna sino que
+cada una sea una fila diferente. Que no estén todos juntos, ya que hace
+más difícil contabilizar quién respondió y es más difícil para imprimir
+la lista"*.
+
+Tenía razón y es de producto: una respuesta que dice "somos 3" llegaba
+como **una** fila con los otros dos metidos en columnas de al costado
+—`Invitado 2`, `Comida 2`, `Invitado 3`, `Comida 3`—, así que para saber
+quién va a la fiesta había que leer **a lo ancho**. Y lo que se imprime y
+se le pasa al salón es una lista de GENTE.
+
+**La planilla NO cambia.** Sigue guardando una fila por respuesta, que es
+lo que hace que confirmar dos veces no deje dos filas y lo que usa la
+puerta `?confirmado=`. Lo que se abre es la PANTALLA: `porPersona()`
+toma cada respuesta y la parte en una fila por persona, con su nombre y
+su comida. Por eso esto no necesitó volver a pegar el Apps Script.
+
+**Funciona sin saber cómo se llaman las columnas de esa invitación.** Se
+buscan las que terminan en un número (`Comida 2`) y se las entiende como
+la misma pregunta hecha a la persona 2; el nombre es el caso especial,
+porque en la persona 1 la columna se llama distinto (`Nombre` contra
+`Invitado 2`). Una invitación que no pregunta por acompañantes no tiene
+ninguna columna así y **queda exactamente igual que antes** — hay una
+comprobación para eso, porque el listado de Pía ya anda y no se puede
+romper.
+
+**Cuántas filas salen**: lo que diga "Cuántos", y si escribieron más
+nombres que ese número, mandan los nombres — hay gente escrita que si no
+no aparecería. Tope de 20, por si alguien tipea 999. El que dijo que
+**no** es siempre una sola fila.
+
+**La columna nueva se llama `Grupo` y no "Vino con".** Va en TODAS las
+filas del grupo, la del que contestó incluida, así se ordena y se ve de
+un vistazo quiénes se sientan juntos; *"Cris vino con Cris"* no se
+entiende. Si vino solo no dice nada y la columna ni se dibuja.
+
+**Y los dos números de arriba salen de listas distintas a propósito**:
+"Respuestas" cuenta familias (las filas de la planilla) y "Vienen" cuenta
+**las filas dibujadas** que dicen que sí — así el número de arriba es
+exactamente lo que se ve abajo. Si dijera otra cosa que lo que está
+dibujado, el que mira no sabe a cuál creerle.
+
+Lo mide `pruebas/listado.js`: que dos respuestas (3 personas + 1) den
+**4 filas**, que no quede ninguna columna "Invitado 2 / Comida 2" a lo
+ancho, que cada fila lleve SU comida, que diga el grupo, que los tres
+números sigan separando gente de respuestas, y que **el Excel se baje con
+esas mismas filas** — medido interceptando el archivo, no contando otra
+vez las filas de la tabla, que daría verde con el Excel roto porque
+estaría midiendo dos veces lo mismo. Contra el código publicado da
+**6 fallas**.
+
 #### La portada volvió a ser tipográfica, y el 15 se llena de tinta
 
 A la clienta **no le gustó la foto de portada** (18/10/2026), así que
