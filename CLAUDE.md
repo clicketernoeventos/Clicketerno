@@ -3047,6 +3047,39 @@ vez las filas de la tabla, que daría verde con el Excel roto porque
 estaría midiendo dos veces lo mismo. Contra el código publicado da
 **6 fallas**.
 
+#### Un mensaje para Mia
+
+Pedido del dueño: *"estaría bueno que le pongas mensaje, una pestaña
+para escribirle un mensaje o deseo"*. Es un `textarea` al final del
+formulario, opcional, con tope de 500 caracteres.
+
+**NO se apaga al contestar que no viene**, que es lo contrario de lo que
+hace el resto del formulario: el que no llega es justamente el que más
+quiere dejar escrito algo, y esconderle el campo ahí es perder el
+saludo. Por eso no está en `soloSiViene`, y hay una comprobación para
+las dos mitades —que se vea Y que viaje— porque esconder bien y mandar
+mal da verde igual.
+
+**En el tablero aparece UNA sola vez**, en la fila del que contestó. Con
+una fila por persona, un mensaje largo repetido en las de sus
+acompañantes son tres párrafos iguales uno abajo del otro — el mismo
+relleno que el dueño ya había sacado. La regla quedó general: lo que
+contestó la respuesta (cuándo, el tema, el mensaje) va solo en su fila;
+**el sí/no es la excepción** y va en todas, porque vienen o no vienen
+todos.
+
+**Y el aviso del artículo 6 tuvo que cambiar con el campo.** Decía que
+lo que se escribe se usa "solo para organizar la fiesta: saber cuántos
+son, armar las mesas y pasarle al salón las comidas especiales" — un
+mensaje para la cumpleañera no es ninguna de esas tres. Ahora lo dice.
+Si se agrega una pregunta, ese párrafo se mira: es lo que convierte al
+aviso en verdadero o en una formalidad que miente.
+
+**La del tablero es un guardián de regresión** (contra el código
+anterior da 1 falla: el mensaje repetido en las tres filas). **La de la
+invitación es una verificación**: si el campo no está, lo dice y no
+mide — vale para mia15, no impide que alguien lo saque.
+
 #### La portada volvió a ser tipográfica, y el 15 se llena de tinta
 
 A la clienta **no le gustó la foto de portada** (18/10/2026), así que

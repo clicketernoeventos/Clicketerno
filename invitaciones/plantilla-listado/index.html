@@ -315,7 +315,15 @@ function porPersona(filas){
          se ve por el orden; y en la planilla sigue entero, porque allá
          cada respuesta es una sola fila. */
       fila[COL_NOMBRE] = '';
-      Object.keys(base).forEach(c => { fila[c] = base[c]; });
+      /* Lo que contestó la respuesta —cuándo, el tema, el mensaje— va
+         SOLO en la fila del que contestó. Repetido en las de sus
+         acompañantes es el mismo relleno de antes, y con un mensaje
+         largo son tres párrafos iguales uno abajo del otro.
+         El sí/no es la excepción: ese sí es de cada persona, porque
+         vienen o no vienen todos. */
+      Object.keys(base).forEach(c => {
+        fila[c] = (k === 1 || c === COL_CONFIRMA) ? base[c] : '';
+      });
       if (k > 1){
         /* Los campos de esta persona pisan a los de la primera. */
         fila[COL_NOMBRE] = '';

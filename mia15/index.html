@@ -604,7 +604,7 @@ body.cerrado .port-foto img{transform:scale(1.07)}
   color:var(--oro);margin-bottom:14px}
 .oscura .persona .quien{color:var(--oro-neg,#E7C98F)}
 .oscura .persona{border-top-color:rgba(255,255,255,.16)}
-.campo input,.campo select{
+.campo input,.campo select,.campo textarea{
   width:100%;min-height:52px;padding:14px 0;
   border:0;border-bottom:1px solid rgba(17,16,16,.2);border-radius:0;
   background-color:transparent;color:var(--tinta);
@@ -822,10 +822,20 @@ body.cerrado .port-foto img{transform:scale(1.07)}
         <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
       </div>
 
+      <!-- El mensaje NO está en `soloSiViene`, o sea que sigue a la
+           vista aunque contesten que no pueden ir: el que no llega es
+           justamente el que más quiere dejar escrito algo. -->
+      <div class="campo">
+        <label for="fMensaje">Un mensaje para Mia</label>
+        <textarea id="fMensaje" name="Mensaje" rows="3" maxlength="500"
+                  placeholder="Un deseo, algo que le quieras decir…"></textarea>
+      </div>
+
       <details class="aviso-datos">
         <summary>Qué pasa con lo que escribís acá</summary>
         <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
-        son, armar las mesas y pasarle al salón las comidas especiales.
+        son, armar las mesas, pasarle al salón las comidas especiales y
+        darle a Mia los mensajes que le dejen.
         La lista la tiene <b>la familia de Mia</b>, que es quien organiza;
         Click Eterno solo la guarda por su cuenta y orden.
         Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la

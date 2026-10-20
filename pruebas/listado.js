@@ -352,10 +352,12 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     titulo3('una fila por persona');
     const grupo = { invitados: [
       { 'Cuándo': '2028-01-02 13:00', Nombre: 'Cris', Confirma: 'Sí', 'Cuántos': '3',
-        Comida: 'Diabético', 'Invitado 2': 'Nicki', 'Comida 2': 'Vegetariano',
+        Mensaje: 'Que la pases hermoso', Comida: 'Diabético',
+        'Invitado 2': 'Nicki', 'Comida 2': 'Vegetariano',
         'Invitado 3': '', 'Comida 3': 'Ninguno' },
       { 'Cuándo': '2028-01-02 13:10', Nombre: 'Carla', Confirma: 'No', 'Cuántos': '',
-        Comida: '', 'Invitado 2': '', 'Comida 2': '', 'Invitado 3': '', 'Comida 3': '' }
+        Mensaje: '', Comida: '', 'Invitado 2': '', 'Comida 2': '',
+        'Invitado 3': '', 'Comida 3': '' }
     ], columnas: { nombre: 'Nombre', confirma: 'Confirma' } };
 
     const entrar2 = async (pg) => {
@@ -416,6 +418,18 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
       : `volvió la columna "${cuantos[0]}", que repite en cada fila el número del grupo`);
     es(filas[0][0] === 'Cris' && filas[1][0] === 'Nicki',
        'y los del mismo grupo salen uno debajo del otro');
+
+    /* Lo que contestó la respuesta —el tema, el mensaje— va SOLO en la
+       fila del que contestó. Repetido en las de sus acompañantes son
+       tres párrafos iguales uno abajo del otro, que es el relleno que
+       el dueño sacó. El sí/no es la excepción: vienen o no vienen
+       todos, así que ése sí va en cada fila. */
+    const iMsj = cols.indexOf('Mensaje'), iConf = cols.indexOf('Confirma');
+    es(iMsj >= 0 && filas[0][iMsj] !== '' && filas[1][iMsj] === '' && filas[2][iMsj] === '',
+       iMsj < 0 ? 'el mensaje no llega al tablero'
+                : 'el mensaje aparece una vez, en la fila del que contestó');
+    es(filas.slice(0, 3).every(f => f[iConf] === 'Sí'),
+       'y el sí/no sigue en cada fila, porque vienen o no vienen todos');
 
     es(await txt(pag, '#stat-confirmados') === '3', 'arriba siguen siendo 3 los que vienen');
     es(await txt(pag, '#stat-total') === '2', 'y 2 las respuestas');

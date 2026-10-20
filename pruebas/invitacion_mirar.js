@@ -563,6 +563,30 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(!no.lugares, no.lugares
         ? 'al decir que no viene se le sigue preguntando cuántos son'
         : 'al decir que no viene, "cuántos son" se va de la pantalla');
+      /* El mensaje es la excepción de `soloSiViene`: tiene que seguir a
+         la vista aunque contesten que no pueden ir. El que no llega es
+         justamente el que más quiere dejar escrito algo, y si se lo
+         escondemos ahí se pierde. */
+      if (await pagN.locator('#fMensaje').count()){
+        const seVe = await pagN.isVisible('#fMensaje');
+        es(seVe, seVe
+          ? 'el mensaje se puede dejar aunque conteste que no viene'
+          : 'al decir que no viene se le esconde el campo del mensaje');
+        es(no.manda.includes('Mensaje'), no.manda.includes('Mensaje')
+          ? 'y viaja a la planilla igual'
+          : 'y ni siquiera viaja: el saludo del que no puede ir se pierde');
+        const obliga = await pagN.evaluate(() =>
+          document.querySelector('#fMensaje').hasAttribute('required'));
+        es(!obliga, obliga
+          ? 'y encima es obligatorio: el que no quiere escribir nada no puede confirmar'
+          : 'y no es obligatorio');
+      } else {
+        /* Se DICE que no se midió. Un `if` que no entra es una prueba
+           que se saltea sola y deja la suite en verde sin haber mirado
+           nada — y acá eso taparía el día que alguien saque el campo. */
+        bien('esta invitación no tiene campo de mensaje: no hay nada que medir');
+      }
+
       es(!no.manda.includes('Cuántos'), no.manda.includes('Cuántos')
         ? 'y la fila igual llega a la planilla con un número en "Cuántos"'
         : 'y tampoco viaja: a la planilla no le llega un número de mesas');
