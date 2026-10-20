@@ -3441,7 +3441,7 @@ código anterior da **11 fallas**. El contraste lo mide
 `pruebas/contraste.js`, que ahora recorre también esta página (38
 textos).
 
-## `/guia-listado`: la hoja que se le manda al cliente con su tablero
+## El flyer del listado: `bash flyer/armar.sh`
 
 Pedido del dueño (20/10/2026): *"un flyer con todo lo que contiene ese
 Dashboard y cómo entenderlo y manejarlo. Hacelo GENÉRICO así ya lo tengo
@@ -3449,46 +3449,65 @@ para todos los que hagan invitación. ¿A qué me refiero con genérico? Que
 a la hora de poner la contraseña diga «el correo que nos enviaste para
 usar como contraseña» y cosas así"*.
 
-Es una página sola en `clicketerno.com.ar/guia-listado`, se manda por
-WhatsApp como link y **se imprime o se guarda en PDF** desde el mismo
-teléfono. Explica las siete cosas del tablero en el orden en que las ve
-el cliente: qué es, cómo entrar, los tres números, la lista persona por
-persona, las columnas visibles, el Excel y la impresión, y las dudas que
-aparecen siempre.
+**La primera versión salió mal y vale anotar por qué**: se armó como una
+página del sitio, en `/guia-listado`. Él lo corrigió en una línea —*"yo
+quería un flyer, no armarla en la página"*— y tenía razón: lo que se
+manda por WhatsApp es un **archivo**, no un link más que el cliente
+tiene que abrir. Un link se pierde en el chat; un PDF queda en
+"Documentos" y una imagen se ve sin tocar nada.
 
-**Lo genérico es el pedido entero, y por eso es lo que se mide.** Una
-guía con el nombre de una fiesta adentro deja de servir para la
-siguiente — y el que la recibe ve el nombre de otra clienta. Donde iría
-un dato de cada evento, la guía lo NOMBRA como se lo dice por WhatsApp:
+**Sale de un HTML igual, y eso no es un rodeo.** `flyer/listado.html` es
+la fuente y `bash flyer/armar.sh` escupe `listado.pdf` (A4, para mandar
+o imprimir) y `listado-1.png` / `listado-2.png` (las hojas en imagen,
+que es lo que se ve en el chat sin abrir nada). Es la misma decisión que
+las piezas de video: **el día que el tablero cambie, el flyer se rehace
+con un comando** en vez de volver a dibujarlo — y así lo puede medir una
+prueba, que a un PDF dibujado a mano no se le puede preguntar nada.
+
+**`flyer/` está en `.assetsignore` y los archivos armados en
+`.gitignore`.** Si se cayera del `.assetsignore`, Cloudflare lo subiría
+y quedaría una página suelta en el sitio sin que nadie se entere — y
+**eso no se nota mirando la pantalla**, porque el servidor de pruebas lo
+sirve igual. Por eso hay una comprobación que lo lee.
+
+**Las imágenes se cortan POR SECCIÓN**, no en pedazos iguales: cortar
+cada N píxeles parte un renglón al medio y el que lo recibe ve media
+palabra arriba y media abajo. Se le pregunta al navegador dónde termina
+cada bloque y se corta ahí; y si lo que sobra al final es poco, se le
+suma a la hoja anterior — una última hoja de dos dedos es un recorte,
+no una hoja.
+
+**Lo genérico es el pedido entero, y por eso es lo que se mide.** Un
+flyer con el nombre de una fiesta adentro deja de servir para la
+siguiente — y el que lo recibe ve el nombre de otra clienta. Donde iría
+un dato de cada evento, el flyer lo NOMBRA como se lo dice por WhatsApp:
 *"el correo que nos mandaste para usar como contraseña"*, *"la dirección
 de tu listado, que te pasamos nosotros y termina en /listado"*.
 `pruebas/guia.js` falla si aparece el nombre de cualquier carpeta de
 invitación del repo, una dirección de listado concreta o un correo que
 no sea el nuestro. **Los nombres los saca del repo, no escritos a mano**:
 escritos, la prueba se queda corta sola el día que entra una invitación
-nueva, que es justo el día en que alguien podría meterle el nombre a la
-guía. Verificada poniéndole `mia15` a propósito: da 3 fallas.
+nueva, que es justo el día en que alguien podría meterle el nombre.
+Verificada poniéndole `mia15` a propósito: da 3 fallas.
 
-**Y lo que explica también se mide.** Una guía a la que le falta una
-parte es peor que no tenerla: el cliente la lee entera, no encuentra lo
-que busca y escribe igual. La prueba exige que estén las nueve cosas
-—los tres números, la diferencia entre gente y respuestas, la fila por
+**Y lo que explica también se mide.** Un flyer al que le falta una parte
+es peor que no tenerlo: el cliente lo lee entero, no encuentra lo que
+busca y escribe igual. La prueba exige que estén las nueve cosas —los
+tres números, la diferencia entre gente y respuestas, la fila por
 persona, las columnas visibles, el Excel, imprimir, el PDF, la comida de
-cada uno y qué pasa si confirman dos veces—.
+cada uno y qué pasa si confirman dos veces—. Y que los archivos estén
+armados y no pesen casi nada, porque si el armador se rompe el dueño se
+entera recién cuando va a mandarlo.
 
-**En papel la hoja va en milímetros y los contenedores se resetean**, y
-los botones no se imprimen: en papel un botón es una mancha que no hace
-nada. Es la lección de las tarjetas para cortar, donde el `padding` de
-la pantalla corría la hoja 113px y la mitad se iba fuera del papel.
+**El logo va con `../marca.webp`.** Vive en la raíz y esto está en
+`flyer/`: sin el `../` sale el cuadradito roto, y es lo primero que se
+ve. Lo agarró una captura, no una prueba.
 
-**No está enlazada desde la página pública, a propósito.** Es una hoja
-de post-venta: el que todavía no compró no tiene nada que hacer ahí, y
-en el menú sería una entrada más que no le sirve a nadie. Se manda con
-el link del listado, juntos.
-
-El contraste lo mide `pruebas/contraste.js`, que ahora la recorre (98
-textos) — y le agarró dos grises que no llegaban a 3:1 apenas escrita:
-el "(sin nombre)" de la tabla de ejemplo y la firma del pie.
+En papel la hoja va en milímetros, los contenedores se resetean y los
+botones no se imprimen: en papel un botón es una mancha que no hace
+nada. Es la lección de las tarjetas para cortar. El contraste lo mide
+`pruebas/contraste.js`, que recorre la fuente (98 textos) — y le agarró
+dos grises que no llegaban a 3:1 apenas escrita.
 
 ## Invitaciones alojadas en el repo
 

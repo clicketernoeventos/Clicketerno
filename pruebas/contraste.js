@@ -89,7 +89,7 @@ async function mirar(p, url, nombre, piso, prep){
         const b=document.getElementById('verTodas'); if(b) b.click();
       }); });
     await mirar(p, S+'/invitaciones', 'la página de invitaciones');
-    await mirar(p, S+'/guia-listado', 'la guía del listado');
+    await mirar(p, S+'/flyer/listado.html', 'el flyer del listado');
     await mirar(p, S+'/privacidad', 'la política de privacidad');
     await mirar(p, S+'/terminos', 'los términos y condiciones');
     await mirar(p, S+'/muro.html#panel', 'el panel del muro');

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   LA GUÍA DEL LISTADO · /guia-listado
+   EL FLYER DEL LISTADO · flyer/listado.html
 
    Pedido del dueño (20/10/2026): «un flyer con todo lo que contiene
    ese Dashboard y cómo entenderlo y manejarlo. Hacelo GENÉRICO así
@@ -32,7 +32,7 @@ const fs = require('fs');
 const path = require('path');
 
 const BASE = process.env.BASE || 'http://127.0.0.1:8099';
-const RUTA = '/guia-listado';
+const RUTA = '/flyer/listado.html';
 const RAIZ = path.dirname(__dirname);
 const APARATOS = [
   { nombre: 'iPhone SE  320', ancho: 320, alto: 568, dedo: true },
@@ -49,17 +49,30 @@ const ruido = (t) => /favicon|net::ERR_|ERR_CERT|fonts\.googleapis|fonts\.gstati
 (async () => {
   const navegador = await chromium.launch();
 
-  /* ── existe ── */
-  titulo('la dirección');
+  /* ── existe, y NO se publica ──
+     Es un archivo para mandar por WhatsApp, no una página del sitio:
+     el dueño lo dijo con todas las letras, *"yo quería un flyer, no
+     armarla en la página"*. Si `flyer/` se cayera de .assetsignore,
+     Cloudflare lo subiría y quedaría una página suelta en el sitio sin
+     que nadie se entere — el servidor de pruebas la sirve igual, así
+     que esto NO se nota mirando la pantalla. */
+  titulo('el archivo');
+  {
+    const ignora = fs.readFileSync(path.join(RAIZ, '.assetsignore'), 'utf8');
+    if (!/^flyer\/$/m.test(ignora))
+      mal('`flyer/` no está en .assetsignore: se va a publicar como una página del sitio');
+    else bien('`flyer/` no se publica: es un archivo que se manda');
+  }
+  titulo('la fuente');
   const r = await fetch(BASE + RUTA);
   const crudo = r.ok ? await r.text() : '';
   if (!r.ok) {
-    mal(`${RUTA} contesta ${r.status}: el link que se le manda al cliente no abre`);
+    mal(`${RUTA} no se puede abrir (${r.status}): es de donde sale el flyer`);
     await navegador.close();
     console.log(`\n${fallas.length} FALLAS`);
     process.exit(1);
   }
-  bien(`${RUTA} contesta 200 con la dirección limpia`);
+  bien('la fuente del flyer abre');
 
   /* ── es genérica ──
      Los nombres salen de las carpetas del repo, no escritos a mano:
@@ -212,17 +225,17 @@ const ruido = (t) => /favicon|net::ERR_|ERR_CERT|fonts\.googleapis|fonts\.gstati
     await ctx.close();
   }
 
-  /* ── se llega desde algún lado ── */
-  titulo('no queda suelta');
+  /* ── el armado deja los archivos ──
+     Lo que se manda es el PDF y las imágenes, no el HTML: si el armador
+     se rompe, el dueño se entera recién cuando va a mandar el flyer. */
+  titulo('lo que se manda');
   {
-    const ctx = await navegador.newContext({ viewport: { width: 390, height: 844 } });
-    const p = await ctx.newPage();
-    await p.goto(BASE + RUTA, { waitUntil: 'load' });
-    const vuelve = await p.evaluate(() =>
-      [...document.querySelectorAll('a[href]')].some((a) => a.getAttribute('href') === '/'));
-    if (!vuelve) mal('desde la guía no se vuelve al sitio');
-    else bien('desde la guía se vuelve al sitio');
-    await ctx.close();
+    for (const f of ['listado.pdf', 'listado-1.png']) {
+      const donde = path.join(RAIZ, 'flyer', f);
+      if (!fs.existsSync(donde)) mal(`falta ${f}: corré \`bash flyer/armar.sh\``);
+      else if (fs.statSync(donde).size < 20000) mal(`${f} pesa casi nada: salió vacío`);
+      else bien(`${f} armado (${(fs.statSync(donde).size / 1024).toFixed(0)} KB)`);
+    }
   }
 
   await navegador.close();

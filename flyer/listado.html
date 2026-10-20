@@ -5,14 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tu listado de confirmaciones · Click Eterno</title>
 <meta name="description" content="Cómo ver quién confirmó a tu fiesta: entrar, leer los números, la lista persona por persona, bajarla a Excel e imprimirla.">
-<link rel="canonical" href="https://clicketerno.com.ar/guia-listado">
 <meta name="theme-color" content="#F6F2EA">
-<link rel="icon" href="marca.webp" type="image/webp">
-<link rel="apple-touch-icon" href="marca.webp">
+<link rel="icon" href="../marca.webp" type="image/webp">
+<link rel="apple-touch-icon" href="../marca.webp">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="es_AR">
 <meta property="og:site_name" content="Click Eterno">
-<meta property="og:url" content="https://clicketerno.com.ar/guia-listado">
 <meta property="og:title" content="Tu listado de confirmaciones">
 <meta property="og:description" content="Cómo ver quién confirmó a tu fiesta, bajar la lista a Excel e imprimirla.">
 <meta property="og:image" content="https://clicketerno.com.ar/og.jpg">
@@ -31,17 +29,25 @@
 
 <style>
 /* ══════════════════════════════════════════════════════════════
-   LA GUÍA DEL LISTADO · /guia-listado
+   EL FLYER DEL LISTADO · la fuente, no una página del sitio
 
-   Es la pieza que se le manda al cliente el día que se le entrega
-   la invitación, y sirve para TODOS: acá no se nombra ninguna
-   fiesta. Donde iría un dato de cada evento va dicho como se lo
-   dice por WhatsApp —"el correo que nos mandaste para usar como
-   contraseña"—, así no hay que rehacerla por cliente.
-   Hay una prueba que falla si aparece el nombre de un evento.
+   Esto NO se publica: `flyer/` está en .assetsignore. Es de donde
+   sale el archivo que se le manda al cliente por WhatsApp
+   —`bash flyer/armar.sh` escupe el PDF y las imágenes—, igual que
+   las piezas de video. El dueño lo pidió con todas las letras:
+   *"yo quería un flyer, no armarla en la página"*.
 
-   Se manda como link y también se imprime o se guarda en PDF, así
-   que la hoja está medida en milímetros y los contenedores se
+   Es un HTML y no un diseño hecho a mano por un motivo: el día
+   que el tablero cambie, el flyer se rehace con un comando en vez
+   de volver a dibujarlo. Y así lo puede medir una prueba.
+
+   Sirve para TODOS los clientes: acá no se nombra ninguna fiesta.
+   Donde iría un dato de cada evento va dicho como se lo dice por
+   WhatsApp —"el correo que nos mandaste para usar como
+   contraseña"—, así no hay que rehacerlo por cliente. Hay una
+   prueba que falla si aparece el nombre de un evento.
+
+   La hoja está medida en milímetros y los contenedores se
    resetean: el `padding` de la pantalla corre la hoja y la mitad
    se va fuera del papel. Ya pasó con las tarjetas para cortar.
    ══════════════════════════════════════════════════════════════ */
@@ -134,7 +140,7 @@ footer p{font-size:14px;color:var(--gris)}
 <div class="hoja">
 
 <header>
-  <a class="marca" href="/"><img src="marca.webp" alt=""><span>Click Eterno</span></a>
+  <a class="marca" href="https://clicketerno.com.ar"><img src="../marca.webp" alt=""><span>Click Eterno</span></a>
   <h1>Tu listado de confirmaciones</h1>
   <p class="bajada">Dónde ver quién confirmó a tu fiesta, cómo leerlo y cómo
     bajarlo para armar las mesas. Te alcanza con el teléfono.</p>
@@ -257,7 +263,7 @@ footer p{font-size:14px;color:var(--gris)}
   <p>¿Algo no te cierra o querés que te lo mostremos?<br>Escribinos y lo vemos juntos.</p>
   <div class="no-papel">
     <a class="btn btn-oro" id="wsp" rel="noopener" href="https://wa.me/5493412506451">Escribinos por WhatsApp</a>
-    <a class="btn btn-hilo" href="/">Ver todo lo que hacemos</a>
+    <a class="btn btn-hilo" href="https://clicketerno.com.ar">Ver todo lo que hacemos</a>
   </div>
   <p class="firma">Click Eterno · Rosario</p>
 </footer>
