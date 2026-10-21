@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Almi · Mis quince años</title>
+<meta name="description" content="Almi cumple quince. 19 de junio de 2027, La Mansión del Rey, Rosario.">
+<meta name="theme-color" content="#2A0B16">
+<!-- `noindex`: es la fiesta de quince de una persona de verdad y acá se
+     piden nombres de invitados. El que tiene el link entra igual; esto la
+     saca de los buscadores, que es por donde llega el que no fue invitado. -->
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Almi · Mis quince años">
+<meta property="og:description" content="19 de junio de 2027 · La Mansión del Rey · Rosario">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   Almi · quince años
+   La MISMA paleta y las mismas letras que la de Pia —así lo pidió la
+   clienta—, con otras animaciones. Qué se mueve y por qué está escrito
+   abajo, en el bloque "lo que se mueve".
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --vino:#6B1F36; --vino-hondo:#2A0B16; --vino-noche:#1A060E;
+  --rosa:#B8677A; --rubor:#F3DDE3; --rubor-claro:#FBF1EE; --crema:#FFFAF6;
+  --oro:#B8935A; --oro-claro:#E4C89A; --tinta:#3A2A2F;
+  /* El oro de arriba vive sobre el vino y ahí se lee (5,5:1). Sobre el
+     papel claro da 2,38:1, o sea que NO ESTÁ: es la regla de siempre
+     —si un bloque trae su propio fondo, trae su propia tinta— y por eso
+     las secciones claras usan este otro (4,45:1). El contraste no se
+     opina, se calcula. */
+  --oro-tierra:#8A6B39;
+  --e:cubic-bezier(.22,.7,.24,1);
+  --gutter:clamp(22px,6vw,44px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:Jost,system-ui,sans-serif;font-weight:300;color:var(--tinta);
+  background:var(--vino-noche);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400}
+.cursiva{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+a{color:inherit}
+
+/* el grano: lo que separa un fondo plano de uno con cuerpo */
+.grano{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E")}
+
+/* ══════════ piezas compartidas ══════════ */
+.arriba{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.42em;text-transform:uppercase;
+  font-weight:400;color:var(--oro)}
+.claro .arriba{color:var(--oro-tierra)}
+.filete{display:flex;align-items:center;justify-content:center;gap:14px;color:var(--oro)}
+.claro .filete{color:var(--oro-tierra)}
+.filete i{display:block;height:1px;width:min(70px,17vw);background:currentColor;opacity:.75}
+.filete b{width:7px;height:7px;transform:rotate(45deg);border:1px solid currentColor;flex:none}
+
+/* ══════════ 1 · el sobre ══════════ */
+#sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
+  background:radial-gradient(120% 90% at 50% 12%,#7C2540,var(--vino-hondo) 58%,var(--vino-noche));
+  transition:opacity 1s var(--e),visibility 1s}
+#sobre.abierto{opacity:0;visibility:hidden}
+.sobre-centro{text-align:center;display:grid;gap:clamp(24px,5vh,40px);justify-items:center}
+/* La tapa: un sobre de verdad, con su solapa en V. Lo que se abre es la
+   SOLAPA —gira sobre su bisagra de arriba— y la tarjeta sale de adentro.
+   En la de Pia el sobre se queda quieto y la capa se funde; acá se abre. */
+.tapa{width:min(74vw,290px);aspect-ratio:1.45;position:relative;perspective:900px}
+.tapa-cuerpo{position:absolute;inset:0;border-radius:4px;overflow:hidden;
+  background:linear-gradient(160deg,#8E2C4B,#5C1A2E 62%,#42111F);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.14)}
+/* La tarjeta asomando. El nombre va ABAJO, que es lo único que queda a
+   la vista debajo de la punta de la solapa: puesto al medio, el sello
+   se lo come. */
+.tarjetita{position:absolute;left:7%;right:7%;top:11%;bottom:9%;border-radius:3px;
+  background:linear-gradient(180deg,var(--crema),#F6E7E0);z-index:1;
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.55);
+  display:grid;align-content:end;justify-items:center;padding-bottom:4%}
+.tarjetita span{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(23px,7vw,32px);
+  letter-spacing:.18em;color:var(--vino)}
+/* La solapa es un triángulo de verdad —`clip-path`, no un cuadrado
+   rotado adentro de un `overflow:hidden`— y gira sobre su bisagra de
+   arriba. Hecho con el cuadrado rotado, el recorte caía donde no era y
+   el sobre se veía partido en diagonal: dibujado perfecto y roto. */
+.solapa{position:absolute;left:0;right:0;top:0;height:54%;z-index:2;
+  background:linear-gradient(135deg,#9C3352,#6B1F36);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  filter:drop-shadow(0 7px 16px rgba(0,0,0,.4));
+  transform-origin:50% 0;transition:transform 1s var(--e)}
+#abrir{position:relative;z-index:3;margin:0 auto;display:grid;place-items:center;
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,var(--oro-claro),var(--oro) 52%,#8A6B39);
+  box-shadow:0 10px 24px -8px rgba(0,0,0,.7),inset 0 1px 2px rgba(255,255,255,.5);
+  color:#4A2B10;transition:transform .45s var(--e)}
+.tapa-mandos{position:absolute;left:0;right:0;top:51%;transform:translateY(-50%);z-index:3;
+  display:grid;place-items:center}
+#abrir svg{width:26px;height:26px}
+#abrir:active{transform:scale(.96)}
+@media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
+.sobre-pie{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#E9CBD5}
+.sobre-pie b{color:var(--oro-claro);font-weight:400}
+
+/* ══════════ el lienzo ══════════ */
+#papel{position:relative;z-index:1}
+.seccion{position:relative;padding:clamp(62px,9.5vh,104px) var(--gutter);overflow:hidden}
+.caja{max-width:560px;margin:0 auto;text-align:center}
+h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.08;
+  font-size:clamp(34px,10vw,54px)}
+.cuerpo{font-size:clamp(14.5px,3.9vw,16.5px);line-height:1.9;margin-top:18px}
+.claro{background-color:var(--rubor-claro);color:var(--tinta)}
+.claro h2{color:var(--vino)}
+.oscura{background-color:var(--vino-hondo);
+  background-image:radial-gradient(120% 80% at 50% 0,#4A1527,var(--vino-hondo) 62%,var(--vino-noche));
+  color:#F0DEE4}
+.oscura h2{color:#FBEFF3}
+.oscura .cuerpo{color:#D8BFC8}
+
+/* ══════════ 2 · la portada ══════════ */
+#portada{min-height:100svh;display:grid;align-content:center;justify-items:center;
+  background-color:var(--vino-noche);
+  background-image:radial-gradient(130% 95% at 50% 18%,#55182B,#2A0B16 52%,var(--vino-noche));
+  padding:clamp(70px,12vh,120px) var(--gutter) calc(clamp(64px,11vh,96px) + env(safe-area-inset-bottom));
+  text-align:center}
+#nombre{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+  font-size:clamp(62px,24vw,142px);line-height:.92;color:#FFF7F2;
+  letter-spacing:.02em}
+/* El hilo de abajo se abre desde el centro. Vive en su propia capa y es
+   decoración declarada —aria-hidden y pointer-events:none, las dos
+   juntas—, que es como el medidor de contraste saltea un adorno sin
+   quedarse ciego con el resto. */
+#hilo{height:1px;width:min(220px,56vw);margin:clamp(16px,3.2vh,26px) auto 0;
+  background:linear-gradient(90deg,transparent,var(--oro),transparent)}
+.port-quince{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;
+  font-size:clamp(21px,5.8vw,30px);color:var(--oro-claro);letter-spacing:.08em;
+  margin-top:clamp(14px,2.8vh,22px)}
+.port-dato{margin-top:clamp(22px,4.4vh,34px);color:#EBD6DD;
+  font-size:clamp(12px,3.3vw,14px);letter-spacing:.3em;text-transform:uppercase;line-height:2.1}
+.port-baja{margin-top:clamp(26px,5vh,40px);color:var(--oro-claro);opacity:.8}
+.port-baja svg{margin:0 auto}
+
+/* ══════════ 3 · la cuenta regresiva ══════════ */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,14px);
+  margin-top:clamp(28px,5.5vh,44px)}
+.reloj div{position:relative;padding:clamp(10px,2.6vw,16px) 2px}
+.reloj div + div:before{content:'';position:absolute;left:calc(-1 * clamp(3px,1vw,7px));
+  top:22%;bottom:22%;width:1px;background:var(--oro);opacity:.32}
+.reloj b{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+  font-size:clamp(30px,8.6vw,46px);line-height:1;color:#FFF7F2;
+  /* Cifras de caja alta y de ancho fijo: la Cormorant dibuja los
+     números a la antigua —unos cuelgan y otros no— y en un reloj que
+     cambia cada segundo eso se ve como un salto. */
+  font-variant-numeric:lining-nums tabular-nums}
+.reloj span{display:block;font-size:clamp(8.5px,2.3vw,10px);letter-spacing:.2em;
+  text-transform:uppercase;color:var(--oro);margin-top:10px}
+
+/* ══════════ 4 · el calendario ══════════ */
+.calen{margin-top:clamp(28px,5.5vh,42px)}
+.calen .mes{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(20px,5.4vw,26px);
+  color:var(--vino);letter-spacing:.06em}
+.calen table{width:100%;max-width:360px;margin:16px auto 0;border-collapse:collapse}
+.calen th{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--oro-tierra);font-weight:400;padding-bottom:8px}
+.calen td{height:38px;font-size:14px;color:#6B5A5F;text-align:center;position:relative}
+.calen td.elDia{color:var(--vino);font-weight:500}
+/* El anillo del día se DIBUJA solo al entrar. Es un SVG y no un borde:
+   un borde no se puede dibujar, solo aparecer. */
+.anillo{position:absolute;inset:50% auto auto 50%;width:34px;height:34px;
+  transform:translate(-50%,-50%);pointer-events:none}
+.anillo circle{fill:none;stroke:var(--oro-tierra);stroke-width:1.4}
+.calen .corte{border:0;border-top:1px solid rgba(138,107,57,.3);margin:18px auto 0;max-width:200px}
+.calen .hora-txt{font-size:13.5px;line-height:1.8;margin-top:14px;color:#6B5A5F}
+
+/* ══════════ 5 · tarjetas ══════════ */
+.tarjeta{background-color:var(--crema);border-radius:5px;
+  padding:clamp(28px,7vw,42px) clamp(22px,6vw,34px);text-align:center;
+  box-shadow:0 30px 60px -34px rgba(107,31,54,.4);
+  border:1px solid rgba(184,147,90,.22)}
+.tarjeta + .tarjeta{margin-top:18px}
+.tarjeta .arriba{margin-bottom:12px;color:var(--oro-tierra)}
+.tarjeta h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+  font-size:clamp(26px,7vw,34px);color:var(--vino);line-height:1.15}
+.tarjeta p{font-size:15px;line-height:1.85;margin-top:14px;color:#6B5A5F}
+.rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--oro-tierra);margin-top:22px}
+/* El alias va en la LETRA DE TEXTO y no en la serif de los títulos:
+   la Cormorant dibuja los números a la antigua —el 9 y el 7 cuelgan
+   debajo del renglón— y esto es un dato que alguien va a copiar a mano
+   en el home banking. Donde se puede confundir un número, la elegancia
+   pierde. */
+#alias{display:block;font-family:Jost,system-ui,sans-serif;font-weight:500;
+  font-size:clamp(19px,5.4vw,24px);font-variant-numeric:lining-nums tabular-nums;
+  color:var(--vino);letter-spacing:.06em;margin-top:8px;word-break:break-word}
+#titular{font-size:13px;color:#6B5A5F;margin-top:6px}
+
+/* ══════════ botones ══════════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:48px;margin-top:20px;padding:14px 28px;border-radius:999px;
+  background-color:var(--oro-claro);color:#3A2410;
+  font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;
+  text-decoration:none;transition:transform .3s var(--e),filter .3s}
+.btn:active{transform:scale(.975)}
+@media (hover:hover){ .btn:hover{filter:brightness(1.05)} }
+.btn.hueco{background-color:transparent;border:1px solid rgba(184,147,90,.55);color:var(--oro-claro)}
+.claro .btn.hueco{border-color:rgba(138,107,57,.55);color:var(--oro-tierra)}
+
+/* ══════════ 6 · la confirmación ══════════ */
+.campo{text-align:left;margin-bottom:20px}
+.campo label{display:block;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:9px}
+.campo input,.campo select,.campo textarea{width:100%;min-height:48px;
+  background-color:rgba(255,255,255,.07);border:1px solid rgba(232,200,154,.26);border-radius:3px;
+  padding:13px 15px;font-size:16px;font-weight:300;color:#FFF7F2;transition:border-color .3s}
+.campo textarea{min-height:92px;resize:vertical;line-height:1.7}
+.campo input::placeholder,.campo textarea::placeholder{color:rgba(240,222,228,.6)}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--oro)}
+.campo select{appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23B8935A' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center}
+.campo select option{background-color:#2A0B16;color:#FFF7F2}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radios label{display:flex;align-items:center;justify-content:center;gap:9px;
+  min-height:52px;padding:13px 8px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(232,200,154,.26);font-size:13.5px;color:#E8D2D9;
+  transition:.3s var(--e);text-align:center;letter-spacing:.02em;margin:0}
+.radios label.elegida{background-color:var(--oro-claro);border-color:transparent;
+  color:#3A2410;font-weight:500}
+/* El radio de verdad se achica a 1x1 y se esconde: el blanco del dedo es
+   el label entero, que mide 52 de alto. NO lleva `pointer-events:none`:
+   con eso el navegador no se lo puede dar a nadie y marcar la opción con
+   el teclado —o desde una prueba— deja de funcionar. Se esconde, no se
+   desconecta. */
+.radios input{width:1px;height:1px;position:absolute;opacity:0}
+.persona{border-top:1px solid rgba(232,200,154,.2);padding-top:20px;margin-top:4px}
+.persona .quien{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:16px}
+.aviso-datos{margin:4px 0 22px;border-top:1px solid rgba(232,200,154,.2);padding-top:10px;
+  text-align:left}
+.aviso-datos summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
+  font-size:11.5px;letter-spacing:.08em;color:#D8BFC8}
+.aviso-datos summary::-webkit-details-marker{display:none}
+.aviso-datos summary:before{content:'＋';margin-right:9px;color:var(--oro)}
+.aviso-datos[open] summary:before{content:'－'}
+.aviso-datos p{font-size:12.5px;line-height:1.75;color:#D8BFC8;margin:4px 0 0}
+.aviso-datos b{color:#FBEFF3;font-weight:500}
+.aviso-datos a{color:var(--oro-claro);display:inline-block;padding:14px 2px;
+  text-decoration:underline;text-underline-offset:3px}
+#enviar{width:100%;min-height:56px;margin-top:4px;border-radius:999px;
+  background-color:var(--oro-claro);color:#3A2410;
+  font-size:11.5px;font-weight:500;letter-spacing:.26em;text-transform:uppercase}
+#enviar[disabled]{opacity:.5;cursor:default}
+#enviar:active{transform:scale(.99)}
+.aviso{margin-top:18px;font-size:14px;line-height:1.7;min-height:1.3em;color:#D8BFC8}
+.aviso.bien{color:var(--oro-claro)}
+.aviso.mal{color:#FFAEBE}
+.ya-fue{border:1px solid rgba(232,200,154,.3);border-radius:4px;
+  padding:26px 22px;margin-top:26px}
+.ya-fue .ante{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--oro)}
+.ya-fue .ya-nom{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,8vw,38px);
+  color:#FBEFF3;margin:8px 0 12px;line-height:1.1}
+
+/* ══════════ 7 · el cierre ══════════ */
+#cierre{padding-bottom:calc(clamp(62px,9.5vh,104px) + env(safe-area-inset-bottom))}
+.cierre-n{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;
+  font-size:clamp(50px,16vw,80px);color:#FBEFF3;line-height:1;margin-top:22px}
+.firma{margin-top:36px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:#C3A9B1}
+.firma a{color:var(--oro-claro);display:inline-block;padding:15px 8px;
+  text-decoration:underline;text-underline-offset:4px}
+.firma .ico-wsp{width:1.3em;height:1.3em;vertical-align:-.24em;margin-right:.45em;fill:currentColor}
+
+/* ══════════════════════════════════════════════════════════════════
+   LO QUE SE MUEVE
+   La de Pia revela con un `translateY` y escribe el nombre letra por
+   letra. Acá es otro gesto, y son cuatro, todas una sola vez o atadas
+   al scroll — nada que se repita solo delante de los ojos:
+
+   1 · la SOLAPA del sobre se abre y la tarjeta sale de adentro;
+   2 · el nombre CIERRA su interletrado (de .26em al suyo) y el hilo
+       de abajo se abre desde el centro;
+   3 · cada bloque se revela como un TELÓN que sube (clip-path), no
+       subiendo él;
+   4 · el anillo del día del calendario se DIBUJA.
+
+   EL ESTADO POR DEFECTO ES EL BUENO. El CSS esconde recién con la
+   clase `.js`, que pone el propio script: si el JS no corre, la
+   invitación se ve entera en vez de quedar en blanco — y quedarse en
+   blanco no tira ningún error.
+   ══════════════════════════════════════════════════════════════════ */
+.js .ap{clip-path:inset(0 0 102% 0);transform:translateY(8px)}
+.js .ap.entro{clip-path:inset(0 0 -20% 0);transform:none;
+  transition:clip-path 1.05s var(--e),transform 1.05s var(--e)}
+.js .ap.d1.entro{transition-delay:.1s}
+.js .ap.d2.entro{transition-delay:.2s}
+.js .ap.d3.entro{transition-delay:.3s}
+/* El rótulo abre su interletrado al entrar: el mismo gesto de la
+   portada, en chico. */
+.js .arriba.ap{letter-spacing:.18em}
+.js .arriba.ap.entro{letter-spacing:.42em;transition:clip-path 1.05s var(--e),
+  transform 1.05s var(--e),letter-spacing 1.3s var(--e)}
+/* El sobre */
+.js #sobre.abierto .solapa{transform:rotateX(-172deg)}
+.js #sobre.abierto .tarjetita{transition:transform .95s var(--e) .18s;transform:translateY(-30%)}
+/* El nombre */
+.js #nombre.cerrado{letter-spacing:.26em;opacity:0}
+.js #nombre{transition:letter-spacing 1.7s var(--e),opacity 1.1s var(--e)}
+.js #hilo{transform:scaleX(0);transition:transform 1.5s var(--e) .35s}
+.js #hilo.abierto{transform:none}
+/* El anillo */
+.js .anillo circle{stroke-dasharray:var(--vuelta);stroke-dashoffset:var(--vuelta);
+  transition:stroke-dashoffset 1.2s var(--e) .25s}
+.js .entro .anillo circle{stroke-dashoffset:0}
+.port-baja svg{animation:rebote 2.4s ease-in-out infinite}
+@keyframes rebote{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  .js .ap,.js .ap.entro{clip-path:none;transform:none}
+  .js #nombre,.js #nombre.cerrado{letter-spacing:.02em;opacity:1}
+  .js #hilo,.js #hilo.abierto{transform:none}
+  .js .anillo circle{stroke-dasharray:none;stroke-dashoffset:0}
+  .js .arriba.ap,.js .arriba.ap.entro{letter-spacing:.42em}
+}
+
+/* Los 44px son para dedos: en un escritorio con mouse no hace falta
+   meterle aire muerto a cada renglón. */
+@media (max-width:820px),(pointer:coarse){
+  .firma a,.aviso-datos a{padding-left:12px;padding-right:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="grano" aria-hidden="true"></div>
+
+<!-- ══════════ 1 · el sobre ══════════ -->
+<div id="sobre">
+  <div class="sobre-centro">
+    <p class="arriba">Estás invitado</p>
+    <div class="tapa">
+      <div class="tapa-cuerpo"></div>
+      <div class="tarjetita" aria-hidden="true"><span>Almi</span></div>
+      <div class="solapa" aria-hidden="true"></div>
+      <div class="tapa-mandos">
+        <button id="abrir" type="button" aria-label="Abrir la invitación">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0c.9 8.2 2.9 11.1 12 12-9.1.9-11.1 3.8-12 12-.9-8.2-2.9-11.1-12-12C9.1 11.1 11.1 8.2 12 0z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <p class="sobre-pie">Tocá el sello <b>para abrir</b></p>
+  </div>
+</div>
+
+<main id="papel">
+
+  <!-- ══════════ 2 · la portada ══════════ -->
+  <section class="seccion" id="portada">
+    <h1 id="nombre">Almi</h1>
+    <div id="hilo" aria-hidden="true"></div>
+    <p class="port-quince ap d1">mis quince años</p>
+    <p class="port-dato ap d2" id="portDato"></p>
+    <div class="port-baja" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · la cuenta regresiva ══════════ -->
+  <section class="seccion oscura">
+    <div class="caja">
+      <p class="arriba ap">Falta poco</p>
+      <h2 class="ap d1">Ya casi<br><em class="cursiva">llega la noche</em></h2>
+      <div class="reloj ap d2">
+        <div><b id="cD">–</b><span>días</span></div>
+        <div><b id="cH">–</b><span>horas</span></div>
+        <div><b id="cM">–</b><span>minutos</span></div>
+        <div><b id="cS">–</b><span>segundos</span></div>
+      </div>
+      <p class="cuerpo ap d3" id="cuando"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · guardá la fecha ══════════ -->
+  <section class="seccion claro">
+    <div class="caja">
+      <p class="arriba ap">Anotalo</p>
+      <h2 class="ap d1">Guardá<br><em class="cursiva">la fecha</em></h2>
+      <div class="calen ap d2" id="calendario"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · dónde ══════════ -->
+  <section class="seccion oscura">
+    <div class="caja">
+      <p class="arriba ap">Dónde nos vemos</p>
+      <h2 class="ap d1" id="lugar"></h2>
+      <p class="cuerpo ap d2" id="calle"></p>
+      <a class="btn hueco ap d3" id="mapa" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+        </svg>Cómo llegar</a>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · los detalles ══════════ -->
+  <section class="seccion claro">
+    <div class="caja">
+      <div class="tarjeta ap">
+        <p class="arriba">Cómo vestirse</p>
+        <h3>Dress code</h3>
+        <p id="dressTexto"></p>
+      </div>
+      <div class="tarjeta ap d1">
+        <p class="arriba">Un gesto</p>
+        <h3>Regalo</h3>
+        <p>El mejor regalo es que vengas. Si querés hacerme un presente,
+           podés colaborar con mis sueños y mis ganas de festejar.</p>
+        <p class="rotulo-alias">Alias para transferir</p>
+        <b id="alias"></b>
+        <p id="titular"></p>
+        <button class="btn hueco" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 · la confirmación ══════════ -->
+  <section class="seccion oscura" id="confirmar">
+    <div class="caja">
+      <p class="arriba ap">Cuento con vos</p>
+      <h2 class="ap d1">¿Venís?</h2>
+      <p class="cuerpo ap d2" id="hasta"></p>
+
+      <!-- El cartel del que ya confirmó en este aparato. Lo llena el JS;
+           vacío no ocupa nada. -->
+      <div class="ya-fue ap" id="yaFue" hidden></div>
+
+      <form id="rsvp" class="ap" novalidate style="margin-top:28px">
+        <div class="campo">
+          <label for="fNombre">Nombre y apellido</label>
+          <input id="fNombre" name="Nombre" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="campo">
+          <label id="lblAsiste">¿Vas a asistir?</label>
+          <div class="radios" role="radiogroup" aria-labelledby="lblAsiste">
+            <label><input type="radio" name="Confirma" value="Sí"> Sí, ahí voy</label>
+            <label><input type="radio" name="Confirma" value="No"> No voy a poder</label>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="fLugares">¿Cuántos son?</label>
+          <select id="fLugares" name="Cuántos">
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="fComida">¿Algún requerimiento en tu comida?</label>
+          <select id="fComida" name="Comida"></select>
+          <input id="fComidaOtro" type="text" placeholder="Contanos cuál"
+                 style="margin-top:10px;display:none" aria-label="Qué comida">
+        </div>
+
+        <!-- Los que vienen con él: uno por uno, con su nombre y su comida.
+             Los dibuja el JS según "¿Cuántos son?". -->
+        <div id="acomp"></div>
+
+        <div class="campo">
+          <label for="fTema">Un tema que no puede faltar</label>
+          <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
+        </div>
+
+        <!-- El mensaje NO está en `soloSiViene`: sigue a la vista aunque
+             contesten que no pueden ir. El que no llega es justamente el
+             que más quiere dejar escrito algo. -->
+        <div class="campo">
+          <label for="fMensaje">Un mensaje para Almi</label>
+          <textarea id="fMensaje" name="Mensaje" rows="3" maxlength="500"
+                    placeholder="Un deseo, algo que le quieras decir…"></textarea>
+        </div>
+
+        <details class="aviso-datos">
+          <summary>Qué pasa con lo que escribís acá</summary>
+          <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
+          son, armar las mesas, pasarle al salón las comidas especiales y darle a
+          Almi los mensajes que le dejen.
+          La lista la tiene <b>la familia de Almi</b>, que es quien organiza;
+          Click Eterno solo la guarda por su cuenta y orden.
+          Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
+          comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
+          Si querés que borremos lo tuyo antes, escribinos a
+          <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
+        </details>
+
+        <button id="enviar" type="submit">Confirmar</button>
+        <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · el cierre ══════════ -->
+  <section class="seccion oscura" id="cierre">
+    <div class="caja">
+      <div class="filete ap"><i></i><b></b><i></i></div>
+      <p class="cierre-n ap d1">Almi</p>
+      <p class="cuerpo ap d2" id="teEspero"></p>
+      <p class="firma ap d3">
+        Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   LO ÚNICO QUE SE TOCA
+   `fiesta` va con la zona de Rosario escrita (−03:00) y el día y el
+   mes del calendario salen de la CADENA, no de `new Date(...)`: un
+   `new Date("2027-06-19T21:00:00-03:00").getDate()` devuelve el día EN
+   EL RELOJ DEL QUE MIRA, así que un invitado en Madrid vería marcado
+   el 20. La fecha de una fiesta es la del lugar de la fiesta.
+   ══════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  quien: "Almi",
+  fiesta: "2027-06-19T21:00:00-03:00",
+  hastaHora: "04:00",            // se escribe "de 21 a 4 h": las 4 son del día siguiente
+  confirmarHasta: "",            // vacío NO dibuja el renglón: una fecha puesta a ojo
+                                 // le cierra las mesas al invitado el día que no es
+  lugar: "La Mansión del Rey",
+  calle: "Vera Mujica 68 · Rosario",
+  mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
+  dressTexto: "Formal.",
+  alias: "nancyvaldez1976",
+  titular: "",                   // el nombre que muestra el banco al pegar el alias.
+                                 // Sin saberlo NO se escribe nada: un nombre inventado
+                                 // al lado de un alias es peor que ninguno
+  endpoint: ""                   // la dirección /exec de la planilla. Vacío = muestra:
+                                 // la confirmación se completa entera y DICE que no se
+                                 // mandó a ningún lado
+};
+
+const $  = (s, d) => (d || document).querySelector(s);
+const $$ = (s, d) => [...(d || document).querySelectorAll(s)];
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* La clase .js marca que el JS CORRE. Recién con ella el CSS esconde lo
+   que va a aparecer al bajar: sin esto, con el JS caído la invitación
+   quedaría en blanco y eso no tira ningún error. */
+document.documentElement.classList.add('js');
+
+const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ══════════ el sobre ══════════ */
+(function(){
+  const sobre = $('#sobre'), boton = $('#abrir'), nombre = $('#nombre');
+  if (!sobre || !boton) return;
+  /* El nombre arranca con el interletrado abierto y se cierra cuando se
+     abre el sobre, no al cargar: con el sobre encima, una animación que
+     corre detrás no la ve nadie — se gasta el único momento de sorpresa
+     que tiene la pieza contra una capa opaca. */
+  if (nombre && !menosMovimiento) nombre.classList.add('cerrado');
+  boton.addEventListener('click', () => {
+    sobre.classList.add('abierto');
+    if (nombre) nombre.classList.remove('cerrado');
+    const hilo = $('#hilo'); if (hilo) hilo.classList.add('abierto');
+    /* El foco entra a la invitación: si se queda en un botón que ya no
+       está, el que navega con teclado se queda sin punto de partida. */
+    setTimeout(() => { try{ const p = $('#portada');
+      p.setAttribute('tabindex','-1'); p.focus({preventScroll:true}); }catch(e){} }, 60);
+    setTimeout(() => { try{ sobre.remove(); }catch(e){} }, 1100);
+  });
+})();
+
+/* ══════════ lo que sale de CONFIG ══════════ */
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+               'agosto','septiembre','octubre','noviembre','diciembre'];
+const MESES_T = MESES.map(m => m[0].toUpperCase() + m.slice(1));
+const partes = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+const F = partes ? { anio:+partes[1], mes:+partes[2], dia:+partes[3],
+                     hora:+partes[4], min:+partes[5] } : null;
+const sinCeroHora = (h, m) => h + (m ? ':' + String(m).padStart(2,'0') : '');
+/* "De 21 a 4 h", escrito como se dice y sin los `:00` que nadie
+   pronuncia. Una sola función porque el renglón aparece en tres
+   lugares, y escrito tres veces alguno se queda atrás. */
+function horaTexto(){
+  if (!F) return '';
+  const desde = sinCeroHora(F.hora, F.min);
+  const m = String(CONFIG.hastaHora||'').match(/^(\d{1,2}):(\d{2})$/);
+  return m ? 'De ' + desde + ' a ' + sinCeroHora(+m[1], +m[2]) + ' h' : desde + ' h';
+}
+
+(function(){
+  if (F){
+    const desde = sinCeroHora(F.hora, F.min);
+    const hastaM = String(CONFIG.hastaHora||'').match(/^(\d{1,2}):(\d{2})$/);
+    const hasta = hastaM ? sinCeroHora(+hastaM[1], +hastaM[2]) : '';
+    /* Se escribe como se dice —"de 21 a 4 h"—, sin los `:00` que nadie
+       pronuncia. Y el final va como hora suelta y no como fecha: las 4
+       son del día siguiente, y escribirlas como fecha completa haría que
+       la invitación dijera "20 de junio" en algún lado. La fiesta es el
+       19 y eso es lo que tiene que leer el invitado. */
+    $('#portDato').innerHTML =
+      esc(F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio) + '<br>' +
+      esc(CONFIG.lugar) + '<br>' + esc(hasta ? 'De ' + desde + ' a ' + hasta + ' h'
+                                             : desde + ' h');
+    $('#cuando').textContent =
+      F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio +
+      (hasta ? ', de ' + desde + ' a ' + hasta + ' h.' : ', a las ' + desde + ' h.');
+    $('#teEspero').textContent = 'Te espero el ' + F.dia + ' de ' + MESES[F.mes-1] + '.';
+  }
+  $('#lugar').textContent = CONFIG.lugar;
+  $('#calle').textContent = CONFIG.calle;
+  $('#mapa').href = CONFIG.mapa;
+  $('#dressTexto').textContent = CONFIG.dressTexto;
+  $('#alias').textContent = CONFIG.alias;
+  /* Sin titular no se escribe nada, y el renglón no queda vacío ocupando
+     lugar: se saca. */
+  if (CONFIG.titular) $('#titular').textContent = CONFIG.titular;
+  else $('#titular').hidden = true;
+  /* Sin fecha de cierre NO se inventa una. Es la misma regla que dejó la
+     hora apagada en la de Mia hasta que la pasó el dueño. */
+  if (CONFIG.confirmarHasta)
+    $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta +
+                              '. Con eso cerramos las mesas.';
+  else $('#hasta').textContent = 'Avisame si venís, así armamos las mesas.';
+})();
+
+/* ══════════ la cuenta regresiva ══════════
+   El objetivo sale de la cadena CON su zona (−03:00), así que el que la
+   mira desde cualquier parte del mundo cuenta hasta el mismo instante. */
+(function(){
+  const d = $('#cD'), h = $('#cH'), m = $('#cM'), s = $('#cS');
+  if (!d) return;
+  const destino = new Date(CONFIG.fiesta).getTime();
+  if (!destino){ return; }
+  const dd = n => String(n).padStart(2,'0');
+  function vuelta(){
+    const falta = destino - Date.now();
+    if (falta <= 0){
+      d.textContent = h.textContent = m.textContent = s.textContent = '0';
+      return true;
+    }
+    const t = Math.floor(falta/1000);
+    d.textContent = Math.floor(t/86400);
+    h.textContent = dd(Math.floor(t%86400/3600));
+    m.textContent = dd(Math.floor(t%3600/60));
+    s.textContent = dd(t%60);
+    return false;
+  }
+  if (!vuelta()) setInterval(vuelta, 1000);
+})();
+
+/* ══════════ el calendario de "guardá la fecha" ══════════
+   Las cuentas se hacen con `new Date(anio, mes-1, 1)`, que se construye
+   por componentes y no mete zona horaria. La semana arranca el lunes,
+   como el calendario de la pared de acá. */
+(function(){
+  const caja = $('#calendario');
+  if (!caja || !F) { if (caja) caja.remove(); return; }
+  const DIAS = ['L','M','M','J','V','S','D'];
+  const primero = (new Date(F.anio, F.mes-1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(F.anio, F.mes, 0).getDate();
+
+  const celdas = [];
+  for (let i = 0; i < primero; i++) celdas.push('');
+  for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
+  while (celdas.length % 7) celdas.push('');
+
+  /* El anillo: un SVG para poder DIBUJARLO. `--vuelta` es el perímetro,
+     que es lo que el CSS necesita para el dasharray. */
+  const r = 15.3, vuelta = (2 * Math.PI * r).toFixed(1);
+  const anillo = '<svg class="anillo" viewBox="0 0 34 34" aria-hidden="true" ' +
+                 'style="--vuelta:' + vuelta + '"><circle cx="17" cy="17" r="' + r + '"/></svg>';
+
+  let filas = '';
+  for (let i = 0; i < celdas.length; i += 7){
+    filas += '<tr>' + celdas.slice(i, i+7).map(dia =>
+      dia === '' ? '<td></td>'
+                 : dia === F.dia ? '<td class="elDia">' + anillo + dia + '</td>'
+                                 : '<td>' + dia + '</td>'
+    ).join('') + '</tr>';
+  }
+
+  caja.innerHTML =
+    '<p class="mes">' + MESES_T[F.mes-1] + ' ' + F.anio + '</p>' +
+    '<table role="presentation"><thead><tr>' +
+      DIAS.map(x => '<th>' + x + '</th>').join('') +
+    '</tr></thead><tbody>' + filas + '</tbody></table>' +
+    '<hr class="corte">' +
+    /* Acá va la HORA y no el lugar: el lugar está escrito entero en la
+       sección de abajo, pegada a ésta, y repetirlo dos veces seguidas
+       hace que la invitación parezca más larga de lo que es. */
+    '<p class="hora-txt">' + esc(F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio) +
+    (horaTexto() ? '<br>' + esc(horaTexto()) : '') + '</p>';
+})();
+
+/* ══════════ aparecer al bajar ══════════
+   EL QUE SE MIRA NO ES EL QUE SE ESCONDE, Y ESO NO ES UN CAPRICHO.
+   La primera versión observaba cada `.ap` y le ponía `.entro` cuando
+   entraba en pantalla, que es como está hecho en todas las demás. Acá
+   no funciona, porque acá lo que esconde es un `clip-path`: Chrome lo
+   tiene en cuenta para calcular la intersección, así que un bloque
+   recortado a cero NO INTERSECA NUNCA — se escondía tan bien que el
+   observador no lo veía y no se destapaba jamás.
+   Y no se veía como "una animación que no corre". Un `clip-path` que
+   recorta a cero también se lleva puestos los CLICS: el formulario
+   entero quedaba dibujado ahí abajo y no se podía tocar ni el "Sí" ni
+   el botón de confirmar. Sin un solo error en la consola.
+   Por eso el que se observa es la SECCIÓN, que no está recortada, y es
+   ella la que destapa a los suyos. La cascada sigue saliendo de .d1/.d2.
+   Y lo que YA está en la primera pantalla entra solo, sin esperar a que
+   alguien scrollee: el observador descuenta un pedazo de abajo para que
+   un bloque entre cuando ya se ve bien, y con eso lo último de la
+   portada caía debajo de la raya y no intersecaba nunca. */
+(function(){
+  const destapar = s => $$('.ap', s).forEach(n => n.classList.add('entro'));
+  const secciones = $$('.seccion');
+  if (!secciones.length) return;
+  const mirador = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting){
+      destapar(e.target);
+      mirador.unobserve(e.target);
+    }
+  }, {threshold:0, rootMargin:'0px 0px -6% 0px'});
+  secciones.forEach(s => {
+    if (s.getBoundingClientRect().top < innerHeight) destapar(s);
+    else mirador.observe(s);
+  });
+})();
+
+/* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════
+   Es el único renglón nuestro en toda la invitación y es por donde entra
+   el próximo cliente: el que la recibe y le gusta toca ahí. El mensaje
+   DICE DE QUÉ INVITACIÓN VIENE, así del otro lado se sabe qué está
+   mirando el que escribe sin tener que preguntarlo.
+   El nombre sale de `CONFIG.quien`, no escrito a mano.
+   El `href` del HTML apunta al sitio a propósito: si el JS no corre, el
+   enlace lleva igual a algún lado. Y el logo de WhatsApp se pone ACÁ, en
+   el mismo lugar donde se arma el enlace: sin JS el enlace va al sitio, y
+   ahí un logo de WhatsApp sería una promesa que no se cumple. */
+(function(){
+  const a = $('.firma a');
+  if (!a) return;
+  const TEL = '5493412506451';   /* 341 250-6451, el del negocio */
+  const texto = 'Hola Click Eterno! Vi la invitación de ' + (CONFIG.quien || '') +
+                ' y quiero consultar por una invitación para mi fiesta.';
+  a.href = 'https://wa.me/' + TEL + '?text=' + encodeURIComponent(texto);
+  /* fill-rule evenodd: sin eso el globo y el auricular se rellenan los dos
+     y queda una mancha en vez de un logo. */
+  a.insertAdjacentHTML('afterbegin',
+    '<svg class="ico-wsp" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true">' +
+    '<path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>');
+})();
+
+/* ══════════ copiar el alias ══════════ */
+(function(){
+  const b = $('#copiar'), t = $('#copiarTxt');
+  if (!b) return;
+  b.addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(CONFIG.alias);
+      t.textContent = 'Copiado';
+    }catch(e){
+      /* Si el navegador no deja copiar, no se miente: se dice qué hacer. */
+      t.textContent = 'Mantené apretado el alias';
+    }
+    setTimeout(() => { t.textContent = 'Copiar alias'; }, 2600);
+  });
+})();
+
+/* ══════════ marcar la opción elegida ══════════
+   El CSS lo haría con :has(), que Safari trae recién desde 2022. En uno
+   más viejo la opción elegida no se marcaba y el invitado no sabía qué
+   había tocado: eso no tira ningún error. */
+(function(){
+  const ls = $$('.radios label');
+  const pintar = () => ls.forEach(l => {
+    const i = $('input', l);
+    l.classList.toggle('elegida', !!(i && i.checked));
+  });
+  ls.forEach(l => { const i = $('input', l); if (i) i.addEventListener('change', pintar); });
+  pintar();
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   LA CONFIRMACIÓN
+   Portada tal cual de la de Mia, que es la que está medida contra una
+   fiesta de verdad. Lo que trae y por qué:
+
+   · UNA COMIDA POR PERSONA. Lo reportó el dueño: eligiendo 5 personas
+     salía una sola opción de comida y el salón recibía cinco platos sin
+     TACC. Cada acompañante es un bloque con su nombre y su comida.
+   · EL QUE DICE QUE NO no llena lo que no es suyo. `new FormData(form)`
+     manda TODO lo que esté en el formulario, esté a la vista o no, así
+     que a la planilla le llegaba una fila que dice NO VIENE con
+     "Cuántos: 4" — justo la columna con la que se arman las mesas. Por
+     eso van `hidden` Y `disabled`: lo segundo es lo único que hace que
+     no viajen.
+   · UN SOLO VIAJE. El POST se manda pidiendo leer la respuesta: el Apps
+     Script contesta {"ok":true}, así que en un viaje ya se sabe si
+     entró. Si el navegador no deja leerla, se cae al camino viejo.
+   · Y LA REGLA MÁS VIEJA DEL PROYECTO: si no sabemos que llegó, la
+     pantalla NO dice que llegó.
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const form = $('#rsvp'), aviso = $('#aviso'), boton = $('#enviar');
+  if (!form) return;
+
+  const decir = (txt, clase) => {
+    aviso.textContent = txt;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  /* El Apps Script nuevo contesta JSON: {"ok":true}. El viejo contestaba
+     el texto "si". Se aceptan los dos: leerlo mal no se ve como un error,
+     se ve como "no pudimos confirmar" arriba de una confirmación que SÍ
+     se guardó, y el invitado la manda de nuevo. */
+  async function llego(nombre){
+    try{
+      const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre),
+                            {cache:'no-store'});
+      if (!r.ok) return false;
+      const t = (await r.text()).trim();
+      try{
+        const d = JSON.parse(t);
+        if (d && typeof d.ok === 'boolean') return d.ok;
+      }catch(e){}
+      const p = t.toLowerCase();
+      return p === 'si' || p === 'sí' || p === 'true' || p === '1';
+    }catch(e){ return false; }
+  }
+
+  /* ── los nombres y las comidas de los que vienen ── */
+  (function(){
+    const sel = $('#fLugares'), caja = $('#acomp');
+    if (!sel || !caja) return;
+    const viene = () => { const r = $('input[name="Confirma"]:checked');
+      return !r || r.value === 'Sí'; };
+    const soloSiViene = ['#fLugares', '#fComida', '#fTema'];
+    /* Es una ELECCIÓN y no un campo libre: escrito a mano llegan
+       "celiaco", "CELÍACA", "sin tacc" y "no como gluten" en la misma
+       columna, y el que le pasa las comidas al salón las tiene que
+       ordenar a mano. */
+    const COMIDAS = ['Ninguno','Vegetariano','Celíaco','Diabético','Hipertenso',
+                     'No tolerante a la lactosa','Otro'];
+    const opciones = () => COMIDAS.map(o => '<option value="' + esc(o) + '">' + esc(o) + '</option>').join('');
+    /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el único
+       caso que importa: contestar "no voy a poder" borra los renglones, y
+       al volver al "sí" ya no había de dónde leerlos. */
+    const tenia = {};
+    const pintar = () => {
+      const va = viene();
+      soloSiViene.forEach(q => {
+        const nodo = $(q); if (!nodo) return;
+        const campo = nodo.closest('.campo');
+        if (campo) campo.hidden = !va;
+        nodo.disabled = !va;
+      });
+      const n = va ? Math.max(1, +sel.value || 1) : 1;
+      $$('input,select', caja).forEach(i => { if (i.name) tenia[i.name] = i.value; });
+      let h = '';
+      for (let k = 2; k <= n; k++){
+        /* Los nombres de los campos SON los títulos de las columnas, y el
+           Apps Script crea la columna sola la primera vez que llega una
+           que no conocía: del otro lado no hay nada que tocar. */
+        const nom = 'Invitado ' + k, com = 'Comida ' + k;
+        h += '<div class="persona">' +
+               '<div class="quien">Invitado ' + k + '</div>' +
+               '<div class="campo"><label for="fInv' + k + '">Nombre y apellido</label>' +
+                 '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
+                 ' value="' + esc(tenia[nom] || '') + '"></div>' +
+               '<div class="campo"><label for="fCom' + k + '">¿Algún requerimiento en su comida?</label>' +
+                 '<select id="fCom' + k + '" name="' + com + '">' + opciones() + '</select>' +
+                 '<input id="fCom' + k + 'Otro" type="text" placeholder="Contanos cuál"' +
+                 ' style="margin-top:10px;display:none" aria-label="Qué comida">' +
+               '</div>' +
+             '</div>';
+      }
+      caja.innerHTML = h;
+      $$('select', caja).forEach(se => { if (tenia[se.name]) se.value = tenia[se.name]; });
+      $$('select', caja).forEach(verOtro);
+    };
+    /* "Otro" abre su campito y lo cierra al cambiar de opción. El campo NO
+       tiene `name`: lo que viaja es la columna de la comida, con el texto
+       adentro (lo reemplaza el envío). Dos columnas para lo mismo serían
+       dos lugares donde mirar. */
+    function verOtro(se){
+      const otro = document.getElementById(se.id + 'Otro');
+      if (!otro) return;
+      const hay = se.value === 'Otro';
+      otro.style.display = hay ? 'block' : 'none';
+      if (!hay) otro.value = '';
+    }
+    caja.addEventListener('change', e => { if (e.target.tagName === 'SELECT') verOtro(e.target); });
+
+    const comida1 = $('#fComida');
+    if (comida1){
+      comida1.innerHTML = opciones();
+      comida1.addEventListener('change', () => verOtro(comida1));
+    }
+
+    sel.addEventListener('change', pintar);
+    $$('input[name="Confirma"]').forEach(r => r.addEventListener('change', pintar));
+    pintar();
+  })();
+
+  /* ── el que ya confirmó en ESTE aparato ──
+     El caso que de verdad llena la planilla es el mismo invitado
+     volviendo a abrir el link de WhatsApp dos días después y completando
+     todo otra vez. Confirmado una vez, la pantalla le muestra un cartel
+     con su nombre EN LUGAR del formulario: dejarlo abierto abajo es
+     invitarlo a llenarlo de nuevo. Queda el botón para cambiar la
+     respuesta, que es el otro caso real —el que pasó de "no" a "sí"— y
+     ésa no se puede cerrar.
+     Se guarda SOLO cuando la confirmación llegó de verdad: guardarlo en
+     la muestra sería decirle "ya confirmaste" cuando no se mandó a ningún
+     lado. */
+  const LLAVE = 'ce:rsvp:' + location.pathname;
+  const leerYa = () => { try{ return JSON.parse(localStorage.getItem(LLAVE) || 'null'); }
+                         catch(e){ return null; } };
+  const guardarYa = (nombre, confirma) => { try{
+    localStorage.setItem(LLAVE, JSON.stringify({nombre, confirma}));
+  }catch(e){} };
+
+  const cartel = $('#yaFue');
+  const diaFiesta = F ? F.dia + ' de ' + MESES[F.mes-1] : 'la fiesta';
+  function pintarYa(){
+    const y = leerYa();
+    if (!y || !y.nombre){ cartel.hidden = true; form.hidden = false; return; }
+    cartel.hidden = false;
+    form.hidden = true;
+    cartel.innerHTML =
+      '<p class="ante" style="margin:0">Ya confirmaste</p>' +
+      '<p class="ya-nom">' + esc(y.nombre) + '</p>' +
+      '<p class="cuerpo" style="margin:0 0 4px">' +
+      (y.confirma === 'No' ? 'Nos avisaste que no vas a poder venir. Gracias por decirlo.'
+                           : 'Te esperamos el ' + diaFiesta + '.') + '</p>' +
+      '<button class="btn hueco" type="button" id="cambiarYa">Cambiar mi respuesta</button>';
+    /* El cartel nace con `.ap`, o sea escondido hasta que el observador lo
+       deja entrar — y lo acaba de dibujar el JS, así que puede haberse
+       perdido la vuelta. Se lo deja entrar a mano. */
+    cartel.classList.add('entro');
+    $('#cambiarYa').addEventListener('click', () => {
+      cartel.hidden = true;
+      form.hidden = false;
+      /* Escondido, el formulario nunca intersecó: sin esto vuelve a
+         aparecer recortado y no hay ningún error que lo diga. */
+      form.classList.add('entro');
+      $('#fNombre').value = y.nombre;
+      $('#fNombre').focus();
+    });
+  }
+  pintarYa();
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const nombre = ($('#fNombre').value || '').trim();
+    if (nombre.length < 3){ decir('Escribí tu nombre y apellido.', 'mal'); $('#fNombre').focus(); return; }
+
+    /* Nada viene preseleccionado y hay que elegir. Con el "Sí" puesto de
+       fábrica, el que toca Confirmar sin leer manda un sí que no quiso
+       decir — y eso se paga en comida encargada para gente que no va. */
+    if (!$('input[name="Confirma"]:checked')){
+      decir('Decinos si venís o no.', 'mal');
+      $('.radios').scrollIntoView({block:'center'});
+      return;
+    }
+
+    if (!CONFIG.endpoint){
+      /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
+      decir('Esto todavía es una muestra: la confirmación no se manda a ningún lado. ' +
+            'En la de verdad, acá te decimos que llegó.', 'bien');
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Mandando…');
+
+    /* Donde eligieron "Otro", lo que va a la planilla es lo que
+       escribieron, no la palabra "Otro": el que le pasa las comidas al
+       salón necesita leer "sin frutos secos". */
+    const fd = new FormData(form);
+    $$('select', form).forEach(se => {
+      if (se.name && se.value === 'Otro'){
+        const otro = document.getElementById(se.id + 'Otro');
+        const txt = otro && otro.value.trim();
+        fd.set(se.name, txt ? txt : 'Otro (sin detalle)');
+      }
+    });
+
+    try{
+      let entro = false;
+      try{
+        const r = await fetch(CONFIG.endpoint, {method:'POST', body:fd});
+        if (r.ok){
+          const t = (await r.text()).trim();
+          try{ const d = JSON.parse(t); entro = !!(d && d.ok); }catch(e){ entro = /ok/i.test(t); }
+        }
+      }catch(e){
+        /* Sin permiso para leer la respuesta: se manda a ciegas y se
+           pregunta. Dos intentos cortos en vez de una espera fija larga:
+           casi siempre contesta en el primero. */
+        await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:fd});
+        for (let i = 0; i < 2 && !entro; i++){
+          await new Promise(res => setTimeout(res, i ? 1500 : 500));
+          entro = await llego(nombre);
+        }
+      }
+
+      if (entro){
+        const r = $('input[name="Confirma"]:checked');
+        guardarYa(nombre, r ? r.value : '');
+        decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el ' + (F ? F.dia : '') + '.', 'bien');
+        pintarYa();
+      }
+      else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }catch(e){
+      decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }
+    boton.disabled = false;
+  });
+})();
+</script>
+</body>
+</html>

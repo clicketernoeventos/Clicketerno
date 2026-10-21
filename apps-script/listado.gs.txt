@@ -31,7 +31,12 @@
      3. Agregar propiedad:
           nombre:  CLAVE_LISTADO
           valor:   la clave que quieras (larga, no un número corto)
-     4. Guardar.
+     4. Y la MAESTRA, la misma para todas las invitaciones, que es
+        la que usa Click Eterno para entrar a cualquier listado sin
+        ir a buscar la del evento:
+          nombre:  CLAVE_MAESTRA
+          valor:   la maestra
+     5. Guardar.
 
    Y después de pegar: Implementar → Administrar implementaciones →
    editar la que ya existe → Versión: nueva → Implementar. Si se
@@ -55,9 +60,24 @@ function doGet(e) {
     return json({ error: 'sin_clave_configurada',
                   mensaje: 'Falta poner CLAVE_LISTADO en las propiedades del proyecto.' });
   }
-  if (!p.clave || !igualesSinApuro_(String(p.clave), String(esperada))) {
+  /* Entra la del evento O la maestra. */
+  var maestra = PropertiesService.getScriptProperties().getProperty('CLAVE_MAESTRA');
+  var acierta = !!p.clave && (
+        igualesSinApuro_(String(p.clave), String(esperada)) ||
+        (!!maestra && igualesSinApuro_(String(p.clave), String(maestra))));
+  /* El freno: una clave corta en una puerta abierta a internet se
+     prueba entera en minutos. Doce fallos seguidos y queda cerrada
+     diez minutos, así que probarlas todas pasa a ser días. El que
+     acierta lo borra. */
+  if (frenado_()) {
+    return json({ error: 'frenado',
+                  mensaje: 'Demasiados intentos. Probá de nuevo en un rato.' });
+  }
+  if (!acierta) {
+    fallo_();
     return json({ error: 'clave', mensaje: 'Clave incorrecta.' });
   }
+  acerto_();
   return json({ invitados: filas_() });
 }
 
@@ -107,6 +127,32 @@ function estaConfirmado_(nombre) {
 /* Compara sin apurarse: siempre recorre todo, gane o pierda. Si
    cortara en la primera letra distinta, el tiempo que tarda en
    contestar iría contando cuántas letras acertó quien prueba. */
+var TOPE_FALLOS = 12;
+var CUARENTENA_MS = 10 * 60 * 1000;
+
+function frenado_() {
+  var props = PropertiesService.getScriptProperties();
+  var hasta = Number(props.getProperty('FRENO_HASTA') || 0);
+  if (!hasta) return false;
+  if (Date.now() < hasta) return true;
+  props.deleteProperty('FRENO_HASTA');
+  props.deleteProperty('FALLOS');
+  return false;
+}
+
+function fallo_() {
+  var props = PropertiesService.getScriptProperties();
+  var n = Number(props.getProperty('FALLOS') || 0) + 1;
+  props.setProperty('FALLOS', String(n));
+  if (n >= TOPE_FALLOS) props.setProperty('FRENO_HASTA', String(Date.now() + CUARENTENA_MS));
+}
+
+function acerto_() {
+  var props = PropertiesService.getScriptProperties();
+  props.deleteProperty('FALLOS');
+  props.deleteProperty('FRENO_HASTA');
+}
+
 function igualesSinApuro_(a, b) {
   if (a.length !== b.length) return false;
   var dif = 0;

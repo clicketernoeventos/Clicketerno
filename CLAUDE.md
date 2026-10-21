@@ -3322,6 +3322,134 @@ decisión ya escrita para `muro.html` y `rollo.html`.
 formulario. Acá hace falta de verdad: se piden nombres de invitados
 y comidas especiales, que es información de salud.
 
+### `almi15/`: la segunda invitación de un cliente
+
+19 de junio de 2027, La Mansión del Rey, de 21 a 4 h. Quince años.
+Lo que pidió: **la misma que la de Pia** —*"misma paleta de colores
+pero con otras animaciones"*—, dress code **formal**, alias
+`nancyvaldez1976`.
+
+**La paleta y las letras son las de Pia, tal cual** (`--vino`,
+`--rosa`, `--oro`, Cormorant Garamond + Jost). Lo que NO se copió de
+Pia son los **IDs**: van los de `mia15` (`#abrir`, `#cD`…`#cS`,
+`#calendario .elDia`, `#rsvp`, `#fNombre`, `#fLugares`, `#fComida`,
+`#fMensaje`, `#enviar`, `#aviso`), porque son los que mide
+`pruebas/invitacion_mirar.js`. Una invitación con los nombres de Pia
+se dibuja igual y **la suite la mide a medias**: lo que no encuentra
+lo informa como "esta invitación no tiene eso" y queda verde.
+
+**Y la confirmación es la de mia15 entera**, que es la única medida
+contra una fiesta de verdad: una comida POR PERSONA, el que dice que
+no no manda "Cuántos: 4", el mensaje sigue a la vista aunque conteste
+que no, y un solo viaje al Apps Script.
+
+**Lo que tiene de distinto es el movimiento**, que es lo que se pidió.
+Son cuatro y todas pasan una vez o van atadas al scroll: la **solapa
+del sobre** se abre sobre su bisagra y la tarjeta sale de adentro; el
+nombre **cierra su interletrado** (.26em → el suyo) mientras el hilo de
+abajo se abre desde el centro; cada bloque se revela como un **telón
+que sube** (`clip-path`) en vez de subir él; y el **anillo del día del
+calendario se dibuja** (`stroke-dasharray` con el perímetro de verdad).
+Las cuatro se apagan con "menos movimiento" y el estado por defecto —el
+que se ve sin JavaScript— es el bueno.
+
+**El telón se escondía tan bien que no se destapaba nunca, y de paso
+se comía los clics.** Esto costó la vuelta entera y es una trampa
+nueva: Chrome **tiene en cuenta el `clip-path` para calcular la
+intersección**, así que un bloque recortado a cero NO INTERSECA, el
+`IntersectionObserver` no lo ve y no le pone nunca su `.entro`. Y un
+recorte a cero tampoco responde a un dedo: el formulario entero estaba
+dibujado ahí abajo y **no se podía tocar ni el "Sí" ni el botón de
+confirmar**, sin un solo error en la consola. Se arregla observando la
+**sección**, que no está recortada, y que sea ella la que destapa a los
+suyos. La regla, para la próxima: **el que se mira no puede ser el que
+se esconde.**
+
+**Y un control escondido se esconde, no se desconecta.** El radio de
+`¿Vas a asistir?` se achica a 1x1 detrás de su label —el blanco del
+dedo es el label, que mide 52— y llevaba además `pointer-events:none`.
+Con eso el navegador no se lo puede dar a nadie: marcar la opción con
+el teclado deja de andar, y desde una prueba es imposible. Alcanza con
+achicarlo y dejarlo transparente.
+
+**El oro no es el mismo en las dos mitades.** `--oro` (#B8935A) vive
+sobre el vino y ahí se lee 5,5:1; sobre el papel claro da **2,38:1**, o
+sea que el rótulo de cada sección clara no estaría. Las secciones
+claras usan `--oro-tierra` (#8A6B39, 4,45:1). Es *si un bloque trae su
+propio fondo, trae su propia tinta* otra vez — y vale la pena mirarlo
+en la de Pia, que tiene el mismo rótulo dorado sobre el mismo papel.
+
+**Y el botón principal es un dorado MACIZO, no un degradé.** El
+medidor de contraste no juzga lo que cae sobre un degradé opaco de
+punta a punta: con el degradé de Pia, el texto del botón es
+exactamente un bloque que la suite no puede medir. Sólido, se mide y
+da 9:1.
+
+**Lo que NO se escribió porque no lo mandó la clienta**: la fecha
+límite para confirmar (vacía no dibuja el renglón, no se inventa una),
+y el **titular de la cuenta** del alias — el nombre que le va a mostrar
+el banco al pegarlo. Un nombre inventado al lado de un alias es peor
+que ninguno, así que ese renglón no existe hasta que llegue.
+
+**`almi15/listado/` todavía no existe, y eso está bien.** Se crea el
+día que exista la dirección `/exec` de su planilla: copiar la plantilla
+y llenarle las dos líneas de `CONFIG`. `pruebas/invitaciones.js` falla
+si una carpeta de listado tiene el `appsScriptUrl` vacío, porque esa
+pantalla no traería nada. Mientras tanto `CONFIG.endpoint` de la
+invitación está vacío y la confirmación **dice con todas las letras que
+no se manda a ningún lado**.
+
+**No está en la galería de Trabajos ni en `/invitaciones`**, por lo
+mismo que mia15: es la fiesta de una clienta de verdad, lleva `noindex`
+y en el formulario se juntan nombres de invitados y comidas. La página
+que se le manda a cualquiera que pregunta muestra las muestras
+nuestras, no las fiestas de los clientes.
+
+**Lleva su propia `og.jpg`** (1200x630, 24 KB), tipográfica como la de
+mia15: nunca una foto de la fiesta, que viajaría en la vista previa de
+cada chat por el que pase el link.
+
+### La clave maestra de los listados
+
+Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
+entrar con 1667 — contraseña maestra para todas las invitaciones de
+ahora en más"*. Es para poder abrir el listado de cualquier cliente sin
+ir a buscar la clave de ese evento.
+
+Está en `apps-script/evento-nuevo.gs.txt` y en el parche
+`apps-script/listado.gs.txt`: la puerta acepta **la del evento o la
+maestra**, y el valor vive en las propiedades del proyecto. **En el
+repositorio va vacío** (`CLAVE_MAESTRA_ELEGIDA = ''`), igual que
+`CLAVE_ELEGIDA`: una clave versionada es una clave pública.
+
+**Se le dijo el riesgo y lo sostuvo.** Cuatro dígitos son **diez mil
+combinaciones** en una puerta abierta a internet, y lo que hay del otro
+lado no es un listado: son los de **todos** los clientes, con los
+nombres de los invitados y sus comidas, que es información de salud.
+Un script las prueba todas en minutos.
+
+Por eso la puerta ahora **se frena**: doce intentos fallados seguidos y
+queda cerrada diez minutos. No la vuelve segura —la vuelve cara: diez
+mil pruebas pasan de minutos a días de insistir—. El que acierta borra
+la cuenta, así que el cliente que se equivocó dos veces y después entró
+arranca de cero. Que un atacante pueda dejar al cliente diez minutos
+afuera es el precio, y es barato: el cliente entra una vez y su
+navegador se acuerda de la clave.
+
+Del lado de la pantalla, **"esperá un rato" no es "esa clave no es"**:
+el listado tiene su propio mensaje para el freno y **no borra la clave
+guardada**, porque la clave puede estar perfecta y lo único que pasa es
+que hay que esperar. Borrándola, el cliente vuelve mañana y se
+encuentra con que tiene que escribirla de nuevo sin haberse equivocado
+nunca.
+
+Lo mide `pruebas/rsvp.js`, corriendo el `.gs.txt` de verdad: contra el
+código anterior da **4 fallas**. Y hubo que enseñarle una cosa al
+falso: su `PropertiesService` no tenía `deleteProperty`, que el de
+Google sí tiene, y la suite se cortaba entera con un "is not a
+function". **Un falso al que le falta un método de los de verdad no
+mide el código, mide al falso.**
+
 ### Medir una invitación: `pruebas/invitacion_mirar.js <carpeta>`
 
 Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
@@ -3333,6 +3461,44 @@ la cuenta regresiva corra, que el calendario marque un solo día, que
 ningún enlace quede en `#`, que el sí/no no venga preseleccionado y
 que la confirmación no mienta. No está en `todo.sh` porque toma un
 argumento: se corre después de tocar una invitación.
+
+**Y desde `almi15` mide una cosa más: que lo que se toca SE PUEDA
+TOCAR.** Que un botón mida 56x56 y se vea perfecto no quiere decir que
+responda. Se le pregunta al navegador quién atajaría el dedo en el
+centro de cada control (`elementFromPoint`), con el control traído al
+medio de la pantalla, que es lo que hace una persona. Si contesta
+otro, está tapado. Sin esto, un formulario entero recortado por un
+`clip-path` no da ningún error: lo único que se ve es la suite
+**colgada treinta segundos** contra un botón que está perfecto, y eso
+no dice qué pasó. Contra el código anterior da 4 fallas (una por
+aparato).
+
+**Esa comprobación se equivocó tres veces antes de medir algo**, y las
+tres son la misma lección:
+
+- **Perdonaba que contestara un PADRE del control.** Es lo que hace
+  `barrido.js`, y ahí está bien. Acá no: que en el centro del botón el
+  navegador devuelva al `<div>` que lo contiene quiere decir que **no
+  encontró al botón**, que es exactamente lo que pasa con un recorte a
+  cero. Con esa indulgencia la comprobación daba verde con el
+  formulario muerto. Lo único que se perdona es que conteste un HIJO
+  —el ícono adentro del botón— o que el control se declare decoración
+  (`pointer-events:none`).
+- **Preguntaba sin llegar.** Estas páginas llevan
+  `scroll-behavior:smooth`, así que un `scrollIntoView` pelado ANIMA y
+  no llega a destino antes de la pregunta: se terminaba midiendo
+  arriba, donde contesta la portada, que ocupa la pantalla entera y se
+  descarta por fondo. Verde sin haber medido. Va
+  `behavior:'instant'` — y lo mismo el barrido previo que recorre la
+  página para que el observador destape: **el observador avisa en otra
+  vuelta del reloj**, así que medir en la misma vuelta en que se
+  scrollea informa la invitación entera.
+- **Medía lo de adentro de un `<details>` cerrado.** En Chrome eso no
+  se esconde con `display:none` sino con `content-visibility`, para que
+  el buscador de la página lo encuentre: tiene caja igual. El correo
+  del aviso de datos devolvía una caja de 181x50 en una posición que no
+  existe y la suite informaba un botón tapado que nadie ve. Es la regla
+  de la caja de 0x0 otra vez: antes de medir algo, comprobar que ESTÉ.
 
 **Tres cosas que esa suite midió mal y cómo se arreglaron**, que son
 las tres la misma lección —*antes de creerle a una medición,
@@ -3683,6 +3849,25 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
+- **La planilla de `almi15`.** Faltan los tres pasos de Apps Script —
+  planilla nueva, pegar `apps-script/evento-nuevo.gs.txt`, correr
+  `preparar()` e implementar— y con eso llenar `CONFIG.endpoint` de la
+  invitación y crear `almi15/listado/` desde la plantilla. La clave del
+  listado que pidió la clienta es su correo, y va en `CLAVE_ELEGIDA` de
+  **esa copia del editor**, nunca en el repo; la maestra, en
+  `CLAVE_MAESTRA_ELEGIDA`, igual. Hasta que eso exista, la confirmación
+  de la invitación dice que es una muestra y no se manda a ningún lado.
+- **El titular de la cuenta del alias de `almi15`** (`nancyvaldez1976`):
+  el nombre que muestra el banco al pegarlo. Sin él, ese renglón no se
+  dibuja.
+- **`mateoylucas/` y `claraybruno/` no pasan `invitacion_mirar.js`**, y
+  es de antes de todo esto: la de Mateo y Lucas informa 2 fallas (la
+  portada se queda en modo foto sin tener ninguna, y por eso le falta un
+  borde rasgado) y la de Clara y Bruno **corta la suite**, porque su
+  sobre no tiene el botón `#abrir` que la prueba busca. Las dos son
+  muestras nuestras, así que no hay un cliente esperando, pero son las
+  que se le muestran al que todavía no compró. Es la misma pasada
+  pendiente que ya está anotada para `juliayfranco/`.
 - ~~**El rollo nunca se probó en un teléfono de verdad.**~~ **Mal escrito, y
   quedó dando vueltas.** Esta línea sobrevivió a la sesión que la
   desmintió: el apartado *"Lo que se vio en un iPhone de verdad"*, más

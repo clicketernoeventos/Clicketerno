@@ -185,9 +185,14 @@ async function entrar(clave) {
     document.getElementById('panel').classList.add('show');
     return;
   }
-  olvidarClave();
+  /* Frenado NO borra la clave guardada: la clave puede estar bien y lo
+     único que pasa es que hay que esperar. Borrándola, el cliente
+     vuelve mañana y se encuentra con que tiene que escribirla otra vez
+     sin haberse equivocado nunca. */
+  if (r !== 'frenado') olvidarClave();
   errorGate.textContent =
-      r === 'clave' ? 'Esa clave no es. Probá de nuevo.'
+      r === 'frenado' ? 'Hubo muchos intentos seguidos. Esperá unos minutos y probá de nuevo.'
+    : r === 'clave' ? 'Esa clave no es. Probá de nuevo.'
     : r === 'viejo' ? 'La planilla todavía no tiene puesta la clave: falta correr preparar() una vez en el Apps Script.'
     /* "Falta llenar CONFIG" y "se cortó internet" se ven igual desde
        acá —las dos terminan sin datos— y no son lo mismo: una la
@@ -376,6 +381,12 @@ async function cargarDatos(clave){
     return 'red';
   }
   if (data && data.error === 'sin_clave_configurada') return 'viejo';
+  /* "Esperá un rato" no es "esa clave no es". La planilla frena
+     después de varios intentos fallados —es lo que hace que una
+     clave corta no se pueda probar entera—, y si acá dijéramos
+     "clave incorrecta" el cliente que SÍ la tiene bien se la pasaría
+     escribiendo de nuevo creyendo que se equivocó. */
+  if (data && data.error === 'frenado') return 'frenado';
   if (data && data.error) return 'clave';
   if (!data || !Array.isArray(data.invitados)) return 'red';
 

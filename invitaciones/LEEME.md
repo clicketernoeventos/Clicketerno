@@ -26,10 +26,16 @@ Son tres pasos y el orden importa:
 
 1. **Planilla nueva** en Google Sheets → Extensiones → Apps Script →
    pegar `apps-script/evento-nuevo.gs.txt` entero.
-2. En el editor, correr la función **`preparar`** una vez: escribe los
-   títulos, **inventa la clave** del listado y te la muestra. Después,
-   Implementar → Nueva implementación → Aplicación web → acceso
-   **Cualquier persona**, y copiar la dirección que termina en `/exec`.
+2. Arriba del archivo hay dos constantes. `CLAVE_ELEGIDA` se deja
+   vacía salvo que el cliente pida una suya, y `CLAVE_MAESTRA_ELEGIDA`
+   lleva la maestra —la misma para todas las invitaciones, la que usa
+   Click Eterno para entrar a cualquier listado—. **Las dos se llenan
+   acá, en la copia del editor, nunca en el repositorio.**
+   Después, correr la función **`preparar`** una vez: escribe los
+   títulos, **inventa la clave** del listado si no elegiste una, la
+   guarda y te la muestra. Y por último, Implementar → Nueva
+   implementación → Aplicación web → acceso **Cualquier persona**, y
+   copiar la dirección que termina en `/exec`.
 3. Copiar `invitaciones/plantilla-listado/index.html` a
    **`<evento>/listado/index.html`** y llenarle las dos líneas de
    `CONFIG`: el nombre del evento y esa dirección. La misma dirección
