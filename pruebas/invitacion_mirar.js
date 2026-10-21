@@ -159,6 +159,106 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
                                             : 'todo lo que se toca llega a 44x44');
     }
 
+    /* ── 3bis · y además SE PUEDE TOCAR ──
+       Que un botón mida 56x56 y se vea perfecto no quiere decir que
+       responda. Se le pregunta al navegador QUIÉN atajaría el dedo en
+       el centro del control (`elementFromPoint`): si no es él ni algo
+       suyo, está tapado.
+       No es un caso inventado. En almi15 los bloques se revelan con un
+       `clip-path` que arranca recortado a cero, y un recorte a cero se
+       lleva puestos los CLICS: el formulario entero estaba dibujado y
+       no se podía tocar ni el "Sí" ni el botón de confirmar. No había
+       un solo error en la consola; lo único que pasaba era que la
+       pantalla no contestaba. Sin esta comprobación, lo que se ve es
+       una prueba COLGADA treinta segundos contra un botón que está
+       perfecto, y eso no dice qué pasó.
+       Se pregunta donde está y, si parece tapado, se lo trae al medio y
+       se vuelve a preguntar: en una pantalla corta lo de abajo arranca
+       fuera de la vista y se destapa scrolleando. Mejor callar que
+       inventar una falla. */
+    /* Antes de preguntar hay que DEJAR QUE LA PÁGINA SE ABRA. Lo que
+       aparece al bajar lo destapa un IntersectionObserver, y el
+       observador avisa en OTRA vuelta del reloj: midiendo en la misma
+       vuelta en que se scrollea, todo sigue recortado y la comprobación
+       informa la invitación entera. Se recorre primero, se espera a que
+       terminen las transiciones, y recién después se mide. */
+    for (let i = 0; i < 16; i++){
+      await pag.evaluate(() => scrollBy({top: innerHeight * 0.8, behavior:'instant'}));
+      await pag.waitForTimeout(110);
+    }
+    await pag.waitForTimeout(900);
+    const tapados = await pag.evaluate(() => {
+      const V = {w:innerWidth, h:innerHeight};
+      const nombre = n => (n.id ? '#'+n.id : n.tagName.toLowerCase() +
+        (n.className && typeof n.className === 'string' && n.className.trim()
+          ? '.'+n.className.trim().split(/\s+/)[0] : ''));
+      const malos = [];
+      for (const n of document.querySelectorAll('a[href],button,input,select,textarea,[role="button"]')){
+        const cs = getComputedStyle(n);
+        if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+        /* Lo de adentro de un `<details>` cerrado NO ESTÁ en la
+           pantalla, pero en Chrome tiene caja igual: el navegador lo
+           esconde con `content-visibility`, no con `display:none`, para
+           que el buscador de la página lo encuentre. Medido: el correo
+           del aviso de datos devolvía una caja de 181x50 en una posición
+           que no existe, y la comprobación informaba un botón tapado que
+           nadie ve. Es la regla de la caja de 0x0 otra vez: antes de
+           medir algo, comprobar que ESTÉ. */
+        if (n.closest('details:not([open])')) continue;
+        if (n.checkVisibility && !n.checkVisibility({contentVisibilityAuto:true,
+            opacityProperty:true, visibilityProperty:true})) continue;
+        /* Lo que está escondido a propósito —el radio de 1x1 detrás de
+           su label— no se mide: el blanco es el label. */
+        const b0 = n.getBoundingClientRect();
+        if (b0.width < 3 || b0.height < 3) continue;
+        /* Que conteste un PADRE del control no es "está bien, es suyo":
+           quiere decir que en el centro del control el navegador NO
+           encontró al control. Eso es exactamente lo que pasa con un
+           recorte a cero, y era lo que dejaba pasar la primera versión
+           de esta comprobación —`encima.contains(n)` lo perdonaba— así
+           que medía y daba verde con el formulario muerto.
+           Lo único que se perdona es que el propio control se declare
+           decoración (`pointer-events:none`), y que conteste un HIJO
+           suyo, que es el caso del ícono adentro del botón. */
+        const quienEn = (caja) => {
+          const x = Math.min(Math.max(caja.left + caja.width/2, 1), V.w-1);
+          const y = Math.min(Math.max(caja.top + caja.height/2, 1), V.h-1);
+          const encima = document.elementFromPoint(x, y);
+          if (!encima || encima === n || n.contains(encima)) return null;
+          if (cs.pointerEvents === 'none') return null;
+          const c = encima.getBoundingClientRect();
+          if (c.width >= V.w-2 && c.height >= V.h-2 && !encima.contains(n)) return null;  /* es el fondo */
+          return encima;
+        };
+        /* SE PREGUNTA DONDE EL DEDO LO VA A TOCAR, o sea con el control
+           traído al medio de la pantalla — que es lo que hace una
+           persona. Preguntar donde quedó al cargar no mide nada: lo que
+           está abajo del pliegue tiene su centro fuera de la ventana, el
+           punto se recorta contra el borde y contesta la portada, que
+           ocupa la pantalla entera y se descarta por fondo. Verde sin
+           haber medido.
+           Y `behavior:'instant'`: estas páginas llevan
+           `scroll-behavior:smooth`, así que un scrollIntoView pelado
+           ANIMA y no llega a destino antes de la pregunta. */
+        n.scrollIntoView({block:'center', behavior:'instant'});
+        let quien = quienEn(n.getBoundingClientRect());
+        /* Un enlace de texto que envuelve a dos renglones tiene el
+           centro de su CAJA en el aire, entre los dos: ahí contesta el
+           párrafo y no es una falla. El segundo intento va sobre el
+           primer renglón de verdad (`getClientRects`). */
+        if (quien){
+          const r1 = n.getClientRects()[0], rb = n.getBoundingClientRect();
+          if (r1 && (Math.abs(r1.width - rb.width) > 1 || Math.abs(r1.height - rb.height) > 1))
+            quien = quienEn(r1);
+        }
+        if (quien) malos.push(nombre(n) + ' lo tapa ' + nombre(quien));
+      }
+      return malos;
+    });
+    es(tapados.length === 0, tapados.length
+      ? 'se ven pero no se pueden tocar: ' + tapados.slice(0,3).join(' · ')
+      : 'y nada de lo que se toca está tapado por otra cosa');
+
     /* ── 4 · todo el texto se LEE ──
        Antes de medir hay que DESTAPAR: lo que aparece al bajar nace
        en opacidad 0 y el medidor saltea lo que no se ve. Sin esto se

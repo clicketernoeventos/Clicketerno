@@ -75,6 +75,21 @@ var ZONA = 'America/Argentina/Cordoba';
    vista de cualquiera que tenga acceso al código. */
 var CLAVE_ELEGIDA = '';
 
+/* La clave MAESTRA: la misma para todas las invitaciones, para que
+   Click Eterno pueda entrar a cualquier listado sin tener que
+   buscar la del evento. Decisión del dueño (20/10/2026).
+   Va ACÁ, en TU copia del editor, igual que la de arriba. En el
+   repositorio queda vacía: una clave versionada es una clave
+   pública.
+   SE LE DIJO Y LA SOSTUVO: la elegida son cuatro dígitos, o sea diez
+   mil combinaciones, y esta puerta está abierta a internet. Quien se
+   tome el trabajo se baja la lista de invitados —con los nombres y
+   las comidas, que son datos de salud— de TODOS los clientes, no de
+   uno. Por eso abajo hay un freno: doce intentos fallados dejan la
+   puerta cerrada diez minutos, y eso convierte diez mil pruebas en
+   varios días de insistir. No la vuelve segura; la vuelve cara. */
+var CLAVE_MAESTRA_ELEGIDA = '';
+
 
 /* ── Paso 3: preparar ──────────────────────────────────────────
    Se corre UNA vez, a mano, desde el editor. Es lo que evita tener
@@ -106,6 +121,12 @@ function preparar() {
               .replace(/[^0-9a-f]/gi, '').toLowerCase().slice(0, 16);
     props.setProperty('CLAVE_LISTADO', clave);
   }
+
+  /* La maestra, si se puso. Vive en las propiedades igual que la
+     otra, así que cambiarla es volver a correr preparar(): NO hace
+     falta volver a implementar, porque lo que queda congelado al
+     implementar es el CÓDIGO y esto es un dato. */
+  if (CLAVE_MAESTRA_ELEGIDA) props.setProperty('CLAVE_MAESTRA', String(CLAVE_MAESTRA_ELEGIDA));
 
   Logger.log('═══════════════════════════════════════');
   Logger.log('  LA CLAVE DEL LISTADO ES:   ' + clave);
@@ -210,9 +231,22 @@ function doGet(e) {
     return json({ error: 'sin_clave_configurada',
                   mensaje: 'Falta correr la función preparar() una vez.' });
   }
-  if (!p.clave || !igualesSinApuro_(String(p.clave), String(esperada))) {
+  /* Entra la del evento O la maestra. La maestra es la misma para
+     todas las invitaciones y la tiene Click Eterno: es para poder
+     abrir el listado de un cliente sin ir a buscar su clave. */
+  var maestra = PropertiesService.getScriptProperties().getProperty('CLAVE_MAESTRA');
+  var acierta = !!p.clave && (
+        igualesSinApuro_(String(p.clave), String(esperada)) ||
+        (!!maestra && igualesSinApuro_(String(p.clave), String(maestra))));
+  if (frenado_()) {
+    return json({ error: 'frenado',
+                  mensaje: 'Demasiados intentos. Probá de nuevo en un rato.' });
+  }
+  if (!acierta) {
+    fallo_();
     return json({ error: 'clave', mensaje: 'Clave incorrecta.' });
   }
+  acerto_();
 
   var lista = filas_();
   /* El resumen lo cuenta la PLANILLA, no la página.
@@ -320,6 +354,43 @@ function estaConfirmado_(nombre) {
     if (String(lista[i][COL_NOMBRE] || '').trim().toLowerCase() === buscado) return true;
   }
   return false;
+}
+
+/* ── El freno de los intentos ──────────────────────────────────
+   Una clave corta en una puerta abierta a internet se prueba entera
+   en un rato: diez mil combinaciones son minutos para un script. El
+   freno no la vuelve larga, la vuelve LENTA — doce fallos seguidos y
+   la puerta queda cerrada diez minutos para todo el mundo, así que
+   probarlas todas pasa a ser cuestión de días de insistir.
+   El que acierta lo borra, o sea que el cliente que se equivocó dos
+   veces y después entró arranca de cero.
+   Que un atacante pueda dejar al cliente diez minutos afuera es el
+   precio, y es barato: el cliente entra una vez y su navegador se
+   acuerda de la clave. */
+var TOPE_FALLOS = 12;
+var CUARENTENA_MS = 10 * 60 * 1000;
+
+function frenado_() {
+  var props = PropertiesService.getScriptProperties();
+  var hasta = Number(props.getProperty('FRENO_HASTA') || 0);
+  if (!hasta) return false;
+  if (Date.now() < hasta) return true;
+  props.deleteProperty('FRENO_HASTA');
+  props.deleteProperty('FALLOS');
+  return false;
+}
+
+function fallo_() {
+  var props = PropertiesService.getScriptProperties();
+  var n = Number(props.getProperty('FALLOS') || 0) + 1;
+  props.setProperty('FALLOS', String(n));
+  if (n >= TOPE_FALLOS) props.setProperty('FRENO_HASTA', String(Date.now() + CUARENTENA_MS));
+}
+
+function acerto_() {
+  var props = PropertiesService.getScriptProperties();
+  props.deleteProperty('FALLOS');
+  props.deleteProperty('FRENO_HASTA');
 }
 
 /* Compara sin apurarse: siempre recorre todo, gane o pierda. Si

@@ -68,9 +68,14 @@ function cargar(filas = [], ahora = null) {
   const registro = [];
   const caja = {
     SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheets: () => [hoja] }) },
+    /* El de Google tiene las tres. Con `deleteProperty` sin poner, el
+       freno de intentos reventaba acá con "is not a function" y la
+       suite se cortaba entera: un falso al que le falta un método de
+       los de verdad no mide el código, mide al falso. */
     PropertiesService: { getScriptProperties: () => ({
       getProperty: k => (k in props ? props[k] : null),
-      setProperty: (k, v) => { props[k] = v; }
+      setProperty: (k, v) => { props[k] = v; },
+      deleteProperty: k => { delete props[k]; }
     }) },
     Utilities: {
       /* El de Google es un uuid v4: hexadecimal y al azar. El falso
@@ -163,6 +168,60 @@ console.log('\n─── la clave elegida a mano ───');
   /* Correrla de nuevo no puede cambiarla. */
   a.preparar();
   es(a.props.CLAVE_LISTADO === clave, 'corrida dos veces sigue siendo la misma');
+}
+
+console.log('\n─── la clave maestra, y el freno ───');
+{
+  /* La maestra es la misma para todas las invitaciones y la tiene
+     Click Eterno: es para poder abrir el listado de un cliente sin ir
+     a buscar su clave. Pedido del dueño el 20/10/2026.
+     El valor de verdad NO está acá ni en el repo: vive en la copia
+     del editor del dueño y en las propiedades de cada proyecto. Acá
+     se prueba con uno inventado — un dato de prueba que es el de un
+     cliente deja de ser de prueba el día que el cliente lo usa. */
+  const a = cargar();
+  const DEL_EVENTO = 'clave.de.prueba@ejemplo.com';
+  const MAESTRA = '1234';
+  a.caja.CLAVE_ELEGIDA = DEL_EVENTO;
+  a.caja.CLAVE_MAESTRA_ELEGIDA = MAESTRA;
+  a.preparar();
+  es(a.props.CLAVE_MAESTRA === MAESTRA, 'preparar() guarda la maestra');
+  es(a.get({ clave: DEL_EVENTO }).error === undefined, 'entra la del evento');
+  es(a.get({ clave: MAESTRA }).error === undefined, 'y entra la maestra');
+  es(a.get({ clave: '9999' }).error === 'clave', 'y una cualquiera no entra');
+
+  /* EL FRENO. La maestra elegida son cuatro dígitos, o sea diez mil
+     combinaciones en una puerta abierta a internet: un script las
+     prueba todas en minutos y se lleva la lista de invitados —con
+     las comidas, que son datos de salud— de TODOS los clientes.
+     El freno no la vuelve larga, la vuelve lenta.
+     Se mide con intentos FALLADOS seguidos, que es lo que hace un
+     atacante, y se comprueba que el que acierta lo borra: si no, el
+     cliente que se equivocó dos veces quedaría castigado. */
+  const b = cargar();
+  b.caja.CLAVE_ELEGIDA = DEL_EVENTO;
+  b.caja.CLAVE_MAESTRA_ELEGIDA = MAESTRA;
+  b.preparar();
+  let frenado = null;
+  for (let i = 0; i < 20 && frenado === null; i++){
+    const r = b.get({ clave: '0' + i });
+    if (r.error === 'frenado') frenado = i + 1;
+  }
+  es(frenado !== null && frenado <= 14,
+     frenado === null ? 'probando mil claves no frena NUNCA: la puerta se abre a fuerza bruta'
+                      : 'a los ' + frenado + ' intentos fallados la puerta se cierra');
+  es(b.get({ clave: MAESTRA }).error === 'frenado',
+     'y frenada no entra ni la buena: el freno no distingue, por eso dura poco');
+
+  const c = cargar();
+  c.caja.CLAVE_ELEGIDA = DEL_EVENTO;
+  c.caja.CLAVE_MAESTRA_ELEGIDA = MAESTRA;
+  c.preparar();
+  c.get({ clave: 'mal' }); c.get({ clave: 'mal' });
+  es(c.get({ clave: DEL_EVENTO }).error === undefined,
+     'el que se equivoca dos veces y después acierta, entra');
+  const d = c.props.FALLOS;
+  es(!d, 'y acertar borra la cuenta: no se arrastra de una visita a la otra');
 }
 
 console.log('\n─── el invitado confirma ───');
