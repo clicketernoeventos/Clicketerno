@@ -3705,6 +3705,33 @@ foto encima de la cual va a caer texto —o un borde, o una curva— no se
 encuadra mirando la foto. Se encuadra mirando la pantalla terminada, y
 en el aparato más chico, que es donde el texto pesa más.
 
+#### El sobre se va cuando la carta sale, y la portada se limpia
+
+*"Cuando sale la carta del sobre y hace la animación debería desaparecer
+el sobre"* y *"en la portada borrá toda la info del salón y del día
+porque eso está más abajo"*.
+
+**El sobre.** Se fundía la capa ENTERA —carta incluida— recién al final,
+así que la carta se abría sobre la pantalla con el sobre todavía
+dibujado detrás: dos cosas pasando a la vez, no una transición. Ahora el
+fondo y el papel del sobre se funden apenas la carta arranca a volar, y
+lo único que queda en pantalla es la carta creciendo sobre la portada.
+**Por eso el fondo vive en su propia capa** (`#sobre:before`) y no en
+`#sobre`: fundiendo `#sobre` se funde también la carta, que es su hija.
+Es la misma forma del problema que ya está escrita para el `z-index` de
+la solapa — *lo que se mueve no puede ser lo que se esconde*.
+
+**La portada.** Salieron la fecha, el salón y el horario: los tres están
+más abajo, cada uno en su sección con su medallón. Quedan el nombre, "mis
+quince años" y la frase. **Y eso destapó la cara sola**: con tres
+renglones menos el bloque bajó, así que la foto volvió a subir mucho
+menos (de −17% a −8%) y se ve la cabeza entera. De paso el texto pasó a
+caer sobre la ropa y no sobre la piel: el contraste sobre la foto subió
+de **4,28:1 a 11,3:1**.
+**La regla, al revés de la de más arriba**: sacar un renglón de una
+portada con foto tampoco es sacar un renglón — es todo lo de arriba
+bajando, y el encuadre se vuelve a mirar.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda

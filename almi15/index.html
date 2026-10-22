@@ -136,16 +136,31 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    sobre que la tapa, y la solapa con su sello. Cerrado no se ve nada;
    al abrir, la solapa gira sobre su bisagra y la carta sale de atrás
    del frente, que es exactamente lo que hace un sobre de verdad. */
+/* EL SOBRE SE VA CUANDO LA CARTA SALE, Y LA CARTA NO SE VA CON ÉL.
+   Antes se fundía la capa ENTERA, carta incluida, recién al final: la
+   carta se abría sobre la pantalla con el sobre todavía dibujado
+   detrás, y eso no se lee como una transición — se lee como dos cosas
+   pasando a la vez. Ahora el fondo y el papel del sobre se funden
+   apenas la carta arranca a volar, y lo único que queda en pantalla es
+   la carta creciendo sobre la portada.
+   Por eso el fondo vive en su PROPIA capa (`:before`) y no en `#sobre`:
+   fundiendo `#sobre` se funde también la carta, que es su hija. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
+  transition:visibility 0s linear 1.9s}
+#sobre:before{content:'';position:absolute;inset:0;z-index:0;
   background-color:var(--vino-hondo);
   background-image:radial-gradient(120% 90% at 50% 12%,#7C2540,var(--vino-hondo) 58%,var(--vino-noche));
-  /* El fundido arranca cuando la carta YA terminó de salir. Pisados,
-     se ven las dos cosas a la vez —el sobre translúcido encima de la
-     portada— y eso no se lee como una transición, se lee como una
-     pantalla a medio cargar. */
-  transition:opacity .5s var(--e) 1.26s,visibility .5s 1.26s}
-#sobre.abierto{opacity:0;visibility:hidden;pointer-events:none}
-.sobre-centro{text-align:center;display:grid;gap:clamp(24px,5vh,40px);justify-items:center}
+  transition:opacity .34s var(--e) .92s}
+#sobre.abierto:before{opacity:0}
+#sobre.abierto{visibility:hidden;pointer-events:none}
+/* El papel del sobre se va con el fondo. La carta NO está en esta
+   lista: ella se va sola, volando. */
+.tapa-cuerpo,.tapa-frente,.flanco,#sobre .arriba,.sobre-pie{
+  transition:opacity .34s var(--e) .92s}
+#sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .flanco,
+#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
+.sobre-centro{text-align:center;display:grid;gap:clamp(24px,5vh,40px);justify-items:center;
+  position:relative;z-index:1}
 /* Y el sobre se acerca un poco al irse: el que mira entra en la
    tarjeta en vez de ver desaparecer una capa. */
 .tapa{width:min(76vw,300px);aspect-ratio:1.45;position:relative;perspective:1000px;
@@ -243,8 +258,9 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
      Cambiado de entrada, la carta se vería un cuadro antes de que la
      solapa se mueva; cambiado nunca, la carta sale tapada por el
      triángulo y el gesto no se entiende. */
-  transition:transform .72s var(--e) .12s, z-index 0s linear .45s}
-#sobre.abierto .solapa{transform:rotateX(-168deg);z-index:1}
+  transition:transform .72s var(--e) .12s, z-index 0s linear .45s,
+    opacity .34s var(--e) .92s}
+#sobre.abierto .solapa{transform:rotateX(-168deg);z-index:1;opacity:0}
 .tapa-mandos{position:absolute;left:0;right:0;top:53%;transform:translateY(-50%);z-index:5;
   display:grid;place-items:center;transition:opacity .3s var(--e)}
 #sobre.abierto .tapa-mandos{opacity:0;pointer-events:none}
@@ -334,8 +350,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .port-frase{font-family:var(--titulos);font-weight:400;
   font-size:clamp(15.5px,4.3vw,20px);color:#F7E7EC;line-height:1.5;
   margin-top:clamp(13px,2.5vh,19px)}
-.port-dato{margin-top:clamp(18px,3.4vh,28px);color:#EBD6DD;
-  font-size:clamp(11.5px,3.1vw,13.5px);letter-spacing:.3em;text-transform:uppercase;line-height:2.2}
 .port-baja{margin-top:clamp(24px,4.6vh,36px);color:var(--oro-claro);opacity:.8}
 .port-baja svg{margin:0 auto}
 
@@ -358,7 +372,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    exactamente donde va el nombre y el texto se le monta encima. Lo que
    sube es la CARA; abajo queda la ropa, que es donde el velo y las
    letras no tapan nada. */
-.port-foto img{position:absolute;left:0;top:-17%;width:100%;height:100%;
+.port-foto img{position:absolute;left:0;top:-8%;width:100%;height:100%;
   object-fit:cover;object-position:47% 0;
   filter:grayscale(1) contrast(1.07) brightness(.96)}
 /* El velo va atado al TEXTO y no a un porcentaje de la pantalla: el
@@ -380,13 +394,12 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 @media (max-height:720px){
   #portada.con-foto{padding-top:clamp(40px,8vh,70px);
     padding-bottom:calc(34px + env(safe-area-inset-bottom))}
-  #portada.con-foto .port-foto img{top:-24%;height:126%}
+  #portada.con-foto .port-foto img{top:-11%;height:116%}
   #portada.con-foto .flor{margin-bottom:8px;width:min(150px,44vw)}
   #portada.con-foto #nombre{font-size:clamp(38px,12.5vw,64px)}
   #portada.con-foto #hilo{margin-top:9px}
   #portada.con-foto .port-quince{font-size:clamp(16px,5vw,22px);margin-top:7px}
   #portada.con-foto .port-frase{font-size:clamp(13.5px,3.8vw,16px);line-height:1.45;margin-top:8px}
-  #portada.con-foto .port-dato{line-height:1.9;margin-top:11px;font-size:11px}
   #portada.con-foto .port-baja{margin-top:12px}
 }
 
@@ -642,6 +655,8 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
 @media (prefers-reduced-motion: reduce){
   #sobre.abierto .carta.volando{transform:none;opacity:0;transition:opacity .25s linear}
+  #sobre{transition:none}
+  #sobre.abierto{opacity:0;visibility:hidden}
   #sobre.abierto .quiebre{display:none}
   .js .port-foto img,.js body.cerrado .port-foto img{transform:none;transition:none}
   html{scroll-behavior:auto}
@@ -717,7 +732,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     <div id="hilo" aria-hidden="true"></div>
     <p class="port-quince ap d1">mis quince años</p>
     <p class="port-frase ap d2">Vení a festejar conmigo<br>una noche inolvidable</p>
-    <p class="port-dato ap d3" id="portDato"></p>
     <div class="port-baja" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
         <path d="M6 9l6 6 6-6"/></svg>
@@ -1246,9 +1260,6 @@ function horaTexto(){
        siguiente, y escribirlas como fecha completa haría que la
        invitación dijera "20 de junio" en algún lado. La fiesta es el 19
        y eso es lo que tiene que leer el invitado. */
-    $('#portDato').innerHTML =
-      esc(F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio) + '<br>' +
-      esc(CONFIG.lugar) + '<br>' + esc(horaTexto());
     $('#cuando').textContent =
       F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio + ', ' +
       horaTexto().replace(/^De /,'de ') + '.';
