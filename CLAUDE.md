@@ -3651,6 +3651,28 @@ calculado contra la altura de UNA tipografía, así que dejó de valer el
 día que se cambió la tipografía. Se ve igual y no se toca igual; lo
 agarró la prueba, no el ojo.
 
+#### La frase de la portada, y el velo que hubo que volver a medir
+
+*"Que en la portada diga alguna frase como te invito a festejar esta
+noche inolvidable o algo así."* Dice **"Vení a festejar conmigo una
+noche inolvidable"**, y el cambio de arranque no es de gusto: *"Te
+invito"* es lo que dice la carta del sobre, que el que mira acaba de
+ver dos segundos antes. Dicho dos veces seguidas se lee como un error
+de copiar y pegar, no como una invitación; así la segunda continúa a la
+primera.
+
+**Y agregar dos renglones sobre una foto corrió todo el bloque hacia
+arriba, a la parte clara de la cara.** El nombre pasó de 5,85:1 a
+**2,58:1 en un iPhone SE** — o sea que "Almi" dejó de estar—. No se ve
+en un escritorio, donde la pantalla es más alta y el bloque no sube
+tanto: lo agarró la medición con el píxel, en el aparato más chico.
+El velo hubo que volver a repartirlo y volver a medirlo hasta 4,28:1,
+que es cómodo sin apagarle la cara a la foto.
+**La regla, que vale para cualquier invitación con foto a sangre: un
+renglón que se agrega encima de una foto no es sólo un renglón más — es
+todo lo que estaba abajo, subido.** El velo se vuelve a medir cada vez
+que cambia el texto de la portada.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
