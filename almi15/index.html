@@ -327,7 +327,14 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .port-quince{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(21px,5.8vw,30px);color:var(--oro-claro);letter-spacing:.08em;
   margin-top:clamp(12px,2.4vh,18px)}
-.port-dato{margin-top:clamp(20px,4vh,32px);color:#EBD6DD;
+/* La frase de la portada. NO arranca con "te invito" a propósito: eso
+   es lo que dice la carta del sobre, que el que mira acaba de ver dos
+   segundos antes — dicho dos veces seguidas se lee como un error de
+   copiar y pegar, no como una invitación. Ésta la continúa. */
+.port-frase{font-family:var(--titulos);font-weight:400;
+  font-size:clamp(15.5px,4.3vw,20px);color:#F7E7EC;line-height:1.5;
+  margin-top:clamp(13px,2.5vh,19px)}
+.port-dato{margin-top:clamp(18px,3.4vh,28px);color:#EBD6DD;
   font-size:clamp(11.5px,3.1vw,13.5px);letter-spacing:.3em;text-transform:uppercase;line-height:2.2}
 .port-baja{margin-top:clamp(24px,4.6vh,36px);color:var(--oro-claro);opacity:.8}
 .port-baja svg{margin:0 auto}
@@ -354,11 +361,11 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    de abajo de la foto cae en un punto distinto en cada pantalla y un
    velo que todavía deja pasar un 10% ahí dibuja una raya. */
 .port-foto:after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(20,5,9,.62) 0%,rgba(20,5,9,.14) 22%,
-    rgba(20,5,9,.72) 46%,rgba(20,5,9,.95) 72%,#140509 88%)}
+  background:linear-gradient(180deg,rgba(20,5,9,.62) 0%,rgba(20,5,9,.14) 20%,
+    rgba(20,5,9,.5) 30%,rgba(20,5,9,.87) 50%,rgba(20,5,9,.97) 74%,#140509 88%)}
 #portada.con-foto{align-content:end;background-image:none;background-color:#140509}
 #portada.con-foto > :not(.port-foto){position:relative;z-index:1}
-#portada.con-foto #nombre{font-size:clamp(50px,19vw,112px)}
+#portada.con-foto #nombre{font-size:clamp(46px,17.5vw,112px)}
 /* El zoom lento: la foto entra 6% agrandada y se acomoda sola en once
    segundos. Once es a propósito —un zoom que se nota es un zoom
    molesto—, y cuelga de `body.cerrado`, la clase que pone el JS al
@@ -682,7 +689,8 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     <h1 id="nombre">Almi</h1>
     <div id="hilo" aria-hidden="true"></div>
     <p class="port-quince ap d1">mis quince años</p>
-    <p class="port-dato ap d2" id="portDato"></p>
+    <p class="port-frase ap d2">Vení a festejar conmigo<br>una noche inolvidable</p>
+    <p class="port-dato ap d3" id="portDato"></p>
     <div class="port-baja" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
         <path d="M6 9l6 6 6-6"/></svg>
