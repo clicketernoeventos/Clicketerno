@@ -3574,6 +3574,83 @@ daban verde.
   sin ellos al volver a la portada tipográfica; exigírselos a una que no
   los tiene es inventar una falla.
 
+#### La letra, los medallones y el deslizar
+
+Cuarto reporte del dueño, mirándola publicada: *"El sobre dice A. Podría
+decir te invito a mi fiesta. Después me gustaría que haya otra fuente.
+Algo más redondeado y más legible. No tan finita como la que está. Me
+gustaría que haya unos iconos más llamativos y algo de animación al
+deslizar. Para que no sean genéricas."*
+
+**La carta dice lo que tiene que decir.** Era una inicial; ahora dice
+*"Te invito a mi fiesta"*. Se ve un segundo —mientras sale del sobre y
+se abre sobre la pantalla—, así que va corta y grande: una frase larga
+ahí no la lee nadie.
+
+**La letra: Cormorant Garamond + Jost → Fraunces + Hanken Grotesk.** Es
+el mismo diagnóstico que ya está escrito para la página pública, ahora
+en una invitación: la Cormorant es una **didone** —el contraste entre el
+trazo grueso y el fino es enorme a propósito— y en un teléfono los finos
+se parten; la Jost tiene la **equis baja**, así que el texto chico
+parece más chico de lo que es. Fraunces es una serif de trazo parejo y
+formas redondas, con bastardilla de verdad, y Hanken Grotesk tiene la
+equis alta. **Los pesos subieron un escalón** (300 → 400, 400 → 500),
+que es la otra mitad de "no tan finita", y lo que se pide en el link es
+exactamente lo que usa el CSS: un `font-weight` que no esté pedido se lo
+inventa el navegador y eso no avisa.
+
+**Las dos familias viven en DOS VARIABLES** (`--titulos`, `--texto-f`).
+Estaban escritas quince veces en el CSS; cambiarlas a mano es garantizar
+que alguna se quede atrás y la pieza muestre dos letras para la misma
+cosa. Además es lo que hace posible lo que sigue.
+
+**`pruebas/letras.js`: mostrar la tipografía, no describirla.** Ya está
+escrito más arriba que con mia15 se cambió la familia por descripción
+tres veces y las tres no era, y que a la cuarta se montó la misma
+portada con siete letras y eligió mirando. Eso ahora es un comando:
+`node pruebas/letras.js <carpeta>` arma la invitación con cada pareja
+candidata y deja las capturas. **Las fuentes van INCRUSTADAS en base64 y
+no es un lujo**: desde acá el navegador rechaza `fonts.googleapis.com`
+—el proxy firma los certificados—, así que una captura hecha sin eso
+sale con la letra de respaldo del sistema y muestra justo lo que no es.
+Se bajan con `fetch`, que sí pasa por el proxy. La primera corrida salió
+con Georgia en las cuatro y parecían todas iguales.
+
+**Los medallones.** Eran contorno puro de un píxel: un plano, no una
+insignia. Ahora llevan un disco de oro a muy poca opacidad —el mismo oro
+del contorno, así que no mete un color nuevo—, un anillo de afuera
+punteado, cuatro rombos macizos en vez de dos, y el trazo del icono pasó
+de 1 a 1,7. **El anillo punteado NO se dibuja**, y no es un olvido: el
+dibujo anima el `stroke-dasharray`, que es justamente lo que le da los
+puntos. Las dos cosas en el mismo trazo se pelean y gana una.
+
+**Lo que se mueve al deslizar: las fotos se quedan atrás.** La página
+sube y las franjas suben más despacio, así que la foto parece estar
+detrás del papel en vez de pegada a él. Es el único efecto de la pieza
+que no pasa una sola vez, y por eso va **atado a la posición y no a un
+reloj**: si frenás a mitad de camino, frena ahí. Un solo oyente con
+`requestAnimationFrame` y `passive`.
+
+Tres cosas de eso que no son opcionales:
+
+- **La foto es más alta que su marco** (126%, corrida −13%). Sin ese
+  sobrante, al correrla queda un hueco arriba o abajo, y un hueco en el
+  medio de una foto a sangre se lee como un error de carga.
+- **La portada queda AFUERA del paralaje.** Su foto ya tiene el zoom
+  lento, que es un `transform`, y dos cosas peleando por la misma
+  propiedad es una que gana y otra que desaparece. Moverle la caja
+  tampoco sirve: el velo que hace que el texto se lea es un `::after` de
+  esa caja y se iría con ella.
+- **Se mide lo que importa: que la foto esté corrida DISTINTO en dos
+  puntos del scroll** (−52 → 54 px), no que exista una clase ni un
+  oyente. Así da igual cómo esté hecho. Apagado el paralaje, da 1 falla.
+
+**Y una que dejó la letra nueva al pasar**: el enlace del pie medía
+43,6px de alto y dejó de llegar al mínimo de 44. El `padding` estaba
+calculado contra la altura de UNA tipografía, así que dejó de valer el
+día que se cambió la tipografía. Se ve igual y no se toca igual; lo
+agarró la prueba, no el ojo.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
@@ -3618,7 +3695,10 @@ mide el código, mide al falso.**
 ### Medir una invitación: `pruebas/invitacion_mirar.js <carpeta>`
 
 Cuatro aparatos (320, 390, 430 y escritorio), con el sobre cerrado y
-abierto, que son dos pantallas distintas. Contraste, 44px, desborde,
+abierto, que son dos pantallas distintas. Al lado vive
+`pruebas/letras.js`, que es cómo se ELIGE la tipografía: monta la misma
+invitación con cada candidata y deja las capturas, porque una letra se
+elige mirando y no leyendo su nombre. Contraste, 44px, desborde,
 consola, CSP, **el texto que cae sobre la foto de la portada —medido
 con el píxel, ver `mia15/` más arriba—**, **los bordes de letra que
 no se ven**, y después las piezas: que
