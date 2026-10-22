@@ -75,7 +75,13 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(!!b && b.height >= 44 && b.width >= 44,
          'el botón de abrir llega a 44 (' + (b?Math.round(b.width)+'x'+Math.round(b.height):'no está') + ')');
       await pag.click('#abrir');
-      await pag.waitForTimeout(1200);
+      /* La apertura entera dura 2,6 s —el sello, la solapa, la carta
+         que sale y se disuelve, y la portada que se asienta—, así que
+         medir a los 1200 ms es medir la invitación a mitad de la
+         transición: la portada está todavía apagada y un punto más
+         grande, y lo que se informa es el encuadre de la animación y
+         no el de la pieza. */
+      await pag.waitForTimeout(2700);
     }
 
     /* ── 2 · nada se sale por el costado ──
@@ -422,7 +428,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
                       body: JSON.stringify({ ok: seMando })});
   });
   await pag.goto(URL, {waitUntil:'domcontentloaded'});
-  if (await pag.locator('#abrir').count()){ await pag.click('#abrir'); await pag.waitForTimeout(1200); }
+  if (await pag.locator('#abrir').count()){ await pag.click('#abrir'); await pag.waitForTimeout(2700); }
 
   const cuenta = await pag.locator('#cD').count();
   if (cuenta){
@@ -575,7 +581,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
         return r.continue();
       });
       await pag1.goto(URL, {waitUntil:'domcontentloaded'});
-      if (await pag1.locator('#abrir').count()){ await pag1.click('#abrir'); await pag1.waitForTimeout(900); }
+      if (await pag1.locator('#abrir').count()){ await pag1.click('#abrir'); await pag1.waitForTimeout(2700); }
       await pag1.waitForTimeout(1200);
       const g = await pag1.evaluate(() => {
         const sec = document.querySelector('#galeria');
@@ -609,7 +615,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       await pag2.route('**/*', r => (r.request().resourceType() === 'image' && /\/fotos\//.test(r.request().url()))
         ? r.fulfill({status:404, body:''}) : r.continue());
       await pag2.goto(URL, {waitUntil:'domcontentloaded'});
-      if (await pag2.locator('#abrir').count()){ await pag2.click('#abrir'); await pag2.waitForTimeout(900); }
+      if (await pag2.locator('#abrir').count()){ await pag2.click('#abrir'); await pag2.waitForTimeout(2700); }
       await pag2.waitForTimeout(1200);
       const vacia = await pag2.evaluate(ids => {
         const sec = document.querySelector('#galeria');
@@ -661,7 +667,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     const ctxR = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
     const pagR = await ctxR.newPage();
     await pagR.goto(URL, {waitUntil:'domcontentloaded'});
-    if (await pagR.locator('#abrir').count()){ await pagR.click('#abrir'); await pagR.waitForTimeout(900); }
+    if (await pagR.locator('#abrir').count()){ await pagR.click('#abrir'); await pagR.waitForTimeout(2700); }
     await pagR.waitForTimeout(600);
     const conRasgos = await pagR.evaluate(() => document.querySelectorAll('svg.rasgo').length > 0);
     await ctxR.close();
@@ -684,7 +690,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       return r.continue();
     });
     await pag3.goto(URL, {waitUntil:'domcontentloaded'});
-    if (await pag3.locator('#abrir').count()){ await pag3.click('#abrir'); await pag3.waitForTimeout(900); }
+    if (await pag3.locator('#abrir').count()){ await pag3.click('#abrir'); await pag3.waitForTimeout(2700); }
     await pag3.waitForTimeout(1200);
     if (!pudo) bien('esta invitación no tiene portada con foto');
     else {
@@ -724,7 +730,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     const ctxN = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
     const pagN = await ctxN.newPage();
     await pagN.goto(URL, {waitUntil:'domcontentloaded'});
-    if (await pagN.locator('#abrir').count()){ await pagN.click('#abrir'); await pagN.waitForTimeout(900); }
+    if (await pagN.locator('#abrir').count()){ await pagN.click('#abrir'); await pagN.waitForTimeout(2700); }
     const hayNo = await pagN.locator('input[name="Confirma"][value="No"]').count();
     const haySel = await pagN.locator('#fLugares').count();
     if (!hayNo || !haySel) bien('esta invitación no pregunta cuántos son');
@@ -826,7 +832,65 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctxN.close();
   }
 
-  /* ── 9 · con foto, el 15 SIGUE animándose ──
+  /* ── 9 · la carta no SALTA a la portada ──
+     "Que sea menos brusca la transición de la carta y la portada."
+     Un corte entre dos pantallas no tira ningún error: las dos se
+     dibujan perfectas y lo único que pasa es que el momento de la
+     sorpresa se siente barato.
+     Se mide el CRUCE y no una clase ni un tiempo: que la portada
+     aparezca de a poco —que exista al menos un instante en que está
+     a medio camino, con el sobre todavía en pantalla— y que la carta
+     no se agrande hasta tapar todo, que es lo que la hacía "pasar
+     por delante" en vez de disolverse. Así da igual cómo esté
+     hecho. Contra el código anterior la portada medía 1.00 desde el
+     primer cuadro y la carta llegaba a 7x: dos fallas. */
+  titulo('la carta no salta a la portada');
+  {
+    const ctxT = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagT = await ctxT.newPage();
+    await pagT.goto(URL, {waitUntil:'domcontentloaded'});
+    if (!await pagT.locator('#sobre').count()) bien('esta invitación no tiene sobre');
+    else {
+      await pagT.waitForTimeout(400);
+      await pagT.click('#abrir');
+      const t0 = Date.now();
+      const tomas = [];
+      for (let ms = 150; ms <= 3000; ms += 150){
+        const falta = ms - (Date.now() - t0);
+        if (falta > 0) await pagT.waitForTimeout(falta);
+        tomas.push(await pagT.evaluate(() => {
+          const c = document.querySelector('.carta');
+          const p = document.querySelector('#portada');
+          const esc = n => { const m = n && getComputedStyle(n).transform.match(/matrix\(([-\d.]+)/); return m ? +m[1] : 1; };
+          return {
+            port:  p ? +getComputedStyle(p).opacity : 1,
+            carta: c ? esc(c) : 1,
+            sobre: !!document.querySelector('#sobre')
+          };
+        }));
+      }
+      /* "A medio camino" con el sobre todavía puesto: eso es el cruce.
+         Sin él, la portada está entera desde el primer cuadro y lo que
+         se ve es un corte. */
+      const medio = tomas.filter(t => t.sobre && t.port > .05 && t.port < .95).length;
+      es(medio >= 2, medio >= 2
+        ? 'la portada se enciende de a poco, no de golpe (' + medio + ' instantes a medio camino)'
+        : 'la portada APARECE de golpe: no hay cruce con la carta');
+
+      const pico = Math.max(...tomas.map(t => t.carta));
+      es(pico <= 4, pico <= 4
+        ? 'y la carta se disuelve en vez de taparlo todo (llega a ' + pico.toFixed(1) + 'x)'
+        : 'la carta se agranda hasta ' + pico.toFixed(1) + 'x: pasa por delante en vez de disolverse');
+
+      const final = tomas[tomas.length - 1];
+      es(final.port > .98 && !final.sobre, final.port > .98 && !final.sobre
+        ? 'y al terminar la portada queda entera y el sobre se fue'
+        : 'al terminar quedó algo a medias: portada ' + final.port.toFixed(2) + ', sobre ' + (final.sobre ? 'todavía puesto' : 'se fue'));
+    }
+    await ctxT.close();
+  }
+
+  /* ── 10 · con foto, el 15 SIGUE animándose ──
      La animación del 15 nació para la portada tipográfica y estaba
      apagada en cuanto había foto (`if (!h || CONFIG.portada) return`).
      El día que el cliente pidió la foto de vuelta, eso quería decir

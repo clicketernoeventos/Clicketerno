@@ -3732,6 +3732,41 @@ de **4,28:1 a 11,3:1**.
 portada con foto tampoco es sacar un renglón — es todo lo de arriba
 bajando, y el encuadre se vuelve a mirar.
 
+#### La carta no salta a la portada: el cruce
+
+*"Me gustaría que sea menos brusca la transición de la carta y la
+portada."* La carta volaba **creciendo hasta 6,1x** —o sea hasta tapar
+la pantalla entera— y recién ahí se cortaba a la portada, que estaba
+puesta en opacidad 1 desde el primer cuadro. Son dos pantallas pegadas
+con un corte, y un corte **no tira ningún error**: las dos se dibujan
+perfectas y lo único que pasa es que el único momento de sorpresa que
+tiene la pieza se siente barato.
+
+Ahora es un **cruce**: la carta crece hasta 2,7x y se disuelve
+(1,25 s desacelerando, el fundido entrando a los 0,3), el papel y el
+fondo del sobre se van con ella, y la portada **se asienta** —entra al
+45% y apenas agrandada (1,035) y llega a su tamaño en 1,1 s—. Medido en
+un iPhone: a los 1,3 s la carta va en 2,2x y la portada ya está en
+0,77; a los 1,7 la carta en 0,16 y la portada en 0,97. Las dos cosas
+pasan **a la vez**, que es lo que hace que no se note el empalme.
+
+**Y la cascada de la portada corría detrás del sobre opaco.** El nombre
+cerrando su interletrado, el hilo abriéndose y los bloques entrando
+arrancaban en el click: con el sobre todavía encima, **eso no lo veía
+nadie** — se gastaba la animación contra una capa opaca. Ahora se
+destapa a los 1,05 s, cuando el sobre ya se está yendo. Es la misma
+decisión que ya estaba escrita para `mia15/`, que no se había aplicado
+acá.
+
+**Lo que se mide es el CRUCE, no una clase ni un tiempo.** La suite
+muestrea cada 150 ms desde el click y pide tres cosas: que haya al
+menos dos instantes en que la portada esté **a medio camino con el
+sobre todavía en pantalla** (si no, aparece de golpe), que la carta no
+pase de 4x (si crece más, tapa todo y lo que se ve es un corte), y que
+al final no quede nada a medias. Así da igual cómo esté hecho. Contra
+el código anterior da **2 fallas**: *"la portada APARECE de golpe"* y
+*"la carta se agranda hasta 6.1x"*.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda

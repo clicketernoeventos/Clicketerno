@@ -146,17 +146,17 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    Por eso el fondo vive en su PROPIA capa (`:before`) y no en `#sobre`:
    fundiendo `#sobre` se funde también la carta, que es su hija. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
-  transition:visibility 0s linear 1.9s}
+  transition:visibility 0s linear 2.4s}
 #sobre:before{content:'';position:absolute;inset:0;z-index:0;
   background-color:var(--vino-hondo);
   background-image:radial-gradient(120% 90% at 50% 12%,#7C2540,var(--vino-hondo) 58%,var(--vino-noche));
-  transition:opacity .34s var(--e) .92s}
+  transition:opacity .55s var(--e) .95s}
 #sobre.abierto:before{opacity:0}
 #sobre.abierto{visibility:hidden;pointer-events:none}
 /* El papel del sobre se va con el fondo. La carta NO está en esta
    lista: ella se va sola, volando. */
 .tapa-cuerpo,.tapa-frente,.flanco,#sobre .arriba,.sobre-pie{
-  transition:opacity .34s var(--e) .92s}
+  transition:opacity .55s var(--e) .95s}
 #sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .flanco,
 #sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
 .sobre-centro{text-align:center;display:grid;gap:clamp(24px,5vh,40px);justify-items:center;
@@ -187,9 +187,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    se pasa en un iPhone SE, y en los dos casos se ve el borde del
    papel cruzando la pantalla a mitad de la animación. */
 #sobre.abierto .carta.volando{
-  transform:translateY(-22%) scale(var(--esc,7)) rotateX(0deg);
+  transform:translateY(-30%) scale(var(--esc,2.6));
   opacity:0;
-  transition:transform .92s cubic-bezier(.4,0,.2,1),opacity .5s linear .42s}
+  /* Desacelerando y en un segundo y cuarto, no en novecientos
+     milisegundos con la curva estándar: la primera versión crecía
+     SIETE veces y se iba de golpe, y eso no se lee como una tarjeta
+     que se abre — se lee como un golpe. Y la opacidad empieza a bajar
+     enseguida, así que lo grande ya está translúcido: lo que pasa es
+     una disolución, no un barrido. */
+  transition:transform 1.25s var(--e),opacity 1s var(--e) .3s}
 /* El sello se PARTE: dos mitades que se separan, giran y se caen.
    Va en una capa aparte y no en el botón: moviendo la caja que se
    toca, el navegador la da por inestable y una prueba se cuelga
@@ -259,7 +265,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
      solapa se mueva; cambiado nunca, la carta sale tapada por el
      triángulo y el gesto no se entiende. */
   transition:transform .72s var(--e) .12s, z-index 0s linear .45s,
-    opacity .34s var(--e) .92s}
+    opacity .55s var(--e) .95s}
 #sobre.abierto .solapa{transform:rotateX(-168deg);z-index:1;opacity:0}
 .tapa-mandos{position:absolute;left:0;right:0;top:53%;transform:translateY(-50%);z-index:5;
   display:grid;place-items:center;transition:opacity .3s var(--e)}
@@ -384,6 +390,15 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   background:linear-gradient(180deg,rgba(20,5,9,.62) 0%,rgba(20,5,9,.14) 20%,
     rgba(20,5,9,.5) 30%,rgba(20,5,9,.87) 50%,rgba(20,5,9,.97) 74%,#140509 88%)}
 #portada.con-foto{align-content:end;background-image:none;background-color:#140509}
+/* LA PORTADA SE ASIENTA. Mientras el sobre está encima espera un
+   punto más grande y apagada, y se acomoda justo cuando la carta se
+   disuelve: así las dos mitades de la transición se cruzan en el
+   medio y ninguna empieza donde la otra termina. Sin JS no existe
+   ninguna de las dos clases y la portada está entera desde el
+   principio, que es el estado bueno. */
+.js #portada.con-sobre{opacity:.45;transform:scale(1.035)}
+.js #portada.entrada{opacity:1;transform:none;
+  transition:opacity 1.1s var(--e),transform 1.35s var(--e)}
 #portada.con-foto > :not(.port-foto){position:relative;z-index:1}
 #portada.con-foto #nombre{font-size:clamp(46px,17.5vw,112px)}
 /* En una pantalla BAJA el bloque de texto se lleva una proporción
@@ -1198,6 +1213,11 @@ function sierraPath(semilla, picos){
      corre detrás no la ve nadie — se gasta el único momento de sorpresa
      que tiene la pieza contra una capa opaca. */
   if (nombre && !menosMovimiento) nombre.classList.add('cerrado');
+  /* La portada espera un punto más grande y apagada mientras el sobre
+     está encima. Lo pone el JS y no el HTML: sin JS la portada está
+     entera desde el principio. */
+  const portada = $('#portada');
+  if (portada && !menosMovimiento) portada.classList.add('con-sobre');
   boton.addEventListener('click', () => {
     /* Cuánto tiene que crecer la carta para tapar la pantalla, medido
        con la caja de VERDAD contra la pantalla de verdad. Un número
@@ -1207,32 +1227,46 @@ function sierraPath(semilla, picos){
     const carta = $('.carta');
     if (carta && !menosMovimiento){
       const c = carta.getBoundingClientRect();
+      /* CUÁNTO CRECE, y es poco a propósito. La primera versión la
+         hacía crecer hasta TAPAR la pantalla —siete veces— y eso se
+         lee como un golpe: un papel enorme que se te viene encima.
+         Ahora llega a una vez y media el ancho de la pantalla y se
+         disuelve en el camino, así que la portada se ve aparecer
+         alrededor de la carta en vez de debajo de un portazo. */
       if (c.width && c.height)
         carta.style.setProperty('--esc',
-          (Math.max(innerWidth / c.width, innerHeight / c.height) * 1.25).toFixed(2));
+          Math.min(3.2, Math.max(1.9, (innerWidth / c.width) * 1.7)).toFixed(2));
       /* El vuelo arranca cuando la carta YA terminó de salir del
          sobre: pisados, los dos gestos se leen como uno solo mal
          hecho. */
-      setTimeout(() => carta.classList.add('volando'), 900);
+      setTimeout(() => carta.classList.add('volando'), 1000);
     }
     sobre.classList.add('abierto');
     document.body.classList.remove('cerrado');
-    if (nombre) nombre.classList.remove('cerrado');
-    const hilo = $('#hilo'); if (hilo) hilo.classList.add('abierto');
-    /* La cascada de la portada entra ACÁ y no al cargar: con el sobre
-       encima, una animación que corre detrás no la ve nadie — se gasta
-       el único momento de sorpresa que tiene la pieza contra una capa
-       opaca. */
-    const port = $('#portada');
-    if (port){
+    /* La cascada de la portada entra CUANDO LA CARTA EMPIEZA A
+       DISOLVERSE, no al tocar el sello. Puesta al tocar, corría entera
+       detrás del sobre opaco y para cuando el sobre se iba ya había
+       terminado: la pieza se gastaba su único momento de sorpresa sin
+       que nadie lo viera. Ahora las dos mitades se cruzan — el papel
+       se deshace mientras la invitación se escribe sola—, que es lo
+       que hace que la transición no se sienta un corte.
+       Con "menos movimiento" entra de una, sin esperar. */
+    const destapar = () => {
+      /* El nombre cierra su interletrado y el hilo se abre ACÁ por lo
+         mismo: son parte de la cascada, no del clic. */
+      if (nombre) nombre.classList.remove('cerrado');
+      const hilo = $('#hilo'); if (hilo) hilo.classList.add('abierto');
+      const port = $('#portada');
+      if (!port) return;
       port.classList.add('entrada');
       $$('.ap, .trazo', port).forEach(n => n.classList.add('entro'));
-    }
+    };
+    if (menosMovimiento) destapar(); else setTimeout(destapar, 1050);
     /* El foco entra a la invitación: si se queda en un botón que ya no
        está, el que navega con teclado se queda sin punto de partida. */
     setTimeout(() => { try{ const p = $('#portada');
       p.setAttribute('tabindex','-1'); p.focus({preventScroll:true}); }catch(e){} }, 60);
-    setTimeout(() => { try{ sobre.remove(); }catch(e){} }, 2050);
+    setTimeout(() => { try{ sobre.remove(); }catch(e){} }, 2600);
   });
 })();
 
