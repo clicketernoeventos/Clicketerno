@@ -16,8 +16,8 @@
 <meta property="og:image" content="og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════════
    Almi · quince años
@@ -39,6 +39,11 @@
      las secciones claras usan este otro (4,45:1). */
   --oro-tierra:#8A6B39;
   --gris:#6B5A5F;
+  /* LAS DOS FAMILIAS, UNA SOLA VEZ. Escritas quince veces en el CSS,
+     el día que se cambian alguna se queda atrás y la pieza muestra dos
+     letras para la misma cosa. */
+  --titulos:'Fraunces',Georgia,serif;
+  --texto-f:'Hanken Grotesk',system-ui,sans-serif;
   --e:cubic-bezier(.22,.7,.24,1);
   --gutter:clamp(22px,6vw,44px);
   --arco:clamp(38px,9vw,56px);   /* lo que sube la curva del corte */
@@ -46,12 +51,12 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
-  font-family:Jost,system-ui,sans-serif;font-weight:300;color:var(--tinta);
+  font-family:var(--texto-f);font-weight:400;color:var(--tinta);
   background-color:var(--vino-noche);overflow-x:hidden;-webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;
 }
-.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400}
-.cursiva{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300}
+.serif{font-family:var(--titulos);font-weight:500}
+.cursiva{font-family:var(--titulos);font-style:italic;font-weight:400}
 img{max-width:100%;display:block}
 button,input,select,textarea{font:inherit;color:inherit}
 button{border:0;background:none;cursor:pointer}
@@ -99,15 +104,29 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    animación". Es un SVG de línea —nada de una librería, que la CSP no
    deja bajar un CDN y acá no hay build— y el color lo pone la banda,
    así que el mismo dibujo se lee sobre el vino y sobre el papel. */
-.medallon{position:relative;width:74px;height:74px;margin:0 auto clamp(14px,2.6vh,22px);
+.medallon{position:relative;width:88px;height:88px;margin:0 auto clamp(14px,2.6vh,22px);
   display:grid;place-items:center;color:var(--oro)}
 .claro .medallon{color:var(--oro-tierra)}
-.medallon .anillo{position:absolute;inset:0;width:100%;height:100%}
-.medallon .ico{width:30px;height:30px}
-.medallon .chispa{position:absolute;width:5px;height:5px;transform:rotate(45deg);
-  border:1px solid currentColor;opacity:.9}
-.medallon .chispa.a{top:-3px;left:calc(50% - 2.5px)}
-.medallon .chispa.b{bottom:-3px;left:calc(50% - 2.5px)}
+/* El disco: un medallón de puro contorno se lee como un plano, no como
+   una insignia. El relleno es lo que le da cuerpo, y es el mismo oro
+   del contorno a muy poca opacidad, así que no mete un color nuevo. */
+.medallon:before{content:'';position:absolute;inset:7px;border-radius:50%;
+  background:radial-gradient(circle at 50% 36%,rgba(184,147,90,.26),rgba(184,147,90,.07) 68%,transparent)}
+.claro .medallon:before{
+  background:radial-gradient(circle at 50% 36%,rgba(138,107,57,.18),rgba(138,107,57,.05) 68%,transparent)}
+.medallon .anillo{position:absolute;inset:0;width:100%;height:100%;stroke-width:1.3}
+/* El anillo de afuera va PUNTEADO y por eso no se dibuja: el dibujo
+   anima el `stroke-dasharray`, que es justamente lo que le da los
+   puntos. Las dos cosas en el mismo trazo se pelean y gana una. */
+.medallon .punteado{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);
+  stroke-width:1.1;stroke-dasharray:1 7;opacity:.55}
+.medallon .ico{width:38px;height:38px;stroke-width:1.7}
+.medallon .chispa{position:absolute;width:6px;height:6px;transform:rotate(45deg);
+  border:1px solid currentColor;background:currentColor;opacity:.9}
+.medallon .chispa.a{top:-4px;left:calc(50% - 3px)}
+.medallon .chispa.b{bottom:-4px;left:calc(50% - 3px)}
+.medallon .chispa.c{left:-4px;top:calc(50% - 3px)}
+.medallon .chispa.d{right:-4px;top:calc(50% - 3px)}
 
 /* ══════════ 1 · el sobre ══════════
    LA CARTA NO SE VE DESDE AFUERA. La primera versión la dejaba
@@ -171,7 +190,10 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    con una regla no parece lacre, parece una moneda. */
 .quiebre .sello i.a{clip-path:polygon(0 0,52% 0,46% 22%,56% 44%,45% 68%,53% 100%,0 100%)}
 .quiebre .sello i.b{clip-path:polygon(52% 0,100% 0,100% 100%,53% 100%,45% 68%,56% 44%,46% 22%)}
-#sobre.abierto .quiebre .sello i{transition:transform .62s cubic-bezier(.3,.9,.3,1),opacity .4s linear .3s;
+/* Las dos mitades se van CUANDO YA VOLARON, no mientras vuelan: con
+   el fundido pisado al movimiento se ven dos manchas a media opacidad
+   sobre el papel del sobre y no se entiende qué pasó. */
+#sobre.abierto .quiebre .sello i{transition:transform .62s cubic-bezier(.3,.9,.3,1),opacity .26s linear .44s;
   opacity:0}
 #sobre.abierto .quiebre .sello i.a{transform:translate(-58px,34px) rotate(-38deg)}
 #sobre.abierto .quiebre .sello i.b{transform:translate(58px,34px) rotate(38deg)}
@@ -185,8 +207,12 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   0%{opacity:0;transform:translate(0,0) scale(.4)}
   18%{opacity:1}
   100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
-.carta .mono{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;color:var(--vino);
-  letter-spacing:.06em;line-height:1}
+/* La carta dice lo que tiene que decir, no una inicial. Se ve un
+   segundo —mientras sale del sobre y se abre sobre la pantalla—, así
+   que va corta y grande: una frase larga ahí no la lee nadie. */
+.carta-txt{font-family:var(--titulos);font-weight:500;
+  font-size:clamp(17px,4.9vw,23px);color:var(--vino);
+  letter-spacing:.01em;line-height:1.3;text-align:center;padding:0 8%}
 .carta .hilito{width:46px;height:1px;background:var(--oro-tierra);opacity:.7}
 /* El frente del sobre, que es lo que tapa la carta. */
 .tapa-frente{position:absolute;left:0;right:0;bottom:0;height:56%;z-index:3;
@@ -241,7 +267,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 /* ══════════ el lienzo ══════════ */
 #papel{position:relative;z-index:1}
 .caja{max-width:560px;margin:0 auto;text-align:center;position:relative}
-h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.08;
+h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   font-size:clamp(34px,10vw,54px)}
 .cuerpo{font-size:clamp(14.5px,3.9vw,16.5px);line-height:1.9;margin-top:18px}
 .claro{background-color:var(--rubor-claro);color:var(--tinta)}
@@ -294,11 +320,11 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 .marco .esq.bl{bottom:-1px;left:-1px;transform:scaleY(-1)}
 .marco .esq.br{bottom:-1px;right:-1px;transform:scale(-1)}
 .flor{width:min(180px,52vw);color:var(--oro);margin-bottom:clamp(14px,2.6vh,22px)}
-#nombre{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;
+#nombre{font-family:var(--titulos);font-weight:400;
   font-size:clamp(58px,23vw,136px);line-height:.94;color:#FFF7F2;letter-spacing:.02em}
 #hilo{height:1px;width:min(220px,56vw);margin:clamp(14px,3vh,24px) auto 0;
   background:linear-gradient(90deg,transparent,var(--oro),transparent)}
-.port-quince{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;
+.port-quince{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(21px,5.8vw,30px);color:var(--oro-claro);letter-spacing:.08em;
   margin-top:clamp(12px,2.4vh,18px)}
 .port-dato{margin-top:clamp(20px,4vh,32px);color:#EBD6DD;
@@ -355,9 +381,14 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 .franja{padding:0;overflow:hidden;position:relative;line-height:0}
 .franja .sierra{position:absolute;left:-1px;right:-1px;top:0;width:calc(100% + 2px);
   height:clamp(36px,9.5vw,64px);z-index:2;pointer-events:none;display:block}
-.franja figure{position:relative;margin:0}
-.franja img{width:100%;height:clamp(330px,62vh,520px);object-fit:cover;
-  filter:grayscale(1) contrast(1.08)}
+/* La foto es MÁS ALTA que su marco y se mueve adentro: eso es lo que
+   hace el paralaje. Sin ese sobrante, al correrla queda un hueco
+   arriba o abajo — y un hueco en el medio de una foto a sangre se lee
+   como un error de carga. */
+.franja figure{position:relative;margin:0;overflow:hidden;
+  height:clamp(330px,62vh,520px)}
+.franja img{position:absolute;left:0;top:-13%;width:100%;height:126%;object-fit:cover;
+  filter:grayscale(1) contrast(1.08);will-change:transform}
 .franja figure:after{content:'';position:absolute;inset:0;pointer-events:none}
 /* La de arriba: viene de la sección oscura y entrega a la clara. */
 .franja.tras-oscura{background:var(--rubor-claro)}
@@ -388,7 +419,7 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 .claro .reloj div:before,.claro .reloj div:after{border-color:var(--oro-tierra)}
 .reloj div:before{top:0;left:0;border-width:1px 0 0 1px}
 .reloj div:after{bottom:0;right:0;border-width:0 1px 1px 0}
-.reloj b{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+.reloj b{display:block;font-family:var(--titulos);font-weight:500;
   font-size:clamp(30px,8.6vw,46px);line-height:1;
   /* Cifras de caja alta y de ancho fijo: la Cormorant dibuja los
      números a la antigua —unos cuelgan y otros no— y en un reloj que
@@ -402,7 +433,7 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 
 /* ══════════ 4 · el calendario ══════════ */
 .calen{margin-top:clamp(26px,5vh,40px)}
-.calen .mes{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(20px,5.4vw,26px);
+.calen .mes{font-family:var(--titulos);font-size:clamp(20px,5.4vw,26px);
   letter-spacing:.06em}
 .oscura .calen .mes{color:#FBEFF3}
 .claro .calen .mes{color:var(--vino)}
@@ -433,7 +464,7 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
   border-radius:2px;pointer-events:none}
 .tarjeta + .tarjeta{margin-top:20px}
 .tarjeta .arriba{color:var(--oro-tierra)}
-.tarjeta h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;
+.tarjeta h3{font-family:var(--titulos);font-weight:500;
   font-size:clamp(26px,7vw,34px);color:var(--vino);line-height:1.15;margin-top:10px}
 .tarjeta p{font-size:15px;line-height:1.85;margin-top:14px;color:var(--gris)}
 .tarjeta .medallon{color:var(--oro-tierra);margin-bottom:6px}
@@ -442,7 +473,7 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 /* El alias va en la LETRA DE TEXTO y no en la serif de los títulos: la
    Cormorant dibuja los números a la antigua —el 9 y el 7 cuelgan— y
    esto es un dato que alguien va a copiar a mano en el home banking. */
-#alias{display:block;font-family:Jost,system-ui,sans-serif;font-weight:500;
+#alias{display:block;font-family:var(--texto-f);font-weight:500;
   font-size:clamp(19px,5.4vw,24px);font-variant-numeric:lining-nums tabular-nums;
   color:var(--vino);letter-spacing:.06em;margin-top:8px;word-break:break-word}
 #titular{font-size:13px;color:var(--gris);margin-top:6px}
@@ -515,16 +546,20 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
 .aviso.mal{color:#FFAEBE}
 .ya-fue{border:1px solid rgba(232,200,154,.3);border-radius:4px;padding:26px 22px;margin-top:26px}
 .ya-fue .ante{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--oro)}
-.ya-fue .ya-nom{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,8vw,38px);
+.ya-fue .ya-nom{font-family:var(--titulos);font-size:clamp(28px,8vw,38px);
   color:#FBEFF3;margin:8px 0 12px;line-height:1.1}
 
 /* ══════════ 7 · el cierre ══════════ */
 #cierre{padding-bottom:clamp(50px,8vh,80px)}
-.cierre-n{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:300;
+.cierre-n{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(50px,16vw,80px);color:var(--vino);line-height:1;margin-top:20px}
 .firma{margin-top:36px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
   color:var(--gris)}
-.firma a{color:var(--oro-tierra);display:inline-block;padding:15px 8px;
+/* 16px de aire y no 15: con la letra nueva la caja daba 43,6 —se ve
+   igual y no llega al mínimo de 44—. Un número de padding calculado
+   contra la altura de UNA tipografía deja de valer el día que se
+   cambia la tipografía. */
+.firma a{color:var(--oro-tierra);display:inline-block;padding:16px 10px;
   text-decoration:underline;text-underline-offset:4px}
 .firma .ico-wsp{width:1.3em;height:1.3em;vertical-align:-.24em;margin-right:.45em;fill:currentColor}
 
@@ -602,9 +637,9 @@ h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.
     <p class="arriba">Estás invitado</p>
     <div class="tapa">
       <div class="tapa-cuerpo" aria-hidden="true"></div>
-      <div class="carta" aria-hidden="true">
-        <span class="mono">A</span>
-        <i class="hilito"></i>
+      <div class="carta">
+        <p class="carta-txt">Te invito<br>a mi fiesta</p>
+        <i class="hilito" aria-hidden="true"></i>
       </div>
       <div class="flanco izq" aria-hidden="true"></div>
       <div class="flanco der" aria-hidden="true"></div>
@@ -923,8 +958,10 @@ const ORNAMENTO =
     const destino = $('.caja', n) || n;
     destino.insertAdjacentHTML('afterbegin',
       '<div class="medallon" aria-hidden="true" style="pointer-events:none">' +
+        '<svg class="punteado linea" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48.5"/></svg>' +
         '<svg class="anillo linea" viewBox="0 0 74 74"><circle cx="37" cy="37" r="35.2"/></svg>' +
         '<i class="chispa a"></i><i class="chispa b"></i>' +
+        '<i class="chispa c"></i><i class="chispa d"></i>' +
         '<svg class="ico linea" viewBox="0 0 24 24">' + dib + '</svg>' +
       '</div>');
   });
@@ -933,7 +970,8 @@ const ORNAMENTO =
      a ojo el dibujo arranca por la mitad o termina antes, y el
      navegador que no tenga getTotalLength se queda con el icono
      dibujado, que es el estado bueno. */
-  $$('.medallon svg path, .medallon svg circle, .anillo-dia circle, .flor path, .marco .esq path')
+  $$('.medallon .anillo circle, .medallon .ico path, .medallon .ico circle, ' +
+     '.anillo-dia circle, .flor path, .marco .esq path')
     .forEach(p => {
       try{
         const l = p.getTotalLength();
@@ -1025,6 +1063,63 @@ function sierraPath(semilla, picos){
       pie.insertAdjacentHTML('afterbegin', ORNAMENTO);
     });
   });
+})();
+
+/* ══════════ lo que se mueve al DESLIZAR ══════════
+   Pedido del dueño: "algo de animación al deslizar, para que no sean
+   genéricas". Las fotos se quedan atrás: la página sube y ellas suben
+   más despacio, así que la imagen parece estar DETRÁS del papel en vez
+   de pegada a él. Es el único efecto de toda la pieza que no pasa una
+   sola vez, y por eso tiene que ser suave: atado a la posición, no a
+   un reloj, así que si frenás a mitad de camino frena ahí.
+   Lo que se mueve en la portada es la CAJA y no la imagen: la imagen ya
+   tiene su propio `transform` con el zoom lento, y dos cosas peleando
+   por la misma propiedad es una que gana y otra que desaparece.
+   Un solo oyente con requestAnimationFrame y `passive`: tres oyentes
+   sueltos corriendo en cada píxel es lo que hace que una página se
+   sienta pesada en un teléfono. */
+(function(){
+  if (menosMovimiento) return;
+  const piezas = [];
+  /* `caja` es el elemento que se MIDE y `n` el que se mueve: en la
+     franja la foto sobresale de su marco a propósito, así que midiendo
+     la foto el cálculo se muerde la cola. */
+  const sumar = (n, caja, fuerza) => { if (n && caja) piezas.push({n, caja, f:fuerza}); };
+  /* Se arman DESPUÉS de que las fotos cargaron: la franja nace vacía y
+     escondida, así que preguntando ahora no hay ninguna. */
+  const armar = () => {
+    piezas.length = 0;
+    /* Solo las franjas. La portada queda AFUERA a propósito: su foto ya
+       tiene el zoom lento, que es un `transform`, y dos cosas peleando
+       por la misma propiedad es una que gana y otra que desaparece.
+       Moverle la caja tampoco sirve: el velo que hace que el texto se
+       lea es un `::after` de esa caja y se iría con ella. */
+    $$('.franja img').forEach(im => sumar(im, im.parentElement, 11));
+    mover();
+  };
+  let pedido = false;
+  function mover(){
+    pedido = false;
+    const alto = innerHeight || 1;
+    for (const p of piezas){
+      const c = p.caja.getBoundingClientRect();
+      if (c.bottom < -40 || c.top > alto + 40) continue;
+      /* -1 cuando el bloque entra por abajo, +1 cuando sale por arriba. */
+      const centro = (c.top + c.height / 2 - alto / 2) / (alto / 2 + c.height / 2);
+      p.n.style.transform = 'translate3d(0,' + (-centro * p.f).toFixed(2) + '%,0)';
+    }
+  }
+  addEventListener('scroll', () => {
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(mover);
+  }, {passive:true});
+  addEventListener('resize', mover, {passive:true});
+  /* Las fotos entran tarde: se vuelve a armar cuando alguna carga. */
+  document.addEventListener('load', armar, true);
+  setTimeout(armar, 300);
+  setTimeout(armar, 1500);
+  armar();
 })();
 
 /* ══════════ el sobre ══════════ */

@@ -466,6 +466,33 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   if (await pag.locator('#calendario').count())
     es(cal === 1, 'el calendario marca un solo día (marcó ' + cal + ')');
 
+  /* ── las fotos se quedan atrás al deslizar ──
+     El paralaje es el único efecto de la pieza que no pasa una sola
+     vez, y si se rompe no tira ningún error: la foto simplemente deja
+     de moverse y nadie se entera. Se mide lo que de verdad importa —
+     que la foto esté CORRIDA distinto en dos puntos del scroll—, no
+     que exista una clase ni un oyente: así da igual cómo esté hecho. */
+  if (await pag.locator('.franja img').count()){
+    const donde = await pag.evaluate(() => {
+      const f = document.querySelector('.franja');
+      return f.getBoundingClientRect().top + scrollY;
+    });
+    const correr = async y => {
+      await pag.evaluate(v => scrollTo({top:Math.max(0,v), behavior:'instant'}), y);
+      await pag.waitForTimeout(260);
+      return pag.evaluate(() => new DOMMatrixReadOnly(
+        getComputedStyle(document.querySelector('.franja img')).transform).f);
+    };
+    const antes = await correr(donde - 650), luego = await correr(donde + 350);
+    const mueve = Math.abs(luego - antes);
+    es(mueve > 12, mueve > 12
+      ? 'la foto se queda atrás al deslizar (' + antes.toFixed(0) + ' → ' + luego.toFixed(0) + ' px)'
+      : 'la foto NO se mueve al deslizar: el paralaje no está andando');
+    await pag.evaluate(() => scrollTo({top:0, behavior:'instant'}));
+    await pag.waitForTimeout(200);
+  }
+  else bien('esta invitación no tiene franjas de foto');
+
   /* El mapa no puede quedar en "#": un botón que se ve igual y no
      lleva a ningún lado no da ningún error. */
   const mapas = await pag.evaluate(() =>
