@@ -3478,6 +3478,102 @@ contorno heredaba ahí una tinta pensada para el vino y daba **1,55:1** —
 o sea que "Copiar alias" no estaba. *Si un bloque trae su propio fondo,
 trae su propia tinta.* No lo vio el ojo: lo agarró el medidor.
 
+#### Las fotos, y el sobre que se abre de verdad
+
+Tercera pasada, con tres fotos que mandó el dueño y una captura de otra
+invitación como referencia: *"La primera foto va en la portada. El sobre
+mejorarlo. Busca una animación de apertura que sea copada y no tan
+genérica. La segunda foto va antes de la ubicación... quiero que quede
+como la tercera foto. Y la cuarta foto quiero que sea en el final con el
+'te espero'."*
+
+**Las tres van en blanco y negro, y el filtro está en el CSS.** La paleta
+de esta tarjeta son tres colores; una foto a color mete los suyos —el
+verde de los árboles, el rojo de la remera— y la pieza deja de ser la de
+Pia. En el CSS y no quemado en el archivo: el original queda entero por
+si algún día se quiere a color. Es la misma decisión que ya estaba tomada
+en `mia15/`.
+
+**La portada va `cover` y no `contain`**, al revés que mia15, y el motivo
+es la foto: ésta es apaisada y la pantalla de un teléfono es alta, así que
+entera dejaría dos bandas enormes. Lo que se recorta son los costados, no
+la cara: el `object-position` la sostiene arriba, que es donde no cae el
+texto. **El velo va atado al TEXTO**, no a un porcentaje de la pantalla —
+el alto del bloque cambia con el aparato y la raya del degradé no—, y se
+hace macizo en el 88% y no en el 100%, porque el borde de abajo de la
+foto cae en un punto distinto en cada pantalla.
+
+**Las dos franjas son el pedido de la captura**: una foto a todo lo ancho
+con el borde de arriba RASGADO en el color de la sección que viene
+arriba, que abajo se funde con la que viene después. No llevan marco ni
+título: la foto ES la sección, y por eso la sección que sigue a la
+primera franja perdió su curva — la franja ya hace el corte y dos cortes
+pegados se leen como un error de maqueta.
+
+Cuatro cosas que costaron una vuelta cada una, y **ninguna tiraba un
+error**:
+
+- **La sierra se llenaba del lado equivocado.** El camino rellenaba de la
+  cresta para ABAJO, así que entre la sección de arriba y el rasgado
+  quedaba una tira de la foto metida en el medio: se leía como una raya
+  mal puesta, no como un borde. Va lleno de arriba —del borde de la
+  pantalla hasta la cresta— y ahí el rasgado cuelga sobre la foto, que es
+  lo que hace la referencia.
+- **Una sierra de rectas no es una montaña, es un cotillón.** La primera
+  versión eran triángulos y se veía de papel picado. La cresta va con
+  curvas y seis cumbres.
+- **El camino sale de una SEMILLA fija** —la fecha de la fiesta—, no de
+  `Math.random()`: cambiando en cada carga, dos capturas de la misma
+  invitación saldrían distintas. Es la regla de `mia15/`.
+- **El pie vive FUERA de la franja.** La franja se esconde entera si la
+  foto no carga, y con el pie adentro se iría con ella el único renglón
+  nuestro de toda la invitación — el que le abre el WhatsApp al próximo
+  cliente. Y si esa franja falta, el papel claro del cierre chocaría con
+  el pie oscuro en una juntura recta, así que ahí el pie se pone su
+  curva: el mismo cuidado que ya costó una vuelta en mia15, donde sacar
+  la foto dejaba el borde sin rasgar.
+
+**El sobre: la carta VUELA.** Que la carta salga y el sobre se funda no
+es un gesto, es una transición — y eso era lo "genérico". Ahora el sello
+se PARTE en dos mitades que se separan y se caen con su polvo de oro, la
+solapa gira, la carta sale de atrás del frente y después **se abre sobre
+la pantalla hasta que el papel ES la portada**. Cuánto tiene que crecer
+lo calcula el JS con la caja de verdad contra la pantalla de verdad: un
+número escrito a mano se queda corto en una tablet y se pasa en un iPhone
+SE, y en los dos casos se ve el borde del papel cruzando la pantalla a
+mitad de la animación. Y el quiebre del sello va en una capa aparte y no
+en el botón: moviendo la caja que se toca, el navegador la da por
+inestable y una prueba se cuelga treinta segundos contra un botón que
+está perfecto.
+
+#### Lo que la prueba de las invitaciones no estaba midiendo
+
+almi15 es la primera invitación PUBLICADA con foto en la portada, y con
+eso aparecieron tres agujeros en `pruebas/invitacion_mirar.js`. Los tres
+daban verde.
+
+- **"0 renglones sobre la foto" no es un cero, es que no miró.** La
+  comprobación que mide con el píxel lo que cae sobre la foto corre
+  DESPUÉS de la que recorre la invitación entera para que el observador
+  destape, así que la pantalla estaba en el pie: la portada quedaba fuera
+  de la vista y todos sus renglones se descartaban por estar arriba. Se
+  vuelve al principio antes de medir. Con eso pasó de 0 a **3 renglones
+  en almi15 y 7 en mia15** — o sea que esa comprobación llevaba desde que
+  se escribió sin medir un solo píxel de mia15 tampoco. Es la caja de 0x0
+  otra vez, con el scroll en el medio.
+- **Contaba las fotos de una sola manera.** Miraba `CONFIG.fotos` —el
+  pase de mia15— y no las franjas, así que una invitación con franjas se
+  salteaba sola informando *"no tiene fotos"*. Ahora cuenta las dos, y
+  con todas las fotos caídas exige además que **no quede un solo cuadrado
+  roto dibujado en ningún lado** y que las franjas se escondan enteras.
+  Verificado rompiéndolo a propósito —dibujando la franja antes de saber
+  si la foto cargó—: da 2 fallas.
+- **Le exigía bordes rasgados a una invitación que no los usa.** El
+  rasgado es la forma que eligió mia15 para el corte; almi15 lo resuelve
+  con una curva. Lo que hay que medir es que la que LOS USA no se quede
+  sin ellos al volver a la portada tipográfica; exigírselos a una que no
+  los tiene es inventar una falla.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
