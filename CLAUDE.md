@@ -3409,6 +3409,75 @@ nuestras, no las fiestas de los clientes.
 mia15: nunca una foto de la fiesta, que viajaría en la vista previa de
 cada chat por el que pase el link.
 
+#### La segunda pasada: "es muy básica y de poco vuelo"
+
+El dueño la miró publicada y la bajó entera, con cinco reparos y ninguno
+de gusto: *"la presentación es mala. El sobre debería tener mejor
+animación. Que se vea la carta por fuera queda feo. La portada debería
+ser más linda. Necesito que haya mejor desmarque entre cada sector.
+Quiero emoticones más lujosos y con animación. Es muy básica y de poco
+vuelo."* Los cinco se arreglaron y los cinco dejaron algo escrito.
+
+**1 · La carta se veía por fuera, y el motivo es de geometría.** Un
+sobre cerrado se dibujaba con DOS capas —el cuerpo y la solapa en
+triángulo— y el triángulo se angosta hacia abajo: por los dos costados
+de arriba asomaban dos cuñas de papel crema. Un sobre de verdad tiene
+**cuatro pliegues** en la espalda: el grande de arriba, dos laterales y
+el de abajo. Puestos los cuatro no queda un solo punto por donde se vea
+lo de adentro. Es el mismo error que *una caja de 0x0 pasa todas las
+cuentas*, al revés: lo que no se tapa, se ve.
+
+**2 · El sobre se abre de verdad.** El sello se apaga, la solapa gira
+sobre su bisagra (`rotateX`, con `perspective` en el padre), la carta
+—con su monograma— sale de atrás del frente, el sobre se acerca un
+paso y recién ahí se funde. **Y el `z-index` de la solapa cambia a los
+0,45 s**: una solapa abierta va DETRÁS de la carta. Cambiado de entrada,
+la carta se ve un cuadro antes de que la solapa se mueva; no cambiado
+nunca, la carta sale tapada por el triángulo y el gesto no se entiende.
+`z-index` no se interpola, pero `transition:z-index 0s linear .45s`
+hace el salto en el momento justo.
+**El fundido arranca cuando la carta YA salió.** Pisados, se ven las dos
+cosas a la vez —el sobre translúcido encima de la portada— y eso no se
+lee como una transición sino como una pantalla a medio cargar.
+
+**3 · El desmarque entre secciones es una CURVA, no un borde.** Cada
+sección sube sobre la anterior con un radio en porcentaje —una elipse
+achatada— y apoya una filigrana en la cumbre. Dos franjas de color
+pegadas por una línea recta se leen como una página web; una curva con
+su ornamento se lee como que empezó otra cosa. No pesa nada, no se
+pixela y se adapta a cualquier ancho.
+**El marco de la portada tiene que esquivar esa curva**: sin ese
+respiro, la cumbre del arco le come las dos esquinas de abajo y el
+filete termina cortado contra una curva que no es suya.
+
+**4 · Los medallones.** Siete iconos de línea —reloj de arena,
+calendario, pin, vestido, regalo, sobre, destello— adentro de un anillo
+con dos rombos, y **el anillo y el icono se dibujan solos** al entrar la
+sección, con el largo REAL de cada trazo (`getTotalLength`). Se dibujan
+en el JS desde una tabla y no se escriben siete veces en el HTML. El
+color lo pone la banda, así que el mismo dibujo se lee sobre el vino y
+sobre el papel.
+
+**5 · El marco de la portada se dibuja, y por eso son cuatro líneas y
+no un `border`.** Un borde de CSS no se puede recorrer: o está o no
+está. Cuatro rayas de un píxel que se estiran en cadena —arriba,
+derecha, abajo, izquierda— es el gesto de alguien trazando el marco con
+una regla, y cuesta cuatro divs. Las cuatro esquinas floreadas entran
+después. Sin JS quedan enteras, que es el estado bueno.
+
+**Y la cascada de la portada entra AL ABRIR EL SOBRE, no al cargar.**
+Con el sobre encima, una animación que corre detrás no la ve nadie: se
+gasta el único momento de sorpresa que tiene la pieza contra una capa
+opaca. Por eso el observador saltea la portada mientras el sobre exista
+y es el sobre el que la destapa. Es la misma decisión que ya estaba
+tomada en `mia15/`.
+
+**Y volvió a aparecer la de siempre, por enésima vez**: la tarjeta de
+papel crema vive adentro de una sección oscura, así que el botón de
+contorno heredaba ahí una tinta pensada para el vino y daba **1,55:1** —
+o sea que "Copiar alias" no estaba. *Si un bloque trae su propio fondo,
+trae su propia tinta.* No lo vio el ojo: lo agarró el medidor.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
