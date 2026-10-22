@@ -353,7 +353,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    suyos. El filtro va en el CSS y no quemado en el archivo, así el
    original queda entero por si algún día se quiere a color. */
 .port-foto{position:absolute;inset:0;z-index:0;background:#140509;overflow:hidden}
-.port-foto img{width:100%;height:100%;object-fit:cover;object-position:47% 20%;
+/* La foto es MÁS ALTA que la pantalla y está corrida hacia arriba, y
+   eso no es un recorte caprichoso: con la foto justa, la cara cae
+   exactamente donde va el nombre y el texto se le monta encima. Lo que
+   sube es la CARA; abajo queda la ropa, que es donde el velo y las
+   letras no tapan nada. */
+.port-foto img{position:absolute;left:0;top:-17%;width:100%;height:100%;
+  object-fit:cover;object-position:47% 0;
   filter:grayscale(1) contrast(1.07) brightness(.96)}
 /* El velo va atado al TEXTO y no a un porcentaje de la pantalla: el
    alto del bloque cambia con el aparato y la raya del degradé no. Y se
@@ -366,6 +372,24 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 #portada.con-foto{align-content:end;background-image:none;background-color:#140509}
 #portada.con-foto > :not(.port-foto){position:relative;z-index:1}
 #portada.con-foto #nombre{font-size:clamp(46px,17.5vw,112px)}
+/* En una pantalla BAJA el bloque de texto se lleva una proporción
+   mucho más grande, así que la misma foto vuelve a quedarle encima a
+   la cara. Ahí la foto sube más y el texto achica un escalón: el
+   recorte no se elige por el ancho, se elige por lo que queda libre
+   arriba. */
+@media (max-height:720px){
+  #portada.con-foto{padding-top:clamp(40px,8vh,70px);
+    padding-bottom:calc(34px + env(safe-area-inset-bottom))}
+  #portada.con-foto .port-foto img{top:-24%;height:126%}
+  #portada.con-foto .flor{margin-bottom:8px;width:min(150px,44vw)}
+  #portada.con-foto #nombre{font-size:clamp(38px,12.5vw,64px)}
+  #portada.con-foto #hilo{margin-top:9px}
+  #portada.con-foto .port-quince{font-size:clamp(16px,5vw,22px);margin-top:7px}
+  #portada.con-foto .port-frase{font-size:clamp(13.5px,3.8vw,16px);line-height:1.45;margin-top:8px}
+  #portada.con-foto .port-dato{line-height:1.9;margin-top:11px;font-size:11px}
+  #portada.con-foto .port-baja{margin-top:12px}
+}
+
 /* El zoom lento: la foto entra 6% agrandada y se acomoda sola en once
    segundos. Once es a propósito —un zoom que se nota es un zoom
    molesto—, y cuelga de `body.cerrado`, la clase que pone el JS al
@@ -394,7 +418,10 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    como un error de carga. */
 .franja figure{position:relative;margin:0;overflow:hidden;
   height:clamp(330px,62vh,520px)}
-.franja img{position:absolute;left:0;top:-13%;width:100%;height:126%;object-fit:cover;
+/* El sobrante es el que hace el paralaje, y es poco a propósito: cada
+   punto que se recorta arriba es un punto que el borde rasgado le come
+   a la cabeza de la foto. Con 26% el rasgado le mordía el pelo. */
+.franja img{position:absolute;left:0;top:-8%;width:100%;height:116%;object-fit:cover;
   filter:grayscale(1) contrast(1.08);will-change:transform}
 .franja figure:after{content:'';position:absolute;inset:0;pointer-events:none}
 /* La de arriba: viene de la sección oscura y entrega a la clara. */
@@ -406,7 +433,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 /* La del final: viene del papel y entrega al pie oscuro. */
 .franja.tras-clara{background:var(--vino-noche)}
 .franja.tras-clara .sierra{fill:var(--rubor-claro)}
-.franja.tras-clara img{object-position:50% 18%}
+.franja.tras-clara img{object-position:50% 0}
 .franja.tras-clara figure:after{
   background:linear-gradient(180deg,transparent 64%,rgba(26,6,14,.38) 84%,var(--vino-noche) 100%)}
 /* El pie: el único renglón nuestro, sobre el oscuro del final. */
@@ -1026,7 +1053,7 @@ function sierraPath(semilla, picos){
      lee como un zigzag de cotillón; lo que pidió la captura es una
      montaña. */
   const pts = [];
-  for (let i = 0; i <= picos; i++) pts.push([(1000 / picos) * i, 16 + az() * 70]);
+  for (let i = 0; i <= picos; i++) pts.push([(1000 / picos) * i, 14 + az() * 52]);
   let d = 'M0 0 L1000 0 L1000 ' + pts[picos][1].toFixed(1);
   for (let i = picos - 1; i >= 0; i--){
     const mx = ((pts[i][0] + pts[i+1][0]) / 2).toFixed(1);
@@ -1102,7 +1129,7 @@ function sierraPath(semilla, picos){
        por la misma propiedad es una que gana y otra que desaparece.
        Moverle la caja tampoco sirve: el velo que hace que el texto se
        lea es un `::after` de esa caja y se iría con ella. */
-    $$('.franja img').forEach(im => sumar(im, im.parentElement, 11));
+    $$('.franja img').forEach(im => sumar(im, im.parentElement, 7));
     mover();
   };
   let pedido = false;

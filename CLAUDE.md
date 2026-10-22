@@ -3673,6 +3673,38 @@ renglón que se agrega encima de una foto no es sólo un renglón más — es
 todo lo que estaba abajo, subido.** El velo se vuelve a medir cada vez
 que cambia el texto de la portada.
 
+#### Dos caras tapadas, y por qué el recorte no se elige por el ancho
+
+*"La foto de portada está muy tapada la cara con las letras. Y la del
+final está tapada la cara con el zócalo blanco."* Las dos son el mismo
+error con dos disfraces: **se encuadró la foto sin mirar qué le cae
+encima**.
+
+**La portada.** Con `cover` en una pantalla alta la foto se escala por
+el ALTO, así que `object-position` vertical **no hace nada**: la cara
+queda donde la puso el fotógrafo, y ahí es justo donde va el nombre.
+Se arregla moviendo la caja de la imagen (`top:-17%`), no la posición
+del objeto. Lo que sube es la cara; abajo queda la ropa, que es donde
+el velo y las letras no tapan nada.
+
+**Y en una pantalla BAJA volvía a pasar**, porque el bloque de texto
+mide casi lo mismo en todas y en 568px de alto se lleva la mitad de la
+pantalla. Abajo de 720px de alto la portada achica un escalón —el
+nombre, los aires, el pie— y la foto sube más. **El recorte no se
+elige por el ancho: se elige por lo que queda libre arriba.**
+
+**La franja del final.** Ahí el culpable no era el rasgado sino el
+**sobrante del paralaje**: la foto es más alta que su marco y lo que
+se recorta arriba es exactamente la cabeza. Se bajó el sobrante de 26%
+a 16%, se recortó la foto de origen con aire arriba —130 píxeles más
+de espejo— y la cresta quedó menos honda. Un borde que cuelga sobre
+una foto tiene que ser un borde, no una tapa.
+
+**La lección, y es la tercera vez que aparece en esta invitación**: una
+foto encima de la cual va a caer texto —o un borde, o una curva— no se
+encuadra mirando la foto. Se encuadra mirando la pantalla terminada, y
+en el aparato más chico, que es donde el texto pesa más.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
