@@ -291,6 +291,16 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
        captura y se busca el píxel MÁS CLARO debajo de cada renglón.
        El más claro y no el promedio: el promedio esconde justo el
        reflejo que se come la letra. */
+    /* Y PRIMERO VOLVER ARRIBA. La comprobación de más arriba recorre
+       la invitación entera para que el observador destape, así que al
+       llegar acá la pantalla está en el pie: la portada queda fuera de
+       la vista, todos sus renglones se descartan por `top > innerHeight`
+       y la medición informaba "0 renglones sobre la foto" — verde sin
+       haber mirado un solo píxel. Es la caja de 0x0 otra vez, con el
+       scroll en el medio: lo agarró almi15, la primera invitación
+       publicada con foto en la portada. */
+    await pag.evaluate(() => scrollTo({top:0, behavior:'instant'}));
+    await pag.waitForTimeout(260);
     const conFoto = await pag.evaluate(() => {
       const port = document.querySelector('#portada, header');
       return !!(port && port.querySelector('img'));
@@ -510,8 +520,17 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     /* `CONFIG` es un `const` de script: NO cuelga de `window`, así que
        preguntando por `window.CONFIG` da 0 y la prueba se saltea sola
        informando "no tiene fotos" — verde midiendo la nada. */
-    const cuantas = await pagL.evaluate(
-      () => (typeof CONFIG !== 'undefined' && CONFIG.fotos || []).length);
+    /* Dos formas de tener fotos y las dos cuentan: el PASE
+       (`CONFIG.fotos`, mia15) y las FRANJAS a todo lo ancho
+       (`CONFIG.franjas`, almi15). Contando solo la primera, una
+       invitación con franjas se salteaba sola informando "no tiene
+       fotos" — verde midiendo la nada. */
+    const cuantas = await pagL.evaluate(() => {
+      if (typeof CONFIG === 'undefined') return 0;
+      return (CONFIG.fotos || []).length + Object.keys(CONFIG.franjas || {}).length;
+    });
+    const franjas = await pagL.evaluate(
+      () => typeof CONFIG === 'undefined' ? [] : Object.keys(CONFIG.franjas || {}));
     await ctxL.close();
 
     if (!cuantas) bien('esta invitación no tiene fotos: nada que medir');
@@ -565,16 +584,37 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       await pag2.goto(URL, {waitUntil:'domcontentloaded'});
       if (await pag2.locator('#abrir').count()){ await pag2.click('#abrir'); await pag2.waitForTimeout(900); }
       await pag2.waitForTimeout(1200);
-      const vacia = await pag2.evaluate(() => {
+      const vacia = await pag2.evaluate(ids => {
         const sec = document.querySelector('#galeria');
-        if (!sec) return {hay:false};
-        const r = sec.getBoundingClientRect();
-        return {hay:true, escondida: sec.hidden || (r.width === 0 && r.height === 0)};
-      });
+        const r = sec && sec.getBoundingClientRect();
+        return {
+          hay: !!sec,
+          escondida: !!(sec && (sec.hidden || (r.width === 0 && r.height === 0))),
+          /* Y lo mismo preguntado SIN saber dónde está cada foto: una
+             imagen rota es un dibujo del navegador, no una excepción,
+             así que si no se cuenta no la ve nadie hasta que el cliente
+             manda la captura. */
+          rotas: [...document.querySelectorAll('img')]
+                   .filter(im => im.complete && !im.naturalWidth).length,
+          franjasVivas: ids.filter(id => {
+            const n = document.getElementById(id);
+            if (!n) return false;
+            const c = n.getBoundingClientRect();
+            return !n.hidden && c.width > 0 && c.height > 0;
+          })
+        };
+      }, franjas);
       if (vacia.hay)
         es(vacia.escondida, vacia.escondida
           ? 'sin ninguna foto que cargue, la sección entera se esconde'
           : 'sin ninguna foto, la sección queda dibujada vacía');
+      es(vacia.rotas === 0, vacia.rotas
+        ? `con todas las fotos caídas quedaron ${vacia.rotas} cuadrado(s) roto(s) dibujado(s)`
+        : 'con todas las fotos caídas no queda un solo cuadrado roto dibujado');
+      if (franjas.length)
+        es(vacia.franjasVivas.length === 0, vacia.franjasVivas.length
+          ? `la(s) franja(s) ${vacia.franjasVivas.join(', ')} quedan dibujadas sin foto adentro`
+          : `las ${franjas.length} franjas de foto se esconden enteras`);
       await ctx2.close();
     }
   }
@@ -588,6 +628,17 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
      elegido. */
   titulo('la foto de la portada que no está');
   {
+    /* ¿Esta invitación corta con bordes rasgados? Se le pregunta a la
+       página SIN romperle nada: si los tiene con la foto puesta, tiene
+       que seguir teniéndolos sin ella. */
+    const ctxR = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagR = await ctxR.newPage();
+    await pagR.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagR.locator('#abrir').count()){ await pagR.click('#abrir'); await pagR.waitForTimeout(900); }
+    await pagR.waitForTimeout(600);
+    const conRasgos = await pagR.evaluate(() => document.querySelectorAll('svg.rasgo').length > 0);
+    await ctxR.close();
+
     const ctx3 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
     const pag3 = await ctx3.newPage();
     let pudo = false;
@@ -622,7 +673,13 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(!port.conFoto, port.conFoto
         ? 'la portada se quedó en modo foto sin ninguna foto'
         : 'vuelve a la portada tipográfica, que se sostiene sola');
-      es(port.rasgos > 0, port.rasgos
+      /* El rasgado es la forma que eligió mia15 para el corte; almi15
+         lo resuelve con una curva. Lo que hay que medir es que la
+         invitación que LOS USA no se quede sin ellos al volver a la
+         portada tipográfica — exigírselos a una que no los tiene es
+         inventar una falla. */
+      if (!conRasgos) bien('esta invitación no corta con bordes rasgados');
+      else es(port.rasgos > 0, port.rasgos
         ? `y los bordes rasgados se rehacen (${port.rasgos})`
         : 'quedó sin bordes rasgados: juntura recta entre el negro y el papel');
     }
