@@ -421,9 +421,14 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
      Script, así el recorrido se mide entero. El `?confirmado=` dice
      que no hasta que llega el POST, y que sí después — que es
      exactamente lo que hace la planilla. */
-  let seMando = false;
+  let seMando = false, loQueViajo = '', urlesGoogle = [];
   await pag.route('**/script.google.com/**', r => {
-    if (r.request().method() === 'POST'){ seMando = true; return r.fulfill({status:200, body:'{"ok":true}'}); }
+    urlesGoogle.push(r.request().url());
+    if (r.request().method() === 'POST'){
+      seMando = true;
+      loQueViajo = r.request().postData() || '';
+      return r.fulfill({status:200, body:'{"ok":true}'});
+    }
     return r.fulfill({status:200, contentType:'application/json',
                       body: JSON.stringify({ ok: seMando })});
   });
@@ -507,6 +512,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   es(mapas.every(m => /noopener/.test(m.rel)), 'todo lo que abre en otra pestaña lleva rel=noopener');
 
   /* La confirmación no puede decir "listo" si no se mandó nada. */
+  let CONF_RSVP = null;
   if (await pag.locator('#rsvp').count()){
     await pag.fill('#fNombre', 'Prueba Apellido');
 
@@ -528,12 +534,97 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await pag.waitForTimeout(600);
     const av = (await pag.locator('#aviso').innerText()).toLowerCase();
     es(av.length > 0, 'la confirmación contesta algo');
-    const endpointVacio = await pag.evaluate(() => !CONFIG.endpoint);
-    if (endpointVacio)
+    const conf = await pag.evaluate(() => ({
+      endpoint: (typeof CONFIG !== 'undefined' && CONFIG.endpoint) || '',
+      evento:   (typeof CONFIG !== 'undefined' && CONFIG.evento) || '',
+      /* La dirección de la planilla CENTRAL, la que comparten todas.
+         Hace falta para saber cuál de las dos está usando: si la
+         suya, `evento` no va; si la central, sin `evento` no entra en
+         ninguna pestaña. Preguntado por la dirección y no por si
+         `evento` está puesto — si no, vaciarlo se leía como "tiene
+         planilla propia" y la prueba daba verde con la confirmación
+         muerta. Pasó, y por eso está escrito así. */
+      central:  (typeof PLANILLA !== 'undefined' && PLANILLA.exec) || ''
+    }));
+    if (!conf.endpoint)
       es(/muestra|no se manda|no se mand/.test(av),
          'sin planilla puesta, DICE que no se mandó a ningún lado (no miente con un "listo")');
+    else {
+      /* Con planilla puesta, el camino bueno: la planilla contestó que
+         entró, así que la pantalla tiene que decirlo. Nunca se medía —
+         hasta ahora todas las invitaciones nuevas estaban sin planilla,
+         así que esta mitad vivía sin una sola comprobación. */
+      es(seMando, 'con planilla puesta, la confirmación SE MANDA');
+      es(/listo|gracias|nos vemos/.test(av),
+         'y cuando la planilla dice que entró, la pantalla lo dice (no se queda en "mandando")');
+
+      /* Y tiene que decir a QUÉ fiesta va. Con la planilla central, una
+         confirmación sin eso no entra en ninguna pestaña: la planilla
+         la rechaza y el invitado ve "no pudimos confirmar" teniendo
+         todo bien. Es lo primero que se olvida al copiar una
+         invitación para un cliente nuevo. */
+      const usaCentral = !!conf.central && conf.endpoint === conf.central;
+      if (usaCentral){
+        es(!!conf.evento,
+           conf.evento
+             ? `usa la planilla central y dice de qué fiesta es ("${conf.evento}")`
+             : 'usa la planilla CENTRAL y no dice de qué fiesta es: no va a entrar en ninguna pestaña');
+        if (conf.evento)
+          es(loQueViajo.indexOf('name="evento"') !== -1 && loQueViajo.indexOf(conf.evento) !== -1,
+             `y el POST lo lleva adentro: "${conf.evento}"`);
+      }
+      else bien('esta invitación tiene su propia planilla, no la central');
+      es(urlesGoogle.length === 1,
+         'y entró en UN solo viaje a la planilla, no en tres');
+      CONF_RSVP = conf;
+    }
   }
   await ctx.close();
+
+  /* ── el camino del TELÉFONO: cuando no se puede leer la respuesta ──
+     En algunos navegadores el POST entra pero la respuesta no se
+     puede leer, así que la invitación lo manda a ciegas y después
+     PREGUNTA si llegó. Ese camino no se recorre en el flujo rápido
+     —ahí alcanza con un viaje— o sea que vivía sin medirse, y es
+     justamente el que corre en un iPhone.
+     Lo que no puede faltar ahí es decir de QUÉ fiesta se pregunta:
+     con la planilla central, una pregunta sin eso contestaría por
+     otra fiesta, y al invitado le diría que no llegó teniendo la
+     confirmación guardada. */
+  if (CONF_RSVP && CONF_RSVP.endpoint && CONF_RSVP.evento &&
+      CONF_RSVP.endpoint === CONF_RSVP.central){
+    titulo('el camino del teléfono: mandar a ciegas y preguntar');
+    const ctxF = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagF = await ctxF.newPage();
+    let posts = 0; const preguntas = [];
+    await pagF.route('**/script.google.com/**', r => {
+      if (r.request().method() === 'POST'){
+        posts++;
+        /* El primero revienta, como cuando el navegador no deja leer
+           la respuesta. El segundo —el de a ciegas— entra. */
+        if (posts === 1) return r.abort();
+        return r.fulfill({status:200, body:'{"ok":true}'});
+      }
+      preguntas.push(r.request().url());
+      return r.fulfill({status:200, contentType:'application/json',
+                        body: JSON.stringify({ ok: posts > 1 })});
+    });
+    await pagF.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagF.locator('#abrir').count()){ await pagF.click('#abrir'); await pagF.waitForTimeout(2700); }
+    await pagF.fill('#fNombre', 'Prueba Apellido');
+    if (await pagF.locator('.radios label').count()) await pagF.locator('.radios label').first().click();
+    await pagF.click('#enviar');
+    await pagF.waitForTimeout(3500);
+
+    es(posts >= 2, 'si no se puede leer la respuesta, se manda igual a ciegas');
+    es(preguntas.length > 0, 'y después PREGUNTA si llegó');
+    es(preguntas.every(u => u.indexOf('evento=' + CONF_RSVP.evento) !== -1),
+       `y pregunta por SU fiesta: lleva "evento=${CONF_RSVP.evento}"`);
+    const avF = (await pagF.locator('#aviso').innerText()).toLowerCase();
+    es(/listo|gracias|nos vemos/.test(avF),
+       'y al saber que entró, lo dice');
+    await ctxF.close();
+  }
 
   /* ── 7 · una foto que no está ──
      No es un caso inventado. El día que se saca una foto de una
