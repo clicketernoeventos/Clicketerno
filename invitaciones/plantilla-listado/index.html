@@ -214,7 +214,7 @@ async function entrar(clave) {
        arregla quien publicó la página y la otra se arregla sola. Si
        la dirección está vacía, lo decimos con todas las letras en vez
        de echarle la culpa a la conexión. */
-    : r === 'sinconfig' ? 'Falta configurar esta página: no tiene la dirección de la planilla.'
+    : r === 'sinconfig' ? 'Falta configurar esta página: no dice de qué fiesta es ni de qué planilla salen los datos.'
     : 'No se pudo conectar con la planilla. Probá de nuevo en un momento.';
 }
 
@@ -386,7 +386,16 @@ colChecksEl.addEventListener('change', (e) => {
    mal), 'viejo' (el Apps Script todavía es el de antes, el que contestaba
    sin pedir nada) o 'red'. */
 async function cargarDatos(clave){
+  /* "Falta llenar el CONFIG" y "esa clave no es" son dos cosas
+     distintas y se arreglan en lugares distintos. Con la planilla
+     CENTRAL no alcanza con tener dirección: hay que decir de qué
+     fiesta, porque la dirección es la misma para todos. Sin eso la
+     planilla contesta "sin_evento" y, leído como un error cualquiera,
+     la pantalla le diría "clave incorrecta" a quien tiene la clave
+     bien — y el que la puede arreglar es el que publicó la página,
+     no él. */
   if (!URL_PLANILLA) return 'sinconfig';
+  if (!CONFIG.appsScriptUrl && !CONFIG.evento) return 'sinconfig';
   let data;
   try {
     const res = await fetch(URL_PLANILLA + '?clave=' + encodeURIComponent(clave) + PARAM_EVENTO,
@@ -396,6 +405,7 @@ async function cargarDatos(clave){
     return 'red';
   }
   if (data && data.error === 'sin_clave_configurada') return 'viejo';
+  if (data && data.error === 'sin_evento') return 'sinconfig';
   /* "Esperá un rato" no es "esa clave no es". La planilla frena
      después de varios intentos fallados —es lo que hace que una
      clave corta no se pueda probar entera—, y si acá dijéramos

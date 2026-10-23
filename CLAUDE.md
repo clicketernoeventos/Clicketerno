@@ -1830,12 +1830,41 @@ por la planilla —toda minúscula— no le cambia nada.
 Verificado rompiendo a propósito: ignorar la elegida da **4 fallas** y
 comparar sin perdonar mayúsculas da **1**.
 
-**Lo que todavía necesita a una persona, una vez**: los seis clics están
-escritos arriba de `apps-script/planilla-central.gs.txt`. Hasta que la
-dirección `/exec` no esté en `lib/planilla.js`, `almi15/listado/` no se
-crea —`pruebas/invitaciones.js` falla si un listado no dice de dónde saca
-los datos— y la confirmación de la invitación **dice con todas las letras
-que es una muestra y no se manda a ningún lado**. Nunca dice "listo".
+**IMPLEMENTADA el 23/10/2026.** El dueño hizo los seis clics, la
+dirección `/exec` está en `lib/planilla.js` y `almi15/listado/` existe.
+De acá en adelante una invitación nueva sale con su planilla y su
+tablero sin un solo paso del lado de Google.
+
+**Y el día que se conectó aparecieron dos cosas que nadie había
+medido**, las dos porque hasta entonces TODAS las invitaciones nuevas
+estaban sin planilla y esa mitad vivía sin una comprobación:
+
+- **El camino bueno de la confirmación.** Con planilla puesta se mide
+  que se mande, que diga "listo" cuando la planilla contestó que
+  entró, que vaya en UN viaje y que el POST lleve de qué fiesta es.
+  **Y el camino del TELÉFONO aparte**, forzándolo: cuando el navegador
+  no deja leer la respuesta, la invitación manda a ciegas y después
+  PREGUNTA — y esa pregunta tiene que decir `evento=`, o con la
+  planilla central contestaría por otra fiesta y le diría al invitado
+  que no llegó teniendo la confirmación guardada. Ese camino no se
+  recorre nunca en el flujo rápido, así que hay que provocarlo.
+- **Una plantilla de listado sin llenar pasó a mentir.** Antes, sin
+  `appsScriptUrl`, decía "falta configurar". Con la central puesta ya
+  hay dirección, así que preguntaba sin decir de qué fiesta, la
+  planilla contestaba `sin_evento` y la pantalla lo leía como un error
+  cualquiera: **"clave incorrecta"** a quien tiene la clave bien — y
+  el que lo puede arreglar es el que publicó la página, no él. Es la
+  misma lección ya escrita (*"falta llenar el CONFIG" y "se cortó
+  internet" no son lo mismo*), que volvió por una puerta nueva. Lo
+  agarró `pruebas/listado.js`, que ya la cuidaba.
+
+**Y la primera versión de la comprobación nueva no medía nada.**
+Preguntaba si `CONFIG.evento` estaba puesto, así que vaciarlo se leía
+como *"esta invitación tiene su propia planilla"* y la suite daba
+verde con la confirmación muerta. Se pregunta por la DIRECCIÓN: si la
+que usa es la central, `evento` es obligatorio. Verificado rompiendo a
+propósito — vaciarlo da **1 falla**; con la versión anterior daba
+cero.
 
 ### El listado: cómo lee el cliente quiénes confirmaron
 
@@ -4324,19 +4353,17 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
-- **Implementar la PLANILLA CENTRAL, una vez en la vida.** Los seis
-  pasos están escritos arriba de `apps-script/planilla-central.gs.txt`:
-  planilla nueva, pegar ese archivo, poner la clave maestra en
-  `CLAVE_MAESTRA_ELEGIDA` (nunca en el repo), correr `preparar()`,
-  implementar como aplicación web con acceso para cualquier persona, y
-  pasar la dirección `/exec`. Esa dirección se pega en `lib/planilla.js`
-  y con eso `almi15` —y toda invitación que venga— tiene planilla sin
-  un solo paso más. Hasta entonces la confirmación de `almi15` dice que
-  es una muestra y no se manda a ningún lado, y `almi15/listado/` no se
-  crea.
+- ~~**Implementar la planilla central**~~. **Hecho el 23/10/2026.** La
+  dirección está en `lib/planilla.js` y `almi15/listado/` existe. Lo
+  único que falta de eso es **verlo entrar una vez**: confirmar en
+  `/almi15` como si fuera un invitado y mirar que aparezca la fila en
+  la pestaña `almi15`. Desde acá no se puede comprobar —el proxy no
+  deja salir ni a `clicketerno.com.ar` ni a `script.google.com`—, así
+  que esa vuelta la da una persona.
   La clave de cada cliente **no hay que elegirla ni ir a buscarla**: la
   inventa la planilla y se lee abriendo el listado de ese cliente con la
-  maestra.
+  maestra. La de `almi15` la eligió la clienta y está en
+  `CLAVES_ELEGIDAS`, en la copia del editor.
 - **El titular de la cuenta del alias de `almi15`** (`nancyvaldez1976`):
   el nombre que muestra el banco al pegarlo. Sin él, ese renglón no se
   dibuja.
