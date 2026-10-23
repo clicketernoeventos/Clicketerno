@@ -23,10 +23,11 @@ const es = (cond, m) => cond ? bien(m) : mal(m);
 /* ── la planilla de mentira ──────────────────────────────────────
    Solo lo que el script usa de verdad. Si algún día usa algo más,
    esto revienta acá y no en la fiesta. */
-function hojaFalsa(filas = []) {
+function hojaFalsa(filas = [], nombre = 'Hoja 1') {
   const d = filas.map(f => f.slice());
   const h = {
     datos: d,
+    getName: () => nombre,
     getLastRow: () => d.length,
     getLastColumn: () => d.reduce((m, f) => Math.max(m, f.length), 0),
     setFrozenRows: () => h,
@@ -423,6 +424,225 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
   }
   es(a.get({ confirmado: '  juan pérez  ' }).ok === true,
      'y la puerta del invitado lo reconoce con espacios y en minúscula');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LA PLANILLA CENTRAL · apps-script/planilla-central.gs.txt
+
+   Una sola planilla y un solo Apps Script para TODAS las
+   invitaciones, con una pestaña por fiesta. Es lo que hace que
+   agregar una tarjeta nueva no cueste seis clics en la interfaz de
+   Google.
+
+   Lo que hay que medir acá no es que guarde una fila —eso ya está
+   medido arriba— sino lo ÚNICO que trae tener a todos los clientes
+   adentro del mismo archivo: que no se mezclen. Una fuga ahí no tira
+   ningún error, se ve como un listado perfecto con la gente de otra
+   fiesta.
+   ════════════════════════════════════════════════════════════════ */
+
+function cargarCentral(opciones = {}) {
+  const hojas = [];
+  const props = Object.assign({}, opciones.props || {});
+  const registro = [];
+  let pedidosLista = 0;
+  const libro = {
+    getSheets: () => hojas.slice(),
+    getSheetByName: n => hojas.find(h => h.getName() === n) || null,
+    insertSheet(n) { const h = hojaFalsa([], n); hojas.push(h); return h; }
+  };
+  const caja = {
+    SpreadsheetApp: { getActiveSpreadsheet: () => libro },
+    PropertiesService: { getScriptProperties: () => ({
+      getProperty: k => (k in props ? props[k] : null),
+      setProperty: (k, v) => { props[k] = v; },
+      deleteProperty: k => { delete props[k]; }
+    }) },
+    /* El script le pregunta al SITIO qué fiestas existen. El falso
+       contesta lo que le diga la prueba — y puede contestar que se
+       cayó, que es justamente el caso que hay que medir. */
+    UrlFetchApp: { fetch: () => {
+      pedidosLista++;
+      if (opciones.sitioCaido) throw new Error('sin red');
+      return {
+        getResponseCode: () => opciones.codigo || 200,
+        getContentText: () => JSON.stringify({ eventos: opciones.eventos || ['almi15'] })
+      };
+    } },
+    Utilities: {
+      getUuid: () => require('crypto').randomUUID(),
+      formatDate: (fecha, zona) => new Intl.DateTimeFormat('sv-SE', {
+        timeZone: zona, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(fecha)
+    },
+    LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
+    ContentService: {
+      MimeType: { JSON: 'json' },
+      createTextOutput: t => ({ texto: t, setMimeType() { return this; } })
+    },
+    Logger: { log: m => registro.push(String(m)) },
+    Date, console
+  };
+  vm.createContext(caja);
+  let fuente = fs.readFileSync(
+    path.join(__dirname, '..', 'apps-script', 'planilla-central.gs.txt'), 'utf8');
+  /* La maestra va en la copia del editor del dueño, nunca en el repo:
+     acá se la pone la prueba, igual que él. */
+  if (opciones.maestra)
+    fuente = fuente.replace(/var CLAVE_MAESTRA_ELEGIDA = '';/,
+                            "var CLAVE_MAESTRA_ELEGIDA = " + JSON.stringify(opciones.maestra) + ";");
+  vm.runInContext(fuente, caja);
+  const leer = r => JSON.parse(r.texto);
+  return {
+    libro, hojas, props, registro, caja,
+    get pedidosLista() { return pedidosLista; },
+    preparar: () => caja.preparar(),
+    post: campos => leer(caja.doPost({ parameter: Object.assign({}, campos) })),
+    get:  p => leer(caja.doGet({ parameter: p || {} })),
+    /* La clave de una fiesta, como la leería el dueño: entrando con la
+       maestra. NO se va a buscar a las propiedades, que sería medir por
+       adentro un camino que en la realidad no existe. */
+    claveDe: (ev, maestra) => leer(caja.doGet({ parameter: { evento: ev, clave: maestra } })).claveEvento
+  };
+}
+
+console.log('\n─── la planilla central: preparar() ───');
+{
+  const a = cargarCentral({ maestra: 'clave-maestra-de-prueba' });
+  es(a.preparar() === 'listo', 'preparar() deja la maestra puesta');
+  es(a.props.CLAVE_MAESTRA === 'clave-maestra-de-prueba',
+     'la guarda en las propiedades del proyecto, no en el código');
+  /* El permiso de "servicio externo" se pide en el editor, con alguien
+     mirando. Pedido la primera noche que un invitado confirme, no hay
+     quién lo acepte y la confirmación se pierde. */
+  es(a.pedidosLista > 0, 'y toca la lista de fiestas ahí, para que el permiso se pida en el editor');
+
+  const b = cargarCentral({});
+  es(b.preparar() !== 'listo', 'sin la maestra puesta, lo DICE en vez de dar por listo');
+}
+
+console.log('\n─── la pestaña se crea sola, pero sólo si la fiesta existe ───');
+{
+  const a = cargarCentral({ maestra: 'mmmm', eventos: ['almi15'] });
+  es(a.post({ Nombre: 'Juan', Confirma: 'Sí' }).error === 'sin_evento',
+     'sin decir de qué fiesta, no entra');
+  es(a.hojas.length === 0, 'y no deja ninguna pestaña hecha');
+
+  /* El agujero que cierra la lista: la dirección /exec está a la vista
+     de cualquiera que abra una invitación, así que sin lista alcanza
+     con mandar nombres inventados para llenar la planilla de pestañas
+     basura — y el día que esté llena, la fiesta de verdad no puede
+     crear la suya. */
+  es(a.post({ evento: 'fiesta-trucha', Nombre: 'X', Confirma: 'Sí' }).error === 'evento_desconocido',
+     'una fiesta que no está en la lista NO crea pestaña');
+  es(a.hojas.length === 0, 'y la planilla sigue sin pestañas');
+
+  es(a.post({ evento: 'almi15', Nombre: 'Juan Pérez', Confirma: 'Sí' }).ok === true,
+     'la que SÍ está en la lista entra');
+  es(a.hojas.length === 1 && a.hojas[0].getName() === 'almi15',
+     'y se le crea su pestaña, con el nombre de la fiesta');
+  es(a.hojas[0].datos[0].join('|') === 'Cuándo|Nombre|Confirma',
+     'con los títulos de siempre');
+  /* `evento` dice a qué pestaña va: como columna sería lo mismo
+     repetido en todas las filas, que es el relleno que el dueño ya
+     sacó del listado. */
+  es(!a.hojas[0].datos[0].includes('evento'),
+     'y "evento" NO queda de columna: no es una respuesta de nadie');
+
+  /* El nombre viene de una página pública: es un dato, no una orden. */
+  for (const feo of ['../otra', 'almi 15', 'a:b', 'x'.repeat(60), 'ALMI15/..'])
+    es(a.post({ evento: feo, Nombre: 'X', Confirma: 'Sí' }).error === 'evento_desconocido'
+       || a.post({ evento: feo, Nombre: 'X', Confirma: 'Sí' }).error === 'sin_evento',
+       `un nombre de fiesta sucio no toca nada: ${JSON.stringify(feo).slice(0, 20)}`);
+  es(a.hojas.length === 1, 'después de todo eso sigue habiendo UNA sola pestaña');
+}
+
+console.log('\n─── dos clientes en la misma planilla no se mezclan ───');
+{
+  const M = 'maestra-de-prueba';
+  const a = cargarCentral({ maestra: M, eventos: ['almi15', 'otra15'] });
+  a.preparar();
+  a.post({ evento: 'almi15', Nombre: 'Juan Pérez', Confirma: 'Sí', 'Cuántos': '3' });
+  a.post({ evento: 'otra15', Nombre: 'Ana Gómez',  Confirma: 'Sí', 'Cuántos': '2' });
+
+  const kA = a.claveDe('almi15', M), kB = a.claveDe('otra15', M);
+  es(!!kA && !!kB && kA !== kB, 'cada fiesta tiene SU clave, y no es la misma');
+  /* Para pasársela al cliente no hay que entrar al editor de Apps
+     Script: viene escrita al abrir su listado con la maestra. */
+  es(a.get({ evento: 'almi15', clave: M }).claveEvento === kA,
+     'y con la maestra se la puede leer, sin entrar al editor');
+  es(a.get({ evento: 'almi15', clave: kA }).claveEvento === undefined,
+     'con la clave del evento NO viene: ahí ya la tiene quien pregunta');
+
+  const listaA = a.get({ evento: 'almi15', clave: kA });
+  es(listaA.invitados.length === 1 && listaA.invitados[0].Nombre === 'Juan Pérez',
+     'el listado de una fiesta trae SOLO su gente');
+  es(JSON.stringify(listaA).indexOf('Ana Gómez') === -1,
+     'y ni de casualidad la del cliente de al lado');
+  es(listaA.resumen.personas === 3,
+     'y el resumen cuenta la gente de ESA fiesta (dio ' + listaA.resumen.personas + ')');
+
+  es(a.get({ evento: 'otra15', clave: kA }).error === 'clave',
+     'la clave de un cliente NO abre el listado de otro');
+  es(a.get({ evento: 'almi15', clave: M }).invitados.length === 1 &&
+     a.get({ evento: 'otra15', clave: M }).invitados.length === 1,
+     'la maestra abre los dos, cada uno con lo suyo');
+
+  /* La puerta del invitado también es por fiesta. Sin esto, "¿ya
+     confirmé?" contestaría que sí en una fiesta a la que nunca fue —y
+     la invitación le escondería el formulario. */
+  es(a.get({ evento: 'almi15', confirmado: '  juan pérez  ' }).ok === true,
+     'el invitado pregunta si llegó lo suyo, con espacios y en minúscula');
+  es(a.get({ evento: 'otra15', confirmado: 'Juan Pérez' }).ok === false,
+     'y en la fiesta de al lado NO figura');
+}
+
+console.log('\n─── el freno de intentos es POR FIESTA ───');
+{
+  const M = 'maestra-de-prueba';
+  const a = cargarCentral({ maestra: M, eventos: ['almi15', 'otra15'] });
+  a.preparar();
+  a.post({ evento: 'almi15', Nombre: 'Juan', Confirma: 'Sí' });
+  a.post({ evento: 'otra15', Nombre: 'Ana',  Confirma: 'Sí' });
+  const kB = a.claveDe('otra15', M);
+
+  /* Con una planilla por cliente, un freno global era el freno de ese
+     cliente. Con UNA planilla para todos, un freno global es un
+     desconocido dejando a TODOS los clientes afuera de su listado con
+     doce intentos fallados. */
+  for (let i = 0; i < 14; i++) a.get({ evento: 'almi15', clave: 'no-es' });
+  es(a.get({ evento: 'almi15', clave: 'no-es' }).error === 'frenado',
+     'doce fallos seguidos cierran la puerta de ESA fiesta');
+  const otra = a.get({ evento: 'otra15', clave: kB });
+  es(Array.isArray(otra.invitados),
+     'y el cliente de al lado entra igual: el freno no es de toda la planilla');
+}
+
+console.log('\n─── si el sitio no contesta, la fiesta sigue ───');
+{
+  /* La lista de fiestas vive en el sitio nuestro. Si se cae justo la
+     noche de una fiesta, lo que NO puede pasar es que el invitado no
+     pueda confirmar. */
+  const a = cargarCentral({ maestra: 'm', eventos: ['almi15'] });
+  a.post({ evento: 'almi15', Nombre: 'Juan', Confirma: 'Sí' });
+  es(a.hojas.length === 1, 'con el sitio en pie, la pestaña se crea');
+
+  const caido = cargarCentral({ maestra: 'm', sitioCaido: true,
+                                props: { 'EVENTOS_CACHE': JSON.stringify(['almi15']) } });
+  es(caido.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).ok === true,
+     'caído el sitio, vale la última copia de la lista que teníamos');
+
+  const nunca = cargarCentral({ maestra: 'm', sitioCaido: true });
+  es(nunca.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).error === 'evento_desconocido',
+     'y si NUNCA se pudo leer, no se crea nada: mejor eso que cualquier cosa');
+
+  /* Una pestaña que ya existe anda pase lo que pase con la lista: la
+     lista sólo decide si se CREA. */
+  const viva = cargarCentral({ maestra: 'm', sitioCaido: true });
+  viva.libro.insertSheet('almi15').appendRow(['Cuándo', 'Nombre', 'Confirma']);
+  es(viva.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).ok === true,
+     'y la fiesta que ya tenía su pestaña recibe igual, con el sitio caído');
 }
 
 console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');

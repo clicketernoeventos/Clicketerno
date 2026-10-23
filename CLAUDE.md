@@ -1723,6 +1723,100 @@ comida para gente que no existe. Se le pisa la fila.
 
 `apps-script/` va en `.assetsignore`: no se publica.
 
+## La planilla central: una sola para todas las invitaciones
+
+Pedido del dueño el 22/10/2026, en una línea que es una regla y no un
+pedido: *"Hace la planilla. Siempre que hagas la tarjeta tenés que hacer
+la planilla. No hace falta aclararlo."*
+
+Tenía razón y lo que lo impedía estaba escrito en este mismo archivo:
+cada invitación necesitaba **su propio** proyecto de Apps Script —
+planilla nueva, pegar el código, correr `preparar()`, implementar,
+copiar la dirección— y esos son seis pasos en la interfaz de Google que
+**no se pueden hacer desde el chat**. Así que cada tarjeta nueva
+terminaba publicada diciendo *"esto es una muestra"*, esperando a que
+alguien hiciera los clics. Un pendiente que vuelve en cada trabajo no es
+un pendiente: es un paso del proceso que está mal puesto.
+
+**Ahora es UNA planilla con UNA pestaña por fiesta, y UN solo Apps
+Script implementado.** Los seis clics se hacen **una vez en la vida**.
+Después, agregar una invitación es:
+
+1. un renglón en `lib/planillas.json` (qué fiestas pueden crear su
+   pestaña), y
+2. `CONFIG.evento` en la invitación, más su carpeta `<evento>/listado/`.
+
+Cero pasos del lado de Google. Eso es lo que hacía falta para que "hacer
+la tarjeta" incluya "hacer la planilla" sin que nadie lo pida.
+
+**Qué NO se tocó**: las invitaciones que ya andan (`pia`, `mia15`) siguen
+con su propio proyecto y su propio código, `evento-nuevo.gs.txt`. Andan,
+tienen datos de clientes adentro y moverlas no le suma nada a nadie. El
+archivo viejo se queda por eso, no de sobrante. El listado acepta las dos
+formas: `appsScriptUrl` propio, o `evento` contra la central.
+
+**La dirección vive en UN lugar** (`lib/planilla.js`) y la lista de
+fiestas en OTRO (`lib/planillas.json`), sin un solo dato repetido entre
+los dos: una la lee el navegador y la otra el Apps Script. Escrita la
+dirección en cada invitación, el día que cambie quedarían la mitad
+apuntando a una dirección muerta — y eso **no tira ningún error**: la
+confirmación se manda, no llega, y la pantalla dice "listo".
+
+Cinco cosas que esto obligó a pensar, y ninguna es un detalle:
+
+- **Una dirección pública que crea una pestaña con el nombre que le
+  manden es una planilla que cualquiera llena de basura.** La `/exec`
+  está a la vista de cualquiera que abra el código de una invitación.
+  Un tope por hora **no alcanza**: sólo hace que llenarla lleve unos
+  días, y el que se queda sin poder crear su pestaña es un cliente con
+  el salón lleno — es la lección de `rafaga.sql` otra vez, *ya pusimos
+  un tope pensando en un atacante y le cortamos el brindis a una fiesta
+  de verdad*. Lo único que no se puede agotar es una **lista**, y la
+  lista vive donde mandamos nosotros: `lib/planillas.json`. Si el sitio
+  no contesta, vale la última copia guardada; si nunca se pudo leer, no
+  se crea nada. **Y una pestaña que ya existe recibe igual, pase lo que
+  pase con la lista**: la lista sólo decide si se CREA.
+- **El freno de intentos pasó a ser POR FIESTA.** Con una planilla por
+  cliente, un freno global era el freno de ese cliente. Con una sola
+  planilla para todos, un freno global es un desconocido dejando a
+  **todos** los clientes afuera de su listado con doce intentos
+  fallados. Mismo código, significado opuesto, sólo porque cambió lo
+  que hay del otro lado.
+- **La clave guardada del listado iba atada a la DIRECCIÓN**, y con la
+  central la dirección es la misma para todos: volvía exactamente el bug
+  que ya está escrito más arriba —el segundo listado que abrís en el
+  mismo aparato arranca mandando la clave del primero y te dice "esa
+  clave no es" sin que hayas escrito nada—. Va atada al **evento**.
+- **La clave de cada cliente se lee sin entrar al editor.** Abriendo su
+  listado con la clave maestra, la respuesta la trae escrita. Con la
+  clave del evento no viene: ahí ya la tiene quien pregunta. Sin esto,
+  "pasarle la clave al cliente" habría sido otro paso a mano por
+  invitación, o sea el mismo problema con otra cara.
+- **El permiso de "servicio externo" se pide en `preparar()`**, a
+  propósito. Pedido la primera vez que se usa, se pediría la noche de
+  una fiesta, cuando no hay nadie para aceptarlo — y la confirmación se
+  pierde.
+
+Lo mide `pruebas/rsvp.js`, que corre el `.gs.txt` de verdad contra una
+planilla de mentira con varias pestañas. Lo que mide no es que guarde una
+fila —eso ya estaba medido— sino **lo único que trae tener a todos los
+clientes en el mismo archivo: que no se mezclen**. Una fuga ahí no tira
+ningún error: se ve como un listado perfecto con la gente de otra fiesta.
+Verificado rompiendo a propósito: freno global en vez de por fiesta da
+**1 falla**, sacar la lista da **5**, y una sola pestaña para todos
+—la fuga— da **5**, entre ellas *"el listado de una fiesta trae SOLO su
+gente"* y *"en la fiesta de al lado NO figura"*.
+Y `pruebas/invitaciones.js` cruza los dos archivos: una fiesta en la
+lista sin carpeta, o un listado que pide una pestaña que no está
+habilitada, no traerían nada.
+
+**Lo que todavía necesita a una persona, una vez**: los seis clics están
+escritos arriba de `apps-script/planilla-central.gs.txt`. Hasta que la
+dirección `/exec` no esté en `lib/planilla.js`, `almi15/listado/` no se
+crea —`pruebas/invitaciones.js` falla si un listado no dice de dónde saca
+los datos— y la confirmación de la invitación **dice con todas las letras
+que es una muestra y no se manda a ningún lado**. Nunca dice "listo".
+
 ### El listado: cómo lee el cliente quiénes confirmaron
 
 `clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó
@@ -4210,14 +4304,19 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
-- **La planilla de `almi15`.** Faltan los tres pasos de Apps Script —
-  planilla nueva, pegar `apps-script/evento-nuevo.gs.txt`, correr
-  `preparar()` e implementar— y con eso llenar `CONFIG.endpoint` de la
-  invitación y crear `almi15/listado/` desde la plantilla. La clave del
-  listado que pidió la clienta es su correo, y va en `CLAVE_ELEGIDA` de
-  **esa copia del editor**, nunca en el repo; la maestra, en
-  `CLAVE_MAESTRA_ELEGIDA`, igual. Hasta que eso exista, la confirmación
-  de la invitación dice que es una muestra y no se manda a ningún lado.
+- **Implementar la PLANILLA CENTRAL, una vez en la vida.** Los seis
+  pasos están escritos arriba de `apps-script/planilla-central.gs.txt`:
+  planilla nueva, pegar ese archivo, poner la clave maestra en
+  `CLAVE_MAESTRA_ELEGIDA` (nunca en el repo), correr `preparar()`,
+  implementar como aplicación web con acceso para cualquier persona, y
+  pasar la dirección `/exec`. Esa dirección se pega en `lib/planilla.js`
+  y con eso `almi15` —y toda invitación que venga— tiene planilla sin
+  un solo paso más. Hasta entonces la confirmación de `almi15` dice que
+  es una muestra y no se manda a ningún lado, y `almi15/listado/` no se
+  crea.
+  La clave de cada cliente **no hay que elegirla ni ir a buscarla**: la
+  inventa la planilla y se lee abriendo el listado de ese cliente con la
+  maestra.
 - **El titular de la cuenta del alias de `almi15`** (`nancyvaldez1976`):
   el nombre que muestra el banco al pegarlo. Sin él, ese renglón no se
   dibuja.

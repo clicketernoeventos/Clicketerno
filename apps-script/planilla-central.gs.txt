@@ -1,0 +1,525 @@
+/* ═══════════════════════════════════════════════════════════════
+   LA PLANILLA CENTRAL DE CLICK ETERNO
+   Una sola planilla y un solo Apps Script para TODAS las
+   invitaciones. Se arma UNA vez en la vida.
+   ═══════════════════════════════════════════════════════════════
+
+   POR QUÉ ESTE ARCHIVO EXISTE
+   ───────────────────────────
+   Hasta acá cada invitación necesitaba su propio proyecto: planilla
+   nueva, pegar el código, correr preparar(), implementar, copiar la
+   dirección y pasarla. Seis pasos en la interfaz de Google que no se
+   pueden hacer desde el chat — así que cada tarjeta nueva terminaba
+   esperando a que alguien los hiciera a mano, y la tarjeta quedaba
+   publicada diciendo "esto es una muestra".
+
+   Acá hay UNA planilla con UNA pestaña por fiesta. La pestaña se crea
+   sola la primera vez que alguien confirma. Entonces, agregar una
+   invitación nueva pasa a ser una línea en el repositorio y nada más:
+   cero pasos del lado de Google.
+
+   LO QUE NO CAMBIA: las invitaciones que ya andan (Pía, Mia) siguen
+   con su propio proyecto y su propio código, que es
+   `apps-script/evento-nuevo.gs.txt`. Eso NO se toca: andan, tienen
+   datos de clientes adentro y moverlas no le suma nada a nadie. Este
+   archivo es para las que vienen.
+
+   LOS SEIS PASOS, LA ÚLTIMA VEZ
+   ─────────────────────────────
+   1. Planilla nueva en Google Sheets. Nombre: "Click Eterno ·
+      Confirmaciones".
+   2. Extensiones → Apps Script.
+   3. Borrar lo que haya y pegar ESTE archivo entero.
+   4. Poner la clave maestra en CLAVE_MAESTRA_ELEGIDA, abajo.
+   5. Arriba, elegir la función `preparar` y darle a ▷ Ejecutar.
+      Pide permisos la primera vez: aceptar. (Pide también permiso
+      para "conectarse a un servicio externo": es para leer del sitio
+      qué fiestas existen. Ver ALTAS, más abajo.)
+   6. Implementar → Nueva implementación → Aplicación web →
+      Ejecutar como: yo · Quién tiene acceso: CUALQUIER PERSONA →
+      Implementar, y copiar la dirección que termina en /exec.
+
+   Esa dirección se pega UNA vez en `lib/planilla.js` del repositorio
+   y vale para todas las invitaciones que vengan.
+
+   SI ALGÚN DÍA SE TOCA ESTE CÓDIGO: hay que volver a implementar
+   (Implementar → Administrar implementaciones → ✏️ → Versión: nueva).
+   Lo que queda congelado al implementar es el CÓDIGO; las claves
+   viven en las propiedades del proyecto y se leen en cada pedido, así
+   que cambiar una clave NO necesita volver a implementar.
+
+   ESTO ES PÚBLICO A PROPÓSITO
+   ───────────────────────────
+   Tiene que serlo: el que confirma es un invitado sin cuenta de
+   Google. Lo que cierra la puerta es la clave, y la clave no está en
+   ninguna página: vive en las propiedades de ESTE proyecto. Una
+   página pública no puede guardar un secreto.
+   Sin clave, desde afuera solo se puede preguntar "¿llegó lo mío?" y
+   la respuesta es sí o no. Ni un nombre ni un teléfono.
+
+   Y ahora que es UNA sola planilla para todos los clientes, eso pesa
+   más que antes: lo que hay del otro lado de la clave maestra ya no
+   es el listado de una fiesta, son los de TODAS. Por eso el freno de
+   intentos de más abajo es por fiesta y no global, y por eso la
+   maestra no se escribe nunca en el repositorio.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── Lo único que se toca ────────────────────────────────────── */
+
+/* La clave MAESTRA: la misma para todas las invitaciones, para que
+   Click Eterno pueda abrir el listado de cualquier cliente sin ir a
+   buscar la clave de ese evento.
+   Va ACÁ, en TU copia del editor. En el repositorio queda vacía: una
+   clave versionada es una clave pública. */
+var CLAVE_MAESTRA_ELEGIDA = '';
+
+/* Dónde pregunta este script qué fiestas existen. Ver ALTAS. */
+var LISTA_EVENTOS = 'https://clicketerno.com.ar/lib/planillas.json';
+
+/* Los títulos que el resumen necesita entender. Cualquier otra
+   pregunta de la invitación se crea sola como columna la primera vez
+   que llega: no hace falta tocar nada acá. */
+var COL_NOMBRE   = 'Nombre';    // con esto se responde "¿llegó mi confirmación?"
+var COL_CONFIRMA = 'Confirma';  // vale 'Sí' o 'No'
+var COL_CUANDO   = 'Cuándo';    // lo pone la planilla, no el formulario
+
+/* Rosario. Si esto dijera UTC, una confirmación de las diez de la
+   noche quedaría fechada al día siguiente. */
+var ZONA = 'America/Argentina/Cordoba';
+
+
+/* ── Preparar: se corre UNA vez, desde el editor ────────────── */
+function preparar() {
+  var props = PropertiesService.getScriptProperties();
+
+  if (CLAVE_MAESTRA_ELEGIDA) {
+    props.setProperty('CLAVE_MAESTRA', String(CLAVE_MAESTRA_ELEGIDA));
+  }
+  var maestra = props.getProperty('CLAVE_MAESTRA');
+
+  Logger.log('═══════════════════════════════════════');
+  Logger.log(maestra
+    ? '  Clave maestra: PUESTA (' + maestra.length + ' caracteres)'
+    : '  ⚠ FALTA la clave maestra: poné CLAVE_MAESTRA_ELEGIDA');
+  Logger.log('  Pestañas de fiesta: ' + hojasDeEvento_().length);
+  Logger.log('═══════════════════════════════════════');
+  Logger.log('Ahora: Implementar → Nueva implementación →');
+  Logger.log('Aplicación web → acceso: CUALQUIER PERSONA.');
+  Logger.log('Copiá la dirección /exec y pegala en lib/planilla.js.');
+
+  /* Se toca la lista una vez acá para que el permiso de "servicio
+     externo" se pida AHORA, en el editor, y no la primera noche que
+     un invitado confirme — ahí no hay nadie para aceptarlo y la
+     confirmación se perdería. */
+  try { eventosPermitidos_(true); } catch (e) {}
+
+  return maestra ? 'listo' : 'falta la clave maestra';
+}
+
+
+/* ── ALTAS: qué fiestas pueden crear su pestaña ───────────────
+
+   Una dirección /exec pública que crea una pestaña con el nombre que
+   le manden es una planilla que cualquiera llena de pestañas basura
+   — y el día que eso pase, la fiesta de verdad no puede crear la
+   suya. Es la misma trampa de siempre: *lo que decide el navegador
+   no es una regla*.
+
+   Un tope por hora no alcanza: sólo hace que llenarla lleve unos
+   días, y el que se queda afuera es un cliente con el salón lleno.
+   Lo único que no se puede agotar es una LISTA, y la lista vive donde
+   nosotros mandamos: `lib/planillas.json`, en el repositorio. Agregar
+   una invitación es agregar un renglón ahí, que es exactamente lo que
+   ya se hace para que aparezca en la galería.
+
+   Se lee como mucho una vez cada diez minutos y se guarda una copia:
+   si el sitio no contesta, vale la última copia que teníamos. Así un
+   problema nuestro no deja a un invitado sin poder confirmar. Y si
+   nunca pudimos leerla, NO se crea nada: mejor que no entre una
+   confirmación a que entre cualquiera. Las pestañas que YA existen
+   siguen andando igual, pase lo que pase con la lista. */
+var LISTA_VALE_MS = 10 * 60 * 1000;
+
+function eventosPermitidos_(forzar) {
+  var props = PropertiesService.getScriptProperties();
+  var guardada = props.getProperty('EVENTOS_CACHE');
+  var cuando = Number(props.getProperty('EVENTOS_CUANDO') || 0);
+
+  if (!forzar && guardada && (Date.now() - cuando) < LISTA_VALE_MS) {
+    try { return JSON.parse(guardada); } catch (e) {}
+  }
+
+  try {
+    var res = UrlFetchApp.fetch(LISTA_EVENTOS, {
+      muteHttpExceptions: true, followRedirects: true
+    });
+    if (res.getResponseCode() === 200) {
+      var datos = JSON.parse(res.getContentText());
+      var lista = (datos && datos.eventos) || [];
+      if (Object.prototype.toString.call(lista) === '[object Array]') {
+        props.setProperty('EVENTOS_CACHE', JSON.stringify(lista));
+        props.setProperty('EVENTOS_CUANDO', String(Date.now()));
+        return lista;
+      }
+    }
+  } catch (e) {}
+
+  /* No se pudo leer: vale la copia vieja aunque esté vencida. */
+  if (guardada) { try { return JSON.parse(guardada); } catch (e2) {} }
+  return [];
+}
+
+
+/* ── La pestaña de cada fiesta ───────────────────────────────── */
+
+/* El nombre viene de una página pública, así que es un dato y no una
+   orden: se limpia antes de que toque nada. Sin esto, un `evento` con
+   dos puntos o una barra rompe el nombre de pestaña de Google, y uno
+   larguísimo deja una pestaña que no se puede ni leer. */
+function eventoLimpio_(v) {
+  var s = String(v == null ? '' : v).trim().toLowerCase();
+  return /^[a-z0-9][a-z0-9_-]{1,39}$/.test(s) ? s : '';
+}
+
+function hojaDe_(evento, crearSiFalta) {
+  if (!evento) return null;
+  var libro = SpreadsheetApp.getActiveSpreadsheet();
+  var hoja = libro.getSheetByName(evento);
+  if (hoja) return hoja;
+  if (!crearSiFalta) return null;
+
+  /* Sólo las de la lista. Ver ALTAS. */
+  if (eventosPermitidos_(false).indexOf(evento) === -1) return null;
+
+  hoja = libro.insertSheet(evento);
+  hoja.appendRow([COL_CUANDO, COL_NOMBRE, COL_CONFIRMA]);
+  hoja.setFrozenRows(1);
+  hoja.getRange(1, 1, 1, 3).setFontWeight('bold');
+  return hoja;
+}
+
+/* Las pestañas que son una fiesta: las que tienen el encabezado que
+   pone hojaDe_. Así una pestaña suelta que alguien haya agregado a
+   mano no se cuenta como un evento. */
+function hojasDeEvento_() {
+  var hojas = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  var salida = [];
+  for (var i = 0; i < hojas.length; i++) {
+    if (hojas[i].getLastColumn() < 2) continue;
+    var t = hojas[i].getRange(1, 1, 1, 3).getDisplayValues()[0];
+    if (t[1] === COL_NOMBRE) salida.push(hojas[i].getName());
+  }
+  return salida;
+}
+
+/* La clave de cada fiesta. Se inventa sola la primera vez que hace
+   falta: una clave pensada a mano termina siendo el nombre de la
+   fiesta y el año, que es adivinable — y lo que abre es la lista de
+   invitados con sus comidas, que son datos de salud.
+   Son los 16 dígitos de DOS uuid pegados, no un pedazo de un base64:
+   el principio de un base64 depende del principio del texto de
+   adentro, así que dos claves hechas igual arrancaban iguales.
+   Hexadecimal además se dicta por teléfono sin pifiar: no tiene o ni
+   l, que se confunden con el cero y el uno.
+   Para saber cuál es NO hay que entrar al editor: se abre el listado
+   de ese cliente con la clave maestra y viene escrita en la
+   respuesta. */
+function claveDe_(evento) {
+  var props = PropertiesService.getScriptProperties();
+  var k = 'CLAVE:' + evento;
+  var clave = props.getProperty(k);
+  if (!clave) {
+    clave = (Utilities.getUuid() + Utilities.getUuid())
+              .replace(/[^0-9a-f]/gi, '').toLowerCase().slice(0, 16);
+    props.setProperty(k, clave);
+  }
+  return clave;
+}
+
+
+/* ── La escritura: lo que manda el formulario ──────────────────
+
+   Llega como FormData, así que los campos vienen en e.parameter.
+   Cualquier campo que no tenga columna se la crea: así la invitación
+   puede preguntar lo que quiera sin tocar esto.
+
+   Va con candado (LockService) porque dos confirmaciones en el mismo
+   segundo —que es exactamente lo que pasa cuando se reparte el link
+   por WhatsApp— leerían las dos la misma última fila y una pisaría a
+   la otra. */
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(25000);
+  } catch (err) {
+    return json({ ok: false, error: 'ocupado' });
+  }
+
+  try {
+    var campos = (e && e.parameter) || {};
+    /* Por si alguna vez se manda como JSON en vez de FormData. */
+    if (!campos[COL_NOMBRE] && e && e.postData && e.postData.contents) {
+      try { campos = JSON.parse(e.postData.contents) || campos; } catch (err2) {}
+    }
+
+    var evento = eventoLimpio_(campos.evento);
+    if (!evento) return json({ ok: false, error: 'sin_evento' });
+
+    var nombre = String(campos[COL_NOMBRE] || '').trim();
+    if (!nombre) return json({ ok: false, error: 'sin_nombre' });
+
+    var hoja = hojaDe_(evento, true);
+    if (!hoja) return json({ ok: false, error: 'evento_desconocido' });
+
+    /* `evento` dice a qué pestaña va, no es una respuesta de nadie:
+       como columna sería lo mismo repetido en todas las filas. */
+    delete campos.evento;
+
+    var titulos = hoja.getRange(1, 1, 1, Math.max(1, hoja.getLastColumn()))
+                      .getValues()[0].map(function (t) { return String(t || '').trim(); });
+
+    /* Columnas nuevas para los campos que no estaban. */
+    for (var k in campos) {
+      if (!campos.hasOwnProperty(k)) continue;
+      var nom = String(k).trim();
+      if (!nom || nom === COL_CUANDO) continue;
+      if (titulos.indexOf(nom) === -1) {
+        titulos.push(nom);
+        hoja.getRange(1, titulos.length).setValue(nom).setFontWeight('bold');
+      }
+    }
+
+    campos[COL_CUANDO] = Utilities.formatDate(new Date(), ZONA, 'yyyy-MM-dd HH:mm');
+
+    var fila = titulos.map(function (t) {
+      var v = campos[t];
+      if (v === undefined || v === null) return '';
+      return Array.isArray(v) ? v.join(', ') : String(v);
+    });
+
+    /* ¿Ya había confirmado? Se le PISA la fila en vez de agregar otra.
+       Un invitado que toca dos veces porque el wifi tardó, o que
+       vuelve a cambiar el "no" por un "sí", son los dos casos que
+       pasan de verdad; con filas nuevas el cliente cuenta de más y
+       encarga comida para gente que no existe. */
+    var dondeNombre = titulos.indexOf(COL_NOMBRE) + 1;
+    var yaEsta = filaDe_(hoja, dondeNombre, nombre);
+    if (yaEsta > 0) hoja.getRange(yaEsta, 1, 1, fila.length).setValues([fila]);
+    else            hoja.appendRow(fila);
+
+    return json({ ok: true });
+  } catch (err3) {
+    return json({ ok: false, error: String(err3) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+
+/* ── La lectura: dos puertas y ninguna abre de más ───────────── */
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  var evento = eventoLimpio_(p.evento);
+  if (!evento) return json({ error: 'sin_evento' });
+
+  /* Puerta 1 · ¿llegó mi confirmación? Sí o no, y nada más. Es lo
+     único que necesita saber el invitado y lo único que puede
+     averiguar: la dirección la tiene a mano cualquiera que abra el
+     link de la invitación. */
+  if (p.confirmado) {
+    return json({ ok: estaConfirmado_(evento, p.confirmado) });
+  }
+
+  /* Puerta 2 · la lista entera, con la clave. La usa el listado.
+     Entra la del evento O la maestra. La maestra es la misma para
+     todas las invitaciones y la tiene Click Eterno. */
+  var props = PropertiesService.getScriptProperties();
+  var maestra = props.getProperty('CLAVE_MAESTRA');
+
+  /* El freno es POR FIESTA y no global, y eso no es un detalle: con
+     una sola planilla para todos los clientes, un freno global sería
+     un atacante dejando a TODOS los clientes afuera de su listado con
+     doce intentos. */
+  if (frenado_(evento)) {
+    return json({ error: 'frenado',
+                  mensaje: 'Demasiados intentos. Probá de nuevo en un rato.' });
+  }
+
+  var conMaestra = !!p.clave && !!maestra && igualesSinApuro_(String(p.clave), String(maestra));
+  /* La clave del evento se consulta SÓLO si ya hay pestaña: si no, un
+     desconocido probando nombres de fiesta iría creando una clave por
+     cada nombre que se le ocurra. */
+  var hay = !!hojaDe_(evento, false);
+  var acierta = conMaestra ||
+    (!!p.clave && hay && igualesSinApuro_(String(p.clave), String(claveDe_(evento))));
+
+  if (!acierta) {
+    fallo_(evento);
+    return json({ error: 'clave', mensaje: 'Clave incorrecta.' });
+  }
+  acerto_(evento);
+
+  var lista = hay ? filas_(hojaDe_(evento, false)) : [];
+
+  /* El resumen lo cuenta la PLANILLA, no la página.
+     Contado de los dos lados, el día que una columna se llame distinto
+     el listado muestra "0 confirmaron" con la planilla llena y no hay
+     ningún error a la vista. Acá están los títulos de verdad, así que
+     acá se cuenta. */
+  var si = 0, personas = 0;
+  var colCuantos = columnaCuantos_(lista);
+  for (var i = 0; i < lista.length; i++) {
+    if (!esSi_(lista[i][COL_CONFIRMA])) continue;
+    si++;
+    /* Y cuánta GENTE viene, que es lo único con lo que se arman las
+       mesas. Una fila que dice "Cuántos: 4" es una familia de cuatro:
+       contada como una, el cliente encarga comida para menos gente de
+       la que va a ir. Vacío o sin esa columna vale 1 — el que contestó
+       viene él. Se cuenta sólo en las que dijeron que sí. */
+    var n = colCuantos ? parseInt(String(lista[i][colCuantos] || '').replace(/[^0-9]/g, ''), 10) : 1;
+    personas += (n > 0) ? n : 1;
+  }
+
+  var salida = {
+    invitados: lista,
+    resumen: { total: lista.length, confirmados: si, no: lista.length - si,
+               personas: personas },
+    columnas: { nombre: COL_NOMBRE, confirma: COL_CONFIRMA, cuantos: colCuantos || '' }
+  };
+  /* Con la maestra viene además la clave de ESE cliente, para poder
+     pasársela sin entrar al editor de Apps Script. Nunca con la clave
+     del evento: ahí ya la tiene quien pregunta. */
+  if (conMaestra && hay) salida.claveEvento = claveDe_(evento);
+  return json(salida);
+}
+
+
+/* La columna de cuántos son la crea el formulario, no este archivo, así
+   que acá se la busca — y por PALABRA ENTERA, no por "contiene": con
+   "contiene", una columna que dijera "cuantos chicos" o "de cuantos es
+   la mesa" matchearía primero y la cuenta saldría de otro lado. Es la
+   misma trampa que ya costó una vuelta con "confirmación". */
+function columnaCuantos_(lista) {
+  if (!lista.length) return '';
+  var claves = Object.keys(lista[0]);
+  for (var i = 0; i < claves.length; i++) {
+    var limpio = String(claves[i]).toLowerCase()
+      .replace(/[áà]/g, 'a').replace(/[éè]/g, 'e').replace(/[íì]/g, 'i')
+      .replace(/[óò]/g, 'o').replace(/[úùü]/g, 'u')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+    if (limpio.split(' ').indexOf('cuantos') !== -1) return claves[i];
+  }
+  return '';
+}
+
+
+/* ── lo de abajo no hace falta tocarlo ───────────────────────── */
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* "Sí", "si", "SI", "Confirmo", "sí, voy" — todas son un sí. Lo que
+   NO puede pasar es que un "No" cuente como sí, así que se descarta
+   primero. */
+function esSi_(v) {
+  var s = String(v == null ? '' : v).trim().toLowerCase();
+  if (!s) return false;
+  if (s.indexOf('no') === 0) return false;
+  return s.indexOf('s') === 0 || s.indexOf('confirm') !== -1 || s.indexOf('voy') !== -1;
+}
+
+/* Lee la pestaña usando la PRIMERA FILA como nombres de columna. Así
+   sirve igual aunque se agreguen o se muevan columnas: no hay ninguna
+   posición escrita a mano. */
+function filas_(hoja) {
+  if (!hoja) return [];
+  var datos = hoja.getDataRange().getDisplayValues();
+  if (datos.length < 2) return [];
+  var titulos = datos[0];
+  var salida = [];
+  for (var i = 1; i < datos.length; i++) {
+    var fila = {}, vacia = true;
+    for (var j = 0; j < titulos.length; j++) {
+      var t = String(titulos[j] || '').trim();
+      if (!t) continue;
+      fila[t] = datos[i][j];
+      if (String(datos[i][j] || '').trim() !== '') vacia = false;
+    }
+    if (!vacia) salida.push(fila);
+  }
+  return salida;
+}
+
+/* En qué fila está ese nombre, o 0. Se mira una sola columna. */
+function filaDe_(hoja, col, nombre) {
+  if (col < 1 || hoja.getLastRow() < 2) return 0;
+  var valores = hoja.getRange(2, col, hoja.getLastRow() - 1, 1).getDisplayValues();
+  var buscado = String(nombre || '').trim().toLowerCase();
+  for (var i = 0; i < valores.length; i++) {
+    if (String(valores[i][0] || '').trim().toLowerCase() === buscado) return i + 2;
+  }
+  return 0;
+}
+
+function estaConfirmado_(evento, nombre) {
+  var buscado = String(nombre || '').trim().toLowerCase();
+  if (!buscado) return false;
+  var lista = filas_(hojaDe_(evento, false));
+  for (var i = 0; i < lista.length; i++) {
+    if (String(lista[i][COL_NOMBRE] || '').trim().toLowerCase() === buscado) return true;
+  }
+  return false;
+}
+
+/* ── El freno de los intentos ──────────────────────────────────
+   Una clave corta en una puerta abierta a internet se prueba entera
+   en un rato: diez mil combinaciones son minutos para un script. El
+   freno no la vuelve larga, la vuelve LENTA — doce fallos seguidos y
+   la puerta de ESA fiesta queda cerrada diez minutos, así que
+   probarlas todas pasa a ser cuestión de días de insistir.
+   El que acierta lo borra, o sea que el cliente que se equivocó dos
+   veces y después entró arranca de cero.
+   Que un atacante pueda dejar a ese cliente diez minutos afuera es el
+   precio, y es barato: el cliente entra una vez y su navegador se
+   acuerda de la clave. */
+var TOPE_FALLOS = 12;
+var CUARENTENA_MS = 10 * 60 * 1000;
+
+function frenado_(evento) {
+  var props = PropertiesService.getScriptProperties();
+  var hasta = Number(props.getProperty('FRENO_HASTA:' + evento) || 0);
+  if (!hasta) return false;
+  if (Date.now() < hasta) return true;
+  props.deleteProperty('FRENO_HASTA:' + evento);
+  props.deleteProperty('FALLOS:' + evento);
+  return false;
+}
+
+function fallo_(evento) {
+  var props = PropertiesService.getScriptProperties();
+  var n = Number(props.getProperty('FALLOS:' + evento) || 0) + 1;
+  props.setProperty('FALLOS:' + evento, String(n));
+  if (n >= TOPE_FALLOS) {
+    props.setProperty('FRENO_HASTA:' + evento, String(Date.now() + CUARENTENA_MS));
+  }
+}
+
+function acerto_(evento) {
+  var props = PropertiesService.getScriptProperties();
+  props.deleteProperty('FALLOS:' + evento);
+  props.deleteProperty('FRENO_HASTA:' + evento);
+}
+
+/* Compara sin apurarse: siempre recorre todo, gane o pierda. Si
+   cortara en la primera letra distinta, el tiempo que tarda en
+   contestar iría contando cuántas letras acertó quien prueba. */
+function igualesSinApuro_(a, b) {
+  if (a.length !== b.length) return false;
+  var dif = 0;
+  for (var i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return dif === 0;
+}

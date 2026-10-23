@@ -9,6 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <!-- En el repo, no en un CDN: este panel muestra la lista de invitados. -->
 <script src="../../lib/xlsx.full.min.js"></script>
+<!-- La dirección de la planilla central, UNA para todas. -->
+<script src="../../lib/planilla.js"></script>
 <style>
   :root{ --wine:#6b1f36; --rose:#b8677a; --blush:#f3dde3; --blush-light:#fbf1ee; --cream:#fffaf6; --gold:#b8935a; --ink:#3a2a2f; }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -122,7 +124,10 @@
 const CONFIG = {
   // ↓↓↓ LO ÚNICO QUE SE TOCA AL COPIAR ESTA PLANTILLA ↓↓↓
   nombreEvento: "",          // "Casamiento de Mateo y Lucas"
-  appsScriptUrl: "",         // la dirección /exec de SU Apps Script
+  evento: "",                // la pestaña en la planilla CENTRAL ("almi15").
+                             // Las invitaciones nuevas usan esto y nada más.
+  appsScriptUrl: "",         // SÓLO las viejas (pia, mia15), que tienen su
+                             // propio Apps Script. Vacío = se usa la central.
   // ↑↑↑ y nada más ↑↑↑
   // La clave NO va acá: esta página es pública. La guarda el Apps Script en
   // las propiedades del proyecto y la comprueba él. La inventa preparar().
@@ -134,7 +139,17 @@ const CONFIG = {
    segundo listado que abras en el mismo aparato arranca mandando la
    clave del primero y te dice "esa clave no es" sin que hayas escrito
    nada. */
-const K_CLAVE = 'ce:listado:' + (CONFIG.appsScriptUrl.match(/\/s\/([^/]+)/) || [0, 'x'])[1].slice(0, 24);
+/* La dirección: la suya si la tiene, si no la central de lib/planilla.js. */
+const URL_PLANILLA = CONFIG.appsScriptUrl || (window.PLANILLA && window.PLANILLA.exec) || '';
+/* Y qué se le pide: con la central hay que decirle de qué fiesta. */
+const PARAM_EVENTO = CONFIG.evento ? '&evento=' + encodeURIComponent(CONFIG.evento) : '';
+/* La ranura de la clave guardada va por EVENTO, no por dirección: con la
+   planilla central la dirección es la MISMA para todos los clientes, así
+   que atarla a la dirección volvería a lo de antes — el segundo listado
+   que abrís en el mismo aparato arranca mandando la clave del primero y
+   te dice "esa clave no es" sin que hayas escrito nada. */
+const K_CLAVE = 'ce:listado:' + (CONFIG.evento ||
+  (CONFIG.appsScriptUrl.match(/\/s\/([^/]+)/) || [0, 'x'])[1].slice(0, 24));
 const claveGuardada = () => { try { return localStorage.getItem(K_CLAVE) || ''; } catch (e) { return ''; } };
 const guardarClave = v => { try { localStorage.setItem(K_CLAVE, v); } catch (e) {} };
 const olvidarClave = () => { try { localStorage.removeItem(K_CLAVE); } catch (e) {} };
@@ -199,7 +214,7 @@ async function entrar(clave) {
        arregla quien publicó la página y la otra se arregla sola. Si
        la dirección está vacía, lo decimos con todas las letras en vez
        de echarle la culpa a la conexión. */
-    : r === 'sinconfig' ? 'Falta configurar esta página: el CONFIG.appsScriptUrl está vacío.'
+    : r === 'sinconfig' ? 'Falta configurar esta página: no tiene la dirección de la planilla.'
     : 'No se pudo conectar con la planilla. Probá de nuevo en un momento.';
 }
 
@@ -371,10 +386,10 @@ colChecksEl.addEventListener('change', (e) => {
    mal), 'viejo' (el Apps Script todavía es el de antes, el que contestaba
    sin pedir nada) o 'red'. */
 async function cargarDatos(clave){
-  if (!CONFIG.appsScriptUrl) return 'sinconfig';
+  if (!URL_PLANILLA) return 'sinconfig';
   let data;
   try {
-    const res = await fetch(CONFIG.appsScriptUrl + '?clave=' + encodeURIComponent(clave),
+    const res = await fetch(URL_PLANILLA + '?clave=' + encodeURIComponent(clave) + PARAM_EVENTO,
                             { cache: 'no-store' });
     data = await res.json();
   } catch (err) {

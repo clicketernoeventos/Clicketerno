@@ -916,6 +916,9 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   </footer>
 </main>
 
+<!-- La dirección de la planilla central, UNA para todas las invitaciones.
+     Va antes que el script de abajo porque CONFIG la lee al armarse. -->
+<script src="../lib/planilla.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════
    LO ÚNICO QUE SE TOCA
@@ -947,9 +950,17 @@ const CONFIG = {
   titular: "",                   // el nombre que muestra el banco al pegar el alias.
                                  // Sin saberlo NO se escribe nada: un nombre inventado
                                  // al lado de un alias es peor que ninguno
-  endpoint: ""                   // la dirección /exec de la planilla. Vacío = muestra:
-                                 // la confirmación se completa entera y DICE que no se
-                                 // mandó a ningún lado
+  /* La pestaña de ESTA fiesta en la planilla central de Click Eterno.
+     Tiene que estar además en lib/planillas.json, que es la lista que
+     mira el Apps Script: lo que no está en esa lista no entra. */
+  evento: "almi15",
+  /* La dirección NO se escribe acá: es UNA sola para todas las
+     invitaciones y vive en lib/planilla.js. Escrita en cada una, el día
+     que cambie quedarían la mitad apuntando a una dirección muerta y
+     ninguna tiraría un error.
+     Vacía = muestra: la confirmación se completa entera y DICE que no se
+     mandó a ningún lado. Nunca dice "listo". */
+  endpoint: (window.PLANILLA && window.PLANILLA.exec) || ""
 };
 
 const $  = (s, d) => (d || document).querySelector(s);
@@ -1507,7 +1518,8 @@ function horaTexto(){
      se guardó, y el invitado la manda de nuevo. */
   async function llego(nombre){
     try{
-      const r = await fetch(CONFIG.endpoint + '?confirmado=' + encodeURIComponent(nombre),
+      const r = await fetch(CONFIG.endpoint + '?evento=' + encodeURIComponent(CONFIG.evento) +
+                            '&confirmado=' + encodeURIComponent(nombre),
                             {cache:'no-store'});
       if (!r.ok) return false;
       const t = (await r.text()).trim();
@@ -1667,6 +1679,10 @@ function horaTexto(){
        escribieron, no la palabra "Otro": el que le pasa las comidas al
        salón necesita leer "sin frutos secos". */
     const fd = new FormData(form);
+    /* A qué pestaña de la planilla central va. No es una respuesta de
+       nadie: la planilla lo usa para elegir la hoja y no lo guarda como
+       columna. */
+    fd.set('evento', CONFIG.evento);
     $$('select', form).forEach(se => {
       if (se.name && se.value === 'Otro'){
         const otro = document.getElementById(se.id + 'Otro');
