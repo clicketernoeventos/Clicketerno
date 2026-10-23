@@ -137,6 +137,32 @@ for(const c of carpetas){
    panel de Pía tenía las columnas de SU formulario escritas a mano,
    así que cualquier otro evento abría la tabla con las filas vacías y
    sin un solo error. */
+/* La planilla CENTRAL: una sola para todas las invitaciones nuevas.
+   La dirección vive en lib/planilla.js y la lista de fiestas que
+   pueden crear su pestaña en lib/planillas.json, que es lo que lee el
+   Apps Script. Escritas en dos lados se separan solas; acá se cruzan. */
+const CENTRAL = ((() => {
+  try {
+    const t = fs.readFileSync(path.join(RAIZ, 'lib', 'planilla.js'), 'utf8');
+    return (t.match(/exec:\s*"([^"]*)"/) || [])[1] || '';
+  } catch (e) { return ''; }
+})());
+const EVENTOS = ((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(RAIZ, 'lib', 'planillas.json'), 'utf8')).eventos || [];
+  } catch (e) { return []; }
+})());
+/* Una fiesta en la lista que no tiene carpeta es un renglón que quedó
+   de algo que se borró: deja abierta una pestaña que nadie va a mirar. */
+console.log('\n─── la planilla central ───');
+if (!CENTRAL) console.log('  (todavía sin implementar: lib/planilla.js vacío)');
+else bien('la dirección está puesta en lib/planilla.js');
+for (const ev of EVENTOS) {
+  if (!fs.existsSync(path.join(RAIZ, ev, 'index.html')))
+    mal(`lib/planillas.json nombra "${ev}" y esa invitación no existe en el repo`);
+}
+if (EVENTOS.length) bien(`${EVENTOS.length} fiesta(s) habilitada(s): ${EVENTOS.join(', ')}`);
+
 console.log('\n─── los listados salen de la plantilla ───');
 {
   const rutaPlantilla = path.join(RAIZ, 'invitaciones', 'plantilla-listado', 'index.html');
@@ -161,9 +187,24 @@ console.log('\n─── los listados salen de la plantilla ───');
       /* Una plantilla copiada y no llenada se ve perfecta y no trae
          ni un dato. */
       const url = (txt.match(/appsScriptUrl:\s*"([^"]*)"/) || [])[1];
-      if (!url) mal(`"${c}/listado" tiene el appsScriptUrl vacío: no va a traer nada`);
-      else if (!/^https:\/\/script\.google\.com\//.test(url))
-        mal(`"${c}/listado" apunta a algo que no es un Apps Script: ${url}`);
+      const ev  = (txt.match(/\n\s*evento:\s*"([^"]*)"/) || [])[1];
+      /* Hay dos formas de tener planilla y las dos valen: la suya
+         (pia, mia15, que tienen su propio Apps Script) o la CENTRAL,
+         que es una sola para todas y entonces lo que hace falta es
+         decir qué pestaña. Lo que no vale es ninguna de las dos: la
+         pantalla se dibuja perfecta y no trae un solo dato. */
+      if (url) {
+        if (!/^https:\/\/script\.google\.com\//.test(url))
+          mal(`"${c}/listado" apunta a algo que no es un Apps Script: ${url}`);
+      } else if (ev) {
+        if (!CENTRAL)
+          mal(`"${c}/listado" usa la planilla central y lib/planilla.js está vacío: no va a traer nada`);
+        else if (!EVENTOS.includes(ev))
+          mal(`"${c}/listado" pide la pestaña "${ev}" y no está en lib/planillas.json: el Apps Script no la crea`);
+        else bien(`"${c}/listado" lee la planilla central, pestaña "${ev}"`);
+      } else {
+        mal(`"${c}/listado" no dice de dónde saca los datos: ni appsScriptUrl ni evento`);
+      }
       const nom = (txt.match(/nombreEvento:\s*"([^"]*)"/) || [])[1];
       if (!nom) mal(`"${c}/listado" no tiene nombre de evento: el título sale vacío`);
     }
