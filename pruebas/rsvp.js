@@ -492,6 +492,10 @@ function cargarCentral(opciones = {}) {
   if (opciones.maestra)
     fuente = fuente.replace(/var CLAVE_MAESTRA_ELEGIDA = '';/,
                             "var CLAVE_MAESTRA_ELEGIDA = " + JSON.stringify(opciones.maestra) + ";");
+  /* Lo mismo con la clave que eligió un cliente. */
+  if (opciones.elegidas)
+    fuente = fuente.replace(/var CLAVES_ELEGIDAS = \{\n\};/,
+                            "var CLAVES_ELEGIDAS = " + JSON.stringify(opciones.elegidas) + ";");
   vm.runInContext(fuente, caja);
   const leer = r => JSON.parse(r.texto);
   return {
@@ -643,6 +647,41 @@ console.log('\n─── si el sitio no contesta, la fiesta sigue ───');
   viva.libro.insertSheet('almi15').appendRow(['Cuándo', 'Nombre', 'Confirma']);
   es(viva.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).ok === true,
      'y la fiesta que ya tenía su pestaña recibe igual, con el sitio caído');
+}
+
+console.log('\n─── la clave que elige el cliente ───');
+{
+  /* Dato de prueba INVENTADO: el de un cliente de verdad versionado
+     en el repo es la llave de su lista de invitados. Ya pasó. */
+  const M = 'maestra-de-prueba', SUYA = 'clave.de.prueba@ejemplo.com';
+  const a = cargarCentral({ maestra: M, eventos: ['almi15', 'otra15'],
+                            elegidas: { almi15: SUYA } });
+  a.preparar();
+  a.post({ evento: 'almi15', Nombre: 'Juan', Confirma: 'Sí' });
+  a.post({ evento: 'otra15', Nombre: 'Ana',  Confirma: 'Sí' });
+
+  es(Array.isArray(a.get({ evento: 'almi15', clave: SUYA }).invitados),
+     'la clave que eligió el cliente abre su listado');
+  es(a.claveDe('almi15', M) === SUYA,
+     'y es la que la planilla da por buena, no una inventada al lado');
+  /* Si la elegida se mirara sólo en preparar(), escribirla sin volver
+     a correrla dejaría puesta la inventada: le pasaríamos al cliente
+     una clave que no abre, sin un solo error a la vista. */
+  const b = cargarCentral({ maestra: M, eventos: ['almi15'],
+                            elegidas: { almi15: SUYA } });
+  b.post({ evento: 'almi15', Nombre: 'Juan', Confirma: 'Sí' });
+  es(Array.isArray(b.get({ evento: 'almi15', clave: SUYA }).invitados),
+     'y abre aunque no se haya vuelto a correr preparar()');
+
+  es(a.get({ evento: 'otra15', clave: SUYA }).error === 'clave',
+     'y NO abre el listado del cliente de al lado');
+
+  /* El caso que de verdad pasa: la clave es un correo y el que la
+     escribe en un iPhone se come una mayúscula o un espacio. */
+  es(Array.isArray(a.get({ evento: 'almi15', clave: '  Clave.De.Prueba@Ejemplo.com ' }).invitados),
+     'con mayúsculas y espacios de más entra igual: la escribe un dedo');
+  es(a.get({ evento: 'almi15', clave: SUYA + 'x' }).error === 'clave',
+     'pero una letra de más no');
 }
 
 console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');

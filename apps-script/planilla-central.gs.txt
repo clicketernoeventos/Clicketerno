@@ -30,7 +30,8 @@
       Confirmaciones".
    2. Extensiones → Apps Script.
    3. Borrar lo que haya y pegar ESTE archivo entero.
-   4. Poner la clave maestra en CLAVE_MAESTRA_ELEGIDA, abajo.
+   4. Poner la clave maestra en CLAVE_MAESTRA_ELEGIDA, abajo. Y si
+      algún cliente eligió la suya, en CLAVES_ELEGIDAS.
    5. Arriba, elegir la función `preparar` y darle a ▷ Ejecutar.
       Pide permisos la primera vez: aceptar. (Pide también permiso
       para "conectarse a un servicio externo": es para leer del sitio
@@ -73,6 +74,32 @@
    Va ACÁ, en TU copia del editor. En el repositorio queda vacía: una
    clave versionada es una clave pública. */
 var CLAVE_MAESTRA_ELEGIDA = '';
+
+/* La clave del listado de un cliente, cuando la ELIGE él.
+   Lo normal es no tocar esto: la inventa la planilla y se lee
+   abriendo su listado con la maestra. Pero a veces el cliente manda
+   la suya —un correo, casi siempre— y entonces va acá, con el nombre
+   de la fiesta:
+
+       var CLAVES_ELEGIDAS = {
+         'fiesta15': 'loquepidioelcliente'
+       };
+
+   Va ACÁ, en TU copia del editor, igual que la maestra. En el
+   repositorio queda vacío: una clave versionada es una clave
+   pública.
+
+   SE DICE UNA VEZ Y NO SE REPITE: un correo es público y adivinable,
+   y lo que abre no es un correo, es la lista entera de invitados con
+   sus comidas —que son datos de salud—. La inventada por la planilla
+   es mucho más fuerte. Si el cliente igual la quiere, es su
+   decisión, y el freno de abajo es lo que la hace cara de probar.
+
+   Para CAMBIAR una: se edita acá y hay que volver a implementar
+   (Implementar → Administrar implementaciones → ✏️ → Versión nueva),
+   porque esto es código y no un dato guardado. */
+var CLAVES_ELEGIDAS = {
+};
 
 /* Dónde pregunta este script qué fiestas existen. Ver ALTAS. */
 var LISTA_EVENTOS = 'https://clicketerno.com.ar/lib/planillas.json';
@@ -226,6 +253,13 @@ function hojasDeEvento_() {
    de ese cliente con la clave maestra y viene escrita en la
    respuesta. */
 function claveDe_(evento) {
+  /* La elegida por el cliente gana SIEMPRE, y se mira acá y no en
+     preparar(): escrita en el editor pero sin volver a correr
+     preparar(), la planilla seguiría esperando la inventada y la que
+     le pasamos al cliente no abriría — sin un solo error a la vista,
+     sólo un cliente diciendo "me dice que la clave no es". */
+  if (CLAVES_ELEGIDAS[evento]) return String(CLAVES_ELEGIDAS[evento]);
+
   var props = PropertiesService.getScriptProperties();
   var k = 'CLAVE:' + evento;
   var clave = props.getProperty(k);
@@ -346,13 +380,13 @@ function doGet(e) {
                   mensaje: 'Demasiados intentos. Probá de nuevo en un rato.' });
   }
 
-  var conMaestra = !!p.clave && !!maestra && igualesSinApuro_(String(p.clave), String(maestra));
+  var conMaestra = !!p.clave && !!maestra && mismaClave_(p.clave, maestra);
   /* La clave del evento se consulta SÓLO si ya hay pestaña: si no, un
      desconocido probando nombres de fiesta iría creando una clave por
      cada nombre que se le ocurra. */
   var hay = !!hojaDe_(evento, false);
   var acierta = conMaestra ||
-    (!!p.clave && hay && igualesSinApuro_(String(p.clave), String(claveDe_(evento))));
+    (!!p.clave && hay && mismaClave_(p.clave, claveDe_(evento)));
 
   if (!acierta) {
     fallo_(evento);
@@ -512,6 +546,18 @@ function acerto_(evento) {
   var props = PropertiesService.getScriptProperties();
   props.deleteProperty('FALLOS:' + evento);
   props.deleteProperty('FRENO_HASTA:' + evento);
+}
+
+/* La clave se escribe en un teléfono, así que se le perdonan los
+   espacios de los costados y las mayúsculas. Hace falta de verdad:
+   cuando la clave es un CORREO, el que la escribe en un iPhone se
+   come una mayúscula al principio o un espacio del autocompletado, y
+   le diría "clave incorrecta" teniéndola bien. Una clave inventada
+   por la planilla ya es toda minúscula, así que no le cambia nada. */
+function mismaClave_(a, b) {
+  return igualesSinApuro_(
+    String(a == null ? '' : a).trim().toLowerCase(),
+    String(b == null ? '' : b).trim().toLowerCase());
 }
 
 /* Compara sin apurarse: siempre recorre todo, gane o pierda. Si

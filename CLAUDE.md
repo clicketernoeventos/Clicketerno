@@ -1810,6 +1810,26 @@ Y `pruebas/invitaciones.js` cruza los dos archivos: una fiesta en la
 lista sin carpeta, o un listado que pide una pestaña que no está
 habilitada, no traerían nada.
 
+**La clave de un cliente que la elige él va en `CLAVES_ELEGIDAS`**, un
+renglón por fiesta, en la copia del editor y nunca en el repositorio —
+igual que `CLAVE_ELEGIDA` de antes. Para `almi15` es el correo que
+mandó la clienta, que es la misma excepción ya escrita para `mia15` y
+por el mismo motivo: lo pidió el cliente, se le dijo el riesgo y lo
+sostuvo.
+**Se mira en `claveDe_` y no en `preparar()`**, y eso no es un detalle:
+escrita en el editor pero sin volver a correr `preparar()`, la planilla
+seguiría esperando la inventada y la clave que le pasamos al cliente no
+abriría — sin un solo error a la vista, sólo un cliente diciendo *"me
+dice que la clave no es"*. El precio es que cambiarla pide volver a
+implementar, porque es código y no un dato guardado.
+**Y la comparación perdona espacios y mayúsculas.** Hace falta
+justamente cuando la clave es un CORREO: el que la escribe en un
+iPhone se come una mayúscula del autocompletado o un espacio al pegar,
+y le diría "clave incorrecta" teniéndola bien. A una clave inventada
+por la planilla —toda minúscula— no le cambia nada.
+Verificado rompiendo a propósito: ignorar la elegida da **4 fallas** y
+comparar sin perdonar mayúsculas da **1**.
+
 **Lo que todavía necesita a una persona, una vez**: los seis clics están
 escritos arriba de `apps-script/planilla-central.gs.txt`. Hasta que la
 dirección `/exec` no esté en `lib/planilla.js`, `almi15/listado/` no se
