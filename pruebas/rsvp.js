@@ -492,6 +492,11 @@ function cargarCentral(opciones = {}) {
   if (opciones.maestra)
     fuente = fuente.replace(/var CLAVE_MAESTRA_ELEGIDA = '';/,
                             "var CLAVE_MAESTRA_ELEGIDA = " + JSON.stringify(opciones.maestra) + ";");
+  /* Y el piso de fiestas escrito en el código: la prueba lo cambia para
+     poder medir una fiesta que NO está en ninguna de las dos listas. */
+  if (opciones.enElCodigo)
+    fuente = fuente.replace(/var EVENTOS_EN_EL_CODIGO = \[[^\]]*\];/,
+                            "var EVENTOS_EN_EL_CODIGO = " + JSON.stringify(opciones.enElCodigo) + ";");
   /* Lo mismo con la clave que eligió un cliente. */
   if (opciones.elegidas)
     fuente = fuente.replace(/var CLAVES_ELEGIDAS = \{\n\};/,
@@ -528,9 +533,9 @@ console.log('\n─── la planilla central: preparar() ───');
   /* Si la lista de fiestas no se puede leer, NINGUNA confirmación de
      una fiesta nueva entra. Eso no se ve por ningún lado hasta que un
      cliente avisa que su fila no está, así que preparar() lo dice. */
-  const c = cargarCentral({ maestra: 'm', sitioCaido: true });
+  const c = cargarCentral({ maestra: 'm', sitioCaido: true, enElCodigo: [] });
   es(c.preparar() !== 'listo', 'si no pudo leer la lista de fiestas, tampoco da por listo');
-  es(c.registro.join(' ').indexOf('lista de fiestas') !== -1,
+  es(c.registro.join(' ').toLowerCase().indexOf('no se pudo leer la lista del sitio') !== -1,
      'y lo escribe en el registro, que es lo único que mira una persona');
 }
 
@@ -669,9 +674,30 @@ console.log('\n─── si el sitio no contesta, la fiesta sigue ───');
   es(caido.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).ok === true,
      'caído el sitio, vale la última copia de la lista que teníamos');
 
-  const nunca = cargarCentral({ maestra: 'm', sitioCaido: true });
-  es(nunca.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).error === 'evento_desconocido',
-     'y si NUNCA se pudo leer, no se crea nada: mejor eso que cualquier cosa');
+  /* Lo que SÍ tiene que entrar con el sitio caído y sin copia: la
+     fiesta que está escrita en el código. Esto es lo que faltaba y
+     costó una confirmación perdida con la planilla vacía: la lista
+     vivía afuera y era lo único que habilitaba una pestaña nueva. */
+  const piso = cargarCentral({ maestra: 'm', sitioCaido: true,
+                               enElCodigo: ['almi15'] });
+  es(piso.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' }).ok === true,
+     'sin sitio y sin copia, la fiesta escrita en el código entra igual');
+
+  /* Y lo que NO: una fiesta que no está en ninguna de las dos listas.
+     Es lo único que impide que cualquiera con la dirección /exec llene
+     la planilla de pestañas basura. */
+  const nunca = cargarCentral({ maestra: 'm', sitioCaido: true,
+                                enElCodigo: ['almi15'] });
+  es(nunca.post({ evento: 'colada15', Nombre: 'Ana', Confirma: 'Sí' }).error === 'evento_desconocido',
+     'y la que no está en ninguna de las dos listas no crea nada');
+
+  /* preparar() lo tiene que DECIR, aunque el piso del código salve la
+     noche: si la lista del sitio no se lee, una fiesta nueva no va a
+     poder crear su pestaña y nadie se enteraría. */
+  const muda = cargarCentral({ maestra: 'm', sitioCaido: true,
+                               enElCodigo: ['almi15'] });
+  es(muda.preparar() !== 'listo',
+     'y preparar() no da por listo que la lista del sitio no se lea');
 
   /* Una pestaña que ya existe anda pase lo que pase con la lista: la
      lista sólo decide si se CREA. */

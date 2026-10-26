@@ -1882,20 +1882,54 @@ maestra se lee igual, con `maestraPuesta_()`, y la escrita en el
 código **gana**, así que cambiarla deja de valer la vieja en el
 momento.
 
-**Y la otra mitad del mismo reporte: confirmó y la fila no apareció.**
-Saltearse `preparar()` tampoco da el permiso de "servicio externo", y
-sin eso la lista de fiestas no se puede leer: una fiesta que todavía
-no tiene su pestaña **no la puede crear**, así que la confirmación no
-entra. El invitado ve que no se pudo y en la planilla no hay nada. Eso
-no se descubre hasta que un cliente avisa que su fila falta, así que
-ahora `preparar()` **dice en su registro** si pudo leer la lista y qué
-fiestas vio, y no devuelve "listo" si no pudo. Correrlo una vez arregla
-las dos cosas.
-
 La lección, que es la de siempre vista de otro lado: **un paso de
 instalación que no se puede saltear sin que algo avise, se va a
 saltear.** Lo mide `pruebas/rsvp.js` corriendo el `.gs.txt` de verdad
 — contra el código anterior da **5 fallas**.
+
+#### Y después entró al listado, y la fila igual no aparecía
+
+La otra mitad del mismo reporte, y es peor: con la maestra ya
+andando —o sea con el script respondiendo bien— **el invitado
+confirmaba y en la planilla no quedaba nada**. Sin un solo error a la
+vista: el que confirma ve que no se pudo, y del otro lado hay una
+planilla vacía.
+
+La causa es de diseño. La lista de fiestas habilitadas vivía **sólo en
+el sitio** (`lib/planillas.json`), y era lo ÚNICO que permitía crear
+una pestaña nueva. O sea que una lectura HTTP a un servidor nuestro
+estaba en el **camino crítico de lo único que esta planilla hace**: si
+no se podía leer —el permiso de "servicio externo" sin dar, el sitio
+lento, un 404— la confirmación no entraba. Y la decisión escrita
+("mejor que no entre una confirmación a que entre cualquiera") estaba
+tomada pensando en un atacante llenando la planilla de pestañas
+basura, no en el caso que de verdad pasó: **la fiesta del cliente que
+ya está habilitada, perdiendo confirmaciones por un problema
+nuestro.** Es la lección de `rafaga.sql` otra vez, en otro archivo:
+*ya pusimos un tope pensando en un atacante y le cortamos el brindis a
+una fiesta de verdad.*
+
+Ahora son **dos listas y valen las dos juntas**: la del sitio, que es
+la que hace que una invitación nueva no cueste un paso del lado de
+Google, y `EVENTOS_EN_EL_CODIGO`, un **piso** escrito adentro del Apps
+Script que no depende de nada. No afloja nada: lo escrito en el código
+también es una lista que decidimos nosotros. Lo que sigue sin entrar
+es una fiesta que no está en ninguna de las dos.
+
+**El piso puede quedarse corto, pero nunca ser más ancho.** Una fiesta
+nueva va en `lib/planillas.json` y nada más; el piso cubre las que ya
+existían cuando se pegó el código. `pruebas/invitaciones.js` falla si
+el Apps Script habilita algo que la lista de verdad no.
+
+**Y `preparar()` dice si leyó el sitio, aunque el piso salve la
+noche.** Si la lista no se lee, una fiesta NUEVA sigue sin poder crear
+su pestaña, y eso no se descubre hasta que un cliente avisa que su
+fila falta. Por eso no devuelve "listo" en ese caso aunque las fiestas
+del código funcionen: un informe que dice "listo" cuando la mitad no
+anda es la mentira de siempre.
+
+Contra el código anterior, `pruebas/rsvp.js` da **2 fallas** y
+`pruebas/invitaciones.js` **1**.
 
 ### El listado: cómo lee el cliente quiénes confirmaron
 

@@ -163,6 +163,25 @@ for (const ev of EVENTOS) {
 }
 if (EVENTOS.length) bien(`${EVENTOS.length} fiesta(s) habilitada(s): ${EVENTOS.join(', ')}`);
 
+/* El piso escrito adentro del Apps Script: las fiestas que entran
+   aunque el sitio no se pueda leer. Puede quedarse corto —una fiesta
+   nueva va en lib/planillas.json y nada más, que es el punto de la
+   planilla central— pero NO puede ser más ancho que la lista de
+   verdad: ahí habilitaría una pestaña que nosotros ya no habilitamos. */
+{
+  const gs = fs.readFileSync(
+    path.join(RAIZ, 'apps-script', 'planilla-central.gs.txt'), 'utf8');
+  const m = gs.match(/var EVENTOS_EN_EL_CODIGO = \[([^\]]*)\];/);
+  if (!m) mal('el Apps Script central no tiene su lista EVENTOS_EN_EL_CODIGO');
+  else {
+    const piso = (m[1].match(/'[^']*'|"[^"]*"/g) || []).map(t => t.slice(1, -1));
+    const sobran = piso.filter(e => !EVENTOS.includes(e));
+    if (sobran.length)
+      mal(`el Apps Script habilita "${sobran.join(', ')}" y lib/planillas.json no`);
+    else bien(`el piso del Apps Script no habilita nada de más (${piso.join(', ') || 'vacío'})`);
+  }
+}
+
 console.log('\n─── los listados salen de la plantilla ───');
 {
   const rutaPlantilla = path.join(RAIZ, 'invitaciones', 'plantilla-listado', 'index.html');
