@@ -47,6 +47,10 @@
   .acciones{ display:flex; gap:10px; margin-bottom:24px; }
   .acciones button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--wine); background:#fff; color:var(--wine); font-size:13px; cursor:pointer; }
   .acciones button.filled{ background:var(--wine); color:#fff; }
+  /* Sólo aparece con la clave maestra: es el atajo al archivo de Drive
+     y a la pestaña de esta fiesta. Sin display propio, para que el
+     atributo "hidden" alcance para esconderlo. */
+  .acciones a.planilla{ flex:1; padding:13px; line-height:18px; border-radius:10px; border:1px dashed var(--wine); color:var(--wine); font-size:13px; text-align:center; text-decoration:none; }
 
   .tabla-wrap{ background:#fff; border-radius:14px; overflow-x:auto; box-shadow:0 8px 20px -8px rgba(107,31,54,0.1); }
   table{ width:100%; border-collapse:collapse; font-size:13px; }
@@ -104,6 +108,7 @@
     <div class="acciones">
       <button id="btn-excel" class="filled">Descargar Excel</button>
       <button id="btn-print">Imprimir listado</button>
+      <a id="ir-planilla" class="planilla" target="_blank" rel="noopener" hidden>Abrir la planilla</a>
     </div>
 
     <div id="loading">Cargando confirmaciones...</div>
@@ -422,6 +427,14 @@ async function cargarDatos(clave){
      que la columna se llame distinto esta pantalla diría "0
      confirmaron" con la planilla llena y no habría ningún error. */
   resumen = data.resumen || null;
+  /* Con la clave maestra la planilla dice dónde está, parada en la
+     pestaña de esta fiesta. Con la del cliente no viene, y ahí el
+     enlace no se dibuja: no la puede abrir. */
+  const ir = document.getElementById('ir-planilla');
+  if (ir) {
+    if (data.planilla) { ir.href = data.planilla; ir.hidden = false; }
+    else { ir.removeAttribute('href'); ir.hidden = true; }
+  }
   if (data.columnas && data.columnas.confirma) COL_CONFIRMA = data.columnas.confirma;
   if (data.columnas && data.columnas.nombre)   COL_NOMBRE   = data.columnas.nombre;
   /* Un Apps Script viejo no dice con qué columnas trabajó, y la suya
