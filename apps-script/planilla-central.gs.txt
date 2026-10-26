@@ -193,6 +193,32 @@ function preparar() {
 }
 
 
+/* ── Dónde está cada cosa: se corre desde el editor ──────────
+
+   Existe porque pasó: las confirmaciones estaban guardadas, el listado
+   las mostraba, y no se encontraba la pestaña. Cada fiesta es una
+   PESTAÑA de este libro, así que "no aparece" casi siempre es "está en
+   otra pestaña". Esto devuelve el nombre del libro y un enlace por
+   pestaña, parado en ella: se elige `dondeEsta` arriba y se le da a
+   Ejecutar. No necesita volver a implementar — se corre en el editor,
+   no por la dirección /exec. */
+function dondeEsta() {
+  var libro = SpreadsheetApp.getActiveSpreadsheet();
+  if (!libro) {
+    Logger.log('⚠ Este script no está adentro de ninguna planilla.');
+    return 'sin planilla';
+  }
+  Logger.log('Planilla: ' + libro.getName());
+  var hojas = libro.getSheets();
+  for (var i = 0; i < hojas.length; i++) {
+    Logger.log('Pestaña "' + hojas[i].getName() + '"  ·  ' +
+               hojas[i].getLastRow() + ' filas  ·  ' +
+               libro.getUrl() + '#gid=' + hojas[i].getSheetId());
+  }
+  return hojas.length + ' pestañas';
+}
+
+
 /* ── ALTAS: qué fiestas pueden crear su pestaña ───────────────
 
    Una dirección /exec pública que crea una pestaña con el nombre que
