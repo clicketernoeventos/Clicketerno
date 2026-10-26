@@ -1866,6 +1866,37 @@ que usa es la central, `evento` es obligatorio. Verificado rompiendo a
 propósito — vaciarlo da **1 falla**; con la versión anterior daba
 cero.
 
+#### Y la maestra no abría, con la maestra bien puesta
+
+El dueño pegó el código, puso la clave maestra, implementó, y en el
+listado le decía **"clave incorrecta"**. La clave estaba perfecta.
+
+La maestra vivía **sólo en las propiedades del proyecto**, y ahí la
+escribe `preparar()`, que es un paso aparte. Escrita en el editor pero
+sin volver a correr `preparar()`, la puerta seguía sin aceptarla — y
+del otro lado lo único que se ve es "clave incorrecta". **Es la misma
+trampa que ya estaba escrita y resuelta tres párrafos más arriba para
+la clave que elige un cliente** (*"se mira en `claveDe_` y no en
+`preparar()`"*): estaba aplicada a la mitad de las claves. Ahora la
+maestra se lee igual, con `maestraPuesta_()`, y la escrita en el
+código **gana**, así que cambiarla deja de valer la vieja en el
+momento.
+
+**Y la otra mitad del mismo reporte: confirmó y la fila no apareció.**
+Saltearse `preparar()` tampoco da el permiso de "servicio externo", y
+sin eso la lista de fiestas no se puede leer: una fiesta que todavía
+no tiene su pestaña **no la puede crear**, así que la confirmación no
+entra. El invitado ve que no se pudo y en la planilla no hay nada. Eso
+no se descubre hasta que un cliente avisa que su fila falta, así que
+ahora `preparar()` **dice en su registro** si pudo leer la lista y qué
+fiestas vio, y no devuelve "listo" si no pudo. Correrlo una vez arregla
+las dos cosas.
+
+La lección, que es la de siempre vista de otro lado: **un paso de
+instalación que no se puede saltear sin que algo avise, se va a
+saltear.** Lo mide `pruebas/rsvp.js` corriendo el `.gs.txt` de verdad
+— contra el código anterior da **5 fallas**.
+
 ### El listado: cómo lee el cliente quiénes confirmaron
 
 `clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó

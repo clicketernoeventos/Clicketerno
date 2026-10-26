@@ -36,6 +36,12 @@
       Pide permisos la primera vez: aceptar. (Pide también permiso
       para "conectarse a un servicio externo": es para leer del sitio
       qué fiestas existen. Ver ALTAS, más abajo.)
+      ESTE PASO NO SE SALTEA, y el motivo es que saltearlo no tira
+      ningún error: sin el permiso de servicio externo, la lista de
+      fiestas no se puede leer y la confirmación de una fiesta que
+      todavía no tiene su pestaña NO ENTRA — el invitado ve que no se
+      pudo y en la planilla no aparece nada. El registro que deja
+      `preparar` lo dice con todas las letras.
    6. Implementar → Nueva implementación → Aplicación web →
       Ejecutar como: yo · Quién tiene acceso: CUALQUIER PERSONA →
       Implementar, y copiar la dirección que termina en /exec.
@@ -45,9 +51,12 @@
 
    SI ALGÚN DÍA SE TOCA ESTE CÓDIGO: hay que volver a implementar
    (Implementar → Administrar implementaciones → ✏️ → Versión: nueva).
-   Lo que queda congelado al implementar es el CÓDIGO; las claves
-   viven en las propiedades del proyecto y se leen en cada pedido, así
-   que cambiar una clave NO necesita volver a implementar.
+   Lo que queda congelado al implementar es el CÓDIGO.
+   O sea: las claves escritas ACÁ ARRIBA —la maestra y las que eligió
+   un cliente— son código, así que cambiarlas pide volver a
+   implementar. La que la planilla se inventa sola para un cliente
+   vive en las propiedades del proyecto y se lee en cada pedido, así
+   que ésa no pide nada.
 
    ESTO ES PÚBLICO A PROPÓSITO
    ───────────────────────────
@@ -123,25 +132,35 @@ function preparar() {
   if (CLAVE_MAESTRA_ELEGIDA) {
     props.setProperty('CLAVE_MAESTRA', String(CLAVE_MAESTRA_ELEGIDA));
   }
-  var maestra = props.getProperty('CLAVE_MAESTRA');
+  var maestra = maestraPuesta_();
+
+  /* Se toca la lista una vez acá para que el permiso de "servicio
+     externo" se pida AHORA, en el editor, y no la primera noche que
+     un invitado confirme — ahí no hay nadie para aceptarlo y la
+     confirmación se perdería. Y se DICE qué contestó: si la lista no
+     se puede leer, ninguna confirmación entra, y eso no se ve por
+     ningún lado hasta que un cliente avisa que su fila no está. */
+  var lista = [];
+  try { lista = eventosPermitidos_(true) || []; } catch (e) {}
 
   Logger.log('═══════════════════════════════════════');
   Logger.log(maestra
     ? '  Clave maestra: PUESTA (' + maestra.length + ' caracteres)'
     : '  ⚠ FALTA la clave maestra: poné CLAVE_MAESTRA_ELEGIDA');
+  Logger.log(lista.length
+    ? '  Fiestas habilitadas: ' + lista.join(', ')
+    : '  ⚠ NO se pudo leer la lista de fiestas: ' + LISTA_EVENTOS +
+      ' — mientras eso pase, una confirmación de una fiesta que todavía' +
+      ' no tiene pestaña NO entra.');
   Logger.log('  Pestañas de fiesta: ' + hojasDeEvento_().length);
   Logger.log('═══════════════════════════════════════');
   Logger.log('Ahora: Implementar → Nueva implementación →');
   Logger.log('Aplicación web → acceso: CUALQUIER PERSONA.');
   Logger.log('Copiá la dirección /exec y pegala en lib/planilla.js.');
 
-  /* Se toca la lista una vez acá para que el permiso de "servicio
-     externo" se pida AHORA, en el editor, y no la primera noche que
-     un invitado confirme — ahí no hay nadie para aceptarlo y la
-     confirmación se perdería. */
-  try { eventosPermitidos_(true); } catch (e) {}
-
-  return maestra ? 'listo' : 'falta la clave maestra';
+  if (!maestra) return 'falta la clave maestra';
+  if (!lista.length) return 'no se pudo leer la lista de fiestas';
+  return 'listo';
 }
 
 
@@ -252,6 +271,20 @@ function hojasDeEvento_() {
    Para saber cuál es NO hay que entrar al editor: se abre el listado
    de ese cliente con la clave maestra y viene escrita en la
    respuesta. */
+/* La clave MAESTRA, y se mira ACÁ y no sólo en las propiedades por
+   exactamente la misma razón que CLAVES_ELEGIDAS se mira en claveDe_:
+   escrita en el editor pero sin volver a correr preparar(), la puerta
+   seguía sin aceptarla — y lo único que se ve del otro lado es "clave
+   incorrecta" con la clave bien escrita. Pasó: el dueño puso la
+   maestra, implementó, y el listado no le abría.
+   La escrita en el código GANA, así que cambiarla deja de valer la
+   vieja en el momento; la propiedad queda de respaldo para las
+   implementaciones que ya corrieron preparar(). */
+function maestraPuesta_() {
+  if (CLAVE_MAESTRA_ELEGIDA) return String(CLAVE_MAESTRA_ELEGIDA);
+  return PropertiesService.getScriptProperties().getProperty('CLAVE_MAESTRA');
+}
+
 function claveDe_(evento) {
   /* La elegida por el cliente gana SIEMPRE, y se mira acá y no en
      preparar(): escrita en el editor pero sin volver a correr
@@ -368,8 +401,7 @@ function doGet(e) {
   /* Puerta 2 · la lista entera, con la clave. La usa el listado.
      Entra la del evento O la maestra. La maestra es la misma para
      todas las invitaciones y la tiene Click Eterno. */
-  var props = PropertiesService.getScriptProperties();
-  var maestra = props.getProperty('CLAVE_MAESTRA');
+  var maestra = maestraPuesta_();
 
   /* El freno es POR FIESTA y no global, y eso no es un detalle: con
      una sola planilla para todos los clientes, un freno global sería

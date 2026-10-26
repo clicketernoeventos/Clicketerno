@@ -524,6 +524,38 @@ console.log('\n─── la planilla central: preparar() ───');
 
   const b = cargarCentral({});
   es(b.preparar() !== 'listo', 'sin la maestra puesta, lo DICE en vez de dar por listo');
+
+  /* Si la lista de fiestas no se puede leer, NINGUNA confirmación de
+     una fiesta nueva entra. Eso no se ve por ningún lado hasta que un
+     cliente avisa que su fila no está, así que preparar() lo dice. */
+  const c = cargarCentral({ maestra: 'm', sitioCaido: true });
+  es(c.preparar() !== 'listo', 'si no pudo leer la lista de fiestas, tampoco da por listo');
+  es(c.registro.join(' ').indexOf('lista de fiestas') !== -1,
+     'y lo escribe en el registro, que es lo único que mira una persona');
+}
+
+console.log('\n─── la maestra entra sin volver a correr preparar() ───');
+{
+  /* Pasó de verdad: el dueño puso la maestra en el editor, implementó,
+     y el listado le decía "clave incorrecta" con la clave bien. La
+     maestra vivía SÓLO en las propiedades y ahí la escribe preparar(),
+     que es un paso aparte. Es la misma trampa que ya estaba resuelta
+     para la clave que elige un cliente (se mira en claveDe_), aplicada
+     a medias. */
+  const a = cargarCentral({ maestra: 'mil-seiscientos', eventos: ['almi15'] });
+  const r = a.get({ evento: 'almi15', clave: 'mil-seiscientos' });
+  es(!r.error, 'escrita en el código, la puerta abre sin que nadie corra nada');
+  es(a.props.CLAVE_MAESTRA === undefined,
+     'y no hizo falta que estuviera guardada en las propiedades');
+
+  /* Y cambiarla tiene que dejar de valer la vieja en el momento: si la
+     propiedad ganara, la clave de antes seguiría abriendo para
+     siempre. */
+  const b = cargarCentral({ maestra: 'la-nueva', eventos: ['almi15'],
+                            props: { CLAVE_MAESTRA: 'la-vieja' } });
+  es(!b.get({ evento: 'almi15', clave: 'la-nueva' }).error, 'la nueva abre');
+  es(b.get({ evento: 'almi15', clave: 'la-vieja' }).error === 'clave',
+     'y la vieja deja de abrir, aunque siga guardada');
 }
 
 console.log('\n─── la pestaña se crea sola, pero sólo si la fiesta existe ───');
