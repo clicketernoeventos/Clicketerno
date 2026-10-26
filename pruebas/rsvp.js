@@ -645,6 +645,29 @@ console.log('\n─── dos clientes en la misma planilla no se mezclan ──�
      'y en la fiesta de al lado NO figura');
 }
 
+console.log('\n─── dondeEsta(): el enlace a cada pestaña, desde el editor ───');
+{
+  /* Pasó: las filas estaban guardadas, el listado las mostraba, y no se
+     encontraba la pestaña. Esto se corre en el editor y devuelve el
+     enlace parado en cada una. */
+  const a = cargarCentral({ maestra: 'm', eventos: ['almi15', 'otra15'] });
+  a.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' });
+  a.post({ evento: 'otra15', Nombre: 'Beto', Confirma: 'Sí' });
+  a.caja.dondeEsta();
+  const log = a.registro.join('\n');
+  es(log.indexOf('Planilla: ') !== -1, 'dice en qué archivo escribe');
+  es(/Pesta\u00f1a "almi15"[\s\S]*#gid=\d+/.test(log),
+     'y da el enlace parado en la pestaña de cada fiesta');
+  es(log.indexOf('otra15') !== -1, 'las lista todas, no sólo una');
+  /* Y no se queda callado si el script no está adentro de una planilla:
+     eso es exactamente el caso en que nada funciona. */
+  const sola = cargarCentral({ maestra: 'm' });
+  sola.caja.SpreadsheetApp.getActiveSpreadsheet = () => null;
+  sola.caja.dondeEsta();
+  es(sola.registro.join(' ').indexOf('no está adentro') !== -1,
+     'y si el script no está adentro de una planilla, lo dice');
+}
+
 console.log('\n─── con la maestra, el listado dice DÓNDE está la planilla ───');
 {
   /* Pasó: las confirmaciones estaban guardadas, el listado las
