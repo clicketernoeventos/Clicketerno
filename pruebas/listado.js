@@ -47,7 +47,7 @@ const RESPUESTA = {
 
 /* Abre la plantilla con su CONFIG rellenada —como quedaría copiada a
    <evento>/listado/— y con el Apps Script reemplazado. */
-async function abrir(ctx, { responde = RESPUESTA, config = true } = {}) {
+async function abrir(ctx, { responde = RESPUESTA, config = true, evento = '' } = {}) {
   const pag = await ctx.newPage();
   const errores = [];
   pag.on('pageerror', e => errores.push(String(e)));
@@ -57,6 +57,10 @@ async function abrir(ctx, { responde = RESPUESTA, config = true } = {}) {
       let html = await r.text();
       html = html.replace('nombreEvento: ""', 'nombreEvento: "Casamiento de prueba"')
                  .replace('appsScriptUrl: ""', `appsScriptUrl: "${URL_FALSA}"`);
+      /* Con la planilla central la fiesta es una PESTAÑA, y la pantalla
+         tiene que decir cuál: sin esto, CONFIG.evento queda vacío y la
+         comprobación mediría una pantalla que no existe. */
+      if (evento) html = html.replace('evento: ""', `evento: "${evento}"`);
       await ruta.fulfill({ response: r, body: html });
     });
   }
@@ -495,6 +499,39 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
       : 'el enlace no tiene caja');
     es(errores.length === 0, 'sin errores de JavaScript');
     await pag.close();
+
+    /* Y DICHO EN PALABRAS, que es lo que vale cuando el Apps Script
+       todavía es el de antes y no manda el enlace: en qué pestaña se
+       guarda. Buscar la fila en la pestaña equivocada se ve igual que
+       una confirmación perdida, y eso ya pasó. */
+    const { pag: pagD } = await abrir(ctx, { evento: 'almi15',
+      responde: Object.assign({}, RESPUESTA, { claveEvento: 'abc123' }) });
+    if (await pagD.locator('#clave-input').isVisible().catch(() => false)) {
+      await pagD.fill('#clave-input', 'la-maestra');
+      await pagD.keyboard.press('Enter');
+    }
+    await pagD.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    /* Se pregunta si se VE y después qué dice: el `innerText` de un
+       elemento que no se está dibujando devuelve el textContent igual
+       —lo dice la especificación— así que leer el texto de un bloque
+       escondido da verde con la pantalla muda. Medido: con
+       `hidden` puesto a propósito, esta comprobación pasaba. */
+    const seVe = await pagD.locator('#donde').isVisible();
+    const dicho = (await pagD.locator('#donde').textContent().catch(() => '') || '').toLowerCase();
+    es(seVe && dicho.includes('almi15') && dicho.includes('pesta'),
+       seVe && dicho ? 'dice en qué pestaña se guarda' : 'NO dice en qué pestaña se guarda');
+    await pagD.close();
+
+    /* Al cliente no: el nombre de una pestaña de un archivo que no
+       puede abrir es ruido. */
+    const { pag: pagE } = await abrir(ctx, { evento: 'almi15' });
+    if (await pagE.locator('#clave-input').isVisible().catch(() => false)) {
+      await pagE.fill('#clave-input', 'la-del-cliente');
+      await pagE.keyboard.press('Enter');
+    }
+    await pagE.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    es(await pagE.locator('#donde').isHidden(), 'y al cliente no se le dice nada de eso');
+    await pagE.close();
 
     /* Y con la clave del CLIENTE no viene: él no puede abrir la
        planilla, así que un enlace ahí es un enlace muerto. */

@@ -1964,6 +1964,23 @@ sin ese dato no exista). Contra lo publicado dan **2** y **1**.
 `getSheetId` de la hoja—: un falso al que le falta un método de los de
 verdad no mide el código, mide al falso.
 
+**Y además lo DICE en palabras, que es lo que sirve cuando el enlace no
+está.** El enlace sólo aparece con el Apps Script nuevo pegado, y eso es
+un paso del lado de Google; la frase no necesita nada. Entrando con la
+maestra, el listado escribe *"estas filas están guardadas en la pestaña
+**almi15** de la planilla de confirmaciones. Cada fiesta tiene su propia
+pestaña: en las otras no aparecen."* Con la clave del cliente no se
+dibuja: el nombre de una pestaña de un archivo que no puede abrir es
+ruido.
+
+**Y la primera versión de esa prueba no medía nada**: leía el texto con
+`innerText` y daba verde con el bloque `hidden`. **El `innerText` de un
+elemento que NO se está dibujando devuelve el `textContent` igual** —lo
+dice la especificación—, así que leer el texto no dice si se VE. Medido:
+con `hidden` puesto a propósito, la comprobación pasaba. Se pregunta
+`isVisible()` primero. Es la caja de 0x0 otra vez, disfrazada de leer un
+texto.
+
 ### El listado: cómo lee el cliente quiénes confirmaron
 
 `clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó
