@@ -470,6 +470,47 @@ const txt = async (pag, sel) => (await pag.locator(sel).first().innerText()).tri
     await pagS.close();
   }
 
+  titulo('con la maestra, el atajo a la planilla');
+  {
+    /* Pasó de verdad: las confirmaciones estaban guardadas, el listado
+       las mostraba, y no se encontraba en qué archivo de Drive — se
+       estaba mirando otra pestaña. Con la maestra el Apps Script dice
+       dónde está, parado en la pestaña de esa fiesta. */
+    ctx = await nuevoCtx();
+    const conLink = Object.assign({}, RESPUESTA,
+      { planilla: 'https://docs.google.com/spreadsheets/d/XYZ/edit#gid=123' });
+    const { pag, errores } = await abrir(ctx, { responde: conLink });
+    await pag.fill('#clave-input', 'la-maestra');
+    await pag.keyboard.press('Enter');
+    await pag.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    const a = pag.locator('#ir-planilla');
+    es(await a.isVisible(), 'aparece el enlace a la planilla');
+    es((await a.getAttribute('href')) === conLink.planilla,
+       'y lleva a la pestaña de esa fiesta');
+    es((await a.getAttribute('rel') || '').includes('noopener'),
+       'abre en otra pestaña con rel=noopener');
+    const caja = await a.boundingBox();
+    es(!!caja && caja.height >= 44, caja
+      ? `se puede tocar con el pulgar (${Math.round(caja.height)}px de alto)`
+      : 'el enlace no tiene caja');
+    es(errores.length === 0, 'sin errores de JavaScript');
+    await pag.close();
+
+    /* Y con la clave del CLIENTE no viene: él no puede abrir la
+       planilla, así que un enlace ahí es un enlace muerto. */
+    const { pag: pagC } = await abrir(ctx, { responde: RESPUESTA });
+    /* La clave quedó guardada del bloque de arriba, así que el portón
+       puede no aparecer: se escribe sólo si está. */
+    if (await pagC.locator('#clave-input').isVisible().catch(() => false)) {
+      await pagC.fill('#clave-input', 'la-del-cliente');
+      await pagC.keyboard.press('Enter');
+    }
+    await pagC.waitForSelector('#tabla-wrap:visible', { timeout: 5000 });
+    es(await pagC.locator('#ir-planilla').isHidden(),
+       'sin ese dato, el enlace no se dibuja');
+    await pagC.close();
+  }
+
   await navegador.close();
   console.log(fallas.length ? `\n${fallas.length} FALLAS` : `\n✓ Sin fallas`);
   process.exit(fallas.length ? 1 : 0);

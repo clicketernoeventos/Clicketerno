@@ -171,6 +171,17 @@ function preparar() {
       ' Valen sólo las escritas en el código. Una fiesta NUEVA no va a' +
       ' poder crear su pestaña hasta que esto ande.');
   Logger.log('  Pestañas de fiesta: ' + hojasDeEvento_().length);
+  /* En qué archivo escribe. No es un adorno: cada fiesta es una
+     PESTAÑA de este libro, y mirando otra pestaña —o otro archivo— las
+     confirmaciones parecen perdidas estando guardadas. */
+  try {
+    var libro = SpreadsheetApp.getActiveSpreadsheet();
+    Logger.log('  Escribe en: ' + libro.getName());
+    Logger.log('  ' + libro.getUrl());
+  } catch (e) {
+    Logger.log('  ⚠ Este script no está adentro de una planilla: pegalo' +
+               ' desde la planilla, con Extensiones → Apps Script.');
+  }
   Logger.log('═══════════════════════════════════════');
   Logger.log('Ahora: Implementar → Nueva implementación →');
   Logger.log('Aplicación web → acceso: CUALQUIER PERSONA.');
@@ -485,7 +496,21 @@ function doGet(e) {
   /* Con la maestra viene además la clave de ESE cliente, para poder
      pasársela sin entrar al editor de Apps Script. Nunca con la clave
      del evento: ahí ya la tiene quien pregunta. */
-  if (conMaestra && hay) salida.claveEvento = claveDe_(evento);
+  if (conMaestra && hay) {
+    salida.claveEvento = claveDe_(evento);
+    /* Y DÓNDE está la planilla, con el enlace parado en la pestaña de
+       ESTA fiesta. Hace falta de verdad: la primera vez que se usó,
+       las confirmaciones estaban guardadas, el listado las mostraba, y
+       no se encontraba en qué archivo de Drive — se estaba mirando
+       otra pestaña. El listado lee de la planilla y de ningún otro
+       lado, así que si ahí hay filas, están acá. Nunca con la clave
+       del evento: el cliente no puede abrir la planilla, así que sería
+       un enlace muerto. */
+    try {
+      salida.planilla = SpreadsheetApp.getActiveSpreadsheet().getUrl() +
+                        '#gid=' + hojaDe_(evento, false).getSheetId();
+    } catch (e) {}
+  }
   return json(salida);
 }
 

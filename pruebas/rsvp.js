@@ -28,6 +28,10 @@ function hojaFalsa(filas = [], nombre = 'Hoja 1') {
   const h = {
     datos: d,
     getName: () => nombre,
+    /* El de Google lo tiene y el enlace a la pestaña sale de acá: un
+       falso al que le falta un método de los de verdad no mide el
+       código, mide al falso. */
+    getSheetId: () => 100 + nombre.length,
     getLastRow: () => d.length,
     getLastColumn: () => d.reduce((m, f) => Math.max(m, f.length), 0),
     setFrozenRows: () => h,
@@ -447,6 +451,8 @@ function cargarCentral(opciones = {}) {
   const registro = [];
   let pedidosLista = 0;
   const libro = {
+    getUrl: () => 'https://docs.google.com/spreadsheets/d/FALSA/edit',
+    getName: () => 'Click Eterno · Confirmaciones (falsa)',
     getSheets: () => hojas.slice(),
     getSheetByName: n => hojas.find(h => h.getName() === n) || null,
     insertSheet(n) { const h = hojaFalsa([], n); hojas.push(h); return h; }
@@ -637,6 +643,28 @@ console.log('\n─── dos clientes en la misma planilla no se mezclan ──�
      'el invitado pregunta si llegó lo suyo, con espacios y en minúscula');
   es(a.get({ evento: 'otra15', confirmado: 'Juan Pérez' }).ok === false,
      'y en la fiesta de al lado NO figura');
+}
+
+console.log('\n─── con la maestra, el listado dice DÓNDE está la planilla ───');
+{
+  /* Pasó: las confirmaciones estaban guardadas, el listado las
+     mostraba, y no se encontraba en qué archivo de Drive — se estaba
+     mirando otra pestaña. El listado lee de la planilla y de ningún
+     otro lado, así que si muestra filas, están ahí. */
+  const a = cargarCentral({ maestra: 'm', eventos: ['almi15'] });
+  a.post({ evento: 'almi15', Nombre: 'Ana', Confirma: 'Sí' });
+
+  const conM = a.get({ evento: 'almi15', clave: 'm' });
+  es(/^https:\/\/docs\.google\.com\//.test(conM.planilla || ''),
+     'con la maestra viene el enlace a la planilla');
+  es(/#gid=\d+$/.test(conM.planilla || ''),
+     'y parado en la pestaña de ESA fiesta, no en la primera');
+
+  /* Nunca con la clave del cliente: no puede abrirla, sería un enlace
+     muerto en su pantalla. */
+  const conCliente = a.get({ evento: 'almi15', clave: a.claveDe('almi15', 'm') });
+  es(!conCliente.error, 'el cliente entra con la suya');
+  es(conCliente.planilla === undefined, 'y a él NO se le manda el enlace a la planilla');
 }
 
 console.log('\n─── el freno de intentos es POR FIESTA ───');

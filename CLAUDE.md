@@ -1931,6 +1931,39 @@ anda es la mentira de siempre.
 Contra el código anterior, `pruebas/rsvp.js` da **2 fallas** y
 `pruebas/invitaciones.js` **1**.
 
+#### Y después estaban guardadas, y no se encontraban
+
+Lo siguiente que pasó la misma noche: **el listado mostraba dos
+confirmaciones y en la planilla no estaban.** Es imposible, y por eso
+la respuesta es tranquilizadora: el listado lee de la planilla y de
+ningún otro lado —no guarda nada, pide con `cache:'no-store'`— así que
+si muestra filas, las filas están ahí. Lo que pasaba es que **cada
+fiesta es una PESTAÑA** de un solo libro, y se estaba mirando otra.
+
+Es la primera vez que eso puede pasar, y es una consecuencia directa
+de la planilla central: antes cada cliente tenía su archivo y el
+archivo que se abría era el archivo. Ahora hay que saber **cuál
+pestaña y cuál archivo**, y eso no estaba escrito en ninguna pantalla.
+
+Se arregla donde se mira: con la clave maestra, el Apps Script
+devuelve además **dónde está la planilla**, con el enlace parado en la
+pestaña de esa fiesta (`getUrl()` + `#gid=`), y el listado dibuja un
+**"Abrir la planilla"** al lado de "Descargar Excel". **Con la clave
+del cliente no viene y el enlace no se dibuja**: él no puede abrir el
+archivo, así que ahí sería un enlace muerto. Y `preparar()` escribe en
+su registro el nombre y la dirección del libro en el que escribe —y si
+el script no está adentro de ninguna planilla, lo dice en vez de
+fallar callado.
+
+Lo mide `pruebas/rsvp.js` (que el enlace venga con la maestra, que
+apunte a la pestaña y que al cliente NO se le mande) y
+`pruebas/listado.js` (que el enlace se vea, que llegue a 44px y que
+sin ese dato no exista). Contra lo publicado dan **2** y **1**.
+
+**Y hubo que enseñarle dos métodos al falso** —`getUrl` del libro y
+`getSheetId` de la hoja—: un falso al que le falta un método de los de
+verdad no mide el código, mide al falso.
+
 ### El listado: cómo lee el cliente quiénes confirmaron
 
 `clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó
