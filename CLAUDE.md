@@ -1882,11 +1882,25 @@ maestra se lee igual, con `maestraPuesta_()`, y la escrita en el
 código **gana**, así que cambiarla deja de valer la vieja en el
 momento.
 
+<<<<<<< HEAD
+=======
+**Y la otra mitad del mismo reporte: confirmó y la fila no apareció.**
+Saltearse `preparar()` tampoco da el permiso de "servicio externo", y
+sin eso la lista de fiestas no se puede leer: una fiesta que todavía
+no tiene su pestaña **no la puede crear**, así que la confirmación no
+entra. El invitado ve que no se pudo y en la planilla no hay nada. Eso
+no se descubre hasta que un cliente avisa que su fila falta, así que
+ahora `preparar()` **dice en su registro** si pudo leer la lista y qué
+fiestas vio, y no devuelve "listo" si no pudo. Correrlo una vez arregla
+las dos cosas.
+
+>>>>>>> origin/main
 La lección, que es la de siempre vista de otro lado: **un paso de
 instalación que no se puede saltear sin que algo avise, se va a
 saltear.** Lo mide `pruebas/rsvp.js` corriendo el `.gs.txt` de verdad
 — contra el código anterior da **5 fallas**.
 
+<<<<<<< HEAD
 #### Y después entró al listado, y la fila igual no aparecía
 
 La otra mitad del mismo reporte, y es peor: con la maestra ya
@@ -1931,6 +1945,8 @@ anda es la mentira de siempre.
 Contra el código anterior, `pruebas/rsvp.js` da **2 fallas** y
 `pruebas/invitaciones.js` **1**.
 
+=======
+>>>>>>> origin/main
 ### El listado: cómo lee el cliente quiénes confirmaron
 
 `clicketerno.com.ar/<evento>/listado`. Escribe una clave —la que generó
