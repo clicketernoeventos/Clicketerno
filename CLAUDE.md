@@ -4364,9 +4364,20 @@ dejaría peor parados.
   inventa la planilla y se lee abriendo el listado de ese cliente con la
   maestra. La de `almi15` la eligió la clienta y está en
   `CLAVES_ELEGIDAS`, en la copia del editor.
-- **El titular de la cuenta del alias de `almi15`** (`nancyvaldez1976`):
-  el nombre que muestra el banco al pegarlo. Sin él, ese renglón no se
-  dibuja.
+- **El titular de la cuenta del alias de `almi15`.** El alias **cambió
+  el 26/10/2026**: era `nancyvaldez1976` y pasó a **`alma.mia120`**, de
+  otra cuenta — así que el titular hay que **volver a preguntarlo**, que
+  es exactamente lo que ya había pasado en `mia15`. Es el nombre que le
+  muestra el banco al invitado cuando pega el alias; sin él ese renglón
+  no se dibuja, y un nombre inventado al lado de un alias es peor que
+  ninguno.
+  **El alias se escribe TAL CUAL lo manda el dueño.** En `mia15` el
+  punto del final resultó ser parte del alias y por poco se lo
+  "arreglamos": copiado de menos, la transferencia del invitado va a
+  otra cuenta o no encuentra ninguna. Y el rótulo *"Alias para
+  transferir"* queda arriba por los dos lados: se lee igual que un
+  usuario de Instagram, y el dueño lo pasa diciendo *"el cbu para
+  regalos"* — pegar un alias donde el banco pide un CBU no entra.
 - **`mateoylucas/` y `claraybruno/` no pasan `invitacion_mirar.js`**, y
   es de antes de todo esto: la de Mateo y Lucas informa 2 fallas (la
   portada se queda en modo foto sin tener ninguna, y por eso le falta un
