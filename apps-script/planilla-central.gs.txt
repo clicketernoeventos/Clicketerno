@@ -113,6 +113,18 @@ var CLAVES_ELEGIDAS = {
 /* Dónde pregunta este script qué fiestas existen. Ver ALTAS. */
 var LISTA_EVENTOS = 'https://clicketerno.com.ar/lib/planillas.json';
 
+/* Y el PISO: las fiestas habilitadas aunque el sitio no se pueda leer.
+   Pasó: la lista no se leía —el permiso de servicio externo quedó sin
+   dar— y la confirmación de un invitado NO entraba, sin un solo error
+   a la vista y con la planilla vacía. Una lista que vive afuera es una
+   dependencia en el camino crítico de lo único que esta planilla hace.
+   Esto no afloja nada: lo escrito acá es CÓDIGO, así que sigue siendo
+   una lista que decidimos nosotros, igual que la del sitio. La del
+   sitio existe para que una invitación nueva no cueste un paso del
+   lado de Google; ésta existe para que un problema nuestro no le
+   cueste una confirmación a un cliente. Valen las dos juntas. */
+var EVENTOS_EN_EL_CODIGO = ['almi15'];
+
 /* Los títulos que el resumen necesita entender. Cualquier otra
    pregunta de la invitación se crea sola como columna la primera vez
    que llega: no hace falta tocar nada acá. */
@@ -140,18 +152,24 @@ function preparar() {
      confirmación se perdería. Y se DICE qué contestó: si la lista no
      se puede leer, ninguna confirmación entra, y eso no se ve por
      ningún lado hasta que un cliente avisa que su fila no está. */
+  var marca = props.getProperty('EVENTOS_CUANDO');
   var lista = [];
   try { lista = eventosPermitidos_(true) || []; } catch (e) {}
+  /* ¿Contestó el SITIO, o lo que hay es sólo el piso del código? La
+     marca de tiempo se escribe únicamente cuando la lectura salió
+     bien, así que esto no se puede confundir. */
+  var leyoElSitio = props.getProperty('EVENTOS_CUANDO') !== marca;
 
   Logger.log('═══════════════════════════════════════');
   Logger.log(maestra
     ? '  Clave maestra: PUESTA (' + maestra.length + ' caracteres)'
     : '  ⚠ FALTA la clave maestra: poné CLAVE_MAESTRA_ELEGIDA');
-  Logger.log(lista.length
-    ? '  Fiestas habilitadas: ' + lista.join(', ')
-    : '  ⚠ NO se pudo leer la lista de fiestas: ' + LISTA_EVENTOS +
-      ' — mientras eso pase, una confirmación de una fiesta que todavía' +
-      ' no tiene pestaña NO entra.');
+  Logger.log('  Fiestas habilitadas: ' + (lista.join(', ') || 'NINGUNA'));
+  Logger.log(leyoElSitio
+    ? '  Lista del sitio: LEÍDA'
+    : '  ⚠ NO se pudo leer la lista del sitio (' + LISTA_EVENTOS + ').' +
+      ' Valen sólo las escritas en el código. Una fiesta NUEVA no va a' +
+      ' poder crear su pestaña hasta que esto ande.');
   Logger.log('  Pestañas de fiesta: ' + hojasDeEvento_().length);
   Logger.log('═══════════════════════════════════════');
   Logger.log('Ahora: Implementar → Nueva implementación →');
@@ -159,7 +177,7 @@ function preparar() {
   Logger.log('Copiá la dirección /exec y pegala en lib/planilla.js.');
 
   if (!maestra) return 'falta la clave maestra';
-  if (!lista.length) return 'no se pudo leer la lista de fiestas';
+  if (!leyoElSitio) return 'no se pudo leer la lista de fiestas';
   return 'listo';
 }
 
@@ -180,11 +198,13 @@ function preparar() {
    ya se hace para que aparezca en la galería.
 
    Se lee como mucho una vez cada diez minutos y se guarda una copia:
-   si el sitio no contesta, vale la última copia que teníamos. Así un
-   problema nuestro no deja a un invitado sin poder confirmar. Y si
-   nunca pudimos leerla, NO se crea nada: mejor que no entre una
-   confirmación a que entre cualquiera. Las pestañas que YA existen
-   siguen andando igual, pase lo que pase con la lista. */
+   si el sitio no contesta, vale la última copia que teníamos. Y abajo
+   de todo está el piso de EVENTOS_EN_EL_CODIGO, que no depende de
+   nada: así un problema nuestro no deja a un invitado sin poder
+   confirmar. Una fiesta que no está en ninguna de las dos no crea
+   nada: mejor que no entre una confirmación a que entre cualquiera.
+   Las pestañas que YA existen siguen andando igual, pase lo que pase
+   con la lista. */
 var LISTA_VALE_MS = 10 * 60 * 1000;
 
 function eventosPermitidos_(forzar) {
@@ -192,8 +212,16 @@ function eventosPermitidos_(forzar) {
   var guardada = props.getProperty('EVENTOS_CACHE');
   var cuando = Number(props.getProperty('EVENTOS_CUANDO') || 0);
 
+  /* Lo del sitio MÁS lo escrito en el código, nunca una cosa sola. */
+  function con(lista) {
+    var salida = EVENTOS_EN_EL_CODIGO.slice();
+    for (var i = 0; i < lista.length; i++)
+      if (salida.indexOf(lista[i]) === -1) salida.push(lista[i]);
+    return salida;
+  }
+
   if (!forzar && guardada && (Date.now() - cuando) < LISTA_VALE_MS) {
-    try { return JSON.parse(guardada); } catch (e) {}
+    try { return con(JSON.parse(guardada)); } catch (e) {}
   }
 
   try {
@@ -206,14 +234,15 @@ function eventosPermitidos_(forzar) {
       if (Object.prototype.toString.call(lista) === '[object Array]') {
         props.setProperty('EVENTOS_CACHE', JSON.stringify(lista));
         props.setProperty('EVENTOS_CUANDO', String(Date.now()));
-        return lista;
+        return con(lista);
       }
     }
   } catch (e) {}
 
-  /* No se pudo leer: vale la copia vieja aunque esté vencida. */
-  if (guardada) { try { return JSON.parse(guardada); } catch (e2) {} }
-  return [];
+  /* No se pudo leer: vale la copia vieja aunque esté vencida, y si
+     nunca hubo copia, el piso escrito en el código. */
+  if (guardada) { try { return con(JSON.parse(guardada)); } catch (e2) {} }
+  return con([]);
 }
 
 
