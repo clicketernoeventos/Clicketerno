@@ -4171,6 +4171,36 @@ que identifica a la bolsa y se lee: el cuerpo ancho, **las dos asas
 sobre el borde** y las rayas. **Un icono no es una foto: lo que no se
 lee a 42 no va**, y de tres detalles hay que elegir dos.
 
+**Y una cuarta vuelta, porque seguía sin parecerse**: el dueño volvió
+con la foto —*"no podés hacer un icono parecido al de la bolsa de
+VS"*—. Lo que faltaba no era un detalle más, era la PROPORCIÓN: las
+asas eran dos arcos cortos apoyados en el borde, y en la bolsa de
+verdad las cintas suben casi tanto como el cuerpo y se cruzan arriba.
+Con las cintas altas la bolsa se reconoce de un vistazo. **Se eligió
+mirando**: se montaron cinco versiones a 150px y a 42 y se comparó —es
+lo mismo que ya está escrito para la tipografía, y es lo único que
+sirve cuando el problema es que algo "no se parece". El papel de seda
+volvió a quedar afuera y por el mismo motivo de siempre.
+
+**Y los POMPONES del dress code.** Estaban marcados en la referencia y
+no se habían hecho: son tres plumas —crema, rosa y negro— atadas con
+el moño de la pieza, y ahora son el dibujo de la tarjeta de dress code
+mientras no lleguen las fotos de la clienta. Reemplazan a los cuatro
+productos en fila que había antes: lo que dice qué ponerse es el
+texto, el dibujo es decoración, y la decoración es la que él señaló.
+Tres cosas que costaron una vuelta cada una, y **las tres se ven
+mirando, no leyendo el código**:
+- **Con lóbulos parejos un pompón es un chupetín.** Lo que lo vuelve
+  pluma es el borde: muchos bultos chiquitos e irregulares. Quince
+  lóbulos iguales y un mango largo y recto se leían como algodón de
+  azúcar.
+- **Los tres mangos tienen que CONVERGER en el nudo.** Sueltos, cada
+  pompón era una flor aparte y eso no es un ramo; y el moño, dibujado
+  lejos de donde se juntan, quedaba flotando sin atar nada.
+- **Las siluetas van escritas ya calculadas, de una semilla fija.**
+  Con `Math.random()` dos capturas de la misma invitación saldrían
+  distintas — la misma regla que la sierra de las franjas.
+
 **El medidor de contraste no ve esta textura** —mide el
 `background-color`, no la imagen—, y acá eso no esconde nada porque los
 dos negros están a menos de un punto de luminancia. Si alguna vez se
