@@ -4104,6 +4104,43 @@ error**:
   `max-width`. Un número que depende del padding de otro no se escribe
   dos veces — lo agarró la suite, no el ojo.
 
+**Los iconos son PRODUCTOS DE LA TIENDA**, pedido del dueño con esas
+palabras: *"los quiero personalizados con onda Victoria's Secret, como
+si fueran de productos"*. Son siete y cada uno sigue diciendo de qué
+habla su sección: el reloj de arena **con su moño**, el calendario
+**atado con un moño**, el pin **con una perla** adentro, el vestido
+**colgado de su percha**, la **bolsa a rayas** (el producto más
+reconocible de los dos), el sobre **cerrado con un moño** y el **frasco
+de perfume** con su atomizador. La filigrana de cada corte dejó de ser
+un rombo y es un **moño entre dos hilos de perlas**.
+
+**El moño es UNO SOLO** (`MONO(cx,cy,ancho,alto)`) y se usa en los
+cuatro lugares: escrito cuatro veces, el día que se cambie alguno se
+queda atrás y la pieza muestra dos moños distintos para la misma cosa.
+
+Y tres cosas que sólo se ven MIRANDO, no leyendo el código:
+
+- **Un icono con quince líneas a 42px no es un dibujo, es una mancha.**
+  La primera tanda tenía percha + vestido + moño + cintura en el mismo
+  dibujo y se leía como un borrón. Lo que no se lee a 42 no va.
+- **El moño dibujado con dos curvas en S se lee como un garabato
+  cruzado.** Son dos hojas que se tocan en el nudo, y el nudo se
+  dibuja: sin él son dos gotas sueltas.
+- **Una hoja del moño mide 0,75 del ancho que se le pasa.** Con 3,4
+  quedaba de cuatro píxeles en pantalla y parecía una nube. Y la bolsa
+  con los lados en diagonal se leía como un **tacho de basura**: va
+  recta y con las rayas de punta a punta.
+
+**La tarjeta de dress code acepta FOTOS** (`CONFIG.dressFotos`, hasta
+cuatro), que es el detalle de la referencia que el dueño marcó como
+bueno: cuatro recortes enmarcados y apenas torcidos, como pegados en un
+tablero. Vacío deja los cuatro dibujos. Cada foto aparece recién cuando
+cargó de verdad, la que falla se saca y si no queda ninguna vuelve el
+dibujo — nunca un marco alrededor de un cuadrado roto.
+**Van EN COLOR**, al revés que las de la portada de `mia15` y `almi15`:
+en un dress code el color es el dato, y una foto en blanco y negro no
+dice si el vestido es negro o es verde.
+
 **No está en la galería de Trabajos ni en `/invitaciones`**, por lo
 mismo que `mia15` y `almi15`: es la fiesta de una clienta de verdad,
 lleva `noindex` y en el formulario se juntan nombres de invitados y
