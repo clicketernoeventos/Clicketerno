@@ -4141,6 +4141,33 @@ dibujo — nunca un marco alrededor de un cuadrado roto.
 en un dress code el color es el dato, y una foto en blanco y negro no
 dice si el vestido es negro o es verde.
 
+**EL ENCAJE ES ENCAJE, no un festón.** El dueño mandó dos capturas —
+una tira de encaje negro fruncido arriba y abajo de las rayas, y una
+tarjeta con **textura** de encaje negro— y pidió las dos. Están hechas
+con SVG que se repite, no con imágenes: pesan 23 KB y 15 KB, no se
+pixelan y se adaptan a cualquier pantalla.
+
+**Lo que hace que un recorte parezca TELA es la red fina.** La primera
+versión eran festones con tres ojalitos y se leía como un toldo; la
+segunda tenía la malla con el punto grande y se leía como lunares. El
+encaje es **red fina MÁS motivo grande**, los dos tamaños a la vez: una
+malla de puntos de 0,6 y rosetas de seis pétalos. Con un tamaño solo no
+hay encaje. Se ve mirando, no leyendo el código.
+
+**Y en la textura, cuatro elipses cruzadas no son una flor: son un
+moño.** La primera versión del motivo giraba cuatro elipses sobre el
+mismo centro y salían aspas. La flor son **seis pétalos alrededor de un
+centro**, separados. Va en un negro apenas más claro que el fondo
+(`#2C2029` sobre `#140B10`): tiene que sentirse, no verse — si se ve,
+le compite a los títulos y a las tarjetas, que es justo lo que va
+encima.
+
+**El medidor de contraste no ve esta textura** —mide el
+`background-color`, no la imagen—, y acá eso no esconde nada porque los
+dos negros están a menos de un punto de luminancia. Si alguna vez se
+aclara el motivo, ese texto hay que volver a mirarlo con el píxel, como
+en la portada de `mia15`.
+
 **No está en la galería de Trabajos ni en `/invitaciones`**, por lo
 mismo que `mia15` y `almi15`: es la fiesta de una clienta de verdad,
 lleva `noindex` y en el formulario se juntan nombres de invitados y
