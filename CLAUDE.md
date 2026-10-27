@@ -4025,6 +4025,90 @@ al final no quede nada a medias. Así da igual cómo esté hecho. Contra
 el código anterior da **2 fallas**: *"la portada APARECE de golpe"* y
 *"la carta se agranda hasta 6.1x"*.
 
+### `nueva15/`: la tercera de un cliente, y todavía sin nombre
+
+10 de abril de 2027 · La Mansión del Rey · de 21 a 4 h. Quince años.
+**La carpeta se llama `nueva15` a propósito y se renombra el día que
+llegue el nombre**: la dirección es `clicketerno.com.ar/<nombre>15` y
+todavía no se repartió, así que renombrarla no cuesta nada. Un link
+repartido no se puede mover; uno que nadie tiene, sí.
+
+**La referencia la eligió la clienta** y la mandó el dueño: dos
+capturas y un video de TikTok de una invitación de Etsy, todo en la
+estética de **Victoria's Secret** — rayas rosa y blanco, encaje negro,
+moño de raso, perlas, y una foto adentro de un óvalo con alas. El
+pedido fue *"hacela igual pero con nuestro estilo para que no sea copia
+fiel"*.
+
+**Dos cosas de la referencia NO se copian, y no es una opinión:**
+
+- **El monograma de alas con la V y la S es el logo de Victoria's
+  Secret**, una marca registrada. Una invitación publicada con el logo
+  de otro es un problema nuestro, no de la clienta. En el óvalo va **la
+  inicial de ella** —y si no hay foto, esa inicial es el centro de la
+  portada—. Visualmente no pierde nada: lo que hace la estética son las
+  rayas, el encaje, el moño y las alas, no las dos letras.
+- **El moodboard de dress code de la referencia son fotos de personas
+  reales sacadas de internet.** Es el artículo 53 otra vez, el que está
+  escrito en nuestros propios Términos. Acá el dress code va
+  **dibujado** —vestido, taco, cartera, moño—, que dice lo mismo, pesa
+  cero y es nuestro. El día que la clienta mande sus fotos, se cambia.
+
+**Lo que se hereda de `almi15`, que a su vez lo heredó de `mia15`**: el
+sobre que se abre y la carta que vuela, los medallones, el corte en
+curva, y **la confirmación entera** —una comida por persona, el que
+dice que no no manda "Cuántos", el mensaje a la vista aunque conteste
+que no, y un solo viaje al Apps Script—. Son los IDs que mide
+`pruebas/invitacion_mirar.js`: una invitación con otros nombres se
+dibuja igual y la suite la mide a medias.
+
+**LOS HUECOS.** Esta salió a propósito a medio llenar: el dueño la
+pidió así —*"hacé todo y dejá los huecos así vamos viendo qué
+modificar"*— porque la clienta todavía no mandó los datos. Lo que falta
+no se inventa **y tampoco se deja en blanco**: cada dato ausente se
+dibuja como una **píldora que dice qué falta** (`falta()` + `.falta`),
+y la píldora desaparece sola en cuanto el dato existe. Lo que la
+enciende es que todavía no haya pestaña de planilla (`CONFIG.evento`
+vacío), o sea exactamente "esto es un borrador", así que no puede
+quedarse puesta el día que esto se reparta.
+Hoy son cinco: el **nombre**, la **foto**, el **dress code**, el
+**alias** y el **titular**.
+
+**Y la dirección de la planilla se enciende sola** cuando `CONFIG.evento`
+tiene valor. Con dirección y sin pestaña, la confirmación se manda, la
+planilla contesta `sin_evento` y el invitado ve un error que no es
+suyo: es la misma trampa que ya costó una vuelta en el listado.
+
+Cuatro cosas que costaron una vuelta cada una, y **ninguna tiraba un
+error**:
+
+- **`.hueco` ya existía**: es el botón de contorno de las tres
+  invitaciones. La píldora de los datos que faltan se llamó `.falta`.
+  Es la regla escrita dos veces en este archivo y por poco la piso una
+  tercera: antes de inventar un nombre, `grep`.
+- **El encaje y el marco de la portada desaparecían.** La portada tiene
+  `#portada > *{position:relative}` para que el texto quede por encima
+  del velo, y eso le pisaba el `position:absolute` a las dos capas: de
+  capas pasaron a ser filas de la grilla, con `justify-items:center` y
+  ancho de contenido, o sea **0 de ancho**. La caja de 0x0 otra vez,
+  ahora por un selector demasiado ancho. La regla exime a las dos.
+- **El ala no se dibuja con trazos.** La primera versión eran cinco
+  arcos paralelos y se leía como un rayado; la segunda, cinco plumas
+  sueltas, y se leía como dos pestañas. Lo que hace que sea un ala es
+  la **silueta**: una sola forma rellena con las muescas de las plumas
+  en el borde de abajo, y encima tres hilos claros. Se ve mirando, no
+  leyendo el código.
+- **Un ancho en `vw` adentro de una sección con padding se sale.** Las
+  alas iban `min(440px,92vw)` y la portada tiene su propio padding: 36
+  píxeles afuera de la pantalla en un iPhone. Va `width:100%` con
+  `max-width`. Un número que depende del padding de otro no se escribe
+  dos veces — lo agarró la suite, no el ojo.
+
+**No está en la galería de Trabajos ni en `/invitaciones`**, por lo
+mismo que `mia15` y `almi15`: es la fiesta de una clienta de verdad,
+lleva `noindex` y en el formulario se juntan nombres de invitados y
+comidas.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
