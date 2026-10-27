@@ -137,11 +137,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    puntos. Las dos cosas en el mismo trazo se pelean y gana una. */
 .medallon .punteado{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);
   stroke-width:1.1;stroke-dasharray:1 7;opacity:.55}
-<<<<<<< HEAD
 .medallon .ico{width:42px;height:42px;stroke-width:1.6}
-=======
-.medallon .ico{width:38px;height:38px;stroke-width:1.7}
->>>>>>> origin/main
 .medallon .chispa{position:absolute;width:6px;height:6px;transform:rotate(45deg);
   border:1px solid currentColor;background:currentColor;opacity:.9}
 .medallon .chispa.a{top:-4px;left:calc(50% - 3px)}
@@ -622,7 +618,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   font-size:clamp(26px,7vw,34px);color:var(--negro);line-height:1.15;margin-top:10px}
 .tarjeta p{font-size:15px;line-height:1.85;margin-top:14px;color:var(--gris)}
 .tarjeta .medallon{color:var(--acento-ti);margin-bottom:6px}
-<<<<<<< HEAD
 /* ── EL MOODBOARD DEL DRESS CODE ──
    Con fotos es lo que pidió el dueño mirando la referencia: cuatro
    recortes enmarcados, apenas torcidos, como fotos pegadas en un
@@ -640,9 +635,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .dressfotos figure:nth-child(even){transform:rotate(1.4deg)}
 .dressfotos img{width:100%;aspect-ratio:.76;object-fit:cover;border-radius:2px;display:block}
 /* El moodboard dibujado: cuatro productos en fila. */
-=======
-/* El moodboard del dress code: cuatro dibujos en fila. */
->>>>>>> origin/main
 .moodboard{display:flex;justify-content:center;gap:clamp(10px,3.5vw,20px);
   margin-top:clamp(14px,2.6vh,20px)}
 .moodboard span{display:grid;place-items:center;width:clamp(44px,13vw,58px);
@@ -950,12 +942,8 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
              está escrito en nuestros propios Términos. Dibujado dice lo
              mismo, pesa cero y es nuestro. El día que la clienta mande
              sus fotos, se cambia. -->
-<<<<<<< HEAD
         <div class="dressfotos" id="dressFotos" hidden></div>
         <div class="moodboard" id="dressDibujo" aria-hidden="true">
-=======
-        <div class="moodboard" aria-hidden="true">
->>>>>>> origin/main
           <span><svg class="linea" viewBox="0 0 40 52"><path d="M14 6h12l-2 7 7 24a6 6 0 0 1-5 9H18a6 6 0 0 1-5-9l7-24z"/><path d="M16 13h8"/></svg></span>
           <span><svg class="linea" viewBox="0 0 40 52"><path d="M9 10v22c0 5 4 8 9 8h14"/><path d="M18 40c0-6 5-9 11-10l3 10"/><path d="M29 30l1-10"/></svg></span>
           <span><svg class="linea" viewBox="0 0 40 52"><path d="M8 20h24l3 22H5z"/><path d="M15 20v-4a5 5 0 0 1 10 0v4"/></svg></span>
@@ -1105,14 +1093,11 @@ const CONFIG = {
   calle: "Vera Mujica 68 · Rosario",
   mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
   dressTexto: "",                // HUECO · qué dice el dress code
-<<<<<<< HEAD
   /* Las fotos de referencia del dress code, hasta cuatro. Vacío deja
      los cuatro DIBUJOS, que dicen lo mismo y son nuestros. Y si van
      fotos, que sean de ropa o de la clienta: las de la referencia son
      de personas reales sacadas de internet y eso es el artículo 53. */
   dressFotos: [],                // HUECO · {foto:"fotos/dress1.webp", alt:"…"}
-=======
->>>>>>> origin/main
   /* Las fotos. Vacío NO dibuja nada —ni un marco alrededor de nada ni
      un cuadrado roto—: la portada se queda tipográfica, el óvalo
      muestra la inicial y la franja se esconde entera. */
@@ -1162,7 +1147,6 @@ const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
    lee en las dos. Van con `aria-hidden` y `pointer-events:none`, que
    es la definición estricta con la que el medidor de contraste saltea
    un adorno sin quedarse ciego con el resto. */
-<<<<<<< HEAD
 /* EL MOÑO ES UNO SOLO y se usa en todos lados: dos hojas que se tocan
    en el nudo. La primera versión lo dibujaba con dos curvas en S y a
    42px se leía como un garabato cruzado, no como un moño — se ve
@@ -1211,41 +1195,11 @@ const ICONOS = {
             '<path d="M8.4 7.8h3.2v3.2H8.4z"/><path d="M7.8 5.2h4.4v2.6H7.8z"/>' +
             '<path d="M12.8 6.2h2.6a2 2 0 0 1 2 2v1.4"/>' +
             '<circle cx="17.4" cy="12" r="2.1"/>'
-=======
-const ICONOS = {
-  /* reloj de arena, con su arena cayendo */
-  reloj: '<path d="M7 2.6h10M7 21.4h10"/>' +
-         '<path d="M8.2 2.6c0 4.3 3.8 5.6 3.8 9.4 0-3.8 3.8-5.1 3.8-9.4"/>' +
-         '<path d="M8.2 21.4c0-4.3 3.8-5.6 3.8-9.4 0 3.8 3.8 5.1 3.8 9.4"/>' +
-         '<path d="M12 12.6v3.1"/><path d="M9.9 19.4c.7-1.4 1.4-2.1 2.1-2.1s1.4.7 2.1 2.1"/>',
-  /* calendario con el día marcado en rombo */
-  calendario: '<path d="M4 6.6h16v13.8H4z"/><path d="M4 10.4h16"/>' +
-              '<path d="M8.4 3.2v3.4M15.6 3.2v3.4"/>' +
-              '<path d="M12 13.4l2.1 2.1-2.1 2.1-2.1-2.1z"/>',
-  /* el pin del salón, con un rombo adentro */
-  pin: '<path d="M12 21.6s7-6.4 7-11.3A7 7 0 1 0 5 10.3c0 4.9 7 11.3 7 11.3z"/>' +
-       '<path d="M12 7.3l2.2 2.2-2.2 2.2-2.2-2.2z"/>',
-  /* el vestido largo */
-  vestido: '<path d="M9.3 2.8h5.4l-.8 3.1 2.1 2-1.5 2.5 2.8 9.3c-2.6 1-6.9 1-9.6 0l2.8-9.3-1.5-2.5 2.1-2z"/>' +
-           '<path d="M8.6 11.5h6.8"/><path d="M12 2.8v4.6"/>',
-  /* la caja con su moño */
-  regalo: '<path d="M4.2 10.8h15.6V21H4.2z"/><path d="M3 7.2h18v3.6H3z"/>' +
-          '<path d="M12 7.2V21"/>' +
-          '<path d="M12 7.2C10.3 7.2 8.5 6.7 8.5 5.2S10.6 3.1 12 7.2z"/>' +
-          '<path d="M12 7.2c1.7 0 3.5-.5 3.5-2s-2.1-2.1-3.5 2z"/>',
-  /* el sobre, con su sello */
-  sobre: '<path d="M3 6.3h18v11.4H3z"/><path d="M3 6.3l9 6.3 9-6.3"/>' +
-         '<path d="M3 17.7l6.2-5M21 17.7l-6.2-5"/>',
-  /* el destello del cierre */
-  destello: '<path d="M11.4 3.2c.7 5.4 2.3 7 7.7 7.7-5.4.7-7 2.3-7.7 7.7-.7-5.4-2.3-7-7.7-7.7 5.4-.7 7-2.3 7.7-7.7z"/>' +
-            '<path d="M18.8 15.4l.5 1.8 1.8.5-1.8.5-.5 1.8-.5-1.8-1.8-.5 1.8-.5z"/>'
->>>>>>> origin/main
 };
 
 /* La filigrana que se apoya en la cumbre de cada corte. */
 const ORNAMENTO =
   '<svg class="orna linea" viewBox="0 0 150 22" aria-hidden="true" style="pointer-events:none">' +
-<<<<<<< HEAD
   /* dos hilos de PERLAS y un moño en el medio: es el remate que se
      repite en la referencia, y reemplaza al rombo de la invitación de
      la que salió esta pieza. */
@@ -1256,13 +1210,6 @@ const ORNAMENTO =
   '<circle cx="119" cy="11" r="1.7"/><circle cx="127" cy="11" r="1.7"/>' +
   MONO(75, 11, 26, 15, 2.3) +
   '<path d="M72.4 12.8 68.4 19.8M77.6 12.8 81.6 19.8"/></svg>';
-=======
-  '<path d="M4 11h40M106 11h40"/>' +
-  '<path d="M52 11c5-7 11-7 16 0-5 7-11 7-16 0z"/>' +
-  '<path d="M98 11c-5-7-11-7-16 0 5 7 11 7 16 0z"/>' +
-  '<path d="M75 5.6l5.4 5.4-5.4 5.4-5.4-5.4z"/>' +
-  '<path d="M47 11h3M100 11h3"/></svg>';
->>>>>>> origin/main
 
 (function(){
   /* El corte: cada sección con `.arco` lleva su filigrana arriba. */
@@ -1359,7 +1306,6 @@ function falta(que, chico){
 }
 
 (function(){
-<<<<<<< HEAD
   /* El dress code: las fotos si las hay, y si no los dibujos. Cada
      foto se muestra recién cuando cargó de verdad; la que falla se
      saca, y si no queda ninguna vuelve el dibujo — nunca un marco
@@ -1383,8 +1329,6 @@ function falta(que, chico){
     cd.insertAdjacentElement('afterend', falta('las fotos del dress code'));
   }
 
-=======
->>>>>>> origin/main
   /* El óvalo: la foto si la hay, y si no la INICIAL. Nunca un hueco
      negro ni un cuadrado roto. Si la foto falla al cargar, vuelve la
      inicial — que es el estado bueno. */
