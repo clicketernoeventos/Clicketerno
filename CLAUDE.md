@@ -4162,6 +4162,15 @@ centro**, separados. Va en un negro apenas más claro que el fondo
 le compite a los títulos y a las tarjetas, que es justo lo que va
 encima.
 
+**La bolsa costó tres vueltas y es la lección de siempre**: el dueño
+mandó la foto de la bolsa de verdad —rayas, dos asas de cinta y el
+papel de seda asomando— y las tres cosas juntas a 42px son una mancha.
+Con las asas colgando POR ADENTRO se perdían contra las rayas; con el
+papel de seda arriba, los picos y las asas formaban una cara. Quedó lo
+que identifica a la bolsa y se lee: el cuerpo ancho, **las dos asas
+sobre el borde** y las rayas. **Un icono no es una foto: lo que no se
+lee a 42 no va**, y de tres detalles hay que elegir dos.
+
 **El medidor de contraste no ve esta textura** —mide el
 `background-color`, no la imagen—, y acá eso no esconde nada porque los
 dos negros están a menos de un punto de luminancia. Si alguna vez se
