@@ -691,10 +691,15 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
           es(g.fotos === cuantas - 1,
              g.fotos === cuantas - 1 ? `quedan las otras ${g.fotos}`
                                      : `quedaron ${g.fotos} fotos de las ${cuantas - 1} que tenían que quedar`);
-        const esperados = g.fotos > 1 ? g.fotos : 0;
-        es(g.puntos === esperados,
-           g.puntos === esperados ? `y los puntitos son ${esperados}, uno por foto que existe`
-                                  : `hay ${g.puntos} puntitos para ${g.fotos} foto(s): alguno no lleva a ninguna`);
+        /* Los puntitos se miden SOLO si esta galería tiene puntitos.
+           Lo que hay que agarrar es un punto que no lleva a ninguna
+           foto —el pase de mia15—, no que una galería esté hecha con
+           pase: `facuymaxi` las muestra en grilla, sin puntos, y
+           exigírselos sería inventar una falla. */
+        if (!g.puntos) bien('esta galería no tiene puntitos: no hay ninguno que lleve a la nada');
+        else es(g.puntos === g.fotos,
+           g.puntos === g.fotos ? `y los puntitos son ${g.fotos}, uno por foto que existe`
+                                : `hay ${g.puntos} puntitos para ${g.fotos} foto(s): alguno no lleva a ninguna`);
       }
       await ctx1.close();
 

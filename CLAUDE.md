@@ -4212,6 +4212,134 @@ mismo que `mia15` y `almi15`: es la fiesta de una clienta de verdad,
 lleva `noindex` y en el formulario se juntan nombres de invitados y
 comidas.
 
+### `facuymaxi/`: el casamiento de Facundo y Maximiliano
+
+Sábado 22 de mayo de 2027 · La Mansión del Rey (Vera Mujica 68, Rosario)
+· de 21 a 4 h. La ceremonia civil es **durante la fiesta y en el mismo
+salón**, así que va en un solo bloque: partida en dos —"ceremonia" y
+"fiesta"— el invitado lee dos lugares y dos horarios donde hay uno
+solo, y aparece temprano en una puerta cerrada.
+
+El pedido del dueño fue *"que sea diferente a todo lo que venimos
+haciendo"*, y el de ellos, por escrito: *"moderna y elegante, pero
+cálida, romántica y descontracturada… diseño limpio, buena tipografía,
+transiciones delicadas y una presentación atractiva de nuestras
+fotografías… sin demasiados adornos ni elementos innecesarios"*.
+
+**NO HAY SOBRE, y es la decisión de fondo.** Las tres invitaciones
+anteriores arrancan con un sobre que se abre, y un sobre es
+exactamente lo contrario de descontracturado: es una ceremonia antes
+de la ceremonia. Acá la invitación ya está abierta y lo primero que se
+ve son ellos dos. El momento es **tipográfico**: los dos nombres
+entran desde los costados y se encuentran en el medio, y recién ahí
+aparece la "y" y se abre el hilo. Pasa una vez, dura segundo y medio y
+dice de qué se trata sin un solo adorno.
+**La suite ya aguantaba una invitación sin sobre** (`if (sobre)`): lo
+que la corta es un `#sobre` SIN su `#abrir`, que es el caso de
+`claraybruno`.
+
+**El hilo cose la pieza.** Donde `almi15` pone una curva con filigrana
+y `mia15` un borde rasgado, acá cada sección cuelga de una línea de un
+píxel que termina en un rombo. Dice "empezó otra cosa" con dos formas
+de cero kilobytes y se dibuja sola al entrar la sección.
+
+**Todo va de a dos y del mismo tamaño** —los nombres, las dos tarjetas
+de los detalles, las dos columnas de la galería—. Es la regla que ya
+está escrita para `mateoylucas/`: en una invitación hétero hay un
+orden heredado (la novia primero, los padres de cada lado); acá
+cualquier jerarquía sería una declaración, así que no hay ninguna. No
+cuesta una línea de más.
+**Lo que NO se puso es la sección "No siempre se pudo"** de
+`mateoylucas`. Ahí está escrito que para una pareja de verdad es
+opcional **y hay que preguntarlo**: a algunas les va a encantar y
+otras van a querer que su invitación no hable de eso. Está preguntado.
+
+**La paleta la mandaron ellos** —verde salvia, marfil cálido,
+champagne, dorado suave y gris antracita— y está respetada. Lo único
+que se agregó son las versiones HONDAS de los acentos, y no es un
+gusto: el dorado que mandaron (`#B79A68`) sobre el marfil da
+**2,38:1**, o sea que el texto no está. Sobre el papel va `#8E7342`
+(3,99:1) y sobre la tinta el de ellos (4,54:1). Es la regla de
+siempre, y acá apareció antes de escribir una línea de CSS porque los
+contrastes se calcularon primero.
+
+**Las letras son Newsreader + Figtree**, y se eligieron MIRANDO, con
+`pruebas/letras.js` contra cuatro parejas: la Newsreader es una serif
+de trazo parejo —no una didone, que en un teléfono se parte— y la
+Figtree tiene la equis alta. Con Lora, *"Sábado 22 de mayo de 2027, de
+21 a 4 h"* se partía y dejaba un `h.` solo en el renglón de abajo.
+Son dos variables (`--titulos`, `--texto-f`) y nada más, que es lo que
+hace posible elegirlas así.
+
+**La canción no suena adentro de la invitación.** Mandaron
+*"Bellísimo así", de Laura Pausini*: el archivo no es nuestro y la CSP
+no deja incrustar un reproductor de terceros —que además sería un
+tercero corriendo código en la pantalla del invitado—. Va el dato y un
+enlace para escucharla, y el enlace es una **búsqueda** y no la
+dirección de un tema: una dirección de tema se adivina, y mandar a la
+canción equivocada es peor que no mandar a ninguna.
+
+**El texto del regalo es de ELLOS, casi literal**, igual que el "Te
+invito" de `mia15`: es su voz, no la nuestra. El corazón que
+escribieron va dibujado en el dorado de la paleta en vez de ir como
+emoji: un ❤️ rojo sería el único rojo de toda la pieza.
+Y el alias, **`FACUYMAXI.BODA`, se escribe tal cual lo mandaron.**
+
+Tres cosas que costaron una vuelta, y **ninguna tiraba un error**:
+
+- **`#portada > *` le gana a una clase.** Esa regla sube el texto por
+  encima del velo, y de paso le pisó el `position:absolute` a la caja
+  de la foto y a "Deslizá": la capa absoluta pasó a ser una fila más y
+  "Deslizá" quedó montado arriba del renglón de "La Mansión del Rey".
+  Es exactamente lo que ya había pasado en `mia15`. Las dos recuperan
+  el suyo en una regla con el id adelante.
+- **El día marcado del calendario llevaba su fondo DETRÁS**, en un
+  `<i>` posicionado, y el medidor informó el "22" a **1,00:1**. Tenía
+  razón según lo que mide: sube por el árbol buscando el primer fondo
+  OPACO, y el del `<td>` es transparente, así que encontraba el papel
+  de la tarjeta — marfil sobre marfil. Es la misma trampa del
+  `background-clip:text`. El número vive adentro de un `span` que trae
+  su propio `background-color` y ahí lo que se mide es lo que se ve
+  (10,8:1).
+- **La tarjeta del dress code decía dos veces lo mismo** ("Elegante
+  sport" de título y "Elegante sport · elegante de fiesta" abajo). El
+  título y el detalle van partidos en el CONFIG. Y el icono tuvo su
+  vuelta: la camisa a 28px se leía como un libro abierto. Se eligió
+  mirando, entre cuatro a 26px: quedó la **percha**, que es la que se
+  lee y además es la que no promete etiqueta.
+
+**LOS HUECOS.** `CONFIG.borrador` dibuja una píldora donde falta un
+dato, igual que en `nueva15` — un dato que no mandaron no se inventa y
+tampoco se deja en blanco, porque en blanco nadie se acuerda y se
+publica así. Hoy son tres: **las cinco fotos** (no llegaron los
+archivos; falta además la de las mascotas, que todavía no se sacaron),
+**hasta cuándo se puede confirmar** (dijeron "durante marzo de 2027,
+confirmamos el día exacto", y eso no es una fecha) y **el titular de
+la cuenta** del alias. Acá la píldora cuelga de una bandera explícita
+y no de `CONFIG.evento` como en `nueva15`, porque esta invitación nace
+con su pestaña de planilla andando: la confirmación entra desde el
+primer día.
+
+**Sin fotos no queda ningún hueco visible**: la portada vuelve a ser
+tipográfica —que se sostiene sola— y la galería se esconde. Con ellas,
+la galería va en grilla editorial (una ancha, dos iguales, otra
+ancha), sin marcos y **sin puntitos**: las fotos son el contenido.
+Por eso `pruebas/invitacion_mirar.js` dejó de exigir un puntito por
+foto siempre y lo exige **solo si la galería tiene puntitos** — lo que
+hay que agarrar es un punto que no lleva a ninguna foto (el pase de
+`mia15`, que sigue medido), no que una galería esté hecha con pase.
+
+`facuymaxi` está en `lib/planillas.json` y tiene su `facuymaxi/listado/`,
+así que el tablero de confirmaciones funciona desde el día uno sin un
+solo paso del lado de Google. Lleva `noindex` y **no está en la
+galería de Trabajos ni en `/invitaciones`**, por lo mismo que `mia15`,
+`almi15` y `nueva15`.
+
+**La carpeta se llama `facuymaxi` y se puede renombrar** mientras el
+link no se haya repartido: la dirección es
+`clicketerno.com.ar/facuymaxi` y sale del alias que eligieron ellos.
+Un link repartido no se puede mover; uno que nadie tiene, sí.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
@@ -4680,6 +4808,19 @@ dejaría peor parados.
   transferir"* queda arriba por los dos lados: se lee igual que un
   usuario de Instagram, y el dueño lo pasa diciendo *"el cbu para
   regalos"* — pegar un alias donde el banco pide un CBU no entra.
+- **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos**: las
+  **cinco fotos** (la de portada es la del jardín al atardecer, que es
+  la que eligieron; falta además la de las mascotas), **hasta cuándo
+  se puede confirmar** —dijeron "durante marzo de 2027"— y el
+  **titular de la cuenta** del alias `FACUYMAXI.BODA`, que es el
+  nombre que le muestra el banco al invitado cuando lo pega. Mientras
+  tanto cada uno tiene su píldora en la pantalla. Y hay que
+  preguntarles si quieren una sección como la de `mateoylucas/` sobre
+  la Ley 26.618: no se pone sin preguntar.
+- **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
+  "la portada APARECE de golpe, no hay cruce con la carta". El cruce
+  se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado
+  contra el código publicado: da la misma falla.
 - **`mateoylucas/` y `claraybruno/` no pasan `invitacion_mirar.js`**, y
   es de antes de todo esto: la de Mateo y Lucas informa 2 fallas (la
   portada se queda en modo foto sin tener ninguna, y por eso le falta un

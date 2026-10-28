@@ -1,4 +1,4 @@
 {
   "_": "Las fiestas que pueden crear su pestaña en la planilla central. Lo lee el Apps Script de apps-script/planilla-central.gs.txt. Agregar una invitación nueva es agregar su carpeta acá y nada más. Si un nombre no está en esta lista, su confirmacion NO entra: es lo unico que impide que cualquiera que tenga la direccion /exec llene la planilla de pestañas basura. Las invitaciones viejas (pia, mia15) tienen su propio Apps Script y no van aca.",
-  "eventos": ["almi15"]
+  "eventos": ["almi15", "facuymaxi"]
 }
