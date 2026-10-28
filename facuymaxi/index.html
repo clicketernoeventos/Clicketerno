@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facundo y Maximiliano · Nos casamos</title>
+<meta name="description" content="Facundo y Maximiliano se casan. Sábado 22 de mayo de 2027, La Mansión del Rey, Rosario.">
+<meta name="theme-color" content="#333638">
+<!-- `noindex`: es el casamiento de dos personas de verdad y acá se piden
+     nombres de invitados y comidas. El que tiene el link entra igual;
+     esto la saca de los buscadores, que es por donde llega el que no fue
+     invitado. -->
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Facundo y Maximiliano">
+<meta property="og:description" content="Sábado 22 de mayo de 2027 · La Mansión del Rey · Rosario">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Figtree:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Figtree:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   Facundo y Maximiliano · 22 de mayo de 2027
+
+   LO QUE LA HACE DISTINTA DE LAS OTRAS TRES, y está pedido con todas
+   las letras: "moderna, cálida, elegante y descontracturada, sin
+   demasiada ornamentación… diseño limpio, buena tipografía,
+   transiciones delicadas y una presentación atractiva de las
+   fotografías".
+
+   · NO HAY SOBRE. Las tres anteriores arrancan con un sobre que se
+     abre, y un sobre es exactamente lo contrario de descontracturado:
+     es una ceremonia antes de la ceremonia. Acá la invitación ya está
+     abierta y lo primero que se ve es la foto de ellos.
+   · EL MOMENTO es tipográfico: los dos nombres ENTRAN DESDE LOS
+     COSTADOS y se encuentran en el medio, y recién ahí aparece la "y"
+     y se abre el hilo. Pasa una vez, dura un segundo y medio, y dice
+     de qué se trata sin un solo adorno.
+   · EL HILO cose la pieza. Donde almi15 pone una curva con filigrana,
+     acá cada sección cuelga de una línea de un píxel con su rombo:
+     el que baja ve que empezó otra cosa sin que nada le grite.
+   · TODO VA DE A DOS Y DEL MISMO TAMAÑO — los nombres, las dos
+     tarjetas de los detalles, las dos columnas de la galería. En una
+     invitación hétero hay un orden heredado (la novia primero, los
+     padres de cada lado); acá cualquier jerarquía sería una
+     declaración, así que no hay ninguna. Es la misma regla que ya
+     está escrita para `mateoylucas/` y no cuesta una línea de más.
+
+   LA PALETA LA MANDARON ELLOS y está respetada: verde salvia, marfil
+   cálido, champagne, dorado suave y gris antracita. Lo único que se
+   agregó son las VERSIONES HONDAS de los acentos, y no es un gusto:
+   el dorado que mandaron (#B79A68) sobre el marfil da 2,38:1, o sea
+   que el texto NO ESTÁ. Es la regla de siempre —si un bloque trae su
+   propio fondo, trae su propia tinta—: sobre el papel va #8E7342
+   (3,99:1) y sobre la tinta va el de ellos (4,54:1).
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  /* los cinco que mandaron ellos */
+  --salvia:#A3AD95; --marfil:#F6F1E8; --champan:#D9C5A4;
+  --oro:#B79A68; --antracita:#333638;
+  /* y las versiones hondas, que existen para que el texto se lea */
+  --oro-hondo:#8E7342;     /* 3,99:1 sobre marfil */
+  --salvia-honda:#5E6B52;  /* 5,04:1 sobre marfil */
+  --tinta-hondo:#26292B;   /* el pie y el velo de la portada */
+  --marfil-vivo:#FCFAF5;
+  --gris:#5B5F61;
+  /* LAS DOS FAMILIAS, UNA SOLA VEZ. Escritas veinte veces en el CSS,
+     el día que se cambian alguna se queda atrás y la pieza muestra dos
+     letras para la misma cosa. Y son las dos variables que mira
+     `pruebas/letras.js` para montar la misma portada con cada
+     candidata: una tipografía se elige MIRÁNDOLA, no leyendo su
+     nombre. */
+  --titulos:'Newsreader',Georgia,serif;
+  --texto-f:'Figtree',system-ui,sans-serif;
+  --e:cubic-bezier(.22,.7,.24,1);
+  --gutter:clamp(22px,6vw,46px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--texto-f);font-weight:400;color:var(--antracita);
+  background-color:var(--marfil);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+a{color:inherit}
+.serif{font-family:var(--titulos);font-weight:400}
+.cursiva{font-family:var(--titulos);font-style:italic;font-weight:300}
+
+/* ══════════ las tres pieles ══════════
+   Marfil (el papel), salvia (el respiro) y tinta (el foco). Cada una
+   trae su fondo, así que cada una trae su propia tinta: es la regla
+   que este proyecto ya pagó cinco veces. */
+.seccion{position:relative;padding:clamp(74px,11vh,120px) var(--gutter)}
+.seccion .caja{max-width:640px;margin:0 auto;text-align:center}
+.papel{background-color:var(--marfil);color:var(--antracita)}
+.verde{background-color:var(--salvia);color:var(--antracita)}
+.tinta{background-color:var(--antracita);color:var(--marfil)}
+
+/* ── el hilo que cose la pieza ──
+   Una línea de un píxel que baja desde el borde de cada sección y
+   termina en un rombo. Reemplaza a la curva con filigrana de almi15 y
+   a los bordes rasgados de mia15: dice "empezó otra cosa" con dos
+   formas de cero kilobytes, que es exactamente lo que se pidió
+   ("sin demasiada ornamentación"). */
+.seccion:before{content:'';position:absolute;left:50%;top:0;margin-left:-.5px;
+  width:1px;height:clamp(38px,6.5vh,60px);background-color:currentColor;opacity:.32;
+  transform-origin:top center}
+.seccion:after{content:'';position:absolute;left:50%;top:clamp(38px,6.5vh,60px);
+  width:5px;height:5px;margin:-3px 0 0 -3px;transform:rotate(45deg);
+  background-color:currentColor;opacity:.5}
+.verde:before,.verde:after{opacity:.55}
+
+/* ══════════ piezas compartidas ══════════ */
+.ante{font-size:clamp(9.5px,2.5vw,11px);letter-spacing:.4em;text-transform:uppercase;
+  font-weight:500}
+.papel .ante{color:var(--oro-hondo)}
+.tinta .ante{color:var(--champan)}
+.verde .ante{color:var(--antracita);opacity:.72}
+h2{font-family:var(--titulos);font-weight:300;line-height:1.04;
+  font-size:clamp(33px,9vw,52px);letter-spacing:-.015em;margin:14px 0 0}
+h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
+  letter-spacing:-.01em;margin:0}
+.cuerpo{font-size:clamp(15px,4vw,17px);font-weight:300;line-height:1.82;
+  max-width:33em;margin:18px auto 0}
+.tinta .cuerpo{color:#E7E2D9}
+.dato{font-family:var(--titulos);font-size:clamp(19px,5vw,24px);font-weight:400;
+  line-height:1.5;margin-top:6px}
+.chico{font-size:13.5px;font-weight:300;line-height:1.7;margin-top:8px;color:var(--gris)}
+.verde .chico,.tinta .chico{color:inherit;opacity:.82}
+
+/* la píldora de lo que todavía no mandaron.
+   Un dato que falta no se inventa Y TAMPOCO SE DEJA EN BLANCO: en
+   blanco nadie se acuerda, y se publica así. La píldora dice qué
+   falta y desaparece sola en cuanto el dato existe. Vive mientras
+   `CONFIG.borrador` esté en true. */
+.falta{display:inline-block;margin:12px auto 0;padding:9px 16px;border-radius:999px;
+  border:1px dashed var(--oro-hondo);color:var(--oro-hondo);
+  font-size:12.5px;letter-spacing:.04em;background-color:rgba(217,197,164,.22)}
+.tinta .falta{border-color:var(--champan);color:var(--champan);
+  background-color:rgba(217,197,164,.1)}
+
+/* ══════════ 1 · la portada ══════════
+   La foto a sangre y los dos nombres encima. Sin foto NO queda un
+   hueco: la portada vuelve a ser tipográfica —tinta, un halo de
+   salvia y los nombres— y se sostiene sola. Es una línea volver, y
+   por eso el camino queda entero y medido. */
+#portada{position:relative;min-height:100svh;min-height:100vh;
+  display:grid;align-content:center;justify-items:center;
+  padding:calc(var(--gutter) + 18px) var(--gutter) calc(var(--gutter) + 56px);
+  background-color:var(--antracita);color:var(--marfil);overflow:hidden;text-align:center}
+/* `#portada > *` tiene MÁS especificidad que una clase, así que le
+   pisa el `position:absolute` a la foto y a "Deslizá": la capa
+   absoluta pasa a ser una fila más y "Deslizá" se monta encima del
+   renglón de arriba. Ya costó una vuelta en mia15. Por eso las dos
+   recuperan el suyo en una regla con el id adelante. */
+#portada>*{position:relative;z-index:1}
+#portada .port-foto{position:absolute;z-index:0}
+#portada .port-baja{position:absolute;z-index:1}
+/* El halo de la portada tipográfica: sin foto, un rectángulo gris
+   parece un error de carga. */
+#portada:before{content:'';position:absolute;left:50%;top:38%;width:min(660px,125vw);
+  height:min(660px,125vw);transform:translate(-50%,-50%);z-index:0;
+  background:radial-gradient(circle,rgba(163,173,149,.3),rgba(163,173,149,0) 66%)}
+.port-foto{position:absolute;inset:0;z-index:0;overflow:hidden;background-color:var(--tinta-hondo)}
+.port-foto img{width:100%;height:100%;object-fit:cover;object-position:center 32%}
+/* EL VELO VA ATADO A SU FOTO, no a un porcentaje de la pantalla: el
+   alto del bloque de texto cambia con el aparato y la raya del
+   degradé no. Y es un `::after` de la caja de la FOTO a propósito: la
+   medición con el píxel esconde los hijos de la portada menos el que
+   tiene el `<img>`, así que el velo —que es lo único que sostiene la
+   promesa de que esos renglones se leen— sigue estando en la captura
+   del fondo. */
+.port-foto:after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(38,41,43,.46) 0%,rgba(38,41,43,.26) 26%,
+    rgba(38,41,43,.52) 58%,rgba(38,41,43,.84) 84%,rgba(38,41,43,.93) 100%)}
+.port-ante{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.44em;text-transform:uppercase;
+  color:var(--champan);font-weight:500}
+/* LOS DOS NOMBRES, DEL MISMO TAMAÑO Y DEL MISMO PESO. No es una
+   decisión de maqueta: en una invitación de dos hombres cualquier
+   jerarquía sería una declaración, así que no hay ninguna. */
+.nombres{font-family:var(--titulos);font-weight:300;line-height:.96;
+  font-size:clamp(40px,12.4vw,88px);letter-spacing:-.02em;margin-top:clamp(16px,3vh,26px)}
+.nombres span{display:block}
+.nombres .ye{font-style:italic;font-weight:300;color:var(--champan);
+  font-size:.42em;line-height:1.6;letter-spacing:0}
+.hilo-port{width:min(190px,48vw);height:1px;background-color:var(--champan);
+  margin:clamp(20px,4vh,34px) auto 0;opacity:.85}
+.port-cuando{margin-top:clamp(18px,3.4vh,28px);font-size:clamp(13px,3.5vw,15.5px);
+  font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:#EFEADF}
+.port-donde{margin-top:9px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:#DAD4C8}
+.port-baja{position:absolute;left:0;right:0;bottom:calc(var(--gutter) - 6px);z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:#DAD4C8}
+.port-baja svg{width:13px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3}
+
+/* ══════════ 2 · la cuenta regresiva ══════════ */
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,16px);
+  max-width:430px;margin:clamp(26px,5vh,40px) auto 0}
+.reloj div{position:relative}
+.reloj b{display:block;font-family:var(--titulos);font-weight:300;
+  font-size:clamp(28px,8.6vw,44px);line-height:1;letter-spacing:-.02em;
+  font-variant-numeric:lining-nums tabular-nums}
+.reloj span{display:block;margin-top:9px;font-size:9px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--salvia-honda)}
+
+/* ══════════ 3 · guardá la fecha ══════════ */
+#calendario{max-width:330px;margin:clamp(26px,5vh,38px) auto 0;
+  background-color:var(--marfil);border-radius:6px;padding:22px 16px 20px;
+  box-shadow:0 18px 40px -28px rgba(38,41,43,.55)}
+#calendario .mes{font-family:var(--titulos);font-size:19px;font-weight:400;
+  letter-spacing:.02em;margin-bottom:14px}
+#calendario table{width:100%;border-collapse:collapse;
+  font-variant-numeric:lining-nums tabular-nums}
+#calendario th{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--salvia-honda);font-weight:500;padding-bottom:9px}
+#calendario td{font-size:13.5px;font-weight:300;padding:6px 0;color:var(--antracita)}
+/* EL DÍA MARCADO LLEVA SU FONDO ENCIMA, no detrás.
+   La primera versión ponía el número en marfil y el disco oscuro en
+   un `<i>` posicionado atrás. Se ve perfecto y el medidor de
+   contraste informaba el "22" a **1,00:1** — y tenía razón según lo
+   que mide: el medidor sube por el árbol buscando el primer fondo
+   OPACO, y el fondo del `<td>` es transparente, así que el que
+   encontraba era el papel de la tarjeta. Marfil sobre marfil.
+   Es la misma trampa del `background-clip:text` de mia15: un color
+   dibujado en otra capa no es el fondo del texto. El número vive
+   adentro de un `span` que trae su propio `background-color`, y ahí
+   lo que se mide es lo que se ve (10,8:1). */
+#calendario td.elDia{color:var(--marfil);font-weight:500}
+#calendario td.elDia span{display:inline-grid;place-items:center;
+  width:30px;height:30px;border-radius:50%;background-color:var(--antracita);
+  color:var(--marfil)}
+#calendario .corte{border:0;border-top:1px solid rgba(94,107,82,.3);margin:16px 0 12px}
+#calendario .hora-txt{font-size:12.5px;line-height:1.7;color:var(--gris);font-weight:300}
+
+/* ══════════ 4 · la galería ══════════
+   Editorial y no un carrusel: una foto ancha, dos del mismo tamaño al
+   lado, otra ancha. Nada de marcos ni de puntitos — las fotos son el
+   contenido y lo que se pidió es "una presentación atractiva de
+   nuestras fotografías", no un marco alrededor.
+   Las dos de la fila van SIEMPRE de a pares y del mismo tamaño, que
+   es la misma regla de los nombres. */
+#galeria{background-color:var(--antracita);color:var(--marfil)}
+#fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(9px,2.2vw,16px);
+  margin-top:clamp(26px,5vh,40px)}
+#fotos figure{margin:0;overflow:hidden;background-color:#2B2E30;border-radius:3px}
+#fotos figure.ancha{grid-column:1/-1}
+#fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;
+  transform:scale(1.06);transition:transform 1.4s var(--e)}
+#fotos figure.ancha img{aspect-ratio:16/11}
+#fotos figure.entro img{transform:none}
+
+/* ══════════ 5 · dónde ══════════ */
+.mapa{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:48px;margin-top:22px;padding:14px 26px;border-radius:999px;
+  border:1px solid rgba(94,107,82,.5);color:var(--salvia-honda);
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
+  text-decoration:none;transition:transform .3s var(--e),background-color .3s}
+.mapa svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.4}
+.mapa:active{transform:scale(.975)}
+@media (hover:hover){ .mapa:hover{background-color:rgba(163,173,149,.2)} }
+
+/* ══════════ 6 · los detalles: dos tarjetas iguales ══════════ */
+.dos{display:grid;gap:clamp(14px,3vw,20px);margin-top:clamp(26px,5vh,38px)}
+@media (min-width:620px){ .dos{grid-template-columns:1fr 1fr;align-items:stretch} }
+.ficha{background-color:var(--marfil);color:var(--antracita);border-radius:6px;
+  padding:clamp(26px,6vw,34px) clamp(20px,5vw,26px);text-align:center;
+  box-shadow:0 18px 40px -30px rgba(38,41,43,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.ficha .ante{color:var(--oro-hondo)}
+.ficha h3{margin-top:12px}
+.ficha p{font-size:15px;font-weight:300;line-height:1.75;margin-top:10px}
+.ficha .ico{width:28px;height:28px;fill:none;stroke:var(--oro-hondo);stroke-width:1.2;
+  stroke-linecap:round;stroke-linejoin:round}
+.cancion-aut{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--salvia-honda);margin-top:8px}
+
+/* ══════════ 7 · el regalo ══════════ */
+.corazon{width:1em;height:1em;vertical-align:-.12em;fill:var(--oro-hondo)}
+.alias-caja{margin-top:clamp(24px,4.6vh,34px);padding:24px 20px;border-radius:6px;
+  border:1px solid rgba(142,115,66,.42);background-color:rgba(217,197,164,.2)}
+.rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--oro-hondo);font-weight:500}
+/* El alias va en la letra de TEXTO y no en la serif: es un dato que
+   alguien va a copiar a mano en el home banking, y una serif con
+   números a la antigua ahí se lee mal. */
+#alias{display:block;margin-top:10px;font-family:var(--texto-f);font-weight:600;
+  font-size:clamp(20px,5.6vw,26px);letter-spacing:.05em;color:var(--antracita);
+  font-variant-numeric:lining-nums tabular-nums;word-break:break-word}
+#titular{margin-top:7px;font-size:13px;color:var(--gris)}
+
+/* ══════════ botones ══════════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:48px;margin-top:20px;padding:14px 28px;border-radius:999px;
+  background-color:var(--champan);color:var(--antracita);
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  text-decoration:none;transition:transform .3s var(--e),filter .3s}
+.btn:active{transform:scale(.975)}
+@media (hover:hover){ .btn:hover{filter:brightness(1.04)} }
+.btn.hueco{background-color:transparent;border:1px solid rgba(142,115,66,.5);
+  color:var(--oro-hondo)}
+.tinta .btn.hueco{border-color:rgba(217,197,164,.5);color:var(--champan)}
+
+/* ══════════ 8 · la confirmación ══════════ */
+.campo{text-align:left;margin-bottom:20px}
+.campo label{display:block;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--champan);margin-bottom:9px}
+.campo input,.campo select,.campo textarea{width:100%;min-height:48px;
+  background-color:rgba(246,241,232,.06);border:1px solid rgba(217,197,164,.3);border-radius:3px;
+  padding:13px 15px;font-size:16px;font-weight:300;color:var(--marfil-vivo);
+  transition:border-color .3s}
+.campo textarea{min-height:92px;resize:vertical;line-height:1.7}
+.campo input::placeholder,.campo textarea::placeholder{color:#C9C3B7}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--champan)}
+.campo select{appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23D9C5A4' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center}
+.campo select option{background-color:#2B2E30;color:#F6F1E8}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radios label{display:flex;align-items:center;justify-content:center;gap:9px;
+  min-height:52px;padding:13px 8px;border-radius:3px;cursor:pointer;
+  border:1px solid rgba(217,197,164,.3);font-size:13.5px;color:#E7E2D9;
+  transition:.3s var(--e);text-align:center;letter-spacing:.02em;margin:0}
+.radios label.elegida{background-color:var(--champan);border-color:transparent;
+  color:var(--antracita);font-weight:600}
+/* El radio de verdad se achica a 1x1 detrás de su label —el blanco del
+   dedo es el label, que mide 52—. NO lleva `pointer-events:none`: con
+   eso el navegador no se lo puede dar a nadie y marcar la opción con
+   el teclado deja de funcionar. Se esconde, no se desconecta. */
+.radios input{width:1px;height:1px;position:absolute;opacity:0}
+.persona{border-top:1px solid rgba(217,197,164,.24);padding-top:20px;margin-top:4px}
+.persona .quien{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--champan);margin-bottom:16px}
+.aviso-datos{margin:4px 0 22px;border-top:1px solid rgba(217,197,164,.24);padding-top:10px;
+  text-align:left}
+.aviso-datos summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
+  font-size:11.5px;letter-spacing:.08em;color:#D7D1C6}
+.aviso-datos summary::-webkit-details-marker{display:none}
+.aviso-datos summary:before{content:'＋';margin-right:9px;color:var(--champan)}
+.aviso-datos[open] summary:before{content:'－'}
+.aviso-datos p{font-size:12.5px;line-height:1.75;color:#D7D1C6;margin:4px 0 0}
+.aviso-datos b{color:var(--marfil-vivo);font-weight:500}
+.aviso-datos a{color:var(--champan);display:inline-block;padding:14px 2px;
+  text-decoration:underline;text-underline-offset:3px}
+#enviar{width:100%;min-height:56px;margin-top:4px;border-radius:999px;
+  background-color:var(--champan);color:var(--antracita);
+  font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
+#enviar[disabled]{opacity:.5;cursor:default}
+#enviar:active{transform:scale(.99)}
+.aviso{margin-top:18px;font-size:14px;line-height:1.7;min-height:1.3em;color:#D7D1C6}
+.aviso.bien{color:var(--champan)}
+.aviso.mal{color:#F6B6A8}
+.ya-fue{border:1px solid rgba(217,197,164,.34);border-radius:5px;padding:26px 22px;margin-top:26px}
+.ya-fue .ante{color:var(--champan)}
+.ya-fue .ya-nom{font-family:var(--titulos);font-weight:300;
+  font-size:clamp(28px,8vw,38px);color:var(--marfil-vivo);margin:8px 0 12px;line-height:1.1}
+
+/* ══════════ 9 · el cierre y el pie ══════════ */
+#cierre .cierre-n .cursiva{color:var(--oro-hondo)}
+#cierre .cierre-n{font-family:var(--titulos);font-style:italic;font-weight:300;
+  font-size:clamp(34px,10vw,56px);line-height:1.12;margin-top:18px;color:var(--antracita)}
+#pie{background-color:var(--tinta-hondo);color:#BFBAB1;padding:34px var(--gutter) 40px;
+  text-align:center}
+#pie:before,#pie:after{display:none}
+.firma{font-size:10px;letter-spacing:.3em;text-transform:uppercase}
+/* 16px de aire y no 15: un padding calculado contra la altura de UNA
+   tipografía deja de valer el día que se cambia la tipografía, y la
+   caja se queda en 43,6 — se ve igual y no llega al mínimo de 44. */
+.firma a{color:var(--champan);display:inline-block;padding:16px 10px;
+  text-decoration:underline;text-underline-offset:4px}
+.firma .ico-wsp{width:1.3em;height:1.3em;vertical-align:-.24em;margin-right:.45em;fill:currentColor}
+
+/* ══════════════════════════════════════════════════════════════════
+   LO QUE SE MUEVE
+   Cuatro cosas, y todas pasan UNA SOLA VEZ o van atadas al scroll:
+   nada que se repita solo delante de los ojos. Es lo que se pidió:
+   "transiciones delicadas".
+   1 · LOS DOS NOMBRES se encuentran en el medio y recién ahí aparece
+       la "y" y se abre el hilo;
+   2 · cada bloque entra subiendo y enfocándose (un desenfoque de 5px
+       que se va), que es más blando que un telón y no recorta nada;
+   3 · EL HILO de cada sección se dibuja de arriba hacia abajo;
+   4 · las fotos se ASIENTAN: entran un 6% más grandes y se acomodan.
+   Y la foto de la portada se queda atrás al bajar, a un quinto de la
+   velocidad de la página.
+
+   EL ESTADO POR DEFECTO ES EL BUENO: el CSS esconde recién con la
+   clase `.js`, que pone el propio script. Si el JS no corre, la
+   invitación se ve entera en vez de quedar en blanco — y quedarse en
+   blanco no tira ningún error.
+   ══════════════════════════════════════════════════════════════════ */
+.js .ap{opacity:0;transform:translateY(16px);filter:blur(5px)}
+.js .ap.entro{opacity:1;transform:none;filter:none;
+  transition:opacity 1s var(--e),transform 1.05s var(--e),filter 1s var(--e)}
+.js .ap.d1.entro{transition-delay:.1s}
+.js .ap.d2.entro{transition-delay:.2s}
+.js .ap.d3.entro{transition-delay:.3s}
+.js .seccion:before{transform:scaleY(0)}
+.js .seccion.entro:before{transform:none;transition:transform 1s var(--e)}
+.js .seccion:after{opacity:0}
+.js .seccion.entro:after{opacity:.5;transition:opacity .6s var(--e) .75s}
+.js .verde.entro:after{opacity:.55}
+.js #calendario td.elDia span{transform:scale(0)}
+.js #calendario.entro td.elDia span{transform:none;transition:transform .8s var(--e) .4s}
+/* los dos nombres que se encuentran */
+.js .nombres .n1{opacity:0;transform:translateX(-30px)}
+.js .nombres .n2{opacity:0;transform:translateX(30px)}
+.js .nombres .ye{opacity:0}
+.js .hilo-port{transform:scaleX(0)}
+.js .port-ante,.js .port-cuando,.js .port-donde,.js .port-baja{opacity:0}
+.js .abierta .n1,.js .abierta .n2{opacity:1;transform:none;
+  transition:opacity 1.1s var(--e),transform 1.35s var(--e)}
+.js .abierta .ye{opacity:1;transition:opacity .85s var(--e) .9s}
+.js .abierta .hilo-port{transform:none;transition:transform 1.25s var(--e) 1.05s}
+.js .abierta .port-ante{opacity:1;transition:opacity .9s var(--e) .2s}
+.js .abierta .port-cuando{opacity:1;transition:opacity .9s var(--e) 1.25s}
+.js .abierta .port-donde{opacity:1;transition:opacity .9s var(--e) 1.4s}
+.js .abierta .port-baja{opacity:1;transition:opacity .9s var(--e) 1.7s}
+.port-baja svg{animation:rebote 2.6s ease-in-out infinite}
+@keyframes rebote{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important}
+  .js .ap,.js .ap.entro{opacity:1;transform:none;filter:none}
+  .js .seccion:before,.js .seccion.entro:before{transform:none}
+  .js .seccion:after{opacity:.5}
+  .js .verde:after{opacity:.55}
+  .js .nombres .n1,.js .nombres .n2,.js .nombres .ye{opacity:1;transform:none}
+  .js .hilo-port{transform:none}
+  .js .port-ante,.js .port-cuando,.js .port-donde,.js .port-baja{opacity:1}
+  .js #calendario td.elDia span{transform:none}
+  #fotos img{transform:none}
+}
+
+/* Los 44px son para dedos: en un escritorio con mouse no hace falta
+   meterle aire muerto a cada renglón. */
+@media (max-width:820px),(pointer:coarse){
+  .firma a,.aviso-datos a{padding-left:12px;padding-right:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ 1 · la portada ══════════
+     Sin sobre a propósito: lo primero que se ve son ellos dos. La
+     caja de la foto la dibuja el JS —un `<img>` con el `src` vacío le
+     pide al servidor la página entera de nuevo, y eso no avisa—. -->
+<header id="portada">
+  <p class="port-ante">Nos casamos</p>
+  <h1 class="nombres">
+    <span class="n1">Facundo</span>
+    <span class="ye">y</span>
+    <span class="n2">Maximiliano</span>
+  </h1>
+  <div class="hilo-port" aria-hidden="true"></div>
+  <p class="port-cuando" id="portCuando"></p>
+  <p class="port-donde" id="portDonde"></p>
+  <div class="port-baja" aria-hidden="true" style="pointer-events:none">
+    <span>Deslizá</span>
+    <svg viewBox="0 0 14 22"><path d="M7 1v18M2 14l5 6 5-6"/></svg>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════ 2 · la invitación ══════════ -->
+  <section class="seccion papel" id="invitacion">
+    <div class="caja">
+      <p class="ante ap">Sábado 22 de mayo de 2027</p>
+      <h2 class="ap d1">Queremos que estés</h2>
+      <p class="cuerpo ap d2">Después de un montón de años juntos, elegimos una
+        noche para festejarlo con la gente que queremos. Vas a estar vos, va a
+        estar la música, y vamos a estar nosotros dos diciendo que sí.</p>
+      <div class="reloj ap d3" aria-label="Cuánto falta">
+        <div><b id="cD">0</b><span>Días</span></div>
+        <div><b id="cH">00</b><span>Horas</span></div>
+        <div><b id="cM">00</b><span>Min</span></div>
+        <div><b id="cS">00</b><span>Seg</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 3 · guardá la fecha ══════════ -->
+  <section class="seccion verde" id="fecha">
+    <div class="caja">
+      <p class="ante ap">Guardá la fecha</p>
+      <h2 class="ap d1">22 de mayo</h2>
+      <div id="calendario" class="ap d2"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · la galería ══════════
+       Vacía se esconde entera: un marco alrededor de nada es peor que
+       no estar. Y la foto que no carga se va con su lugar, nunca deja
+       el cuadrado gris con el signo de pregunta. -->
+  <section class="seccion tinta" id="galeria" hidden>
+    <div class="caja">
+      <p class="ante ap">Nosotros</p>
+      <h2 class="ap d1">Un poco de nuestra historia</h2>
+      <div id="fotos"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · dónde y cuándo ══════════
+       La ceremonia civil es DURANTE la fiesta y en el mismo salón, así
+       que va en un solo bloque. Partido en dos —"ceremonia" y
+       "fiesta"— el invitado lee dos lugares y dos horarios donde hay
+       uno solo, y aparece temprano en una puerta cerrada. -->
+  <section class="seccion papel" id="donde">
+    <div class="caja">
+      <p class="ante ap">Dónde y cuándo</p>
+      <h2 class="ap d1" id="lugar"></h2>
+      <p class="cuerpo ap d2">Nos casamos por civil esa misma noche, en el salón,
+        con ustedes mirando. Después, fiesta.</p>
+      <p class="dato ap d2" id="cuando"></p>
+      <p class="chico ap d2" id="calle"></p>
+      <a class="mapa ap d3" id="mapa" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21.5s7-6.3 7-11.2a7 7 0 1 0-14 0c0 4.9 7 11.2 7 11.2z"/>
+          <circle cx="12" cy="10.1" r="2.6"/>
+        </svg>Cómo llegar</a>
+    </div>
+  </section>
+
+  <!-- ══════════ 6 · los detalles: dos tarjetas iguales ══════════ -->
+  <section class="seccion verde" id="detalles">
+    <div class="caja">
+      <p class="ante ap">Para la noche</p>
+      <h2 class="ap d1">Dos cosas</h2>
+      <div class="dos">
+        <div class="ficha ap d2">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5.6a1.8 1.8 0 1 1 1.8 1.8H12v1.8"/>
+            <path d="M12 9.2 3.6 15.4a1.2 1.2 0 0 0 .7 2.2h15.4a1.2 1.2 0 0 0 .7-2.2z"/>
+          </svg>
+          <p class="ante">Dress code</p>
+          <h3 id="dressTitulo"></h3>
+          <p id="dressTexto"></p>
+        </div>
+        <div class="ficha ap d3">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 18V5.6l10-2v12"/><circle cx="6.6" cy="18" r="2.6"/>
+            <circle cx="16.6" cy="15.6" r="2.6"/>
+          </svg>
+          <p class="ante">Nuestra canción</p>
+          <h3 id="cancionNom"></h3>
+          <p class="cancion-aut" id="cancionAut"></p>
+          <a class="btn hueco" id="escuchar" href="#" target="_blank" rel="noopener">Escucharla</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 7 · el regalo ══════════
+       El texto es de ELLOS, casi literal. No se mejora: es su voz. -->
+  <section class="seccion papel" id="regalo">
+    <div class="caja">
+      <p class="ante ap">Un gesto</p>
+      <h2 class="ap d1">Regalos</h2>
+      <p class="cuerpo ap d2">El mejor regalo es compartir este día con ustedes.
+        <svg class="corazon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.6s-8.2-5-8.2-10.3A4.6 4.6 0 0 1 12 7.2a4.6 4.6 0 0 1 8.2 3.1c0 5.3-8.2 10.3-8.2 10.3z"/></svg><br>
+        Pero si además desean hacernos un obsequio, pueden ayudarnos a cumplir
+        otro de nuestros sueños: ¡nuestra luna de miel!</p>
+      <div class="alias-caja ap d3">
+        <p class="rotulo-alias">Alias para transferir</p>
+        <b id="alias"></b>
+        <p id="titular"></p>
+        <button class="btn hueco" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+      </div>
+      <p class="cuerpo ap d3">¡Gracias por ser parte de nuestra historia!</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · la confirmación ══════════ -->
+  <section class="seccion tinta" id="confirmar">
+    <div class="caja">
+      <p class="ante ap">Contamos con vos</p>
+      <h2 class="ap d1">¿Venís?</h2>
+      <p class="cuerpo ap d2" id="hasta"></p>
+
+      <!-- El cartel del que ya confirmó en este aparato. Lo llena el JS;
+           vacío no ocupa nada. -->
+      <div class="ya-fue ap" id="yaFue" hidden></div>
+
+      <form id="rsvp" class="ap" novalidate style="margin-top:28px">
+        <div class="campo">
+          <label for="fNombre">Nombre y apellido</label>
+          <input id="fNombre" name="Nombre" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="campo">
+          <label id="lblAsiste">¿Vas a asistir?</label>
+          <div class="radios" role="radiogroup" aria-labelledby="lblAsiste">
+            <label><input type="radio" name="Confirma" value="Sí"> Sí, ahí voy</label>
+            <label><input type="radio" name="Confirma" value="No"> No voy a poder</label>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="fLugares">¿Cuántos son?</label>
+          <select id="fLugares" name="Cuántos">
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="fComida">¿Algún requerimiento en tu comida?</label>
+          <select id="fComida" name="Comida"></select>
+          <input id="fComidaOtro" type="text" placeholder="Contanos cuál"
+                 style="margin-top:10px;display:none" aria-label="Qué comida">
+        </div>
+
+        <!-- Los que vienen con él: uno por uno, con su nombre y su comida. -->
+        <div id="acomp"></div>
+
+        <div class="campo">
+          <label for="fTema">Un tema que no puede faltar</label>
+          <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
+        </div>
+
+        <!-- El mensaje NO está en `soloSiViene`: sigue a la vista aunque
+             contesten que no pueden ir. El que no llega es justamente el
+             que más quiere dejar escrito algo. -->
+        <div class="campo">
+          <label for="fMensaje">Un mensaje para ellos</label>
+          <textarea id="fMensaje" name="Mensaje" rows="3" maxlength="500"
+                    placeholder="Un deseo, algo que les quieras decir…"></textarea>
+        </div>
+
+        <details class="aviso-datos">
+          <summary>Qué pasa con lo que escribís acá</summary>
+          <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
+          son, armar las mesas, pasarle al salón las comidas especiales y darles a
+          Facundo y Maximiliano los mensajes que les dejen.
+          La lista la tienen <b>ellos dos</b>, que son quienes organizan;
+          Click Eterno solo la guarda por su cuenta y orden.
+          Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
+          comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
+          Si querés que borremos lo tuyo antes, escribinos a
+          <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
+        </details>
+
+        <button id="enviar" type="submit">Confirmar</button>
+        <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ══════════ 9 · el cierre ══════════ -->
+  <section class="seccion papel" id="cierre">
+    <div class="caja">
+      <p class="ante ap">Nos vemos</p>
+      <p class="cierre-n ap d1">Facundo <span class="cursiva">y</span> Maximiliano</p>
+      <p class="cuerpo ap d2" id="teEspero"></p>
+    </div>
+  </section>
+</main>
+
+<!-- El pie es el único renglón nuestro de toda la invitación y es por
+     donde entra el próximo cliente. -->
+<footer class="seccion" id="pie">
+  <p class="firma">
+    Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a>
+  </p>
+</footer>
+
+<!-- La dirección de la planilla central, UNA para todas las
+     invitaciones. Va antes que el script de abajo porque CONFIG la lee
+     al armarse. -->
+<script src="../lib/planilla.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   LO ÚNICO QUE SE TOCA
+   `fiesta` va con la zona de Rosario escrita (−03:00) y el día y el
+   mes del calendario salen de la CADENA, no de `new Date(...)`: un
+   `new Date("2027-05-22T21:00:00-03:00").getDate()` devuelve el día EN
+   EL RELOJ DEL QUE MIRA, así que un invitado en Madrid vería marcado
+   el 23. La fecha de una fiesta es la del lugar de la fiesta.
+   ══════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  quien: "Facundo y Maximiliano",
+  fiesta: "2027-05-22T21:00:00-03:00",
+  hastaHora: "04:00",            // se escribe "de 21 a 4 h": las 4 son del día siguiente
+  /* Vacío NO dibuja el renglón. Dijeron "durante marzo de 2027,
+     confirmamos el día exacto": eso no es una fecha, y una puesta a
+     ojo le cierra las mesas al invitado el día que no es. */
+  confirmarHasta: "",
+  lugar: "La Mansión del Rey",
+  calle: "Vera Mujica 68 · Rosario, Santa Fe",
+  mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
+  /* El título y el detalle van PARTIDOS: escrito entero en los dos
+     lugares, la tarjeta decía "Elegante sport" y abajo "Elegante
+     sport · elegante de fiesta", o sea lo mismo dos veces. */
+  dress: { titulo: "Elegante sport", detalle: "O elegante de fiesta." },
+  /* La canción de ellos. NO suena adentro de la invitación: el archivo
+     no es nuestro y la CSP no deja incrustar un reproductor de
+     terceros —que además sería un tercero corriendo código en la
+     pantalla del invitado—. Va el dato y un enlace para escucharla. */
+  cancion: { nombre: "Bellísimo así", autor: "Laura Pausini" },
+  /* LAS FOTOS. Mandaron cinco y todavía no llegaron los archivos: la
+     portada es la del jardín al atardecer (preferencia de ellos) y las
+     otras van a la galería. Vacío no dibuja nada —ni un marco
+     alrededor de nada ni un cuadrado roto—: la portada vuelve a ser
+     tipográfica, que se sostiene sola, y la galería se esconde
+     entera. Falta además la de las mascotas, que todavía no se
+     sacaron: entra sola agregando un renglón acá. */
+  portada: "",                   // fotos/portada.webp
+  fotos: [],                     // {foto:"fotos/1.webp", alt:"…"}
+  /* Se escribe TAL CUAL lo mandaron, sin "arreglarle" nada: un alias
+     no se adivina, y en mia15 el punto del final resultó ser parte
+     del alias y por poco se lo sacamos. */
+  alias: "FACUYMAXI.BODA",
+  titular: "",                   // el nombre que muestra el banco al pegar el alias.
+                                 // Sin saberlo NO se escribe nada: un nombre inventado
+                                 // al lado de un alias es peor que ninguno
+  /* La pestaña de ESTA fiesta en la planilla central de Click Eterno.
+     Tiene que estar además en lib/planillas.json, que es la lista que
+     mira el Apps Script: lo que no está en esa lista no entra. */
+  evento: "facuymaxi",
+  /* MIENTRAS ESTO SEA UN BORRADOR, lo que falta se DICE. Un dato que
+     no mandaron no se inventa y tampoco se deja en blanco: en blanco
+     nadie se acuerda y se publica así. Se apaga el día que llegue
+     todo. */
+  borrador: true,
+  /* La dirección NO se escribe acá: es UNA sola para todas las
+     invitaciones y vive en lib/planilla.js. */
+  endpoint: (window.PLANILLA && window.PLANILLA.exec) || ""
+};
+
+const $  = (s, d) => (d || document).querySelector(s);
+const $$ = (s, d) => [...(d || document).querySelectorAll(s)];
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* La clase .js marca que el JS CORRE. Recién con ella el CSS esconde
+   lo que va a aparecer al bajar: sin esto, con el JS caído la
+   invitación quedaría en blanco y eso no tira ningún error. */
+document.documentElement.classList.add('js');
+const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* La píldora de lo que falta. */
+function falta(que){
+  const n = document.createElement('p');
+  n.className = 'falta';
+  n.textContent = 'falta: ' + que;
+  return n;
+}
+
+/* ══════════ lo que sale de CONFIG ══════════ */
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+               'agosto','septiembre','octubre','noviembre','diciembre'];
+const MESES_T = MESES.map(m => m[0].toUpperCase() + m.slice(1));
+const DIAS_S = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const partes = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+const F = partes ? { anio:+partes[1], mes:+partes[2], dia:+partes[3],
+                     hora:+partes[4], min:+partes[5] } : null;
+const sinCeroHora = (h, m) => h + (m ? ':' + String(m).padStart(2,'0') : '');
+/* "De 21 a 4 h", escrito como se dice y sin los `:00` que nadie
+   pronuncia. Una sola función porque el renglón aparece en tres
+   lugares, y escrito tres veces alguno se queda atrás. */
+function horaTexto(){
+  if (!F) return '';
+  const desde = sinCeroHora(F.hora, F.min);
+  const m = String(CONFIG.hastaHora||'').match(/^(\d{1,2}):(\d{2})$/);
+  return m ? 'De ' + desde + ' a ' + sinCeroHora(+m[1], +m[2]) + ' h' : desde + ' h';
+}
+/* El día de la semana se CALCULA por componentes —`new Date(anio,
+   mes-1, dia)`—, que no mete zona horaria. */
+const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
+
+(function(){
+  if (F){
+    const fechaLarga = diaSemana + ' ' + F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
+    $('#portCuando').textContent = fechaLarga;
+    /* El final va como hora suelta y no como fecha: las 4 son del día
+       siguiente, y escribirlas como fecha completa haría que la
+       invitación dijera "23 de mayo" en algún lado. La fiesta es el 22
+       y eso es lo que tiene que leer el invitado. */
+    $('#cuando').textContent = fechaLarga.charAt(0).toUpperCase() + fechaLarga.slice(1) +
+                               ', ' + horaTexto().replace(/^De /,'de ') + '.';
+    $('#teEspero').textContent = 'Te esperamos el ' + F.dia + ' de ' + MESES[F.mes-1] + '.';
+  }
+  $('#portDonde').textContent = CONFIG.lugar + ' · Rosario';
+  $('#lugar').textContent = CONFIG.lugar;
+  $('#calle').textContent = CONFIG.calle;
+  $('#mapa').href = CONFIG.mapa;
+  $('#dressTitulo').textContent = (CONFIG.dress||{}).titulo || '';
+  $('#dressTexto').textContent = (CONFIG.dress||{}).detalle || '';
+  $('#alias').textContent = CONFIG.alias;
+
+  /* La canción: el dato, y un enlace para escucharla. Es una BÚSQUEDA
+     y no la dirección de un tema: una dirección de tema se adivina, y
+     una invitación que manda a la canción equivocada es peor que una
+     que no manda a ninguna. */
+  const c = CONFIG.cancion || {};
+  $('#cancionNom').textContent = c.nombre || '';
+  $('#cancionAut').textContent = c.autor || '';
+  const esc1 = $('#escuchar');
+  if (c.nombre) esc1.href = 'https://open.spotify.com/search/' +
+    encodeURIComponent(c.nombre + ' ' + (c.autor || ''));
+  else esc1.remove();
+
+  /* Sin titular no se escribe nada, y el renglón no queda vacío
+     ocupando lugar: se saca. */
+  if (CONFIG.titular) $('#titular').textContent = CONFIG.titular;
+  else {
+    $('#titular').hidden = true;
+    if (CONFIG.borrador) $('#titular').insertAdjacentElement('afterend',
+      falta('el titular de la cuenta'));
+  }
+
+  /* Sin fecha de cierre NO se inventa una. */
+  if (CONFIG.confirmarHasta)
+    $('#hasta').textContent = 'Avisanos antes del ' + CONFIG.confirmarHasta +
+                              '. Con eso cerramos las mesas.';
+  else {
+    $('#hasta').textContent = 'Avisanos si venís, así armamos las mesas.';
+    if (CONFIG.borrador) $('#hasta').insertAdjacentElement('afterend',
+      falta('hasta cuándo se puede confirmar'));
+  }
+})();
+
+/* ══════════ las fotos ══════════
+   Dos piezas y una sola regla: el `<img>` lo crea el JS, nunca el
+   HTML. Un `<img>` con el `src` vacío le pide al servidor la página
+   entera de nuevo, y eso no tira ningún error.
+   Y una foto que no carga SE VA, no deja el cuadrado gris con el `?`:
+   pasó con mia15 el día que se sacó una foto de una invitación ya
+   publicada y el que la tenía abierta siguió pidiendo el archivo
+   viejo. A la que ya falló hay que preguntarle (`complete &&
+   !naturalWidth`): si se cayó antes de que llegáramos a escuchar, el
+   evento `error` no vuelve a dispararse nunca. */
+function cargarFoto(src, alt){
+  return new Promise(res => {
+    const im = new Image();
+    im.alt = alt || '';
+    im.decoding = 'async';
+    const fallo = () => res(null);
+    im.addEventListener('load', () => res(im.naturalWidth ? im : null));
+    im.addEventListener('error', fallo);
+    im.src = src;
+    if (im.complete && !im.naturalWidth) fallo();
+  });
+}
+
+/* ── la portada ── */
+(function(){
+  const port = $('#portada');
+  const abrir = () => port.classList.add('abierta');
+  if (!CONFIG.portada){ requestAnimationFrame(() => setTimeout(abrir, 90)); return; }
+  cargarFoto(CONFIG.portada, 'Facundo y Maximiliano').then(im => {
+    if (im){
+      const caja = document.createElement('div');
+      caja.className = 'port-foto';
+      caja.appendChild(im);
+      port.insertBefore(caja, port.firstChild);
+    }
+    /* Cargue o no, la portada se abre: con la foto caída queda la
+       tipográfica, que se sostiene sola. */
+    requestAnimationFrame(() => setTimeout(abrir, 90));
+  });
+})();
+
+/* ── la galería ──
+   Se arma recién con las que CARGARON, y en el orden de CONFIG: la
+   que falló no deja su lugar vacío. Si no queda ninguna, la sección
+   entera se esconde — un título arriba de nada es peor que no estar.
+   El ritmo es ancha / dos iguales / ancha: las dos de la fila van
+   siempre de a pares y del mismo tamaño, que es la misma regla que
+   los dos nombres de la portada. */
+(function(){
+  const sec = $('#galeria'), caja = $('#fotos');
+  const lista = (CONFIG.fotos || []).filter(f => f && f.foto);
+  if (!lista.length){
+    if (CONFIG.borrador){
+      sec.hidden = false;
+      /* Afuera de la grilla: adentro cae en la primera columna y queda
+         pegada al borde izquierdo. */
+      caja.insertAdjacentElement('beforebegin', falta('las cinco fotos de ellos'));
+    }
+    return;
+  }
+  Promise.all(lista.map(f => cargarFoto(f.foto, f.alt || ''))).then(ims => {
+    const vivas = ims.filter(Boolean);
+    if (!vivas.length) return;            /* la sección se queda `hidden` */
+    vivas.forEach((im, i) => {
+      const sola = (i % 3 === 1) && (i === vivas.length - 1);
+      const fig = document.createElement('figure');
+      if (i % 3 === 0 || sola) fig.className = 'ancha';
+      fig.appendChild(im);
+      caja.appendChild(fig);
+    });
+    sec.hidden = false;
+    /* El observador ya pasó por acá cuando esto se dibuja, así que las
+       fotos se destapan a mano: sin esto quedan en opacidad 0 y no hay
+       ningún error que lo diga. */
+    requestAnimationFrame(() => {
+      $$('#fotos figure').forEach(f => f.classList.add('entro'));
+      $$('.ap', sec).forEach(n => n.classList.add('entro'));
+      sec.classList.add('entro');
+    });
+  });
+})();
+
+/* ══════════ la cuenta regresiva ══════════
+   El objetivo sale de la cadena CON su zona (−03:00), así que el que
+   la mira desde cualquier parte del mundo cuenta hasta el mismo
+   instante. */
+(function(){
+  const d = $('#cD'), h = $('#cH'), m = $('#cM'), s = $('#cS');
+  if (!d) return;
+  const destino = new Date(CONFIG.fiesta).getTime();
+  if (!destino) return;
+  const dd = n => String(n).padStart(2,'0');
+  function vuelta(){
+    const falta = destino - Date.now();
+    if (falta <= 0){
+      d.textContent = h.textContent = m.textContent = s.textContent = '0';
+      return true;
+    }
+    const t = Math.floor(falta/1000);
+    d.textContent = Math.floor(t/86400);
+    h.textContent = dd(Math.floor(t%86400/3600));
+    m.textContent = dd(Math.floor(t%3600/60));
+    s.textContent = dd(t%60);
+    return false;
+  }
+  if (!vuelta()) setInterval(vuelta, 1000);
+})();
+
+/* ══════════ el calendario de "guardá la fecha" ══════════
+   Las cuentas se hacen con `new Date(anio, mes-1, 1)`, que se
+   construye por componentes y no mete zona horaria. La semana arranca
+   el lunes, como el calendario de la pared de acá. */
+(function(){
+  const caja = $('#calendario');
+  if (!caja || !F) { if (caja) caja.remove(); return; }
+  const DIAS = ['L','M','M','J','V','S','D'];
+  const primero = (new Date(F.anio, F.mes-1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(F.anio, F.mes, 0).getDate();
+
+  const celdas = [];
+  for (let i = 0; i < primero; i++) celdas.push('');
+  for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
+  while (celdas.length % 7) celdas.push('');
+
+  let filas = '';
+  for (let i = 0; i < celdas.length; i += 7){
+    filas += '<tr>' + celdas.slice(i, i+7).map(dia =>
+      dia === '' ? '<td></td>'
+                 : dia === F.dia ? '<td class="elDia"><span>' + dia + '</span></td>'
+                                 : '<td>' + dia + '</td>'
+    ).join('') + '</tr>';
+  }
+
+  caja.innerHTML =
+    '<p class="mes">' + MESES_T[F.mes-1] + ' ' + F.anio + '</p>' +
+    '<table role="presentation"><thead><tr>' +
+      DIAS.map(x => '<th>' + x + '</th>').join('') +
+    '</tr></thead><tbody>' + filas + '</tbody></table>' +
+    '<hr class="corte">' +
+    /* Acá va la HORA y no el lugar: el lugar está escrito entero en la
+       sección de al lado, y repetirlo hace que la invitación parezca
+       más larga de lo que es. */
+    '<p class="hora-txt">' + esc(fechaCorta()) +
+    (horaTexto() ? '<br>' + esc(horaTexto()) : '') + '</p>';
+
+  function fechaCorta(){
+    return F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
+  }
+})();
+
+/* ══════════ aparecer al bajar ══════════
+   EL QUE SE MIRA NO ES EL QUE SE ESCONDE. Se observa la SECCIÓN, que
+   nunca está escondida, y es ella la que destapa a los suyos: un
+   bloque que se esconde a sí mismo puede no intersecar nunca y
+   quedarse invisible para siempre, sin un solo error.
+   Lo que YA está en la primera pantalla entra solo: el observador
+   descuenta un pedazo de abajo para que un bloque entre cuando ya se
+   ve bien, y con eso lo último de una sección corta no intersecaría
+   nunca. */
+(function(){
+  const destapar = s => {
+    s.classList.add('entro');
+    $$('.ap', s).forEach(n => n.classList.add('entro'));
+  };
+  const secciones = $$('.seccion');
+  if (!secciones.length) return;
+  const mirador = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting){
+      destapar(e.target);
+      mirador.unobserve(e.target);
+    }
+  }, {threshold:0, rootMargin:'0px 0px -6% 0px'});
+  secciones.forEach(s => {
+    if (s.getBoundingClientRect().top < innerHeight) destapar(s);
+    else mirador.observe(s);
+  });
+})();
+
+/* ══════════ la foto de la portada se queda atrás ══════════
+   Se mueve la CAJA y no la imagen, y es el único efecto atado al
+   scroll: si frenás a mitad de camino, frena ahí. Un solo oyente con
+   `requestAnimationFrame` y `passive`, y se corta apenas la portada
+   sale de pantalla: mover algo que nadie ve es batería del invitado. */
+(function(){
+  if (menosMovimiento) return;
+  const port = $('#portada');
+  let pedido = false;
+  function pintar(){
+    pedido = false;
+    const caja = $('.port-foto', port);
+    if (!caja) return;
+    const y = scrollY;
+    if (y > port.offsetHeight) return;
+    caja.style.transform = 'translateY(' + (y * .2).toFixed(1) + 'px)';
+  }
+  addEventListener('scroll', () => {
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(pintar);
+  }, {passive:true});
+})();
+
+/* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════
+   Es el único renglón nuestro en toda la invitación y es por donde
+   entra el próximo cliente: el que la recibe y le gusta toca ahí. El
+   mensaje DICE DE QUÉ INVITACIÓN VIENE, así del otro lado se sabe qué
+   está mirando el que escribe sin tener que preguntarlo. El nombre
+   sale de `CONFIG.quien`, no escrito a mano.
+   El `href` del HTML apunta al sitio a propósito: si el JS no corre,
+   el enlace lleva igual a algún lado. Y el logo de WhatsApp se pone
+   ACÁ, en el mismo lugar donde se arma el enlace: sin JS el enlace va
+   al sitio, y ahí un logo de WhatsApp sería una promesa que no se
+   cumple. */
+(function(){
+  const a = $('.firma a');
+  if (!a) return;
+  const TEL = '5493412506451';   /* 341 250-6451, el del negocio */
+  const texto = 'Hola Click Eterno! Vi la invitación de ' + (CONFIG.quien || '') +
+                ' y quiero consultar por una invitación para mi fiesta.';
+  a.href = 'https://wa.me/' + TEL + '?text=' + encodeURIComponent(texto);
+  /* fill-rule evenodd: sin eso el globo y el auricular se rellenan los
+     dos y queda una mancha en vez de un logo. */
+  a.insertAdjacentHTML('afterbegin',
+    '<svg class="ico-wsp" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true">' +
+    '<path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>');
+})();
+
+/* ══════════ copiar el alias ══════════ */
+(function(){
+  const b = $('#copiar'), t = $('#copiarTxt');
+  if (!b) return;
+  b.addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(CONFIG.alias);
+      t.textContent = 'Copiado';
+    }catch(e){
+      /* Si el navegador no deja copiar, no se miente: se dice qué hacer. */
+      t.textContent = 'Mantené apretado el alias';
+    }
+    setTimeout(() => { t.textContent = 'Copiar alias'; }, 2600);
+  });
+})();
+
+/* ══════════ marcar la opción elegida ══════════
+   El CSS lo haría con :has(), que Safari trae recién desde 2022. En
+   uno más viejo la opción elegida no se marcaba y el invitado no sabía
+   qué había tocado: eso no tira ningún error. */
+(function(){
+  const ls = $$('.radios label');
+  const pintar = () => ls.forEach(l => {
+    const i = $('input', l);
+    l.classList.toggle('elegida', !!(i && i.checked));
+  });
+  ls.forEach(l => { const i = $('input', l); if (i) i.addEventListener('change', pintar); });
+  pintar();
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   LA CONFIRMACIÓN
+   Portada tal cual de la de Mia, que es la que está medida contra una
+   fiesta de verdad. Lo que trae y por qué:
+
+   · UNA COMIDA POR PERSONA. Eligiendo 5 personas salía una sola opción
+     de comida y el salón recibía cinco platos sin TACC.
+   · EL QUE DICE QUE NO no llena lo que no es suyo. `new FormData(form)`
+     manda TODO lo que esté en el formulario, esté a la vista o no, así
+     que a la planilla le llegaba una fila que dice NO VIENE con
+     "Cuántos: 4" — justo la columna con la que se arman las mesas. Por
+     eso van `hidden` Y `disabled`: lo segundo es lo único que hace que
+     no viajen.
+   · UN SOLO VIAJE. El POST se manda pidiendo leer la respuesta.
+   · Y LA REGLA MÁS VIEJA DEL PROYECTO: si no sabemos que llegó, la
+     pantalla NO dice que llegó.
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const form = $('#rsvp'), aviso = $('#aviso'), boton = $('#enviar');
+  if (!form) return;
+
+  const decir = (txt, clase) => {
+    aviso.textContent = txt;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  /* El Apps Script nuevo contesta JSON: {"ok":true}. El viejo contestaba
+     el texto "si". Se aceptan los dos: leerlo mal no se ve como un error,
+     se ve como "no pudimos confirmar" arriba de una confirmación que SÍ
+     se guardó, y el invitado la manda de nuevo. */
+  async function llego(nombre){
+    try{
+      const r = await fetch(CONFIG.endpoint + '?evento=' + encodeURIComponent(CONFIG.evento) +
+                            '&confirmado=' + encodeURIComponent(nombre),
+                            {cache:'no-store'});
+      if (!r.ok) return false;
+      const t = (await r.text()).trim();
+      try{
+        const d = JSON.parse(t);
+        if (d && typeof d.ok === 'boolean') return d.ok;
+      }catch(e){}
+      const p = t.toLowerCase();
+      return p === 'si' || p === 'sí' || p === 'true' || p === '1';
+    }catch(e){ return false; }
+  }
+
+  /* ── los nombres y las comidas de los que vienen ── */
+  (function(){
+    const sel = $('#fLugares'), caja = $('#acomp');
+    if (!sel || !caja) return;
+    const viene = () => { const r = $('input[name="Confirma"]:checked');
+      return !r || r.value === 'Sí'; };
+    const soloSiViene = ['#fLugares', '#fComida', '#fTema'];
+    /* Es una ELECCIÓN y no un campo libre: escrito a mano llegan
+       "celiaco", "CELÍACA", "sin tacc" y "no como gluten" en la misma
+       columna, y el que le pasa las comidas al salón las tiene que
+       ordenar a mano. */
+    const COMIDAS = ['Ninguno','Vegetariano','Celíaco','Diabético','Hipertenso',
+                     'No tolerante a la lactosa','Otro'];
+    const opciones = () => COMIDAS.map(o => '<option value="' + esc(o) + '">' + esc(o) + '</option>').join('');
+    /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el único
+       caso que importa: contestar "no voy a poder" borra los renglones, y
+       al volver al "sí" ya no había de dónde leerlos. */
+    const tenia = {};
+    const pintar = () => {
+      const va = viene();
+      soloSiViene.forEach(q => {
+        const nodo = $(q); if (!nodo) return;
+        const campo = nodo.closest('.campo');
+        if (campo) campo.hidden = !va;
+        nodo.disabled = !va;
+      });
+      const n = va ? Math.max(1, +sel.value || 1) : 1;
+      $$('input,select', caja).forEach(i => { if (i.name) tenia[i.name] = i.value; });
+      let h = '';
+      for (let k = 2; k <= n; k++){
+        /* Los nombres de los campos SON los títulos de las columnas, y el
+           Apps Script crea la columna sola la primera vez que llega una
+           que no conocía: del otro lado no hay nada que tocar. */
+        const nom = 'Invitado ' + k, com = 'Comida ' + k;
+        h += '<div class="persona">' +
+               '<div class="quien">Invitado ' + k + '</div>' +
+               '<div class="campo"><label for="fInv' + k + '">Nombre y apellido</label>' +
+                 '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
+                 ' value="' + esc(tenia[nom] || '') + '"></div>' +
+               '<div class="campo"><label for="fCom' + k + '">¿Algún requerimiento en su comida?</label>' +
+                 '<select id="fCom' + k + '" name="' + com + '">' + opciones() + '</select>' +
+                 '<input id="fCom' + k + 'Otro" type="text" placeholder="Contanos cuál"' +
+                 ' style="margin-top:10px;display:none" aria-label="Qué comida">' +
+               '</div>' +
+             '</div>';
+      }
+      caja.innerHTML = h;
+      $$('select', caja).forEach(se => { if (tenia[se.name]) se.value = tenia[se.name]; });
+      $$('select', caja).forEach(verOtro);
+    };
+    /* "Otro" abre su campito y lo cierra al cambiar de opción. El campo NO
+       tiene `name`: lo que viaja es la columna de la comida, con el texto
+       adentro (lo reemplaza el envío). */
+    function verOtro(se){
+      const otro = document.getElementById(se.id + 'Otro');
+      if (!otro) return;
+      const hay = se.value === 'Otro';
+      otro.style.display = hay ? 'block' : 'none';
+      if (!hay) otro.value = '';
+    }
+    caja.addEventListener('change', e => { if (e.target.tagName === 'SELECT') verOtro(e.target); });
+
+    const comida1 = $('#fComida');
+    if (comida1){
+      comida1.innerHTML = opciones();
+      comida1.addEventListener('change', () => verOtro(comida1));
+    }
+
+    sel.addEventListener('change', pintar);
+    $$('input[name="Confirma"]').forEach(r => r.addEventListener('change', pintar));
+    pintar();
+  })();
+
+  /* ── el que ya confirmó en ESTE aparato ──
+     El caso que de verdad llena la planilla es el mismo invitado
+     volviendo a abrir el link de WhatsApp dos días después y completando
+     todo otra vez. Confirmado una vez, la pantalla le muestra un cartel
+     con su nombre EN LUGAR del formulario. Queda el botón para cambiar
+     la respuesta, que es el otro caso real —el que pasó de "no" a "sí"—.
+     Se guarda SOLO cuando la confirmación llegó de verdad: guardarlo en
+     la muestra sería decirle "ya confirmaste" cuando no se mandó a
+     ningún lado. */
+  const LLAVE = 'ce:rsvp:' + location.pathname;
+  const leerYa = () => { try{ return JSON.parse(localStorage.getItem(LLAVE) || 'null'); }
+                         catch(e){ return null; } };
+  const guardarYa = (nombre, confirma) => { try{
+    localStorage.setItem(LLAVE, JSON.stringify({nombre, confirma}));
+  }catch(e){} };
+
+  const cartel = $('#yaFue');
+  const diaFiesta = F ? F.dia + ' de ' + MESES[F.mes-1] : 'la fiesta';
+  function pintarYa(){
+    const y = leerYa();
+    if (!y || !y.nombre){ cartel.hidden = true; form.hidden = false; return; }
+    cartel.hidden = false;
+    form.hidden = true;
+    cartel.innerHTML =
+      '<p class="ante" style="margin:0">Ya confirmaste</p>' +
+      '<p class="ya-nom">' + esc(y.nombre) + '</p>' +
+      '<p class="cuerpo" style="margin:0 0 4px">' +
+      (y.confirma === 'No' ? 'Nos avisaste que no vas a poder venir. Gracias por decirlo.'
+                           : 'Te esperamos el ' + diaFiesta + '.') + '</p>' +
+      '<button class="btn hueco" type="button" id="cambiarYa">Cambiar mi respuesta</button>';
+    /* El cartel nace con `.ap`, o sea escondido hasta que el observador lo
+       deja entrar — y lo acaba de dibujar el JS, así que puede haberse
+       perdido la vuelta. Se lo deja entrar a mano. */
+    cartel.classList.add('entro');
+    $('#cambiarYa').addEventListener('click', () => {
+      cartel.hidden = true;
+      form.hidden = false;
+      /* Escondido, el formulario nunca intersecó: sin esto vuelve a
+         aparecer recortado y no hay ningún error que lo diga. */
+      form.classList.add('entro');
+      $('#fNombre').value = y.nombre;
+      $('#fNombre').focus();
+    });
+  }
+  pintarYa();
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const nombre = ($('#fNombre').value || '').trim();
+    if (nombre.length < 3){ decir('Escribí tu nombre y apellido.', 'mal'); $('#fNombre').focus(); return; }
+
+    /* Nada viene preseleccionado y hay que elegir. Con el "Sí" puesto de
+       fábrica, el que toca Confirmar sin leer manda un sí que no quiso
+       decir — y eso se paga en comida encargada para gente que no va. */
+    if (!$('input[name="Confirma"]:checked')){
+      decir('Decinos si venís o no.', 'mal');
+      $('.radios').scrollIntoView({block:'center'});
+      return;
+    }
+
+    if (!CONFIG.endpoint){
+      /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
+      decir('Esto todavía es una muestra: la confirmación no se manda a ningún lado. ' +
+            'En la de verdad, acá te decimos que llegó.', 'bien');
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Mandando…');
+
+    /* Donde eligieron "Otro", lo que va a la planilla es lo que
+       escribieron, no la palabra "Otro": el que le pasa las comidas al
+       salón necesita leer "sin frutos secos". */
+    const fd = new FormData(form);
+    /* A qué pestaña de la planilla central va. No es una respuesta de
+       nadie: la planilla lo usa para elegir la hoja y no lo guarda como
+       columna. */
+    fd.set('evento', CONFIG.evento);
+    $$('select', form).forEach(se => {
+      if (se.name && se.value === 'Otro'){
+        const otro = document.getElementById(se.id + 'Otro');
+        const txt = otro && otro.value.trim();
+        fd.set(se.name, txt ? txt : 'Otro (sin detalle)');
+      }
+    });
+
+    try{
+      let entro = false;
+      try{
+        const r = await fetch(CONFIG.endpoint, {method:'POST', body:fd});
+        if (r.ok){
+          const t = (await r.text()).trim();
+          try{ const d = JSON.parse(t); entro = !!(d && d.ok); }catch(e){ entro = /ok/i.test(t); }
+        }
+      }catch(e){
+        /* Sin permiso para leer la respuesta: se manda a ciegas y se
+           pregunta. Dos intentos cortos en vez de una espera fija larga:
+           casi siempre contesta en el primero. */
+        await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:fd});
+        for (let i = 0; i < 2 && !entro; i++){
+          await new Promise(res => setTimeout(res, i ? 1500 : 500));
+          entro = await llego(nombre);
+        }
+      }
+
+      if (entro){
+        const r = $('input[name="Confirma"]:checked');
+        guardarYa(nombre, r ? r.value : '');
+        decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el ' + (F ? F.dia : '') + '.', 'bien');
+        pintarYa();
+      }
+      else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }catch(e){
+      decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }
+    boton.disabled = false;
+  });
+})();
+</script>
+</body>
+</html>
