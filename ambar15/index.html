@@ -792,14 +792,23 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .dressfotos figure:nth-child(odd){transform:rotate(-1.4deg)}
 .dressfotos figure:nth-child(even){transform:rotate(1.4deg)}
 .dressfotos img{width:100%;aspect-ratio:.76;object-fit:cover;border-radius:2px;display:block}
-/* Sin fotos, el ramo de PLUMAS: los tres pompones de la referencia
-   —crema, rosa y negro— atados con un moño. Antes acá había cuatro
-   productos dibujados en fila; el dueño marcó los pompones con todas
-   las letras, y encima la foto de dress code los va a reemplazar el
-   día que llegue, así que lo que va mientras tanto es lo que él
-   señaló. Es DECORACIÓN: lo que dice qué ponerse es el texto. */
-.plumas{width:min(206px,68%);margin:clamp(14px,2.6vh,20px) auto 0}
-.plumas svg{display:block;width:100%;height:auto}
+/* La corona de plumas: los tres pompones asomando por detrás del
+   borde de arriba del bloque, que es la captura que mandó el dueño
+   ("los 3 pompones esos haciendo de marco en la parte de arriba").
+   LO QUE LOS CONVIERTE EN MARCO ES QUE ESTÉN CORTADOS. Antes estaban
+   abajo, atados en un ramo: un ramo entero es un dibujo más adentro de
+   la bolsa. Tres pompones que se ven a medias se leen como que hay algo
+   adelante, y ese algo es el bloque. El corte lo hace la CAJA —el alto
+   fijo más `overflow:hidden`— y no el dibujo.
+   Y la raya de abajo no es un adorno: es el borde del que asoman. Sin
+   ella el corte se lee como un dibujo mal recortado. */
+.corona{position:relative;width:min(336px,96%);margin:clamp(16px,3.2vh,26px) auto 0;
+  aspect-ratio:274/82;overflow:hidden}
+.corona svg{position:absolute;left:0;top:0;width:100%;height:auto;display:block}
+.corona:after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(155,53,88,.5) 15%,
+    rgba(155,53,88,.5) 85%,transparent)}
+.corona + h3{margin-top:18px}
 .rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--acento-ti);margin-top:22px}
 /* El alias va en la LETRA DE TEXTO y no en la serif de los títulos: la
@@ -1131,6 +1140,11 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
             <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
           </p>
 
+          <!-- La corona: los tres pompones asomando por detrás del
+               borde de arriba del bloque. Es DECORACIÓN —lo que dice
+               qué ponerse es el texto— y por eso va con `aria-hidden`
+               y sin atajar el dedo. -->
+          <div class="corona" id="dressDibujo" aria-hidden="true" style="pointer-events:none"></div>
           <h3>Dress code</h3>
           <p id="dressTexto"></p>
           <!-- Las muestras salen de CONFIG, no escritas acá: el día que
@@ -1144,7 +1158,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
                53, el que está escrito en nuestros propios Términos. El
                día que la clienta mande las suyas, se cambia. -->
           <div class="dressfotos" id="dressFotos" hidden></div>
-          <div class="plumas" id="dressDibujo" aria-hidden="true" style="pointer-events:none"></div>
 
           <i class="bolsa-corte" aria-hidden="true"></i>
 
@@ -1423,46 +1436,106 @@ const ICONOS = {
             '<circle cx="17.4" cy="12" r="2.1"/>'
 };
 
-/* ── EL RAMO DE PLUMAS DEL DRESS CODE ──
-   Los tres pompones de la referencia —crema, rosa y negro— atados con
-   el mismo moño que se usa en toda la pieza.
-   Las siluetas salen de una SEMILLA fija y están escritas acá ya
-   calculadas: con `Math.random()` dos capturas de la misma invitación
-   saldrían distintas. Es la misma regla que la sierra de las franjas.
-   Lo que hace que un pompón se lea como PLUMA y no como un chupetín
-   es el borde: muchos bultos chiquitos e irregulares, no quince
-   lóbulos parejos. Con lóbulos parejos y el mango largo y recto se
-   leía como algodón de azúcar —se ve mirándolo, no leyendo el
-   código—. Y los tres mangos CONVERGEN en el nudo: sueltos, cada
-   pompón era una flor aparte y no un ramo. */
-const PLUMAS = {
-  a:["M87.0 44.0Q90.9 49.0 77.0 50.7Q85.6 57.5 78.5 58.9Q87.3 69.7 76.4 67.4Q78.4 76.0 66.8 68.4Q66.7 75.7 60.1 70.6Q59.2 81.2 53.7 74.6Q50.0 83.4 45.9 77.8Q40.0 84.7 38.0 75.7Q30.3 81.5 30.6 72.1Q24.2 73.1 29.2 62.5Q20.6 64.3 24.0 57.6Q10.2 59.1 15.5 52.5Q3.3 49.7 17.0 44.0Q9.5 39.1 19.9 36.6Q14.3 30.5 24.9 30.8Q17.0 21.2 24.2 21.2Q22.1 12.5 32.0 17.9Q29.7 5.4 37.2 10.3Q39.2 0.0 46.0 10.8Q50.0 -1.5 54.0 11.2Q60.4 1.8 61.1 14.8Q70.7 4.6 69.1 16.3Q77.7 12.8 76.2 20.8Q85.4 19.6 74.7 31.0Q82.4 31.7 76.8 37.4Q94.0 38.7 87.0 44.0Z","M67.6 40.0Q71.8 44.4 63.3 45.9Q70.0 53.3 65.0 55.1Q63.4 59.5 55.5 54.8Q54.3 60.1 50.1 57.5Q47.0 63.0 44.0 57.0Q38.7 62.7 36.6 58.0Q30.3 59.9 30.8 53.6Q23.7 53.4 25.0 48.0Q18.3 45.1 23.4 40.0Q15.6 34.5 25.1 32.0Q24.9 27.2 33.2 28.4Q31.8 21.9 37.3 23.3Q38.6 16.8 43.9 22.3Q47.0 12.5 50.8 18.2Q56.5 14.0 56.6 23.5Q64.1 19.6 64.9 25.0Q71.5 25.9 66.2 33.0Q71.3 35.7 67.6 40.0Z"],
-  b:["M86.1 44.0Q89.6 48.8 77.4 50.8Q82.8 56.4 75.4 57.4Q82.5 66.4 77.1 68.0Q80.7 78.7 67.5 69.4Q70.8 83.6 62.1 76.0Q60.2 85.6 53.8 75.6Q50.0 82.9 46.3 74.3Q40.7 81.8 40.4 69.3Q32.8 76.8 32.6 69.2Q25.6 71.6 29.2 62.4Q17.9 66.1 24.9 57.2Q10.4 59.0 14.3 52.8Q6.4 49.3 15.3 44.0Q6.9 38.8 21.1 36.9Q16.8 31.4 24.7 30.7Q15.3 20.0 23.7 20.7Q24.1 14.7 34.0 20.9Q34.2 13.8 40.1 17.8Q40.4 5.3 46.4 14.4Q50.0 3.6 54.1 10.4Q60.2 2.8 60.1 17.4Q67.3 11.0 68.5 17.2Q77.9 12.6 77.5 19.6Q89.9 16.4 80.5 28.0Q88.7 29.3 76.2 37.5Q89.5 39.2 86.1 44.0Z","M67.0 40.0Q72.3 44.5 63.5 46.0Q67.7 52.0 63.1 53.5Q62.8 58.9 55.8 55.3Q55.4 63.2 50.2 58.4Q47.0 65.8 43.3 61.0Q37.5 66.1 36.2 58.6Q29.5 60.9 32.7 52.0Q27.7 51.2 29.5 46.4Q23.3 44.2 25.9 40.0Q18.1 34.9 25.2 32.1Q24.4 26.9 33.7 28.9Q31.0 20.9 36.9 22.5Q38.4 16.3 43.7 21.1Q47.0 15.9 50.7 19.1Q55.3 17.2 56.6 23.3Q60.7 23.6 59.7 29.3Q66.8 28.6 63.8 33.9Q69.5 36.0 67.0 40.0Z"],
-  c:["M84.1 44.0Q91.5 49.0 82.6 52.0Q90.7 59.4 76.4 57.9Q79.7 64.5 71.9 63.4Q78.3 75.9 68.6 70.9Q69.4 81.0 62.8 77.7Q59.4 82.3 53.4 72.4Q50.0 81.8 46.0 76.9Q39.5 86.6 38.6 74.0Q31.5 79.2 31.2 71.2Q23.8 73.6 27.7 63.8Q15.9 67.6 19.7 59.9Q11.1 58.7 18.5 51.8Q7.2 49.2 19.6 44.0Q12.1 39.4 18.7 36.3Q10.5 29.0 21.2 28.9Q16.5 20.9 27.1 23.7Q20.8 11.0 30.3 15.4Q31.4 8.5 39.0 14.9Q40.3 4.7 46.5 15.4Q50.0 3.4 54.4 7.9Q61.3 -1.9 61.7 13.2Q70.1 5.8 67.8 18.3Q77.6 12.9 71.5 24.9Q82.5 21.5 76.7 30.0Q89.8 28.9 84.4 35.5Q96.8 38.3 84.1 44.0Z","M65.6 40.0Q71.5 44.3 67.1 47.3Q69.8 53.2 63.7 54.0Q64.7 61.1 57.0 57.3Q55.6 63.7 50.5 59.7Q47.0 67.0 43.1 62.2Q37.4 66.3 37.4 56.7Q30.7 59.5 31.3 53.2Q22.2 54.3 26.2 47.6Q20.4 44.7 24.2 40.0Q21.6 35.5 30.6 34.0Q25.2 27.4 30.6 26.2Q30.6 20.4 38.4 25.1Q38.0 15.2 43.0 17.0Q47.0 10.0 51.0 17.3Q57.4 11.3 58.0 20.9Q65.7 17.7 62.8 26.7Q70.7 26.3 68.2 32.3Q71.4 35.7 65.6 40.0Z"]
-};
+/* ── LA CORONA DE PLUMAS DEL DRESS CODE ──
+   Los tres pompones de la captura que mandó el dueño, asomando por
+   detrás del borde de arriba del bloque.
 
-function ramoDePlumas(){
-  const NX = 110, NY = 120;                 /* el nudo */
-  const C = [[58, 62], [110, 44], [162, 64]];
-  /* el puff: la silueta y, encima, su lado iluminado. 50,44 es el
-     centro de los dos caminos, así que se escala desde ahí. */
-  const puff = (k, relleno, luz, borde, cx, cy, e, giro) =>
-    '<g transform="translate(' + (cx - 50*e).toFixed(1) + ' ' + (cy - 44*e).toFixed(1) +
-      ') scale(' + e + ') rotate(' + giro + ' 50 44)">' +
-      '<path d="' + PLUMAS[k][0] + '" fill="' + relleno + '" stroke="' + borde +
-        '" stroke-width="' + (1.1/e).toFixed(2) + '"/>' +
-      '<path d="' + PLUMAS[k][1] + '" fill="' + luz + '" opacity=".5"/></g>';
-  let g = '<svg viewBox="0 0 220 146" role="presentation">' +
-    '<g stroke="var(--acento-ti)" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85">';
-  C.forEach(c => {
-    g += '<path d="M' + c[0] + ' ' + c[1] + 'Q' + ((c[0]+NX)/2) + ' ' +
-         ((c[1]+NY)/2 + 6) + ' ' + NX + ' ' + NY + '"/>';
+   UNA PLUMA SE DIBUJA CON PELO, NO CON SILUETA. Se probaron cuatro
+   caminos y los tres primeros se tiraron, y los tres fallaban igual:
+   cualquier forma RELLENA de borde limpio se lee como otra cosa. Con
+   lóbulos redondos sale una margarita; con el borde en puntas, una
+   corona de espinas; con lóbulos grandes y blandos, un loto. Lo que
+   hace a la pluma es el raquis y las BARBAS que salen de él, y lo que
+   hace al pompón es que el borde quede peludo —o sea que la silueta NO
+   se cierre—. Se eligió mirando: los armados montados al tamaño real y
+   al de un teléfono, que es lo único que sirve cuando el problema es
+   que algo "no se parece".
+
+   Tres cosas que no son de gusto:
+   · Las barbas se ARQUEAN —el punto de control cae hacia la base— y se
+     van parando hacia la punta. Rectas y parejas sale un helecho.
+   · Adentro hay un núcleo relleno MÁS ANGOSTO que las barbas: el pompón
+     es denso en el medio y deshilachado en el borde, como el de verdad.
+     Sin núcleo se transparenta; con el núcleo del ancho de las barbas
+     vuelve el pétalo.
+   · El abanico va APLANADO —todas las plumas casi del mismo largo y muy
+     abiertas—, que es lo que lo vuelve un montículo. Con la del medio
+     larga y las de afuera cortas sale una palmera.
+
+   Los colores son los TRES QUE MANDÓ LA CLIENTA —rosa, negro y
+   plateado— y no el crema de antes: son los mismos de las muestras que
+   están dos renglones más abajo, así que el adorno dice lo mismo que el
+   dato. El plateado además se ve sobre el papel rosa; un crema ahí casi
+   no existe. */
+const PLUMA = { N: 9, ABRE: 88, BARBAS: 58, PANZA: 1, INC_BASE: 80,
+                INC_PUNTA: 34, LARGO: .95, NUCLEO: .45, ANCHO: 32, APLANADO: .08 };
+
+function coronaDePlumas(){
+  /* La misma cuenta que la sierra y los besos, con una semilla fija:
+     con `Math.random()` dos capturas de la misma invitación saldrían
+     distintas. */
+  let x = 20270410;
+  const R = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
+  const env = (W, t) => W * Math.pow(Math.sin(Math.PI * Math.pow(t, PLUMA.PANZA)), .66);
+
+  /* las barbas de UNA pluma, todas en un solo camino */
+  const barbas = (L, W) => {
+    let d = '';
+    for (let i = 1; i <= PLUMA.BARBAS; i++) {
+      const t = i / (PLUMA.BARBAS + 1), y = -L * t;
+      const inc = (PLUMA.INC_BASE + (PLUMA.INC_PUNTA - PLUMA.INC_BASE) * t +
+                   (R() - .5) * 14) * Math.PI / 180;
+      const e = env(W, t) * PLUMA.LARGO * (.68 + .56 * R());
+      for (const s of [-1, 1]) {
+        d += 'M0 ' + y.toFixed(1) + 'Q' + (s * e * .30).toFixed(1) + ' ' +
+             (y - e * .62).toFixed(1) + ' ' + (s * e * Math.sin(inc)).toFixed(1) +
+             ' ' + (y - e * Math.cos(inc)).toFixed(1);
+      }
+    }
+    return d;
+  };
+  /* el núcleo: la misma envolvente, más angosta y cerrada */
+  const nucleo = (L, W) => {
+    let d = 'M0 0';
+    for (let i = 1; i <= 16; i++)
+      d += 'L' + (-env(W, i/16) * PLUMA.NUCLEO).toFixed(1) + ' ' + (-L*i/16).toFixed(1);
+    for (let i = 16; i >= 1; i--)
+      d += 'L' + (env(W, i/16) * PLUMA.NUCLEO).toFixed(1) + ' ' + (-L*i/16).toFixed(1);
+    return d + 'Z';
+  };
+
+  const pompon = (L, W, col, nerv) => {
+    /* de afuera hacia adentro: las del medio quedan adelante */
+    const orden = [];
+    for (let i = 0; i < PLUMA.N; i++) orden.push(i);
+    orden.sort((a, b) => Math.abs(b - (PLUMA.N-1)/2) - Math.abs(a - (PLUMA.N-1)/2));
+    let g = '';
+    orden.forEach(i => {
+      const u = PLUMA.N === 1 ? 0 : (i / (PLUMA.N - 1)) * 2 - 1;
+      const li = L * (1 - PLUMA.APLANADO + PLUMA.APLANADO * Math.cos(u * 1.18)) * (.93 + .14*R());
+      const wi = W * (.90 + .20 * R());
+      g += '<g transform="rotate(' + (u * PLUMA.ABRE).toFixed(1) + ')">' +
+        '<path d="' + barbas(li, wi) + '" fill="none" stroke="' + col +
+          '" stroke-width=".5" stroke-linecap="round" opacity=".85"/>' +
+        /* el núcleo es MÁS CORTO que las barbas: denso abajo y pura
+           pelusa arriba. Del largo de la pluma sale una hoja con punta,
+           que es lo que hacía leer el pompón como una planta. */
+        '<path d="' + nucleo(li * .58, wi) + '" fill="' + col + '" opacity=".85"/>' +
+        '<path d="M0 0L0 ' + (-li * .50).toFixed(1) + '" fill="none" stroke="' + nerv +
+          '" stroke-width=".7" opacity=".35"/></g>';
+    });
+    return g;
+  };
+
+  /* El viewBox es MÁS ALTO que la caja que lo muestra: lo que sobra por
+     abajo es justamente lo que queda detrás del borde. Van de menor a
+     mayor y de atrás para adelante, como en la captura. */
+  let g = '<svg viewBox="0 0 274 100" role="presentation">';
+  [[66, '#A9A5AE', '#8D8994', .76], [132, '#CE7B98', '#B06482', .88],
+   [198, '#1C1016', '#56404B', 1]].forEach(c => {
+    g += '<g transform="translate(' + c[0] + ' 100)">' +
+         pompon(88 * c[3], PLUMA.ANCHO * c[3], c[1], c[2]) + '</g>';
   });
-  g += '</g>' +
-    puff('a', '#FFF9FB', '#FFFFFF', '#D7A9BA', C[0][0], C[0][1], .80, -14) +
-    puff('c', 'var(--negro)', '#3A2630', 'var(--negro)', C[2][0], C[2][1], .78, 14) +
-    puff('b', 'var(--rosa)', '#EFB3C6', '#B06F86', C[1][0], C[1][1], .96, 0) +
-    '<g fill="var(--acento-ti)" stroke="none">' + MONO(NX, NY, 20, 11, 2.2) + '</g>';
   return g + '</svg>';
 }
 
@@ -1635,18 +1708,19 @@ function falta(que, chico){
 }
 
 (function(){
-  /* El dress code: las fotos si las hay, y si no los dibujos. Cada
-     foto se muestra recién cuando cargó de verdad; la que falla se
-     saca, y si no queda ninguna vuelve el dibujo — nunca un marco
-     alrededor de un cuadrado roto. */
+  /* El dress code. La corona de plumas es el MARCO del bloque y está
+     siempre: no es el dibujo que espera a las fotos, así que el día que
+     la clienta las mande no se va — las fotos entran abajo, que es el
+     moodboard. Cada foto se muestra recién cuando cargó de verdad y la
+     que falla se saca: nunca un marco alrededor de un cuadrado roto. */
   const cf = $('#dressFotos'), cd = $('#dressDibujo');
-  if (cd) cd.innerHTML = ramoDePlumas();
+  if (cd) cd.innerHTML = coronaDePlumas();
   const lista = (CONFIG.dressFotos || []).filter(f => f && f.foto);
-  if (cf && cd && lista.length) {
+  if (cf && lista.length) {
     let vivas = 0, faltan = lista.length;
     const cerrar = () => {
       if (--faltan) return;
-      if (vivas) { cf.hidden = false; cd.hidden = true; }
+      if (vivas) cf.hidden = false;
     };
     lista.slice(0, 4).forEach(f => {
       cargarFoto(f.foto, f.alt || '', im => {
@@ -1654,9 +1728,10 @@ function falta(que, chico){
         fig.appendChild(im); cf.appendChild(fig); vivas++; cerrar();
       }, cerrar);
     });
-  } else if (cd && !CONFIG.dressTexto) {
-    /* Borrador: se dice que las fotos todavía no están. */
-    cd.insertAdjacentElement('afterend', falta('las fotos del dress code'));
+  } else if (cf && !CONFIG.dressTexto) {
+    /* Borrador: se dice que las fotos todavía no están. Va pegado al
+       hueco de las fotos y no a la corona, que ahora vive arriba. */
+    cf.insertAdjacentElement('afterend', falta('las fotos del dress code'));
   }
   /* LAS MUESTRAS DE COLOR, que es lo que la referencia pone adentro de
      la bolsa y lo que la clienta mandó escrito a mano. Salen de CONFIG
