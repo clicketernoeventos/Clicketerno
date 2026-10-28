@@ -903,6 +903,15 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .marca-alada .ala{width:clamp(88px,26vw,128px);flex:none;
   filter:drop-shadow(0 3px 6px rgba(155,53,88,.33))}
 .marca-alada .ala.der{transform:scaleX(-1)}
+/* LA MARCA YA DIBUJADA que mandó el dueño. Se pone RECIÉN cuando el
+   archivo cargó de verdad: hasta entonces —y si alguna vez faltara—
+   queda la dibujada, que se sostiene sola. Nunca un cuadrado roto
+   donde va el emblema del final. Y lleva su sombra porque las plumas
+   son casi blancas y el papel también: sin ella el ala se pierde
+   contra el fondo, que es lo mismo que ya hacía la dibujada. */
+.marca-alada.con-foto{display:block;margin-bottom:clamp(2px,.8vh,8px)}
+.marca-foto{display:block;width:min(440px,92%);height:auto;margin:0 auto;
+  filter:drop-shadow(0 5px 12px rgba(155,53,88,.22))}
 .marca-pie{justify-content:center;font-size:clamp(46px,13vw,64px);
   color:var(--negro);flex:none}
 .marca-pie-nom{font-family:var(--titulos);font-weight:500;
@@ -1258,7 +1267,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
            segunda referencia: el monograma centrado y el nombre
            abajo, chiquito y espaciado. Acá no lleva metal —sobre el
            papel claro el oro rosa da 2,2:1, o sea que no estaría—. -->
-      <p class="marca-alada ap">
+      <p class="marca-alada ap" id="marcaAlada">
         <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
         <span class="azb marca-pie"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
         <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
@@ -1335,6 +1344,9 @@ const CONFIG = {
      un cuadrado roto—: la portada se queda tipográfica, el óvalo
      muestra la inicial y la franja se esconde entera. */
   portada: "fotos/portada.webp",
+  /* La marca con alas, ya dibujada, para el cierre. Vacía deja la
+     dibujada con el `<symbol>` de siempre, que es el estado bueno. */
+  marca: "fotos/marca.webp",
   franjas: {
     fRecuerdo: {foto:"fotos/1.webp", alt:"Ámbar"},
     fHoy:      {foto:"fotos/2.webp", alt:"Ámbar"}
@@ -1765,6 +1777,20 @@ function falta(que, chico){
   if (ov && CONFIG.portada)
     cargarFoto(CONFIG.portada, (CONFIG.quien || 'La cumpleañera'),
                im => { ov.innerHTML = ''; ov.appendChild(im); }, inicial);
+
+  /* LA MARCA DEL CIERRE. La dibujada ya está en el HTML, así que
+     ésta la REEMPLAZA recién cuando cargó de verdad: si el archivo
+     faltara queda la de siempre y no un cuadrado roto. Y el `<img>` lo
+     crea el JS y no el HTML: un `<img>` con `src` vacío le pide al
+     servidor la página entera de nuevo, y eso no avisa. */
+  const ma = document.getElementById('marcaAlada');
+  if (ma && CONFIG.marca)
+    cargarFoto(CONFIG.marca, (CONFIG.nombreCompleto || CONFIG.quien || ''), im => {
+      im.className = 'marca-foto';
+      ma.innerHTML = '';
+      ma.appendChild(im);
+      ma.classList.add('con-foto');
+    }, () => {});
 
   /* Las franjas. Cada una trae su sierra —con su propia semilla, para
      que las dos no salgan iguales— y se muestra recién cuando la foto

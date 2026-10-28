@@ -4282,6 +4282,8 @@ que ahí la marca es tinta: *si un bloque trae su propio fondo, trae su
 propia tinta*, enésima vez.
 **Y el cierre perdió su medallón**: la marca ES su emblema, y dos
 emblemas apilados se leen como un error de maqueta.
+*(Más abajo: esa marca dibujada pasó a ser el RESPALDO, porque el dueño
+mandó después la pieza ya hecha.)*
 
 **El sobre es el de la captura: abierto, con la carta asomando, las
 alas a los costados y el lacre dorado.** Y eso NO contradice lo que ya
@@ -4488,6 +4490,30 @@ Verificada rompiéndola a propósito: con el "Almi" del cierre puesto da
 invitación nueva es copiar la anterior, así que lo que se queda viejo
 no es el código — es el DATO escrito a mano en el renglón que nadie
 vuelve a mirar.
+
+#### Y después mandó la marca ya dibujada
+
+*"Esto ponelo."* — un PNG con la A y la B en negro y oro rosa entre dos
+alas de pluma, que es el emblema del cierre pero hecho como una pieza
+terminada: las plumas con volumen y las letras con su biselado.
+
+**Va en el cierre y reemplaza a la dibujada, pero la dibujada se
+queda.** Se pone recién cuando el archivo cargó de verdad; si faltara
+—o si el día de mañana alguien lo borra— queda la de siempre, que se
+sostiene sola, y no un cuadrado roto donde va el emblema. Es lo mismo
+que ya hacen la portada y las franjas, y es por lo que el `<img>` lo
+crea el JS y no el HTML: un `<img>` con `src` vacío le pide al servidor
+la página entera de nuevo, y eso no avisa.
+
+**Y va SOLO en el cierre, no en todos lados.** Sus plumas son casi
+blancas, así que se lee sobre el papel claro del final —con su sombra,
+igual que la dibujada— y se perdería sobre las rayas de la bolsa, que
+es claro también. En la bolsa y en la portada las alas siguen siendo
+las dibujadas, que ahí van en negro. **Un emblema no se pone donde
+entra: se pone donde se lee.**
+
+Pesa **53 KB** en `.webp` a 820px de ancho, que es el doble de lo que
+se dibuja en pantalla. El PNG que llegó pesaba 1,5 MB.
 
 #### Lo que sigue faltando
 
