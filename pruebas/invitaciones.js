@@ -154,6 +154,46 @@ const EVENTOS = ((() => {
 })());
 /* Una fiesta en la lista que no tiene carpeta es un renglón que quedó
    de algo que se borró: deja abierta una pestaña que nadie va a mirar. */
+/* ── EL NOMBRE DE OTRA CLIENTA ──
+   Una invitación nueva se hace copiando la anterior, y el nombre de la
+   anterior se queda escrito a mano en los renglones que nadie vuelve a
+   mirar: el cierre, el rótulo del mensaje, el aviso de datos. Pasó —
+   ambar15 salió de almi15 y decía "Almi" en tres lugares—. Se dibuja
+   perfecto, no tira ningún error, y lo ve la clienta.
+   Se mira el HTML SIN comentarios: lo que explica de dónde salió la
+   pieza puede nombrar a la otra; lo que se PUBLICA, no. */
+console.log('\n─── el nombre de otra clienta ───');
+{
+  const quienDe = {};
+  for (const c of carpetas){
+    const f = path.join(RAIZ, c, 'index.html');
+    if (!fs.existsSync(f)) continue;
+    const m = fs.readFileSync(f, 'utf8').match(/\bquien\s*:\s*["']([^"']+)["']/);
+    if (m && m[1].trim()) quienDe[c] = m[1].trim();
+  }
+  let cruces = 0;
+  for (const c of carpetas){
+    const f = path.join(RAIZ, c, 'index.html');
+    if (!fs.existsSync(f)) continue;
+    const limpio = fs.readFileSync(f, 'utf8')
+      .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/\/\*[\s\S]*?\*\//g, ' ')
+      .replace(/^[ \t]*\/\/.*$/gm, ' ');
+    for (const otra of Object.keys(quienDe)){
+      const nombre = quienDe[otra];
+      if (otra === c || nombre === quienDe[c]) continue;
+      const esc = nombre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      /* El borde no es \b: ni una letra ni un dígito, así que "almi15"
+         —la carpeta— no cuenta como nombrar a Almi. */
+      if (new RegExp('(^|[^\\p{L}\\p{N}])' + esc + '($|[^\\p{L}\\p{N}])', 'iu').test(limpio)){
+        mal(`"${c}" nombra a "${nombre}", que es la clienta de "${otra}"`);
+        cruces++;
+      }
+    }
+  }
+  if (!cruces) bien(`ninguna de las ${carpetas.length} nombra a la clienta de otra`);
+}
+
 console.log('\n─── la planilla central ───');
 if (!CENTRAL) console.log('  (todavía sin implementar: lib/planilla.js vacío)');
 else bien('la dirección está puesta en lib/planilla.js');

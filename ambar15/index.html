@@ -22,9 +22,11 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   Almi · quince años
-   La MISMA paleta y las mismas letras que la de Pia —así lo pidió la
-   clienta—, con otro armado y otras animaciones.
+   Ámbar · quince años
+   La estética la eligió ella: Victoria's Secret —rayas rosa y blanco,
+   encaje negro, moños, perlas y alas—. El sobre y la bolsa salen de
+   dos capturas que mandó el dueño, y el monograma AZB son SUS
+   iniciales (Ámbar Zoe Balbi), no la marca de nadie.
    Lo que la separa de una invitación "básica" está en tres lugares y
    los tres están comentados abajo: el SOBRE (se abre de verdad y la
    carta sale de adentro), el CORTE entre secciones (una curva con su
@@ -146,22 +148,23 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 .medallon .chispa.d{right:-4px;top:calc(50% - 3px)}
 
 /* ══════════ 1 · el sobre ══════════
-   LA CARTA NO SE VE DESDE AFUERA. La primera versión la dejaba
-   asomando debajo de la solapa —"queda feo", y es cierto: un sobre
-   cerrado no muestra lo que tiene adentro—. Ahora son cuatro capas y
-   el orden es el que importa: el cuerpo, la CARTA, el frente del
-   sobre que la tapa, y la solapa con su sello. Cerrado no se ve nada;
-   al abrir, la solapa gira sobre su bisagra y la carta sale de atrás
-   del frente, que es exactamente lo que hace un sobre de verdad. */
-/* EL SOBRE SE VA CUANDO LA CARTA SALE, Y LA CARTA NO SE VA CON ÉL.
-   Antes se fundía la capa ENTERA, carta incluida, recién al final: la
-   carta se abría sobre la pantalla con el sobre todavía dibujado
-   detrás, y eso no se lee como una transición — se lee como dos cosas
-   pasando a la vez. Ahora el fondo y el papel del sobre se funden
-   apenas la carta arranca a volar, y lo único que queda en pantalla es
-   la carta creciendo sobre la portada.
-   Por eso el fondo vive en su PROPIA capa (`:before`) y no en `#sobre`:
-   fundiendo `#sobre` se funde también la carta, que es su hija. */
+   EL SOBRE ES EL DE LA REFERENCIA, con todas las letras: el dueño
+   mandó la captura y pidió "que el sobre sea igual al que te mandé y
+   con la misma fuente". Son cinco piezas y el orden importa:
+     · el fondo de RAYAS, que es el mismo de la portada;
+     · las ALAS blancas, que salen de atrás a los dos costados;
+     · la SOLAPA abierta, un triángulo que apunta hacia arriba;
+     · la CARTA, que asoma por encima del bolsillo;
+     · el BOLSILLO del frente con sus dos pliegues, y el LACRE dorado
+       con el monograma — que es lo único que hay que tocar.
+
+   ACÁ LA CARTA SE VE A PROPÓSITO, y no contradice lo que ya está
+   escrito para almi15 ("que se vea la carta por fuera queda feo").
+   Allá el papel se escapaba por los COSTADOS de un sobre cerrado, que
+   es un defecto; acá el sobre está ABIERTO y la carta asoma por
+   arriba, que es lo que hace la referencia y lo que hace un sobre
+   abierto de verdad. Lo que no puede verse nunca es lo que el sobre
+   dice que está tapando. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
   transition:visibility 0s linear 2.4s}
 /* El sobre vive sobre las MISMAS rayas que la portada: el que abre no
@@ -170,7 +173,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre:before{content:'';position:absolute;inset:0;z-index:0;
   background-color:var(--papel);
   background-image:
-    radial-gradient(120% 80% at 50% 44%,rgba(255,255,255,.78),rgba(255,255,255,.25) 60%,rgba(247,216,227,.1)),
+    radial-gradient(120% 80% at 50% 44%,rgba(255,255,255,.62),rgba(255,255,255,.12) 60%,rgba(247,216,227,.06)),
     repeating-linear-gradient(90deg,
       var(--raya) 0,var(--raya) var(--raya-ancho),
       var(--papel) var(--raya-ancho),var(--papel) calc(var(--raya-ancho) * 2));
@@ -179,57 +182,135 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre.abierto{visibility:hidden;pointer-events:none}
 /* El papel del sobre se va con el fondo. La carta NO está en esta
    lista: ella se va sola, volando. */
-.tapa-cuerpo,.tapa-frente,.flanco,#sobre .arriba,.sobre-pie{
+.tapa-cuerpo,.tapa-frente,.solapa,.alas-sobre,#sobre .arriba,.sobre-pie{
   transition:opacity .55s var(--e) .95s}
-#sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .flanco,
-#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
-.sobre-centro{text-align:center;display:grid;gap:clamp(24px,5vh,40px);justify-items:center;
+#sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .solapa,
+#sobre.abierto .alas-sobre,#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
+.sobre-centro{text-align:center;display:grid;gap:clamp(18px,4vh,34px);justify-items:center;
   position:relative;z-index:1}
 /* Y el sobre se acerca un poco al irse: el que mira entra en la
-   tarjeta en vez de ver desaparecer una capa. */
-.tapa{width:min(76vw,300px);aspect-ratio:1.45;position:relative;perspective:1000px;
+   tarjeta en vez de ver desaparecer una capa.
+   La caja es MÁS ALTA que el sobre porque la carta asoma por arriba:
+   el sobre ocupa del 10% para abajo y lo de arriba es la carta. */
+.tapa{width:min(66vw,268px);aspect-ratio:1.05;position:relative;perspective:1000px;
   transition:transform .75s var(--e) .55s}
 #sobre.abierto .tapa{transform:scale(1.07)}
-.tapa-cuerpo{position:absolute;inset:0;border-radius:5px;
+
+/* ── LAS ALAS ── salen de atrás, una a cada lado, como en la
+   referencia. Son el MISMO dibujo espejado que el de la portada: dos
+   dibujos para la misma cosa es uno que se queda atrás. Blancas, con
+   los nervios en rosa y su sombra: sobre las rayas claras un blanco
+   sin sombra no se ve. */
+.alas-sobre{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;pointer-events:none}
+.alas-sobre .ala{position:absolute;top:14%;width:46%;
+  filter:drop-shadow(0 4px 7px rgba(155,53,88,.28))}
+/* Las alas BARREN HACIA ARRIBA, como en la referencia: sin ese giro
+   el dibujo cae y se lee como dos plumas colgando. Y no se salen de
+   la pantalla: el sobre ya mide 78vw, así que lo que asoma a los
+   costados es lo que queda — un ancho en vw acá se iría del borde.
+   POR ESO EL SOBRE ES MÁS ANGOSTO que la pantalla: las alas no son un
+   adorno que se puede recortar, son la mitad de la referencia, y un
+   ala cortada contra el borde se lee como un error de maqueta. */
+.alas-sobre .ala.izq{left:-21%;transform:rotate(-18deg)}
+.alas-sobre .ala.der{right:-21%;transform:scaleX(-1) rotate(-18deg)}
+.alas-sobre{color:#fff;--pluma:#DFA9BD}
+
+/* ── LA SOLAPA ABIERTA ── un triángulo de verdad (`clip-path`, no un
+   cuadrado rotado) con la punta hacia ARRIBA, que es como se ve la
+   espalda de un sobre abierto. Gira sobre su bisagra al abrir. */
+.solapa{position:absolute;left:0;right:0;top:7%;height:45%;z-index:2;
+  background:linear-gradient(195deg,#F6CEDB,#E7A6BC);
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+  filter:drop-shadow(0 6px 12px rgba(155,53,88,.3));
+  transform-origin:50% 100%;
+  transition:transform .72s var(--e) .12s,opacity .55s var(--e) .95s}
+#sobre.abierto .solapa{transform:rotateX(150deg)}
+/* El cuerpo del sobre, atrás de todo lo de abajo. */
+.tapa-cuerpo{position:absolute;left:0;right:0;top:44%;bottom:0;z-index:3;border-radius:0 0 5px 5px;
   background:linear-gradient(160deg,#F3C3D3,#E7A3BA 60%,#D98BA4);
-  box-shadow:0 42px 84px -32px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.14),
-    0 0 0 1px rgba(242,184,203,.2)}
-/* La carta: vive adentro y sale al abrir. */
-.carta{position:absolute;left:9%;right:9%;top:9%;bottom:7%;border-radius:3px;z-index:2;
-  background:linear-gradient(180deg,var(--perla),#FBEAF0);
-  box-shadow:0 12px 26px -16px rgba(0,0,0,.5);
-  display:grid;place-items:center;align-content:center;gap:7px;
+  box-shadow:0 42px 84px -32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.14)}
+
+/* ── LA CARTA ── asoma por encima del bolsillo. Dice QUIÉN invita y
+   cuándo: se ve dos segundos, así que son cuatro renglones y nada más.
+   La fuente es la misma de los títulos, que es lo que pidió el dueño
+   ("con la misma fuente"). */
+.carta{position:absolute;left:12%;right:12%;top:20%;bottom:29%;border-radius:3px;z-index:4;
+  background:linear-gradient(180deg,#fff,#FBEAF0);
+  box-shadow:0 12px 26px -14px rgba(28,16,22,.45);
+  display:grid;place-items:center;align-content:center;gap:clamp(4px,1.2vw,7px);
+  /* El relleno de abajo sube el texto: la parte de la carta que se VE
+     es la que asoma del bolsillo, y centrado en la caja entera el
+     último renglón le quedaba atrás —la fecha tapada por el lacre—. */
+  padding:0 7% 26%;
   transition:transform .8s var(--e) .35s,opacity .55s linear .95s}
-#sobre.abierto .carta{transform:translateY(-64%) scale(1.03)}
-/* Y DESPUÉS LA CARTA VUELA HACIA EL QUE MIRA.
-   Esto es lo que el dueño pidió con "una apertura copada y no tan
-   genérica": que salga la carta y se funda no es un gesto, es una
-   transición. Acá la carta sale del sobre, se para de frente y se
-   abre sobre la pantalla hasta que el papel ES la portada. El cuánto
-   lo calcula el JS (`--esc`) con la caja de verdad contra la pantalla
-   de verdad: un número escrito a mano se queda corto en una tablet y
-   se pasa en un iPhone SE, y en los dos casos se ve el borde del
-   papel cruzando la pantalla a mitad de la animación. */
+#sobre.abierto .carta{transform:translateY(-40%) scale(1.03)}
+/* Y DESPUÉS LA CARTA VUELA HACIA EL QUE MIRA. Esto es lo que el dueño
+   pidió con "una apertura copada y no tan genérica": que salga la
+   carta y se funda no es un gesto, es una transición. El cuánto lo
+   calcula el JS (`--esc`) con la caja de verdad contra la pantalla de
+   verdad: un número escrito a mano se queda corto en una tablet y se
+   pasa en un iPhone SE, y en los dos casos se ve el borde del papel
+   cruzando la pantalla a mitad de la animación. */
 #sobre.abierto .carta.volando{
-  transform:translateY(-30%) scale(var(--esc,2.6));
+  transform:translateY(-22%) scale(var(--esc,2.6));
   opacity:0;
-  /* Desacelerando y en un segundo y cuarto, no en novecientos
-     milisegundos con la curva estándar: la primera versión crecía
-     SIETE veces y se iba de golpe, y eso no se lee como una tarjeta
-     que se abre — se lee como un golpe. Y la opacidad empieza a bajar
-     enseguida, así que lo grande ya está translúcido: lo que pasa es
-     una disolución, no un barrido. */
   transition:transform 1.25s var(--e),opacity 1s var(--e) .3s}
-/* El sello se PARTE: dos mitades que se separan, giran y se caen.
+.carta-mono{font-size:clamp(15px,4.2vw,20px);color:var(--negro)}
+.carta-nom{font-family:var(--titulos);font-weight:500;
+  font-size:clamp(11.5px,3.2vw,15px);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--negro);line-height:1.25}
+.carta-txt{font-family:var(--texto-f);font-weight:400;
+  font-size:clamp(8.5px,2.3vw,10.5px);letter-spacing:.3em;text-transform:uppercase;
+  color:var(--acento-ti)}
+.carta-fecha{font-family:var(--texto-f);font-weight:500;
+  font-size:clamp(9.5px,2.5vw,11.5px);letter-spacing:.2em;color:var(--gris);
+  font-variant-numeric:lining-nums tabular-nums}
+.carta .hilito{width:38px;height:1px;background:var(--acento-ti);opacity:.6}
+
+/* ── EL BOLSILLO DEL FRENTE ── con sus dos pliegues, que es lo que lo
+   hace leer como un sobre y no como un rectángulo rosa. Los pliegues
+   son dos cuñas con una sombra apenas distinta: una línea dibujada
+   encima se ve como una raya, dos papeles que se tocan se ven como un
+   pliegue. */
+.tapa-frente{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:5;
+  border-radius:0 0 5px 5px;overflow:hidden;
+  background:linear-gradient(170deg,#EDB4C7,#E099B2 70%,#D286A0);
+  box-shadow:0 -3px 12px -6px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
+.tapa-frente i{position:absolute;inset:0}
+.tapa-frente i.f1{clip-path:polygon(0 100%,50% 0,0 0);background:rgba(255,255,255,.1)}
+.tapa-frente i.f2{clip-path:polygon(100% 100%,50% 0,100% 0);background:rgba(154,70,96,.1)}
+
+/* ── EL LACRE ── dorado, con el monograma adentro. Es lo único que hay
+   que tocar en toda la pantalla, así que no puede ser rosa sobre un
+   sobre rosa: en la referencia es dorado y acá además le queda —se
+   llama Ámbar—. El monograma en tinta sobre el dorado da 5,9:1. */
+.tapa-mandos{position:absolute;left:0;right:0;top:76%;transform:translateY(-50%);z-index:6;
+  display:grid;place-items:center;transition:opacity .3s var(--e)}
+#sobre.abierto .tapa-mandos{opacity:0;pointer-events:none}
+#abrir{position:relative;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#F0D08A,#C9972F 58%,#9A6E18);
+  box-shadow:0 12px 26px -8px rgba(28,16,22,.45),inset 0 1px 2px rgba(255,255,255,.4);
+  color:var(--tinta);transition:transform .45s var(--e)}
+#abrir .azb{font-size:23px}
+#abrir:active{transform:scale(.95)}
+@media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
+/* El latido va en un HALO alrededor y no en el botón: moviendo la caja
+   que se toca, el navegador la da por "inestable" y una prueba se
+   cuelga treinta segundos contra un botón que está perfecto. */
+#abrir:after{content:'';position:absolute;inset:-7px;border-radius:50%;
+  border:1px solid #9A6E18;opacity:0;animation:latir 3s ease-out infinite}
+@keyframes latir{0%{opacity:.5;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.18)}}
+
+/* El lacre se PARTE: dos mitades que se separan, giran y se caen.
    Va en una capa aparte y no en el botón: moviendo la caja que se
    toca, el navegador la da por inestable y una prueba se cuelga
    treinta segundos contra un botón que está perfecto. */
-.quiebre{position:absolute;left:0;right:0;top:53%;transform:translateY(-50%);z-index:6;
+.quiebre{position:absolute;left:0;right:0;top:76%;transform:translateY(-50%);z-index:7;
   display:grid;place-items:center;pointer-events:none;opacity:0}
 #sobre.abierto .quiebre{opacity:1}
 .quiebre .sello{position:relative;width:62px;height:62px}
 .quiebre .sello i{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#46303A,var(--negro) 55%,#0B0509);
+  background:radial-gradient(circle at 34% 28%,#F0D08A,#C9972F 58%,#9A6E18);
   box-shadow:0 10px 22px -10px rgba(28,16,22,.5)}
 /* El filo del medio va quebrado, no recto: un sello partido al medio
    con una regla no parece lacre, parece una moneda. */
@@ -246,71 +327,37 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    lo único de toda la pieza que dura menos de medio segundo, y es el
    remate del gesto. */
 .quiebre .polvo{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;
-  border-radius:50%;background:var(--negro);opacity:0}
+  border-radius:50%;background:#C9972F;opacity:0}
 #sobre.abierto .quiebre .polvo{animation:chispear .72s ease-out forwards}
 @keyframes chispear{
   0%{opacity:0;transform:translate(0,0) scale(.4)}
   18%{opacity:1}
   100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
-/* La carta dice lo que tiene que decir, no una inicial. Se ve un
-   segundo —mientras sale del sobre y se abre sobre la pantalla—, así
-   que va corta y grande: una frase larga ahí no la lee nadie. */
-.carta-txt{font-family:var(--titulos);font-weight:500;
-  font-size:clamp(17px,4.9vw,23px);color:var(--negro);
-  letter-spacing:.01em;line-height:1.3;text-align:center;padding:0 8%}
-.carta .hilito{width:46px;height:1px;background:var(--acento-ti);opacity:.7}
-/* El frente del sobre, que es lo que tapa la carta. */
-.tapa-frente{position:absolute;left:0;right:0;bottom:0;height:56%;z-index:3;
-  border-radius:0 0 5px 5px;
-  background:linear-gradient(170deg,#EDB4C7,#E099B2 70%,#D286A0);
-  box-shadow:0 -2px 10px -4px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1)}
-/* LOS DOS PLIEGUES LATERALES, y no son un adorno: son lo que termina
-   de TAPAR la carta. Con la solapa sola, el triángulo se angosta hacia
-   abajo y por los dos costados de arriba asomaban dos cuñas blancas —
-   exactamente lo que el dueño señaló: "que se vea la carta por fuera
-   queda feo". Un sobre de verdad tiene cuatro pliegues en la espalda:
-   el grande de arriba, estos dos y el de abajo. Puestos los cuatro, no
-   queda un solo punto por donde se vea lo de adentro. */
-.flanco{position:absolute;top:0;height:46%;width:54%;z-index:3;
-  background:linear-gradient(200deg,#F1BFD0,#DE94AD 78%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.flanco.izq{left:0;clip-path:polygon(0 0,0 100%,100% 100%)}
-.flanco.der{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
-/* La solapa: un triángulo de verdad —`clip-path`, no un cuadrado
-   rotado adentro de un overflow— que gira sobre su bisagra de arriba. */
-.solapa{position:absolute;left:0;right:0;top:0;height:56%;z-index:4;
-  background:linear-gradient(135deg,#F6CEDB,#E7A6BC);
-  clip-path:polygon(0 0,100% 0,50% 100%);
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,.45));
-  transform-origin:50% 0;
-  /* El `z-index` cambia A LOS 0,45 s, cuando la solapa ya pasó de los
-     90 grados: una solapa abierta va DETRÁS de la carta, no encima.
-     Cambiado de entrada, la carta se vería un cuadro antes de que la
-     solapa se mueva; cambiado nunca, la carta sale tapada por el
-     triángulo y el gesto no se entiende. */
-  transition:transform .72s var(--e) .12s, z-index 0s linear .45s,
-    opacity .55s var(--e) .95s}
-#sobre.abierto .solapa{transform:rotateX(-168deg);z-index:1;opacity:0}
-.tapa-mandos{position:absolute;left:0;right:0;top:53%;transform:translateY(-50%);z-index:5;
-  display:grid;place-items:center;transition:opacity .3s var(--e)}
-#sobre.abierto .tapa-mandos{opacity:0;pointer-events:none}
-/* EL SELLO ES NEGRO. En rosa sobre un sobre rosa desaparece, y es lo
-   único que hay que tocar en toda la pantalla. */
-#abrir{position:relative;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#46303A,var(--negro) 55%,#0B0509);
-  box-shadow:0 12px 26px -8px rgba(28,16,22,.5),inset 0 1px 2px rgba(255,255,255,.22);
-  color:var(--acento-cl);transition:transform .45s var(--e)}
-#abrir svg{width:26px;height:26px}
-#abrir:active{transform:scale(.95)}
-@media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
-/* El latido va en un HALO alrededor y no en el botón: moviendo la caja
-   que se toca, el navegador la da por "inestable" y una prueba se
-   cuelga treinta segundos contra un botón que está perfecto. */
-#abrir:after{content:'';position:absolute;inset:-7px;border-radius:50%;
-  border:1px solid var(--negro);opacity:0;animation:latir 3s ease-out infinite}
-@keyframes latir{0%{opacity:.4;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.18)}}
 .sobre-pie{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta)}
 .sobre-pie b{color:var(--acento-ti);font-weight:400}
+
+/* ══════════ EL MONOGRAMA AZB ══════════
+   Lo pidió el dueño con todas las letras: "hacé un juego con las
+   iniciales de la quinceañera y que parezca el logo de Victoria's
+   Secret; las iniciales son AZB". Son SUS iniciales —Ámbar Zoe
+   Balbi—, no la V y la S de una marca registrada: eso último es lo
+   que este archivo ya tenía prohibido y sigue prohibido.
+   SE ELIGIÓ MIRANDO, no describiendo: se montaron doce armados a 72,
+   34 y 20 píxeles y adentro del lacre, y se eligió el que se lee en
+   los cuatro. Lo que no funciona —y había que verlo para saberlo— es
+   SOLAPAR tres capitulares de una didona: el logo de VS son DOS
+   letras y por eso puede entrelazarlas; con tres, la del medio se la
+   come la de al lado y a 20px queda una mancha.
+   Lo que sí funciona es la ESCALA: la Z al 122% entre una A y una B
+   al 74%, tocándose apenas. A 20px se sigue leyendo AZB.
+   Va como TEXTO y no como dibujo, así que el medidor de contraste lo
+   mide de verdad: dibujado en un SVG sin color propio informaría
+   1,00:1 y tendría razón según lo que mide. */
+.azb{display:inline-flex;align-items:baseline;line-height:1;
+  font-family:var(--titulos);font-weight:600;letter-spacing:0;color:inherit}
+.azb i{font-style:normal;display:block}
+.azb i:nth-child(1),.azb i:nth-child(3){font-size:.74em}
+.azb i:nth-child(2){font-size:1.22em;margin:0 -.05em}
 
 /* ══════════ el lienzo ══════════ */
 #papel{position:relative;z-index:1}
@@ -396,19 +443,19 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    la clienta y no se inventan. En vez de dejar un renglón vacío —que se
    lee como un error de maqueta— cada dato que falta se dibuja como una
    píldora que DICE qué falta. Y desaparece sola en cuanto el dato
-   existe, así que no puede quedarse puesta el día que esto se reparta:
-   lo que la enciende es que todavía no haya pestaña de planilla
-   (`CONFIG.evento` vacío), o sea exactamente "esto es un borrador". */
+   existe, así que no puede quedarse puesta el día que esto se reparta.
+   Lo que la enciende es que el DATO esté vacío, uno por uno: llenos
+   los cinco que faltaban, hoy no se dibuja ninguna. */
 .falta{display:inline-block;font-family:var(--texto-f);font-weight:500;
   font-size:clamp(11px,3vw,13px);letter-spacing:.04em;line-height:1.3;
   color:#7A2340;background:#FFE8F0;border:1px dashed #C97C98;
   border-radius:999px;padding:5px 11px;vertical-align:middle}
 .oscura .falta{color:#FFE8F0;background:rgba(255,232,240,.12);border-color:#E3A9BF}
-/* La tarjeta es papel claro aunque viva adentro de una sección oscura,
+/* La bolsa es papel claro aunque viva adentro de una sección oscura,
    así que se lleva su propia tinta: con la del fondo negro, la píldora
    quedaba rosa pálido sobre rosa pálido y no se leía. Si un bloque
    trae su propio fondo, trae su propia tinta — enésima vez. */
-.oscura .tarjeta .falta{color:#7A2340;background:#FFE8F0;border-color:#C97C98}
+.oscura .bolsa-cuerpo .falta{color:#7A2340;background:#FFE8F0;border-color:#C97C98}
 /* La del óvalo va más chica: ahí no entra un renglón entero. */
 .falta.chica{font-size:10px;padding:4px 7px;letter-spacing:0}
 
@@ -429,15 +476,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    el abanico es lo que las convierte en un ala. El dibujo es uno solo
    y se espeja: dos dibujos para la misma cosa es uno que se queda
    atrás. */
-.alas .ala{width:100%;color:var(--negro)}
+.alas{color:var(--negro);--pluma:var(--papel)}
+.alas .ala{width:100%}
 /* El ala es UNA silueta rellena con dos muescas —no un manojo de
    trazos—, y encima tres hilos claros que marcan las plumas. Dibujada
    con puro trazo se lee como un rayado; dibujada con plumas sueltas y
    paralelas, como dos pestañas. La silueta es lo que la hace un ala.
    Es la misma idea que el ala negra sobre las rayas de la referencia. */
-.alas .ala .cuerpo{fill:currentColor}
-.alas .ala .detalle{fill:none;stroke:var(--papel);stroke-width:1.6;
-  stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.9}
 .alas .ala.der{transform:scaleX(-1)}
 .ovalo{position:relative;width:clamp(104px,30vw,146px);aspect-ratio:.84;
   border-radius:50%;overflow:hidden;flex:none;
@@ -614,19 +659,79 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .oscura .calen .hora-txt{color:#E8CBD6}
 .claro .calen .hora-txt{color:var(--gris)}
 
-/* ══════════ 5 · tarjetas ══════════ */
-.tarjeta{position:relative;background-color:var(--perla);border-radius:4px;
-  padding:clamp(30px,7.5vw,44px) clamp(22px,6vw,34px);text-align:center;
-  box-shadow:0 34px 64px -36px rgba(0,0,0,.55)}
-/* El filete interior: una tarjeta de papel con su borde impreso. */
-.tarjeta:before{content:'';position:absolute;inset:9px;border:1px solid rgba(155,53,88,.3);
-  border-radius:2px;pointer-events:none}
-.tarjeta + .tarjeta{margin-top:20px}
-.tarjeta .arriba{color:var(--acento-ti)}
-.tarjeta h3{font-family:var(--titulos);font-weight:500;
-  font-size:clamp(26px,7vw,34px);color:var(--negro);line-height:1.15;margin-top:10px}
-.tarjeta p{font-size:15px;line-height:1.85;margin-top:14px;color:var(--gris)}
-.tarjeta .medallon{color:var(--acento-ti);margin-bottom:6px}
+/* ══════════ 5 · LA BOLSA ══════════
+   El dueño mandó la segunda referencia con una línea: "la parte del
+   dress code y eso, que sea como la última foto". La última foto es
+   la BOLSA DE PAPEL a rayas: adentro van el dress code con sus
+   muestras de color y el regalo.
+   Antes acá había dos tarjetas de papel, una al lado de la otra. La
+   bolsa no es un cambio de adorno: es lo que hace que esta parte se
+   lea como la tienda y no como una ficha.
+   LO QUE NO SE COPIA DE LA REFERENCIA ES EL TEXTO EN ARCO. Ahí los
+   párrafos van curvados siguiendo el borde de la bolsa y es lindo en
+   una captura; leído en un teléfono es exactamente lo que este
+   archivo no permite — un texto que hay que girar la cabeza para
+   leer. Lo que hace a la bolsa son las rayas, las asas y el pliegue
+   de la boca, no la curva del párrafo. */
+.bolsa{max-width:420px;margin:0 auto;position:relative}
+/* Las asas. Van DETRÁS del cuerpo (z-index menor), así los pies
+   desaparecen bajo el pliegue de la boca igual que en una bolsa de
+   verdad: pegados por encima se leen como dos arcos dibujados. */
+.bolsa-asas{display:block;width:72%;margin:0 auto -14px;height:auto;position:relative;z-index:1;
+  fill:none;stroke:#FFF9FB;stroke-width:6;stroke-linecap:round;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
+.bolsa-cuerpo{position:relative;z-index:2;border-radius:3px;overflow:hidden;
+  padding:clamp(36px,8.5vw,50px) clamp(20px,5.5vw,32px) clamp(30px,7vw,42px);
+  text-align:center;color:var(--tinta);
+  box-shadow:0 34px 64px -34px rgba(0,0,0,.6)}
+/* El pliegue de la boca: la tira que se dobla hacia afuera. */
+.bolsa-cuerpo:before{content:'';position:absolute;left:0;right:0;top:0;
+  height:clamp(16px,4vw,22px);z-index:1;pointer-events:none;
+  background:rgba(255,255,255,.55);border-bottom:1px solid rgba(155,53,88,.22)}
+/* El volumen: una bolsa no es un rectángulo plano. Es un degradé
+   TRANSPARENTE, así que el medidor de contraste lo saltea y sigue
+   subiendo hasta el fondo de verdad — que es lo que hay que medir. */
+.bolsa-cuerpo:after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(28,16,22,.13),rgba(28,16,22,0) 17%,
+    rgba(255,255,255,.2) 47%,rgba(28,16,22,0) 82%,rgba(28,16,22,.11))}
+.bolsa-cuerpo > *{position:relative;z-index:2}
+/* LA BOLSA TRAE SU PROPIO FONDO, ASÍ QUE TRAE SU PROPIA TINTA: vive
+   adentro de una sección oscura y sin esto heredaría el crema del
+   texto sobre negro, o sea crema sobre papel rosa. Enésima vez. */
+.bolsa-cuerpo .arriba{color:var(--acento-ti)}
+.bolsa-cuerpo h3{font-family:var(--titulos);font-weight:500;
+  font-size:clamp(26px,7vw,34px);color:var(--negro);line-height:1.15;
+  letter-spacing:.02em;text-transform:uppercase;margin-top:14px}
+.bolsa-cuerpo p{font-size:15px;line-height:1.85;margin-top:14px;color:var(--gris)}
+/* La marca de la bolsa: las alas y el monograma, como en la
+   referencia. Las alas son el MISMO dibujo de siempre. */
+/* La marca va con el id de la bolsa adelante y no suelta: `.bolsa-cuerpo p`
+   pesa más que `.bolsa-marca`, así que el monograma heredaba el gris de
+   los párrafos y las alas con él. Se dibujaba y no era el color. */
+.bolsa-cuerpo .bolsa-marca{display:flex;align-items:center;justify-content:center;
+  gap:clamp(0px,.6vw,5px);margin-top:0;color:var(--negro);--pluma:#F3D4DF}
+.bolsa-marca .ala{width:clamp(56px,16vw,76px);flex:none}
+.bolsa-marca .ala.der{transform:scaleX(-1)}
+.bolsa-marca .azb{font-size:clamp(27px,7.4vw,36px)}
+/* LAS MUESTRAS DE COLOR, que es lo que la referencia pone adentro de
+   la bolsa y lo que la clienta mandó escrito: rosa, negro, plateado.
+   Cada una dice su nombre: una fila de cuadraditos sin rótulo es un
+   adorno, y esto es un dato. */
+.muestras{display:flex;justify-content:center;gap:clamp(9px,2.6vw,14px);
+  margin-top:clamp(16px,3.4vw,22px)}
+/* El ancho de la muestra lo decide el RÓTULO, no el cuadradito:
+   "PLATEADO" espaciado mide 58px y la primera versión le daba 55. Se
+   dibujaba perfecto y la palabra se salía de su caja. */
+.muestras figure{margin:0;width:clamp(54px,16.5vw,70px)}
+.muestras i{display:block;height:clamp(56px,16vw,74px);border-radius:3px;
+  box-shadow:inset 0 0 0 1px rgba(28,16,22,.2),0 7px 14px -9px rgba(28,16,22,.55)}
+.muestras figcaption{font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--acento-ti);margin-top:8px}
+.bolsa-cuerpo .muestras-pie{font-size:12.5px;line-height:1.6;margin-top:12px;
+  color:var(--acento-ti)}
+.bolsa-corte{display:block;height:1px;width:min(180px,56%);
+  margin:clamp(28px,6.5vw,38px) auto 0;
+  background:linear-gradient(90deg,transparent,rgba(155,53,88,.55),transparent)}
 /* ── EL MOODBOARD DEL DRESS CODE ──
    Con fotos es lo que pidió el dueño mirando la referencia: cuatro
    recortes enmarcados, apenas torcidos, como fotos pegadas en un
@@ -649,7 +754,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    las letras, y encima la foto de dress code los va a reemplazar el
    día que llegue, así que lo que va mientras tanto es lo que él
    señaló. Es DECORACIÓN: lo que dice qué ponerse es el texto. */
-.plumas{width:min(250px,84%);margin:clamp(12px,2.4vh,18px) auto 0}
+.plumas{width:min(206px,68%);margin:clamp(14px,2.6vh,20px) auto 0}
 .plumas svg{display:block;width:100%;height:auto}
 .rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--acento-ti);margin-top:22px}
@@ -676,7 +781,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    para el vino y da 1,55:1 — o sea que "Copiar alias" no está. Es la
    regla de siempre, por enésima vez: si un bloque trae su propio
    fondo, trae su propia tinta. Lo agarró el medidor, no el ojo. */
-.tarjeta .btn.hueco{border-color:rgba(155,53,88,.55);color:var(--acento-ti)}
+.bolsa-cuerpo .btn.hueco{border-color:rgba(155,53,88,.55);color:var(--acento-ti)}
 
 /* ══════════ 6 · la confirmación ══════════ */
 .campo{text-align:left;margin-bottom:20px}
@@ -816,32 +921,50 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
 <div class="grano" aria-hidden="true"></div>
 
+<!-- EL ALA, UNA SOLA VEZ. Aparece en la portada (negra, sobre el
+     papel) y en el sobre (blanca, como en la referencia): dos dibujos
+     para la misma cosa es uno que se queda atrás. El color lo pone
+     quien la usa —`color` para la silueta y `--pluma` para los
+     nervios—, porque un selector de CSS no entra adentro de un `use`
+     pero una propiedad heredada sí. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="alaAzb" viewBox="0 0 130 92">
+    <path fill="currentColor" d="M124 86C100 74 70 52 48 32 30 16 16 10 6 6c6 14 16 30 28 44-6-2-12-5-17-9 8 13 19 25 32 34-6-1-12-3-17-6 12 11 30 17 44 19-6-2-12-4-17-7 15 7 39 9 65 5z"/>
+    <path fill="none" stroke="var(--pluma,#FDF0F5)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M112 78C92 69 66 50 46 31"/>
+    <path fill="none" stroke="var(--pluma,#FDF0F5)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M96 70C80 59 62 44 50 31"/>
+    <path fill="none" stroke="var(--pluma,#FDF0F5)" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke" d="M78 62C68 54 56 42 48 32"/>
+  </symbol>
+</svg>
+
 <!-- ══════════ 1 · el sobre ══════════ -->
 <div id="sobre">
   <div class="sobre-centro">
     <p class="arriba">Estás invitado</p>
     <div class="tapa">
+      <div class="alas-sobre" aria-hidden="true">
+        <svg class="ala izq" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
+        <svg class="ala der" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
+      </div>
+      <div class="solapa" aria-hidden="true"></div>
       <div class="tapa-cuerpo" aria-hidden="true"></div>
       <div class="carta">
-        <p class="carta-txt">Te invito<br>a mi fiesta</p>
+        <span class="azb carta-mono"><i>A</i><i>Z</i><i>B</i></span>
+        <p class="carta-nom" id="cartaNom"></p>
         <i class="hilito" aria-hidden="true"></i>
+        <p class="carta-txt">mis quince años</p>
+        <p class="carta-fecha" id="cartaFecha"></p>
       </div>
-      <div class="flanco izq" aria-hidden="true"></div>
-      <div class="flanco der" aria-hidden="true"></div>
-      <div class="tapa-frente" aria-hidden="true"></div>
-      <div class="solapa" aria-hidden="true"></div>
+      <div class="tapa-frente" aria-hidden="true"><i class="f1"></i><i class="f2"></i></div>
       <div class="tapa-mandos">
         <button id="abrir" type="button" aria-label="Abrir la invitación">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 0c.9 8.2 2.9 11.1 12 12-9.1.9-11.1 3.8-12 12-.9-8.2-2.9-11.1-12-12C9.1 11.1 11.1 8.2 12 0z"/>
-          </svg>
+          <span class="azb" aria-hidden="true"><i>A</i><i>Z</i><i>B</i></span>
         </button>
       </div>
+      <div class="quiebre" aria-hidden="true">
+        <div class="sello"><i class="a"></i><i class="b"></i></div>
+      </div>
     </div>
-    <div class="quiebre" aria-hidden="true">
-      <div class="sello"><i class="a"></i><i class="b"></i></div>
-    </div>
-    <p class="sobre-pie">Tocá el sello <b>para abrir</b></p>
+    <p class="sobre-pie">Tocá el lacre <b>para abrir</b></p>
   </div>
 </div>
 
@@ -860,19 +983,9 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
     <!-- Las alas y el óvalo. Las dos alas son el MISMO dibujo espejado. -->
     <div class="alas ap" aria-hidden="true">
-      <svg class="ala izq" viewBox="0 0 130 92">
-        <path class="cuerpo" d="M124 86C100 74 70 52 48 32 30 16 16 10 6 6c6 14 16 30 28 44-6-2-12-5-17-9 8 13 19 25 32 34-6-1-12-3-17-6 12 11 30 17 44 19-6-2-12-4-17-7 15 7 39 9 65 5z"/>
-        <path class="detalle" d="M112 78C92 69 66 50 46 31"/>
-        <path class="detalle" d="M96 70C80 59 62 44 50 31"/>
-        <path class="detalle" d="M78 62C68 54 56 42 48 32"/>
-      </svg>
+      <svg class="ala izq" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
       <div class="ovalo" id="ovalo"></div>
-      <svg class="ala der" viewBox="0 0 130 92">
-        <path class="cuerpo" d="M124 86C100 74 70 52 48 32 30 16 16 10 6 6c6 14 16 30 28 44-6-2-12-5-17-9 8 13 19 25 32 34-6-1-12-3-17-6 12 11 30 17 44 19-6-2-12-4-17-7 15 7 39 9 65 5z"/>
-        <path class="detalle" d="M112 78C92 69 66 50 46 31"/>
-        <path class="detalle" d="M96 70C80 59 62 44 50 31"/>
-        <path class="detalle" d="M78 62C68 54 56 42 48 32"/>
-      </svg>
+      <svg class="ala der" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
     </div>
 
     <!-- El moño, debajo del óvalo. -->
@@ -939,31 +1052,47 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     </div>
   </section>
 
-  <!-- ══════════ 6 · los detalles ══════════ -->
-  <section class="seccion oscura arco">
+  <!-- ══════════ 6 · la bolsa: dress code y regalo ══════════ -->
+  <section class="seccion oscura arco" id="detalles" data-ico="vestido">
     <div class="caja">
-      <div class="tarjeta ap" data-ico="vestido">
-        <p class="arriba">Cómo vestirse</p>
-        <h3>Dress code</h3>
-        <p id="dressTexto"></p>
-        <!-- El moodboard: las FOTOS si las hay, y mientras tanto el
-             ramo de plumas dibujado. La referencia arma el moodboard
-             con fotos de gente sacadas de internet; esas no van: la
-             invitación queda en una dirección pública y es el artículo
-             53, el que está escrito en nuestros propios Términos. El
-             día que la clienta mande las suyas, se cambia. -->
-        <div class="dressfotos" id="dressFotos" hidden></div>
-        <div class="plumas" id="dressDibujo" aria-hidden="true" style="pointer-events:none"></div>
-      </div>
-      <div class="tarjeta ap d1" data-ico="regalo">
-        <p class="arriba">Un gesto</p>
-        <h3>Regalo</h3>
-        <p>El mejor regalo es que vengas. Si querés hacerme un presente,
-           podés colaborar con mis sueños y mis ganas de festejar.</p>
-        <p class="rotulo-alias">Alias para transferir</p>
-        <b id="alias"></b>
-        <p id="titular"></p>
-        <button class="btn hueco" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+      <p class="arriba ap">Para la noche</p>
+      <div class="bolsa ap d1">
+        <svg class="bolsa-asas" viewBox="0 0 300 70" aria-hidden="true">
+          <path d="M70 70C70 12 130 12 130 70"/>
+          <path d="M170 70C170 12 230 12 230 70"/>
+        </svg>
+        <div class="bolsa-cuerpo rayado">
+          <p class="bolsa-marca">
+            <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
+            <span class="azb"><i>A</i><i>Z</i><i>B</i></span>
+            <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
+          </p>
+
+          <h3>Dress code</h3>
+          <p id="dressTexto"></p>
+          <!-- Las muestras salen de CONFIG, no escritas acá: el día que
+               cambie un color, escrito en dos lugares uno se queda. -->
+          <div class="muestras" id="muestras"></div>
+          <p class="muestras-pie">Son una guía, no una obligación.</p>
+          <!-- El moodboard: las FOTOS si las hay, y mientras tanto el
+               ramo de plumas dibujado. La referencia arma el moodboard
+               con fotos de gente sacadas de internet; esas no van: la
+               invitación queda en una dirección pública y es el artículo
+               53, el que está escrito en nuestros propios Términos. El
+               día que la clienta mande las suyas, se cambia. -->
+          <div class="dressfotos" id="dressFotos" hidden></div>
+          <div class="plumas" id="dressDibujo" aria-hidden="true" style="pointer-events:none"></div>
+
+          <i class="bolsa-corte" aria-hidden="true"></i>
+
+          <h3>El regalo</h3>
+          <p>El mejor regalo es que vengas. Si querés hacerme un presente,
+             podés colaborar con mis sueños y mis ganas de festejar.</p>
+          <p class="rotulo-alias">Alias para transferir</p>
+          <b id="alias"></b>
+          <p id="titular"></p>
+          <button class="btn hueco" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+        </div>
       </div>
     </div>
   </section>
@@ -1020,7 +1149,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
              contesten que no pueden ir. El que no llega es justamente el
              que más quiere dejar escrito algo. -->
         <div class="campo">
-          <label for="fMensaje">Un mensaje para Almi</label>
+          <label for="fMensaje">Un mensaje para <span class="elNom"></span></label>
           <textarea id="fMensaje" name="Mensaje" rows="3" maxlength="500"
                     placeholder="Un deseo, algo que le quieras decir…"></textarea>
         </div>
@@ -1029,8 +1158,8 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
           <summary>Qué pasa con lo que escribís acá</summary>
           <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
           son, armar las mesas, pasarle al salón las comidas especiales y darle a
-          Almi los mensajes que le dejen.
-          La lista la tiene <b>la familia de Almi</b>, que es quien organiza;
+          <span class="elNom"></span> los mensajes que le dejen.
+          La lista la tiene <b>la familia de <span class="elNom"></span></b>, que es quien organiza;
           Click Eterno solo la guarda por su cuenta y orden.
           Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
           comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
@@ -1048,7 +1177,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   <section class="seccion claro arco" id="cierre" data-ico="destello">
     <div class="caja">
       <div class="filete ap"><i></i><b></b><i></i></div>
-      <p class="cierre-n ap d1">Almi</p>
+      <p class="cierre-n ap d1 elNom"></p>
       <p class="cuerpo ap d2" id="teEspero"></p>
     </div>
   </section>
@@ -1085,10 +1214,8 @@ const CONFIG = {
      píldora que dice qué falta, y la píldora desaparece sola en cuanto
      el dato existe. Mientras haya huecos la confirmación NO se manda a
      ningún lado y lo dice con todas las letras. */
-  quien: "",                     // HUECO · el nombre. Va en grande en la
-                                 // portada y además arma la dirección
-                                 // (clicketerno.com.ar/<nombre>15), así que
-                                 // el día que llegue se renombra la carpeta
+  quien: "Ámbar",
+  nombreCompleto: "Ámbar Zoe Balbi",   // el que va en la carta del sobre
   fiesta: "2027-04-10T21:00:00-03:00",
   hastaHora: "04:00",            // se escribe "de 21 a 4 h": las 4 son del día siguiente
   confirmarHasta: "",            // HUECO · vacío NO dibuja el renglón: una fecha
@@ -1097,7 +1224,17 @@ const CONFIG = {
   lugar: "La Mansión del Rey",
   calle: "Vera Mujica 68 · Rosario",
   mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
-  dressTexto: "",                // HUECO · qué dice el dress code
+  dressTexto: "Elegante sport",
+  /* LOS COLORES DE LA FIESTA, que en la referencia son las muestras de
+     la bolsa. Los mandó ella escritos a mano: "rosa y negro plateado".
+     Van como GUÍA y no como obligación —a la pregunta de cómo se
+     visten contestó "como quieran"—, y eso lo dice el renglón de
+     abajo. */
+  dressColores: [
+    {n:"Rosa",     c:"#E3A6BC"},
+    {n:"Negro",    c:"#1C1016"},
+    {n:"Plateado", c:"#C9C7CC"}
+  ],
   /* Las fotos de referencia del dress code, hasta cuatro. Vacío deja
      los cuatro DIBUJOS, que dicen lo mismo y son nuestros. Y si van
      fotos, que sean de ropa o de la clienta: las de la referencia son
@@ -1106,22 +1243,22 @@ const CONFIG = {
   /* Las fotos. Vacío NO dibuja nada —ni un marco alrededor de nada ni
      un cuadrado roto—: la portada se queda tipográfica, el óvalo
      muestra la inicial y la franja se esconde entera. */
-  portada: "",                   // HUECO · la foto del óvalo de la portada
+  portada: "fotos/portada.webp",
   franjas: {
-    fRecuerdo: {foto:"", alt:""},   // HUECO
-    fHoy:      {foto:"", alt:""}    // HUECO
+    fRecuerdo: {foto:"fotos/1.webp", alt:"Ámbar"},
+    fHoy:      {foto:"fotos/2.webp", alt:"Ámbar"}
   },
-  alias: "",                     // HUECO · el alias para los regalos. Se escribe
-                                 // TAL CUAL lo manden, sin "arreglarle" nada:
-                                 // en mia15 el punto del final resultó ser
-                                 // parte del alias
+  /* EL ALIAS SE ESCRIBE TAL CUAL LO MANDAN, sin "arreglarle" nada: en
+     mia15 el punto del final resultó ser parte del alias, y copiado de
+     menos la transferencia del invitado va a otra cuenta. */
+  alias: "ambar.balbi.rc",
   titular: "",                   // HUECO · el nombre que muestra el banco al
                                  // pegar el alias. Un nombre inventado al lado
                                  // de un alias es peor que ninguno
   /* La pestaña de ESTA fiesta en la planilla central de Click Eterno.
      Tiene que estar además en lib/planillas.json, que es la lista que
      mira el Apps Script: lo que no está en esa lista no entra. */
-  evento: "",                    // HUECO · se llena junto con el nombre
+  evento: "ambar15",
   /* La dirección NO se escribe acá: es UNA sola para todas las
      invitaciones y vive en lib/planilla.js. */
   endpoint: ""
@@ -1383,6 +1520,19 @@ function falta(que, chico){
     /* Borrador: se dice que las fotos todavía no están. */
     cd.insertAdjacentElement('afterend', falta('las fotos del dress code'));
   }
+  /* LAS MUESTRAS DE COLOR, que es lo que la referencia pone adentro de
+     la bolsa y lo que la clienta mandó escrito a mano. Salen de CONFIG
+     y no del HTML: escritas en los dos lados, el día que cambie un
+     color uno de los dos se queda viejo. Sin colores la fila se saca
+     entera — nunca una hilera de cuadraditos vacíos. */
+  const mu = $('#muestras');
+  if (mu) {
+    const cols = (CONFIG.dressColores || []).filter(c => c && c.c);
+    if (cols.length) mu.innerHTML = cols.map(c =>
+      '<figure><i style="background:' + esc(c.c) + '"></i>' +
+      '<figcaption>' + esc(c.n || '') + '</figcaption></figure>').join('');
+    else mu.remove();
+  }
 
   /* El óvalo: la foto si la hay, y si no la INICIAL. Nunca un hueco
      negro ni un cuadrado roto. Si la foto falla al cargar, vuelve la
@@ -1611,6 +1761,20 @@ function horaTexto(){
     if (CONFIG.quien) nom.textContent = CONFIG.quien;
     else { nom.textContent = ''; nom.appendChild(falta('el nombre')); }
   }
+  /* Y TODOS LOS DEMÁS LUGARES DONDE SE LA NOMBRA salen del mismo
+     dato: el cierre, el rótulo del mensaje y el aviso de datos.
+     Escrito a mano en cada uno, esta invitación salió una vez con el
+     nombre de la clienta anterior en tres renglones — se dibujaba
+     perfecta y no daba ningún error. */
+  $$('.elNom').forEach(n => { n.textContent = CONFIG.quien || '…'; });
+  /* La carta del sobre: quién invita y cuándo. Sale de CONFIG como
+     todo lo demás — escrita a mano en el HTML sería un segundo lugar
+     donde está el nombre, y el segundo es el que se queda viejo. */
+  const cn = $('#cartaNom');
+  if (cn) cn.textContent = CONFIG.nombreCompleto || CONFIG.quien || '';
+  const cfe = $('#cartaFecha');
+  if (cfe && F) cfe.textContent = String(F.dia).padStart(2,'0') + ' · ' +
+                                  String(F.mes).padStart(2,'0') + ' · ' + F.anio;
   $('#lugar').textContent = CONFIG.lugar;
   $('#calle').textContent = CONFIG.calle;
   $('#mapa').href = CONFIG.mapa;
