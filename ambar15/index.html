@@ -339,6 +339,32 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 .sobre-pie{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta)}
 .sobre-pie b{color:var(--acento-ti);font-weight:400}
 
+/* ══════════ EL BESO ══════════
+   Lo pidió el dueño con una captura: la marca de labios rosa sobre
+   las rayas. Va DIBUJADA, no es la imagen de la captura: una imagen
+   de la que no sabemos la licencia no se publica, y además así pesa
+   cero, no se pixela y se puede teñir donde haga falta.
+   Lo que hace que se lea como un SELLO y no como una boca de
+   dibujito son tres cosas, y se vieron mirando: el HUECO entre los
+   dos labios (la primera versión los pegaba y quedaba un globo), las
+   ESTRÍAS claras que lo cruzan casi hasta el filo —recortadas con un
+   `clipPath`, porque sueltas asoman por fuera y parecen rayones— y
+   el borde IRREGULAR. Sale de una semilla fija, como la sierra: al
+   azar en cada carga, dos capturas de la misma invitación saldrían
+   distintas.
+   Es decoración declarada —`aria-hidden` Y `pointer-events:none`,
+   las dos juntas—, que es como el medidor de contraste saltea un
+   adorno sin quedarse ciego con el resto. */
+.beso{position:absolute;display:block;pointer-events:none;z-index:2;
+  line-height:0}
+.beso svg{display:block;width:100%;height:auto}
+.beso-sobre{top:9%;right:6%;width:clamp(58px,17vw,96px);transform:rotate(-13deg);opacity:.9}
+.beso-portada{top:clamp(80px,14vh,130px);left:9%;width:clamp(52px,15vw,84px);
+  transform:rotate(-16deg);opacity:.85}
+.beso-bolsa{top:6%;right:6%;width:clamp(44px,12vw,66px);transform:rotate(12deg);opacity:.9}
+.beso-cierre{position:relative;width:clamp(44px,12vw,62px);
+  margin:clamp(18px,3vh,28px) auto 0;transform:rotate(-11deg);opacity:.9}
+
 /* ══════════ EL MONOGRAMA AZB ══════════
    Son SUS iniciales —Ámbar Zoe Balbi—, no la V y la S de una marca
    registrada: eso último es lo que este archivo ya tenía prohibido y
@@ -409,7 +435,11 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   text-align:center;overflow:hidden;color:var(--negro)}
 #portada:before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(120% 75% at 50% 42%,rgba(255,255,255,.72),rgba(255,255,255,.2) 62%,transparent)}
-#portada > :not(.encaje):not(.marco){position:relative;z-index:1}
+/* Las capas sueltas de la portada quedan AFUERA de esta regla: con
+   `position:relative` dejan de ser capas y pasan a ser filas de la
+   grilla, con ancho de contenido — o sea 0. Ya costó una vuelta con
+   el encaje y el marco; el beso es la tercera. */
+#portada > :not(.encaje):not(.marco):not(.beso){position:relative;z-index:1}
 /* El marco esquiva la curva de la sección siguiente: sin ese respiro,
    la cumbre del arco le come las dos esquinas de abajo y el filete
    termina cortado contra una curva que no es suya. */
@@ -704,7 +734,11 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .bolsa-cuerpo:after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(90deg,rgba(28,16,22,.13),rgba(28,16,22,0) 17%,
     rgba(255,255,255,.2) 47%,rgba(28,16,22,0) 82%,rgba(28,16,22,.11))}
-.bolsa-cuerpo > *{position:relative;z-index:2}
+/* Y el beso queda AFUERA de esta regla, por lo mismo que en la
+   portada: `position:relative` lo saca de ser una capa y lo mete en
+   el flujo, así que el `right/top` deja de valer y se planta donde
+   caiga. Tercera vez que aparece la misma trampa en este archivo. */
+.bolsa-cuerpo > :not(.beso){position:relative;z-index:2}
 /* LA BOLSA TRAE SU PROPIO FONDO, ASÍ QUE TRAE SU PROPIA TINTA: vive
    adentro de una sección oscura y sin esto heredaría el crema del
    texto sobre negro, o sea crema sobre papel rosa. Enésima vez. */
@@ -849,10 +883,19 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
 /* ══════════ 7 · el cierre ══════════ */
 #cierre{padding-bottom:clamp(50px,8vh,80px)}
-/* La marca del final. Va en el NEGRO de la pieza y no en el metal:
-   el oro rosa del lacre sobre este papel da 2,2:1 y no se leería. */
+/* La marca del final, CON SUS ALAS: es el diseño que mandó el dueño
+   —la A y la B negras entre dos alas de pluma— y éste es el lugar
+   donde entra entera, en grande y sin competirle a nada.
+   Va en el NEGRO de la pieza y no en el metal: el oro rosa del lacre
+   sobre este papel da 2,2:1 y no se leería. */
+.marca-alada{display:flex;align-items:center;justify-content:center;
+  gap:clamp(0px,.8vw,6px);color:#FFFFFF;--pluma:#D98BA4;
+  margin-bottom:clamp(8px,1.6vh,14px)}
+.marca-alada .ala{width:clamp(88px,26vw,128px);flex:none;
+  filter:drop-shadow(0 3px 6px rgba(155,53,88,.33))}
+.marca-alada .ala.der{transform:scaleX(-1)}
 .marca-pie{justify-content:center;font-size:clamp(46px,13vw,64px);
-  color:var(--negro);margin-bottom:clamp(8px,1.6vh,14px)}
+  color:var(--negro);flex:none}
 .marca-pie-nom{font-family:var(--titulos);font-weight:500;
   font-size:clamp(9.5px,2.6vw,11.5px);letter-spacing:.34em;
   text-transform:uppercase;color:var(--gris);margin-bottom:clamp(20px,3.4vh,30px)}
@@ -955,6 +998,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
 <!-- ══════════ 1 · el sobre ══════════ -->
 <div id="sobre">
+  <i class="beso beso-sobre" data-beso aria-hidden="true"></i>
   <div class="sobre-centro">
     <p class="arriba">Estás invitado</p>
     <div class="tapa">
@@ -990,6 +1034,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   <!-- ══════════ 2 · la portada ══════════ -->
   <section class="seccion rayado" id="portada">
     <div class="encaje" aria-hidden="true"></div>
+    <i class="beso beso-portada" data-beso aria-hidden="true"></i>
     <div class="marco" aria-hidden="true">
       <i class="t"></i><i class="r"></i><i class="b"></i><i class="l"></i>
       <svg class="esq tl linea" viewBox="0 0 30 30"><path d="M0 14c6 0 10-4 10-10M0 8c4 0 8-3 8-8M4 0c0 2-2 4-4 4"/></svg>
@@ -1079,6 +1124,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
           <path d="M170 70C170 12 230 12 230 70"/>
         </svg>
         <div class="bolsa-cuerpo rayado">
+          <i class="beso beso-bolsa" data-beso aria-hidden="true"></i>
           <p class="bolsa-marca">
             <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
             <span class="azb"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
@@ -1199,11 +1245,18 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
            segunda referencia: el monograma centrado y el nombre
            abajo, chiquito y espaciado. Acá no lleva metal —sobre el
            papel claro el oro rosa da 2,2:1, o sea que no estaría—. -->
-      <p class="azb marca-pie ap"><i>A</i><i class="z">Z</i><i class="b">B</i></p>
+      <p class="marca-alada ap">
+        <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
+        <span class="azb marca-pie"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
+        <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
+      </p>
       <p class="marca-pie-nom ap d1" id="pieNombre"></p>
       <div class="filete ap d1"><i></i><b></b><i></i></div>
       <p class="cierre-n ap d2 elNom"></p>
       <p class="cuerpo ap d3" id="teEspero"></p>
+      <!-- El beso del final va DESPUÉS del "te espero": entre el nombre
+           y el filete le quedaba montado al rombo. -->
+      <i class="beso beso-cierre ap d3" data-beso aria-hidden="true"></i>
     </div>
   </section>
 
@@ -1461,6 +1514,66 @@ const ORNAMENTO =
         p.classList.add('trazo');
       }catch(e){}
     });
+})();
+
+/* ══════════ EL BESO ══════════
+   La marca de labios que pidió el dueño. Tres cosas la hacen leer
+   como un sello y no como una boca —se vieron mirando, no leyendo el
+   código—: el HUECO entre los dos labios, las ESTRÍAS claras que los
+   cruzan y el borde IRREGULAR.
+   Las estrías van RECORTADAS con un `clipPath` a la silueta: sueltas
+   asoman por fuera del labio y lo que se ve son rayones blancos
+   colgando, no un sello. Eso costó una vuelta.
+   La semilla es fija —la fecha de la fiesta, como la sierra—, así que
+   dos capturas de la misma invitación salen iguales; y cada beso lleva
+   la suya, para que los cuatro no sean el mismo dibujo repetido. */
+function besoSVG(semilla, id){
+  let x = (semilla || 1) >>> 0;
+  const az = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
+  const j = n => (az() - .5) * n;
+  const mid = 52, sep = 3.8, curva = 3;
+  /* El filo de la boca es una CURVA, no una recta: recto se lee como
+     si a los labios los hubiera cortado una regla. */
+  const filo = y0 => {
+    const q = [];
+    for (let i = 0; i <= 8; i++){
+      const px = 4 + i * 16.5, h = (px - 70) / 70;
+      q.push([px, y0 + (1 - h * h) * curva + j(.8)]);
+    }
+    return q;
+  };
+  const linea = q => q.map(c => 'L' + c[0].toFixed(1) + ' ' + c[1].toFixed(1)).join('');
+  const fArr = filo(mid - sep), fAb = filo(mid + sep);
+  let dA = 'M4 ' + (mid - 4 + j(1)).toFixed(1);
+  [[18,mid-14],[32,mid-22],[46,mid-27],[57,mid-19],[70,mid-12],
+   [83,mid-20],[96,mid-27],[110,mid-22],[124,mid-14],[136,mid-4]]
+    .forEach(c => { dA += ' L' + (c[0]+j(2.2)).toFixed(1) + ' ' + (c[1]+j(2.4)).toFixed(1); });
+  dA += linea(fArr.slice().reverse()) + ' Z';
+  let dB = 'M' + fAb[0][0] + ' ' + fAb[0][1].toFixed(1) + linea(fAb.slice(1));
+  [[128,mid+12],[115,mid+24],[100,mid+34],[84,mid+40],[70,mid+42],
+   [56,mid+40],[40,mid+34],[25,mid+24],[12,mid+12]]
+    .forEach(c => { dB += ' L' + (c[0]+j(2.4)).toFixed(1) + ' ' + (c[1]+j(2.6)).toFixed(1); });
+  dB += ' Z';
+  let est = '';
+  for (let i = 0; i < 26; i++){
+    const px = 8 + (i + az() * .55) * (124 / 26), h = (px - 70) / 70;
+    est += '<path d="M' + px.toFixed(1) + ' ' + mid + ' L' + (px + j(3.4)).toFixed(1) + ' '
+         + (mid - 6 - 20 * (1 - h * h * .7) * (.55 + az() * .55)).toFixed(1) + '"/>';
+    const p2 = 8 + (i + az() * .55) * (124 / 26);
+    est += '<path d="M' + p2.toFixed(1) + ' ' + mid + ' L' + (p2 + j(3.4)).toFixed(1) + ' '
+         + (mid + 6 + 32 * (1 - h * h * .62) * (.55 + az() * .55)).toFixed(1) + '"/>';
+  }
+  return '<svg viewBox="0 0 140 104" role="presentation">'
+    + '<defs><clipPath id="' + id + '"><path d="' + dA + '"/><path d="' + dB + '"/></clipPath></defs>'
+    + '<g fill="#C97591"><path d="' + dA + '"/><path d="' + dB + '"/></g>'
+    + '<g clip-path="url(#' + id + ')" stroke="#FFFFFF" stroke-width="1.2" '
+    + 'stroke-linecap="round" fill="none" opacity=".7">' + est + '</g></svg>';
+}
+(function(){
+  const sem = String(CONFIG.fiesta || '').replace(/\D/g,'').slice(0,8) | 0;
+  $$('[data-beso]').forEach((n, i) => {
+    n.innerHTML = besoSVG(sem + i * 104729, 'beso' + i);
+  });
 })();
 
 /* ══════════ las fotos ══════════

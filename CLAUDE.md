@@ -4327,6 +4327,44 @@ raya rosa y el papel están a menos de cinco puntos de luminancia y el
 texto es oscuro. Si alguna vez se oscurece la raya, ese texto hay que
 volver a mirarlo con el píxel.
 
+#### El monograma con alas, y los besos
+
+Dos pedidos más, con dos capturas: *"Pone ese diseño en algún lado y
+unos labios iguales a esos en algunas partes de la invitación"*.
+
+**El diseño con alas va al FINAL**, que es el único lugar donde entra
+entero y en grande sin competirle a nada: la A y la B negras entre las
+dos alas, el nombre completo abajo en versalitas y, debajo, el beso.
+Ahí las alas van **blancas** —son las de la referencia— con los
+nervios en rosa y su sombra: sobre el papel claro, un blanco sin
+sombra no se ve. Es el mismo dibujo de siempre, el del `<symbol>`.
+
+**El beso va DIBUJADO, no es la imagen de la captura.** Una imagen de
+la que no sabemos la licencia no se publica —la regla de siempre—, y
+además así pesa cero, no se pixela y se puede teñir donde haga falta.
+Está en cuatro lugares: el fondo del sobre, la portada, la bolsa y el
+cierre, cada uno con su propia semilla para que no sean el mismo
+dibujo repetido cuatro veces.
+
+**Lo que hace que se lea como un SELLO y no como una boca de dibujito
+son tres cosas, y las tres se vieron mirando:**
+
+- **El HUECO entre los dos labios.** La primera versión los pegaba con
+  una línea fina y quedaba un globo rosa.
+- **Las ESTRÍAS claras**, y **recortadas con un `clipPath`**. Sueltas
+  asoman por fuera del labio y lo que se ve son rayones blancos
+  colgando, no un sello. Eso costó una vuelta entera.
+- **El borde IRREGULAR**, de una semilla fija como la sierra: al azar
+  en cada carga, dos capturas de la misma invitación saldrían
+  distintas.
+
+**Y volvió la trampa del selector demasiado ancho, por tercera vez.**
+`#portada > *` y `.bolsa-cuerpo > *` les ponen `position:relative` a
+todos sus hijos para subirlos por encima del velo — y con eso el beso
+deja de ser una capa y pasa a ser una fila del flujo: el `top/right`
+no vale nada y se planta donde caiga. Ya había pasado con el encaje y
+con el marco. Las dos reglas eximen ahora a `.beso`.
+
 #### Las fotos, y la que no se usó
 
 Son cinco selfies que mandó ella. **Van tres**: una en el óvalo de la
