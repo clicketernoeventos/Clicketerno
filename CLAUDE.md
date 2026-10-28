@@ -4025,13 +4025,16 @@ al final no quede nada a medias. Así da igual cómo esté hecho. Contra
 el código anterior da **2 fallas**: *"la portada APARECE de golpe"* y
 *"la carta se agranda hasta 6.1x"*.
 
-### `nueva15/`: la tercera de un cliente, y todavía sin nombre
+### `ambar15/`: la tercera de un cliente — Ámbar Zoe Balbi
 
 10 de abril de 2027 · La Mansión del Rey · de 21 a 4 h. Quince años.
-**La carpeta se llama `nueva15` a propósito y se renombra el día que
-llegue el nombre**: la dirección es `clicketerno.com.ar/<nombre>15` y
-todavía no se repartió, así que renombrarla no cuesta nada. Un link
-repartido no se puede mover; uno que nadie tiene, sí.
+Alias `ambar.balbi.rc`, dress code **Elegante sport**, y los colores de
+la fiesta —**rosa, negro y plateado**— que ella mandó escritos a mano.
+
+**La carpeta se llamaba `nueva15` y se renombró el día que llegó el
+nombre**, que era exactamente para lo que se había dejado así: la
+dirección es `clicketerno.com.ar/ambar15` y el link todavía no se había
+repartido. Un link repartido no se puede mover; uno que nadie tiene, sí.
 
 **La referencia la eligió la clienta** y la mandó el dueño: dos
 capturas y un video de TikTok de una invitación de Etsy, todo en la
@@ -4071,8 +4074,12 @@ y la píldora desaparece sola en cuanto el dato existe. Lo que la
 enciende es que todavía no haya pestaña de planilla (`CONFIG.evento`
 vacío), o sea exactamente "esto es un borrador", así que no puede
 quedarse puesta el día que esto se reparta.
-Hoy son cinco: el **nombre**, la **foto**, el **dress code**, el
-**alias** y el **titular**.
+Eran cinco —nombre, foto, dress code, alias y titular— y **hoy no
+queda ninguna píldora dibujada**: lo que falta son el **titular de la
+cuenta** y **hasta cuándo se puede confirmar**, y esos dos no llevan
+píldora sino que **no dibujan su renglón**, que es lo que ya hacían
+`mia15` y `almi15`. Un renglón que no está no le miente a nadie; una
+fecha puesta a ojo le cierra las mesas al invitado el día que no es.
 
 **Y la dirección de la planilla se enciende sola** cuando `CONFIG.evento`
 tiene valor. Con dirección y sin pestaña, la confirmación se manda, la
@@ -4212,6 +4219,124 @@ mismo que `mia15` y `almi15`: es la fiesta de una clienta de verdad,
 lleva `noindex` y en el formulario se juntan nombres de invitados y
 comidas.
 
+#### El monograma AZB, el sobre de la referencia y la bolsa
+
+El dueño mandó los datos, cinco fotos y dos capturas más, con tres
+pedidos: *"que el sobre sea igual al que te mandé y con la misma
+fuente"*, *"la parte del Dresscode y eso que sea como la última foto"*
+y *"hacé un juego con las iniciales de la quinceañera y que parezca el
+logo de Victoria's Secret; las iniciales son AZB"*.
+
+**El monograma se eligió MIRANDO, no describiendo**, que es la misma
+regla ya escrita para la tipografía y para la bolsa de los iconos. Se
+montaron doce armados a 72, 34 y 20 píxeles y adentro del lacre, y se
+eligió el que se lee en los cuatro tamaños. Lo que NO funciona —y había
+que verlo para saberlo— es **solapar tres capitulares de una didona**:
+el logo de VS son DOS letras y por eso puede entrelazarlas; con tres,
+la del medio se la come la de al lado y a 20px queda una mancha. Lo que
+sí funciona es la **escala**: la Z al 122% entre una A y una B al 74%,
+tocándose apenas.
+**Son SUS iniciales**, no la V y la S de una marca registrada: eso
+último sigue prohibido y por el mismo motivo de siempre —una invitación
+publicada con el logo de otro es un problema nuestro, no de la clienta.
+Y va como **texto y no como dibujo**, así que el medidor de contraste
+lo mide de verdad: dibujado en un SVG sin color propio informaría
+1,00:1 y tendría razón según lo que mide.
+
+**El sobre es el de la captura: abierto, con la carta asomando, las
+alas a los costados y el lacre dorado.** Y eso NO contradice lo que ya
+está escrito para `almi15` (*"que se vea la carta por fuera queda
+feo"*): allá el papel se escapaba por los COSTADOS de un sobre cerrado,
+que es un defecto; acá el sobre está abierto y la carta asoma por
+arriba, que es lo que hace un sobre abierto de verdad. Lo que no puede
+verse nunca es lo que el sobre dice que está tapando.
+El lacre es **dorado** y no negro —en la referencia lo es, y además le
+queda: se llama Ámbar—, con el monograma en tinta encima (5,9:1).
+
+**El sobre es más ANGOSTO que la pantalla, y no es un ajuste de gusto**:
+las alas no son un adorno que se pueda recortar, son la mitad de la
+referencia, y un ala cortada contra el borde se lee como un error de
+maqueta. Con el sobre a 78vw las dos quedaban mochas; a 66vw entran
+enteras hasta en un iPhone SE.
+**Y el ala es UNA sola**, en un `<symbol>` que usan la portada (negra)
+y el sobre (blanca). Un selector de CSS no entra adentro de un `<use>`,
+así que el color viaja por propiedades que SÍ heredan: `color` para la
+silueta y `--pluma` para los nervios.
+
+**El dress code y el regalo pasaron a ser LA BOLSA de papel a rayas**,
+que es la segunda captura. Antes eran dos tarjetas de papel. Son las
+asas, el pliegue de la boca y las rayas lo que la hace leer como la
+tienda; **lo que NO se copia es el texto en ARCO** de la referencia,
+que es lindo en una captura y en un teléfono es un párrafo que hay que
+girar la cabeza para leer.
+Adentro van las **muestras de color** —rosa, negro y plateado, cada una
+con su nombre: una fila de cuadraditos sin rótulo es un adorno, y esto
+es un dato— y el renglón que dice que *son una guía, no una
+obligación*, porque a cómo se visten contestó **"como quieran"**.
+Las muestras salen de `CONFIG.dressColores` y no del HTML: escritas en
+los dos lados, el día que cambie un color uno de los dos se queda viejo.
+
+**Y la bolsa trae su propio fondo, así que trae su propia tinta** —
+enésima vez—: vive adentro de una sección oscura y sin eso heredaba el
+crema del texto sobre negro, o sea crema sobre papel rosa. Ojo con un
+detalle de especificidad que ya costó una vuelta: `.bolsa-cuerpo p`
+pesa más que `.bolsa-marca`, así que el monograma heredaba el gris de
+los párrafos **y las alas con él**. Se dibujaba y no era el color.
+
+**El ancho de una muestra lo decide el RÓTULO, no el cuadradito**:
+"PLATEADO" espaciado mide 58px y la primera versión le daba 55. Lo
+agarró la prueba, no el ojo.
+
+**El medidor de contraste no ve las rayas de la bolsa** —mide el
+`background-color`, no la imagen—, y acá eso no esconde nada porque la
+raya rosa y el papel están a menos de cinco puntos de luminancia y el
+texto es oscuro. Si alguna vez se oscurece la raya, ese texto hay que
+volver a mirarlo con el píxel.
+
+#### Las fotos, y la que no se usó
+
+Son cinco selfies que mandó ella. **Van tres**: una en el óvalo de la
+portada y dos en las franjas, todas en blanco y negro por el CSS —la
+paleta son tres colores y una foto a color mete los suyos—. Las otras
+dos son casi la misma pose con otra ropa, así que no suman nada y no se
+versionan: una foto de una menor sentada en una dirección pública es
+peso y es exposición sin nada a cambio.
+
+**El recorte del óvalo se hizo DOS veces.** El primero entraba 900px de
+ancho y la cara quedaba en el cuarto de arriba del óvalo: el óvalo
+recorta apenas un 10% del alto, así que `object-position` casi no
+mueve nada — **el encuadre se arregla en el archivo, no en el CSS**.
+
+#### Y una que nadie había medido: el nombre de otra clienta
+
+Esta invitación salió copiando `almi15`, y el nombre de la clienta
+anterior se quedó escrito a mano en **tres renglones**: el cierre, el
+rótulo del mensaje y el aviso de datos. *"Un mensaje para Almi"* en la
+fiesta de Ámbar. Se dibujaba perfecto, no tiraba ningún error, y lo
+primero que ve la clienta es el nombre de otra.
+
+Ahora esos tres salen de `CONFIG.quien` como todo lo demás (`.elNom`),
+y lo cuida `pruebas/invitaciones.js`: ninguna invitación puede nombrar
+a la clienta de otra. Se mira el HTML **sin los comentarios** —lo que
+explica de dónde salió la pieza puede nombrar a la otra; lo que se
+publica, no— y el borde de la palabra no es `\b` sino "ni letra ni
+dígito", para que la carpeta `almi15` no cuente como nombrar a Almi.
+Verificada rompiéndola a propósito: con el "Almi" del cierre puesto da
+**1 falla**.
+
+**La lección, que es la de siempre con otra cara**: hacer una
+invitación nueva es copiar la anterior, así que lo que se queda viejo
+no es el código — es el DATO escrito a mano en el renglón que nadie
+vuelve a mirar.
+
+#### Lo que sigue faltando
+
+**El titular de la cuenta** del alias —el nombre que le muestra el
+banco al invitado cuando lo pega— y **hasta cuándo se puede
+confirmar**: a esa pregunta contestó *"confirmar asistencia"*, que no
+es una fecha. Los dos siguen como huecos con su píldora, y vacíos no
+dibujan el renglón en vez de inventarlo.
+
 ### `facuymaxi/`: el casamiento de Facundo y Maximiliano
 
 Sábado 22 de mayo de 2027 · La Mansión del Rey (Vera Mujica 68, Rosario)
@@ -4343,7 +4468,7 @@ rojo sería el único rojo de toda la pieza. Y el alias, **`FACUYMAXI.BODA`,
 se escribe tal cual lo mandaron.**
 
 **LOS HUECOS.** `CONFIG.borrador` dibuja una píldora donde falta un
-dato, igual que en `nueva15` — un dato que no mandaron no se inventa y
+dato, igual que en `ambar15` — un dato que no mandaron no se inventa y
 tampoco se deja en blanco, porque en blanco nadie se acuerda y se
 publica así. Hoy son cinco: **la foto de portada**, **las fotos de la
 galería** (no llegaron los archivos; falta además la de las mascotas,
@@ -4351,7 +4476,7 @@ que todavía no se sacaron), **los horarios del resto de la noche**,
 **hasta cuándo se puede confirmar** (dijeron "durante marzo de 2027,
 confirmamos el día exacto", y eso no es una fecha) y **el titular de la
 cuenta** del alias. Acá la píldora cuelga de una bandera explícita y no
-de `CONFIG.evento` como en `nueva15`, porque esta invitación nace con su
+de `CONFIG.evento` como en `ambar15`, porque esta invitación nace con su
 pestaña de planilla andando: la confirmación entra desde el primer día.
 
 **Sin fotos no queda ningún hueco visible**: la banda de la portada y la
@@ -4367,7 +4492,7 @@ hecha con pase.
 así que el tablero de confirmaciones funciona desde el día uno sin un
 solo paso del lado de Google. Lleva `noindex` y **no está en la galería
 de Trabajos ni en `/invitaciones`**, por lo mismo que `mia15`, `almi15` y
-`nueva15`.
+`ambar15`.
 
 **La carpeta se llama `facuymaxi` y se puede renombrar** mientras el
 link no se haya repartido: la dirección es
@@ -4842,6 +4967,13 @@ dejaría peor parados.
   transferir"* queda arriba por los dos lados: se lee igual que un
   usuario de Instagram, y el dueño lo pasa diciendo *"el cbu para
   regalos"* — pegar un alias donde el banco pide un CBU no entra.
+- **Lo que falta de `ambar15/`, y lo tiene que mandar la clienta**: el
+  **titular de la cuenta** del alias `ambar.balbi.rc` —el nombre que le
+  muestra el banco al invitado cuando lo pega— y **hasta cuándo se
+  puede confirmar**: a esa pregunta contestó *"confirmar asistencia"*,
+  que no es una fecha. Los dos, vacíos, no dibujan su renglón. Y el
+  alias se escribe **tal cual lo mandó**, sin "arreglarle" nada: en
+  `mia15` el punto del final resultó ser parte del alias.
 - **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos**: las
   **cinco fotos** (la de portada es la del jardín al atardecer, que es
   la que eligieron; falta además la de las mascotas), **los horarios
