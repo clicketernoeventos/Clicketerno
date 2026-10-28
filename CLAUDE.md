@@ -4230,18 +4230,52 @@ logo de Victoria's Secret; las iniciales son AZB"*.
 **El monograma se eligió MIRANDO, no describiendo**, que es la misma
 regla ya escrita para la tipografía y para la bolsa de los iconos. Se
 montaron doce armados a 72, 34 y 20 píxeles y adentro del lacre, y se
-eligió el que se lee en los cuatro tamaños. Lo que NO funciona —y había
-que verlo para saberlo— es **solapar tres capitulares de una didona**:
-el logo de VS son DOS letras y por eso puede entrelazarlas; con tres,
-la del medio se la come la de al lado y a 20px queda una mancha. Lo que
-sí funciona es la **escala**: la Z al 122% entre una A y una B al 74%,
-tocándose apenas.
+eligió el que se lee en los cuatro tamaños: la Z al 122% entre una A y
+una B al 74%, tocándose apenas. Y la conclusión que se sacó de ahí
+—*"solapar tres capitulares de una didona no se lee"*— era cierta a
+medias, y el dueño lo destapó con una referencia.
 **Son SUS iniciales**, no la V y la S de una marca registrada: eso
 último sigue prohibido y por el mismo motivo de siempre —una invitación
 publicada con el logo de otro es un problema nuestro, no de la clienta.
 Y va como **texto y no como dibujo**, así que el medidor de contraste
 lo mide de verdad: dibujado en un SVG sin color propio informaría
 1,00:1 y tendría razón según lo que mide.
+
+##### Y después mandó el logo que quería, y la conclusión estaba a medias
+
+*"Prefiero este logo en vez del que hiciste. Ponerlo como la cera de la
+carta y al final de la invitación así en negro como en la segunda
+foto."* La referencia es una **A y una B de didona ENTRELAZADAS**, con
+una lazada caligráfica cruzando por el medio, en oro rosa.
+
+Acá arriba estaba escrito que con tres letras no se puede entrelazar, y
+**lo medido era verdad pero la conclusión sobraba**: lo que no se lee
+son tres capitulares **de la misma didona**, porque las tres pelean por
+el mismo peso y la del medio se la come la de al lado. Con la Z en la
+**manuscrita** —la Pinyon, que ya estaba cargada para el nombre— la del
+medio deja de ser una capitular y pasa a ser la LAZADA: la A y la B se
+entrelazan como en la referencia y la Z las cose, sin taparse. Se
+probaron cuatro armados y se eligió mirando, igual que la vez anterior.
+
+**La lección, que es nueva**: una medición dice que algo *no funcionó*,
+no que *no se puede*. La primera vuelta probó doce variantes de un solo
+camino —tres capitulares de la misma familia— y escribió la conclusión
+como si cubriera todos. El camino que faltaba lo señaló el dueño con una
+imagen en dos segundos.
+
+**El lacre pasó a ser de ORO ROSA**, que es el metal de la referencia
+—y le queda, porque se llama Ámbar—, con el monograma en cobre hondo
+encima (4,8:1). Ese número **hay que calcularlo a mano**: el medidor no
+juzga lo que cae sobre un degradé opaco de punta a punta, así que ahí
+da verde mire lo que mire.
+
+**Y al final de la invitación va la misma marca en NEGRO**, con el
+nombre completo abajo en versalitas espaciadas, que es la segunda
+referencia. Sobre el papel claro el oro rosa da 2,2:1 —no estaría—, así
+que ahí la marca es tinta: *si un bloque trae su propio fondo, trae su
+propia tinta*, enésima vez.
+**Y el cierre perdió su medallón**: la marca ES su emblema, y dos
+emblemas apilados se leen como un error de maqueta.
 
 **El sobre es el de la captura: abierto, con la carta asomando, las
 alas a los costados y el lacre dorado.** Y eso NO contradice lo que ya
