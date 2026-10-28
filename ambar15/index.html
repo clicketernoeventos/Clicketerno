@@ -255,7 +255,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   transform:translateY(-22%) scale(var(--esc,2.6));
   opacity:0;
   transition:transform 1.25s var(--e),opacity 1s var(--e) .3s}
-.carta-mono{font-size:clamp(15px,4.2vw,20px);color:var(--negro)}
+.carta-mono{font-size:clamp(18px,5vw,24px);color:var(--negro)}
 .carta-nom{font-family:var(--titulos);font-weight:500;
   font-size:clamp(11.5px,3.2vw,15px);letter-spacing:.1em;text-transform:uppercase;
   color:var(--negro);line-height:1.25}
@@ -280,25 +280,28 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 .tapa-frente i.f1{clip-path:polygon(0 100%,50% 0,0 0);background:rgba(255,255,255,.1)}
 .tapa-frente i.f2{clip-path:polygon(100% 100%,50% 0,100% 0);background:rgba(154,70,96,.1)}
 
-/* ── EL LACRE ── dorado, con el monograma adentro. Es lo único que hay
-   que tocar en toda la pantalla, así que no puede ser rosa sobre un
-   sobre rosa: en la referencia es dorado y acá además le queda —se
-   llama Ámbar—. El monograma en tinta sobre el dorado da 5,9:1. */
+/* ── EL LACRE ── de ORO ROSA, con el monograma adentro, que es el
+   metal de la referencia que eligió el dueño. Es lo único que hay que
+   tocar en toda la pantalla, así que no puede ser rosa pálido sobre un
+   sobre rosa: el lacre es el punto más saturado de la pantalla.
+   El monograma va en cobre hondo y da 4,8:1 sobre el metal — y eso
+   hay que calcularlo a mano, porque el medidor NO juzga lo que cae
+   sobre un degradé opaco de punta a punta: lo saltea y da verde. */
 .tapa-mandos{position:absolute;left:0;right:0;top:76%;transform:translateY(-50%);z-index:6;
   display:grid;place-items:center;transition:opacity .3s var(--e)}
 #sobre.abierto .tapa-mandos{opacity:0;pointer-events:none}
 #abrir{position:relative;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#F0D08A,#C9972F 58%,#9A6E18);
-  box-shadow:0 12px 26px -8px rgba(28,16,22,.45),inset 0 1px 2px rgba(255,255,255,.4);
-  color:var(--tinta);transition:transform .45s var(--e)}
-#abrir .azb{font-size:23px}
+  background:radial-gradient(circle at 34% 28%,#F6D5C6,#DA9E85 48%,#A85F45);
+  box-shadow:0 12px 26px -8px rgba(28,16,22,.45),inset 0 1px 2px rgba(255,255,255,.5);
+  color:#5A2B1C;transition:transform .45s var(--e)}
+#abrir .azb{font-size:29px}
 #abrir:active{transform:scale(.95)}
 @media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
 /* El latido va en un HALO alrededor y no en el botón: moviendo la caja
    que se toca, el navegador la da por "inestable" y una prueba se
    cuelga treinta segundos contra un botón que está perfecto. */
 #abrir:after{content:'';position:absolute;inset:-7px;border-radius:50%;
-  border:1px solid #9A6E18;opacity:0;animation:latir 3s ease-out infinite}
+  border:1px solid #A85F45;opacity:0;animation:latir 3s ease-out infinite}
 @keyframes latir{0%{opacity:.5;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.18)}}
 
 /* El lacre se PARTE: dos mitades que se separan, giran y se caen.
@@ -310,7 +313,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre.abierto .quiebre{opacity:1}
 .quiebre .sello{position:relative;width:62px;height:62px}
 .quiebre .sello i{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%,#F0D08A,#C9972F 58%,#9A6E18);
+  background:radial-gradient(circle at 34% 28%,#F6D5C6,#DA9E85 48%,#A85F45);
   box-shadow:0 10px 22px -10px rgba(28,16,22,.5)}
 /* El filo del medio va quebrado, no recto: un sello partido al medio
    con una regla no parece lacre, parece una moneda. */
@@ -327,7 +330,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    lo único de toda la pieza que dura menos de medio segundo, y es el
    remate del gesto. */
 .quiebre .polvo{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;
-  border-radius:50%;background:#C9972F;opacity:0}
+  border-radius:50%;background:#C98B74;opacity:0}
 #sobre.abierto .quiebre .polvo{animation:chispear .72s ease-out forwards}
 @keyframes chispear{
   0%{opacity:0;transform:translate(0,0) scale(.4)}
@@ -337,27 +340,34 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 .sobre-pie b{color:var(--acento-ti);font-weight:400}
 
 /* ══════════ EL MONOGRAMA AZB ══════════
-   Lo pidió el dueño con todas las letras: "hacé un juego con las
-   iniciales de la quinceañera y que parezca el logo de Victoria's
-   Secret; las iniciales son AZB". Son SUS iniciales —Ámbar Zoe
-   Balbi—, no la V y la S de una marca registrada: eso último es lo
-   que este archivo ya tenía prohibido y sigue prohibido.
-   SE ELIGIÓ MIRANDO, no describiendo: se montaron doce armados a 72,
-   34 y 20 píxeles y adentro del lacre, y se eligió el que se lee en
-   los cuatro. Lo que no funciona —y había que verlo para saberlo— es
-   SOLAPAR tres capitulares de una didona: el logo de VS son DOS
-   letras y por eso puede entrelazarlas; con tres, la del medio se la
-   come la de al lado y a 20px queda una mancha.
-   Lo que sí funciona es la ESCALA: la Z al 122% entre una A y una B
-   al 74%, tocándose apenas. A 20px se sigue leyendo AZB.
+   Son SUS iniciales —Ámbar Zoe Balbi—, no la V y la S de una marca
+   registrada: eso último es lo que este archivo ya tenía prohibido y
+   sigue prohibido.
+   LA FORMA LA ELIGIÓ EL DUEÑO MIRANDO, con una referencia: una A y
+   una B de didona ENTRELAZADAS, con una lazada cruzando por el medio.
+   Y eso corrige lo que este comentario decía antes. Acá estaba
+   escrito que solapar tres capitulares no se lee —y es cierto, se
+   midió—, pero la conclusión estaba de más: lo que no se lee son
+   tres capitulares DE LA MISMA DIDONA, porque las tres pelean por el
+   mismo peso. Con la Z en la MANUSCRITA, la del medio deja de ser una
+   capitular y pasa a ser la lazada: la A y la B se entrelazan como en
+   la referencia y la Z las cose, sin taparse.
+   Verificado mirando los cuatro tamaños que importan —96, 40 y 22
+   píxeles y adentro del lacre— y en los dos acabados: oro rosa sobre
+   el lacre y NEGRO al pie de la invitación, que es como lo pidió.
    Va como TEXTO y no como dibujo, así que el medidor de contraste lo
    mide de verdad: dibujado en un SVG sin color propio informaría
    1,00:1 y tendría razón según lo que mide. */
 .azb{display:inline-flex;align-items:baseline;line-height:1;
   font-family:var(--titulos);font-weight:600;letter-spacing:0;color:inherit}
 .azb i{font-style:normal;display:block}
-.azb i:nth-child(1),.azb i:nth-child(3){font-size:.74em}
-.azb i:nth-child(2){font-size:1.22em;margin:0 -.05em}
+/* La B se mete DENTRO de la A: es el entrelazado de la referencia, no
+   dos letras una al lado de la otra. */
+.azb i.b{margin-left:-.30em}
+/* Y la Z es la lazada que las cruza. En la manuscrita, no en la
+   didona: ahí deja de competir con las otras dos. */
+.azb i.z{font-family:var(--escrita);font-weight:400;font-size:1.15em;
+  margin:0 -.30em;position:relative;top:.04em}
 
 /* ══════════ el lienzo ══════════ */
 #papel{position:relative;z-index:1}
@@ -839,6 +849,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
 /* ══════════ 7 · el cierre ══════════ */
 #cierre{padding-bottom:clamp(50px,8vh,80px)}
+/* La marca del final. Va en el NEGRO de la pieza y no en el metal:
+   el oro rosa del lacre sobre este papel da 2,2:1 y no se leería. */
+.marca-pie{justify-content:center;font-size:clamp(46px,13vw,64px);
+  color:var(--negro);margin-bottom:clamp(8px,1.6vh,14px)}
+.marca-pie-nom{font-family:var(--titulos);font-weight:500;
+  font-size:clamp(9.5px,2.6vw,11.5px);letter-spacing:.34em;
+  text-transform:uppercase;color:var(--gris);margin-bottom:clamp(20px,3.4vh,30px)}
 .cierre-n{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(50px,16vw,80px);color:var(--negro);line-height:1;margin-top:20px}
 .firma{margin-top:36px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
@@ -948,7 +965,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
       <div class="solapa" aria-hidden="true"></div>
       <div class="tapa-cuerpo" aria-hidden="true"></div>
       <div class="carta">
-        <span class="azb carta-mono"><i>A</i><i>Z</i><i>B</i></span>
+        <span class="azb carta-mono"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
         <p class="carta-nom" id="cartaNom"></p>
         <i class="hilito" aria-hidden="true"></i>
         <p class="carta-txt">mis quince años</p>
@@ -957,7 +974,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
       <div class="tapa-frente" aria-hidden="true"><i class="f1"></i><i class="f2"></i></div>
       <div class="tapa-mandos">
         <button id="abrir" type="button" aria-label="Abrir la invitación">
-          <span class="azb" aria-hidden="true"><i>A</i><i>Z</i><i>B</i></span>
+          <span class="azb" aria-hidden="true"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
         </button>
       </div>
       <div class="quiebre" aria-hidden="true">
@@ -1064,7 +1081,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
         <div class="bolsa-cuerpo rayado">
           <p class="bolsa-marca">
             <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
-            <span class="azb"><i>A</i><i>Z</i><i>B</i></span>
+            <span class="azb"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
             <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
           </p>
 
@@ -1174,11 +1191,19 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   </section>
 
   <!-- ══════════ 9 · el cierre ══════════ -->
-  <section class="seccion claro arco" id="cierre" data-ico="destello">
+  <!-- El cierre NO lleva medallón: la marca del final ES su emblema, y
+       dos emblemas apilados se leen como un error de maqueta. -->
+  <section class="seccion claro arco" id="cierre">
     <div class="caja">
-      <div class="filete ap"><i></i><b></b><i></i></div>
-      <p class="cierre-n ap d1 elNom"></p>
-      <p class="cuerpo ap d2" id="teEspero"></p>
+      <!-- La marca EN NEGRO al final, como la pidió el dueño con la
+           segunda referencia: el monograma centrado y el nombre
+           abajo, chiquito y espaciado. Acá no lleva metal —sobre el
+           papel claro el oro rosa da 2,2:1, o sea que no estaría—. -->
+      <p class="azb marca-pie ap"><i>A</i><i class="z">Z</i><i class="b">B</i></p>
+      <p class="marca-pie-nom ap d1" id="pieNombre"></p>
+      <div class="filete ap d1"><i></i><b></b><i></i></div>
+      <p class="cierre-n ap d2 elNom"></p>
+      <p class="cuerpo ap d3" id="teEspero"></p>
     </div>
   </section>
 
@@ -1772,6 +1797,8 @@ function horaTexto(){
      donde está el nombre, y el segundo es el que se queda viejo. */
   const cn = $('#cartaNom');
   if (cn) cn.textContent = CONFIG.nombreCompleto || CONFIG.quien || '';
+  const pn = $('#pieNombre');
+  if (pn) pn.textContent = CONFIG.nombreCompleto || CONFIG.quien || '';
   const cfe = $('#cartaFecha');
   if (cfe && F) cfe.textContent = String(F.dia).padStart(2,'0') + ' · ' +
                                   String(F.mes).padStart(2,'0') + ' · ' + F.anio;
