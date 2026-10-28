@@ -4208,6 +4208,12 @@ mirando, no leyendo el código**:
   Con `Math.random()` dos capturas de la misma invitación saldrían
   distintas — la misma regla que la sierra de las franjas.
 
+**El ramo después se tiró entero**, y con él el moño y los mangos: los
+pompones pasaron ARRIBA y CORTADOS, haciendo de marco. Está abajo, en
+*"Los tres pompones haciendo de marco"*, y ahí el dibujo se rehizo de
+cero — lo único que sobrevive de esta vuelta es la lección del
+chupetín, que volvió a aparecer.
+
 **El medidor de contraste no ve esta textura** —mide el
 `background-color`, no la imagen—, y acá eso no esconde nada porque los
 dos negros están a menos de un punto de luminancia. Si alguna vez se
@@ -4276,6 +4282,8 @@ que ahí la marca es tinta: *si un bloque trae su propio fondo, trae su
 propia tinta*, enésima vez.
 **Y el cierre perdió su medallón**: la marca ES su emblema, y dos
 emblemas apilados se leen como un error de maqueta.
+*(Más abajo: esa marca dibujada pasó a ser el RESPALDO, porque el dueño
+mandó después la pieza ya hecha.)*
 
 **El sobre es el de la captura: abierto, con la carta asomando, las
 alas a los costados y el lacre dorado.** Y eso NO contradice lo que ya
@@ -4379,6 +4387,88 @@ ancho y la cara quedaba en el cuarto de arriba del óvalo: el óvalo
 recorta apenas un 10% del alto, así que `object-position` casi no
 mueve nada — **el encuadre se arregla en el archivo, no en el CSS**.
 
+#### Los tres pompones haciendo de marco
+
+Pedido del dueño con una captura —una tarjeta de RSVP con tres
+pompones de pluma asomando por detrás del borde de arriba—:
+*"Esto mismo para la parte del Dresscode. Los 3 pompones esos
+haciendo de marco en la parte de arriba."*
+
+Los pompones ya existían, pero estaban ABAJO del texto, atados en un
+ramo con su moño. **Lo que cambia no es dónde se ponen: es que ahora
+están CORTADOS.** Un ramo entero es un dibujo más adentro de la
+bolsa; tres pompones que se ven a medias se leen como que hay algo
+adelante, y ese algo es el bloque. El corte lo hace la CAJA —alto fijo
+más `overflow:hidden`— y no el dibujo, y la raya de abajo es el borde
+del que asoman: sin ella el corte se lee como un recorte mal hecho.
+
+**Y dejaron de ser el dibujo que espera a las fotos.** Antes se
+escondían el día que llegaran las del dress code. La corona es el
+MARCO del bloque, así que se queda: las fotos entran abajo, que es el
+moodboard.
+
+**Los colores pasaron a ser los TRES QUE MANDÓ LA CLIENTA** —rosa,
+negro y plateado— en vez del crema de antes. Son los mismos de las
+muestras que están dos renglones más abajo, así que el adorno dice lo
+mismo que el dato; y el plateado se ve sobre el papel rayado, donde un
+crema casi no existe. Lo mismo el rosa y el plateado del dibujo, que
+van un tono más hondos que la muestra: sobre el papel rosa claro, el
+rosa de la muestra no se despega del fondo.
+
+##### Una pluma se dibuja con PELO, no con silueta
+
+Esto costó cuatro vueltas y es la lección que queda. **Cualquier forma
+rellena de borde limpio se lee como otra cosa**, y las tres primeras
+versiones fallaron todas por lo mismo:
+
+- con lóbulos redondos y parejos sale una **margarita** —es la misma
+  falla que ya estaba anotada para los pompones del ramo, "con lóbulos
+  parejos un pompón es un chupetín"—;
+- con el borde en puntas, una **corona de espinas**;
+- con lóbulos grandes y blandos, un **loto**;
+- y con barbas rectas y parejas, un **helecho**.
+
+Lo que hace a la pluma es el raquis y las BARBAS que salen de él, y lo
+que hace al pompón es que **el borde quede peludo**, o sea que la
+silueta NO se cierre. Tres cosas que no son de gusto:
+
+- **Las barbas se arquean** —el punto de control cae hacia la base— y
+  se van parando hacia la punta.
+- **Adentro hay un núcleo relleno MÁS ANGOSTO Y MÁS CORTO que las
+  barbas**: denso abajo y pura pelusa arriba, como el de verdad. Sin
+  núcleo se transparenta; con el núcleo del largo de la pluma sale una
+  hoja con punta y el pompón se lee como una **planta de interior**.
+- **El abanico va aplanado** —todas las plumas casi del mismo largo y
+  muy abiertas—, que es lo que lo vuelve un montículo. Con la del
+  medio larga y las de afuera cortas sale una **palmera**.
+
+Todo sale de una semilla fija, como la sierra y los besos, y los
+parámetros viven en una sola constante (`PLUMA`) —que es lo que
+permitió probar los armados **interceptando el HTML**, igual que
+`puertas.js` con `MUESTRA_MURO`, en vez de editar el archivo cada
+vez—. **Se eligió mirando**, montado al tamaño real y al de un
+teléfono, que es lo único que sirve cuando el problema es que algo
+"no se parece". Es la misma forma de trabajar que la tipografía, el
+monograma y la bolsa.
+
+##### Y la regla de los nombres repetidos también vale para un script de edición
+
+Haciendo esto se perdieron 32 KB del archivo y no hubo ningún error.
+El script de edición buscaba un comentario por su título
+(`/* ── LA CORONA DE PLUMAS DEL DRESS CODE ──`) y reemplazaba hasta
+otro ancla — pero ese título había quedado **dos veces**, una en el
+CSS y otra en el JS, así que `index()` encontró la primera y se llevó
+puesto todo lo que había en el medio: el CSS, el HTML de dos secciones
+y la mitad del JS. El archivo quedó válido, se sirvió con 200 y la
+página dibujó sin una sola excepción en la consola; lo único que
+delataba era que `#detalles` ya no existía.
+
+Es *antes de inventar un nombre, `grep`* —la regla que ya está escrita
+dos veces para el código y una para las pruebas— aplicada a los
+scripts que EDITAN el código. Un ancla se busca con
+`assert s.count(ancla) == 1`, nunca con el primer `index()`, y después
+se mira el tamaño del archivo.
+
 #### Y una que nadie había medido: el nombre de otra clienta
 
 Esta invitación salió copiando `almi15`, y el nombre de la clienta
@@ -4400,6 +4490,30 @@ Verificada rompiéndola a propósito: con el "Almi" del cierre puesto da
 invitación nueva es copiar la anterior, así que lo que se queda viejo
 no es el código — es el DATO escrito a mano en el renglón que nadie
 vuelve a mirar.
+
+#### Y después mandó la marca ya dibujada
+
+*"Esto ponelo."* — un PNG con la A y la B en negro y oro rosa entre dos
+alas de pluma, que es el emblema del cierre pero hecho como una pieza
+terminada: las plumas con volumen y las letras con su biselado.
+
+**Va en el cierre y reemplaza a la dibujada, pero la dibujada se
+queda.** Se pone recién cuando el archivo cargó de verdad; si faltara
+—o si el día de mañana alguien lo borra— queda la de siempre, que se
+sostiene sola, y no un cuadrado roto donde va el emblema. Es lo mismo
+que ya hacen la portada y las franjas, y es por lo que el `<img>` lo
+crea el JS y no el HTML: un `<img>` con `src` vacío le pide al servidor
+la página entera de nuevo, y eso no avisa.
+
+**Y va SOLO en el cierre, no en todos lados.** Sus plumas son casi
+blancas, así que se lee sobre el papel claro del final —con su sombra,
+igual que la dibujada— y se perdería sobre las rayas de la bolsa, que
+es claro también. En la bolsa y en la portada las alas siguen siendo
+las dibujadas, que ahí van en negro. **Un emblema no se pone donde
+entra: se pone donde se lee.**
+
+Pesa **53 KB** en `.webp` a 820px de ancho, que es el doble de lo que
+se dibuja en pantalla. El PNG que llegó pesaba 1,5 MB.
 
 #### Lo que sigue faltando
 
