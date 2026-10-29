@@ -4566,6 +4566,188 @@ Como la marca del cierre, se pone recién cuando el archivo cargó de
 verdad: si faltara, el bloque queda como estaba y no un cuadrado roto
 arriba del título.
 
+#### La canción, el cuenta atrás y el dress code sin colores
+
+Tres cosas de una vez, con dos capturas y un video de referencia.
+
+**1 · El dress code se quedó sin los colores.** *"Esos colores no van en
+el dress code. Solo elegante."* Las muestras de rosa, negro y plateado
+estaban debajo de "Elegante sport" como si fueran una instrucción, y la
+clienta nunca dijo cómo quiere que se vistan —a eso contestó *"como
+quieran"*—. Los tres colores siguen estando en toda la pieza: son la
+paleta, los pompones del marco y las rayas. Lo que se fue es la fila de
+cuadraditos, **y con ella el renglón que la explicaba**: "son una guía,
+no una obligación" sin ninguna muestra arriba no se entiende de qué
+habla. Y el dress code pasó a decir **"Elegante"**, no "Elegante sport".
+
+**2 · El cuenta atrás, como la captura.** El "faltan…" en manuscrita y
+las cuatro cifras **en una sola línea** separadas por dos puntos, con su
+rótulo abajo. Antes eran cuatro fichas con sus esquinitas: cuatro
+recuadros se leen como un tablero, una línea corrida se lee como un
+reloj.
+Dos cosas que no son de gusto: **el rótulo chico de la sección se fue**
+—"Falta poco" arriba de "faltan…" dice dos veces lo mismo—, y **el dos
+puntos se alinea con las CIFRAS y no con la caja**: su caja mide
+exactamente el alto de una cifra, así que queda sobre la misma línea
+aunque los días pasen a tres dígitos. Esa es justamente la falla que ya
+está anotada para esta suite —*"469" pintado encima del dos puntos de al
+lado*— y por eso acá el separador vive en el hueco entre casilla y
+casilla, no pegado a un número.
+
+**3 · La canción, con su reproductor.** El dueño mandó un video y una
+línea: *"la música del video ese. No el video"*. El audio se sacó con
+`ffmpeg`, normalizado y con un fundido de entrada de un cuarto de
+segundo para que el bucle no haga clic.
+
+**ARRANCA CON EL TOQUE QUE ABRE EL SOBRE.** Safari no deja sonar nada
+sin un gesto de la persona, y ese gesto ya existe: no hay que inventarle
+otro botón ni dejar la invitación muda esperando que alguien descubra el
+play. Si el navegador se niega igual, el reproductor queda en "play" y
+decide el invitado.
+
+**SON TRES BOTONES Y LOS TRES HACEN ALGO.** La captura tiene cinco
+—mezclar y repetir además— y con UNA sola canción esos dos no pueden
+hacer nada: *un botón que no puede hacer su trabajo molesta más que no
+estar*. "Anterior" y "siguiente" sí valen, porque con un solo tema los
+dos vuelven al principio, que es lo que hace un reproductor de verdad; y
+la canción se repite sola, así que el botón de repetir no hace falta. **La
+línea con el corazón no es un control**: es el avance, y va con
+`aria-hidden` y sin atajar el dedo.
+
+**Dos archivos y UNA sola descarga.** El `<audio>` lleva dos `<source>`:
+AAC para el iPhone —que es donde están los invitados— y Opus para el que
+no puede con ese formato. El navegador baja uno solo. Son 170 KB y 150 KB
+en el repo, no 320 para la misma persona.
+**Y hubo que ponerlo así para poder MEDIRLO**: el Chromium de las pruebas
+no decodifica AAC, así que con un `src` suelto el reproductor se borraba
+solo —que es lo que tiene que pasar cuando el archivo no sirve— y la
+suite veía una sección vacía sin saber por qué. Con los dos `<source>`,
+el error llega al elemento recién cuando fallaron TODAS las fuentes.
+**Y el dibujo se AGREGA, no reemplaza**: con `innerHTML` se borraba el
+`<audio>` que acababa de colgarse ahí adentro.
+
+##### La canción no es nuestra, y eso queda escrito
+
+Más arriba, para `facuymaxi/`, dice que **la canción no suena adentro de
+la invitación** porque *"el archivo no es nuestro"*. Acá suena. La mitad
+técnica de aquel motivo sigue en pie y se respeta —no hay ningún
+reproductor de un tercero: la CSP no lo deja y además sería un tercero
+corriendo código en la pantalla del invitado—, pero **la otra mitad no**:
+el audio es una grabación comercial sacada de un video y queda publicada
+en una dirección nuestra, que cualquiera puede bajar.
+
+**Lo decidió el dueño y se le dijo.** Queda anotado para que nadie —yo el
+mes que viene incluido— lo "arregle" sacándolo, y para que la próxima
+invitación no copie el criterio sin saber que es una excepción: en
+`facuymaxi/` el play LLEVA a escucharla y no suena, y ahí sigue siendo
+lo correcto porque ellos no pidieron otra cosa.
+
+#### El pase VIP, de emblema de "dónde nos vemos"
+
+*"Esto quiero que lo pongas como icono en donde va el icono de la
+ubicación"* — una credencial VIP con su cintita, el moño, los dijes y
+la marca AB entre alas, con "ÁMBAR FEST" y "VIP ALL ACCESS".
+
+**Reemplaza al medallón de esa sección, y no se mete adentro del
+anillo.** El medallón lleva un icono de línea de 42px, y una credencial
+llena de brillantes a ese tamaño es una mancha —*lo que no se lee a 42
+no va*, la lección que este archivo ya tiene escrita tres veces—. Va del
+tamaño al que se LEEN las dos líneas de la tarjeta, que es lo único que
+la hace valer la pena. La credencial además dice lo que la sección dice:
+es la entrada a la fiesta.
+
+**Va recortada, sin el fondo de la foto**, por lo mismo que la bolsa del
+regalo: un recuadro oscuro en el medio del papel rosa se lee como una
+captura pegada. Acá el recorte funciona porque la tarjeta tiene su borde
+dorado y la cinta es rosa maciza, así que el relleno por inundación
+desde las esquinas corta justo. Pesa **89 KB** en `.webp`; el PNG que
+llegó pesaba 2,6 MB.
+
+Y como la marca del cierre y la bolsa del regalo, **se pone recién
+cuando el archivo cargó de verdad**: si faltara queda el medallón con el
+pin dibujado, que se sostiene solo.
+
+#### La portada es un afiche, y el afiche manda
+
+*"Esta va a ser la portada."* — una pieza ya terminada: la foto de ella
+sobre un rosa fuerte, "ÁMBAR · MIS XV AÑOS" en una didona cromada y el
+monograma alado con su corona.
+
+**Con el afiche puesto, la portada no vuelve a decir nada de eso.** El
+nombre, el hilo, el renglón de abajo, las alas, el óvalo, el encaje, el
+marco y el beso se esconden: repetirlos sería decir dos veces lo mismo,
+una de ellas con otra letra. Lo único que queda encima es el "Deslizá".
+
+**Va ENTERO, no recortado.** El afiche es 2:3 y un teléfono es 9:19.5:
+recortándolo para llenar la pantalla se le van 86px por lado, o sea las
+dos puntas de "ÁMBAR" y la mitad del monograma. Y el ancho sale del
+ALTO que queda, no de un porcentaje del ancho — la misma regla que la
+ficha de celular del carrusel del sitio—, porque medido por el ancho,
+en una pantalla baja el pie del afiche cae abajo del borde.
+**Lo que sobra arriba y abajo es el MISMO rosa del afiche**, sacado de
+sus cuatro esquinas con el cuentagotas (`#E83D76`): no se ve ninguna
+juntura, así que el afiche no parece una foto pegada en el medio de una
+pantalla. Y sin esquinas redondeadas, que ahí dibujarían cuatro
+esquinitas rosas donde no hay ningún borde.
+
+**El nombre no se borra: se esconde.** Es el `h1` de la página y lo que
+el afiche dice lo dice DIBUJADO — un lector de pantalla no lee una
+imagen. Queda de 1x1 con `clip-path`, a la vista de nadie y presente
+para quien lo necesita.
+
+**Y si el archivo falta, no queda una pantalla vacía**: no se pone la
+clase y vuelve la portada tipográfica entera, que se sostiene sola. Es
+lo mismo que ya hacen la marca del cierre, la bolsa y el pase VIP, y por
+eso el `<img>` lo crea el JS y nunca el HTML.
+**La foto del óvalo se pide RECIÉN si el afiche no vino**: con el afiche
+puesto el óvalo está escondido, así que bajarla igual son 29 KB que el
+invitado paga por una foto que no va a ver nunca.
+
+Lo mide `pruebas/invitacion_mirar.js` con una comprobación nueva, y las
+dos mitades: con el afiche, que cargue, que entre entero en la pantalla
+y que **el nombre no se escriba dos veces**; y sin él —forzado con un
+404, porque en el camino normal no se recorre nunca— que no quede un
+cuadrado roto, que no se quede en modo afiche y que el nombre vuelva a
+la vista. Verificada rompiéndola a propósito —poniendo la clase y el
+`<img>` sin esperar a que cargue— da **3 fallas**.
+
+#### Lo que quedó debajo del afiche
+
+Dos cosas de la vuelta anterior quedaron hechas y **no se ven**, porque
+el afiche llegó después y las reemplaza. No son un sobrante: son la
+portada tipográfica, que es a donde cae todo si el archivo falta.
+
+- **El nombre pasó de la manuscrita a CAPITULARES espaciadas**, que es
+  la forma de una etiqueta de perfume: "ÁMBAR" grande y "XV AÑOS" chico
+  debajo son un solo bloque que se lee *"Ámbar XV años"*. Se probaron
+  cinco familias mirándolas (`pruebas/letras.js`) y la mejor era la
+  **Bodoni Moda** — pero va la **Playfair**, que ya está cargada para
+  los títulos: bajarle a cada invitado una familia entera por un texto
+  que sólo aparece si el archivo falta es peso regalado.
+- **Las tres estrellas apiladas** que había pedido con una captura —la
+  de atrás en animal print, la del medio rosa y la de adelante plateada,
+  los tres colores que mandó la clienta—. Van dibujadas y no es la
+  imagen de la referencia: una imagen de la que no sabemos la licencia
+  no se publica. Están donde estaba el moño, que salió de ahí porque ya
+  está en los cuatro cortes, en el sobre y en tres iconos, y dos adornos
+  apilados entre el óvalo y el nombre se leen como un error de maqueta.
+  **Ponerlas encima del afiche no se hizo a propósito**: el afiche es un
+  diseño cerrado y pegarle estrellas arriba lo arruina.
+
+**Y un animal print chiquito se lee como una VACA.** Costó seis vueltas
+y la lección es la de siempre —se ve mirando, no leyendo el código—:
+manchas macizas dan vaca; rayitas sueltas dan granos de arroz. Lo que lo
+vuelve leopardo son tres cosas juntas: el anillo ROTO (dibujado con UN
+círculo punteado, no con cuatro elipses sueltas, que se separan), el
+centro del anillo TEÑIDO un tono más hondo, y las rosetas repartidas en
+una **grilla sacudida** y no al azar puro —al azar se amontonan de un
+lado y media estrella queda lisa—. Y el print va en negro sobre rosa
+claro, no en marrón: el marrón sería un cuarto color en una paleta de
+tres.
+**Y la composición importaba más que el dibujo**: la estrella de atrás
+estaba tapada en un 80% por las otras dos, así que su print no se veía
+por fino que se dibujara. Separadas, se lee.
+
 #### Lo que sigue faltando
 
 **El titular de la cuenta** del alias —el nombre que le muestra el
@@ -4681,7 +4863,9 @@ lleva un solo texto largo.
 
 **La canción no suena adentro de la invitación.** Mandaron *"Bellísimo
 así", de Laura Pausini*: el archivo no es nuestro y la CSP no deja
-incrustar un reproductor de terceros —que además sería un tercero
+incrustar un reproductor de terceros —en `ambar15/` el dueño después
+pidió lo contrario y está contado ahí; acá sigue valiendo porque ellos
+no pidieron que sonara— —que además sería un tercero
 corriendo código en la pantalla del invitado—. El reproductor de la
 referencia 1 **está dibujado** y el play LLEVA a escucharla, y el
 renglón de abajo lo dice: un play que no suena es la mentira de siempre.
