@@ -4285,13 +4285,12 @@ emblemas apilados se leen como un error de maqueta.
 *(Más abajo: esa marca dibujada pasó a ser el RESPALDO, porque el dueño
 mandó después la pieza ya hecha.)*
 
-**El sobre es el de la captura: abierto, con la carta asomando, las
-alas a los costados y el lacre dorado.** Y eso NO contradice lo que ya
-está escrito para `almi15` (*"que se vea la carta por fuera queda
-feo"*): allá el papel se escapaba por los COSTADOS de un sobre cerrado,
-que es un defecto; acá el sobre está abierto y la carta asoma por
-arriba, que es lo que hace un sobre abierto de verdad. Lo que no puede
-verse nunca es lo que el sobre dice que está tapando.
+**El sobre sale de la captura: las alas a los costados y el lacre
+dorado.** ~~Abierto, con la carta asomando.~~ **Eso duró poco y está
+contado abajo**, en *"El sobre estaba revelado"*: la carta afuera
+mostraba el nombre y la fecha antes de tocar nada, y encima peleándose
+con el lacre. Lo que no puede verse nunca es lo que el sobre dice que
+está tapando.
 El lacre es **dorado** y no negro —en la referencia lo es, y además le
 queda: se llama Ámbar—, con el monograma en tinta encima (5,9:1).
 
@@ -4514,6 +4513,58 @@ entra: se pone donde se lee.**
 
 Pesa **53 KB** en `.webp` a 820px de ancho, que es el doble de lo que
 se dibuja en pantalla. El PNG que llegó pesaba 1,5 MB.
+
+#### El sobre estaba revelado, y la bolsa de la fiesta
+
+Dos cosas que marcó el dueño mirando la invitación publicada.
+
+**1 · "El sobre ya está revelado. Eso está mal."** Y tenía razón por
+partida doble. La carta asomaba por arriba del bolsillo con **el
+nombre, "mis quince años" y la fecha a la vista**: el que llega ya leyó
+la invitación antes de tocar nada, así que abrir el sobre no le muestra
+nada nuevo — se gasta el único momento de sorpresa que tiene la pieza
+antes de empezar. Y además era contradictorio: **el lacre dice sellado y
+el papel afuera dice abierto.**
+
+Esto *parece* contradecir lo que está escrito más arriba —que acá el
+sobre está abierto porque así es la referencia— y no lo contradice: la
+referencia es un sobre abierto **sin lacre**. Copiado el lacre encima,
+las dos mitades se pelean. **Un detalle de una referencia no se puede
+copiar solo: viene con lo que lo hace cierto.**
+
+Se arregla como en `almi15`: **la carta vive DETRÁS de un cuerpo
+opaco**. Adentro, cualquier parte que los pliegues no tapen se ve y hay
+que acertarle al apilado; atrás no hay nada que tapar. El sobre pasó a
+ser uno cerrado de verdad —la proporción de un C6, los cuatro pliegues
+de la espalda y la solapa doblada hacia abajo con el lacre en su punta—
+y al abrir la solapa se levanta sobre su bisagra de arriba.
+
+**Y al salir la carta SIGUE DETRÁS del sobre**, que es lo que pasa de
+verdad: lo que todavía está adentro queda oculto, y lo que se lee es la
+parte que ya salió. Recién cuando empieza a volar pasa adelante. Son
+dos saltos de `z-index` —la solapa cae, la carta sube— y ninguno de los
+dos se interpola: se hacen con una transición de 0 s y retardo, el mismo
+truco que ya costó una vuelta en `almi15`.
+**Corolario del relleno**: la carta se centra contra lo que se VE de
+ella, no contra su caja. Centrada en la caja entera, el último renglón
+—la fecha— queda adentro del sobre todo el tiempo que dura el gesto.
+
+**2 · La bolsa de la fiesta, de icono del regalo.** El dueño mandó una
+foto de la bolsa a rayas con **"ÁMBAR FEST"** impreso: *"poné la primera
+foto en donde dice regalos, como si fuera un icono"*.
+
+**Va RECORTADA, sin el fondo de la foto.** Un recuadro ahí se lee como
+una captura pegada en el medio de la tarjeta, no como un icono; y la
+juntura de un rectángulo contra el papel rayado se ve a la legua. El
+fondo se sacó con un relleno por inundación desde las cuatro esquinas,
+que acá funciona porque el borde de la bolsa es negro y el fondo un
+degradé parejo.
+**Y la sombra no es adorno**: una bolsa rosa a rayas sobre un papel rosa
+a rayas se funde con el fondo. Pesa **19 KB** en `.webp` a 420px; el PNG
+que llegó pesaba 1,8 MB.
+Como la marca del cierre, se pone recién cuando el archivo cargó de
+verdad: si faltara, el bloque queda como estaba y no un cuadrado roto
+arriba del título.
 
 #### Lo que sigue faltando
 

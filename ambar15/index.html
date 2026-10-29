@@ -160,11 +160,21 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 
    ACÁ LA CARTA SE VE A PROPÓSITO, y no contradice lo que ya está
    escrito para almi15 ("que se vea la carta por fuera queda feo").
-   Allá el papel se escapaba por los COSTADOS de un sobre cerrado, que
-   es un defecto; acá el sobre está ABIERTO y la carta asoma por
-   arriba, que es lo que hace la referencia y lo que hace un sobre
-   abierto de verdad. Lo que no puede verse nunca es lo que el sobre
-   dice que está tapando. */
+
+   EL SOBRE ESTÁ CERRADO, y la primera versión no: la carta asomaba
+   por arriba con el nombre, "mis quince años" y la fecha a la vista.
+   Eso es contradictorio por partida doble —el lacre dice sellado y el
+   papel afuera dice abierto— y además REVELA lo que el sobre viene a
+   tapar: el que llega ya leyó la invitación antes de tocar nada, así
+   que abrirlo no le muestra nada nuevo. Lo dijo el dueño en una
+   línea: "el sobre ya está revelado, eso está mal".
+
+   Se arregla como en almi15: LA CARTA VIVE DETRÁS DE UN CUERPO
+   OPACO. Adentro, cualquier parte que los pliegues no tapen se ve y
+   hay que acertarle al apilado; atrás no hay nada que tapar. Y al
+   abrir sigue DETRÁS mientras sube, así que lo que todavía está
+   adentro queda oculto por el sobre — que es lo que hace una carta
+   de verdad al salir. Recién cuando vuela pasa adelante. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
   transition:visibility 0s linear 2.4s}
 /* El sobre vive sobre las MISMAS rayas que la portada: el que abre no
@@ -190,9 +200,9 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   position:relative;z-index:1}
 /* Y el sobre se acerca un poco al irse: el que mira entra en la
    tarjeta en vez de ver desaparecer una capa.
-   La caja es MÁS ALTA que el sobre porque la carta asoma por arriba:
-   el sobre ocupa del 10% para abajo y lo de arriba es la carta. */
-.tapa{width:min(66vw,268px);aspect-ratio:1.05;position:relative;perspective:1000px;
+   La caja ES el sobre, en la proporción de uno de verdad (un C6 da
+   1,42): cerrado no hay nada que asome, así que no sobra alto. */
+.tapa{width:min(66vw,268px);aspect-ratio:1.42;position:relative;perspective:1000px;
   transition:transform .75s var(--e) .55s}
 #sobre.abierto .tapa{transform:scale(1.07)}
 
@@ -202,7 +212,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    los nervios en rosa y su sombra: sobre las rayas claras un blanco
    sin sombra no se ve. */
 .alas-sobre{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;pointer-events:none}
-.alas-sobre .ala{position:absolute;top:14%;width:46%;
+.alas-sobre .ala{position:absolute;top:19%;width:50%;
   filter:drop-shadow(0 4px 7px rgba(155,53,88,.28))}
 /* Las alas BARREN HACIA ARRIBA, como en la referencia: sin ese giro
    el dibujo cae y se lee como dos plumas colgando. Y no se salen de
@@ -211,39 +221,47 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    POR ESO EL SOBRE ES MÁS ANGOSTO que la pantalla: las alas no son un
    adorno que se puede recortar, son la mitad de la referencia, y un
    ala cortada contra el borde se lee como un error de maqueta. */
-.alas-sobre .ala.izq{left:-21%;transform:rotate(-18deg)}
-.alas-sobre .ala.der{right:-21%;transform:scaleX(-1) rotate(-18deg)}
+.alas-sobre .ala.izq{left:-23%;transform:rotate(-18deg)}
+.alas-sobre .ala.der{right:-23%;transform:scaleX(-1) rotate(-18deg)}
 .alas-sobre{color:#fff;--pluma:#DFA9BD}
 
-/* ── LA SOLAPA ABIERTA ── un triángulo de verdad (`clip-path`, no un
-   cuadrado rotado) con la punta hacia ARRIBA, que es como se ve la
-   espalda de un sobre abierto. Gira sobre su bisagra al abrir. */
-.solapa{position:absolute;left:0;right:0;top:7%;height:45%;z-index:2;
-  background:linear-gradient(195deg,#F6CEDB,#E7A6BC);
-  clip-path:polygon(50% 0,100% 100%,0 100%);
-  filter:drop-shadow(0 6px 12px rgba(155,53,88,.3));
-  transform-origin:50% 100%;
-  transition:transform .72s var(--e) .12s,opacity .55s var(--e) .95s}
-#sobre.abierto .solapa{transform:rotateX(150deg)}
-/* El cuerpo del sobre, atrás de todo lo de abajo. */
-.tapa-cuerpo{position:absolute;left:0;right:0;top:44%;bottom:0;z-index:3;border-radius:0 0 5px 5px;
+/* ── LA SOLAPA CERRADA ── el triángulo doblado hacia ABAJO sobre la
+   espalda del sobre, que es donde va el lacre. Su bisagra es el borde
+   de arriba, así que al abrir se levanta hacia atrás.
+   Y SU `z-index` CAE a mitad de camino: una solapa ya levantada va
+   DETRÁS de la carta que sale. `z-index` no se interpola, pero una
+   transición de 0 s con retardo hace el salto en el momento justo —es
+   el mismo truco que ya costó una vuelta en almi15—. */
+.solapa{position:absolute;left:0;right:0;top:0;height:64%;z-index:5;
+  background:linear-gradient(185deg,#F8D2DF,#EAAEC4);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  filter:drop-shadow(0 7px 11px rgba(155,53,88,.26));
+  transform-origin:50% 0;
+  transition:transform .72s var(--e) .12s,opacity .55s var(--e) .95s,
+             z-index 0s linear .4s}
+#sobre.abierto .solapa{transform:rotateX(-158deg);z-index:0}
+/* El cuerpo del sobre: el rectángulo ENTERO y opaco. La carta vive
+   atrás, así que no hay ningún punto por donde se vea. */
+.tapa-cuerpo{position:absolute;inset:0;z-index:3;border-radius:5px;
   background:linear-gradient(160deg,#F3C3D3,#E7A3BA 60%,#D98BA4);
   box-shadow:0 42px 84px -32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.14)}
 
-/* ── LA CARTA ── asoma por encima del bolsillo. Dice QUIÉN invita y
-   cuándo: se ve dos segundos, así que son cuatro renglones y nada más.
-   La fuente es la misma de los títulos, que es lo que pidió el dueño
-   ("con la misma fuente"). */
-.carta{position:absolute;left:12%;right:12%;top:20%;bottom:29%;border-radius:3px;z-index:4;
+/* ── LA CARTA ── vive ADENTRO y no se ve hasta que se abre. Dice
+   QUIÉN invita y cuándo: se ve dos segundos, así que son cuatro
+   renglones y nada más. La fuente es la misma de los títulos, que es
+   lo que pidió el dueño ("con la misma fuente"). */
+.carta{position:absolute;left:9%;right:9%;top:6%;bottom:6%;border-radius:3px;z-index:2;
   background:linear-gradient(180deg,#fff,#FBEAF0);
   box-shadow:0 12px 26px -14px rgba(28,16,22,.45);
   display:grid;place-items:center;align-content:center;gap:clamp(4px,1.2vw,7px);
-  /* El relleno de abajo sube el texto: la parte de la carta que se VE
-     es la que asoma del bolsillo, y centrado en la caja entera el
-     último renglón le quedaba atrás —la fecha tapada por el lacre—. */
-  padding:0 7% 26%;
+  /* El relleno de abajo sube el texto: al salir, lo que se VE es la
+     parte de ARRIBA de la carta —el resto sigue adentro del sobre—,
+     así que centrado en la caja entera el último renglón queda tapado. */
+  padding:0 8% 32%;
   transition:transform .8s var(--e) .35s,opacity .55s linear .95s}
-#sobre.abierto .carta{transform:translateY(-40%) scale(1.03)}
+/* Sube casi entera, y SIGUE DETRÁS del cuerpo: lo que todavía está
+   adentro lo tapa el sobre, que es lo que pasa de verdad. */
+#sobre.abierto .carta{transform:translateY(-76%) scale(1.02)}
 /* Y DESPUÉS LA CARTA VUELA HACIA EL QUE MIRA. Esto es lo que el dueño
    pidió con "una apertura copada y no tan genérica": que salga la
    carta y se funda no es un gesto, es una transición. El cuánto lo
@@ -252,7 +270,8 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    pasa en un iPhone SE, y en los dos casos se ve el borde del papel
    cruzando la pantalla a mitad de la animación. */
 #sobre.abierto .carta.volando{
-  transform:translateY(-22%) scale(var(--esc,2.6));
+  z-index:9;
+  transform:translateY(-42%) scale(var(--esc,2.6));
   opacity:0;
   transition:transform 1.25s var(--e),opacity 1s var(--e) .3s}
 .carta-mono{font-size:clamp(18px,5vw,24px);color:var(--negro)}
@@ -272,13 +291,17 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    son dos cuñas con una sombra apenas distinta: una línea dibujada
    encima se ve como una raya, dos papeles que se tocan se ven como un
    pliegue. */
-.tapa-frente{position:absolute;left:0;right:0;top:56%;bottom:0;z-index:5;
+.tapa-frente{position:absolute;inset:0;z-index:4;
   border-radius:0 0 5px 5px;overflow:hidden;
   background:linear-gradient(170deg,#EDB4C7,#E099B2 70%,#D286A0);
   box-shadow:0 -3px 12px -6px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
 .tapa-frente i{position:absolute;inset:0}
-.tapa-frente i.f1{clip-path:polygon(0 100%,50% 0,0 0);background:rgba(255,255,255,.1)}
-.tapa-frente i.f2{clip-path:polygon(100% 100%,50% 0,100% 0);background:rgba(154,70,96,.1)}
+/* Los CUATRO pliegues de la espalda: los dos de los costados, el de
+   abajo y —encima de todos— la solapa. Es lo que hace que se lea como
+   un sobre cerrado y no como un rectángulo rosa. */
+.tapa-frente i.f1{clip-path:polygon(0 0,50% 50%,0 100%);background:rgba(255,255,255,.13)}
+.tapa-frente i.f2{clip-path:polygon(100% 0,50% 50%,100% 100%);background:rgba(154,70,96,.10)}
+.tapa-frente i.f3{clip-path:polygon(0 100%,50% 50%,100% 100%);background:rgba(154,70,96,.05)}
 
 /* ── EL LACRE ── de ORO ROSA, con el monograma adentro, que es el
    metal de la referencia que eligió el dueño. Es lo único que hay que
@@ -287,7 +310,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    El monograma va en cobre hondo y da 4,8:1 sobre el metal — y eso
    hay que calcularlo a mano, porque el medidor NO juzga lo que cae
    sobre un degradé opaco de punta a punta: lo saltea y da verde. */
-.tapa-mandos{position:absolute;left:0;right:0;top:76%;transform:translateY(-50%);z-index:6;
+.tapa-mandos{position:absolute;left:0;right:0;top:60%;transform:translateY(-50%);z-index:6;
   display:grid;place-items:center;transition:opacity .3s var(--e)}
 #sobre.abierto .tapa-mandos{opacity:0;pointer-events:none}
 #abrir{position:relative;display:grid;place-items:center;width:62px;height:62px;border-radius:50%;
@@ -308,7 +331,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    Va en una capa aparte y no en el botón: moviendo la caja que se
    toca, el navegador la da por inestable y una prueba se cuelga
    treinta segundos contra un botón que está perfecto. */
-.quiebre{position:absolute;left:0;right:0;top:76%;transform:translateY(-50%);z-index:7;
+.quiebre{position:absolute;left:0;right:0;top:60%;transform:translateY(-50%);z-index:7;
   display:grid;place-items:center;pointer-events:none;opacity:0}
 #sobre.abierto .quiebre{opacity:1}
 .quiebre .sello{position:relative;width:62px;height:62px}
@@ -773,6 +796,16 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   color:var(--acento-ti);margin-top:8px}
 .bolsa-cuerpo .muestras-pie{font-size:12.5px;line-height:1.6;margin-top:12px;
   color:var(--acento-ti)}
+/* ── LA BOLSA DE LA FIESTA, de icono del regalo ──
+   La mandó el dueño ya hecha, con "ÁMBAR FEST" impreso. Va RECORTADA
+   —sin el fondo de la foto— y por eso se apoya sobre el papel de la
+   bolsa sin dejar una juntura rectangular en el medio de la tarjeta:
+   un recuadro ahí se lee como una captura pegada, no como un icono.
+   Y la sombra no es adorno: sin ella una bolsa rosa sobre un papel
+   rosa rayado se funde con el fondo. */
+.regalo-ico{display:block;width:clamp(132px,38vw,184px);height:auto;
+  margin:clamp(4px,1.4vh,10px) auto 0;
+  filter:drop-shadow(0 10px 17px rgba(155,53,88,.32))}
 .bolsa-corte{display:block;height:1px;width:min(180px,56%);
   margin:clamp(28px,6.5vw,38px) auto 0;
   background:linear-gradient(90deg,transparent,rgba(155,53,88,.55),transparent)}
@@ -1033,7 +1066,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
         <p class="carta-txt">mis quince años</p>
         <p class="carta-fecha" id="cartaFecha"></p>
       </div>
-      <div class="tapa-frente" aria-hidden="true"><i class="f1"></i><i class="f2"></i></div>
+      <div class="tapa-frente" aria-hidden="true"><i class="f1"></i><i class="f2"></i><i class="f3"></i></div>
       <div class="tapa-mandos">
         <button id="abrir" type="button" aria-label="Abrir la invitación">
           <span class="azb" aria-hidden="true"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
@@ -1170,7 +1203,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 
           <i class="bolsa-corte" aria-hidden="true"></i>
 
-          <h3>El regalo</h3>
+          <h3 id="tReg">El regalo</h3>
           <p>El mejor regalo es que vengas. Si querés hacerme un presente,
              podés colaborar con mis sueños y mis ganas de festejar.</p>
           <p class="rotulo-alias">Alias para transferir</p>
@@ -1347,6 +1380,9 @@ const CONFIG = {
   /* La marca con alas, ya dibujada, para el cierre. Vacía deja la
      dibujada con el `<symbol>` de siempre, que es el estado bueno. */
   marca: "fotos/marca.webp",
+  /* La bolsa de la fiesta, de icono del regalo. Vacía no dibuja nada
+     —el bloque se sostiene sin ella—, nunca un cuadrado roto. */
+  bolsaFoto: "fotos/bolsa.webp",
   franjas: {
     fRecuerdo: {foto:"fotos/1.webp", alt:"Ámbar"},
     fHoy:      {foto:"fotos/2.webp", alt:"Ámbar"}
@@ -1790,6 +1826,16 @@ function falta(que, chico){
       ma.innerHTML = '';
       ma.appendChild(im);
       ma.classList.add('con-foto');
+    }, () => {});
+
+  /* EL ICONO DEL REGALO: la bolsa de la fiesta. Se pone recién cuando
+     cargó de verdad; si faltara, el bloque queda como estaba y no un
+     cuadrado roto arriba del título. */
+  const treg = document.getElementById('tReg');
+  if (treg && CONFIG.bolsaFoto)
+    cargarFoto(CONFIG.bolsaFoto, '', im => {
+      im.className = 'regalo-ico';
+      treg.insertAdjacentElement('beforebegin', im);
     }, () => {});
 
   /* Las franjas. Cada una trae su sierra —con su propia semilla, para
