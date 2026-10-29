@@ -4642,6 +4642,31 @@ invitación no copie el criterio sin saber que es una excepción: en
 `facuymaxi/` el play LLEVA a escucharla y no suena, y ahí sigue siendo
 lo correcto porque ellos no pidieron otra cosa.
 
+#### El pase VIP, de emblema de "dónde nos vemos"
+
+*"Esto quiero que lo pongas como icono en donde va el icono de la
+ubicación"* — una credencial VIP con su cintita, el moño, los dijes y
+la marca AB entre alas, con "ÁMBAR FEST" y "VIP ALL ACCESS".
+
+**Reemplaza al medallón de esa sección, y no se mete adentro del
+anillo.** El medallón lleva un icono de línea de 42px, y una credencial
+llena de brillantes a ese tamaño es una mancha —*lo que no se lee a 42
+no va*, la lección que este archivo ya tiene escrita tres veces—. Va del
+tamaño al que se LEEN las dos líneas de la tarjeta, que es lo único que
+la hace valer la pena. La credencial además dice lo que la sección dice:
+es la entrada a la fiesta.
+
+**Va recortada, sin el fondo de la foto**, por lo mismo que la bolsa del
+regalo: un recuadro oscuro en el medio del papel rosa se lee como una
+captura pegada. Acá el recorte funciona porque la tarjeta tiene su borde
+dorado y la cinta es rosa maciza, así que el relleno por inundación
+desde las esquinas corta justo. Pesa **89 KB** en `.webp`; el PNG que
+llegó pesaba 2,6 MB.
+
+Y como la marca del cierre y la bolsa del regalo, **se pone recién
+cuando el archivo cargó de verdad**: si faltara queda el medallón con el
+pin dibujado, que se sostiene solo.
+
 #### Lo que sigue faltando
 
 **El titular de la cuenta** del alias —el nombre que le muestra el

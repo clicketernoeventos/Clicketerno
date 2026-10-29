@@ -848,6 +848,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   color:var(--acento-ti);margin-top:8px}
 .bolsa-cuerpo .muestras-pie{font-size:12.5px;line-height:1.6;margin-top:12px;
   color:var(--acento-ti)}
+/* ── EL PASE VIP, de emblema de "dónde nos vemos" ──
+   Lo mandó el dueño ya hecho y REEMPLAZA AL MEDALLÓN de esa sección:
+   la credencial es la entrada a la fiesta, así que va donde estaba el
+   pin del mapa.
+   NO se mete adentro del anillo: es una tarjeta vertical y un icono de
+   línea de 42px —lo que cabe ahí— la volvería una mancha, que es la
+   lección que este archivo ya tiene escrita tres veces. Va del tamaño
+   al que se LEE "ÁMBAR FEST" y "VIP ALL ACCESS", que es lo que la hace
+   valer la pena.
+   Va recortada, sin el fondo de la foto: un recuadro oscuro en el medio
+   del papel rosa se lee como una captura pegada. */
+.pase-vip{display:block;width:clamp(158px,45vw,216px);height:auto;
+  margin:0 auto clamp(10px,2vh,18px);
+  filter:drop-shadow(0 12px 20px rgba(155,53,88,.26))}
+
 /* ── LA BOLSA DE LA FIESTA, de icono del regalo ──
    La mandó el dueño ya hecha, con "ÁMBAR FEST" impreso. Va RECORTADA
    —sin el fondo de la foto— y por eso se apoya sobre el papel de la
@@ -1459,6 +1474,9 @@ const CONFIG = {
   /* La bolsa de la fiesta, de icono del regalo. Vacía no dibuja nada
      —el bloque se sostiene sin ella—, nunca un cuadrado roto. */
   bolsaFoto: "fotos/bolsa.webp",
+  /* El pase VIP, de emblema de "dónde nos vemos". Vacío deja el
+     medallón con el pin dibujado, que es el estado bueno. */
+  vip: "fotos/vip.webp",
   franjas: {
     fRecuerdo: {foto:"fotos/1.webp", alt:"Ámbar"},
     fHoy:      {foto:"fotos/2.webp", alt:"Ámbar"}
@@ -1908,6 +1926,19 @@ function falta(que, chico){
       ma.innerHTML = '';
       ma.appendChild(im);
       ma.classList.add('con-foto');
+    }, () => {});
+
+  /* EL PASE VIP, en lugar del medallón de "dónde nos vemos". Se pone
+     recién cuando cargó de verdad: si faltara queda el medallón con el
+     pin, que se sostiene solo, y no un cuadrado roto. */
+  const dond = document.getElementById('donde');
+  if (dond && CONFIG.vip)
+    cargarFoto(CONFIG.vip, '', im => {
+      im.className = 'pase-vip';
+      im.setAttribute('aria-hidden', 'true');
+      const med = dond.querySelector('.medallon');
+      if (med) med.replaceWith(im);
+      else (dond.querySelector('.caja') || dond).insertAdjacentElement('afterbegin', im);
     }, () => {});
 
   /* EL ICONO DEL REGALO: la bolsa de la fiesta. Se pone recién cuando
