@@ -789,32 +789,55 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    botón redondo de oro rosa y la frase abajo. El metal es el MISMO
    del lacre del sobre, así que no entra un color nuevo a la pieza.
 
-   SON TRES BOTONES Y LOS TRES HACEN ALGO. La captura tiene cinco
-   —mezclar y repetir además—, y con UNA sola canción esos dos no
-   pueden hacer nada: la regla de este proyecto es que un botón que no
-   puede hacer su trabajo molesta más que no estar. "Anterior" y
-   "siguiente" sí valen —con un solo tema los dos vuelven al
-   principio, que es lo que hace un reproductor de verdad— y la
-   canción se repite sola, así que el botón de repetir no hace falta.
+   LOS CINCO ESTÁN DIBUJADOS Y TRES SON BOTONES. El dueño pidió el
+   mismo reproductor de la captura, que tiene cinco mandos: mezclar,
+   anterior, play, siguiente y repetir. Con UNA sola canción —y
+   pidiendo que suene UNA VEZ— mezclar y repetir no pueden hacer
+   nada, y la regla de este proyecto es que un botón que no puede
+   hacer su trabajo molesta más que no estar. Así que los dos de los
+   extremos son parte del DIBUJO, no botones: van con `aria-hidden` y
+   `pointer-events:none`, que es la definición estricta con la que el
+   medidor de contraste y el barrido saltean un adorno. Se ve igual
+   que la captura y no hay nada que se toque y no responda.
+   "Anterior" y "siguiente" sí valen: con un solo tema los dos
+   vuelven al principio, que es lo que hace un reproductor de verdad.
 
    LA LÍNEA NO ES UN CONTROL, es el avance: va con `aria-hidden` y sin
-   atajar el dedo, que es como el medidor de contraste y el barrido
-   saltean un adorno. */
-.repro{max-width:330px;margin:clamp(16px,3.4vh,26px) auto 0}
-.repro-linea{position:relative;height:2px;border-radius:2px;
+   atajar el dedo, por lo mismo. */
+/* EL AIRE DE ARRIBA NO ES AIRE: es lo que hace que el corazón del
+   avance se vea entero. El bloque entra con el telón de `.ap`, que es
+   un `clip-path` recortado a SU CAJA — y el corazón está centrado
+   sobre una línea de 2px pegada al borde de arriba, así que su mitad
+   superior quedaba afuera de la caja y desaparecía. Lo que se veía
+   era media gota colgando de la línea, y no tiraba ningún error.
+   Es pariente de la trampa del telón de `almi15` (*el que se mira no
+   puede ser el que se esconde*): acá el que recorta no puede ser más
+   chico que lo que tiene que mostrar. */
+.repro{max-width:330px;padding-top:9px;
+  margin:calc(clamp(16px,3.4vh,26px) - 9px) auto 0}
+.repro-linea{position:relative;height:2px;border-radius:2px;margin:0 9px;
   background:linear-gradient(90deg,#9B6753,#E6B79D,#9B6753)}
-.repro-linea i{position:absolute;top:50%;left:0;width:15px;height:15px;
+.repro-linea i{position:absolute;top:50%;left:3%;width:15px;height:15px;
   transform:translate(-50%,-50%);transition:left .3s linear;
-  color:#E8B59B;display:block}
+  color:#B9795C;display:block}
 .repro-linea svg{display:block;width:100%;height:100%;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+  filter:drop-shadow(0 1px 2px rgba(155,53,88,.3))}
 .repro-mandos{display:flex;align-items:center;justify-content:center;
-  gap:clamp(6px,3vw,20px);margin-top:clamp(14px,3vh,24px)}
+  gap:clamp(4px,2.2vw,16px);margin-top:clamp(14px,3vh,24px)}
 .repro-mandos button{display:flex;align-items:center;justify-content:center;
-  background:none;border:0;padding:0;cursor:pointer;color:#E3AC92;
+  background:none;border:0;padding:0;cursor:pointer;color:#9B6753;
   min-width:44px;min-height:44px;-webkit-tap-highlight-color:transparent}
 .repro-mandos button svg{width:clamp(21px,6vw,26px);height:auto;display:block;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+  filter:drop-shadow(0 1px 2px rgba(155,53,88,.28))}
+/* Mezclar y repetir: DIBUJO, no botones. Del mismo tamaño que los
+   otros dos para que la fila se lea como la de la captura, un punto
+   más apagados y sin caja que atraje el dedo. */
+.repro-mandos .adorno{display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;color:#9B6753;opacity:.72;pointer-events:none;flex:none}
+.repro-mandos .adorno svg{width:clamp(21px,6vw,26px);height:auto;display:block;
+  fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 1px 2px rgba(155,53,88,.24))}
 /* El botón grande: la misma esfera de oro rosa del lacre. */
 .repro-mandos .play{min-width:clamp(58px,17vw,70px);min-height:clamp(58px,17vw,70px);
   border-radius:50%;color:#6B3522;
@@ -823,8 +846,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .repro-mandos .play svg{width:clamp(20px,5.6vw,25px);filter:none}
 .repro-frase{font-family:var(--titulos);font-weight:400;
   font-size:clamp(14.5px,4vw,19px);line-height:1.5;letter-spacing:.07em;
-  text-transform:uppercase;color:#FFF2F7;
+  text-transform:uppercase;color:var(--negro);
   margin:clamp(26px,5.4vh,40px) auto 0;max-width:19em}
+/* El velo claro del fondo: la raya rosa es lo que sostiene la
+   estética, pero una raya fuerte detrás de una capitular espaciada es
+   un texto que no se lee — y eso el medidor no lo mide, porque mide
+   el fondo y no el dibujo. Es el mismo velo de la portada. */
+#cancion:before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% 46%,rgba(255,255,255,.76),
+    rgba(255,255,255,.26) 60%,transparent)}
+/* La filigrana del corte queda AFUERA de esta regla: con
+   `position:relative` deja de ser una capa y pasa a ser una fila, y
+   se le monta encima a "La canción". Es la cuarta vez que un
+   selector `> *` le pisa el `absolute` a algo en esta invitación —el
+   encaje, el marco y el beso fueron las otras tres—. */
+#cancion > :not(.orna){position:relative;z-index:1}
 
 /* ══════════ 4 · el calendario ══════════ */
 .calen{margin-top:clamp(26px,5vh,40px)}
@@ -1285,7 +1321,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
        de esta sección y dos emblemas apilados se leen como un error de
        maqueta. El JS lo dibuja sólo si hay canción Y el archivo carga:
        un play que no suena es la mentira de siempre. -->
-  <section class="seccion oscura arco" id="cancion">
+  <section class="seccion claro rayado arco" id="cancion">
     <div class="caja">
       <p class="arriba ap">La canción</p>
       <div class="repro ap d1" id="repro"></div>
@@ -2428,7 +2464,13 @@ function horaTexto(){
    sin un gesto de la persona, y ese gesto ya existe: no hay que
    inventarle otro botón. Si el navegador se niega igual, el
    reproductor queda en "play" y decide el invitado — nunca se queda
-   diciendo que suena algo que no suena. */
+   diciendo que suena algo que no suena.
+
+   Y SUENA UNA SOLA VEZ, por pedido del dueño: terminada la canción
+   el botón vuelve a decir "play" y el que la quiera escuchar otra
+   vez la toca. Por eso el audio NO va en bucle y, al terminar, se
+   rebobina solo: si quedara en el final, el primer toque del play
+   no sonaría. */
 let sonar = null;
 
 (function(){
@@ -2454,7 +2496,7 @@ let sonar = null;
      no decodifica el primero se quedaba sin reproductor teniendo el
      otro al lado. */
   const a = document.createElement('audio');
-  a.loop = true;
+  a.loop = false;
   a.preload = 'metadata';
   a.addEventListener('error', fuera);
   (Array.isArray(CONFIG.musica) ? CONFIG.musica : [CONFIG.musica]).forEach(u => {
@@ -2475,15 +2517,32 @@ let sonar = null;
   const PLAY  = ico('<path d="M7.6 4.6 20 12 7.6 19.4z"/>');
   const PAUSA = ico('<rect x="6.4" y="4.6" width="4" height="14.8" rx="1.2"/>' +
                     '<rect x="13.6" y="4.6" width="4" height="14.8" rx="1.2"/>');
+  /* Los dos de los extremos son DIBUJO. Van de trazo, como en la
+     captura, con su destellito abajo. */
+  const linea = d => '<svg viewBox="0 0 26 26" aria-hidden="true">' + d + '</svg>';
+  const CHISPA = (x, y) => '<path fill="currentColor" stroke="none" d="M' + x + ' ' + (y - 3.2)
+    + 'q.55 2.65 3.2 3.2q-2.65.55-3.2 3.2q-.55-2.65-3.2-3.2q2.65-.55 3.2-3.2z"/>';
+  const MEZCLA = linea(
+    '<path d="M2.6 7.8h3.1c1 0 1.9.5 2.5 1.3l4.8 6.6c.6.8 1.5 1.3 2.5 1.3h3.9"/>' +
+    '<path d="M2.6 17h3.1c1 0 1.9-.5 2.5-1.3l4.8-6.6c.6-.8 1.5-1.3 2.5-1.3h3.9"/>' +
+    '<path d="m16.9 4.9 2.9 2.9-2.9 2.9"/><path d="m16.9 14.1 2.9 2.9-2.9 2.9"/>' +
+    CHISPA(5.4, 21.8));
+  const REPITE = linea(
+    '<path d="M6.5 8.3h10.6c1.8 0 3.2 1.4 3.2 3.2v1.3"/>' +
+    '<path d="M19.5 16.5H8.9c-1.8 0-3.2-1.4-3.2-3.2v-1.3"/>' +
+    '<path d="m14.6 5.4 2.9 2.9-2.9 2.9"/><path d="m11.4 13.6-2.9 2.9 2.9 2.9"/>' +
+    CHISPA(20.6, 21.4));
 
   /* El dibujo se AGREGA, no reemplaza: con `innerHTML` se borraba el
      `<audio>` que acaba de colgarse acá adentro. */
   caja.insertAdjacentHTML('beforeend',
     '<div class="repro-linea" aria-hidden="true" style="pointer-events:none"><i>' + COR + '</i></div>' +
     '<div class="repro-mandos">' +
+      '<i class="adorno" aria-hidden="true">' + MEZCLA + '</i>' +
       '<button type="button" id="rAtras" aria-label="Volver al principio de la canción">' + ATRAS + '</button>' +
       '<button type="button" class="play" id="rPlay" aria-label="Escuchar la canción">' + PLAY + '</button>' +
       '<button type="button" id="rAde" aria-label="Volver al principio de la canción">' + ADE + '</button>' +
+      '<i class="adorno" aria-hidden="true">' + REPITE + '</i>' +
     '</div>');
 
   const bPlay = document.getElementById('rPlay');
@@ -2494,11 +2553,29 @@ let sonar = null;
   };
   a.addEventListener('play', pintar);
   a.addEventListener('pause', pintar);
+  /* Terminada la canción se rebobina y el botón vuelve a decir
+     "play". Sin el rebobinado, el primer toque no suena: el audio
+     está parado en el final. */
+  a.addEventListener('ended', () => {
+    /* El `pause()` no sobra: el navegador ya dejó el audio parado,
+       pero así el botón queda bien dibujado venga el final de donde
+       venga, y no hay que confiar en qué orden avisa cada uno. */
+    a.pause();
+    a.currentTime = 0;
+    if (cor) cor.style.left = '3%';
+    pintar();
+  });
   /* El corazón sobre la línea es el AVANCE, no un control: muestra por
      dónde va y no ataja el dedo. */
   a.addEventListener('timeupdate', () => {
-    if (!a.duration) return;
-    cor.style.left = Math.max(0, Math.min(100, (a.currentTime / a.duration) * 100)) + '%';
+    /* Un Ogg todavía sin bufferear entero devuelve `Infinity` en vez
+       de un número, y ahí la cuenta da 0 para siempre: el corazón se
+       queda clavado en la izquierda sin que nada avise. */
+    if (!a.duration || !isFinite(a.duration)) return;
+    /* Entre el 3 y el 97: en el 0 la mitad del corazón queda FUERA de
+       la línea y lo que se ve es una gota, no un corazón. Cuatro
+       píxeles de mentira sobre el avance no se los debe nadie. */
+    cor.style.left = Math.max(3, Math.min(97, (a.currentTime / a.duration) * 100)) + '%';
   });
   bPlay.addEventListener('click', () => {
     if (a.paused) a.play().catch(() => {}); else a.pause();

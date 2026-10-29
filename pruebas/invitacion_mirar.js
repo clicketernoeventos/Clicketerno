@@ -815,6 +815,45 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctx3.close();
   }
 
+  /* ── 8a-ter · LA CANCIÓN SUENA UNA SOLA VEZ ──
+     Una invitación puede traer su canción. Lo que se mide no es que
+     suene —eso lo decide el navegador y acá el Chromium no decodifica
+     AAC— sino las dos cosas que se ven: que NO quede en bucle, y que
+     al terminar el botón vuelva a decir "play" con la canción
+     rebobinada. Sin el rebobinado el primer toque no suena: el audio
+     está parado en el final, y eso no tira ningún error. */
+  titulo('la canción suena una sola vez');
+  {
+    const ctxM = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagM = await ctxM.newPage();
+    await pagM.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagM.locator('#abrir').count()){ await pagM.click('#abrir'); await pagM.waitForTimeout(2700); }
+    await pagM.waitForTimeout(600);
+    const hay = await pagM.evaluate(() => !!document.querySelector('.repro audio'));
+    if (!hay) bien('esta invitación no trae canción');
+    else {
+      const enBucle = await pagM.evaluate(() => document.querySelector('.repro audio').loop);
+      es(!enBucle, enBucle ? 'la canción queda en BUCLE: no se la puede dejar de escuchar'
+                           : 'la canción no queda en bucle');
+      /* Se fuerza el final: en el camino normal hay que esperar la
+         canción entera, así que esto no se recorre nunca. */
+      const fin = await pagM.evaluate(async () => {
+        const a = document.querySelector('.repro audio'),
+              b = document.querySelector('.repro .play');
+        a.dispatchEvent(new Event('ended'));
+        await new Promise(r => setTimeout(r, 120));
+        return { t: a.currentTime, et: b ? (b.getAttribute('aria-label') || '') : '' };
+      });
+      es(fin.t < .2, fin.t < .2
+        ? 'y al terminar se rebobina sola'
+        : `quedó parada en el final (${fin.t.toFixed(1)}s): el primer toque del play no suena`);
+      es(/escuchar/i.test(fin.et), /escuchar/i.test(fin.et)
+        ? 'y el botón vuelve a decir "escuchar"'
+        : `el botón quedó diciendo "${fin.et}" con la canción terminada`);
+    }
+    await ctxM.close();
+  }
+
   /* ── 8a-bis · EL AFICHE DE LA PORTADA ──
      Una invitación puede traer la portada ya hecha: una pieza que el
      cliente mandó armada, con su foto, su nombre y su letra adentro.
