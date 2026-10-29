@@ -815,6 +815,91 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctx3.close();
   }
 
+  /* ── 8a-bis · EL AFICHE DE LA PORTADA ──
+     Una invitación puede traer la portada ya hecha: una pieza que el
+     cliente mandó armada, con su foto, su nombre y su letra adentro.
+     Eso abre dos agujeros y ninguno tira un error:
+       · con el afiche puesto, la portada no puede escribir el nombre
+         OTRA VEZ debajo — serían dos nombres con dos letras distintas;
+       · sin el afiche —un archivo que falta, un deploy a medias— la
+         portada no puede quedar VACÍA ni con el cuadrado roto: tiene
+         que volver a la tipográfica, que se sostiene sola.
+     El segundo es el que importa y por eso se fuerza: en el camino
+     normal no se recorre nunca. */
+  titulo('el afiche de la portada');
+  {
+    const ctxP = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagP = await ctxP.newPage();
+    await pagP.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagP.locator('#abrir').count()){ await pagP.click('#abrir'); await pagP.waitForTimeout(2700); }
+    await pagP.waitForTimeout(900);
+    const con = await pagP.evaluate(() => {
+      const p = document.querySelector('#portada'),
+            im = document.querySelector('.port-poster img'),
+            n  = document.querySelector('#nombre');
+      const vis = e => { if (!e) return false;
+        const r = e.getBoundingClientRect(); return r.width > 2 && r.height > 2; };
+      return { hay: !!im, modo: !!p && p.classList.contains('con-poster'),
+               cargo: !!(im && im.naturalWidth > 0),
+               caja: im ? im.getBoundingClientRect().height : 0,
+               alto: innerHeight, nombreVisible: vis(n) };
+    });
+    if (!con.hay) bien('esta invitación no trae la portada ya hecha');
+    else {
+      es(con.cargo, con.cargo ? 'el afiche de la portada carga de verdad'
+                              : 'el afiche de la portada NO cargó');
+      es(con.modo, con.modo ? 'y la portada se pone en modo afiche'
+                            : 'el afiche cargó y la portada no se puso en modo afiche');
+      es(con.caja > 0 && con.caja <= con.alto,
+         con.caja > 0 && con.caja <= con.alto
+           ? `y entra entero en la pantalla (${Math.round(con.caja)} de ${con.alto})`
+           : `el afiche se sale de la pantalla (${Math.round(con.caja)} de ${con.alto})`);
+      es(!con.nombreVisible, con.nombreVisible
+        ? 'el nombre se dibuja DOS veces: el del afiche y el de abajo'
+        : 'y el nombre no se escribe dos veces');
+    }
+    await ctxP.close();
+
+    if (con.hay){
+      const ctxQ = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+      const pagQ = await ctxQ.newPage();
+      await pagQ.route('**/*', async r => {
+        const u = r.request().url();
+        if (r.request().resourceType() === 'image' && /no-esta-este-afiche/.test(u))
+          return r.fulfill({status:404, body:''});
+        if (r.request().resourceType() === 'document' && u.replace(/[?#].*/,'').replace(/\/$/,'') === URL.replace(/\/$/,'')){
+          const res = await r.fetch();
+          let html = await res.text();
+          html = html.replace(/poster: *"[^"]*"/, 'poster: "fotos/no-esta-este-afiche.webp"');
+          return r.fulfill({response:res, body:html});
+        }
+        return r.continue();
+      });
+      await pagQ.goto(URL, {waitUntil:'domcontentloaded'});
+      if (await pagQ.locator('#abrir').count()){ await pagQ.click('#abrir'); await pagQ.waitForTimeout(2700); }
+      await pagQ.waitForTimeout(1200);
+      const sin = await pagQ.evaluate(() => {
+        const p = document.querySelector('#portada'), n = document.querySelector('#nombre');
+        const rotas = [...document.querySelectorAll('img')]
+          .filter(i => i.complete && !i.naturalWidth && i.getBoundingClientRect().width > 2).length;
+        const r = n ? n.getBoundingClientRect() : {width:0,height:0};
+        return { modo: !!p && p.classList.contains('con-poster'), rotas,
+                 nombre: (n && n.textContent || '').trim(),
+                 vis: r.width > 2 && r.height > 2 };
+      });
+      es(!sin.modo, sin.modo
+        ? 'la portada se quedó en modo afiche sin ningún afiche'
+        : 'sin el afiche vuelve a la portada tipográfica');
+      es(!sin.rotas, sin.rotas ? `quedaron ${sin.rotas} cuadrados rotos dibujados`
+                               : 'y no queda ningún cuadrado roto');
+      es(sin.vis && sin.nombre.length > 1,
+         sin.vis && sin.nombre.length > 1
+           ? `y el nombre vuelve a la vista ("${sin.nombre}")`
+           : 'la portada quedó sin afiche Y sin nombre: una pantalla vacía');
+      await ctxQ.close();
+    }
+  }
+
   /* ── 8b · el que NO viene no llena lo que no es suyo ──
      Un campo escondido igual VIAJA: `new FormData(form)` manda todo
      lo que esté en el formulario. Así que esto se mide por las dos

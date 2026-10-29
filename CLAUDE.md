@@ -4667,6 +4667,87 @@ Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
 
+#### La portada es un afiche, y el afiche manda
+
+*"Esta va a ser la portada."* — una pieza ya terminada: la foto de ella
+sobre un rosa fuerte, "ÁMBAR · MIS XV AÑOS" en una didona cromada y el
+monograma alado con su corona.
+
+**Con el afiche puesto, la portada no vuelve a decir nada de eso.** El
+nombre, el hilo, el renglón de abajo, las alas, el óvalo, el encaje, el
+marco y el beso se esconden: repetirlos sería decir dos veces lo mismo,
+una de ellas con otra letra. Lo único que queda encima es el "Deslizá".
+
+**Va ENTERO, no recortado.** El afiche es 2:3 y un teléfono es 9:19.5:
+recortándolo para llenar la pantalla se le van 86px por lado, o sea las
+dos puntas de "ÁMBAR" y la mitad del monograma. Y el ancho sale del
+ALTO que queda, no de un porcentaje del ancho — la misma regla que la
+ficha de celular del carrusel del sitio—, porque medido por el ancho,
+en una pantalla baja el pie del afiche cae abajo del borde.
+**Lo que sobra arriba y abajo es el MISMO rosa del afiche**, sacado de
+sus cuatro esquinas con el cuentagotas (`#E83D76`): no se ve ninguna
+juntura, así que el afiche no parece una foto pegada en el medio de una
+pantalla. Y sin esquinas redondeadas, que ahí dibujarían cuatro
+esquinitas rosas donde no hay ningún borde.
+
+**El nombre no se borra: se esconde.** Es el `h1` de la página y lo que
+el afiche dice lo dice DIBUJADO — un lector de pantalla no lee una
+imagen. Queda de 1x1 con `clip-path`, a la vista de nadie y presente
+para quien lo necesita.
+
+**Y si el archivo falta, no queda una pantalla vacía**: no se pone la
+clase y vuelve la portada tipográfica entera, que se sostiene sola. Es
+lo mismo que ya hacen la marca del cierre, la bolsa y el pase VIP, y por
+eso el `<img>` lo crea el JS y nunca el HTML.
+**La foto del óvalo se pide RECIÉN si el afiche no vino**: con el afiche
+puesto el óvalo está escondido, así que bajarla igual son 29 KB que el
+invitado paga por una foto que no va a ver nunca.
+
+Lo mide `pruebas/invitacion_mirar.js` con una comprobación nueva, y las
+dos mitades: con el afiche, que cargue, que entre entero en la pantalla
+y que **el nombre no se escriba dos veces**; y sin él —forzado con un
+404, porque en el camino normal no se recorre nunca— que no quede un
+cuadrado roto, que no se quede en modo afiche y que el nombre vuelva a
+la vista. Verificada rompiéndola a propósito —poniendo la clase y el
+`<img>` sin esperar a que cargue— da **3 fallas**.
+
+#### Lo que quedó debajo del afiche
+
+Dos cosas de la vuelta anterior quedaron hechas y **no se ven**, porque
+el afiche llegó después y las reemplaza. No son un sobrante: son la
+portada tipográfica, que es a donde cae todo si el archivo falta.
+
+- **El nombre pasó de la manuscrita a CAPITULARES espaciadas**, que es
+  la forma de una etiqueta de perfume: "ÁMBAR" grande y "XV AÑOS" chico
+  debajo son un solo bloque que se lee *"Ámbar XV años"*. Se probaron
+  cinco familias mirándolas (`pruebas/letras.js`) y la mejor era la
+  **Bodoni Moda** — pero va la **Playfair**, que ya está cargada para
+  los títulos: bajarle a cada invitado una familia entera por un texto
+  que sólo aparece si el archivo falta es peso regalado.
+- **Las tres estrellas apiladas** que había pedido con una captura —la
+  de atrás en animal print, la del medio rosa y la de adelante plateada,
+  los tres colores que mandó la clienta—. Van dibujadas y no es la
+  imagen de la referencia: una imagen de la que no sabemos la licencia
+  no se publica. Están donde estaba el moño, que salió de ahí porque ya
+  está en los cuatro cortes, en el sobre y en tres iconos, y dos adornos
+  apilados entre el óvalo y el nombre se leen como un error de maqueta.
+  **Ponerlas encima del afiche no se hizo a propósito**: el afiche es un
+  diseño cerrado y pegarle estrellas arriba lo arruina.
+
+**Y un animal print chiquito se lee como una VACA.** Costó seis vueltas
+y la lección es la de siempre —se ve mirando, no leyendo el código—:
+manchas macizas dan vaca; rayitas sueltas dan granos de arroz. Lo que lo
+vuelve leopardo son tres cosas juntas: el anillo ROTO (dibujado con UN
+círculo punteado, no con cuatro elipses sueltas, que se separan), el
+centro del anillo TEÑIDO un tono más hondo, y las rosetas repartidas en
+una **grilla sacudida** y no al azar puro —al azar se amontonan de un
+lado y media estrella queda lisa—. Y el print va en negro sobre rosa
+claro, no en marrón: el marrón sería un cuarto color en una paleta de
+tres.
+**Y la composición importaba más que el dibujo**: la estrella de atrás
+estaba tapada en un 80% por las otras dos, así que su print no se veía
+por fino que se dibujara. Separadas, se lee.
+
 #### Lo que sigue faltando
 
 **El titular de la cuenta** del alias —el nombre que le muestra el

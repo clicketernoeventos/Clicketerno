@@ -50,6 +50,20 @@
      La manuscrita es SOLO para el nombre y los acentos: en un párrafo
      no se lee. */
   --titulos:'Playfair Display',Georgia,serif;
+  /* El NOMBRE de la portada tiene su propia familia: es el único texto
+     de la pieza que se lee como una etiqueta de perfume —capitulares
+     muy espaciadas— y eso en un párrafo no se puede usar. Está en una
+     variable y no escrita en la regla por lo mismo que las otras tres:
+     para poder probar candidatas interceptando el HTML, sin tocar el
+     archivo (`node pruebas/letras.js`).
+     Se probaron cinco mirándolas —Bodoni Moda, Playfair, Prata,
+     Italiana y Cinzel— y la que mejor quedaba era la Bodoni. Va la
+     Playfair igual, y el motivo no es de gusto: con el afiche puesto
+     este renglón NO SE VE —la portada es la pieza que mandó el dueño,
+     que ya trae su propia letra—, así que bajarle a cada invitado una
+     familia entera por un texto que sólo aparece si el archivo falta
+     es peso regalado. La Playfair ya está cargada para los títulos. */
+  --nombre-f:'Playfair Display',Georgia,serif;
   --texto-f:'Hanken Grotesk',system-ui,sans-serif;
   --escrita:'Pinyon Script',cursive;
   --e:cubic-bezier(.22,.7,.24,1);
@@ -562,8 +576,58 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   font-family:var(--escrita);font-size:clamp(54px,16vw,86px);color:var(--acento-ti);
   line-height:1;padding-bottom:.06em}
 
-/* ── EL MOÑO ── debajo del óvalo, como en la referencia. */
-.mono{width:clamp(74px,22vw,104px);margin:0 auto;color:var(--negro)}
+/* ── LAS TRES ESTRELLAS APILADAS ──
+   Van donde estaba el moño, debajo del óvalo y justo encima del
+   nombre. El moño salió de ahí y no es un olvido: ya está en los cuatro
+   cortes de sección, en el sobre y en tres de los iconos, y dos adornos
+   apilados entre el óvalo y el nombre se leen como un error de maqueta
+   —es lo mismo que ya pasó con el emblema del cierre—. Estas tres, en
+   cambio, dicen los TRES COLORES que mandó la clienta.
+   El alto no cambia, así que el bloque de la portada mide lo mismo que
+   antes: en una pantalla de 568px cada renglón que se agrega acá es un
+   renglón que se cae por abajo. */
+.estrellas{width:clamp(116px,34vw,158px);margin:0 auto clamp(2px,.6vh,6px);
+  filter:drop-shadow(0 7px 12px rgba(155,53,88,.3))}
+.estrellas svg{display:block;width:100%;height:auto}
+
+/* ── LA PORTADA ES EL AFICHE ──
+   La pieza que mandó el dueño ya trae TODO: la foto, "ÁMBAR", "MIS XV
+   AÑOS" y el monograma alado. Así que con el afiche puesto la portada
+   no vuelve a dibujar nada de eso: el nombre, el hilo, el renglón de
+   abajo, las alas, el óvalo, las estrellas, el encaje, el marco y el
+   beso se esconden. Repetirlos sería decir dos veces lo mismo, una de
+   ellas con otra letra.
+   VA ENTERO, NO RECORTADO. El afiche es 2:3 y un teléfono es 9:19.5:
+   recortándolo para llenar la pantalla se le van 86px por lado, o sea
+   las dos puntas de "ÁMBAR" y la mitad del monograma. Y el ancho sale
+   del ALTO que queda —como la ficha de celular del carrusel del
+   sitio—, no de un porcentaje del ancho: medido por el ancho, en una
+   pantalla baja el pie del afiche queda abajo del borde.
+   Lo que sobra arriba y abajo es el MISMO rosa del afiche, medido de
+   sus cuatro esquinas, así que no se ve ninguna juntura.
+   Si el archivo no carga no queda un cuadrado roto ni una pantalla
+   vacía: no se pone la clase y la portada se queda tipográfica. */
+#portada.con-poster{background:#E83D76;color:#FFE4EF;
+  padding:clamp(10px,2.2vh,22px) clamp(10px,3vw,22px)
+          calc(clamp(14px,3vh,26px) + env(safe-area-inset-bottom))}
+#portada.con-poster:before{display:none}
+#portada.con-poster .encaje,#portada.con-poster .marco,
+#portada.con-poster .beso,#portada.con-poster .alas,
+#portada.con-poster .estrellas,#portada.con-poster #hilo,
+#portada.con-poster .port-quince,#portada.con-poster .port-frase,
+#portada.con-poster .perlas{display:none}
+/* El nombre NO se borra: se esconde a la vista y sigue estando. Es el
+   `h1` de la página, y lo que el afiche dice lo dice dibujado — un
+   lector de pantalla no lee una imagen. */
+#portada.con-poster #nombre{position:absolute;width:1px;height:1px;
+  overflow:hidden;clip-path:inset(50%);white-space:nowrap;padding:0}
+.port-poster{width:100%;max-width:min(100%,calc((100svh - 82px) * .667));
+  margin:0 auto}
+/* Sin esquinas redondeadas: el fondo de la sección es el mismo rosa
+   del afiche, así que un radio dibujaría cuatro esquinitas rosas donde
+   no se ve ningún borde. */
+.port-poster img{display:block;width:100%;height:auto}
+#portada.con-poster .port-baja{margin-top:clamp(10px,2vh,18px);opacity:.85}
 
 /* ── LAS PERLAS ── una hilera, no un adorno suelto. */
 .perlas{display:flex;justify-content:center;gap:7px;margin:clamp(10px,2vh,16px) auto 0}
@@ -571,9 +635,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   background:radial-gradient(circle at 34% 28%,#fff,#F0D2DE 55%,#C79FB0);
   box-shadow:0 0 0 .5px rgba(28,16,22,.18)}
 
-#nombre{font-family:var(--escrita);font-weight:400;
-  font-size:clamp(54px,20vw,118px);line-height:1;color:var(--acento-ti);
-  letter-spacing:.01em;padding:0 .08em}
+/* EL NOMBRE ES LA ETIQUETA. "ÁMBAR" grande y "XV AÑOS" chico y
+   espaciado abajo son un solo bloque que se lee "Ámbar XV años", que es
+   exactamente la forma de una etiqueta de perfume: el nombre en
+   capitulares de didona y la línea chica debajo. Los dos en tinta, no
+   uno en rosa y el otro en negro: dos colores ahí parten en dos lo que
+   es una sola cosa.
+   La didona va SOLO acá. En un teléfono a 15px sus finos se parten —la
+   lección está escrita en CLAUDE.md— pero esto no es un párrafo: es un
+   cartel de 78px, que es justamente para lo que la didona se dibujó.
+   El interletrado ES el lujo: apretada, una capitular de didona se lee
+   como un titular de diario. */
+#nombre{font-family:var(--nombre-f);font-weight:400;
+  font-size:clamp(38px,17.5vw,84px);line-height:1.04;color:var(--negro);
+  letter-spacing:.075em;text-transform:uppercase;
+  padding-left:.075em}
 #hilo{height:1px;width:min(220px,56vw);margin:clamp(12px,2.4vh,20px) auto 0;
   background:linear-gradient(90deg,transparent,var(--negro),transparent);opacity:.5}
 .port-quince{font-family:var(--titulos);font-weight:500;
@@ -616,8 +692,8 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     padding-bottom:calc(34px + env(safe-area-inset-bottom))}
   .alas{width:min(330px,86vw)}
   .ovalo{width:clamp(96px,26vw,128px)}
-  .mono{width:clamp(60px,17vw,82px)}
-  #nombre{font-size:clamp(42px,15vw,78px)}
+  .estrellas{width:clamp(92px,26vw,120px)}
+  #nombre{font-size:clamp(34px,15vw,72px)}
   #hilo{margin-top:9px}
   .port-quince{font-size:clamp(13px,3.9vw,17px);margin-top:7px}
   .port-frase{font-size:clamp(13.5px,3.8vw,16px);line-height:1.45;margin-top:8px}
@@ -1082,7 +1158,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;
     transition-duration:.001ms!important}
   .js .ap,.js .ap.entro{clip-path:none;transform:none}
-  .js #nombre,.js #nombre.cerrado{letter-spacing:.02em;opacity:1}
+  .js #nombre,.js #nombre.cerrado{letter-spacing:.075em;opacity:1}
   .js #hilo,.js #hilo.abierto{transform:none}
   .js .trazo{stroke-dasharray:none;stroke-dashoffset:0}
   .js .arriba.ap,.js .arriba.ap.entro{letter-spacing:.42em}
@@ -1168,18 +1244,17 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
       <svg class="ala der" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
     </div>
 
-    <!-- El moño, debajo del óvalo. -->
-    <svg class="mono ap d1" viewBox="0 0 120 70" aria-hidden="true">
-      <path fill="currentColor" d="M56 30C40 8 10 8 8 28c-2 18 30 20 48 6z"/>
-      <path fill="currentColor" d="M64 30c16-22 46-22 48-2 2 18-30 20-48 6z"/>
-      <path fill="currentColor" d="M54 39c-5 13-13 21-24 27l15-3c8-7 13-14 15-22z"/>
-      <path fill="currentColor" d="M66 39c5 13 13 21 24 27l-15-3c-8-7-13-14-15-22z"/>
-      <rect x="51" y="26" width="18" height="17" rx="7" fill="currentColor"/>
-    </svg>
+    <!-- El afiche. El `<img>` lo crea el JS, nunca el HTML: uno con
+         el `src` vacío le pide al servidor la página entera otra vez,
+         y eso no tira ningún error. -->
+    <div class="port-poster" id="poster" hidden></div>
+
+    <!-- Las tres estrellas apiladas, debajo del óvalo. -->
+    <div class="estrellas ap d1" id="estrellas" aria-hidden="true"></div>
 
     <h1 id="nombre"></h1>
     <div id="hilo" aria-hidden="true"></div>
-    <p class="port-quince ap d1">mis quince años</p>
+    <p class="port-quince ap d1">XV años</p>
     <p class="port-frase ap d2">Vení a festejar conmigo<br>una noche inolvidable</p>
     <div class="perlas ap d2" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="port-baja" aria-hidden="true">
@@ -1467,6 +1542,11 @@ const CONFIG = {
   /* Las fotos. Vacío NO dibuja nada —ni un marco alrededor de nada ni
      un cuadrado roto—: la portada se queda tipográfica, el óvalo
      muestra la inicial y la franja se esconde entera. */
+  /* EL AFICHE. Cuando tiene archivo, la portada ES esta pieza: el
+     nombre, "mis XV años" y el monograma ya están adentro de la
+     imagen, así que la portada no los vuelve a escribir. Vacío, vuelve
+     sola la portada tipográfica, que se sostiene entera. */
+  poster: "fotos/poster.webp",
   portada: "fotos/portada.webp",
   /* La marca con alas, ya dibujada, para el cierre. Vacía deja la
      dibujada con el `<symbol>` de siempre, que es el estado bueno. */
@@ -1791,6 +1871,129 @@ function besoSVG(semilla, id){
   });
 })();
 
+/* ══════════ LAS TRES ESTRELLAS APILADAS ══════════
+   Tres estrellas pegadas una sobre la otra, como tres calcos: la de
+   atrás en animal print, la del medio rosa maciza y la de adelante
+   plateada con su brillo. Son los TRES COLORES que mandó la clienta
+   —rosa, negro y plateado—, así que el adorno dice lo mismo que la
+   paleta en vez de meter un cuarto color.
+   VAN DIBUJADAS, no es la imagen de la referencia: una imagen de la
+   que no sabemos la licencia no se publica —la regla de siempre—, y
+   así además pesan cero, no se pixelan y se tiñen donde haga falta.
+   El animal print va en NEGRO sobre rosa claro y no en marrón: lo que
+   hace leer un animal print es el DIBUJO y no el color, y el marrón
+   sería justamente ese cuarto color.
+   Y las tres llevan su filete oscuro: una estrella rosa sobre un papel
+   de rayas rosas se funde con el fondo, que es la misma lección que ya
+   costó la sombra de la bolsa del regalo.
+   La semilla es fija —como la sierra y los besos—: al azar en cada
+   carga, dos capturas de la misma invitación saldrían distintas. */
+function estrellasSVG(){
+  let x = 20270410;
+  const az = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
+  /* Cinco puntas, con el radio de adentro en .40 del de afuera: más
+     chico son cinco agujas, más grande es un pentágono. */
+  const punta = (cx, cy, r, rot) => {
+    let d = '';
+    for (let i = 0; i < 10; i++){
+      const rr = i % 2 ? r * .4 : r, a = (rot - 90 + i * 36) * Math.PI / 180;
+      d += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1)
+         + ' ' + (cy + rr * Math.sin(a)).toFixed(1);
+    }
+    return d + 'Z';
+  };
+  /* LA ROSETA. A este tamaño —la estrella mide 95px en un teléfono—
+     un animal print de manchas chiquitas se lee como una VACA: lo
+     probamos y eso salió. Lo que lo vuelve leopardo son dos cosas y
+     hacen falta las dos: pocas rosetas GRANDES (un anillo de rayitas
+     finas con un hueco, no un redondel macizo) y el centro del anillo
+     TEÑIDO un tono más hondo. Sin el centro teñido vuelve a ser una
+     vaca por más fino que se dibuje el anillo.
+     El tono del centro es un rosa más hondo y no un marrón: el marrón
+     sería un cuarto color en una paleta de tres. */
+  let print = '', centros = '';
+  /* LAS ROSETAS VAN EN UNA GRILLA SACUDIDA, no al azar puro: tiradas
+     al azar se amontonan de un lado y dejan medio hueco del otro, y
+     media estrella lisa no se lee como animal print. Una por celda,
+     corrida un poco, cubre parejo. */
+  const COLS = 5, FILAS = 6, CW = 104 / COLS, CH = 106 / FILAS;
+  for (let f = 0; f < FILAS; f++) for (let k = 0; k < COLS; k++){
+    const cx = -6 + k * CW + CW * (.2 + az() * .6),
+          cy =  0 + f * CH + CH * (.2 + az() * .6),
+          r  = 5.4 + az() * 2.6,
+          c  = 2 * Math.PI * r, n = 5, raya = c / n * .6;
+    centros += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1)
+            + '" rx="' + (r * .84).toFixed(1) + '" ry="' + (r * .84).toFixed(1) + '"/>';
+    /* El anillo roto se dibuja con UN círculo punteado, no con cuatro
+       elipses sueltas: sueltas se separan y lo que se ve son granos de
+       arroz. La raya y el hueco salen del perímetro, así que una roseta
+       grande y una chica tienen los mismos cinco trazos. */
+    print += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1)
+          + '" r="' + r.toFixed(1) + '" fill="none" stroke="#1C1016" stroke-width="'
+          + (r * .36).toFixed(1) + '" stroke-dasharray="' + raya.toFixed(1) + ' '
+          + (c / n - raya).toFixed(1) + '" stroke-dashoffset="' + (az() * c).toFixed(1)
+          + '" stroke-linecap="round"/>';
+    /* Y una manchita maciza entre medio: el animal de verdad las tiene,
+       y sin ellas el dibujo queda demasiado ordenado. */
+    if (az() > .35)
+      print += '<ellipse fill="#1C1016" cx="' + (cx + (az() - .5) * CW * 1.1).toFixed(1)
+            + '" cy="' + (cy + (az() - .5) * CH * 1.1).toFixed(1)
+            + '" rx="' + (1.2 + az() * 1.1).toFixed(1)
+            + '" ry="' + (.9 + az() * .7).toFixed(1) + '"/>';
+  }
+  /* El brillo de la plateada es GRANO, no un degradé: un degradé solo
+     se lee como plástico gris. */
+  let glitter = '';
+  for (let i = 0; i < 54; i++)
+    glitter += '<circle cx="' + (31 + az() * 90).toFixed(1) + '" cy="'
+            + (42 + az() * 90).toFixed(1) + '" r="' + (.45 + az() * 1.6).toFixed(2)
+            + '" fill="' + (az() > .4 ? '#FFFFFF' : '#86828F') + '" opacity="'
+            + (.45 + az() * .5).toFixed(2) + '"/>';
+  [[68,68,6.4],[90,96,5],[60,102,4]].forEach(d => {
+    const [cx, cy, r] = d, Q = 'Q' + cx + ' ' + cy + ' ';
+    glitter += '<path d="M' + cx + ' ' + (cy - r) + Q + (cx + r) + ' ' + cy
+            + Q + cx + ' ' + (cy + r) + Q + (cx - r) + ' ' + cy
+            + Q + cx + ' ' + (cy - r) + 'Z" fill="#FFFFFF" opacity=".9"/>';
+  });
+
+  const A = punta(46, 54, 48, -22),   /* animal print, atrás */
+        B = punta(102, 56, 41, 16),   /* rosa, al medio */
+        C = punta(76, 84, 42, -3);    /* plateada, adelante */
+  const filete = ' fill="none" stroke="#1C1016" stroke-opacity=".4" stroke-width="1.2"';
+  return '<svg viewBox="0 0 150 134" role="presentation">'
+    + '<defs>'
+    +   '<clipPath id="estA"><path d="' + A + '"/></clipPath>'
+    +   '<clipPath id="estC"><path d="' + C + '"/></clipPath>'
+    +   '<linearGradient id="estRosa" x1="0" y1="0" x2=".45" y2="1">'
+    +     '<stop offset="0" stop-color="#EDA6BE"/><stop offset="1" stop-color="#C06C8A"/>'
+    +   '</linearGradient>'
+    +   '<linearGradient id="estPlata" x1="0" y1="0" x2=".7" y2="1">'
+    +     '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".3" stop-color="#E7E3EB"/>'
+    +     '<stop offset=".55" stop-color="#9E99A6"/><stop offset=".78" stop-color="#EFEBF2"/>'
+    +     '<stop offset="1" stop-color="#B6B1BE"/>'
+    +   '</linearGradient>'
+    + '</defs>'
+    /* 1 · la de atrás: papel rosa clarito y las rosetas negras encima */
+    + '<path d="' + A + '" fill="#FDEFF4"/>'
+    + '<g clip-path="url(#estA)">'
+    +   '<g fill="#F2CFDB">' + centros + '</g>'
+    +   '<g opacity=".86">' + print + '</g>'
+    + '</g>'
+    + '<path d="' + A + '"' + filete + '/>'
+    /* 2 · la del medio, rosa maciza */
+    + '<path d="' + B + '" fill="url(#estRosa)"/>'
+    + '<path d="' + B + '"' + filete + '/>'
+    /* 3 · la de adelante, plateada con su grano */
+    + '<path d="' + C + '" fill="url(#estPlata)"/>'
+    + '<g clip-path="url(#estC)">' + glitter + '</g>'
+    + '<path d="' + C + '"' + filete + '/>'
+    + '</svg>';
+}
+(function(){
+  const c = $('#estrellas');
+  if (c) c.innerHTML = estrellasSVG();
+})();
+
 /* ══════════ las fotos ══════════
    Tres piezas y una sola regla: el `<img>` lo crea el JS, nunca el
    HTML. Un `<img>` con el `src` vacío le pide al servidor la página
@@ -1910,9 +2113,27 @@ function falta(que, chico){
     ov.appendChild(sp);
   };
   inicial();
-  if (ov && CONFIG.portada)
-    cargarFoto(CONFIG.portada, (CONFIG.quien || 'La cumpleañera'),
-               im => { ov.innerHTML = ''; ov.appendChild(im); }, inicial);
+  /* La foto del óvalo se pide RECIÉN si el afiche no vino. Con el
+     afiche puesto el óvalo está escondido, así que bajarla igual son
+     29 KB que el invitado paga por una foto que no va a ver nunca. */
+  const fotoDelOvalo = () => {
+    if (ov && CONFIG.portada)
+      cargarFoto(CONFIG.portada, (CONFIG.quien || 'La cumpleañera'),
+                 im => { ov.innerHTML = ''; ov.appendChild(im); }, inicial);
+  };
+
+  /* EL AFICHE DE LA PORTADA. La clase se pone RECIÉN cuando el
+     archivo cargó de verdad: puesta de entrada, un archivo que falta
+     deja la portada en blanco —sin nombre, sin fecha y sin nada— y
+     eso no tira ningún error. */
+  const pos = document.getElementById('poster'), por = $('#portada');
+  if (pos && por && CONFIG.poster)
+    cargarFoto(CONFIG.poster,
+               (CONFIG.quien || 'La cumpleañera') + ' · mis XV años',
+               im => { pos.innerHTML = ''; pos.appendChild(im);
+                       pos.hidden = false; por.classList.add('con-poster'); },
+               fotoDelOvalo);
+  else fotoDelOvalo();
 
   /* LA MARCA DEL CIERRE. La dibujada ya está en el HTML, así que
      ésta la REEMPLAZA recién cuando cargó de verdad: si el archivo
