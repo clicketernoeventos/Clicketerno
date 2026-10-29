@@ -975,6 +975,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   margin:0 auto clamp(10px,2vh,18px);
   filter:drop-shadow(0 12px 20px rgba(155,53,88,.26))}
 
+/* ── EL AFICHE DE "GUARDÁ LA FECHA", de emblema del calendario ──
+   Lo mandó el dueño ya hecho y REEMPLAZA AL MEDALLÓN de esa sección:
+   un afiche que dice "ÁMBAR FEST 2027" ES guardar la fecha, así que
+   va donde estaba el calendario de línea.
+   ACÁ NO SE RECORTA, al revés que el pase VIP y la bolsa, y el motivo
+   no es de gusto: su tinta es NEGRA y la banda de esta sección también,
+   así que sin su papel rosa no quedaría nada a la vista. Se apoya como
+   un afiche impreso sobre la banda oscura —con su esquina apenas
+   redondeada y su sombra, que es lo que lo despega del fondo—. Es la
+   misma regla de siempre vista al revés: un emblema no se pone donde
+   entra, se pone donde se lee. */
+.afiche-fecha{display:block;width:clamp(140px,38vw,182px);height:auto;
+  margin:0 auto clamp(14px,2.6vh,22px);border-radius:3px;
+  box-shadow:0 16px 30px -14px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+
 /* ── LA BOLSA DE LA FIESTA, de icono del regalo ──
    La mandó el dueño ya hecha, con "ÁMBAR FEST" impreso. Va RECORTADA
    —sin el fondo de la foto— y por eso se apoya sobre el papel de la
@@ -1330,7 +1345,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   </section>
 
   <!-- ══════════ 4 · guardá la fecha ══════════ -->
-  <section class="seccion oscura arco" data-ico="calendario">
+  <section class="seccion oscura arco" id="fecha" data-ico="calendario">
     <div class="caja">
       <p class="arriba ap">Anotalo</p>
       <h2 class="ap d1">Guardá<br><em class="cursiva">la fecha</em></h2>
@@ -1593,6 +1608,10 @@ const CONFIG = {
   /* El pase VIP, de emblema de "dónde nos vemos". Vacío deja el
      medallón con el pin dibujado, que es el estado bueno. */
   vip: "fotos/vip.webp",
+  /* EL AFICHE DE "GUARDÁ LA FECHA". Lo mandó el dueño ya hecho:
+     "ÁMBAR FEST 2027" en negro sobre rosa, con el monograma alado.
+     Reemplaza al medallón del calendario. */
+  afiche: "fotos/fecha.webp",
   franjas: {
     fRecuerdo: {foto:"fotos/1.webp", alt:"Ámbar"},
     fHoy:      {foto:"fotos/2.webp", alt:"Ámbar"}
@@ -2196,6 +2215,20 @@ function falta(que, chico){
       const med = dond.querySelector('.medallon');
       if (med) med.replaceWith(im);
       else (dond.querySelector('.caja') || dond).insertAdjacentElement('afterbegin', im);
+    }, () => {});
+
+  /* EL AFICHE, en lugar del medallón de "guardá la fecha". Igual que
+     el pase VIP: se pone recién cuando cargó de verdad, así que si
+     faltara queda el medallón con el calendario dibujado —que se
+     sostiene solo— y nunca un cuadrado roto. */
+  const fech = document.getElementById('fecha');
+  if (fech && CONFIG.afiche)
+    cargarFoto(CONFIG.afiche, '', im => {
+      im.className = 'afiche-fecha';
+      im.setAttribute('aria-hidden', 'true');
+      const med = fech.querySelector('.medallon');
+      if (med) med.replaceWith(im);
+      else (fech.querySelector('.caja') || fech).insertAdjacentElement('afterbegin', im);
     }, () => {});
 
   /* EL ICONO DEL REGALO: la bolsa de la fiesta. Se pone recién cuando

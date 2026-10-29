@@ -4738,6 +4738,29 @@ Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
 
+#### El afiche de "guardá la fecha"
+
+*"Este ponelo en el icono de guardá la fecha"* — un afiche de "ÁMBAR
+FEST 2027" en negro sobre rosa, con el monograma alado y su corona.
+
+**Reemplaza al medallón del calendario**: un afiche que dice el nombre
+de la fiesta y el año ES guardar la fecha, así que va donde estaba el
+icono de línea. Abajo quedan "Anotalo · Guardá la fecha", el mes de
+abril con el 10 marcado y el horario.
+
+**Acá NO se recorta, al revés que el pase VIP y la bolsa.** Su tinta es
+NEGRA y la banda de esta sección también: sin su papel rosa no quedaría
+nada a la vista. Se apoya como un afiche impreso sobre la banda oscura,
+con la esquina apenas redondeada y su sombra, que es lo que lo despega
+del fondo. Es la regla de siempre vista al revés: **un emblema no se
+pone donde entra, se pone donde se lee** — y cómo se lo prepara depende
+de sobre qué cae, no de lo que se hizo la vez anterior.
+
+Pesa **21 KB** en `.webp`; el PNG que llegó pesaba 1,1 MB. Y como las
+otras tres piezas que mandó ya hechas, **se pone recién cuando el
+archivo cargó de verdad**: si faltara queda el medallón con el
+calendario dibujado, que se sostiene solo.
+
 #### La portada es un afiche, y el afiche manda
 
 *"Esta va a ser la portada."* — una pieza ya terminada: la foto de ella
