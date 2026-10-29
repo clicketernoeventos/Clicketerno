@@ -675,28 +675,80 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 #pie .firma{color:#C9A9B6;margin-top:0}
 #pie .firma a{color:var(--acento-cl)}
 
-/* ══════════ 3 · la cuenta regresiva ══════════ */
-.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,14px);
-  margin-top:clamp(26px,5vh,40px)}
-.reloj div{position:relative;padding:clamp(13px,3vw,19px) 2px}
-/* Las esquinitas de cada casilla: cuatro ángulos de un píxel. Un
-   recuadro entero cierra demasiado; esto se lee como una ficha. */
-.reloj div:before,.reloj div:after{content:'';position:absolute;width:10px;height:10px;
-  border:1px solid var(--acento);opacity:.5}
-.claro .reloj div:before,.claro .reloj div:after{border-color:var(--acento-ti)}
-.reloj div:before{top:0;left:0;border-width:1px 0 0 1px}
-.reloj div:after{bottom:0;right:0;border-width:0 1px 1px 0}
+/* ══════════ 3 · la cuenta regresiva ══════════
+   La forma sale de la captura que mandó el dueño: el "faltan…" en
+   manuscrita y las cuatro cifras EN UNA SOLA LÍNEA separadas por dos
+   puntos, con su rótulo abajo. Antes eran cuatro fichas con sus
+   esquinitas: cuatro recuadros se leen como un tablero, una línea
+   corrida se lee como un reloj. */
+.faltan{font-family:var(--escrita);font-weight:400;font-style:normal;
+  font-size:clamp(46px,14vw,78px);line-height:.95;letter-spacing:0;
+  color:var(--negro)}
+.reloj{display:flex;justify-content:center;align-items:flex-start;
+  margin-top:clamp(20px,4vh,32px)}
+.reloj div{position:relative;padding:0 clamp(6px,2.4vw,15px)}
+/* El dos puntos vive en el hueco entre casilla y casilla y se alinea
+   con las CIFRAS, no con la caja: su caja mide exactamente el alto de
+   una cifra, así que queda centrado sobre la misma línea. */
+.reloj div + div:before{content:':';position:absolute;left:0;top:0;
+  transform:translateX(-50%);height:clamp(30px,9.6vw,54px);
+  display:flex;align-items:center;
+  font-family:var(--titulos);font-weight:400;
+  font-size:clamp(17px,5.2vw,29px);color:var(--negro);opacity:.5}
 .reloj b{display:block;font-family:var(--titulos);font-weight:500;
-  font-size:clamp(30px,8.6vw,46px);line-height:1;
+  font-size:clamp(30px,9.6vw,54px);line-height:1;
   /* Cifras de caja alta y de ancho fijo: la Cormorant dibuja los
      números a la antigua —unos cuelgan y otros no— y en un reloj que
      cambia cada segundo eso se ve como un salto. */
   font-variant-numeric:lining-nums tabular-nums}
 .oscura .reloj b{color:#FFF9FB}
 .claro .reloj b{color:var(--negro)}
-.reloj span{display:block;font-size:clamp(8.5px,2.3vw,10px);letter-spacing:.2em;
-  text-transform:uppercase;color:var(--acento);margin-top:10px}
+.reloj span{display:block;font-family:var(--titulos);font-weight:400;
+  font-size:clamp(8.5px,2.3vw,10.5px);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--acento);margin-top:9px}
 .claro .reloj span{color:var(--acento-ti)}
+
+/* ══════════ 3b · EL REPRODUCTOR ══════════
+   Sale de la segunda captura del dueño: la línea con el corazón, el
+   botón redondo de oro rosa y la frase abajo. El metal es el MISMO
+   del lacre del sobre, así que no entra un color nuevo a la pieza.
+
+   SON TRES BOTONES Y LOS TRES HACEN ALGO. La captura tiene cinco
+   —mezclar y repetir además—, y con UNA sola canción esos dos no
+   pueden hacer nada: la regla de este proyecto es que un botón que no
+   puede hacer su trabajo molesta más que no estar. "Anterior" y
+   "siguiente" sí valen —con un solo tema los dos vuelven al
+   principio, que es lo que hace un reproductor de verdad— y la
+   canción se repite sola, así que el botón de repetir no hace falta.
+
+   LA LÍNEA NO ES UN CONTROL, es el avance: va con `aria-hidden` y sin
+   atajar el dedo, que es como el medidor de contraste y el barrido
+   saltean un adorno. */
+.repro{max-width:330px;margin:clamp(16px,3.4vh,26px) auto 0}
+.repro-linea{position:relative;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,#9B6753,#E6B79D,#9B6753)}
+.repro-linea i{position:absolute;top:50%;left:0;width:15px;height:15px;
+  transform:translate(-50%,-50%);transition:left .3s linear;
+  color:#E8B59B;display:block}
+.repro-linea svg{display:block;width:100%;height:100%;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.repro-mandos{display:flex;align-items:center;justify-content:center;
+  gap:clamp(6px,3vw,20px);margin-top:clamp(14px,3vh,24px)}
+.repro-mandos button{display:flex;align-items:center;justify-content:center;
+  background:none;border:0;padding:0;cursor:pointer;color:#E3AC92;
+  min-width:44px;min-height:44px;-webkit-tap-highlight-color:transparent}
+.repro-mandos button svg{width:clamp(21px,6vw,26px);height:auto;display:block;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+/* El botón grande: la misma esfera de oro rosa del lacre. */
+.repro-mandos .play{min-width:clamp(58px,17vw,70px);min-height:clamp(58px,17vw,70px);
+  border-radius:50%;color:#6B3522;
+  background:radial-gradient(circle at 34% 28%,#F8DCCE,#E3B19A 48%,#BF8268);
+  box-shadow:0 7px 16px -6px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.35)}
+.repro-mandos .play svg{width:clamp(20px,5.6vw,25px);filter:none}
+.repro-frase{font-family:var(--titulos);font-weight:400;
+  font-size:clamp(14.5px,4vw,19px);line-height:1.5;letter-spacing:.07em;
+  text-transform:uppercase;color:#FFF2F7;
+  margin:clamp(26px,5.4vh,40px) auto 0;max-width:19em}
 
 /* ══════════ 4 · el calendario ══════════ */
 .calen{margin-top:clamp(26px,5vh,40px)}
@@ -1124,15 +1176,30 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   <!-- ══════════ 3 · la cuenta regresiva ══════════ -->
   <section class="seccion claro arco" data-ico="reloj">
     <div class="caja">
-      <p class="arriba ap">Falta poco</p>
-      <h2 class="ap d1">Ya casi<br><em class="cursiva">llega la noche</em></h2>
-      <div class="reloj ap d2">
+      <!-- Acá no va el rótulo chico de las otras secciones: "faltan…"
+           ya es el título y el rótulo a la vez, y los dos juntos dicen
+           dos veces lo mismo. -->
+      <h2 class="faltan ap">faltan…</h2>
+      <div class="reloj ap d1">
         <div><b id="cD">–</b><span>días</span></div>
         <div><b id="cH">–</b><span>horas</span></div>
         <div><b id="cM">–</b><span>minutos</span></div>
         <div><b id="cS">–</b><span>segundos</span></div>
       </div>
-      <p class="cuerpo ap d3" id="cuando"></p>
+      <p class="cuerpo ap d2" id="cuando"></p>
+    </div>
+  </section>
+
+  <!-- ══════════ 3b · la canción ══════════
+       Sin medallón, igual que el cierre: el reproductor ES el emblema
+       de esta sección y dos emblemas apilados se leen como un error de
+       maqueta. El JS lo dibuja sólo si hay canción Y el archivo carga:
+       un play que no suena es la mentira de siempre. -->
+  <section class="seccion oscura arco" id="cancion">
+    <div class="caja">
+      <p class="arriba ap">La canción</p>
+      <div class="repro ap d1" id="repro"></div>
+      <p class="repro-frase ap d2" id="fraseNoche"></p>
     </div>
   </section>
 
@@ -1357,17 +1424,26 @@ const CONFIG = {
   lugar: "La Mansión del Rey",
   calle: "Vera Mujica 68 · Rosario",
   mapa: "https://www.google.com/maps/search/?api=1&query=La%20Mansi%C3%B3n%20del%20Rey%2C%20Vera%20Mujica%2068%2C%20Rosario",
-  dressTexto: "Elegante sport",
+  dressTexto: "Elegante",
+  /* LA CANCIÓN. Sale del video que mandó el dueño —el audio, no el
+     video— y vive acá adentro: la CSP no deja incrustar un reproductor
+     de terceros, que además sería un tercero corriendo código en la
+     pantalla del invitado. Vacía, la sección entera no se dibuja. */
+  musica: ["musica.m4a", "musica.ogg"],
+  frase: "Esa noche, todas las miradas son para ella",
   /* LOS COLORES DE LA FIESTA, que en la referencia son las muestras de
      la bolsa. Los mandó ella escritos a mano: "rosa y negro plateado".
      Van como GUÍA y no como obligación —a la pregunta de cómo se
      visten contestó "como quieran"—, y eso lo dice el renglón de
      abajo. */
-  dressColores: [
-    {n:"Rosa",     c:"#E3A6BC"},
-    {n:"Negro",    c:"#1C1016"},
-    {n:"Plateado", c:"#C9C7CC"}
-  ],
+  /* LOS COLORES DE LA FIESTA SALIERON DEL DRESS CODE. Los mandó la
+     clienta y están en toda la pieza —el rosa, el negro y el
+     plateado son la paleta, los pompones del marco y las rayas—, pero
+     como MUESTRAS debajo de "Elegante" le daban al invitado una
+     instrucción que ella no dio: el dueño lo cortó en una línea,
+     "esos colores no van en el dress code, solo elegante". Vacío saca
+     la fila entera y el renglón que la explicaba. */
+  dressColores: [],
   /* Las fotos de referencia del dress code, hasta cuatro. Vacío deja
      los cuatro DIBUJOS, que dicen lo mismo y son nuestros. Y si van
      fotos, que sean de ropa o de la clienta: las de la referencia son
@@ -1792,7 +1868,13 @@ function falta(que, chico){
     if (cols.length) mu.innerHTML = cols.map(c =>
       '<figure><i style="background:' + esc(c.c) + '"></i>' +
       '<figcaption>' + esc(c.n || '') + '</figcaption></figure>').join('');
-    else mu.remove();
+    else {
+      mu.remove();
+      /* Y con ellas se va el renglón que las explicaba: "son una guía,
+         no una obligación" sin ninguna muestra arriba no se entiende
+         de qué habla. */
+      const pie = $('.muestras-pie'); if (pie) pie.remove();
+    }
   }
 
   /* El óvalo: la foto si la hay, y si no la INICIAL. Nunca un hueco
@@ -1983,6 +2065,10 @@ function falta(que, chico){
     }
     sobre.classList.add('abierto');
     document.body.classList.remove('cerrado');
+    /* La canción arranca ACÁ y no al cargar: es el único gesto de la
+       persona que tiene la pieza, y sin un gesto Safari no deja sonar
+       nada. */
+    if (sonar) sonar();
     /* La cascada de la portada entra CUANDO LA CARTA EMPIEZA A
        DISOLVERSE, no al tocar el sello. Puesta al tocar, corría entera
        detrás del sobre opaco y para cuando el sobre se iba ya había
@@ -2078,6 +2164,101 @@ function horaTexto(){
     $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta +
                               '. Con eso cerramos las mesas.';
   else $('#hasta').textContent = 'Avisame si venís, así armamos las mesas.';
+})();
+
+/* ══════════ LA CANCIÓN ══════════
+   El audio sale del video que mandó el dueño y vive en el repo: la CSP
+   dice `media-src 'self'`, así que un reproductor de un tercero no
+   entra —y además sería un tercero corriendo código en la pantalla del
+   invitado, que es justo lo que no cargamos—.
+
+   ARRANCA CON EL TOQUE QUE ABRE EL SOBRE. Safari no deja sonar nada
+   sin un gesto de la persona, y ese gesto ya existe: no hay que
+   inventarle otro botón. Si el navegador se niega igual, el
+   reproductor queda en "play" y decide el invitado — nunca se queda
+   diciendo que suena algo que no suena. */
+let sonar = null;
+
+(function(){
+  const sec = document.getElementById('cancion');
+  const caja = document.getElementById('repro');
+  const fr = document.getElementById('fraseNoche');
+  if (fr) { if (CONFIG.frase) fr.textContent = CONFIG.frase; else fr.remove(); }
+  if (!caja) return;
+  /* Sin canción no queda un reproductor de adorno; y sin canción NI
+     frase la sección entera no se dibuja. */
+  const fuera = () => {
+    caja.remove(); sonar = null;
+    if (sec && !CONFIG.frase) sec.remove();
+  };
+  if (!CONFIG.musica || !CONFIG.musica.length) { fuera(); return; }
+
+  /* DOS FUENTES, y el navegador baja UNA SOLA: el iPhone —que es donde
+     están los invitados— toca el AAC, y el que no puede con ese
+     formato cae al Opus. Son dos archivos en el repo, no dos descargas
+     para la misma persona.
+     El `<audio>` con `<source>` adentro avisa del error en el ELEMENTO
+     recién cuando fallaron TODAS: con un `src` suelto, un navegador que
+     no decodifica el primero se quedaba sin reproductor teniendo el
+     otro al lado. */
+  const a = document.createElement('audio');
+  a.loop = true;
+  a.preload = 'metadata';
+  a.addEventListener('error', fuera);
+  (Array.isArray(CONFIG.musica) ? CONFIG.musica : [CONFIG.musica]).forEach(u => {
+    const f = document.createElement('source');
+    f.src = u;
+    if (/\.ogg$/i.test(u)) f.type = 'audio/ogg; codecs=opus';
+    else if (/\.m4a$/i.test(u)) f.type = 'audio/mp4; codecs="mp4a.40.2"';
+    a.appendChild(f);
+  });
+  caja.appendChild(a);
+
+  const COR = '<svg viewBox="0 0 24 22" fill="currentColor" aria-hidden="true">' +
+    '<path d="M12 20.4C12 20.4 2.4 14.6 2.4 8.2 2.4 5 4.8 2.6 7.8 2.6c1.9 0 3.4 1 4.2 2.3' +
+    '.8-1.3 2.3-2.3 4.2-2.3 3 0 5.4 2.4 5.4 5.6 0 6.4-9.6 12.2-9.6 12.2z"/></svg>';
+  const ico = d => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + d + '</svg>';
+  const ATRAS = ico('<path d="M6 5h2.3v14H6z"/><path d="M19 5.6v12.8L9.7 12z"/>');
+  const ADE   = ico('<path d="M15.7 5H18v14h-2.3z"/><path d="M5 5.6 14.3 12 5 18.4z"/>');
+  const PLAY  = ico('<path d="M7.6 4.6 20 12 7.6 19.4z"/>');
+  const PAUSA = ico('<rect x="6.4" y="4.6" width="4" height="14.8" rx="1.2"/>' +
+                    '<rect x="13.6" y="4.6" width="4" height="14.8" rx="1.2"/>');
+
+  /* El dibujo se AGREGA, no reemplaza: con `innerHTML` se borraba el
+     `<audio>` que acaba de colgarse acá adentro. */
+  caja.insertAdjacentHTML('beforeend',
+    '<div class="repro-linea" aria-hidden="true" style="pointer-events:none"><i>' + COR + '</i></div>' +
+    '<div class="repro-mandos">' +
+      '<button type="button" id="rAtras" aria-label="Volver al principio de la canción">' + ATRAS + '</button>' +
+      '<button type="button" class="play" id="rPlay" aria-label="Escuchar la canción">' + PLAY + '</button>' +
+      '<button type="button" id="rAde" aria-label="Volver al principio de la canción">' + ADE + '</button>' +
+    '</div>');
+
+  const bPlay = document.getElementById('rPlay');
+  const cor = caja.querySelector('.repro-linea i');
+  const pintar = () => {
+    bPlay.innerHTML = a.paused ? PLAY : PAUSA;
+    bPlay.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción');
+  };
+  a.addEventListener('play', pintar);
+  a.addEventListener('pause', pintar);
+  /* El corazón sobre la línea es el AVANCE, no un control: muestra por
+     dónde va y no ataja el dedo. */
+  a.addEventListener('timeupdate', () => {
+    if (!a.duration) return;
+    cor.style.left = Math.max(0, Math.min(100, (a.currentTime / a.duration) * 100)) + '%';
+  });
+  bPlay.addEventListener('click', () => {
+    if (a.paused) a.play().catch(() => {}); else a.pause();
+  });
+  /* Con UNA sola canción, "anterior" y "siguiente" hacen lo mismo que
+     en cualquier reproductor de verdad: volver al principio del tema. */
+  const alPrincipio = () => { a.currentTime = 0; a.play().catch(() => {}); };
+  document.getElementById('rAtras').addEventListener('click', alPrincipio);
+  document.getElementById('rAde').addEventListener('click', alPrincipio);
+
+  sonar = () => { a.play().catch(() => {}); };
+  pintar();
 })();
 
 /* ══════════ la cuenta regresiva ══════════

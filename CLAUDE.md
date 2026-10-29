@@ -4566,6 +4566,82 @@ Como la marca del cierre, se pone recién cuando el archivo cargó de
 verdad: si faltara, el bloque queda como estaba y no un cuadrado roto
 arriba del título.
 
+#### La canción, el cuenta atrás y el dress code sin colores
+
+Tres cosas de una vez, con dos capturas y un video de referencia.
+
+**1 · El dress code se quedó sin los colores.** *"Esos colores no van en
+el dress code. Solo elegante."* Las muestras de rosa, negro y plateado
+estaban debajo de "Elegante sport" como si fueran una instrucción, y la
+clienta nunca dijo cómo quiere que se vistan —a eso contestó *"como
+quieran"*—. Los tres colores siguen estando en toda la pieza: son la
+paleta, los pompones del marco y las rayas. Lo que se fue es la fila de
+cuadraditos, **y con ella el renglón que la explicaba**: "son una guía,
+no una obligación" sin ninguna muestra arriba no se entiende de qué
+habla. Y el dress code pasó a decir **"Elegante"**, no "Elegante sport".
+
+**2 · El cuenta atrás, como la captura.** El "faltan…" en manuscrita y
+las cuatro cifras **en una sola línea** separadas por dos puntos, con su
+rótulo abajo. Antes eran cuatro fichas con sus esquinitas: cuatro
+recuadros se leen como un tablero, una línea corrida se lee como un
+reloj.
+Dos cosas que no son de gusto: **el rótulo chico de la sección se fue**
+—"Falta poco" arriba de "faltan…" dice dos veces lo mismo—, y **el dos
+puntos se alinea con las CIFRAS y no con la caja**: su caja mide
+exactamente el alto de una cifra, así que queda sobre la misma línea
+aunque los días pasen a tres dígitos. Esa es justamente la falla que ya
+está anotada para esta suite —*"469" pintado encima del dos puntos de al
+lado*— y por eso acá el separador vive en el hueco entre casilla y
+casilla, no pegado a un número.
+
+**3 · La canción, con su reproductor.** El dueño mandó un video y una
+línea: *"la música del video ese. No el video"*. El audio se sacó con
+`ffmpeg`, normalizado y con un fundido de entrada de un cuarto de
+segundo para que el bucle no haga clic.
+
+**ARRANCA CON EL TOQUE QUE ABRE EL SOBRE.** Safari no deja sonar nada
+sin un gesto de la persona, y ese gesto ya existe: no hay que inventarle
+otro botón ni dejar la invitación muda esperando que alguien descubra el
+play. Si el navegador se niega igual, el reproductor queda en "play" y
+decide el invitado.
+
+**SON TRES BOTONES Y LOS TRES HACEN ALGO.** La captura tiene cinco
+—mezclar y repetir además— y con UNA sola canción esos dos no pueden
+hacer nada: *un botón que no puede hacer su trabajo molesta más que no
+estar*. "Anterior" y "siguiente" sí valen, porque con un solo tema los
+dos vuelven al principio, que es lo que hace un reproductor de verdad; y
+la canción se repite sola, así que el botón de repetir no hace falta. **La
+línea con el corazón no es un control**: es el avance, y va con
+`aria-hidden` y sin atajar el dedo.
+
+**Dos archivos y UNA sola descarga.** El `<audio>` lleva dos `<source>`:
+AAC para el iPhone —que es donde están los invitados— y Opus para el que
+no puede con ese formato. El navegador baja uno solo. Son 170 KB y 150 KB
+en el repo, no 320 para la misma persona.
+**Y hubo que ponerlo así para poder MEDIRLO**: el Chromium de las pruebas
+no decodifica AAC, así que con un `src` suelto el reproductor se borraba
+solo —que es lo que tiene que pasar cuando el archivo no sirve— y la
+suite veía una sección vacía sin saber por qué. Con los dos `<source>`,
+el error llega al elemento recién cuando fallaron TODAS las fuentes.
+**Y el dibujo se AGREGA, no reemplaza**: con `innerHTML` se borraba el
+`<audio>` que acababa de colgarse ahí adentro.
+
+##### La canción no es nuestra, y eso queda escrito
+
+Más arriba, para `facuymaxi/`, dice que **la canción no suena adentro de
+la invitación** porque *"el archivo no es nuestro"*. Acá suena. La mitad
+técnica de aquel motivo sigue en pie y se respeta —no hay ningún
+reproductor de un tercero: la CSP no lo deja y además sería un tercero
+corriendo código en la pantalla del invitado—, pero **la otra mitad no**:
+el audio es una grabación comercial sacada de un video y queda publicada
+en una dirección nuestra, que cualquiera puede bajar.
+
+**Lo decidió el dueño y se le dijo.** Queda anotado para que nadie —yo el
+mes que viene incluido— lo "arregle" sacándolo, y para que la próxima
+invitación no copie el criterio sin saber que es una excepción: en
+`facuymaxi/` el play LLEVA a escucharla y no suena, y ahí sigue siendo
+lo correcto porque ellos no pidieron otra cosa.
+
 #### Lo que sigue faltando
 
 **El titular de la cuenta** del alias —el nombre que le muestra el
@@ -4681,7 +4757,9 @@ lleva un solo texto largo.
 
 **La canción no suena adentro de la invitación.** Mandaron *"Bellísimo
 así", de Laura Pausini*: el archivo no es nuestro y la CSP no deja
-incrustar un reproductor de terceros —que además sería un tercero
+incrustar un reproductor de terceros —en `ambar15/` el dueño después
+pidió lo contrario y está contado ahí; acá sigue valiendo porque ellos
+no pidieron que sonara— —que además sería un tercero
 corriendo código en la pantalla del invitado—. El reproductor de la
 referencia 1 **está dibujado** y el play LLEVA a escucharla, y el
 renglón de abajo lo dice: un play que no suena es la mentira de siempre.
