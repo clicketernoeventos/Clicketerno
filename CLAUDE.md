@@ -5007,17 +5007,19 @@ nombre, el hilo, el renglón de abajo, las alas, el óvalo, el encaje, el
 marco y el beso se esconden: repetirlos sería decir dos veces lo mismo,
 una de ellas con otra letra. Lo único que queda encima es el "Deslizá".
 
-**Va ENTERO, no recortado.** El afiche es 2:3 y un teléfono es 9:19.5:
-recortándolo para llenar la pantalla se le van 86px por lado, o sea las
-dos puntas de "ÁMBAR" y la mitad del monograma. Y el ancho sale del
-ALTO que queda, no de un porcentaje del ancho — la misma regla que la
-ficha de celular del carrusel del sitio—, porque medido por el ancho,
-en una pantalla baja el pie del afiche cae abajo del borde.
-**Lo que sobra arriba y abajo es el MISMO rosa del afiche**, sacado de
-sus cuatro esquinas con el cuentagotas (`#E83D76`): no se ve ninguna
-juntura, así que el afiche no parece una foto pegada en el medio de una
-pantalla. Y sin esquinas redondeadas, que ahí dibujarían cuatro
-esquinitas rosas donde no hay ningún borde.
+**Va ENTERO, no recortado.** El afiche es 3:4 y un teléfono es 9:19.5:
+recortándolo para llenar la pantalla se le van las dos puntas de
+"ÁMBAR" y la mitad del monograma. Y el ancho sale del ALTO que queda,
+no de un porcentaje del ancho — la misma regla que la ficha de celular
+del carrusel del sitio—, porque medido por el ancho, en una pantalla
+baja el pie del afiche cae abajo del borde. Y sin esquinas
+redondeadas, que ahí dibujarían cuatro esquinitas rosas donde no hay
+ningún borde.
+**Como nunca tiene la forma del teléfono, SIEMPRE queda una banda**, y
+qué se pone ahí depende del BORDE del afiche. Con el primero, que
+tenía el fondo plano, alcanzaba con el mismo rosa sacado de sus
+esquinas y el afiche iba centrado. Con el de ahora no: está más abajo,
+en *"La foto nueva, y la banda que tuvo que aprender a dibujar"*.
 
 **El nombre no se borra: se esconde.** Es el `h1` de la página y lo que
 el afiche dice lo dice DIBUJADO — un lector de pantalla no lee una
@@ -5039,6 +5041,66 @@ y que **el nombre no se escriba dos veces**; y sin él —forzado con un
 cuadrado roto, que no se quede en modo afiche y que el nombre vuelva a
 la vista. Verificada rompiéndola a propósito —poniendo la clase y el
 `<img>` sin esperar a que cargue— da **3 fallas**.
+
+#### La foto nueva, y la banda que tuvo que aprender a dibujar
+
+*"Necesito que cambiemos esta foto para la portada. Ajústala y que
+quede bien."* — el mismo afiche con otra foto, y con una diferencia que
+cambia todo: **el empapelado le llega hasta el borde.** El anterior
+tenía el fondo plano, así que las bandas de arriba y abajo con ese
+mismo rosa desaparecían. Acá el relleno plano deja una juntura a lo
+ancho de la pantalla: el dibujo arranca de golpe.
+
+Son tres decisiones y ninguna es de gusto:
+
+- **El afiche se apoya ABAJO y va a todo el ancho.** Medido, su borde
+  de arriba es un rosa parejo (±8 a lo ancho) y el de abajo es la
+  remera y el pelo. Así que todo el sobrante va arriba, donde un
+  relleno puede pasar desapercibido, y la figura termina en el borde
+  de la pantalla: una figura que sale por abajo se lee como algo
+  pensado, y cortada contra una banda se lee como una foto pegada en
+  el medio.
+- **La banda CONTINÚA el empapelado, con una baldosa recortada del
+  propio afiche.** Los períodos se midieron comparando parches, no a
+  ojo: **325 x 351**. Se corta un período exacto de una zona limpia y
+  se lo **rueda 70px** para que su borde izquierdo caiga en la misma
+  fase que el borde izquierdo del afiche; va colgada del borde de
+  arriba del afiche (`bottom:100%` + `background-position:left
+  bottom`), así la fase sigue enganchada sea cual sea el alto de la
+  pantalla. El `29.926%` es `325/1086`: escrito como fracción del
+  ancho del afiche, la trama se dibuja siempre a su misma escala.
+  Pesa **7,5 KB**.
+- **La baldosa del formulario NO servía**, y es lo primero que se
+  probó: es el mismo dibujo, pero con otra escala, otro rosa y su
+  propio viñeteado, que a este tamaño deja los cuadrados a la vista.
+  Mismo monograma no es misma trama.
+
+**Y volvió el selector `> *`, por QUINTA vez.** La flecha de "Deslizá"
+tenía que pasar a `position:absolute` para no empujar al afiche hacia
+arriba —y devolver la banda que vinimos a sacar—, y
+`#portada > :not(.encaje):not(.marco):not(.beso)` le ganaba en
+especificidad y la dejaba en `relative`: ahí un `bottom` no ancla
+abajo, **sube el elemento**, que es exactamente la trampa ya escrita
+para `mia15`. Se arregla eximiéndola de esa regla y dándole su propia
+`position:relative`, como ya estaban el encaje, el marco y el beso.
+De paso la flecha cambia de color: cae sobre la ropa oscura y el negro
+de siempre ahí no existe.
+
+##### La juntura se mide por la TEXTURA, no comparando dos filas
+
+La primera versión de la comprobación restaba la fila de arriba contra
+la de abajo del borde, y **daba MENOR diferencia con la banda rota**
+(4,9) que con la trama puesta (9,3): el borde del afiche también es
+liso, así que dos filas pegadas son casi iguales en los dos casos — el
+dibujo empieza unos píxeles más abajo. Lo que se ve es **plano arriba
+contra dibujo abajo**, así que se mide el desvío de la luminancia en
+una franja de 70px a cada lado y se compara. Con la trama da **0,50**;
+con la banda plana, **0,06**. El tope quedó en 0,25.
+
+Se saltea sola donde no aplica: sin banda, o con un afiche de borde
+liso —que es justamente el caso del afiche anterior, donde la banda
+plana era la respuesta correcta—. Verificada rompiéndola a propósito:
+con la banda sin su trama da **1 falla**.
 
 #### Lo que quedó debajo del afiche
 
