@@ -366,6 +366,102 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
                         (peorFoto ? peorFoto.r.toFixed(2) + ':1 "' + peorFoto.txt + '"' : '—'));
     }
 
+    /* ── 5b · el texto que cae SOBRE UN FONDO DIBUJADO ──
+       El medidor compartido NO juzga lo que cae sobre una imagen de
+       fondo: sube hasta el primer `background-color` opaco y, si ese
+       mismo elemento trae además un `url(...)`, el número que informa
+       es el del color y no el del dibujo. O sea que **una sección
+       empapelada es un punto ciego de la suite**, y da verde mire lo
+       que mire. Pasó apenas se puso un empapelado de verdad: con el
+       texto del formulario cayendo sobre un rosa fuerte —1,5:1— la
+       suite seguía diciendo "sin fallas".
+
+       Se mide con el píxel, igual que el texto sobre la foto de la
+       portada. Y sólo donde hace falta: un renglón que tenga ENTRE
+       él y la sección un ancestro con fondo opaco propio ya lo midió
+       bien el medidor compartido, así que acá se saltea. Lo que queda
+       es exactamente lo que se apoya sobre el dibujo. */
+    {
+      const lineas = await pag.evaluate(() => {
+        const opaco = c => { const m = /rgba?\(([^)]+)\)/.exec(c || ''); if (!m) return false;
+          const q = m[1].split(',').map(parseFloat); return q.length < 4 || q[3] >= .999; };
+        const fondos = [...document.querySelectorAll('section,div,main,header,footer')]
+          .filter(e => /url\(/.test(getComputedStyle(e).backgroundImage));
+        const out = [];
+        for (const sec of fondos){
+          for (const n of sec.querySelectorAll('*')){
+            const propio = [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim());
+            if (!propio) continue;
+            const cs = getComputedStyle(n);
+            if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+            if (n.getAttribute('aria-hidden') === 'true' && cs.pointerEvents === 'none') continue;
+            if (opaco(cs.backgroundColor)) continue;      /* trae su propio fondo */
+            let tapa = false;
+            for (let a = n.parentElement; a && a !== sec; a = a.parentElement)
+              if (opaco(getComputedStyle(a).backgroundColor)) { tapa = true; break; }
+            if (tapa) continue;                            /* ya lo midió el otro */
+            const r = n.getBoundingClientRect();
+            if (r.width < 2 || r.height < 2) continue;
+            n.dataset.ceMide = String(out.length);
+            out.push({ txt:(n.textContent||'').trim().replace(/\s+/g,' ').slice(0,26),
+                       color:cs.color });
+          }
+        }
+        return out;
+      });
+      if (!lineas.length) bien('ningún texto se apoya directo sobre un fondo dibujado');
+      else {
+        const dpr = await pag.evaluate(() => devicePixelRatio || 1);
+        /* Se esconden TODAS de una: `visibility:hidden` no mueve la
+           maqueta, así que las cajas siguen valiendo. */
+        await pag.evaluate(() => document.querySelectorAll('[data-ce-mide]')
+          .forEach(n => { n.dataset.ceVis = n.style.visibility; n.style.visibility = 'hidden'; }));
+        const malos = []; let peor = null;
+        /* UNA captura por PANTALLA, no una por renglón. La primera
+           versión sacaba una captura por renglón y cortaba en 24 para
+           no tardar una eternidad — y los 24 primeros caían todos en
+           las secciones de arriba, así que el formulario, que es el
+           que estaba en riesgo, no se medía NUNCA. Verificado
+           rompiéndolo: con el texto sobre el rosa, daba verde. */
+        const vistos = new Set();
+        const alto = await pag.evaluate(() => innerHeight);
+        const largo = await pag.evaluate(() => document.documentElement.scrollHeight);
+        for (let y = 0; y < largo + alto && vistos.size < lineas.length; y += Math.round(alto * .85)){
+          await pag.evaluate(y => scrollTo({top:y, behavior:'instant'}), y);
+          await pag.waitForTimeout(90);
+          const aqui = await pag.evaluate(() => {
+            const out = [];
+            document.querySelectorAll('[data-ce-mide]').forEach(n => {
+              const r = n.getBoundingClientRect();
+              if (r.width < 2 || r.height < 2) return;
+              if (r.top < 0 || r.bottom > innerHeight) return;
+              out.push({ i:+n.dataset.ceMide, x:r.left, y:r.top, w:r.width, h:r.height });
+            });
+            return out;
+          });
+          const nuevos = aqui.filter(t => !vistos.has(t.i));
+          if (!nuevos.length) continue;
+          const png = leerPNG(await pag.screenshot());
+          for (const t of nuevos){
+            vistos.add(t.i);
+            const fondo = masClaro(png, t.x * dpr, t.y * dpr, t.w * dpr, t.h * dpr);
+            if (!fondo) continue;
+            const tinta = (lineas[t.i].color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+            if (tinta.length < 3) continue;
+            const rz = razon(tinta, fondo);
+            if (!peor || rz < peor.r) peor = { r:rz, txt:lineas[t.i].txt };
+            if (rz < PISO) malos.push(rz.toFixed(2) + ':1 "' + lineas[t.i].txt + '"');
+          }
+        }
+        await pag.evaluate(() => document.querySelectorAll('[data-ce-mide]')
+          .forEach(n => { n.style.visibility = n.dataset.ceVis || ''; }));
+        es(malos.length === 0,
+           malos.length ? 'sobre el fondo dibujado no se leen: ' + malos.slice(0,4).join(' · ')
+                        : lineas.length + ' renglones sobre un fondo dibujado, el peor ' +
+                          (peor ? peor.r.toFixed(2) + ':1 "' + peor.txt + '"' : '—'));
+      }
+    }
+
     /* ── 6 · un borde de letra que no se ve ──
        `-webkit-text-stroke-width` en `em` se resuelve contra el
        font-size DEL ELEMENTO, y el tamaño de un número gigante
@@ -813,6 +909,45 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
         : 'quedó sin bordes rasgados: juntura recta entre el negro y el papel');
     }
     await ctx3.close();
+  }
+
+  /* ── 8a-ter · LA CANCIÓN SUENA UNA SOLA VEZ ──
+     Una invitación puede traer su canción. Lo que se mide no es que
+     suene —eso lo decide el navegador y acá el Chromium no decodifica
+     AAC— sino las dos cosas que se ven: que NO quede en bucle, y que
+     al terminar el botón vuelva a decir "play" con la canción
+     rebobinada. Sin el rebobinado el primer toque no suena: el audio
+     está parado en el final, y eso no tira ningún error. */
+  titulo('la canción suena una sola vez');
+  {
+    const ctxM = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagM = await ctxM.newPage();
+    await pagM.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagM.locator('#abrir').count()){ await pagM.click('#abrir'); await pagM.waitForTimeout(2700); }
+    await pagM.waitForTimeout(600);
+    const hay = await pagM.evaluate(() => !!document.querySelector('.repro audio'));
+    if (!hay) bien('esta invitación no trae canción');
+    else {
+      const enBucle = await pagM.evaluate(() => document.querySelector('.repro audio').loop);
+      es(!enBucle, enBucle ? 'la canción queda en BUCLE: no se la puede dejar de escuchar'
+                           : 'la canción no queda en bucle');
+      /* Se fuerza el final: en el camino normal hay que esperar la
+         canción entera, así que esto no se recorre nunca. */
+      const fin = await pagM.evaluate(async () => {
+        const a = document.querySelector('.repro audio'),
+              b = document.querySelector('.repro .play');
+        a.dispatchEvent(new Event('ended'));
+        await new Promise(r => setTimeout(r, 120));
+        return { t: a.currentTime, et: b ? (b.getAttribute('aria-label') || '') : '' };
+      });
+      es(fin.t < .2, fin.t < .2
+        ? 'y al terminar se rebobina sola'
+        : `quedó parada en el final (${fin.t.toFixed(1)}s): el primer toque del play no suena`);
+      es(/escuchar/i.test(fin.et), /escuchar/i.test(fin.et)
+        ? 'y el botón vuelve a decir "escuchar"'
+        : `el botón quedó diciendo "${fin.et}" con la canción terminada`);
+    }
+    await ctxM.close();
   }
 
   /* ── 8a-bis · EL AFICHE DE LA PORTADA ──

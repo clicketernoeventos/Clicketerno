@@ -4609,10 +4609,11 @@ decide el invitado.
 —mezclar y repetir además— y con UNA sola canción esos dos no pueden
 hacer nada: *un botón que no puede hacer su trabajo molesta más que no
 estar*. "Anterior" y "siguiente" sí valen, porque con un solo tema los
-dos vuelven al principio, que es lo que hace un reproductor de verdad; y
-la canción se repite sola, así que el botón de repetir no hace falta. **La
+dos vuelven al principio, que es lo que hace un reproductor de verdad. **La
 línea con el corazón no es un control**: es el avance, y va con
 `aria-hidden` y sin atajar el dedo.
+*(Más abajo, en "El fondo de rayas": los cinco se dibujan igual que en
+la captura, y los dos de los extremos son DIBUJO y no botones.)*
 
 **Dos archivos y UNA sola descarga.** El `<audio>` lleva dos `<source>`:
 AAC para el iPhone —que es donde están los invitados— y Opus para el que
@@ -4642,6 +4643,76 @@ invitación no copie el criterio sin saber que es una excepción: en
 `facuymaxi/` el play LLEVA a escucharla y no suena, y ahí sigue siendo
 lo correcto porque ellos no pidieron otra cosa.
 
+#### El fondo de rayas, los cinco mandos y una sola vuelta
+
+*"Pone ese fondo y usa el mismo reproductor y la misma frase. Y el audio
+es el de este video. Que se reproduzca una sola vez. Después si quieren
+repetirlo que toque el play."* — con la captura de la referencia, que es
+el mismo reproductor sobre el **papel de rayas rosa** y no sobre negro.
+
+**La sección pasó de la banda oscura al papel de rayas**, que es el
+fondo de la portada y de la bolsa: no entra ningún fondo nuevo a la
+pieza, se reusa el que ya existe (`.rayado`) con la tinta clara
+(`.claro`), así que los rótulos, la filigrana y el arco toman solos su
+color. Y lleva el **mismo velo claro de la portada**: una raya fuerte
+detrás de una capitular espaciada es un texto que no se lee, y **eso el
+medidor no lo mide** —mide el fondo, no el dibujo—.
+
+**Los CINCO mandos se dibujan y TRES son botones.** Mezclar y repetir
+están en la captura, pero con una sola canción —y sonando una sola vez—
+no pueden hacer nada: van con `aria-hidden` y `pointer-events:none`, o
+sea como adorno declarado, que es exactamente como el medidor de
+contraste y el barrido saltean un dibujo. Se ve igual que la referencia
+y no queda nada que se toque y no responda. Es la misma salida que ya
+se había usado para el "15" en contorno de `mia15`.
+
+**Suena UNA sola vez.** El audio deja de ir en bucle y, al terminar, se
+**rebobina solo**: parado en el final, el primer toque del play no
+sonaría — y eso no tira ningún error, sólo un botón que parece roto. El
+`pause()` del final tampoco sobra: el navegador ya dejó el audio
+parado, pero así el botón queda bien dibujado venga el final de donde
+venga.
+
+**Y un Ogg todavía sin bajar entero devuelve `Infinity` de duración**,
+no un número: la cuenta del avance daba 0 para siempre y el corazón se
+quedaba clavado a la izquierda. En el iPhone —que es donde están los
+invitados— suena el AAC y la duración se sabe, así que esto no se veía
+nunca desde acá.
+
+##### El corazón salía cortado al medio, y el culpable era el telón
+
+El corazón del avance se dibujaba **sin la mitad de arriba**: lo que se
+veía colgando de la línea era media gota. No había ningún error, el
+camino SVG estaba perfecto —montado solo se dibuja entero— y nada lo
+tapaba.
+
+Lo tapaba **el telón de `.ap`**, la animación de entrada: es un
+`clip-path` recortado **a la caja del bloque**, y el corazón está
+centrado sobre una línea de 2px pegada al borde de arriba, así que su
+mitad superior caía fuera de la caja y desaparecía. Se arregla dándole
+al bloque 9px de aire arriba —que no es aire: es lo que hace que el
+corazón quepa—.
+
+**La regla, que es pariente de la de `almi15`** (*el que se mira no
+puede ser el que se esconde*): **el que recorta no puede ser más chico
+que lo que tiene que mostrar.** Y la de siempre: se ve mirando, no
+leyendo el código — el camino, los tamaños y las posiciones estaban
+todos bien.
+
+**Y volvió por CUARTA vez el selector `> *` que pisa un `absolute`.**
+El velo nuevo obligó a subir el contenido con `#cancion > *
+{position:relative}`, y eso le pisó el `position:absolute` a la
+filigrana del corte: de capa pasó a ser una fila y se le montó encima a
+"La canción". Ya había pasado con el encaje, con el marco y con el
+beso. La regla exime a `.orna`.
+
+Lo mide `pruebas/invitacion_mirar.js` con una comprobación nueva y
+genérica —se saltea sola en una invitación sin canción—: que el audio
+**no quede en bucle**, que al terminar **se rebobine** y que el botón
+vuelva a decir "escuchar". El final se **fuerza**, porque en el camino
+normal hay que esperar la canción entera. Contra el código anterior da
+**3 fallas**.
+
 #### El pase VIP, de emblema de "dónde nos vemos"
 
 *"Esto quiero que lo pongas como icono en donde va el icono de la
@@ -4666,6 +4737,81 @@ llegó pesaba 2,6 MB.
 Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
+
+#### El empapelado de "¿Venís?"
+
+*"Esto es para la parte del ¿Venís?"* — el monograma alado repetido
+sobre el rosa, como un papel de pared.
+
+**Va de a BALDOSA, no la imagen entera estirada.** Probado y
+descartado: una foto de 1024x1536 puesta a `cover` en una sección tan
+larga como un formulario escala los monogramas a 300px, y lo que se ve
+no es un empapelado — son dos alas gigantes detrás de las letras.
+
+**Y la baldosa no es un recorte de la captura.** Sus bordes no
+coinciden —la luz de la imagen cae de un lado—, así que repetida deja
+una raya cada pantalla. Se recortó UN monograma, se lo fundió contra el
+rosa plano con un velo radial, y se lo plantó **cinco veces** en la
+baldosa: al centro y en las cuatro esquinas. Eso es un *medio paso*
+seamless — las filas salen corridas la mitad, igual que en la captura, y
+no queda un solo borde que empalmar. Pesa **15 KB**.
+
+**El formulario NO va sobre el empapelado: va sobre una tarjeta negra.**
+Dos motivos y ninguno es de gusto. Uno, el texto: todo lo de adentro
+está escrito para la banda oscura y sobre el rosa no se leería nada.
+Dos, el MEDIDOR: la tarjeta es un color **macizo** y no un degradé,
+porque un degradé opaco de punta a punta es un bloque que la suite no
+puede medir — la misma decisión que ya está escrita para el panel de la
+página pública.
+
+##### Una sección empapelada es un PUNTO CIEGO de la suite
+
+Y es la lección que deja esto. El medidor compartido sube por el árbol
+hasta el primer `background-color` opaco y, si ese mismo elemento trae
+además un `url(...)`, **el número que informa es el del color y no el
+del dibujo**. O sea que cualquier texto apoyado sobre un fondo dibujado
+da verde mire lo que mire. Comprobado: con el formulario entero cayendo
+sobre el rosa fuerte —1,1:1, o sea que no estaba— la suite seguía
+diciendo *"sin fallas"*.
+
+Ahora `pruebas/invitacion_mirar.js` lo mide **con el píxel**, igual que
+el texto sobre la foto de la portada, y sólo donde hace falta: un
+renglón que tenga entre él y la sección un ancestro con fondo opaco
+propio ya lo midió bien el medidor compartido y se saltea. Lo que queda
+es exactamente lo que se apoya sobre el dibujo. Contra el código
+anterior —con la tarjeta sin su fondo— da **4 fallas**, una por aparato.
+
+**Y la primera versión de esa comprobación no medía lo que importaba.**
+Sacaba una captura POR RENGLÓN y cortaba en 24 para no tardar una
+eternidad — y los 24 primeros caían todos en las secciones de arriba,
+así que el formulario, que era justo el que estaba en riesgo, no se
+medía nunca. Daba verde con el texto sobre el rosa. Ahora es **una
+captura por PANTALLA**: se baja de a 85% de la ventana y se miden todos
+los renglones que entran enteros. Es la regla de siempre —*una prueba
+que pasa siempre no prueba nada*— con un tope de tiempo de disfraz.
+
+#### El afiche de "guardá la fecha"
+
+*"Este ponelo en el icono de guardá la fecha"* — un afiche de "ÁMBAR
+FEST 2027" en negro sobre rosa, con el monograma alado y su corona.
+
+**Reemplaza al medallón del calendario**: un afiche que dice el nombre
+de la fiesta y el año ES guardar la fecha, así que va donde estaba el
+icono de línea. Abajo quedan "Anotalo · Guardá la fecha", el mes de
+abril con el 10 marcado y el horario.
+
+**Acá NO se recorta, al revés que el pase VIP y la bolsa.** Su tinta es
+NEGRA y la banda de esta sección también: sin su papel rosa no quedaría
+nada a la vista. Se apoya como un afiche impreso sobre la banda oscura,
+con la esquina apenas redondeada y su sombra, que es lo que lo despega
+del fondo. Es la regla de siempre vista al revés: **un emblema no se
+pone donde entra, se pone donde se lee** — y cómo se lo prepara depende
+de sobre qué cae, no de lo que se hizo la vez anterior.
+
+Pesa **21 KB** en `.webp`; el PNG que llegó pesaba 1,1 MB. Y como las
+otras tres piezas que mandó ya hechas, **se pone recién cuando el
+archivo cargó de verdad**: si faltara queda el medallón con el
+calendario dibujado, que se sostiene solo.
 
 #### La portada es un afiche, y el afiche manda
 
