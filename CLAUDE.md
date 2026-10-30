@@ -4820,6 +4820,57 @@ porque un degradé opaco de punta a punta es un bloque que la suite no
 puede medir — la misma decisión que ya está escrita para el panel de la
 página pública.
 
+##### Y la tarjeta se puso TRANSLÚCIDA, para que se vea el empapelado
+
+*"A este formulario deberías ponerlo con transparencia así se ve el
+diseño de abajo"*, mirándola publicada. El empapelado estaba y la
+tarjeta negra lo tapaba entero justo donde más superficie hay.
+
+**La tarjeta no se puede sacar** —todo lo de adentro está escrito para
+la banda oscura y sobre el rosa no se leería nada—, pero sí dejar pasar
+luz: queda en `rgba(20,11,16,.78)`. **El número no es a ojo**: la
+tarjeta es casi negra, así que la transparencia cuesta poquísimo
+contraste. Medido contra el píxel MÁS CLARO del empapelado —que es casi
+blanco— el peor texto da 6,4:1 en la cuenta, y con el píxel de verdad
+la suite informa **55 renglones y el peor en 5,5:1**.
+
+**Y lo que lo cuida de acá en adelante no es esa cuenta.** Translúcida,
+la tarjeta deja de ser un fondo opaco, así que el medidor compartido la
+atraviesa y cada renglón del formulario pasa a medirse CON EL PÍXEL
+contra lo que de verdad quedó atrás. El día que se aclare el empapelado
+o se suba la transparencia, la suite lo dice sola. Verificado
+rompiéndolo a propósito: con la tarjeta sin fondo da **4 fallas**, una
+por aparato, y el "¿Venís?" en 1,08:1.
+
+El filete de afuera subió de `.08` a `.16`: translúcida, la tarjeta se
+funde con el rosa en los bordes y deja de leerse como una tarjeta
+apoyada encima.
+
+###### Y el `<details>` cerrado volvió a morder, ahora en el medidor del píxel
+
+Apenas se puso la transparencia la suite informó **cuatro renglones a
+1,13:1** en los cuatro aparatos, y los cuatro eran del aviso de datos
+—*"Lo que ponés se usa solo para organizar la fiesta"*, *"voluntario"*,
+*"la familia de Ámbar"*—. Su color es `#E8CBD6` y se lee perfecto: con
+el `<details>` abierto a propósito, esos nueve renglones miden **5,5:1**
+como todos los demás.
+
+Lo de adentro de un `<details>` cerrado **no está dibujado**, pero en
+Chrome tiene caja igual: el navegador lo esconde con
+`content-visibility`, no con `display:none`, para que el buscador de la
+página lo encuentre. Así que la comprobación comparaba el color de un
+texto que no se pinta contra el píxel de lo que hubiera abajo.
+
+**Es la MISMA trampa que esta suite ya tenía escrita y resuelta** para
+la comprobación de los controles tapados, aplicada a la mitad de las
+comprobaciones. Es la regla de la caja de 0x0 otra vez: *antes de medir
+algo, comprobar que ESTÉ*. Y la lección que deja: una trampa que se
+arregla en un lugar hay que ir a buscarla a los otros, porque el que la
+descubre es el que la escribió y no vuelve a pasar por ahí.
+
+Verificado que el arreglo no la deja ciega: con la tarjeta sin fondo
+sigue dando las 4 fallas.
+
 ##### Una sección empapelada es un PUNTO CIEGO de la suite
 
 Y es la lección que deja esto. El medidor compartido sube por el árbol

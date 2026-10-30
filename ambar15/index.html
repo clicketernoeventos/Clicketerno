@@ -987,13 +987,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    borde que empalmar.
    El rosa es el de la captura, sacado con el cuentagotas.
 
-   Y EL FORMULARIO NO VA SOBRE EL EMPAPELADO: va sobre una tarjeta
-   negra. Dos motivos y ninguno es de gusto. Uno, el texto: todo lo de
-   adentro está escrito para la banda oscura y sobre el rosa no se
-   leería nada. Dos, el MEDIDOR: un degradé opaco de punta a punta es un
-   bloque que la suite no puede medir, así que la tarjeta es un color
-   MACIZO y no un degradé — la misma decisión que ya está escrita para
-   el panel de la página pública. */
+   Y EL FORMULARIO VA SOBRE UNA TARJETA OSCURA Y TRANSLÚCIDA, para
+   que el empapelado se vea por abajo: pedido del dueño mirándola
+   publicada. Sobre el rosa pelado no se leería nada —todo lo de
+   adentro está escrito para la banda oscura—, así que la tarjeta no se
+   puede sacar; lo que se puede es dejarla pasar luz.
+   EL NÚMERO NO ES A OJO. La tarjeta es casi negra, así que la
+   transparencia cuesta poquísimo contraste: medido contra el píxel MÁS
+   CLARO del empapelado —que es casi blanco— el peor texto de adentro
+   da 6,4:1 con un 22% de transparencia. Y lo que lo cuida no es esta
+   cuenta: translúcida, la tarjeta deja de ser un fondo opaco, así que
+   el medidor compartido la atraviesa y cada renglón pasa a medirse
+   CON EL PÍXEL contra lo que de verdad quedó atrás. Si algún día se
+   aclara el empapelado o se sube la transparencia, la suite lo dice.
+   Lo que sigue siendo macizo es el COLOR y no un degradé: un degradé
+   opaco de punta a punta es un bloque que la suite no puede medir. */
 #confirmar{
   background-color:#F6AAAF;
   background-image:url("fotos/empapelado.webp");
@@ -1003,10 +1011,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 /* La filigrana del corte cae sobre el rosa, y el acento claro ahí no
    existe: si un bloque trae su propio fondo, trae su propia tinta. */
 #confirmar .orna{color:var(--acento-ti);opacity:.92}
-#confirmar .caja{background-color:var(--carbon);border-radius:22px;
+#confirmar .caja{background-color:rgba(20,11,16,.78);border-radius:22px;
   padding:clamp(26px,7vw,42px) clamp(16px,4.6vw,30px) clamp(28px,5.5vh,42px);
+  /* El filete de afuera sube de .08 a .16: translúcida, la tarjeta se
+     funde con el rosa en los bordes y deja de leerse como una tarjeta
+     apoyada encima. */
   box-shadow:0 28px 52px -24px rgba(120,30,55,.55),
-    0 0 0 1px rgba(255,255,255,.08)}
+    0 0 0 1px rgba(255,255,255,.16)}
 
 /* ── EL AFICHE DE "GUARDÁ LA FECHA", de emblema del calendario ──
    Lo mandó el dueño ya hecho y REEMPLAZA AL MEDALLÓN de esa sección:

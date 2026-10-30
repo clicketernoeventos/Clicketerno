@@ -394,6 +394,19 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
             if (!propio) continue;
             const cs = getComputedStyle(n);
             if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+            /* Lo de adentro de un `<details>` cerrado NO ESTÁ dibujado,
+               pero en Chrome tiene caja igual —lo esconde con
+               `content-visibility`, no con `display:none`—. Medido: con
+               la tarjeta del formulario translúcida, los cuatro
+               renglones del aviso de datos se informaban a 1,13:1 en los
+               cuatro aparatos, y su color de verdad (#E8CBD6) se lee
+               perfecto. Se estaba comparando el color de un texto que no
+               se pinta contra el píxel de lo que haya abajo. Es la misma
+               trampa que ya costó una vuelta en la comprobación de los
+               controles tapados. */
+            if (n.closest('details:not([open])')) continue;
+            if (n.checkVisibility && !n.checkVisibility({contentVisibilityAuto:true,
+                opacityProperty:true, visibilityProperty:true})) continue;
             if (n.getAttribute('aria-hidden') === 'true' && cs.pointerEvents === 'none') continue;
             if (opaco(cs.backgroundColor)) continue;      /* trae su propio fondo */
             let tapa = false;
