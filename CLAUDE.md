@@ -4386,7 +4386,15 @@ ancho y la cara quedaba en el cuarto de arriba del óvalo: el óvalo
 recorta apenas un 10% del alto, así que `object-position` casi no
 mueve nada — **el encuadre se arregla en el archivo, no en el CSS**.
 
-#### Los tres pompones haciendo de marco
+#### ~~Los tres pompones haciendo de marco~~
+
+**SACADOS el 30/10/2026**, con el monograma con alas de la misma
+tarjeta: *"Esta parte quedó fea. Esos pompones no se parecen en nada a
+lo que te pedí. Lo mejor sería sacar eso y el logo horrendo ese que
+hiciste"*. Lo que hay ahí ahora son las tres estrellas; está abajo, en
+*"Las tres estrellas, de emblema del dress code"*. Lo de acá queda
+escrito por la lección de la pluma, que es lo único que sobrevive.
+
 
 Pedido del dueño con una captura —una tarjeta de RSVP con tres
 pompones de pluma asomando por detrás del borde de arriba—:
@@ -4467,6 +4475,54 @@ dos veces para el código y una para las pruebas— aplicada a los
 scripts que EDITAN el código. Un ancla se busca con
 `assert s.count(ancla) == 1`, nunca con el primer `index()`, y después
 se mira el tamaño del archivo.
+
+#### Las tres estrellas, de emblema del dress code
+
+*"Esta parte quedó fea. Esos pompones no se parecen en nada a lo que te
+pedí. Lo mejor sería sacar eso y el logo horrendo ese que hiciste y
+hacer algo como lo de la segunda foto"* — y la segunda foto son las
+**tres estrellas apiladas**: la de atrás en animal print, la del medio
+rosa y la de adelante plateada con glitter, sobre el papel a rayas.
+
+De la tarjeta se fueron las dos cosas: la corona de pompones y el
+monograma con alas que encabezaba el bloque. En su lugar van las
+estrellas, **que ya estaban dibujadas en el archivo**: son las de la
+portada tipográfica, que hoy no se ven porque manda el afiche. Es la
+misma regla de siempre —*dos dibujos para lo mismo es uno que se queda
+atrás*—, así que las dos las hace `estrellasSVG()`.
+
+**Lo que las hacía no parecerse a la referencia era el RIBETE BLANCO.**
+Sin él las tres se tocan y lo que se ve es una mancha con varias
+puntas; el borde blanco es lo que dice que hay tres cosas pegadas, y es
+lo primero que salta de la captura. Lo demás fue el leopardo —pocas
+rosetas GRANDES en vez de muchas chiquitas, que a este tamaño se leen
+como lunares— y el glitter, que pasó de 54 granos a 300: un degradé
+liso con cuatro burbujas se lee como plástico gris, no como brillo.
+Y abajo del grupo va una sombra suave, que es lo que despega al rosa
+del papel rayado.
+
+**El animal print sigue en NEGRO sobre rosa claro y no en marrón**,
+aunque la referencia sea tan: lo que hace leer un animal print es el
+DIBUJO y no el color, y el marrón sería un cuarto color en una paleta
+de tres. Si alguna vez se pide tal cual, es una línea.
+
+##### Y el mismo dibujo dos veces en la página son `id` repetidos
+
+Esto no se vio, se razonó, y es la regla de los nombres repetidos
+llevada a un SVG: el dibujo lleva adentro dos recortes, dos degradés y
+una sombra, cada uno con su `id`. Puesto dos veces —la portada y la
+tarjeta— el navegador resuelve `url(#…)` contra el **primero** que
+encuentra. Hoy los dos son iguales y no se notaría; el día que uno
+cambie, se pintaría con las piezas del otro. `estrellasSVG(suf)` lleva
+sufijo, igual que el beso.
+
+**Y ponerle el sufijo rompió el dibujo, sin un solo error.** Se
+renombraron los `id` de los degradés y quedaron sin tocar los dos
+`fill="url(#estRosa)"` que los nombran: una referencia que no resuelve
+no es un error en SVG, es un relleno vacío. El rosa y el plateado
+salieron **blancos**, con el ribete y la sombra perfectos. Lo agarró la
+captura, no la consola — las pruebas daban verde igual. Es *mirar que
+el cambio haya ENTRADO*, y acá entró a medias.
 
 #### Y una que nadie había medido: el nombre de otra clienta
 
@@ -4713,6 +4769,64 @@ vuelva a decir "escuchar". El final se **fuerza**, porque en el camino
 normal hay que esperar la canción entera. Contra el código anterior da
 **3 fallas**.
 
+#### El encaje, de borde de la cuenta regresiva
+
+*"Podés ponerle el diseño de abajo a la fecha. Esa tela"* — con la
+captura de una cuenta regresiva sobre el papel a rayas, con la tira de
+**encaje negro** arriba y abajo.
+
+**El encaje ya existía y no se veía nunca.** Es el de la portada, y la
+portada se esconde entera desde que manda el afiche: una pieza
+dibujada, medida y publicada que ningún invitado iba a ver. Ahora es el
+borde de la cuenta regresiva, que además pasó al papel a rayas.
+
+**Y el encaje REEMPLAZA al corte en curva, no se suma.** Son dos formas
+de cortar y puestas juntas se leen como un error de maqueta: por eso
+esta sección perdió su `arco` —y con él su filigrana, porque el encaje
+es el remate— y **la de la canción también**. Con las dos puestas
+quedaba la costura del arco justo encima de la tira y la filigrana
+enterrada debajo del encaje: dibujada y tapada, que es lo peor de los
+dos mundos.
+
+##### Dos rayas finas que aparecieron por ser dos secciones rayadas
+
+Ninguna de las dos existía antes, y las dos aparecieron por lo mismo:
+**la sección de arriba pasó a ser rayada, así que lo que antes caía
+sobre un fondo liso ahora cae sobre un dibujo que sigue del otro lado.**
+
+- **El velo de la canción no llegaba a cero en su propio borde.**
+  Estaba centrado en el 46% y con el radio corto, así que en su fila de
+  arriba todavía valía un 22% de blanco: una raya clara de punta a
+  punta, como si las dos mitades fueran de dos papeles distintos. Se
+  arregla centrándolo y poniendo la parada transparente EXACTAMENTE
+  donde cae el borde (50/78 = 64%).
+- **El encaje del pie dado vuelta dejaba una fila oscura por encima.**
+  `transform:scaleY(-1)` a secas deja el borde de arriba de la tira a
+  medio píxel y Chrome pinta ahí una fila al 13%: medido, **28 puntos
+  de escalón**. Con `translateZ(0)` la tira va en su propia capa y
+  queda alineada a píxeles enteros — **escalón 0 ó 1**, medido en los
+  cuatro anchos. No es un amuleto: se probaron seis variantes y sólo
+  las dos que promueven la capa lo arreglan.
+
+**Las dos se midieron con el píxel, no con el ojo.** Una fila de un
+píxel al 13% no se ve en una captura de escritorio y sí en un teléfono,
+y ninguna de las dos tira un error.
+
+##### Y el papel a rayas también era un punto ciego de la suite
+
+La comprobación del texto sobre un fondo dibujado buscaba `url(...)`, y
+el rayado es un `repeating-linear-gradient`: o sea que **la portada, la
+canción y ahora la cuenta regresiva no se medían con el píxel**, y el
+medidor compartido las juzga contra `--papel`, ignorando la raya. La
+raya cuesta **un punto** de contraste —medido: 5,82 → 4,87 para el gris
+de los párrafos— así que hoy no escondía nada, pero el agujero es el
+mismo. Ahora entra también el `repeating-gradient`, y con eso la suite
+pasó de **55 a 74 renglones medidos** en ambar15, el peor en 5,49:1.
+Verificado rompiéndolo a propósito —el contador en rosa claro— da
+**4 fallas**, una por aparato, con el "162" a 1,10:1. Y verificado que
+no inventa fallas en las otras: `almi15` y `facuymaxi` quedan limpias y
+`mia15` informa sólo la suya de antes.
+
 #### El pase VIP, de emblema de "dónde nos vemos"
 
 *"Esto quiero que lo pongas como icono en donde va el icono de la
@@ -4764,6 +4878,57 @@ porque un degradé opaco de punta a punta es un bloque que la suite no
 puede medir — la misma decisión que ya está escrita para el panel de la
 página pública.
 
+##### Y la tarjeta se puso TRANSLÚCIDA, para que se vea el empapelado
+
+*"A este formulario deberías ponerlo con transparencia así se ve el
+diseño de abajo"*, mirándola publicada. El empapelado estaba y la
+tarjeta negra lo tapaba entero justo donde más superficie hay.
+
+**La tarjeta no se puede sacar** —todo lo de adentro está escrito para
+la banda oscura y sobre el rosa no se leería nada—, pero sí dejar pasar
+luz: queda en `rgba(20,11,16,.78)`. **El número no es a ojo**: la
+tarjeta es casi negra, así que la transparencia cuesta poquísimo
+contraste. Medido contra el píxel MÁS CLARO del empapelado —que es casi
+blanco— el peor texto da 6,4:1 en la cuenta, y con el píxel de verdad
+la suite informa **55 renglones y el peor en 5,5:1**.
+
+**Y lo que lo cuida de acá en adelante no es esa cuenta.** Translúcida,
+la tarjeta deja de ser un fondo opaco, así que el medidor compartido la
+atraviesa y cada renglón del formulario pasa a medirse CON EL PÍXEL
+contra lo que de verdad quedó atrás. El día que se aclare el empapelado
+o se suba la transparencia, la suite lo dice sola. Verificado
+rompiéndolo a propósito: con la tarjeta sin fondo da **4 fallas**, una
+por aparato, y el "¿Venís?" en 1,08:1.
+
+El filete de afuera subió de `.08` a `.16`: translúcida, la tarjeta se
+funde con el rosa en los bordes y deja de leerse como una tarjeta
+apoyada encima.
+
+###### Y el `<details>` cerrado volvió a morder, ahora en el medidor del píxel
+
+Apenas se puso la transparencia la suite informó **cuatro renglones a
+1,13:1** en los cuatro aparatos, y los cuatro eran del aviso de datos
+—*"Lo que ponés se usa solo para organizar la fiesta"*, *"voluntario"*,
+*"la familia de Ámbar"*—. Su color es `#E8CBD6` y se lee perfecto: con
+el `<details>` abierto a propósito, esos nueve renglones miden **5,5:1**
+como todos los demás.
+
+Lo de adentro de un `<details>` cerrado **no está dibujado**, pero en
+Chrome tiene caja igual: el navegador lo esconde con
+`content-visibility`, no con `display:none`, para que el buscador de la
+página lo encuentre. Así que la comprobación comparaba el color de un
+texto que no se pinta contra el píxel de lo que hubiera abajo.
+
+**Es la MISMA trampa que esta suite ya tenía escrita y resuelta** para
+la comprobación de los controles tapados, aplicada a la mitad de las
+comprobaciones. Es la regla de la caja de 0x0 otra vez: *antes de medir
+algo, comprobar que ESTÉ*. Y la lección que deja: una trampa que se
+arregla en un lugar hay que ir a buscarla a los otros, porque el que la
+descubre es el que la escribió y no vuelve a pasar por ahí.
+
+Verificado que el arreglo no la deja ciega: con la tarjeta sin fondo
+sigue dando las 4 fallas.
+
 ##### Una sección empapelada es un PUNTO CIEGO de la suite
 
 Y es la lección que deja esto. El medidor compartido sube por el árbol
@@ -4789,6 +4954,24 @@ medía nunca. Daba verde con el texto sobre el rosa. Ahora es **una
 captura por PANTALLA**: se baja de a 85% de la ventana y se miden todos
 los renglones que entran enteros. Es la regla de siempre —*una prueba
 que pasa siempre no prueba nada*— con un tope de tiempo de disfraz.
+
+#### El reloj de arena sobraba
+
+*"Ese icono queda feo. Sácalo"*, mirándola publicada: el medallón del
+reloj de arena, arriba de la cuenta regresiva.
+
+Tenía razón y el motivo se puede decir en una línea: **un reloj de
+arena dibujado arriba de un reloj que corre dice dos veces lo mismo, y
+el de verdad es el que está abajo.** En las otras secciones el medallón
+es lo único que anuncia de qué habla el bloque antes de leerlo; acá el
+bloque ES un reloj andando, así que el dibujo no anuncia nada y encima
+le compite al dato, que es lo único que se mira.
+
+Se saca quitándole el `data-ico` a esa sección —el medallón lo pone el
+JS para cualquiera que lo lleve— y el icono, que quedaba sin usar, se
+fue de la tabla. **La canción y el cierre ya estaban así**, cada uno
+por el mismo motivo: donde el bloque trae su propio emblema (el
+reproductor, la marca), un medallón arriba son dos emblemas apilados.
 
 #### El afiche de "guardá la fecha"
 

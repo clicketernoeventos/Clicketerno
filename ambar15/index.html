@@ -512,7 +512,16 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .encaje{position:absolute;left:0;right:0;top:0;height:clamp(40px,11.5vw,64px);z-index:2;
   pointer-events:none;color:var(--negro);
   background-repeat:repeat-x;background-size:auto 100%;background-position:center top}
-.encaje.pie{top:auto;bottom:0;transform:scaleY(-1)}
+/* EL `translateZ(0)` NO ES UN ADORNO. Dado vuelta con `scaleY(-1)` a
+   secas, Chrome deja el borde de arriba de la tira a medio píxel y
+   pinta UNA FILA oscura justo por encima: medido, 28 puntos de
+   escalón, una raya finita de punta a punta que se lee como la
+   juntura de dos papeles. No se veía mientras la sección de arriba
+   era lisa; apareció el día que pasó a ser rayada. Con el
+   `translateZ(0)` la tira va en su propia capa y queda alineada a
+   píxeles enteros: el escalón pasa a CERO. Medido en los cuatro
+   aparatos, no supuesto. */
+.encaje.pie{top:auto;bottom:0;transform:scaleY(-1) translateZ(0)}
 .encaje{background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='46'%20viewBox='0%200%2080%2046'%3E%3Cpath%20fill='%231C1016'%20fill-rule='evenodd'%20d='M0%200H80V14C80%2041%2040.0%2041%2040.0%2014C40.0%2041%200.0%2041%200.0%2014Z%20M0.0%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%201.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%204.8%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M0.0%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%207.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%2010.9%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M0.0%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%2014.0%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%2017.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M0.0%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%2020.1%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%2023.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M0.0%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%2026.2%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%2029.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M0.0%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M5.2%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M10.4%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M15.6%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.8%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M26.0%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M31.2%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M36.4%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M41.6%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M46.8%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M52.0%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M57.2%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M62.4%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M67.6%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M72.8%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M78.0%2032.3%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M2.6%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M7.8%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M13.0%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M18.2%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M23.4%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M28.6%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M33.8%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M39.0%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M44.2%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M49.4%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M54.6%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M59.8%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M65.0%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M70.2%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M75.4%2035.4%20m-0.62%200%20a0.62%200.62%200%201%200%201.24%200%20a0.62%200.62%200%201%200%20-1.24%200%20M20.0%2025.0%20m-2.1%200%20a2.1%202.1%200%201%200%204.2%200%20a2.1%202.1%200%201%200%20-4.2%200%20M25.4%2025.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M22.7%2029.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M17.3%2029.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M14.6%2025.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M17.3%2020.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M22.7%2020.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M60.0%2025.0%20m-2.1%200%20a2.1%202.1%200%201%200%204.2%200%20a2.1%202.1%200%201%200%20-4.2%200%20M65.4%2025.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M62.7%2029.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M57.3%2029.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M54.6%2025.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M57.3%2020.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M62.7%2020.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M0.0%207.0%20m-2.1%200%20a2.1%202.1%200%201%200%204.2%200%20a2.1%202.1%200%201%200%20-4.2%200%20M5.4%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M2.7%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M-2.7%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M-5.4%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M-2.7%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M2.7%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M40.0%207.0%20m-2.1%200%20a2.1%202.1%200%201%200%204.2%200%20a2.1%202.1%200%201%200%20-4.2%200%20M45.4%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M42.7%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M37.3%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M34.6%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M37.3%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M42.7%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M80.0%207.0%20m-2.1%200%20a2.1%202.1%200%201%200%204.2%200%20a2.1%202.1%200%201%200%20-4.2%200%20M85.4%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M82.7%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M77.3%2011.7%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M74.6%207.0%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M77.3%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M82.7%202.3%20m-1.9%200%20a1.9%201.9%200%201%200%203.8%200%20a1.9%201.9%200%201%200%20-3.8%200%20M20.0%2034.5%20m-2.4%200%20a2.4%202.4%200%201%200%204.8%200%20a2.4%202.4%200%201%200%20-4.8%200%20M60.0%2034.5%20m-2.4%200%20a2.4%202.4%200%201%200%204.8%200%20a2.4%202.4%200%201%200%20-4.8%200'/%3E%3C/svg%3E")}
 
 /* ── LOS HUECOS ──
@@ -851,10 +860,17 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 /* El velo claro del fondo: la raya rosa es lo que sostiene la
    estética, pero una raya fuerte detrás de una capitular espaciada es
    un texto que no se lee — y eso el medidor no lo mide, porque mide
-   el fondo y no el dibujo. Es el mismo velo de la portada. */
+   el fondo y no el dibujo. Es el mismo velo de la portada.
+   EL VELO TIENE QUE LLEGAR A CERO EN SU PROPIO BORDE. Estaba centrado
+   en el 46% y con el radio corto, así que arriba de todo todavía valía
+   un 22%: una raya clara de punta a punta justo abajo del encaje, como
+   si las dos mitades fueran de dos papeles distintos. Antes no se veía
+   porque la sección de arriba no era rayada; el día que lo fue, la
+   costura apareció. Centrado y con la parada transparente puesta
+   EXACTAMENTE donde cae el borde (50/78 = 64%), no hay escalón. */
 #cancion:before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(120% 70% at 50% 46%,rgba(255,255,255,.76),
-    rgba(255,255,255,.26) 60%,transparent)}
+  background:radial-gradient(120% 78% at 50% 50%,rgba(255,255,255,.78),
+    rgba(255,255,255,.30) 38%,transparent 64%)}
 /* La filigrana del corte queda AFUERA de esta regla: con
    `position:relative` deja de ser una capa y pasa a ser una fila, y
    se le monta encima a "La canción". Es la cuarta vez que un
@@ -934,16 +950,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   font-size:clamp(26px,7vw,34px);color:var(--negro);line-height:1.15;
   letter-spacing:.02em;text-transform:uppercase;margin-top:14px}
 .bolsa-cuerpo p{font-size:15px;line-height:1.85;margin-top:14px;color:var(--gris)}
-/* La marca de la bolsa: las alas y el monograma, como en la
-   referencia. Las alas son el MISMO dibujo de siempre. */
-/* La marca va con el id de la bolsa adelante y no suelta: `.bolsa-cuerpo p`
-   pesa más que `.bolsa-marca`, así que el monograma heredaba el gris de
-   los párrafos y las alas con él. Se dibujaba y no era el color. */
-.bolsa-cuerpo .bolsa-marca{display:flex;align-items:center;justify-content:center;
-  gap:clamp(0px,.6vw,5px);margin-top:0;color:var(--negro);--pluma:#F3D4DF}
-.bolsa-marca .ala{width:clamp(56px,16vw,76px);flex:none}
-.bolsa-marca .ala.der{transform:scaleX(-1)}
-.bolsa-marca .azb{font-size:clamp(27px,7.4vw,36px)}
+/* LAS TRES ESTRELLAS, que son el emblema de esta tarjeta.
+   Reemplazan a los pompones y al monograma con alas: pedido del dueño
+   mirándola publicada, con la captura de las tres estrellas apiladas.
+   Van arriba de todo, que es donde estaba la marca. */
+.bolsa-cuerpo .estrellas-dress{width:clamp(138px,40vw,178px);
+  margin:0 auto clamp(2px,.8vh,8px)}
+.estrellas-dress svg{display:block;width:100%;height:auto}
 /* LAS MUESTRAS DE COLOR, que es lo que la referencia pone adentro de
    la bolsa y lo que la clienta mandó escrito: rosa, negro, plateado.
    Cada una dice su nombre: una fila de cuadraditos sin rótulo es un
@@ -990,13 +1003,21 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    borde que empalmar.
    El rosa es el de la captura, sacado con el cuentagotas.
 
-   Y EL FORMULARIO NO VA SOBRE EL EMPAPELADO: va sobre una tarjeta
-   negra. Dos motivos y ninguno es de gusto. Uno, el texto: todo lo de
-   adentro está escrito para la banda oscura y sobre el rosa no se
-   leería nada. Dos, el MEDIDOR: un degradé opaco de punta a punta es un
-   bloque que la suite no puede medir, así que la tarjeta es un color
-   MACIZO y no un degradé — la misma decisión que ya está escrita para
-   el panel de la página pública. */
+   Y EL FORMULARIO VA SOBRE UNA TARJETA OSCURA Y TRANSLÚCIDA, para
+   que el empapelado se vea por abajo: pedido del dueño mirándola
+   publicada. Sobre el rosa pelado no se leería nada —todo lo de
+   adentro está escrito para la banda oscura—, así que la tarjeta no se
+   puede sacar; lo que se puede es dejarla pasar luz.
+   EL NÚMERO NO ES A OJO. La tarjeta es casi negra, así que la
+   transparencia cuesta poquísimo contraste: medido contra el píxel MÁS
+   CLARO del empapelado —que es casi blanco— el peor texto de adentro
+   da 6,4:1 con un 22% de transparencia. Y lo que lo cuida no es esta
+   cuenta: translúcida, la tarjeta deja de ser un fondo opaco, así que
+   el medidor compartido la atraviesa y cada renglón pasa a medirse
+   CON EL PÍXEL contra lo que de verdad quedó atrás. Si algún día se
+   aclara el empapelado o se sube la transparencia, la suite lo dice.
+   Lo que sigue siendo macizo es el COLOR y no un degradé: un degradé
+   opaco de punta a punta es un bloque que la suite no puede medir. */
 #confirmar{
   background-color:#F6AAAF;
   background-image:url("fotos/empapelado.webp");
@@ -1006,10 +1027,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 /* La filigrana del corte cae sobre el rosa, y el acento claro ahí no
    existe: si un bloque trae su propio fondo, trae su propia tinta. */
 #confirmar .orna{color:var(--acento-ti);opacity:.92}
-#confirmar .caja{background-color:var(--carbon);border-radius:22px;
+#confirmar .caja{background-color:rgba(20,11,16,.78);border-radius:22px;
   padding:clamp(26px,7vw,42px) clamp(16px,4.6vw,30px) clamp(28px,5.5vh,42px);
+  /* El filete de afuera sube de .08 a .16: translúcida, la tarjeta se
+     funde con el rosa en los bordes y deja de leerse como una tarjeta
+     apoyada encima. */
   box-shadow:0 28px 52px -24px rgba(120,30,55,.55),
-    0 0 0 1px rgba(255,255,255,.08)}
+    0 0 0 1px rgba(255,255,255,.16)}
 
 /* ── EL AFICHE DE "GUARDÁ LA FECHA", de emblema del calendario ──
    Lo mandó el dueño ya hecho y REEMPLAZA AL MEDALLÓN de esa sección:
@@ -1055,23 +1079,6 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .dressfotos figure:nth-child(odd){transform:rotate(-1.4deg)}
 .dressfotos figure:nth-child(even){transform:rotate(1.4deg)}
 .dressfotos img{width:100%;aspect-ratio:.76;object-fit:cover;border-radius:2px;display:block}
-/* La corona de plumas: los tres pompones asomando por detrás del
-   borde de arriba del bloque, que es la captura que mandó el dueño
-   ("los 3 pompones esos haciendo de marco en la parte de arriba").
-   LO QUE LOS CONVIERTE EN MARCO ES QUE ESTÉN CORTADOS. Antes estaban
-   abajo, atados en un ramo: un ramo entero es un dibujo más adentro de
-   la bolsa. Tres pompones que se ven a medias se leen como que hay algo
-   adelante, y ese algo es el bloque. El corte lo hace la CAJA —el alto
-   fijo más `overflow:hidden`— y no el dibujo.
-   Y la raya de abajo no es un adorno: es el borde del que asoman. Sin
-   ella el corte se lee como un dibujo mal recortado. */
-.corona{position:relative;width:min(336px,96%);margin:clamp(16px,3.2vh,26px) auto 0;
-  aspect-ratio:274/82;overflow:hidden}
-.corona svg{position:absolute;left:0;top:0;width:100%;height:auto;display:block}
-.corona:after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(155,53,88,.5) 15%,
-    rgba(155,53,88,.5) 85%,transparent)}
-.corona + h3{margin-top:18px}
 .rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--acento-ti);margin-top:22px}
 /* El alias va en la LETRA DE TEXTO y no en la serif de los títulos: la
@@ -1350,8 +1357,24 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     </div>
   </section>
 
-  <!-- ══════════ 3 · la cuenta regresiva ══════════ -->
-  <section class="seccion claro arco" data-ico="reloj">
+  <!-- ══════════ 3 · la cuenta regresiva ══════════
+       SOBRE EL PAPEL A RAYAS Y CON EL ENCAJE DE BORDE, que es la
+       captura que mandó el dueño. El encaje ya existía —es el de la
+       portada— y no se veía nunca desde que la portada es el afiche.
+       SIN medallón, por pedido del dueño mirándola publicada. Un reloj
+       de arena arriba de un reloj que corre dice dos veces lo mismo, y
+       encima el de verdad es el que está abajo: el dibujo le compite al
+       dato. Igual que la canción y el cierre, esta sección no lleva
+       `data-ico`. -->
+  <section class="seccion claro rayado" id="cuenta">
+    <!-- EL ENCAJE, arriba y abajo: es la captura que mandó el dueño
+         —la cuenta regresiva sobre el papel a rayas, con la tira de
+         encaje negro de borde—. Acá el encaje REEMPLAZA al corte en
+         curva: son dos formas de cortar y puestas juntas se leen como
+         un error de maqueta. Por eso esta sección no lleva `arco`, y
+         con él no lleva su filigrana: el encaje es el remate. -->
+    <div class="encaje" aria-hidden="true"></div>
+    <div class="encaje pie" aria-hidden="true"></div>
     <div class="caja">
       <!-- Acá no va el rótulo chico de las otras secciones: "faltan…"
            ya es el título y el rótulo a la vez, y los dos juntos dicen
@@ -1368,11 +1391,16 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   </section>
 
   <!-- ══════════ 3b · la canción ══════════
+       Y SIN corte en curva: el encaje del pie de la cuenta regresiva ya
+       es el corte. Con los dos puestos quedaba la costura del arco
+       justo arriba del encaje, y la filigrana del arco enterrada
+       debajo de la tira — dibujada y tapada, que es lo peor de los dos
+       mundos.
        Sin medallón, igual que el cierre: el reproductor ES el emblema
        de esta sección y dos emblemas apilados se leen como un error de
        maqueta. El JS lo dibuja sólo si hay canción Y el archivo carga:
        un play que no suena es la mentira de siempre. -->
-  <section class="seccion claro rayado arco" id="cancion">
+  <section class="seccion claro rayado" id="cancion">
     <div class="caja">
       <p class="arriba ap">La canción</p>
       <div class="repro ap d1" id="repro"></div>
@@ -1420,17 +1448,12 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
         </svg>
         <div class="bolsa-cuerpo rayado">
           <i class="beso beso-bolsa" data-beso aria-hidden="true"></i>
-          <p class="bolsa-marca">
-            <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
-            <span class="azb"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
-            <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
-          </p>
-
-          <!-- La corona: los tres pompones asomando por detrás del
-               borde de arriba del bloque. Es DECORACIÓN —lo que dice
-               qué ponerse es el texto— y por eso va con `aria-hidden`
-               y sin atajar el dedo. -->
-          <div class="corona" id="dressDibujo" aria-hidden="true" style="pointer-events:none"></div>
+          <!-- Las tres estrellas apiladas, que son el emblema de esta
+               tarjeta. Es DECORACIÓN —lo que dice qué ponerse es el
+               texto— y por eso va con `aria-hidden` y sin atajar el
+               dedo. Son el MISMO dibujo que el de la portada. -->
+          <div class="estrellas-dress" id="dressEstrellas" aria-hidden="true"
+               style="pointer-events:none"></div>
           <h3>Dress code</h3>
           <p id="dressTexto"></p>
           <!-- Las muestras salen de CONFIG, no escritas acá: el día que
@@ -1711,11 +1734,6 @@ const ICONOS = {
      tamaño un dibujo con quince líneas no es un dibujo, es una mancha.
      Lo que no se lee a 42 no va. */
 
-  /* el reloj de arena, con su moño colgado arriba como una etiqueta */
-  reloj: MONO(12, 3.6, 7, 5) +
-         '<path d="M6.6 5.6h10.8M6.6 21.4h10.8"/>' +
-         '<path d="M8 5.6c0 4.2 4 5.4 4 9.1 0-3.7 4-4.9 4-9.1"/>' +
-         '<path d="M8 21.4c0-4.2 4-5.4 4-9.1 0 3.7 4 4.9 4 9.1"/>',
   /* el calendario atado con un moño */
   calendario: MONO(12, 7.4, 7.5, 5) +
               '<path d="M4 9.2h16v11.2H4z"/><path d="M4 12.6h16"/>' +
@@ -1748,109 +1766,6 @@ const ICONOS = {
             '<path d="M12.8 6.2h2.6a2 2 0 0 1 2 2v1.4"/>' +
             '<circle cx="17.4" cy="12" r="2.1"/>'
 };
-
-/* ── LA CORONA DE PLUMAS DEL DRESS CODE ──
-   Los tres pompones de la captura que mandó el dueño, asomando por
-   detrás del borde de arriba del bloque.
-
-   UNA PLUMA SE DIBUJA CON PELO, NO CON SILUETA. Se probaron cuatro
-   caminos y los tres primeros se tiraron, y los tres fallaban igual:
-   cualquier forma RELLENA de borde limpio se lee como otra cosa. Con
-   lóbulos redondos sale una margarita; con el borde en puntas, una
-   corona de espinas; con lóbulos grandes y blandos, un loto. Lo que
-   hace a la pluma es el raquis y las BARBAS que salen de él, y lo que
-   hace al pompón es que el borde quede peludo —o sea que la silueta NO
-   se cierre—. Se eligió mirando: los armados montados al tamaño real y
-   al de un teléfono, que es lo único que sirve cuando el problema es
-   que algo "no se parece".
-
-   Tres cosas que no son de gusto:
-   · Las barbas se ARQUEAN —el punto de control cae hacia la base— y se
-     van parando hacia la punta. Rectas y parejas sale un helecho.
-   · Adentro hay un núcleo relleno MÁS ANGOSTO que las barbas: el pompón
-     es denso en el medio y deshilachado en el borde, como el de verdad.
-     Sin núcleo se transparenta; con el núcleo del ancho de las barbas
-     vuelve el pétalo.
-   · El abanico va APLANADO —todas las plumas casi del mismo largo y muy
-     abiertas—, que es lo que lo vuelve un montículo. Con la del medio
-     larga y las de afuera cortas sale una palmera.
-
-   Los colores son los TRES QUE MANDÓ LA CLIENTA —rosa, negro y
-   plateado— y no el crema de antes: son los mismos de las muestras que
-   están dos renglones más abajo, así que el adorno dice lo mismo que el
-   dato. El plateado además se ve sobre el papel rosa; un crema ahí casi
-   no existe. */
-const PLUMA = { N: 9, ABRE: 88, BARBAS: 58, PANZA: 1, INC_BASE: 80,
-                INC_PUNTA: 34, LARGO: .95, NUCLEO: .45, ANCHO: 32, APLANADO: .08 };
-
-function coronaDePlumas(){
-  /* La misma cuenta que la sierra y los besos, con una semilla fija:
-     con `Math.random()` dos capturas de la misma invitación saldrían
-     distintas. */
-  let x = 20270410;
-  const R = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
-  const env = (W, t) => W * Math.pow(Math.sin(Math.PI * Math.pow(t, PLUMA.PANZA)), .66);
-
-  /* las barbas de UNA pluma, todas en un solo camino */
-  const barbas = (L, W) => {
-    let d = '';
-    for (let i = 1; i <= PLUMA.BARBAS; i++) {
-      const t = i / (PLUMA.BARBAS + 1), y = -L * t;
-      const inc = (PLUMA.INC_BASE + (PLUMA.INC_PUNTA - PLUMA.INC_BASE) * t +
-                   (R() - .5) * 14) * Math.PI / 180;
-      const e = env(W, t) * PLUMA.LARGO * (.68 + .56 * R());
-      for (const s of [-1, 1]) {
-        d += 'M0 ' + y.toFixed(1) + 'Q' + (s * e * .30).toFixed(1) + ' ' +
-             (y - e * .62).toFixed(1) + ' ' + (s * e * Math.sin(inc)).toFixed(1) +
-             ' ' + (y - e * Math.cos(inc)).toFixed(1);
-      }
-    }
-    return d;
-  };
-  /* el núcleo: la misma envolvente, más angosta y cerrada */
-  const nucleo = (L, W) => {
-    let d = 'M0 0';
-    for (let i = 1; i <= 16; i++)
-      d += 'L' + (-env(W, i/16) * PLUMA.NUCLEO).toFixed(1) + ' ' + (-L*i/16).toFixed(1);
-    for (let i = 16; i >= 1; i--)
-      d += 'L' + (env(W, i/16) * PLUMA.NUCLEO).toFixed(1) + ' ' + (-L*i/16).toFixed(1);
-    return d + 'Z';
-  };
-
-  const pompon = (L, W, col, nerv) => {
-    /* de afuera hacia adentro: las del medio quedan adelante */
-    const orden = [];
-    for (let i = 0; i < PLUMA.N; i++) orden.push(i);
-    orden.sort((a, b) => Math.abs(b - (PLUMA.N-1)/2) - Math.abs(a - (PLUMA.N-1)/2));
-    let g = '';
-    orden.forEach(i => {
-      const u = PLUMA.N === 1 ? 0 : (i / (PLUMA.N - 1)) * 2 - 1;
-      const li = L * (1 - PLUMA.APLANADO + PLUMA.APLANADO * Math.cos(u * 1.18)) * (.93 + .14*R());
-      const wi = W * (.90 + .20 * R());
-      g += '<g transform="rotate(' + (u * PLUMA.ABRE).toFixed(1) + ')">' +
-        '<path d="' + barbas(li, wi) + '" fill="none" stroke="' + col +
-          '" stroke-width=".5" stroke-linecap="round" opacity=".85"/>' +
-        /* el núcleo es MÁS CORTO que las barbas: denso abajo y pura
-           pelusa arriba. Del largo de la pluma sale una hoja con punta,
-           que es lo que hacía leer el pompón como una planta. */
-        '<path d="' + nucleo(li * .58, wi) + '" fill="' + col + '" opacity=".85"/>' +
-        '<path d="M0 0L0 ' + (-li * .50).toFixed(1) + '" fill="none" stroke="' + nerv +
-          '" stroke-width=".7" opacity=".35"/></g>';
-    });
-    return g;
-  };
-
-  /* El viewBox es MÁS ALTO que la caja que lo muestra: lo que sobra por
-     abajo es justamente lo que queda detrás del borde. Van de menor a
-     mayor y de atrás para adelante, como en la captura. */
-  let g = '<svg viewBox="0 0 274 100" role="presentation">';
-  [[66, '#A9A5AE', '#8D8994', .76], [132, '#CE7B98', '#B06482', .88],
-   [198, '#1C1016', '#56404B', 1]].forEach(c => {
-    g += '<g transform="translate(' + c[0] + ' 100)">' +
-         pompon(88 * c[3], PLUMA.ANCHO * c[3], c[1], c[2]) + '</g>';
-  });
-  return g + '</svg>';
-}
 
 /* La filigrana que se apoya en la cumbre de cada corte. */
 const ORNAMENTO =
@@ -1964,10 +1879,19 @@ function besoSVG(semilla, id){
 
 /* ══════════ LAS TRES ESTRELLAS APILADAS ══════════
    Tres estrellas pegadas una sobre la otra, como tres calcos: la de
-   atrás en animal print, la del medio rosa maciza y la de adelante
-   plateada con su brillo. Son los TRES COLORES que mandó la clienta
-   —rosa, negro y plateado—, así que el adorno dice lo mismo que la
-   paleta en vez de meter un cuarto color.
+   atrás en animal print, la del medio rosa y la de adelante plateada
+   con su brillo. Son los TRES COLORES que mandó la clienta —rosa,
+   negro y plateado—, así que el adorno dice lo mismo que la paleta en
+   vez de meter un cuarto color.
+   SON EL EMBLEMA DE LA TARJETA DEL DRESS CODE, además de la portada
+   tipográfica: ahí reemplazaron a los tres pompones y al monograma con
+   alas, por pedido del dueño mirándola publicada.
+   LO QUE LAS VUELVE TRES CALCOS ES EL RIBETE BLANCO. Sin él las tres
+   se tocan y lo que se ve es una mancha con tres puntas: el borde
+   blanco es lo que dice que hay tres cosas apiladas, y es lo primero
+   que salta de la captura que mandó. Y abajo del grupo va una sombra
+   suave, que es lo que las despega del papel rayado —una estrella rosa
+   sobre rayas rosas se funde con el fondo—.
    VAN DIBUJADAS, no es la imagen de la referencia: una imagen de la
    que no sabemos la licencia no se publica —la regla de siempre—, y
    así además pesan cero, no se pixelan y se tiñen donde haga falta.
@@ -1979,11 +1903,17 @@ function besoSVG(semilla, id){
    costó la sombra de la bolsa del regalo.
    La semilla es fija —como la sierra y los besos—: al azar en cada
    carga, dos capturas de la misma invitación saldrían distintas. */
-function estrellasSVG(){
+function estrellasSVG(suf){
+  /* El SUFIJO no es un adorno: este dibujo se usa DOS veces en la
+     página —la portada y la tarjeta del dress code— y adentro lleva
+     recortes, degradés y una sombra con `id`. Repetidos, el navegador
+     resuelve `url(#…)` contra el PRIMERO que encuentra: hoy los dos
+     dibujos son iguales y no se notaría, y el día que uno cambie se
+     pintaría con las piezas del otro. Es la regla de los nombres
+     repetidos, y la misma salida que ya usa el beso. */
+  suf = suf || '';
   let x = 20270410;
   const az = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
-  /* Cinco puntas, con el radio de adentro en .40 del de afuera: más
-     chico son cinco agujas, más grande es un pentágono. */
   const punta = (cx, cy, r, rot) => {
     let d = '';
     for (let i = 0; i < 10; i++){
@@ -1993,96 +1923,95 @@ function estrellasSVG(){
     }
     return d + 'Z';
   };
-  /* LA ROSETA. A este tamaño —la estrella mide 95px en un teléfono—
-     un animal print de manchas chiquitas se lee como una VACA: lo
-     probamos y eso salió. Lo que lo vuelve leopardo son dos cosas y
-     hacen falta las dos: pocas rosetas GRANDES (un anillo de rayitas
-     finas con un hueco, no un redondel macizo) y el centro del anillo
-     TEÑIDO un tono más hondo. Sin el centro teñido vuelve a ser una
-     vaca por más fino que se dibuje el anillo.
-     El tono del centro es un rosa más hondo y no un marrón: el marrón
-     sería un cuarto color en una paleta de tres. */
+
+  /* LAS ROSETAS. Grandes y pocas: a este tamaño muchas chiquitas se
+     leen como lunares. Cada una es un anillo ROTO —tres o cuatro
+     trozos gruesos— con el centro teñido. */
   let print = '', centros = '';
-  /* LAS ROSETAS VAN EN UNA GRILLA SACUDIDA, no al azar puro: tiradas
-     al azar se amontonan de un lado y dejan medio hueco del otro, y
-     media estrella lisa no se lee como animal print. Una por celda,
-     corrida un poco, cubre parejo. */
-  const COLS = 5, FILAS = 6, CW = 104 / COLS, CH = 106 / FILAS;
+  const COLS = 4, FILAS = 5, CW = 124 / COLS, CH = 128 / FILAS;
   for (let f = 0; f < FILAS; f++) for (let k = 0; k < COLS; k++){
-    const cx = -6 + k * CW + CW * (.2 + az() * .6),
-          cy =  0 + f * CH + CH * (.2 + az() * .6),
-          r  = 5.4 + az() * 2.6,
-          c  = 2 * Math.PI * r, n = 5, raya = c / n * .6;
+    const cx = -10 + k * CW + CW * (.12 + az() * .76),
+          cy =  -8 + f * CH + CH * (.12 + az() * .76),
+          r  = 7.6 + az() * 4.2,
+          c  = 2 * Math.PI * r, n = 3 + Math.floor(az() * 2), raya = c / n * .58;
     centros += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1)
-            + '" rx="' + (r * .84).toFixed(1) + '" ry="' + (r * .84).toFixed(1) + '"/>';
-    /* El anillo roto se dibuja con UN círculo punteado, no con cuatro
-       elipses sueltas: sueltas se separan y lo que se ve son granos de
-       arroz. La raya y el hueco salen del perímetro, así que una roseta
-       grande y una chica tienen los mismos cinco trazos. */
+            + '" rx="' + (r * .82).toFixed(1) + '" ry="' + (r * .78).toFixed(1)
+            + '" transform="rotate(' + (az()*180).toFixed(0) + ' ' + cx.toFixed(1)
+            + ' ' + cy.toFixed(1) + ')"/>';
     print += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1)
-          + '" r="' + r.toFixed(1) + '" fill="none" stroke="#1C1016" stroke-width="'
-          + (r * .36).toFixed(1) + '" stroke-dasharray="' + raya.toFixed(1) + ' '
+          + '" r="' + r.toFixed(1) + '" fill="none" stroke="#170D12" stroke-width="'
+          + (r * .40).toFixed(1) + '" stroke-dasharray="' + raya.toFixed(1) + ' '
           + (c / n - raya).toFixed(1) + '" stroke-dashoffset="' + (az() * c).toFixed(1)
           + '" stroke-linecap="round"/>';
-    /* Y una manchita maciza entre medio: el animal de verdad las tiene,
-       y sin ellas el dibujo queda demasiado ordenado. */
-    if (az() > .35)
-      print += '<ellipse fill="#1C1016" cx="' + (cx + (az() - .5) * CW * 1.1).toFixed(1)
-            + '" cy="' + (cy + (az() - .5) * CH * 1.1).toFixed(1)
-            + '" rx="' + (1.2 + az() * 1.1).toFixed(1)
-            + '" ry="' + (.9 + az() * .7).toFixed(1) + '"/>';
+    if (az() > .3)
+      print += '<ellipse fill="#170D12" cx="' + (cx + (az() - .5) * CW * 1.3).toFixed(1)
+            + '" cy="' + (cy + (az() - .5) * CH * 1.3).toFixed(1)
+            + '" rx="' + (2.2 + az() * 2.2).toFixed(1)
+            + '" ry="' + (1.7 + az() * 1.6).toFixed(1)
+            + '" transform="rotate(' + (az()*180).toFixed(0) + ' ' + cx.toFixed(1)
+            + ' ' + cy.toFixed(1) + ')"/>';
   }
-  /* El brillo de la plateada es GRANO, no un degradé: un degradé solo
-     se lee como plástico gris. */
+
+  /* EL GLITTER: muchos granos chiquitos, no un degradé. */
   let glitter = '';
-  for (let i = 0; i < 54; i++)
-    glitter += '<circle cx="' + (31 + az() * 90).toFixed(1) + '" cy="'
-            + (42 + az() * 90).toFixed(1) + '" r="' + (.45 + az() * 1.6).toFixed(2)
-            + '" fill="' + (az() > .4 ? '#FFFFFF' : '#86828F') + '" opacity="'
-            + (.45 + az() * .5).toFixed(2) + '"/>';
-  [[68,68,6.4],[90,96,5],[60,102,4]].forEach(d => {
+  for (let i = 0; i < 300; i++){
+    const g = az();
+    glitter += '<circle cx="' + (24 + az() * 110).toFixed(1) + '" cy="'
+            + (34 + az() * 108).toFixed(1) + '" r="' + (.5 + az() * 1.5).toFixed(2)
+            + '" fill="' + (g > .55 ? '#FFFFFF' : g > .26 ? '#D8D4DE' : '#6F6A7A')
+            + '" opacity="' + (.4 + az() * .6).toFixed(2) + '"/>';
+  }
+  [[72,72,7],[96,100,5.4],[58,106,4.4],[88,62,4]].forEach(d => {
     const [cx, cy, r] = d, Q = 'Q' + cx + ' ' + cy + ' ';
     glitter += '<path d="M' + cx + ' ' + (cy - r) + Q + (cx + r) + ' ' + cy
             + Q + cx + ' ' + (cy + r) + Q + (cx - r) + ' ' + cy
-            + Q + cx + ' ' + (cy - r) + 'Z" fill="#FFFFFF" opacity=".9"/>';
+            + Q + cx + ' ' + (cy - r) + 'Z" fill="#FFFFFF" opacity=".92"/>';
   });
 
-  const A = punta(46, 54, 48, -22),   /* animal print, atrás */
-        B = punta(102, 56, 41, 16),   /* rosa, al medio */
-        C = punta(76, 84, 42, -3);    /* plateada, adelante */
-  const filete = ' fill="none" stroke="#1C1016" stroke-opacity=".4" stroke-width="1.2"';
-  return '<svg viewBox="0 0 150 134" role="presentation">'
+  const A = punta(46, 46, 54, -20),   /* animal print, atrás */
+        B = punta(114, 56, 45, 15),   /* rosa, al medio */
+        C = punta(80, 94, 46, -3);    /* plateada, adelante */
+  /* El RIBETE BLANCO es lo que las vuelve tres calcos pegados: sin él
+     las tres se tocan y se leen como una sola mancha. */
+  const rim = ' fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round"';
+  const filo = ' fill="none" stroke="#9B3558" stroke-opacity=".22" stroke-width="1" stroke-linejoin="round"';
+  return '<svg viewBox="0 0 164 148" role="presentation">'
     + '<defs>'
-    +   '<clipPath id="estA"><path d="' + A + '"/></clipPath>'
-    +   '<clipPath id="estC"><path d="' + C + '"/></clipPath>'
-    +   '<linearGradient id="estRosa" x1="0" y1="0" x2=".45" y2="1">'
-    +     '<stop offset="0" stop-color="#EDA6BE"/><stop offset="1" stop-color="#C06C8A"/>'
+    +   '<clipPath id="estA' + suf + '"><path d="' + A + '"/></clipPath>'
+    +   '<clipPath id="estC' + suf + '"><path d="' + C + '"/></clipPath>'
+    +   '<linearGradient id="estRosa' + suf + '" x1="0" y1="0" x2=".5" y2="1">'
+    +     '<stop offset="0" stop-color="#F8C8DA"/><stop offset="1" stop-color="#E9A2BF"/>'
     +   '</linearGradient>'
-    +   '<linearGradient id="estPlata" x1="0" y1="0" x2=".7" y2="1">'
-    +     '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".3" stop-color="#E7E3EB"/>'
-    +     '<stop offset=".55" stop-color="#9E99A6"/><stop offset=".78" stop-color="#EFEBF2"/>'
-    +     '<stop offset="1" stop-color="#B6B1BE"/>'
+    +   '<linearGradient id="estPlata' + suf + '" x1="0" y1="0" x2=".7" y2="1">'
+    +     '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".32" stop-color="#E3DFE8"/>'
+    +     '<stop offset=".58" stop-color="#ABA6B3"/><stop offset=".8" stop-color="#EFEBF2"/>'
+    +     '<stop offset="1" stop-color="#BCB7C4"/>'
     +   '</linearGradient>'
+    +   '<filter id="estSom' + suf + '" x="-12%" y="-12%" width="124%" height="124%">'
+    +     '<feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#6E2240" flood-opacity=".26"/>'
+    +   '</filter>'
     + '</defs>'
-    /* 1 · la de atrás: papel rosa clarito y las rosetas negras encima */
-    + '<path d="' + A + '" fill="#FDEFF4"/>'
-    + '<g clip-path="url(#estA)">'
-    +   '<g fill="#F2CFDB">' + centros + '</g>'
-    +   '<g opacity=".86">' + print + '</g>'
-    + '</g>'
-    + '<path d="' + A + '"' + filete + '/>'
-    /* 2 · la del medio, rosa maciza */
-    + '<path d="' + B + '" fill="url(#estRosa)"/>'
-    + '<path d="' + B + '"' + filete + '/>'
-    /* 3 · la de adelante, plateada con su grano */
-    + '<path d="' + C + '" fill="url(#estPlata)"/>'
-    + '<g clip-path="url(#estC)">' + glitter + '</g>'
-    + '<path d="' + C + '"' + filete + '/>'
-    + '</svg>';
+    + '<g filter="url(#estSom' + suf + ')">'
+    +   '<path d="' + A + '"' + rim + '/>'
+    +   '<path d="' + A + '" fill="#FBE8EF"/>'
+    +   '<g clip-path="url(#estA' + suf + ')">'
+    +     '<g fill="#EFC6D6">' + centros + '</g>'
+    +     '<g opacity=".92">' + print + '</g>'
+    +   '</g>'
+    +   '<path d="' + A + '"' + filo + '/>'
+    +   '<path d="' + B + '"' + rim + '/>'
+    +   '<path d="' + B + '" fill="url(#estRosa' + suf + ')"/>'
+    +   '<path d="' + B + '"' + filo + '/>'
+    +   '<path d="' + C + '"' + rim + '/>'
+    +   '<path d="' + C + '" fill="url(#estPlata' + suf + ')"/>'
+    +   '<g clip-path="url(#estC' + suf + ')">' + glitter + '</g>'
+    +   '<path d="' + C + '"' + filo + '/>'
+    + '</g></svg>';
 }
+
 (function(){
   const c = $('#estrellas');
-  if (c) c.innerHTML = estrellasSVG();
+  if (c) c.innerHTML = estrellasSVG('p');
 })();
 
 /* ══════════ las fotos ══════════
@@ -2144,13 +2073,14 @@ function falta(que, chico){
 }
 
 (function(){
-  /* El dress code. La corona de plumas es el MARCO del bloque y está
-     siempre: no es el dibujo que espera a las fotos, así que el día que
-     la clienta las mande no se va — las fotos entran abajo, que es el
-     moodboard. Cada foto se muestra recién cuando cargó de verdad y la
-     que falla se saca: nunca un marco alrededor de un cuadrado roto. */
-  const cf = $('#dressFotos'), cd = $('#dressDibujo');
-  if (cd) cd.innerHTML = coronaDePlumas();
+  /* El dress code. Las estrellas son el EMBLEMA del bloque y están
+     siempre: no son el dibujo que espera a las fotos, así que el día
+     que la clienta las mande no se van — las fotos entran abajo, que
+     es el moodboard. Cada foto se muestra recién cuando cargó de
+     verdad y la que falla se saca: nunca un marco alrededor de un
+     cuadrado roto. */
+  const cf = $('#dressFotos'), cd = $('#dressEstrellas');
+  if (cd) cd.innerHTML = estrellasSVG('d');
   const lista = (CONFIG.dressFotos || []).filter(f => f && f.foto);
   if (cf && lista.length) {
     let vivas = 0, faltan = lista.length;
@@ -2166,7 +2096,7 @@ function falta(que, chico){
     });
   } else if (cf && !CONFIG.dressTexto) {
     /* Borrador: se dice que las fotos todavía no están. Va pegado al
-       hueco de las fotos y no a la corona, que ahora vive arriba. */
+       hueco de las fotos y no a las estrellas, que viven arriba. */
     cf.insertAdjacentElement('afterend', falta('las fotos del dress code'));
   }
   /* LAS MUESTRAS DE COLOR, que es lo que la referencia pone adentro de

@@ -385,8 +385,17 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       const lineas = await pag.evaluate(() => {
         const opaco = c => { const m = /rgba?\(([^)]+)\)/.exec(c || ''); if (!m) return false;
           const q = m[1].split(',').map(parseFloat); return q.length < 4 || q[3] >= .999; };
+        /* Un fondo DIBUJADO es una imagen (`url(...)`) o el papel a
+           rayas (`repeating-…-gradient`): los dos pintan encima del
+           `background-color` que es lo único que mira el medidor
+           compartido, así que los dos son puntos ciegos. La raya rosa
+           cuesta un punto de contraste contra el papel —medido— y hoy
+           no esconde nada; el agujero es el mismo y se cierra igual.
+           Un degradé liso NO entra: ése el medidor compartido lo sabe
+           atravesar cuando tiene una parada transparente, y cuando es
+           opaco de punta a punta ya está escrito que no se juzga. */
         const fondos = [...document.querySelectorAll('section,div,main,header,footer')]
-          .filter(e => /url\(/.test(getComputedStyle(e).backgroundImage));
+          .filter(e => /url\(|repeating-[a-z]*-?gradient/.test(getComputedStyle(e).backgroundImage));
         const out = [];
         for (const sec of fondos){
           for (const n of sec.querySelectorAll('*')){
@@ -394,6 +403,19 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
             if (!propio) continue;
             const cs = getComputedStyle(n);
             if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+            /* Lo de adentro de un `<details>` cerrado NO ESTÁ dibujado,
+               pero en Chrome tiene caja igual —lo esconde con
+               `content-visibility`, no con `display:none`—. Medido: con
+               la tarjeta del formulario translúcida, los cuatro
+               renglones del aviso de datos se informaban a 1,13:1 en los
+               cuatro aparatos, y su color de verdad (#E8CBD6) se lee
+               perfecto. Se estaba comparando el color de un texto que no
+               se pinta contra el píxel de lo que haya abajo. Es la misma
+               trampa que ya costó una vuelta en la comprobación de los
+               controles tapados. */
+            if (n.closest('details:not([open])')) continue;
+            if (n.checkVisibility && !n.checkVisibility({contentVisibilityAuto:true,
+                opacityProperty:true, visibilityProperty:true})) continue;
             if (n.getAttribute('aria-hidden') === 'true' && cs.pointerEvents === 'none') continue;
             if (opaco(cs.backgroundColor)) continue;      /* trae su propio fondo */
             let tapa = false;
