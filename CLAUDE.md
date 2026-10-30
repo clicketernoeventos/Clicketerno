@@ -4852,6 +4852,32 @@ Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
 
+#### La bata, de emblema de "para la noche"
+
+*"Donde dice para la noche y está el icono quiero que lo cambies por la
+primera imagen"* — una bata de raso a rayas rosas, con su ribete negro
+y su moño.
+
+**Reemplaza al medallón de la percha**, igual que el pase VIP y el
+afiche de la fecha, y por el mismo motivo: un icono de línea de 42px no
+es lo que se pidió. Va del tamaño al que se leen las rayas, el ribete y
+el moño.
+
+**Acá no hubo nada que recortar**: vino ya con fondo transparente, así
+que lo único que se le hizo fue sacarle el aire de alrededor. Se
+comprobó que no trajera motas sueltas —una sola isla opaca en todo el
+archivo— y pesa **27 KB** contra 1,4 MB del PNG.
+
+**Y no lleva sombra, al revés que la bolsa del regalo.** La bolsa es
+rosa sobre papel rosa y sin sombra se funde; la bata cae sobre la banda
+oscura, donde el rosa claro se despega solo. *Un emblema no se pone
+donde entra: se pone donde se lee* — y cómo se lo prepara depende de
+sobre qué cae.
+
+Como las otras tres piezas que mandó ya hechas, **se pone recién cuando
+el archivo cargó de verdad**: si faltara queda el medallón con la
+percha dibujada, que se sostiene sola.
+
 #### El empapelado de "¿Venís?"
 
 *"Esto es para la parte del ¿Venís?"* — el monograma alado repetido
