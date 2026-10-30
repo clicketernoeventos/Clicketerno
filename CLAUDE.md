@@ -4738,6 +4738,58 @@ Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
 
+#### El empapelado de "¿Venís?"
+
+*"Esto es para la parte del ¿Venís?"* — el monograma alado repetido
+sobre el rosa, como un papel de pared.
+
+**Va de a BALDOSA, no la imagen entera estirada.** Probado y
+descartado: una foto de 1024x1536 puesta a `cover` en una sección tan
+larga como un formulario escala los monogramas a 300px, y lo que se ve
+no es un empapelado — son dos alas gigantes detrás de las letras.
+
+**Y la baldosa no es un recorte de la captura.** Sus bordes no
+coinciden —la luz de la imagen cae de un lado—, así que repetida deja
+una raya cada pantalla. Se recortó UN monograma, se lo fundió contra el
+rosa plano con un velo radial, y se lo plantó **cinco veces** en la
+baldosa: al centro y en las cuatro esquinas. Eso es un *medio paso*
+seamless — las filas salen corridas la mitad, igual que en la captura, y
+no queda un solo borde que empalmar. Pesa **15 KB**.
+
+**El formulario NO va sobre el empapelado: va sobre una tarjeta negra.**
+Dos motivos y ninguno es de gusto. Uno, el texto: todo lo de adentro
+está escrito para la banda oscura y sobre el rosa no se leería nada.
+Dos, el MEDIDOR: la tarjeta es un color **macizo** y no un degradé,
+porque un degradé opaco de punta a punta es un bloque que la suite no
+puede medir — la misma decisión que ya está escrita para el panel de la
+página pública.
+
+##### Una sección empapelada es un PUNTO CIEGO de la suite
+
+Y es la lección que deja esto. El medidor compartido sube por el árbol
+hasta el primer `background-color` opaco y, si ese mismo elemento trae
+además un `url(...)`, **el número que informa es el del color y no el
+del dibujo**. O sea que cualquier texto apoyado sobre un fondo dibujado
+da verde mire lo que mire. Comprobado: con el formulario entero cayendo
+sobre el rosa fuerte —1,1:1, o sea que no estaba— la suite seguía
+diciendo *"sin fallas"*.
+
+Ahora `pruebas/invitacion_mirar.js` lo mide **con el píxel**, igual que
+el texto sobre la foto de la portada, y sólo donde hace falta: un
+renglón que tenga entre él y la sección un ancestro con fondo opaco
+propio ya lo midió bien el medidor compartido y se saltea. Lo que queda
+es exactamente lo que se apoya sobre el dibujo. Contra el código
+anterior —con la tarjeta sin su fondo— da **4 fallas**, una por aparato.
+
+**Y la primera versión de esa comprobación no medía lo que importaba.**
+Sacaba una captura POR RENGLÓN y cortaba en 24 para no tardar una
+eternidad — y los 24 primeros caían todos en las secciones de arriba,
+así que el formulario, que era justo el que estaba en riesgo, no se
+medía nunca. Daba verde con el texto sobre el rosa. Ahora es **una
+captura por PANTALLA**: se baja de a 85% de la ventana y se miden todos
+los renglones que entran enteros. Es la regla de siempre —*una prueba
+que pasa siempre no prueba nada*— con un tope de tiempo de disfraz.
+
 #### El afiche de "guardá la fecha"
 
 *"Este ponelo en el icono de guardá la fecha"* — un afiche de "ÁMBAR
