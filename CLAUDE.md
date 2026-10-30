@@ -4769,6 +4769,64 @@ vuelva a decir "escuchar". El final se **fuerza**, porque en el camino
 normal hay que esperar la canción entera. Contra el código anterior da
 **3 fallas**.
 
+#### El encaje, de borde de la cuenta regresiva
+
+*"Podés ponerle el diseño de abajo a la fecha. Esa tela"* — con la
+captura de una cuenta regresiva sobre el papel a rayas, con la tira de
+**encaje negro** arriba y abajo.
+
+**El encaje ya existía y no se veía nunca.** Es el de la portada, y la
+portada se esconde entera desde que manda el afiche: una pieza
+dibujada, medida y publicada que ningún invitado iba a ver. Ahora es el
+borde de la cuenta regresiva, que además pasó al papel a rayas.
+
+**Y el encaje REEMPLAZA al corte en curva, no se suma.** Son dos formas
+de cortar y puestas juntas se leen como un error de maqueta: por eso
+esta sección perdió su `arco` —y con él su filigrana, porque el encaje
+es el remate— y **la de la canción también**. Con las dos puestas
+quedaba la costura del arco justo encima de la tira y la filigrana
+enterrada debajo del encaje: dibujada y tapada, que es lo peor de los
+dos mundos.
+
+##### Dos rayas finas que aparecieron por ser dos secciones rayadas
+
+Ninguna de las dos existía antes, y las dos aparecieron por lo mismo:
+**la sección de arriba pasó a ser rayada, así que lo que antes caía
+sobre un fondo liso ahora cae sobre un dibujo que sigue del otro lado.**
+
+- **El velo de la canción no llegaba a cero en su propio borde.**
+  Estaba centrado en el 46% y con el radio corto, así que en su fila de
+  arriba todavía valía un 22% de blanco: una raya clara de punta a
+  punta, como si las dos mitades fueran de dos papeles distintos. Se
+  arregla centrándolo y poniendo la parada transparente EXACTAMENTE
+  donde cae el borde (50/78 = 64%).
+- **El encaje del pie dado vuelta dejaba una fila oscura por encima.**
+  `transform:scaleY(-1)` a secas deja el borde de arriba de la tira a
+  medio píxel y Chrome pinta ahí una fila al 13%: medido, **28 puntos
+  de escalón**. Con `translateZ(0)` la tira va en su propia capa y
+  queda alineada a píxeles enteros — **escalón 0 ó 1**, medido en los
+  cuatro anchos. No es un amuleto: se probaron seis variantes y sólo
+  las dos que promueven la capa lo arreglan.
+
+**Las dos se midieron con el píxel, no con el ojo.** Una fila de un
+píxel al 13% no se ve en una captura de escritorio y sí en un teléfono,
+y ninguna de las dos tira un error.
+
+##### Y el papel a rayas también era un punto ciego de la suite
+
+La comprobación del texto sobre un fondo dibujado buscaba `url(...)`, y
+el rayado es un `repeating-linear-gradient`: o sea que **la portada, la
+canción y ahora la cuenta regresiva no se medían con el píxel**, y el
+medidor compartido las juzga contra `--papel`, ignorando la raya. La
+raya cuesta **un punto** de contraste —medido: 5,82 → 4,87 para el gris
+de los párrafos— así que hoy no escondía nada, pero el agujero es el
+mismo. Ahora entra también el `repeating-gradient`, y con eso la suite
+pasó de **55 a 74 renglones medidos** en ambar15, el peor en 5,49:1.
+Verificado rompiéndolo a propósito —el contador en rosa claro— da
+**4 fallas**, una por aparato, con el "162" a 1,10:1. Y verificado que
+no inventa fallas en las otras: `almi15` y `facuymaxi` quedan limpias y
+`mia15` informa sólo la suya de antes.
+
 #### El pase VIP, de emblema de "dónde nos vemos"
 
 *"Esto quiero que lo pongas como icono en donde va el icono de la

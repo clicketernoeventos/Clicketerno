@@ -385,8 +385,17 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       const lineas = await pag.evaluate(() => {
         const opaco = c => { const m = /rgba?\(([^)]+)\)/.exec(c || ''); if (!m) return false;
           const q = m[1].split(',').map(parseFloat); return q.length < 4 || q[3] >= .999; };
+        /* Un fondo DIBUJADO es una imagen (`url(...)`) o el papel a
+           rayas (`repeating-…-gradient`): los dos pintan encima del
+           `background-color` que es lo único que mira el medidor
+           compartido, así que los dos son puntos ciegos. La raya rosa
+           cuesta un punto de contraste contra el papel —medido— y hoy
+           no esconde nada; el agujero es el mismo y se cierra igual.
+           Un degradé liso NO entra: ése el medidor compartido lo sabe
+           atravesar cuando tiene una parada transparente, y cuando es
+           opaco de punta a punta ya está escrito que no se juzga. */
         const fondos = [...document.querySelectorAll('section,div,main,header,footer')]
-          .filter(e => /url\(/.test(getComputedStyle(e).backgroundImage));
+          .filter(e => /url\(|repeating-[a-z]*-?gradient/.test(getComputedStyle(e).backgroundImage));
         const out = [];
         for (const sec of fondos){
           for (const n of sec.querySelectorAll('*')){
