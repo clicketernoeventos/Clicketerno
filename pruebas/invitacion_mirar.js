@@ -1244,9 +1244,19 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
           const c = document.querySelector('.carta');
           const p = document.querySelector('#portada');
           const esc = n => { const m = n && getComputedStyle(n).transform.match(/matrix\(([-\d.]+)/); return m ? +m[1] : 1; };
+          /* Cuánto se SALE la carta de la pantalla mientras vuela: es
+             lo único que el que mira ve como un defecto —su texto
+             cortado contra el borde—, y no se deduce de la escala,
+             porque depende del ancho de la carta en cada aparato. */
+          let fuera = 0;
+          if (c && +getComputedStyle(c).opacity > .06){
+            const r = c.getBoundingClientRect();
+            if (r.width > 2) fuera = Math.max(0, -r.left, r.right - innerWidth);
+          }
           return {
             port:  p ? +getComputedStyle(p).opacity : 1,
             carta: c ? esc(c) : 1,
+            fuera,
             sobre: !!document.querySelector('#sobre')
           };
         }));
@@ -1263,6 +1273,16 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(pico <= 4, pico <= 4
         ? 'y la carta se disuelve en vez de taparlo todo (llega a ' + pico.toFixed(1) + 'x)'
         : 'la carta se agranda hasta ' + pico.toFixed(1) + 'x: pasa por delante en vez de disolverse');
+
+      /* Y QUE NO SE CORTE. Lo marcó el dueño: "queda medio cortado lo
+         que dice". Mientras la carta se ve, su caja no puede salirse
+         de la pantalla: ahí lo que queda afuera es justamente el
+         nombre. No se mide por la escala —el ancho de la carta cambia
+         con el aparato— sino por la CAJA contra la pantalla. */
+      const sale = Math.max(...tomas.map(t => t.fuera || 0));
+      es(sale <= 6, sale <= 6
+        ? 'y no se corta contra el borde mientras se ve'
+        : 'la carta SE SALE ' + Math.round(sale) + 'px de la pantalla: su texto queda cortado');
 
       const final = tomas[tomas.length - 1];
       es(final.port > .98 && !final.sobre, final.port > .98 && !final.sobre

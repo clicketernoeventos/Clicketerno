@@ -4878,6 +4878,62 @@ Y como la marca del cierre y la bolsa del regalo, **se pone recién
 cuando el archivo cargó de verdad**: si faltara queda el medallón con el
 pin dibujado, que se sostiene solo.
 
+#### El sobre con alas, y el papel que se cortaba
+
+*"Me gustaría que el sobre sea algo así. Que se abra y que corrijas
+cuando aparezca el papel porque queda medio cortado lo que dice y la
+transición mejórala."* — con una referencia de sobre rosa con alas de
+pluma blancas, su lacre y la carta asomando.
+
+**De la referencia NO va el logo**: es el de Victoria's Secret, marca
+registrada, y vale lo de siempre —una invitación publicada con el logo
+de otro es un problema nuestro—. Va el monograma AB. **Y la carta
+asomando tampoco**: eso ya se sacó una vez, por pedido del dueño, y está
+contado arriba en *"El sobre estaba revelado"*.
+
+**Las alas tuvieron que REDIBUJARSE.** El ala que había es la del
+monograma, dibujada para 60 o 70 píxeles; en el sobre mide tres veces
+eso y a ese tamaño una silueta lisa se lee como un **pétalo**. Se probó
+subirla, abrirla y ponerle una segunda capa corrida —dos hileras de
+plumas por el precio de un `use`— y no alcanzó: lo que falta no es
+cantidad, es que **tenga plumas**.
+
+La nueva son tres hileras que salen del mismo hombro, la de afuera
+larga y las de adentro cortas. Tres cosas, y las tres se vieron
+mirando:
+
+- **La punta va REDONDEADA.** En aguja, el dibujo se lee como un
+  abanico de cuchillas.
+- **El hombro lleva una mancha** que tapa donde convergen las plumas;
+  sin ella se ve el pico de la convergencia. Y va CHICA: grande y
+  blanca, asomando por arriba del sobre, se lee como dos huevos.
+- **La postura es la mitad del asunto.** El barrido hacia arriba es lo
+  que las vuelve alas; apoyadas de costado son dos hojas. Costó seis
+  vueltas acertarle al par ángulo/altura que además **entra en la
+  pantalla**: hay una medición que falla si se salen, porque un ala
+  cortada contra el borde se lee como un error de maqueta.
+
+Va de **símbolo, y el HTML sigue apuntando al ala chica**: sin JS
+quedan las de siempre, que es el estado bueno.
+
+##### El papel se cortaba, y no era la escala: era la CAJA
+
+La carta volaba hasta `(ancho de pantalla / ancho de la carta) × 1,7`,
+o sea que se salía por los dos costados **justo cuando más se lee** —
+medido, 165px afuera—. Ahora el tope sale de la caja de verdad contra
+la pantalla de verdad, con 18px de aire a cada lado, y nunca baja de
+1,25: con menos no se lee como que la carta se acerca.
+
+Y la transición es más larga y más suave (1,5 s con una curva que
+desacelera, el fundido entrando a los 0,22 s en vez de 0,3), así que la
+portada se ve aparecer alrededor de la carta en vez de debajo de ella.
+
+**Lo mide la suite por la CAJA, no por la escala**: el ancho de la
+carta cambia con el aparato, así que una cota sobre `--esc` no dice
+nada. Mientras la carta se ve, su caja no puede salirse de la pantalla.
+Verificada rompiéndola a propósito —el cálculo anterior— da **1 falla**,
+*"la carta SE SALE 165px de la pantalla"*.
+
 #### La bata, de emblema de "para la noche"
 
 *"Donde dice para la noche y está el icono quiero que lo cambies por la
