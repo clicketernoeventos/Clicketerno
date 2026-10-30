@@ -1014,6 +1014,50 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(!con.nombreVisible, con.nombreVisible
         ? 'el nombre se dibuja DOS veces: el del afiche y el de abajo'
         : 'y el nombre no se escribe dos veces');
+
+      /* LA JUNTURA DE ARRIBA. Un afiche nunca tiene la forma de un
+         teléfono, así que arriba queda una banda — y lo que se ve ahí
+         depende del BORDE del afiche: con un fondo plano la banda del
+         mismo color desaparece, y con un dibujo que llega al borde la
+         banda plana se lee como una juntura a lo ancho de la pantalla.
+         No se mide comparando dos filas pegadas: con el relleno plano
+         esas dos filas son casi iguales igual, porque el borde del
+         afiche también es liso y el dibujo empieza unos píxeles más
+         abajo. Lo que se nota es PLANO ARRIBA contra DIBUJO ABAJO, o
+         sea la TEXTURA. Medido: 0.50 de razón con la trama puesta y
+         0.06 con la banda plana.
+         Se saltea sola donde no aplica: sin banda, o con un afiche de
+         borde liso —que es el caso en el que la banda plana es la
+         respuesta correcta—. */
+      if (con.caja > 0 && con.cargo) {
+        const tex = await pagP.evaluate(async () => {
+          const im = document.querySelector('.port-poster img');
+          const T = Math.round(im.getBoundingClientRect().top);
+          return T;
+        });
+        if (tex < 24) bien('el afiche llena la pantalla: no hay banda que juzgar');
+        else {
+          const tiro = await pagP.screenshot();
+          const {leerPNG} = require('./png.js');
+          const im = leerPNG(tiro);
+          const lum = (x, y) => { const i = (y*im.ancho + x) * im.canales;
+            return .2126*im.pix[i] + .7152*im.pix[i+1] + .0722*im.pix[i+2]; };
+          const textura = (y0, y1) => { const v = [];
+            for (let y = Math.max(0,y0); y < Math.min(im.alto,y1); y++)
+              for (let x = 6; x < im.ancho - 6; x += 2) v.push(lum(x, y));
+            if (!v.length) return 0;
+            const m = v.reduce((a,b)=>a+b,0)/v.length;
+            return Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/v.length); };
+          const arriba = textura(tex-70, tex-2), abajo = textura(tex+2, tex+70);
+          if (abajo < 8) bien('el afiche tiene el borde liso: la banda plana es lo correcto');
+          else {
+            const razon = arriba / abajo;
+            es(razon >= .25, razon >= .25
+              ? `y la banda de arriba sigue el dibujo del afiche (${razon.toFixed(2)})`
+              : `la banda de arriba es PLANA y el afiche llega dibujado al borde: se ve la juntura (${razon.toFixed(2)})`);
+          }
+        }
+      }
     }
     await ctxP.close();
 

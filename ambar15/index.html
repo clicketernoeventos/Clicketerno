@@ -476,7 +476,12 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    `position:relative` dejan de ser capas y pasan a ser filas de la
    grilla, con ancho de contenido — o sea 0. Ya costó una vuelta con
    el encaje y el marco; el beso es la tercera. */
-#portada > :not(.encaje):not(.marco):not(.beso){position:relative;z-index:1}
+/* La flecha se exime igual que el encaje, el marco y el beso: es la
+   QUINTA vez que este selector le pisa el `position` a una capa. Lo
+   que necesita del rule es quedar por encima del velo, y eso se lo da
+   su propia regla — así el modo afiche puede volverla absoluta sin
+   pelear por especificidad. */
+#portada > :not(.encaje):not(.marco):not(.beso):not(.port-baja){position:relative;z-index:1}
 /* El marco esquiva la curva de la sección siguiente: sin ese respiro,
    la cumbre del arco le come las dos esquinas de abajo y el filete
    termina cortado contra una curva que no es suya. */
@@ -616,9 +621,20 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    sus cuatro esquinas, así que no se ve ninguna juntura.
    Si el archivo no carga no queda un cuadrado roto ni una pantalla
    vacía: no se pone la clase y la portada se queda tipográfica. */
-#portada.con-poster{background:#E83D76;color:#FFE4EF;
-  padding:clamp(10px,2.2vh,22px) clamp(10px,3vw,22px)
-          calc(clamp(14px,3vh,26px) + env(safe-area-inset-bottom))}
+/* EL AFICHE SE APOYA ABAJO Y VA A TODO EL ANCHO, y las dos cosas son
+   por la MISMA razón: el afiche nuevo tiene el empapelado hasta el
+   borde, así que el relleno plano sólo es invisible donde su propio
+   borde es parejo. Medido: el borde de ARRIBA es un rosa liso
+   (±8 de variación a lo ancho) y el de ABAJO es la remera y el pelo.
+   Así que todo el sobrante va ARRIBA, relleno con ese mismo rosa, y
+   la foto termina en el borde de la pantalla: una figura que sale por
+   abajo se lee como algo pensado, y cortada contra una banda rosa se
+   lee como una foto pegada en el medio.
+   (El afiche anterior tenía fondo PLANO de punta a punta, así que
+   iba centrado y las dos bandas desaparecían. El relleno no se elige
+   una vez: se elige mirando los bordes del afiche que hay.) */
+#portada.con-poster{background:#F97B91;color:#FFE4EF;
+  padding:0;align-content:end}
 #portada.con-poster:before{display:none}
 #portada.con-poster .encaje,#portada.con-poster .marco,
 #portada.con-poster .beso,#portada.con-poster .alas,
@@ -630,13 +646,43 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    lector de pantalla no lee una imagen. */
 #portada.con-poster #nombre{position:absolute;width:1px;height:1px;
   overflow:hidden;clip-path:inset(50%);white-space:nowrap;padding:0}
-.port-poster{width:100%;max-width:min(100%,calc((100svh - 82px) * .667));
+/* LA BANDA DE ARRIBA CONTINÚA EL EMPAPELADO DEL AFICHE, y por eso no
+   se ve la juntura. La baldosa es UN PERÍODO EXACTO recortado del
+   propio afiche —325x351, medidos por comparación de parches, no a
+   ojo— y rodada 70px para que su borde izquierdo caiga en la misma
+   fase que el borde izquierdo del afiche. Va colgada del BORDE DE
+   ARRIBA del afiche (`bottom:100%` + `background-position:left
+   bottom`), así la fase sigue enganchada pase lo que pase con el alto
+   de la pantalla.
+   El 29.926% es 325/1086, o sea el ancho de la baldosa en el afiche:
+   escrito así, la trama se dibuja SIEMPRE al mismo tamaño que la del
+   afiche, en cualquier pantalla.
+   (La baldosa del formulario no servía: es el mismo dibujo pero con
+   otra escala, otro rosa y su propio viñeteado, que a este tamaño
+   deja los cuadrados a la vista.) */
+#portada.con-poster .port-poster:before{content:'';position:absolute;
+  left:0;right:0;bottom:100%;height:100svh;pointer-events:none;
+  background:url("fotos/portada-tela.webp") left bottom repeat;
+  background-size:29.926% auto}
+/* La flecha cae sobre la ropa oscura: ahí el negro de siempre no se
+   ve. */
+#portada.con-poster .port-baja{color:#FFE9F0}
+/* El .75 es la proporción REAL del archivo (1086x1448): el ancho sale
+   del alto que queda, no de un porcentaje del ancho. Si se cambia el
+   afiche por uno de otra forma, este número se cambia con él. */
+.port-poster{width:100%;max-width:min(100%,calc(100svh * .75));
   margin:0 auto}
 /* Sin esquinas redondeadas: el fondo de la sección es el mismo rosa
    del afiche, así que un radio dibujaría cuatro esquinitas rosas donde
    no se ve ningún borde. */
 .port-poster img{display:block;width:100%;height:auto}
-#portada.con-poster .port-baja{margin-top:clamp(10px,2vh,18px);opacity:.85}
+/* La flecha va ENCIMA del afiche, no debajo: apoyado abajo, una
+   flecha en el flujo lo empujaría hacia arriba y volvería la banda
+   que vinimos a sacar. Cae sobre la ropa oscura, donde el crema se
+   lee de sobra. */
+#portada.con-poster .port-baja{position:absolute;left:50%;
+  transform:translateX(-50%);margin:0;opacity:.9;
+  bottom:calc(clamp(12px,2.4vh,20px) + env(safe-area-inset-bottom))}
 
 /* ── LAS PERLAS ── una hilera, no un adorno suelto. */
 .perlas{display:flex;justify-content:center;gap:7px;margin:clamp(10px,2vh,16px) auto 0}
@@ -671,7 +717,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
 .port-frase{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(15.5px,4.3vw,20px);color:var(--tinta);line-height:1.5;
   margin-top:clamp(12px,2.3vh,18px)}
-.port-baja{margin-top:clamp(20px,4vh,32px);color:var(--negro);opacity:.55}
+.port-baja{position:relative;z-index:1;margin-top:clamp(20px,4vh,32px);color:var(--negro);opacity:.55}
 .port-baja svg{margin:0 auto}
 
 /* ── la foto del óvalo ──
@@ -984,6 +1030,15 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
    valer la pena.
    Va recortada, sin el fondo de la foto: un recuadro oscuro en el medio
    del papel rosa se lee como una captura pegada. */
+/* LA BATA, en lugar del medallón de "para la noche". Vino ya recortada
+   y con fondo transparente, así que acá no hubo nada que recortar: lo
+   único que se le hizo fue sacarle el aire de alrededor.
+   Va del tamaño al que se LEEN las rayas, el ribete y el moño —un
+   icono de línea de 42px no es lo que pidió— y cae sobre la banda
+   oscura, donde el rosa claro se despega solo: no le hace falta la
+   sombra que sí necesita la bolsa del regalo, que es rosa sobre rosa. */
+.bata-noche{display:block;width:clamp(128px,36vw,168px);height:auto;
+  margin:0 auto clamp(10px,2vh,18px)}
 .pase-vip{display:block;width:clamp(158px,45vw,216px);height:auto;
   margin:0 auto clamp(10px,2vh,18px);
   filter:drop-shadow(0 12px 20px rgba(155,53,88,.26))}
@@ -1667,6 +1722,9 @@ const CONFIG = {
   /* El pase VIP, de emblema de "dónde nos vemos". Vacío deja el
      medallón con el pin dibujado, que es el estado bueno. */
   vip: "fotos/vip.webp",
+  /* LA BATA, de emblema de "para la noche". La mandó el dueño ya
+     recortada. Vacío deja el medallón con la percha dibujada. */
+  bata: "fotos/bata.webp",
   /* EL AFICHE DE "GUARDÁ LA FECHA". Lo mandó el dueño ya hecho:
      "ÁMBAR FEST 2027" en negro sobre rosa, con el monograma alado.
      Reemplaza al medallón del calendario. */
@@ -2181,6 +2239,19 @@ function falta(que, chico){
       const med = dond.querySelector('.medallon');
       if (med) med.replaceWith(im);
       else (dond.querySelector('.caja') || dond).insertAdjacentElement('afterbegin', im);
+    }, () => {});
+
+  /* LA BATA, en lugar del medallón de "para la noche". Mismo camino que
+     el pase VIP: si el archivo faltara queda el medallón con la percha
+     dibujada, que se sostiene sola, y nunca un cuadrado roto. */
+  const det = document.getElementById('detalles');
+  if (det && CONFIG.bata)
+    cargarFoto(CONFIG.bata, '', im => {
+      im.className = 'bata-noche';
+      im.setAttribute('aria-hidden', 'true');
+      const med = det.querySelector('.medallon');
+      if (med) med.replaceWith(im);
+      else (det.querySelector('.caja') || det).insertAdjacentElement('afterbegin', im);
     }, () => {});
 
   /* EL AFICHE, en lugar del medallón de "guardá la fecha". Igual que
