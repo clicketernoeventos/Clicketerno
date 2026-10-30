@@ -243,6 +243,26 @@ rollo y las de la base, y apaga solo lo que haya levantado. También
 Correr **todo** antes de mergear, no solo lo que tocaste: los dos servicios
 comparten `pruebas/fakesb.js`, las tablas y el sistema de clave.
 
+**Con UNA excepción, y la marcó el dueño**: *"¿por qué chequeás muro y
+rollo siendo que lo único que modificamos es tarjetas?"*. Si el cambio
+vive entero adentro de `<evento>/` —una invitación— y de
+`pruebas/invitacion_mirar.js`, **la tanda del rollo y la de la base no
+pueden verlo**: comprobado, ninguna prueba del rollo nombra una
+invitación ni ese medidor. Ahí alcanza con
+`node pruebas/invitacion_mirar.js <evento>` y `todo.sh muro`.
+
+**Y la del muro SÍ hay que correrla, aunque el nombre diga otra cosa.**
+Quince de sus pruebas miran las invitaciones: el peso y los nombres de
+las carpetas (`invitaciones`), el tablero (`listado`), el Apps Script
+(`rsvp`), el flyer (`guia`), la página de invitaciones (`vitrina`), el
+contraste y el barrido. Las pruebas están agrupadas por **dónde viven**
+—el servidor que necesitan— y no por lo que miden, así que el nombre de
+la tanda no dice qué cubre.
+
+En cuanto se toca cualquier cosa de afuera de esa carpeta —`lib/`,
+`index.html`, las dos apps, `_headers`, `sql/`, o cualquier otra
+prueba— vuelve a valer la regla entera.
+
 ## Cómo está armado
 
 - **Estático en Cloudflare** (`wrangler.json`, directorio `.`). Las
