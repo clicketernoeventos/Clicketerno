@@ -225,6 +225,12 @@ quede a medio hacer.
   falta de su lado. Los nombres de archivos, los selectores y los
   números de las pruebas no le dicen nada; si algo salió mal, eso sí se
   dice, en castellano.
+- **No gastarle la sesión.** Dicho el 30/10/2026: *"me haces gastar
+  tokens"*. Tres cosas, y las tres salieron de esa misma tanda: correr
+  **solo** las pruebas que pueden ver el cambio (ver la excepción de
+  arriba), correrlas **una vez y al final** en vez de después de cada
+  ajuste, y contestar corto. Un informe largo no es más completo: es
+  más caro.
 - **Del otro lado no se depura.** Si algo falla en el teléfono, lo que
   llega es "no anda" o una captura. La prueba tiene que existir antes de
   que la pruebe una persona.
