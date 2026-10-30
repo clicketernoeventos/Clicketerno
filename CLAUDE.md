@@ -4934,6 +4934,95 @@ nada. Mientras la carta se ve, su caja no puede salirse de la pantalla.
 Verificada rompiéndola a propósito —el cálculo anterior— da **1 falla**,
 *"la carta SE SALE 165px de la pantalla"*.
 
+#### Las alas dibujadas se cayeron: el emblema es SU logo
+
+*"Fíjate que el sobre nada que ver. Además las alas están feas y al
+revés. Presta atención a los detalles. Por otro lado la carta está
+desfasada. No está centrada. Y ese logo que hiciste es horrible. Pone
+el logo de la última foto."* Y después, con dos recortes del lacre y
+de la carta: *"Debes cambiar ese logo por los dos AB."*
+
+Las alas de la vuelta anterior estaban **al revés de verdad, no de
+gusto**: el dibujo sale de un hombro abajo a la derecha y barre hacia
+arriba, pero el CSS les ponía `rotate(-40deg)`, que es **antihorario**,
+o sea que les sumaba cuarenta grados y las pasaba de la horizontal
+hacia el piso. Y los dos hombros caían juntos en el centro, así que lo
+que se veía no eran dos alas: era un moño. Se dibuja perfecto y está
+mal, que es la familia de siempre.
+
+**Y la lección más cara es la otra: el dibujo no hacía falta.** El logo
+de la fiesta —la A y la B entrelazadas, con su corona, entre dos alas—
+ya existía, es de ella, está en su afiche y en el empapelado, y el
+dueño lo tenía a mano. Nosotros estábamos aproximándolo a mano, seis
+vueltas de plumas, para terminar con algo que no se le parece. **Antes
+de dibujar una pieza de la marca de un cliente: preguntar si la
+tiene.**
+
+Así que el emblema del sobre es el logo recortado (`fotos/logo.webp`,
+88 KB), y las alas dibujadas quedan de respaldo —con el giro
+corregido—: si el archivo falta no queda un cuadrado roto. Es lo mismo
+que ya hacen la marca del cierre, la bolsa, el pase VIP y la bata.
+
+**Va ARRIBA del sobre y no detrás**, que es lo que haría la
+referencia. El motivo es de geometría: en su logo las alas vienen
+pegadas a las letras, así que agrandarlo hasta que flanqueen el sobre
+deja un monograma **más alto que el sobre entero**. Arriba, entero y
+apenas más ancho que el sobre, se lee de una y las alas igual asoman a
+los costados. El margen negativo lo pega al sobre: separados son dos
+piezas sueltas.
+
+**Y el fondo dejó de ser las rayas.** Acá estaba escrito que el sobre
+vivía sobre las rayas "porque son las de la portada" — y eso dejó de
+ser cierto el día que la portada pasó a ser el afiche que mandó el
+dueño, cuyo fondo es un rosa fuerte. Encima el logo es rosa PÁLIDO:
+sobre las rayas claras no estaría. Ahora el fondo es ese mismo rosa
+(`#C85075`) con la luz de estudio de la referencia, y el que abre
+sigue sin cambiar de mundo — ahora de verdad.
+**Los dos rótulos del sobre hay que medirlos A MANO**: su fondo es un
+`:before`, o sea un pseudoelemento, que ningún `querySelectorAll`
+devuelve, así que el medidor los juzga contra el negro del `body` y da
+verde mire lo que mire. Medido con el píxel sobre la captura: en crema
+daban 3,2:1 y por eso van en blanco puro (3,7:1 y 4,2:1).
+
+##### El monograma de la carta y el del lacre son el suyo, recortado
+
+Los dos AB que señaló son los dos lugares donde el monograma se ve
+chico. Ahí **las alas no entran** —en un lacre de 62px serían dos
+manchas—, así que va una segunda pieza: el mismo logo **sin alas y en
+rosa hondo** (`fotos/sello.webp`, 17 KB), que se lee tanto sobre el oro
+rosa del lacre como sobre el papel crema de la carta. Una sola
+descarga para los dos: el segundo es un clon.
+
+**Recortarle las alas a una imagen no es recortar un rectángulo.** Las
+alas pasan POR DETRÁS de las letras, así que no hay un corte vertical
+que las separe; lo que sí hay, mirando el alfa fila por fila, es un
+HUECO entre donde termina el ala y donde empieza la letra, y ese hueco
+se mueve con la altura. El recorte es una frontera por tramos sacada de
+esa medición, y después se tiran las islas sueltas que quedan —las
+puntas de pluma que caían del lado de adentro— quedándose sólo con las
+dos grandes: las letras y la corona.
+
+##### Y el monograma dibujado perdió la Z
+
+El de texto sigue existiendo, porque es el respaldo de los dos
+anteriores, pero ahora es **A + B**. Acá estaba escrito —y bien medido—
+que la Z en manuscrita era la lazada que dejaba leer tres capitulares;
+lo que estaba de más era la decisión: **el logo de la fiesta no tiene
+Z**, nunca la tuvo, y el monograma de la pieza tiene que ser el de
+ella. Es la misma lección que la de las alas, en chiquito.
+
+##### La carta estaba desfasada porque el relleno era para otra escena
+
+El texto de la carta vive arriba a propósito: mientras ASOMA del sobre,
+lo que se ve es sólo su parte de arriba, y centrado en la caja entera
+el último renglón queda adentro. Eso es cierto durante el asomo **y
+deja de serlo en cuanto vuela**: afuera se ve la carta entera, y el
+texto arriba con medio papel en blanco abajo se lee como una tarjeta
+mal armada. Ahora el relleno de abajo se va con el vuelo, en el mismo
+tiempo que la escala, así que el texto se acomoda al medio mientras
+crece. **Un valor que es correcto en una escena no lo es en la
+siguiente: si la escena cambia, el valor se anima con ella.**
+
 #### La bata, de emblema de "para la noche"
 
 *"Donde dice para la noche y está el icono quiero que lo cambies por la

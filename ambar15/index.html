@@ -191,17 +191,35 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    de verdad al salir. Recién cuando vuela pasa adelante. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
   transition:visibility 0s linear 2.4s}
-/* El sobre vive sobre las MISMAS rayas que la portada: el que abre no
-   cambia de mundo, entra. Encima va un velo claro para que la raya no
-   le compita al papel del sobre. */
+/* EL FONDO ES EL ROSA DE SU AFICHE, no las rayas. Antes eran las
+   rayas "porque son las de la portada", y eso dejó de ser cierto el
+   día que la portada pasó a ser el afiche que mandó el dueño: su
+   fondo es este rosa fuerte. Así que el que abre sigue sin cambiar
+   de mundo — ahora de verdad.
+   Y HACE FALTA ADEMÁS POR EL LOGO: el emblema del sobre es la pieza
+   que mandó, que es rosa PÁLIDO. Sobre las rayas claras no estaría;
+   sobre este rosa se lee, igual que en su afiche.
+   El `radial` es la luz del estudio de la referencia: un rosa plano
+   de punta a punta se lee como un fondo de aplicación. */
 #sobre:before{content:'';position:absolute;inset:0;z-index:0;
-  background-color:var(--papel);
+  background-color:#C85075;
   background-image:
-    radial-gradient(120% 80% at 50% 44%,rgba(255,255,255,.62),rgba(255,255,255,.12) 60%,rgba(247,216,227,.06)),
-    repeating-linear-gradient(90deg,
-      var(--raya) 0,var(--raya) var(--raya-ancho),
-      var(--papel) var(--raya-ancho),var(--papel) calc(var(--raya-ancho) * 2));
+    radial-gradient(118% 84% at 50% 40%,rgba(255,255,255,.20),rgba(255,255,255,.04) 54%,rgba(104,18,46,.22));
   transition:opacity .55s var(--e) .95s}
+/* Si un bloque trae su propio fondo, trae su propia tinta: sobre el
+   rosa fuerte el acento oscuro de las secciones claras da 1,5:1.
+   VA BLANCO PURO Y NO UN CREMA, y eso hay que calcularlo a mano: el
+   medidor sube hasta el primer fondo OPACO y acá ese fondo es un
+   `:before`, o sea un pseudoelemento, que ningún `querySelectorAll`
+   devuelve — así que juzga estos dos renglones contra el negro del
+   `body` y da verde mire lo que mire. Medido con el píxel sobre la
+   captura: en crema daban 3,2:1 y en blanco dan 3,9:1.
+   Por lo mismo el rótulo del pie perdió su acento rosa: sobre este
+   rosa daba 2,6:1, o sea que no estaría. */
+#sobre .arriba{color:#fff}
+#sobre .sobre-pie,#sobre .sobre-pie b{color:#fff}
+/* Y el beso, que es rosa medio, ahí tampoco existe. */
+#sobre .beso svg g{fill:#FFD9E5}
 #sobre.abierto:before{opacity:0}
 #sobre.abierto{visibility:hidden;pointer-events:none}
 /* El papel del sobre se va con el fondo. La carta NO está en esta
@@ -211,9 +229,29 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .solapa,
 #sobre.abierto .alas-sobre,#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
 /* El hueco de arriba es más grande que el de abajo a propósito: las
-   alas salen POR ARRIBA del sobre, como en la referencia, y sin ese
-   aire se le montan al rótulo. */
+   alas dibujadas salen POR ARRIBA del sobre y sin ese aire se le
+   montan al rótulo. Con el logo puesto ese aire ya no hace falta: el
+   logo ocupa su propio renglón. */
 .sobre-centro .arriba{margin-bottom:clamp(44px,8vh,86px)}
+#sobre.con-logo .arriba{margin-bottom:0}
+
+/* ── EL EMBLEMA ── es LA PIEZA QUE MANDÓ EL DUEÑO, no un dibujo
+   nuestro. Las alas dibujadas que había acá las bajó él en una
+   línea: "las alas están feas y al revés" — y tenía razón por partida
+   doble: salían del centro, las dos juntas, y los giros las mandaban
+   hacia ABAJO, así que se leían como un moño y no como un par de
+   alas. El dibujo de verdad ya existe y es suyo.
+   Va ARRIBA del sobre y no detrás: sus alas vienen pegadas a las
+   letras, así que agrandarlo hasta que flanqueen el sobre deja un
+   monograma más alto que el sobre entero. Arriba, entero, se lee de
+   una. El margen negativo lo pega al sobre: separado, son dos piezas
+   sueltas; pisado, una sola.
+   Un poco MÁS ANCHO que el sobre, que es lo que hace que las alas
+   asomen a los costados como en la referencia. */
+.sobre-logo{width:min(72vw,292px);margin-bottom:calc(-1 * clamp(10px,2.6vh,22px));
+  filter:drop-shadow(0 12px 24px rgba(92,14,42,.3))}
+.sobre-logo img{width:100%;height:auto}
+#sobre.con-logo .alas-sobre{display:none}
 .sobre-centro{text-align:center;display:grid;gap:clamp(18px,4vh,34px);justify-items:center;
   position:relative;z-index:1}
 /* Y el sobre se acerca un poco al irse: el que mira entra en la
@@ -230,7 +268,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    los nervios en rosa y su sombra: sobre las rayas claras un blanco
    sin sombra no se ve. */
 .alas-sobre{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;pointer-events:none}
-.alas-sobre .ala{position:absolute;top:-48%;width:66%;
+.alas-sobre .ala{position:absolute;top:-34%;width:62%;
   filter:drop-shadow(0 3px 10px rgba(155,53,88,.22))
          drop-shadow(0 0 14px rgba(255,255,255,.75))}
 /* Las alas BARREN HACIA ARRIBA, como en la referencia: sin ese giro
@@ -240,14 +278,19 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    POR ESO EL SOBRE ES MÁS ANGOSTO que la pantalla: las alas no son un
    adorno que se puede recortar, son la mitad de la referencia, y un
    ala cortada contra el borde se lee como un error de maqueta. */
-.alas-sobre .ala.izq{left:-14%;transform:rotate(-40deg)}
-.alas-sobre .ala.der{right:-14%;transform:scaleX(-1) rotate(-40deg)}
+/* EL GIRO VA AL REVÉS DEL QUE ESTABA. `rotate(-40deg)` es antihorario,
+   y el ala ya está dibujada apuntando arriba y a la izquierda: sumarle
+   40 la manda más allá de la horizontal, o sea al piso. Con el giro
+   horario el abanico se levanta, que es lo de la referencia. Y los
+   hombros van SEPARADOS: juntos en el centro se leen como un moño. */
+.alas-sobre .ala.izq{left:-24%;transform:rotate(20deg)}
+.alas-sobre .ala.der{right:-24%;transform:scaleX(-1) rotate(20deg)}
 /* En una pantalla angosta se recogen en vez de cortarse contra el
    borde: un ala cortada se lee como un error de maqueta. */
 @media (max-width:360px){
-  .alas-sobre .ala{width:60%;top:-42%}
-  .alas-sobre .ala.izq{left:-10%;transform:rotate(-38deg)}
-  .alas-sobre .ala.der{right:-10%;transform:scaleX(-1) rotate(-38deg)}
+  .alas-sobre .ala{width:58%;top:-30%}
+  .alas-sobre .ala.izq{left:-19%;transform:rotate(18deg)}
+  .alas-sobre .ala.der{right:-19%;transform:scaleX(-1) rotate(18deg)}
 }
 .alas-sobre{color:#fff;--pluma:#DFA9BD}
 
@@ -259,7 +302,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    transición de 0 s con retardo hace el salto en el momento justo —es
    el mismo truco que ya costó una vuelta en almi15—. */
 .solapa{position:absolute;left:0;right:0;top:0;height:64%;z-index:5;
-  background:linear-gradient(185deg,#F8D2DF,#EAAEC4);
+  background:linear-gradient(183deg,#FCE0EA,#F3BFD2 58%,#E8AAC2);
   clip-path:polygon(0 0,100% 0,50% 100%);
   filter:drop-shadow(0 7px 11px rgba(155,53,88,.26));
   transform-origin:50% 0;
@@ -268,9 +311,9 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre.abierto .solapa{transform:rotateX(-158deg);z-index:0}
 /* El cuerpo del sobre: el rectángulo ENTERO y opaco. La carta vive
    atrás, así que no hay ningún punto por donde se vea. */
-.tapa-cuerpo{position:absolute;inset:0;z-index:3;border-radius:5px;
-  background:linear-gradient(160deg,#F3C3D3,#E7A3BA 60%,#D98BA4);
-  box-shadow:0 42px 84px -32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.14)}
+.tapa-cuerpo{position:absolute;inset:0;z-index:3;border-radius:9px;
+  background:linear-gradient(160deg,#F7CEDB,#EFB0C6 58%,#DE94AE);
+  box-shadow:0 42px 84px -32px rgba(104,18,46,.5),inset 0 1px 0 rgba(255,255,255,.3)}
 
 /* ── LA CARTA ── vive ADENTRO y no se ve hasta que se abre. Dice
    QUIÉN invita y cuándo: se ve dos segundos, así que son cuatro
@@ -282,9 +325,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   display:grid;place-items:center;align-content:center;gap:clamp(4px,1.2vw,7px);
   /* El relleno de abajo sube el texto: al salir, lo que se VE es la
      parte de ARRIBA de la carta —el resto sigue adentro del sobre—,
-     así que centrado en la caja entera el último renglón queda tapado. */
+     así que centrado en la caja entera el último renglón queda tapado.
+     ESO VALE MIENTRAS ASOMA, Y NO DESPUÉS: afuera del sobre se ve la
+     carta ENTERA, y el texto arriba con medio papel en blanco abajo se
+     lee como una tarjeta mal armada. Lo dijo el dueño mirándola: "la
+     carta está desfasada, no está centrada". Así que el relleno se va
+     con el vuelo, y el texto se acomoda al medio mientras crece. */
   padding:0 8% 32%;
-  transition:transform .8s var(--e) .35s,opacity .55s linear .95s}
+  transition:transform .8s var(--e) .35s,opacity .55s linear .95s,
+             padding-bottom .9s var(--e) .35s}
 /* Sube casi entera, y SIGUE DETRÁS del cuerpo: lo que todavía está
    adentro lo tapa el sobre, que es lo que pasa de verdad. */
 #sobre.abierto .carta{transform:translateY(-76%) scale(1.02)}
@@ -297,7 +346,8 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    cruzando la pantalla a mitad de la animación. */
 #sobre.abierto .carta.volando{
   z-index:9;
-  transform:translateY(-42%) scale(var(--esc,1.6));
+  padding-bottom:8%;
+  transform:translateY(-16%) scale(var(--esc,1.6));
   opacity:0;
   transition:transform 1.5s cubic-bezier(.22,.61,.2,1),
              opacity 1.15s cubic-bezier(.4,0,.75,.45) .22s}
@@ -319,10 +369,18 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    encima se ve como una raya, dos papeles que se tocan se ven como un
    pliegue. */
 .tapa-frente{position:absolute;inset:0;z-index:4;
-  border-radius:0 0 5px 5px;overflow:hidden;
-  background:linear-gradient(170deg,#EDB4C7,#E099B2 70%,#D286A0);
-  box-shadow:0 -3px 12px -6px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
+  border-radius:0 0 9px 9px;overflow:hidden;
+  background:linear-gradient(170deg,#F2C0D1,#E7A6BD 70%,#D992AA);
+  box-shadow:0 -3px 12px -6px rgba(104,18,46,.3),inset 0 1px 0 rgba(255,255,255,.26)}
 .tapa-frente i{position:absolute;inset:0}
+/* EL BRILLO DEL RASO. El sobre de la referencia no es cartulina: es
+   satén, y lo que lo hace satén es una banda de luz en diagonal. Sin
+   ella los pliegues se leen como cuatro triángulos de color plano.
+   Va de ADORNO declarado —no ataja el dedo— y encima de los pliegues,
+   que es donde cae la luz de verdad. */
+.tapa-frente:after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(118deg,rgba(255,255,255,0) 26%,rgba(255,255,255,.34) 44%,
+    rgba(255,255,255,0) 60%)}
 /* Los CUATRO pliegues de la espalda: los dos de los costados, el de
    abajo y —encima de todos— la solapa. Es lo que hace que se lea como
    un sobre cerrado y no como un rectángulo rosa. */
@@ -345,6 +403,12 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   box-shadow:0 12px 26px -8px rgba(28,16,22,.45),inset 0 1px 2px rgba(255,255,255,.5);
   color:#5A2B1C;transition:transform .45s var(--e)}
 #abrir .azb{font-size:29px}
+/* EL MONOGRAMA DE VERDAD, en el lacre y en la carta. Es el logo que
+   mandó el dueño, sin las alas y en rosa hondo: "cambiá ese logo por
+   los dos AB". El dibujado con letras queda de respaldo —si el
+   archivo falta se ve ése y nunca un cuadrado roto—. */
+#abrir .mono-foto{height:44px;width:auto}
+.carta .mono-foto{height:clamp(26px,7.4vw,34px);width:auto;margin:0 auto}
 #abrir:active{transform:scale(.95)}
 @media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
 /* El latido va en un HALO alrededor y no en el botón: moviendo la caja
@@ -440,10 +504,16 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 /* La B se mete DENTRO de la A: es el entrelazado de la referencia, no
    dos letras una al lado de la otra. */
 .azb i.b{margin-left:-.30em}
-/* Y la Z es la lazada que las cruza. En la manuscrita, no en la
-   didona: ahí deja de competir con las otras dos. */
-.azb i.z{font-family:var(--escrita);font-weight:400;font-size:1.15em;
-  margin:0 -.30em;position:relative;top:.04em}
+/* LA Z SE FUE, y no es un retoque de gusto. Acá estaba escrito que la
+   Z iba en la manuscrita para coser la A con la B — y eso lo decidió
+   este archivo, no el cliente. El dueño mandó después el logo de la
+   fiesta, el de verdad, el que está en su afiche y en el empapelado:
+   es una A y una B entrelazadas, con su corona, y NO TIENE Z. Con la
+   Z en el medio el monograma dibujado no era el de ella: era otro. Lo
+   dijo mirando la pantalla: "ese logo que hiciste es horrible".
+   Así que el monograma de texto —que sigue siendo el respaldo del
+   logo de verdad, el que se ve si el archivo falta— es A + B, como el
+   suyo. */
 
 /* ══════════ el lienzo ══════════ */
 #papel{position:relative;z-index:1}
@@ -1357,6 +1427,12 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   <i class="beso beso-sobre" data-beso aria-hidden="true"></i>
   <div class="sobre-centro">
     <p class="arriba">Estás invitado</p>
+    <!-- EL LOGO DE LA FIESTA. El `<img>` lo crea el JS y nunca el
+         HTML: uno con el `src` vacío le pide al servidor la página
+         entera otra vez, y eso no tira ningún error. Si el archivo
+         falta quedan las alas dibujadas de abajo, que se sostienen
+         solas. -->
+    <div class="sobre-logo" id="sobreLogo" hidden></div>
     <div class="tapa">
       <!-- DOS CAPAS POR ALA. El ala es la misma de siempre —la del
            monograma— y está dibujada para 60 o 70 píxeles; acá mide
@@ -1371,7 +1447,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
       <div class="solapa" aria-hidden="true"></div>
       <div class="tapa-cuerpo" aria-hidden="true"></div>
       <div class="carta">
-        <span class="azb carta-mono"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
+        <span class="azb carta-mono"><i>A</i><i class="b">B</i></span>
         <p class="carta-nom" id="cartaNom"></p>
         <i class="hilito" aria-hidden="true"></i>
         <p class="carta-txt">mis quince años</p>
@@ -1380,7 +1456,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
       <div class="tapa-frente" aria-hidden="true"><i class="f1"></i><i class="f2"></i><i class="f3"></i></div>
       <div class="tapa-mandos">
         <button id="abrir" type="button" aria-label="Abrir la invitación">
-          <span class="azb" aria-hidden="true"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
+          <span class="azb" aria-hidden="true"><i>A</i><i class="b">B</i></span>
         </button>
       </div>
       <div class="quiebre" aria-hidden="true">
@@ -1643,7 +1719,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
            papel claro el oro rosa da 2,2:1, o sea que no estaría—. -->
       <p class="marca-alada ap" id="marcaAlada">
         <svg class="ala izq" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
-        <span class="azb marca-pie"><i>A</i><i class="z">Z</i><i class="b">B</i></span>
+        <span class="azb marca-pie"><i>A</i><i class="b">B</i></span>
         <svg class="ala der" viewBox="0 0 130 92" aria-hidden="true"><use href="#alaAzb"/></svg>
       </p>
       <p class="marca-pie-nom ap d1" id="pieNombre"></p>
@@ -1735,6 +1811,18 @@ const CONFIG = {
   /* La marca con alas, ya dibujada, para el cierre. Vacía deja la
      dibujada con el `<symbol>` de siempre, que es el estado bueno. */
   marca: "fotos/marca.webp",
+  /* EL LOGO DE LA FIESTA · el monograma AB coronado entre sus alas,
+     recortado de la pieza que mandó el dueño. Es el emblema del
+     sobre —las alas de la referencia son LAS SUYAS, no un dibujo
+     nuestro— y el monograma de la carta. Vacío deja las alas
+     dibujadas y el monograma de texto, que es el estado bueno. */
+  logo: "fotos/logo.webp",
+  /* EL MONOGRAMA SOLO · el mismo logo sin las alas y en rosa hondo,
+     para los dos lugares donde el AB es chico: el lacre y la carta.
+     Las alas no entran en un lacre de 62px —serían dos manchas— y lo
+     que tiene que leerse ahí son las letras. Vacío deja el monograma
+     de texto, que es el respaldo. */
+  sello: "fotos/sello.webp",
   /* La bolsa de la fiesta, de icono del regalo. Vacía no dibuja nada
      —el bloque se sostiene sin ella—, nunca un cuadrado roto. */
   bolsaFoto: "fotos/bolsa.webp",
@@ -2299,6 +2387,38 @@ function falta(que, chico){
                        pos.hidden = false; por.classList.add('con-poster'); },
                fotoDelOvalo);
   else fotoDelOvalo();
+
+  /* EL LOGO DEL SOBRE. Es la pieza que mandó el dueño, y reemplaza a
+     las alas dibujadas —que él bajó: "las alas están feas y al revés"—.
+     Se pone recién cuando cargó de verdad: si el archivo faltara
+     quedan las alas de siempre, que se sostienen solas, y nunca un
+     cuadrado roto arriba del sobre. La clase va en `#sobre` y no en el
+     hueco porque lo que cambia es el aire del rótulo y las alas, que
+     son hermanos suyos. */
+  const sb = document.getElementById('sobre');
+  const hl = document.getElementById('sobreLogo');
+  if (sb && hl && CONFIG.logo)
+    cargarFoto(CONFIG.logo, '', im => {
+      im.setAttribute('aria-hidden', 'true');
+      hl.innerHTML = '';
+      hl.appendChild(im);
+      hl.hidden = false;
+      sb.classList.add('con-logo');
+    }, () => {});
+
+  /* EL MONOGRAMA DEL LACRE Y DE LA CARTA. Los dos sitios donde el AB
+     se ve chico, y los dos los señaló el dueño: "cambiá ese logo por
+     los dos AB". Una sola descarga para los dos: el segundo es un
+     clon. Y se reemplaza recién cuando cargó de verdad, así que si el
+     archivo falta queda el monograma de texto. */
+  if (CONFIG.sello)
+    cargarFoto(CONFIG.sello, '', im => {
+      im.className = 'mono-foto';
+      im.setAttribute('aria-hidden', 'true');
+      $$('#abrir .azb, .carta .azb').forEach((n, i) => {
+        n.replaceWith(i ? im.cloneNode(true) : im);
+      });
+    }, () => {});
 
   /* LA MARCA DEL CIERRE. La dibujada ya está en el HTML, así que
      ésta la REEMPLAZA recién cuando cargó de verdad: si el archivo
