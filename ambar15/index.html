@@ -1350,8 +1350,13 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
     </div>
   </section>
 
-  <!-- ══════════ 3 · la cuenta regresiva ══════════ -->
-  <section class="seccion claro arco" data-ico="reloj">
+  <!-- ══════════ 3 · la cuenta regresiva ══════════
+       SIN medallón, por pedido del dueño mirándola publicada. Un reloj
+       de arena arriba de un reloj que corre dice dos veces lo mismo, y
+       encima el de verdad es el que está abajo: el dibujo le compite al
+       dato. Igual que la canción y el cierre, esta sección no lleva
+       `data-ico`. -->
+  <section class="seccion claro arco">
     <div class="caja">
       <!-- Acá no va el rótulo chico de las otras secciones: "faltan…"
            ya es el título y el rótulo a la vez, y los dos juntos dicen
@@ -1711,11 +1716,6 @@ const ICONOS = {
      tamaño un dibujo con quince líneas no es un dibujo, es una mancha.
      Lo que no se lee a 42 no va. */
 
-  /* el reloj de arena, con su moño colgado arriba como una etiqueta */
-  reloj: MONO(12, 3.6, 7, 5) +
-         '<path d="M6.6 5.6h10.8M6.6 21.4h10.8"/>' +
-         '<path d="M8 5.6c0 4.2 4 5.4 4 9.1 0-3.7 4-4.9 4-9.1"/>' +
-         '<path d="M8 21.4c0-4.2 4-5.4 4-9.1 0 3.7 4 4.9 4 9.1"/>',
   /* el calendario atado con un moño */
   calendario: MONO(12, 7.4, 7.5, 5) +
               '<path d="M4 9.2h16v11.2H4z"/><path d="M4 12.6h16"/>' +

@@ -4790,6 +4790,24 @@ captura por PANTALLA**: se baja de a 85% de la ventana y se miden todos
 los renglones que entran enteros. Es la regla de siempre —*una prueba
 que pasa siempre no prueba nada*— con un tope de tiempo de disfraz.
 
+#### El reloj de arena sobraba
+
+*"Ese icono queda feo. Sácalo"*, mirándola publicada: el medallón del
+reloj de arena, arriba de la cuenta regresiva.
+
+Tenía razón y el motivo se puede decir en una línea: **un reloj de
+arena dibujado arriba de un reloj que corre dice dos veces lo mismo, y
+el de verdad es el que está abajo.** En las otras secciones el medallón
+es lo único que anuncia de qué habla el bloque antes de leerlo; acá el
+bloque ES un reloj andando, así que el dibujo no anuncia nada y encima
+le compite al dato, que es lo único que se mira.
+
+Se saca quitándole el `data-ico` a esa sección —el medallón lo pone el
+JS para cualquiera que lo lleve— y el icono, que quedaba sin usar, se
+fue de la tabla. **La canción y el cierre ya estaban así**, cada uno
+por el mismo motivo: donde el bloque trae su propio emblema (el
+reproductor, la marca), un medallón arriba son dos emblemas apilados.
+
 #### El afiche de "guardá la fecha"
 
 *"Este ponelo en el icono de guardá la fecha"* — un afiche de "ÁMBAR
