@@ -210,6 +210,10 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
   transition:opacity .55s var(--e) .95s}
 #sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .solapa,
 #sobre.abierto .alas-sobre,#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
+/* El hueco de arriba es más grande que el de abajo a propósito: las
+   alas salen POR ARRIBA del sobre, como en la referencia, y sin ese
+   aire se le montan al rótulo. */
+.sobre-centro .arriba{margin-bottom:clamp(44px,8vh,86px)}
 .sobre-centro{text-align:center;display:grid;gap:clamp(18px,4vh,34px);justify-items:center;
   position:relative;z-index:1}
 /* Y el sobre se acerca un poco al irse: el que mira entra en la
@@ -226,8 +230,9 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    los nervios en rosa y su sombra: sobre las rayas claras un blanco
    sin sombra no se ve. */
 .alas-sobre{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;pointer-events:none}
-.alas-sobre .ala{position:absolute;top:19%;width:50%;
-  filter:drop-shadow(0 4px 7px rgba(155,53,88,.28))}
+.alas-sobre .ala{position:absolute;top:-48%;width:66%;
+  filter:drop-shadow(0 3px 10px rgba(155,53,88,.22))
+         drop-shadow(0 0 14px rgba(255,255,255,.75))}
 /* Las alas BARREN HACIA ARRIBA, como en la referencia: sin ese giro
    el dibujo cae y se lee como dos plumas colgando. Y no se salen de
    la pantalla: el sobre ya mide 78vw, así que lo que asoma a los
@@ -235,8 +240,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    POR ESO EL SOBRE ES MÁS ANGOSTO que la pantalla: las alas no son un
    adorno que se puede recortar, son la mitad de la referencia, y un
    ala cortada contra el borde se lee como un error de maqueta. */
-.alas-sobre .ala.izq{left:-23%;transform:rotate(-18deg)}
-.alas-sobre .ala.der{right:-23%;transform:scaleX(-1) rotate(-18deg)}
+.alas-sobre .ala.izq{left:-14%;transform:rotate(-40deg)}
+.alas-sobre .ala.der{right:-14%;transform:scaleX(-1) rotate(-40deg)}
+/* En una pantalla angosta se recogen en vez de cortarse contra el
+   borde: un ala cortada se lee como un error de maqueta. */
+@media (max-width:360px){
+  .alas-sobre .ala{width:60%;top:-42%}
+  .alas-sobre .ala.izq{left:-10%;transform:rotate(-38deg)}
+  .alas-sobre .ala.der{right:-10%;transform:scaleX(-1) rotate(-38deg)}
+}
 .alas-sobre{color:#fff;--pluma:#DFA9BD}
 
 /* ── LA SOLAPA CERRADA ── el triángulo doblado hacia ABAJO sobre la
@@ -285,9 +297,10 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    cruzando la pantalla a mitad de la animación. */
 #sobre.abierto .carta.volando{
   z-index:9;
-  transform:translateY(-42%) scale(var(--esc,2.6));
+  transform:translateY(-42%) scale(var(--esc,1.6));
   opacity:0;
-  transition:transform 1.25s var(--e),opacity 1s var(--e) .3s}
+  transition:transform 1.5s cubic-bezier(.22,.61,.2,1),
+             opacity 1.15s cubic-bezier(.4,0,.75,.45) .22s}
 .carta-mono{font-size:clamp(18px,5vw,24px);color:var(--negro)}
 .carta-nom{font-family:var(--titulos);font-weight:500;
   font-size:clamp(11.5px,3.2vw,15px);letter-spacing:.1em;text-transform:uppercase;
@@ -1345,9 +1358,15 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   <div class="sobre-centro">
     <p class="arriba">Estás invitado</p>
     <div class="tapa">
+      <!-- DOS CAPAS POR ALA. El ala es la misma de siempre —la del
+           monograma— y está dibujada para 60 o 70 píxeles; acá mide
+           tres veces eso y a ese tamaño una silueta lisa se lee como
+           un pétalo, no como un ala. Dos capas apenas corridas son
+           dos hileras de plumas, que es lo que tiene la referencia, y
+           cuestan un `use` en vez de un dibujo nuevo. -->
       <div class="alas-sobre" aria-hidden="true">
-        <svg class="ala izq" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
-        <svg class="ala der" viewBox="0 0 130 92"><use href="#alaAzb"/></svg>
+        <svg class="ala izq" viewBox="0 0 200 160"><use href="#alaAzb"/></svg>
+        <svg class="ala der" viewBox="0 0 200 160"><use href="#alaAzb"/></svg>
       </div>
       <div class="solapa" aria-hidden="true"></div>
       <div class="tapa-cuerpo" aria-hidden="true"></div>
@@ -1935,6 +1954,73 @@ function besoSVG(semilla, id){
   });
 })();
 
+/* ══════════ EL ALA DEL SOBRE ══════════
+   El ala del monograma está dibujada para 60 o 70 píxeles; en el sobre
+   mide tres veces eso, y a ese tamaño una silueta lisa se lee como un
+   pétalo —se probó, y las dos capas apenas corridas tampoco alcanzan—.
+   Ésta tiene PLUMAS: tres hileras que salen del mismo hombro, la de
+   afuera larga y las de adentro cortas, con la punta REDONDEADA (en
+   aguja el dibujo se lee como un abanico de cuchillas) y una mancha en
+   el hombro que tapa donde convergen.
+   Va de SÍMBOLO y el HTML sigue apuntando al ala chica: sin JS quedan
+   las de siempre, que es el estado bueno. */
+/* Un ala con plumas: tres hileras que salen del mismo hombro y se
+   abren hacia arriba y a la izquierda. La de afuera es la larga. */
+function alaGrande(){
+  const PX = 196, PY = 150;           /* el hombro */
+  const pluma = (ang, L, W, curva) => {
+    const a = ang * Math.PI / 180;
+    const dx = Math.cos(a), dy = -Math.sin(a);
+    const px = -dy, py = dx;                       /* perpendicular */
+    /* La punta va REDONDEADA, no en aguja: en aguja el dibujo se lee
+       como un abanico de cuchillas. Se arma con dos puntos separados
+       cerca de la punta en vez de uno solo. */
+    const c = curva * L * .12;
+    const mx = PX + dx * L * .50, my = PY + dy * L * .50;
+    const t1x = PX + dx * L * .93 + px * W * .34, t1y = PY + dy * L * .93 + py * W * .34;
+    const t2x = PX + dx * L * .93 - px * W * .34, t2y = PY + dy * L * .93 - py * W * .34;
+    const tx = PX + dx * L, ty = PY + dy * L;
+    return 'M' + PX.toFixed(1) + ' ' + PY.toFixed(1) +
+      'Q' + (mx + px * W + dx * c).toFixed(1) + ' ' + (my + py * W + dy * c).toFixed(1) +
+      ' ' + t1x.toFixed(1) + ' ' + t1y.toFixed(1) +
+      'Q' + tx.toFixed(1) + ' ' + ty.toFixed(1) + ' ' + t2x.toFixed(1) + ' ' + t2y.toFixed(1) +
+      'Q' + (mx - px * W * .72 + dx * c).toFixed(1) + ' ' + (my - py * W * .72 + dy * c).toFixed(1) +
+      ' ' + PX.toFixed(1) + ' ' + PY.toFixed(1) + 'Z';
+  };
+  const hilera = (n, a0, a1, L0, L1, W0, W1, cur) => {
+    let d = '';
+    for (let k = 0; k < n; k++){
+      const f = n === 1 ? 0 : k / (n - 1);
+      d += pluma(a0 + (a1 - a0) * f, L0 + (L1 - L0) * f,
+                 W0 + (W1 - W0) * f, cur);
+    }
+    return d;
+  };
+  /* de atrás hacia adelante: las cobertoras cortas tapan el arranque */
+  const largas  = hilera(9, 172, 116, 188, 124, 19, 13, .95);
+  const medias  = hilera(8, 168, 114, 120,  80, 18, 12, .95);
+  const cortas  = hilera(7, 162, 110,  68,  48, 16, 11, .85);
+  return ''
+    + '<g fill="currentColor" stroke="var(--pluma,#F0C8D8)" stroke-width="1.1"'
+    + ' stroke-linejoin="round" vector-effect="non-scaling-stroke">'
+    +   '<path d="' + largas + '"/>'
+    +   '<path d="' + medias + '"/>'
+    +   '<path d="' + cortas + '"/>'
+    +   '<ellipse cx="189" cy="147" rx="11" ry="8" transform="rotate(-28 189 147)"/>'
+    + '</g>';
+}
+(function(){
+  const defs = document.querySelector('#alaAzb');
+  if (!defs || !defs.parentNode) return;
+  const sym = document.createElementNS('http://www.w3.org/2000/svg', 'symbol');
+  sym.setAttribute('id', 'alaPluma');
+  sym.setAttribute('viewBox', '0 0 200 160');
+  sym.innerHTML = alaGrande();
+  defs.parentNode.appendChild(sym);
+  document.querySelectorAll('.alas-sobre .ala use')
+    .forEach(u => u.setAttribute('href', '#alaPluma'));
+})();
+
 /* ══════════ LAS TRES ESTRELLAS APILADAS ══════════
    Tres estrellas pegadas una sobre la otra, como tres calcos: la de
    atrás en animal print, la del medio rosa y la de adelante plateada
@@ -2407,15 +2493,20 @@ function falta(que, chico){
     const carta = $('.carta');
     if (carta && !menosMovimiento){
       const c = carta.getBoundingClientRect();
-      /* CUÁNTO CRECE, y es poco a propósito. La primera versión la
-         hacía crecer hasta TAPAR la pantalla —siete veces— y eso se
-         lee como un golpe: un papel enorme que se te viene encima.
-         Ahora llega a una vez y media el ancho de la pantalla y se
-         disuelve en el camino, así que la portada se ve aparecer
-         alrededor de la carta en vez de debajo de un portazo. */
+      /* CUÁNTO CRECE: LO QUE ENTRE EN LA PANTALLA Y NI UN PÍXEL MÁS.
+         Antes crecía a 1,7 veces el ancho de la pantalla, así que el
+         papel se salía por los dos costados y el nombre quedaba
+         CORTADO justo cuando más se lee —lo marcó el dueño: "queda
+         medio cortado lo que dice"—. Ahora el tope sale de la caja de
+         verdad contra la pantalla de verdad, con 18px de aire a cada
+         lado, y además nunca baja de 1,25: con menos no se lee como
+         que la carta se acerca.
+         Un papel que se agranda sin cortarse se lee como que se te
+         viene a la mano; cortado contra el borde se lee como un error
+         de maqueta. */
       if (c.width && c.height)
         carta.style.setProperty('--esc',
-          Math.min(3.2, Math.max(1.9, (innerWidth / c.width) * 1.7)).toFixed(2));
+          Math.max(1.25, Math.min(2.1, (innerWidth - 36) / c.width)).toFixed(2));
       /* El vuelo arranca cuando la carta YA terminó de salir del
          sobre: pisados, los dos gestos se leen como uno solo mal
          hecho. */
