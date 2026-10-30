@@ -4386,7 +4386,15 @@ ancho y la cara quedaba en el cuarto de arriba del óvalo: el óvalo
 recorta apenas un 10% del alto, así que `object-position` casi no
 mueve nada — **el encuadre se arregla en el archivo, no en el CSS**.
 
-#### Los tres pompones haciendo de marco
+#### ~~Los tres pompones haciendo de marco~~
+
+**SACADOS el 30/10/2026**, con el monograma con alas de la misma
+tarjeta: *"Esta parte quedó fea. Esos pompones no se parecen en nada a
+lo que te pedí. Lo mejor sería sacar eso y el logo horrendo ese que
+hiciste"*. Lo que hay ahí ahora son las tres estrellas; está abajo, en
+*"Las tres estrellas, de emblema del dress code"*. Lo de acá queda
+escrito por la lección de la pluma, que es lo único que sobrevive.
+
 
 Pedido del dueño con una captura —una tarjeta de RSVP con tres
 pompones de pluma asomando por detrás del borde de arriba—:
@@ -4467,6 +4475,54 @@ dos veces para el código y una para las pruebas— aplicada a los
 scripts que EDITAN el código. Un ancla se busca con
 `assert s.count(ancla) == 1`, nunca con el primer `index()`, y después
 se mira el tamaño del archivo.
+
+#### Las tres estrellas, de emblema del dress code
+
+*"Esta parte quedó fea. Esos pompones no se parecen en nada a lo que te
+pedí. Lo mejor sería sacar eso y el logo horrendo ese que hiciste y
+hacer algo como lo de la segunda foto"* — y la segunda foto son las
+**tres estrellas apiladas**: la de atrás en animal print, la del medio
+rosa y la de adelante plateada con glitter, sobre el papel a rayas.
+
+De la tarjeta se fueron las dos cosas: la corona de pompones y el
+monograma con alas que encabezaba el bloque. En su lugar van las
+estrellas, **que ya estaban dibujadas en el archivo**: son las de la
+portada tipográfica, que hoy no se ven porque manda el afiche. Es la
+misma regla de siempre —*dos dibujos para lo mismo es uno que se queda
+atrás*—, así que las dos las hace `estrellasSVG()`.
+
+**Lo que las hacía no parecerse a la referencia era el RIBETE BLANCO.**
+Sin él las tres se tocan y lo que se ve es una mancha con varias
+puntas; el borde blanco es lo que dice que hay tres cosas pegadas, y es
+lo primero que salta de la captura. Lo demás fue el leopardo —pocas
+rosetas GRANDES en vez de muchas chiquitas, que a este tamaño se leen
+como lunares— y el glitter, que pasó de 54 granos a 300: un degradé
+liso con cuatro burbujas se lee como plástico gris, no como brillo.
+Y abajo del grupo va una sombra suave, que es lo que despega al rosa
+del papel rayado.
+
+**El animal print sigue en NEGRO sobre rosa claro y no en marrón**,
+aunque la referencia sea tan: lo que hace leer un animal print es el
+DIBUJO y no el color, y el marrón sería un cuarto color en una paleta
+de tres. Si alguna vez se pide tal cual, es una línea.
+
+##### Y el mismo dibujo dos veces en la página son `id` repetidos
+
+Esto no se vio, se razonó, y es la regla de los nombres repetidos
+llevada a un SVG: el dibujo lleva adentro dos recortes, dos degradés y
+una sombra, cada uno con su `id`. Puesto dos veces —la portada y la
+tarjeta— el navegador resuelve `url(#…)` contra el **primero** que
+encuentra. Hoy los dos son iguales y no se notaría; el día que uno
+cambie, se pintaría con las piezas del otro. `estrellasSVG(suf)` lleva
+sufijo, igual que el beso.
+
+**Y ponerle el sufijo rompió el dibujo, sin un solo error.** Se
+renombraron los `id` de los degradés y quedaron sin tocar los dos
+`fill="url(#estRosa)"` que los nombran: una referencia que no resuelve
+no es un error en SVG, es un relleno vacío. El rosa y el plateado
+salieron **blancos**, con el ribete y la sombra perfectos. Lo agarró la
+captura, no la consola — las pruebas daban verde igual. Es *mirar que
+el cambio haya ENTRADO*, y acá entró a medias.
 
 #### Y una que nadie había medido: el nombre de otra clienta
 
