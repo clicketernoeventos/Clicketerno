@@ -1234,6 +1234,12 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     if (!await pagT.locator('#sobre').count()) bien('esta invitación no tiene sobre');
     else {
       await pagT.waitForTimeout(400);
+      /* El emblema de la carta EN REPOSO, antes de abrir: es contra
+         este ancho que se mide cuánto creció mientras vuela. */
+      const emb0 = await pagT.evaluate(() => {
+        const e = document.querySelector('.carta img, .carta svg');
+        return e ? e.getBoundingClientRect().width : 0;
+      });
       await pagT.click('#abrir');
       const t0 = Date.now();
       const tomas = [];
@@ -1253,10 +1259,56 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
             const r = c.getBoundingClientRect();
             if (r.width > 2) fuera = Math.max(0, -r.left, r.right - innerWidth);
           }
+          /* LO QUE SE QUEDA PEGADO. Cada capa del sobre tiene que
+             irse con el sobre; la que no tenga fundido se queda
+             OPACA encima de la portada que ya se está encendiendo y
+             después desaparece de golpe. Pasó con el logo y con el
+             beso, y no tira ningún error: las dos capas se dibujan
+             perfectas.
+             No se mide con una lista de selectores —fue justamente
+             una lista la que se quedó corta—: se recorren todos los
+             descendientes del sobre y se cuenta al que PINTA algo
+             propio (un fondo, una imagen, un dibujo o su texto),
+             con la opacidad EFECTIVA, o sea multiplicada por la de
+             todos sus padres. La carta no cuenta: ella vuela sola. */
+          let pegado = 0, quien = '';
+          const sob = document.querySelector('#sobre');
+          if (sob && getComputedStyle(sob).visibility !== 'hidden'){
+            for (const n of sob.querySelectorAll('*')){
+              if (n.closest('.carta')) continue;
+              const cs = getComputedStyle(n);
+              if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+              const r = n.getBoundingClientRect();
+              if (r.width < 24 || r.height < 24) continue;
+              const pinta = cs.backgroundImage !== 'none'
+                || !/^rgba\(0, 0, 0, 0\)$|^transparent$/.test(cs.backgroundColor)
+                || n.tagName === 'IMG' || n.tagName === 'svg'
+                || [...n.childNodes].some(k => k.nodeType === 3 && k.data.trim());
+              if (!pinta) continue;
+              let op = 1;
+              for (let e = n; e && e !== sob.parentNode; e = e.parentElement)
+                op *= +getComputedStyle(e).opacity;
+              if (op > pegado){ pegado = op; quien = n.className || n.tagName; }
+            }
+          }
+          /* EL EMBLEMA QUE LLEVA LA CARTA ADENTRO. La carta crece
+             mientras vuela, así que lo de adentro crece con ella: un
+             dibujo macizo agrandado y medio transparente encima de la
+             portada ya encendida no se lee como un sello, se lee como
+             una mancha. Se mide con la opacidad EFECTIVA —la carta
+             entera se va desvaneciendo— y con el ancho contra el de
+             reposo, que es lo que el que mira ve como "se agranda". */
+          let emb = null;
+          const em = document.querySelector('.carta img, .carta svg');
+          if (em){
+            let op = 1;
+            for (let n = em; n; n = n.parentElement) op *= +getComputedStyle(n).opacity;
+            emb = {op, w: em.getBoundingClientRect().width};
+          }
           return {
             port:  p ? +getComputedStyle(p).opacity : 1,
             carta: c ? esc(c) : 1,
-            fuera,
+            fuera, pegado, quien, emb,
             sobre: !!document.querySelector('#sobre')
           };
         }));
@@ -1283,6 +1335,42 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(sale <= 6, sale <= 6
         ? 'y no se corta contra el borde mientras se ve'
         : 'la carta SE SALE ' + Math.round(sale) + 'px de la pantalla: su texto queda cortado');
+
+      /* Mientras la portada ya está más de la mitad encendida, lo que
+         queda del sobre tiene que estar yéndose. Una capa casi opaca
+         ahí es una capa sin fundido. */
+      const cruce = tomas.filter(t => t.sobre && t.port >= .6);
+      if (!cruce.length) bien('(sin cruce medible para la capa pegada)');
+      else {
+        const peor = cruce.reduce((a2, b2) => b2.pegado > a2.pegado ? b2 : a2);
+        es(peor.pegado <= .55, peor.pegado <= .55
+          ? 'y el sobre entero se va con la carta (lo más opaco: ' + peor.pegado.toFixed(2) + ')'
+          : 'algo del sobre se queda OPACO sobre la portada: ' + peor.pegado.toFixed(2)
+            + ' en "' + peor.quien + '" con la portada en ' + peor.port.toFixed(2));
+      }
+
+      /* Y EL EMBLEMA DE LA CARTA TIENE QUE IRSE ANTES. Lo marcó el
+         dueño: "en la transición se agranda ese logo y queda mal
+         cuando desaparece". Mientras la portada ya está más de la
+         mitad encendida, lo que la carta lleva adentro no puede
+         seguir a la vista: ahí es un AB oscuro agrandado encima del
+         afiche, que tiene su propio empapelado de monogramas, y
+         después desaparece de golpe.
+         Se saltea sola en una carta sin emblema. */
+      if (!emb0) bien('(la carta no lleva emblema: nada que medir)');
+      else {
+        const conEmb = tomas.filter(t => t.sobre && t.emb && t.port >= .6);
+        if (!conEmb.length) bien('(sin cruce medible para el emblema de la carta)');
+        else {
+          const peorE = conEmb.reduce((x, y) => y.emb.op > x.emb.op ? y : x);
+          const crecio = Math.round((peorE.emb.w / emb0 - 1) * 100);
+          es(peorE.emb.op <= .25, peorE.emb.op <= .25
+            ? 'y el emblema de la carta se va antes de que la portada se encienda'
+            : 'el emblema de la carta sigue a la vista sobre la portada: opacidad '
+              + peorE.emb.op.toFixed(2) + ' y ' + crecio + '% más grande, con la portada en '
+              + peorE.port.toFixed(2));
+        }
+      }
 
       const final = tomas[tomas.length - 1];
       es(final.port > .98 && !final.sobre, final.port > .98 && !final.sobre

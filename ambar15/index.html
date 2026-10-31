@@ -223,11 +223,23 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 #sobre.abierto:before{opacity:0}
 #sobre.abierto{visibility:hidden;pointer-events:none}
 /* El papel del sobre se va con el fondo. La carta NO está en esta
-   lista: ella se va sola, volando. */
-.tapa-cuerpo,.tapa-frente,.solapa,.alas-sobre,#sobre .arriba,.sobre-pie{
+   lista: ella se va sola, volando.
+   TODO LO DEMÁS DEL SOBRE TIENE QUE ESTAR ACÁ, y es lo que se había
+   olvidado: el logo y el beso no tenían fundido, así que mientras el
+   papel se deshacía y la portada se encendía los dos seguían
+   OPACOS ENCIMA de ella —el monograma alado estampado sobre la foto
+   de Ámbar, y los labios flotando en una esquina— hasta que el sobre
+   entero se sacaba de un saque. Lo que tendría que ser un cruce se
+   leía como dos capas mal superpuestas y un corte al final.
+   La regla, que es la de siempre vista por otro lado: **lo que entra
+   con el sobre se va con el sobre.** Una capa nueva adentro de
+   `#sobre` que no esté en esta lista va a quedar colgada. */
+.tapa-cuerpo,.tapa-frente,.solapa,.alas-sobre,.sobre-logo,
+#sobre .beso,#sobre .arriba,.sobre-pie{
   transition:opacity .55s var(--e) .95s}
 #sobre.abierto .tapa-cuerpo,#sobre.abierto .tapa-frente,#sobre.abierto .solapa,
-#sobre.abierto .alas-sobre,#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
+#sobre.abierto .alas-sobre,#sobre.abierto .sobre-logo,#sobre.abierto .beso,
+#sobre.abierto .arriba,#sobre.abierto .sobre-pie{opacity:0}
 /* El hueco de arriba es más grande que el de abajo a propósito: las
    alas dibujadas salen POR ARRIBA del sobre y sin ese aire se le
    montan al rótulo. Con el logo puesto ese aire ya no hace falta: el
@@ -409,6 +421,18 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    archivo falta se ve ése y nunca un cuadrado roto—. */
 #abrir .mono-foto{height:44px;width:auto}
 .carta .mono-foto{height:clamp(26px,7.4vw,34px);width:auto;margin:0 auto}
+/* Y EL MONOGRAMA DE LA CARTA SE VA PRIMERO, apenas arranca el vuelo.
+   La carta crece hasta 1,7x y el AB es lo único oscuro y macizo que
+   lleva adentro: agrandado un 83% y medio transparente sobre el
+   afiche —que tiene su propio empapelado de monogramas— no se lee
+   como un sello, se lee como una mancha. Lo dijo el dueño: "en la
+   transición se agranda ese logo y queda mal cuando desaparece".
+   Medido contra el código anterior: el AB llegaba a 34,8px OPACO con
+   la portada ya en 1,00, y recién ahí desaparecía de golpe.
+   El texto de la carta sí se queda —es lo que se lee mientras se
+   acerca—; el AB ya hizo su trabajo en el lacre. */
+#sobre.abierto .carta.volando .mono-foto,
+#sobre.abierto .carta.volando .azb{opacity:0;transition:opacity .24s linear}
 #abrir:active{transform:scale(.95)}
 @media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
 /* El latido va en un HALO alrededor y no en el botón: moviendo la caja

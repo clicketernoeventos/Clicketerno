@@ -127,6 +127,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stro
 .sobre-nom{font-family:var(--titulos);font-weight:300;letter-spacing:-.01em;
   font-size:clamp(25px,7.2vw,38px);line-height:1.12;margin:18px 0 20px}
 .sobre-nom i{font-style:italic;color:var(--oro-hondo);padding:0 .12em}
+/* LOS DOS RENGLONES SE VAN CON EL SOBRE. No tenían fundido, así que
+   mientras el papel se deshacía y la portada se encendía se quedaban
+   OPACOS encima de ella y recién desaparecían cuando el sobre entero
+   se sacaba de un saque: un cruce que termina en un corte. Es la
+   misma falla que apareció en ambar15 con el logo, y la agarró la
+   misma medición. Lo que entra con el sobre se va con el sobre. */
+.sobre-ante,.sobre-nom,#abrir,.sobre-pie{transition:opacity .5s var(--e) .5s}
+#sobre.abierto .sobre-ante,#sobre.abierto .sobre-nom,
+#sobre.abierto #abrir,#sobre.abierto .sobre-pie{opacity:0;pointer-events:none}
 /* el paquete: el sobre adelante y la carta DETRÁS.
    La carta no vive adentro del sobre sino atrás, y esto no es un
    atajo: adentro, cualquier parte suya que los cuatro pliegues no
