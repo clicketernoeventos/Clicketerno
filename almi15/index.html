@@ -1251,9 +1251,15 @@ function sierraPath(semilla, picos){
          Ahora llega a una vez y media el ancho de la pantalla y se
          disuelve en el camino, así que la portada se ve aparecer
          alrededor de la carta en vez de debajo de un portazo. */
+      /* EL TOPE SALE DE LA CAJA CONTRA LA PANTALLA, con 18px de aire
+         a cada lado. Con el cálculo anterior la carta crecía hasta
+         1,7 veces lo que entra y se salía 159px por los costados
+         JUSTO cuando más se lee: el nombre quedaba cortado contra el
+         borde. Es la misma falla que el dueño marcó en ambar15 —"queda
+         medio cortado lo que dice"— y la agarró la misma medición. */
       if (c.width && c.height)
         carta.style.setProperty('--esc',
-          Math.min(3.2, Math.max(1.9, (innerWidth / c.width) * 1.7)).toFixed(2));
+          Math.max(1.25, Math.min(2.1, (innerWidth - 36) / c.width)).toFixed(2));
       /* El vuelo arranca cuando la carta YA terminó de salir del
          sobre: pisados, los dos gestos se leen como uno solo mal
          hecho. */

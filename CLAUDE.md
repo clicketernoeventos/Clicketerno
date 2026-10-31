@@ -5023,6 +5023,72 @@ tiempo que la escala, así que el texto se acomoda al medio mientras
 crece. **Un valor que es correcto en una escena no lo es en la
 siguiente: si la escena cambia, el valor se anima con ella.**
 
+##### Y al final de la transición quedaba una capa pegada
+
+*"Tenés que ver que al finalizar la transición no queda bien."* Y no
+quedaba: mientras el papel del sobre se deshacía y la portada se
+encendía, **el logo y el beso seguían OPACOS encima de ella** —el
+monograma alado estampado sobre la foto de Ámbar y los labios
+flotando en una esquina— hasta que el sobre entero se sacaba de un
+saque. Lo que tendría que leerse como un cruce se leía como dos capas
+mal superpuestas y un corte al final.
+
+**El motivo es de bulto: las dos capas eran NUEVAS y no estaban en la
+lista que se funde.** El sobre apaga sus piezas con una enumeración
+de selectores, y el logo se agregó la vuelta anterior sin entrar ahí;
+el beso nunca había estado. Se dibuja perfecto y está mal, que es la
+familia de siempre. **Lo que entra con el sobre se va con el sobre.**
+
+**Y lo que lo cuida NO es la lista**, porque fue justamente una lista
+la que se quedó corta. `pruebas/invitacion_mirar.js` recorre ahora
+todos los descendientes del sobre mientras la portada ya está más de
+la mitad encendida y se queda con el más opaco, midiendo la opacidad
+**efectiva** —multiplicada por la de todos sus padres—; cuenta sólo
+al que PINTA algo propio (un fondo, una imagen, un dibujo o su
+texto), así que un contenedor vacío no inventa una falla, y saltea la
+carta, que vuela sola. Verificada rompiéndola a propósito: con el
+logo sin fundido da **1 falla**, *"algo del sobre se queda OPACO
+sobre la portada: 1.00 en «IMG» con la portada en 0.66"*.
+
+**Y encontró la misma falla en una invitación ya publicada**:
+`facuymaxi/` dejaba pegados los dos renglones del sobre y su botón,
+exactamente igual. De paso, el tope de la carta de `almi15/` era el
+cálculo viejo, así que **se salía 159px de la pantalla** justo cuando
+más se lee — que es el *"queda medio cortado lo que dice"* que el
+dueño ya había marcado en ambar15, sin arreglar en la de al lado.
+Las dos se arreglaron con esto. Es la lección de siempre: **una
+trampa que se arregla en un lugar hay que ir a buscarla a los otros**,
+y una medición nueva se corre contra TODAS las invitaciones, no sólo
+contra la que la motivó.
+
+##### Y lo que la carta lleva adentro se va antes que la carta
+
+*"El problema está en que en la transición se agranda ese logo y queda
+mal cuando desaparece."* La carta crece hasta **1,7x** mientras vuela,
+y lo de adentro crece con ella: el AB del lacre —lo único oscuro y
+macizo que lleva— llegaba a **34,8px, OPACO, con la portada ya en
+1,00**, y recién ahí desaparecía de golpe. Agrandado un 83% encima del
+afiche, que tiene su propio empapelado de monogramas, no se lee como
+un sello: se lee como una mancha.
+
+**Se va primero**, en 0,24 s, apenas arranca el vuelo: mientras se ve,
+crece un 24% y no más. El texto de la carta sí se queda —es lo que se
+lee mientras se acerca, y para eso se le animó el relleno de abajo—;
+el AB ya hizo su trabajo en el lacre.
+
+**La regla, que es pariente de las otras dos del sobre** (*lo que entra
+con el sobre se va con el sobre*, *lo que se mueve no puede ser lo que
+se esconde*): **lo que viaja adentro de algo que se agranda también se
+agranda**, y un dibujo macizo agrandado y medio transparente encima de
+otra cosa es una mancha, no una transición.
+
+Lo mide `pruebas/invitacion_mirar.js`: mientras la portada ya está más
+de la mitad encendida, el emblema de la carta no puede seguir a la
+vista, y la falla dice cuánto creció. Se saltea sola en una carta sin
+emblema. Contra el código anterior da **1 falla**: *"el emblema de la
+carta sigue a la vista sobre la portada: opacidad 1.00 y 36% más
+grande, con la portada en 0.66"*.
+
 #### La bata, de emblema de "para la noche"
 
 *"Donde dice para la noche y está el icono quiero que lo cambies por la
