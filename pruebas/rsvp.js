@@ -545,6 +545,35 @@ function cargarCentral(opciones = {}) {
   };
 }
 
+console.log('\n─── ninguna clave de verdad queda versionada ───');
+{
+  /* Las claves —la maestra y la que elige un cliente— viven en la
+     copia del editor del dueño, nunca acá: UNA CLAVE VERSIONADA ES
+     UNA CLAVE PÚBLICA, y lo que abre no es un correo sino la lista
+     entera de invitados de una fiesta, con sus nombres y sus comidas.
+     Ya costó caro una vez y lo agarró un `git grep` a mano, no una
+     prueba: por eso ahora es una prueba.
+     Y sacarlo del archivo después NO lo saca del historial: lo único
+     que lo saca de verdad es cambiar la clave. Así que esto tiene que
+     fallar ANTES de que el commit exista.
+     No hace falta saber ninguna clave para medirlo: lo que se exige
+     es que lo versionado esté VACÍO. */
+  for (const archivo of ['evento-nuevo.gs.txt', 'planilla-central.gs.txt']) {
+    const fuente = fs.readFileSync(
+      path.join(__dirname, '..', 'apps-script', archivo), 'utf8');
+    for (const [, nombre, valor] of
+         fuente.matchAll(/^var (CLAVE[A-Z_]*) = '([^']*)';/gm))
+      es(valor === '', valor === ''
+        ? `${archivo}: ${nombre} va vacía, como tiene que ir`
+        : `${archivo}: ${nombre} tiene una clave ESCRITA — eso la hace pública`);
+    const mapa = (fuente.match(/^var (CLAVES_ELEGIDAS) = \{([\s\S]*?)^\};/m) || []);
+    if (mapa[1])
+      es(!/:/.test(mapa[2]), !/:/.test(mapa[2])
+        ? `${archivo}: CLAVES_ELEGIDAS va vacío, como tiene que ir`
+        : `${archivo}: CLAVES_ELEGIDAS tiene la clave de un cliente escrita`);
+  }
+}
+
 console.log('\n─── la planilla central: preparar() ───');
 {
   const a = cargarCentral({ maestra: 'clave-maestra-de-prueba' });

@@ -5624,6 +5624,33 @@ da el dueño. Para entrar al tablero se usa la **maestra**, que además
 devuelve escrita la clave propia de esa fiesta y el enlace parado en
 su pestaña; la del cliente no hay que elegirla ni ir a buscarla.
 
+#### La clave de Ámbar la eligió la clienta, y es un correo
+
+Tercera vez —después de `mia15` y `almi15`— y por el mismo motivo: el
+cliente manda un correo de la familia y lo quiere de contraseña. Se le
+dice el riesgo y se hace: *un correo es público y adivinable, y lo que
+abre no es un correo, es la lista entera de invitados con sus nombres
+y sus comidas.*
+
+**El valor NO se escribe en el repo**, y eso ya no depende de que
+alguien se acuerde. Vive en `CLAVES_ELEGIDAS`, en la copia del editor
+de Apps Script del dueño, y `pruebas/rsvp.js` **falla si lo versionado
+deja de estar vacío** —las dos `CLAVE_*_ELEGIDA` y el mapa de
+`CLAVES_ELEGIDAS`, en los dos `.gs.txt`—. No le hace falta conocer
+ninguna clave para medirlo: lo que exige es el vacío.
+
+Hace falta porque la vez anterior lo agarró **un `git grep` a mano y
+no una prueba**, y porque *sacarlo del archivo después no lo saca del
+historial*: lo único que lo saca de verdad es cambiar la clave, que es
+justo lo que el cliente no quiere. Así que tiene que fallar ANTES de
+que el commit exista. Verificado rompiéndolo a propósito: da 2 fallas
+—y arrastra otras tres, porque el falso reemplaza esas líneas para
+poner las suyas y con una clave escrita ya no matchean.
+
+**Y cambiarla pide volver a implementar**, porque `CLAVES_ELEGIDAS` es
+código y no un dato guardado. La maestra y la inventada por la
+planilla viven en las propiedades del proyecto y no lo piden.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
@@ -6099,6 +6126,13 @@ dejaría peor parados.
   que no es una fecha. Los dos, vacíos, no dibujan su renglón. Y el
   alias se escribe **tal cual lo mandó**, sin "arreglarle" nada: en
   `mia15` el punto del final resultó ser parte del alias.
+  **Y del lado del dueño, un paso en el editor de Apps Script**: la
+  clienta eligió un correo de contraseña para su tablero, así que va
+  en `CLAVES_ELEGIDAS` con la fiesta `ambar15` y **hay que volver a
+  implementar** —es código, no un dato guardado—. Hasta que eso no
+  esté, su listado abre con la clave que inventó la planilla (se lee
+  entrando con la maestra) y no con el correo. En el repositorio ese
+  valor **no va nunca**, y ahora hay una prueba que lo cuida.
 - **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos**: las
   **cinco fotos** (la de portada es la del jardín al atardecer, que es
   la que eligieron; falta además la de las mascotas), **los horarios
