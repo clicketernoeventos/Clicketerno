@@ -338,80 +338,99 @@ console.log('\n─── el resumen lo cuenta la planilla ───');
      'y dice con qué columna contó, para que el listado no adivine');
 }
 
-console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ───');
-/* El Apps Script crea cada columna con el nombre del campo que le
+/* ── LOS CAMPOS DE VERDAD DE UNA INVITACIÓN ──
+   El Apps Script crea cada columna con el nombre del campo que le
    llega, así que lo que decide si la planilla sale bien es cómo se
    llaman los `name=` del formulario. Acá no se escriben a mano: se
    LEEN del HTML y se postean ESOS. Escritos a mano, el día que el
    formulario renombre un campo la prueba seguiría verde posteando
    un nombre que ya no existe — comprobado rompiéndolo a propósito:
    con la primera versión, renombrar el campo no la hacía fallar. */
-{
-  const html = fs.readFileSync(path.join(__dirname, '..', 'mia15', 'index.html'), 'utf8');
+function camposDe(carpeta) {
+  const html = fs.readFileSync(path.join(__dirname, '..', carpeta, 'index.html'), 'utf8');
   const form = (html.match(/<form id="rsvp"[\s\S]*?<\/form>/) || [''])[0];
   const campos = [...form.matchAll(/name="([^"]+)"/g)].map(m => m[1])
                    .filter((v, i, a) => a.indexOf(v) === i);
-  /* Los acompañantes no están en el HTML: los dibuja el JS con el
-     nombre de columna adentro. Se lee de ahí por el mismo motivo. */
-  const plantillaInv = (html.match(/const nom = '([^']+)' \+ k/) || [])[1];
-  /* Y desde que cada acompañante elige SU comida, hay una columna por
-     persona. Antes era una sola para todos: eligiendo "Celíaco" con
-     cinco invitados, la planilla decía que los cinco eran celíacos —y
-     eso se le pasa al salón tal cual. */
-  const plantillaCom = (html.match(/, com = '([^']+)' \+ k/) || [])[1];
+  return {
+    campos,
+    /* Los acompañantes no están en el HTML: los dibuja el JS con el
+       nombre de columna adentro. Se lee de ahí por el mismo motivo. */
+    plantillaInv: (html.match(/const nom = '([^']+)' \+ k/) || [])[1],
+    /* Y desde que cada acompañante elige SU comida, hay una columna por
+       persona. Antes era una sola para todos: eligiendo "Celíaco" con
+       cinco invitados, la planilla decía que los cinco eran celíacos —y
+       eso se le pasa al salón tal cual. */
+    plantillaCom: (html.match(/, com = '([^']+)' \+ k/) || [])[1],
+    /* Estos dos el Apps Script los busca POR NOMBRE para contar y para
+       contestarle al invitado si ya está. Renombrarlos no rompe nada a
+       la vista: la planilla se llena igual y el resumen da cero. */
+    campoNombre:  campos.find(c => /nombre/i.test(c)),
+    campoSiNo:    campos.find(c => /confirma/i.test(c)),
+    campoCuantos: campos.find(c => /cu[aá]nt/i.test(c))
+  };
+}
 
-  /* Estos dos el Apps Script los busca POR NOMBRE para contar y para
-     contestarle al invitado si ya está. Renombrarlos no rompe nada a
-     la vista: la planilla se llena igual y el resumen da cero. */
-  const campoNombre = campos.find(c => /nombre/i.test(c));
-  const campoSiNo   = campos.find(c => /confirma/i.test(c));
-  es(!!campoNombre && !!campoSiNo,
-     `el formulario manda ${campos.length} campos: ${campos.join(', ')}`);
-  es(!!plantillaInv, `y arma los acompañantes como "${plantillaInv}N"`);
-  es(!!plantillaCom, `y la comida de cada uno como "${plantillaCom}N"`);
+/* Y el recorrido entero, UNA sola vez escrito: la misma fiesta que
+   arma el invitado desde el teléfono, contra el .gs.txt de verdad.
+   `api` es el script que corresponde (el propio de la invitación o el
+   de la planilla central) y `ev` es la pestaña, cuando la hay. Dos
+   copias de esto es una que se queda atrás, y la que se queda atrás
+   mide la invitación del cliente que ya pagó. */
+function puntaAPunta(quien, api, c, ev) {
+  const con = x => (ev ? Object.assign({ evento: ev }, x) : x);
+  es(!!c.campoNombre && !!c.campoSiNo,
+     `${quien}: el formulario manda ${c.campos.length} campos: ${c.campos.join(', ')}`);
+  es(!!c.plantillaInv, `y arma los acompañantes como "${c.plantillaInv}N"`);
+  es(!!c.plantillaCom, `y la comida de cada uno como "${c.plantillaCom}N"`);
 
-  const a = cargar();
-  const clave = a.preparar();
+  const clave = api.preparar && !ev ? api.preparar() : null;
+  const leer = () => api.get(con(ev ? { clave: MAESTRA_PRUEBA } : { clave }));
+
   /* Uno que viene, con TODOS los campos que el formulario manda. */
   const viene = {};
-  for (const c of campos) viene[c] = 'algo';
-  viene[campoNombre] = 'Juan Pérez';
-  viene[campoSiNo] = 'Sí';
-  if (plantillaInv){ viene[plantillaInv + '2'] = 'Ana Pérez'; viene[plantillaInv + '3'] = 'Luz Pérez'; }
-  if (plantillaCom){ viene[plantillaCom + '2'] = 'Vegetariano'; viene[plantillaCom + '3'] = 'Celíaco'; }
+  for (const x of c.campos) viene[x] = 'algo';
+  viene[c.campoNombre] = 'Juan Pérez';
+  viene[c.campoSiNo] = 'Sí';
+  if (c.plantillaInv){ viene[c.plantillaInv + '2'] = 'Ana Pérez'; viene[c.plantillaInv + '3'] = 'Luz Pérez'; }
+  if (c.plantillaCom){ viene[c.plantillaCom + '2'] = 'Vegetariano'; viene[c.plantillaCom + '3'] = 'Celíaco'; }
   /* Tres personas en una sola respuesta: lo que el resumen tiene que
      contar como TRES y no como una. */
-  const campoCuantos = campos.find(c => /cu[aá]nt/i.test(c));
-  if (campoCuantos) viene[campoCuantos] = '3';
-  a.post(viene);
+  if (c.campoCuantos) viene[c.campoCuantos] = '3';
+  const r1 = api.post(con(viene));
+  es(r1.ok === true, `la confirmación ENTRA (contestó ${JSON.stringify(r1).slice(0, 60)})`);
   /* Y uno que NO viene: desde que el formulario deshabilita lo que
      no es suyo, de éste llegan SOLO el nombre y el sí/no. */
-  a.post({ [campoNombre]: 'Carla Gómez', [campoSiNo]: 'No' });
+  api.post(con({ [c.campoNombre]: 'Carla Gómez', [c.campoSiNo]: 'No' }));
 
-  const titulos = a.hoja.datos[0];
-  const faltan = campos.filter(c => !titulos.includes(c));
+  const hoja = ev ? api.hojas.find(h => h.getName() === ev) : api.hoja;
+  es(!!hoja, ev ? `y la fila cae en la pestaña "${ev}" y en ninguna otra`
+                : 'y la fila cae en la planilla');
+  const titulos = hoja ? hoja.datos[0] : [];
+  const faltan = c.campos.filter(x => !titulos.includes(x));
   es(faltan.length === 0, faltan.length
     ? `la planilla no creó la(s) columna(s): ${faltan.join(', ')}`
-    : `la planilla creó sola las ${campos.length} columnas del formulario`);
-  if (plantillaInv)
-    es(titulos.includes(plantillaInv + '2') && titulos.includes(plantillaInv + '3'),
-       `y las de los acompañantes ("${plantillaInv}2", "${plantillaInv}3")`);
+    : `la planilla creó sola las ${c.campos.length} columnas del formulario`);
+  if (c.plantillaInv)
+    es(titulos.includes(c.plantillaInv + '2') && titulos.includes(c.plantillaInv + '3'),
+       `y las de los acompañantes ("${c.plantillaInv}2", "${c.plantillaInv}3")`);
 
-  const d = a.get({ clave });
-  es(d.resumen.total === 2 && d.resumen.confirmados === 1 && d.resumen.no === 1,
-     `el resumen da 2 · 1 confirmado · 1 que no (dio ${d.resumen.total} · ${d.resumen.confirmados} · ${d.resumen.no})`);
-  es(d.columnas.confirma === campoSiNo,
-     `y cuenta por la columna "${campoSiNo}", no por "Cuándo"`);
-  const carla = d.invitados.find(i => i[campoNombre] === 'Carla Gómez');
-  if (campoCuantos)
-    es(carla && !String(carla[campoCuantos] || '').trim(),
-       `el que no viene NO deja un número en "${campoCuantos}": esa es la columna de las mesas`);
-  const juan = d.invitados.find(i => i[campoNombre] === 'Juan Pérez');
-  if (plantillaInv)
-    es(juan && juan[plantillaInv + '2'] === 'Ana Pérez' && juan[plantillaInv + '3'] === 'Luz Pérez',
+  const d = leer();
+  es(d.resumen && d.resumen.total === 2 && d.resumen.confirmados === 1 && d.resumen.no === 1,
+     d.resumen ? `el resumen da 2 · 1 confirmado · 1 que no (dio ${d.resumen.total} · ${d.resumen.confirmados} · ${d.resumen.no})`
+               : `el tablero no pudo leer la lista: ${JSON.stringify(d).slice(0, 80)}`);
+  if (!d.resumen) return;
+  es(d.columnas.confirma === c.campoSiNo,
+     `y cuenta por la columna "${c.campoSiNo}", no por "Cuándo"`);
+  const carla = d.invitados.find(i => i[c.campoNombre] === 'Carla Gómez');
+  if (c.campoCuantos)
+    es(carla && !String(carla[c.campoCuantos] || '').trim(),
+       `el que no viene NO deja un número en "${c.campoCuantos}": esa es la columna de las mesas`);
+  const juan = d.invitados.find(i => i[c.campoNombre] === 'Juan Pérez');
+  if (c.plantillaInv)
+    es(juan && juan[c.plantillaInv + '2'] === 'Ana Pérez' && juan[c.plantillaInv + '3'] === 'Luz Pérez',
        'y los acompañantes llegan con nombre y apellido, no como un número');
-  if (plantillaCom)
-    es(juan && juan[plantillaCom + '2'] === 'Vegetariano' && juan[plantillaCom + '3'] === 'Celíaco',
+  if (c.plantillaCom)
+    es(juan && juan[c.plantillaCom + '2'] === 'Vegetariano' && juan[c.plantillaCom + '3'] === 'Celíaco',
        'y cada uno con SU comida, no la del primero repetida');
 
   /* ── el número que mira el que arma las mesas ──
@@ -419,16 +438,20 @@ console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ─�
      una, el cliente encarga comida para menos gente de la que va: lo
      reportó el dueño con la planilla en la mano —"confirmaron dos
      personas y figura como 1"—. */
-  if (campoCuantos){
-    const r2 = a.get({ clave }).resumen;
-    es(r2.personas === 3,
-       `y el resumen dice cuánta GENTE viene, no cuántas respuestas (dio ${r2.personas} de 3)`);
-    es(r2.total === 2 && r2.confirmados === 1,
+  if (c.campoCuantos){
+    es(d.resumen.personas === 3,
+       `y el resumen dice cuánta GENTE viene, no cuántas respuestas (dio ${d.resumen.personas} de 3)`);
+    es(d.resumen.total === 2 && d.resumen.confirmados === 1,
        'sin perder las respuestas: 2 contestaron, 1 viene');
   }
-  es(a.get({ confirmado: '  juan pérez  ' }).ok === true,
+  es(api.get(con({ confirmado: '  juan pérez  ' })).ok === true,
      'y la puerta del invitado lo reconoce con espacios y en minúscula');
 }
+
+const MAESTRA_PRUEBA = 'maestra-de-prueba-1234';
+
+console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ───');
+puntaAPunta('mia15', cargar(), camposDe('mia15'));
 
 /* ════════════════════════════════════════════════════════════════
    LA PLANILLA CENTRAL · apps-script/planilla-central.gs.txt
@@ -791,6 +814,50 @@ console.log('\n─── la clave que elige el cliente ───');
      'con mayúsculas y espacios de más entra igual: la escribe un dedo');
   es(a.get({ evento: 'almi15', clave: SUYA + 'x' }).error === 'clave',
      'pero una letra de más no');
+}
+
+/* ── CADA INVITACIÓN DE LA PLANILLA CENTRAL, DE PUNTA A PUNTA ──
+   Hasta acá el recorrido completo se medía SÓLO con los campos de
+   mia15, que tiene su propio Apps Script. Las que van contra la
+   planilla central —hoy almi15, facuymaxi y ambar15— no se medían
+   nunca: si una renombrara un campo, o su carpeta no estuviera
+   habilitada, el invitado confirmaría, la pantalla diría "listo" y
+   la fila no existiría. Eso no tira ningún error y se descubre con
+   el salón lleno.
+   La lista NO se escribe acá: sale de lib/planillas.json, que es la
+   misma que lee el Apps Script. Escrita a mano, se queda corta sola
+   el día que entra una invitación nueva — que es justo el día en que
+   algo se puede haber quedado sin conectar. */
+{
+  const listaReal = JSON.parse(fs.readFileSync(
+    path.join(__dirname, '..', 'lib', 'planillas.json'), 'utf8')).eventos;
+  for (const ev of listaReal) {
+    const carpeta = path.join(__dirname, '..', ev, 'index.html');
+    if (!fs.existsSync(carpeta)) {
+      es(false, `${ev} está en lib/planillas.json y no tiene carpeta: su confirmación no entra`);
+      continue;
+    }
+    console.log(`\n─── de punta a punta: ${ev} contra la planilla central ───`);
+    /* De qué pestaña se declara la invitación, leído de SU html y no
+       dado por la carpeta: con `CONFIG.evento` vacío la confirmación
+       sale sin decir de qué fiesta es, la planilla contesta
+       `sin_evento` y el invitado ve un error que no es suyo. Dando por
+       hecho el nombre de la carpeta, esta prueba pasaría igual con la
+       invitación desconectada. */
+    const suyo = (fs.readFileSync(carpeta, 'utf8')
+                    .match(/evento *: *"([^"]*)"/) || [])[1];
+    es(suyo === ev, suyo === ev
+      ? `${ev} dice ser la pestaña "${suyo}"`
+      : `${ev} está en la lista pero su CONFIG.evento dice "${suyo || ''}": la confirmación no entra`);
+    const api = cargarCentral({ maestra: MAESTRA_PRUEBA, eventos: listaReal });
+    puntaAPunta(ev, api, camposDe(ev), suyo || ev);
+    /* Y la otra mitad de tener a todos adentro del mismo archivo: que
+       la fiesta de al lado no vea nada de ésta. */
+    const otra = listaReal.find(x => x !== ev);
+    if (otra)
+      es(api.get({ evento: otra, clave: MAESTRA_PRUEBA }).invitados.length === 0,
+         `y en "${otra}" no figura ni una de sus filas`);
+  }
 }
 
 console.log(fallas.length ? `\n${fallas.length} FALLAS` : '\n✓ Sin fallas');

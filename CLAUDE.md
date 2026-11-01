@@ -5574,6 +5574,56 @@ link no se haya repartido: la dirección es
 `clicketerno.com.ar/facuymaxi` y sale del alias que eligieron ellos. Un
 link repartido no se puede mover; uno que nadie tiene, sí.
 
+### Probar el listado de una fiesta antes de que lo use gente
+
+Pedido del dueño el 31/10/2026 para `ambar15`: *"necesito que armemos
+la lista así la probamos"*. Lo que descubrió esa vuelta es que el
+tablero de Ámbar **ya estaba armado y conectado** —su `CONFIG.evento`,
+su renglón en `lib/planillas.json` y su carpeta `ambar15/listado/`—,
+así que no había nada que armar. Lo que faltaba era **medirlo**.
+
+**El recorrido entero se medía SÓLO con los campos de mia15**, que es
+la única que tiene su propio Apps Script. Las tres que van contra la
+planilla central —`almi15`, `facuymaxi`, `ambar15`— no se recorrían
+nunca de punta a punta: si una renombrara un campo, o su
+`CONFIG.evento` quedara vacío, el invitado confirmaría, la pantalla
+diría **"listo"** y la fila no existiría. Eso no tira ningún error y se
+descubre con el salón lleno.
+
+Ahora `pruebas/rsvp.js` recorre **cada fiesta de `lib/planillas.json`**
+contra el `.gs.txt` de verdad: postea los campos que LEE de su HTML,
+comprueba que la planilla cree sola sus columnas, que la fila caiga en
+SU pestaña y en ninguna otra, que el resumen cuente gente y no
+respuestas, y que la puerta `?confirmado=` la reconozca.
+
+Tres cosas que no son un detalle:
+
+- **La lista no se escribe en la prueba**: sale de `lib/planillas.json`,
+  que es la misma que lee el Apps Script. Escrita a mano se queda corta
+  sola el día que entra una invitación nueva — que es justo el día en
+  que algo se puede haber quedado sin conectar.
+- **La pestaña se lee del `CONFIG.evento` de la invitación, no del
+  nombre de la carpeta.** Dándolo por hecho, la prueba pasaría igual
+  con la invitación desconectada: es la trampa de siempre —*una prueba
+  que pasa siempre no prueba nada*— y acá ya había mordido una vez.
+- **El recorrido está escrito UNA sola vez** (`puntaAPunta`) y lo usan
+  mia15 y las tres de la central. Dos copias de lo mismo es una que se
+  queda atrás, y la que se queda atrás mide la invitación del cliente
+  que ya pagó.
+
+Verificado rompiendo a propósito, sobre `ambar15`: vaciarle
+`CONFIG.evento` da **1 falla** y renombrarle el campo `Confirma` da
+**5**, entre ellas el síntoma que importa — *"2 · 0 confirmados"* con
+la planilla llena.
+
+**Lo que desde acá no se puede probar, y lo hace una persona**: el
+proxy no deja salir ni a `clicketerno.com.ar` ni a
+`script.google.com`, así que la vuelta de verdad —confirmar en
+`/ambar15` como un invitado y ver la fila en la pestaña `ambar15`— la
+da el dueño. Para entrar al tablero se usa la **maestra**, que además
+devuelve escrita la clave propia de esa fiesta y el enlace parado en
+su pestaña; la del cliente no hay que elegirla ni ir a buscarla.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
