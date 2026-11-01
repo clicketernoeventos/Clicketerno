@@ -1871,13 +1871,17 @@ const CONFIG = {
   titular: "",                   // HUECO · el nombre que muestra el banco al
                                  // pegar el alias. Un nombre inventado al lado
                                  // de un alias es peor que ninguno
-  /* La pestaña de ESTA fiesta en la planilla central de Click Eterno.
-     Tiene que estar además en lib/planillas.json, que es la lista que
-     mira el Apps Script: lo que no está en esa lista no entra. */
-  evento: "ambar15",
-  /* La dirección NO se escribe acá: es UNA sola para todas las
-     invitaciones y vive en lib/planilla.js. */
-  endpoint: ""
+  /* ÁMBAR TIENE SU PROPIA PLANILLA, no una pestaña de la central.
+     Decisión del dueño (01/11/2026): "nosotros nos vamos a seguir
+     manejando como siempre, un sheet para cada fiesta, siempre
+     separado". Así siguen Pía y Mia.
+     Vacío = no se usa la central, y entonces vale el `endpoint` de
+     abajo. Con las dos puestas mandaría a la central y la fila caería
+     en otro archivo. */
+  evento: "",
+  /* La dirección /exec de SU Apps Script. Acá sí se escribe, porque
+     es de esta fiesta y de ninguna otra. */
+  endpoint: "https://script.google.com/macros/s/AKfycbwcx23pkq3OcAzxvDv2R5cimbBJwUtMQ2alUrlzyazY74aMXpBDXE13LzWiGPFB26RIBA/exec"
 };
 /* Y se enciende SOLA cuando la fiesta ya tiene su pestaña. Con
    dirección y sin pestaña, la confirmación se manda, la planilla
@@ -3087,8 +3091,9 @@ let sonar = null;
      se guardó, y el invitado la manda de nuevo. */
   async function llego(nombre){
     try{
-      const r = await fetch(CONFIG.endpoint + '?evento=' + encodeURIComponent(CONFIG.evento) +
-                            '&confirmado=' + encodeURIComponent(nombre),
+      const r = await fetch(CONFIG.endpoint +
+                            (CONFIG.evento ? '?evento=' + encodeURIComponent(CONFIG.evento) + '&' : '?') +
+                            'confirmado=' + encodeURIComponent(nombre),
                             {cache:'no-store'});
       if (!r.ok) return false;
       const t = (await r.text()).trim();
@@ -3250,8 +3255,11 @@ let sonar = null;
     const fd = new FormData(form);
     /* A qué pestaña de la planilla central va. No es una respuesta de
        nadie: la planilla lo usa para elegir la hoja y no lo guarda como
-       columna. */
-    fd.set('evento', CONFIG.evento);
+       columna.
+       Con planilla PROPIA no va: el doPost de ahí crea una columna con
+       el nombre de cada campo que le llega, así que un `evento` vacío
+       dejaría una columna "evento" vacía en la planilla del cliente. */
+    if (CONFIG.evento) fd.set('evento', CONFIG.evento);
     $$('select', form).forEach(se => {
       if (se.name && se.value === 'Otro'){
         const otro = document.getElementById(se.id + 'Otro');
