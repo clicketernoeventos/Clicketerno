@@ -5526,17 +5526,14 @@ h"* se partía y dejaba un `h.` solo en el renglón de abajo. La tercera
 familia (Parisienne) es **solo** para la "y" y la frase manuscrita: no
 lleva un solo texto largo.
 
-**La canción no suena adentro de la invitación.** Mandaron *"Bellísimo
-así", de Laura Pausini*: el archivo no es nuestro y la CSP no deja
-incrustar un reproductor de terceros —en `ambar15/` el dueño después
-pidió lo contrario y está contado ahí; acá sigue valiendo porque ellos
-no pidieron que sonara— —que además sería un tercero
-corriendo código en la pantalla del invitado—. El reproductor de la
-referencia 1 **está dibujado** y el play LLEVA a escucharla, y el
-renglón de abajo lo dice: un play que no suena es la mentira de siempre.
-El enlace es una **búsqueda** y no la dirección de un tema: una
-dirección de tema se adivina, y mandar a la canción equivocada es peor
-que no mandar a ninguna.
+**La canción SUENA** desde el 01/11/2026 — está contado abajo, en
+*"Sin sobre, con las fotos, con la canción sonando y con SU paleta"*.
+Hasta ese día el reproductor era un dibujo y el play LLEVABA a
+escucharla, porque *el archivo no es nuestro*; el dueño pidió lo
+contrario y es la misma excepción que `ambar15/`. Lo que no se afloja
+es la mitad técnica: ningún reproductor de un tercero, que la CSP no
+lo deja y además sería un tercero corriendo código en la pantalla del
+invitado.
 
 **El cronograma solo tiene lo que mandaron**: la ceremonia a las 21 y el
 final a las 4. Una hora inventada manda a la gente a la hora
@@ -5678,6 +5675,86 @@ respuesta inventada ahí hace venir a una familia entera a una fiesta
 donde no la esperan. Son cinco y las cinco salen de lo que mandaron
 —la hora, el lugar, el dress code, "durante marzo de 2027" y el
 alias—. Entran solas agregando un renglón el día que manden más.
+
+#### Sin sobre, con las fotos, con la canción sonando y con SU paleta
+
+Cuatro pedidos del dueño el 01/11/2026, con las fotos y el audio.
+
+**1 · "No quiero que tenga sobre. Que arranque directo en la portada.
+Va a quedar más prolijo."** Se fue entero: la capa, su CSS y su JS, y
+la cascada de la portada —que esperaba a que el sobre se abriera—
+arranca ahora al cargar, en el cuadro SIGUIENTE y no en éste (puesta
+en el mismo, el navegador junta los dos estados y no hay transición
+que ver, sin un solo error que lo diga).
+De paso se fue sola la falla de abajo: **acá ya no hay capa fija que
+pueda tapar nada si el script no corre.**
+
+**2 · Las cinco fotos.** La del jardín al atardecer es la portada —la
+que eligieron ellos— y las otras cuatro son el mosaico. **Van en
+COLOR**, al revés que `mia15`, `almi15` y `ambar15`: ahí la paleta era
+de tres colores y una foto a color metía los suyos; acá la paleta que
+mandaron es cálida y natural, y el atardecer y las guirnaldas SON el
+champagne y el dorado de su lista. Además eligieron esa foto por eso
+mismo —*"el jardín al atardecer, con las luces de fondo"*—: en blanco
+y negro se borra justo lo que la hizo elegir. Se montaron las dos y se
+eligió mirando.
+
+**Los recortes son la mitad del trabajo.** La de la portada se recortó
+a 1,1:1 alrededor de las caras: entera es vertical de cuerpo entero y
+en la banda de la portada se habría visto una tira de torsos. Y **la
+ancha del mosaico pasó de 2,1:1 a 1,55:1**, porque las cuatro son
+selfies verticales y en una banda tan angosta no entra una cara
+entera: *el ancho de la ranura se elige por lo que hay que mostrar, no
+al revés*.
+
+**3 · La canción SUENA.** Más arriba está escrito que acá no sonaba
+porque *"el archivo no es nuestro"*; el dueño pidió lo contrario, igual
+que en `ambar15`, y es la misma excepción: se le dijo y la sostuvo. La
+mitad técnica no se afloja —ningún reproductor de un tercero: la CSP
+no lo deja y además sería un tercero corriendo código en la pantalla
+del invitado—. El audio sale del video que mandó, normalizado, en AAC
+y en Opus: el navegador baja UNO.
+
+**`preload="metadata"`, y no es un detalle**: son 2,3 MB que no se
+bajan hasta que alguien toca el corazón. Y el reproductor **trae
+escrito cuánto dura**, porque un Ogg todavía sin bajar entero devuelve
+`Infinity` de duración y ahí la cuenta del avance da 0 para siempre —
+la rayita se queda clavada a la izquierda toda la canción, sin un solo
+error que lo diga.
+**Y el reproductor es UNO**: la tarjeta de "nuestra canción" perdió su
+botón y dice dónde suena. Dos botones para escuchar la misma canción no
+son dos entradas, son dos cosas haciendo lo mismo.
+
+**4 · "Necesito que juegues con estos colores. Los bordes, las letras,
+todo. No improvises."** Ninguna raya de la invitación es un gris
+inventado: hay **una variable de borde por cada fondo**
+(`--borde-papel`, `--borde-tinta`, `--borde-verde`), sacadas del
+dorado, del champagne y de la salvia que mandaron ellos, y las usan el
+hilo que cose las secciones, el filete de la banda de la portada, el
+contorno de cada foto del mosaico, las dos tarjetas, las preguntas, el
+marco del calendario, la barra del horario, las fichas de la cuenta
+regresiva, la caja del alias y los botones.
+**El hilo dejó de ir en `currentColor`**, que ahí era el color del
+texto, o sea un gris: va en el dorado sobre el papel, en el champagne
+sobre la tinta y en la salvia honda sobre el verde.
+
+##### Dos cosas que la suite medía con el selector de OTRA invitación
+
+Las dos daban verde o una falla falsa, y las dos son la misma lección
+—*una comprobación escrita para una invitación mide a esa invitación*—:
+
+- **La foto que se tira tenía que ser una de la GALERÍA.** La prueba
+  404ea la PRIMERA imagen de `fotos/` que pide el navegador, y acá esa
+  es la de la PORTADA: la galería quedaba entera y la cuenta informaba
+  *"quedaron 4 de las 3"*. Parecía que la foto caída no se iba, cuando
+  lo que no se había caído era una foto de la galería. Ahora saltea la
+  portada, que tiene su propio bloque.
+- **El reproductor se buscaba por `.repro audio`**, que es la clase de
+  `ambar15`. Acá es `.player`, así que la suite informaba *"esta
+  invitación no trae canción"* con la canción puesta y las tres
+  comprobaciones del bucle y el rebobinado **no se corrían**. Se busca
+  el `<audio>`, que es lo único que toda invitación con canción tiene
+  sí o sí.
 
 #### Y midiendo eso apareció otra, en CINCO invitaciones a la vez
 
@@ -6343,10 +6420,11 @@ dejaría peor parados.
   esté, su listado abre con la clave que inventó la planilla (se lee
   entrando con la maestra) y no con el correo. En el repositorio ese
   valor **no va nunca**, y ahora hay una prueba que lo cuida.
-- **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos**: las
-  **cinco fotos** (la de portada es la del jardín al atardecer, que es
-  la que eligieron; falta además la de las mascotas), **los horarios
-  del resto de la noche** para el cronograma, **hasta cuándo se puede
+- **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos.** Las
+  fotos YA LLEGARON (01/11/2026): la del jardín al atardecer es la
+  portada y las otras cuatro son el mosaico; **falta la de las
+  mascotas**, que todavía no se sacaron. Quedan **los horarios del
+  resto de la noche** para el cronograma, **hasta cuándo se puede
   confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
   cuenta** del alias `FACUYMAXI.BODA` y **a quién le escriben los
   invitados el día de la fiesta**, que no podemos ser nosotros.

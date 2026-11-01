@@ -39,8 +39,10 @@
    4 · El calendario → el día marcado con un CORAZÓN.
    5 · Confirmación y contactos → la CUENTA REGRESIVA EN FICHAS y la
        sección de CONTACTO con WhatsApp.
-   6 · Mark & Esenia → EL SOBRE de entrada con su sello de lacre y
-       "tocá el sobre para abrirlo".
+   6 · Mark & Esenia → el sobre de entrada. SACADO el 01/11/2026 por
+       decisión del dueño: *"no quiero que tenga sobre, que arranque
+       directo en la portada, va a quedar más prolijo"*. La
+       invitación entra en la portada.
 
    Y LAS TRES QUE MANDÓ DESPUÉS, que son las que mandan hoy:
    7 · Иван & Вероника → LA PORTADA: el reproductor arriba de todo,
@@ -56,8 +58,7 @@
    Y LO QUE SE SOSTIENE DE LA VUELTA ANTERIOR, porque es de esta
    pareja y no de una referencia:
    · los dos nombres ENTRAN DESDE LOS COSTADOS y se encuentran en el
-     medio —ahora al abrirse el sobre, que es cuando hay alguien
-     mirando—;
+     medio, al cargar;
    · TODO VA DE A DOS Y DEL MISMO TAMAÑO: las dos iniciales del
      monograma, los dos nombres, las dos tarjetas de los detalles.
      En una invitación hétero hay un orden heredado (la novia
@@ -81,7 +82,14 @@
   --salvia-honda:#5E6B52;  /* 5,04:1 sobre marfil */
   --tinta-hondo:#26292B;
   --marfil-vivo:#FCFAF5;
-  --gris:#5B5F61;          /* 5,74:1 sobre marfil */
+  --gris:#5B5F61;          /* 5,74:1 sobre marfil · es el antracita aclarado */
+  /* LOS BORDES. Ninguna raya de la invitación es un gris inventado:
+     todas salen del champagne y del dorado que mandaron ellos, y hay
+     una por cada fondo. Escritas acá una sola vez, el día que se
+     corrija un tono no queda la mitad de la pieza con el anterior. */
+  --borde-papel:rgba(142,115,66,.34);   /* dorado hondo sobre marfil */
+  --borde-tinta:rgba(217,197,164,.36);  /* champagne sobre antracita */
+  --borde-verde:rgba(94,107,82,.42);    /* salvia honda sobre salvia */
   /* LAS DOS FAMILIAS, UNA SOLA VEZ: son las que mira
      `pruebas/letras.js` para montar la misma portada con cada
      candidata. Una tipografía se elige MIRÁNDOLA.
@@ -109,124 +117,15 @@ a{color:inherit}
 svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
 
 /* ══════════════════════════════════════════════════════════════════
-   1 · EL SOBRE (referencia 6)
-   "Tocá el sobre para abrirlo". El sello se parte, la solapa gira
-   sobre su bisagra y la carta sale de adentro y se abre sobre la
-   pantalla hasta cruzarse con la portada.
-   CUATRO PLIEGUES Y NO DOS: un sobre dibujado con el cuerpo y un
-   triángulo deja ver el papel de adentro por las dos cuñas de
-   arriba. Un sobre de verdad tiene el pliegue grande, dos laterales
-   y el de abajo, y así no queda un solo punto por donde se vea lo de
-   adentro.
+   NO HAY SOBRE, Y ES UNA DECISIÓN DEL DUEÑO (01/11/2026):
+   *"no quiero que tenga sobre, que arranque directo en la portada,
+   va a quedar más prolijo"*. La invitación entra en la portada.
+
+   De paso se fue sola la falla que acababa de aparecer en las otras
+   cuatro: una capa fija que tapa todo y que sólo abre el JS es un
+   invitado mirando un sobre cerrado si el script no corre. Acá ya no
+   hay capa que pueda tapar nada.
    ══════════════════════════════════════════════════════════════════ */
-#sobre{position:fixed;inset:0;z-index:40;display:grid;place-items:center;
-  padding:var(--gutter);text-align:center;perspective:1400px}
-/* SIN JAVASCRIPT EL SOBRE NO EXISTE.
-   `#sobre` es una capa fija que tapa la invitación entera, y su
-   botón lo abre el JS: si el script no corre —o revienta en la
-   primera línea— el invitado se queda mirando un sobre cerrado y un
-   botón que no hace nada, para siempre y sin un solo error a la
-   vista. El `.js` lo pone un script de una línea en el `<head>`, así
-   que esto no parpadea: el sobre no se dibuja hasta que se sabe que
-   hay JS. */
-html:not(.js) #sobre{display:none}
-/* El fondo vive en su PROPIA capa y no en `#sobre`: fundiendo
-   `#sobre` se funde también la carta, que es su hija, y entonces no
-   hay cruce sino dos cosas apagándose juntas. */
-#sobre:before{content:'';position:absolute;inset:0;background-color:var(--marfil);
-  transition:opacity .75s var(--e)}
-#sobre.abierto:before{opacity:0}
-#sobre>*{position:relative}
-.sobre-ante{font-size:10.5px;letter-spacing:.42em;text-transform:uppercase;
-  color:var(--oro-hondo);font-weight:500}
-.sobre-ante b{display:block;margin-top:8px;font-family:var(--titulos);
-  font-style:italic;font-weight:300;font-size:17px;letter-spacing:0;
-  text-transform:none;color:var(--gris)}
-.sobre-nom{font-family:var(--titulos);font-weight:300;letter-spacing:-.01em;
-  font-size:clamp(25px,7.2vw,38px);line-height:1.12;margin:18px 0 20px}
-.sobre-nom i{font-style:italic;color:var(--oro-hondo);padding:0 .12em}
-/* LOS DOS RENGLONES SE VAN CON EL SOBRE. No tenían fundido, así que
-   mientras el papel se deshacía y la portada se encendía se quedaban
-   OPACOS encima de ella y recién desaparecían cuando el sobre entero
-   se sacaba de un saque: un cruce que termina en un corte. Es la
-   misma falla que apareció en ambar15 con el logo, y la agarró la
-   misma medición. Lo que entra con el sobre se va con el sobre. */
-.sobre-ante,.sobre-nom,#abrir,.sobre-pie{transition:opacity .5s var(--e) .5s}
-#sobre.abierto .sobre-ante,#sobre.abierto .sobre-nom,
-#sobre.abierto #abrir,#sobre.abierto .sobre-pie{opacity:0;pointer-events:none}
-/* el paquete: el sobre adelante y la carta DETRÁS.
-   La carta no vive adentro del sobre sino atrás, y esto no es un
-   atajo: adentro, cualquier parte suya que los cuatro pliegues no
-   tapen se VE —ya pasó, dos cuñas de papel crema asomando arriba— y
-   encima hay que acertarle al apilado. Atrás de un frente opaco no
-   hay nada que tapar. */
-.paquete{position:relative;width:min(330px,82vw);margin:0 auto}
-.sb{position:relative;z-index:2;width:100%;aspect-ratio:1.5;border-radius:4px;
-  background-color:var(--antracita);box-shadow:0 26px 50px -30px rgba(38,41,43,.7);
-  transition:opacity .5s var(--e) .5s}
-#sobre.abierto .sb{opacity:0}
-.sb i{position:absolute;display:block}
-/* los cuatro pliegues */
-.sb .izq{left:0;top:0;bottom:0;width:52%;
-  background:linear-gradient(100deg,#3A3D3F 0 50%,#303335 50% 100%);
-  clip-path:polygon(0 0,100% 50%,0 100%)}
-.sb .der{right:0;top:0;bottom:0;width:52%;
-  background:linear-gradient(260deg,#3A3D3F 0 50%,#303335 50% 100%);
-  clip-path:polygon(100% 0,0 50%,100% 100%)}
-.sb .abajo{left:0;right:0;bottom:0;height:62%;background-color:#2C2F31;
-  clip-path:polygon(0 100%,50% 0,100% 100%)}
-.sb .solapa{left:0;right:0;top:0;height:62%;background-color:#3C3F41;
-  clip-path:polygon(0 0,100% 0,50% 100%);
-  transform-origin:top center;backface-visibility:hidden;
-  transition:transform .85s var(--e);z-index:3}
-#sobre.abierto .sb .solapa{transform:rotateX(-168deg)}
-/* el sello de lacre, con las dos iniciales */
-.sello{position:absolute;left:50%;top:52%;width:76px;height:76px;margin:-38px 0 0 -38px;
-  z-index:4;display:grid;place-items:center;border-radius:50%;
-  background:radial-gradient(circle at 38% 32%,#E7D5B4,var(--champan) 58%,#C0A87F);
-  color:#5B4521;font-family:var(--titulos);font-size:17px;letter-spacing:.06em;
-  box-shadow:0 8px 16px -8px rgba(38,41,43,.7);
-  transition:opacity .4s var(--e)}
-#sobre.abierto .sello{opacity:0}
-/* las dos mitades que se separan viven en una capa APARTE y no en el
-   botón: moviendo la caja que se toca, el navegador la da por
-   inestable y una prueba se cuelga treinta segundos contra un botón
-   que está perfecto. */
-.quiebre{position:absolute;left:50%;top:52%;width:76px;height:76px;margin:-38px 0 0 -38px;
-  z-index:5;pointer-events:none;opacity:0}
-#sobre.abierto .quiebre{opacity:1}
-.quiebre i{position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 38% 32%,#E7D5B4,var(--champan) 58%,#C0A87F)}
-.quiebre i:first-child{clip-path:polygon(0 0,52% 0,44% 100%,0 100%)}
-.quiebre i:last-child{clip-path:polygon(52% 0,100% 0,100% 100%,44% 100%)}
-#sobre.abierto .quiebre i:first-child{transform:translate(-26px,16px) rotate(-16deg);
-  opacity:0;transition:transform .9s var(--e),opacity .9s var(--e)}
-#sobre.abierto .quiebre i:last-child{transform:translate(26px,18px) rotate(14deg);
-  opacity:0;transition:transform .9s var(--e),opacity .9s var(--e)}
-/* la carta: sale de atrás del frente y se abre sobre la pantalla.
-   `z-index` no se interpola, pero una transición de 0s con retardo
-   hace el salto en el momento justo: antes de los 0,45 s la carta
-   está detrás del sobre —o sea tapada— y después pasa adelante,
-   cuando el sobre ya se está yendo. */
-.carta{position:absolute;left:10%;right:10%;top:14%;z-index:0;
-  background-color:var(--marfil-vivo);border-radius:3px;
-  padding:24px 16px;color:var(--antracita);
-  box-shadow:0 16px 36px -26px rgba(38,41,43,.65);
-  transform-origin:center 78%;
-  transition:z-index 0s linear .45s}
-.carta p{font-family:var(--titulos);font-style:italic;font-weight:300;
-  font-size:clamp(18px,5vw,23px);line-height:1.35}
-.carta .hilito{width:44px;height:1px;background-color:var(--oro-hondo);
-  margin:12px auto 0;opacity:.8}
-#sobre.abierto .carta{z-index:6;opacity:0;
-  transition:transform 1.25s var(--e),opacity .95s var(--e) .3s,z-index 0s linear .45s}
-#abrir{display:inline-flex;align-items:center;justify-content:center;
-  min-height:52px;min-width:200px;margin-top:26px;padding:15px 26px;border-radius:999px;
-  background-color:var(--antracita);color:var(--marfil);
-  font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;
-  transition:transform .3s var(--e)}
-#abrir:active{transform:scale(.975)}
-.sobre-pie{margin-top:14px;font-size:12px;color:var(--gris)}
 
 /* ══════════ las tres pieles ══════════
    Marfil (el papel), salvia (el respiro) y tinta (el foco). Cada una
@@ -238,13 +137,17 @@ html:not(.js) #sobre{display:none}
 .tinta{background-color:var(--antracita);color:var(--marfil)}
 
 /* ── el hilo que cose la pieza ── */
+/* El hilo y su rombo NO van en `currentColor`: ahí serían el color
+   del texto, o sea un gris. Van en el dorado sobre el papel y en el
+   champagne sobre la tinta, que son dos de los cinco que mandaron. */
 .seccion:before{content:'';position:absolute;left:50%;top:0;margin-left:-.5px;
-  width:1px;height:clamp(36px,6vh,56px);background-color:currentColor;opacity:.32;
+  width:1px;height:clamp(36px,6vh,56px);background-color:var(--oro-hondo);
   transform-origin:top center}
 .seccion:after{content:'';position:absolute;left:50%;top:clamp(36px,6vh,56px);
   width:5px;height:5px;margin:-3px 0 0 -3px;transform:rotate(45deg);
-  background-color:currentColor;opacity:.5}
-.verde:before,.verde:after{opacity:.55}
+  background-color:var(--oro-hondo)}
+.tinta:before,.tinta:after{background-color:var(--champan)}
+.verde:before,.verde:after{background-color:var(--salvia-honda)}
 .sin-hilo:before,.sin-hilo:after{display:none}
 
 /* ══════════ piezas compartidas ══════════ */
@@ -305,27 +208,29 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #portada>*{position:relative;z-index:1}
 
 /* ── 2a · el reproductor, arriba de todo ──
-   Es un DIBUJO y el corazón LLEVA a escucharla: el archivo no es
-   nuestro y la CSP no deja incrustar un reproductor de terceros
-   —que además sería un tercero corriendo código en la pantalla del
-   invitado—. Los dos mandos de los costados se dibujan igual que en
-   la referencia, pero con UNA sola canción no pueden hacer nada, así
-   que van declarados decoración (`aria-hidden` + `pointer-events:
-   none`): se ve igual que la captura y no queda nada que se toque y
-   no responda. Es la misma salida que ya se usó en `ambar15/`. */
+   SUENA. El corazón es el play y la línea es el avance. Los dos
+   mandos de los costados vuelven al principio del tema, que es lo que
+   hacen en cualquier reproductor con una sola canción: no son
+   adorno. El audio sale del video que mandó el dueño; no hay ningún
+   reproductor de un tercero, que la CSP no deja y además sería un
+   tercero corriendo código en la pantalla del invitado. */
 .port-player{padding:clamp(16px,3vh,26px) var(--gutter) clamp(13px,2.4vh,20px)}
 .port-player .rot{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.34em;
   text-transform:uppercase;color:var(--oro-hondo);font-weight:500}
 .player{width:100%;max-width:320px;margin:14px auto 0}
-.player .barra{position:relative;height:1px;background-color:rgba(142,115,66,.35)}
-.player .barra i{position:absolute;left:0;top:-1px;height:3px;width:26%;
-  background-color:var(--oro-hondo)}
-.player .barra b{position:absolute;left:26%;top:50%;width:0;height:0;
+.player .barra{position:relative;height:1px;background-color:var(--borde-papel)}
+.player .barra i{position:absolute;left:0;top:-1px;height:3px;width:0;
+  background-color:var(--oro-hondo);transition:width .25s linear}
+.player .barra b{position:absolute;left:0;top:50%;width:0;height:0;
   margin:-4px 0 0 -3px;border:4px solid transparent;
-  border-left:6px solid var(--oro-hondo)}
+  border-left:6px solid var(--oro-hondo);transition:left .25s linear}
 .player .mandos{display:flex;align-items:center;justify-content:center;
   gap:clamp(18px,6vw,30px);margin-top:14px;color:var(--oro-hondo)}
-.player .mandos svg{width:17px;height:17px;fill:currentColor;opacity:.6}
+.player .mandos svg{width:17px;height:17px;fill:currentColor;opacity:.75}
+.player .salto{display:inline-flex;align-items:center;justify-content:center;
+  width:46px;height:46px;border-radius:50%;color:var(--oro-hondo);flex:none;
+  transition:transform .3s var(--e)}
+.player .salto:active{transform:scale(.94)}
 .player .play{display:inline-flex;align-items:center;justify-content:center;
   width:56px;height:56px;border-radius:50%;background-color:var(--antracita);
   color:var(--marfil);text-decoration:none;flex:none;
@@ -346,8 +251,11 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    primero—; acá cualquier jerarquía sería una declaración, así que
    no hay ninguna. Es la regla que ya está escrita para
    `mateoylucas/`. */
-.port-banda{background-color:var(--antracita);color:var(--marfil);
+.port-banda{position:relative;background-color:var(--antracita);color:var(--marfil);
   padding:clamp(26px,4.4vh,42px) var(--gutter) clamp(20px,3.4vh,32px)}
+/* el filete de champagne que separa la foto de la banda */
+.port-banda:before{content:'';position:absolute;left:var(--gutter);right:var(--gutter);
+  top:0;height:1px;background-color:var(--borde-tinta)}
 .monograma{display:flex;align-items:stretch;justify-content:center;
   gap:clamp(14px,4.4vw,24px);font-family:var(--titulos);font-weight:300;
   font-size:clamp(44px,14vw,82px);line-height:1}
@@ -380,7 +288,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   max-width:430px;margin:clamp(26px,5vh,40px) auto 0}
 .reloj div{display:flex;flex-direction:column;align-items:center}
 .reloj b{position:relative;display:block;width:100%;padding:13px 2px 14px;
-  border:1px solid rgba(142,115,66,.4);border-radius:5px;
+  border:1px solid var(--borde-papel);border-radius:5px;
   background-color:rgba(217,197,164,.22);
   font-family:var(--titulos);font-weight:300;
   font-size:clamp(25px,7.4vw,38px);line-height:1;letter-spacing:-.01em;
@@ -409,7 +317,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   padding:clamp(30px,7vw,40px) clamp(18px,5vw,26px) clamp(22px,5vw,28px);
   box-shadow:0 22px 46px -30px rgba(38,41,43,.7)}
 #calendario .marco{position:absolute;inset:clamp(9px,2.4vw,13px);
-  border:1px solid rgba(217,197,164,.42);pointer-events:none}
+  border:1px solid var(--borde-tinta);pointer-events:none}
 #calendario .esq{position:absolute;width:clamp(24px,6.6vw,32px);color:var(--champan);
   pointer-events:none;line-height:0}
 #calendario .esq svg{width:100%;height:auto}
@@ -432,7 +340,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 /* ── la barra del horario de inicio (el "START 14:30" de la captura) ── */
 #calendario .inicio{display:flex;align-items:center;justify-content:space-between;
   gap:12px;margin-top:clamp(16px,4vw,22px);padding:13px 16px;border-radius:3px;
-  border:1px solid rgba(217,197,164,.32);background-color:rgba(217,197,164,.14)}
+  border:1px solid var(--borde-tinta);background-color:rgba(217,197,164,.14)}
 #calendario .inicio span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--champan)}
 #calendario .inicio b{font-family:var(--titulos);font-weight:300;
@@ -495,14 +403,21 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vw,14px);
   margin-top:clamp(28px,5vh,42px)}
 #fotos .toque{display:block;width:100%;padding:0;overflow:hidden;border-radius:2px;
-  background-color:#2B2E30;line-height:0}
+  background-color:#2B2E30;line-height:0;position:relative}
+/* El filete va ENCIMA de la foto y no como `border`: un borde
+   agranda la caja y rompe la cuenta de las filas del mosaico. */
+#fotos .toque:after{content:'';position:absolute;inset:0;border-radius:2px;
+  box-shadow:inset 0 0 0 1px var(--borde-tinta);pointer-events:none}
 #fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:1/1;
   transform:scale(1.06);transition:transform 1.4s var(--e)}
 #fotos .entro img{transform:none}
 #fotos .alta{grid-column:1;grid-row:1/span 2}
 #fotos .alta img{height:100%;aspect-ratio:auto}
 #fotos .ancha{grid-column:1/-1}
-#fotos .ancha img{aspect-ratio:2.1/1}
+/* 1,55 y no 2,1: son todas selfies verticales y en una banda tan
+   angosta no entra una cara entera. El ancho de la ranura se elige
+   por lo que hay que mostrar, no al revés. */
+#fotos .ancha img{aspect-ratio:1.55/1}
 @media (hover:hover){ #fotos .toque:hover img{transform:scale(1.04)} }
 #fotos .toque:active{opacity:.86}
 
@@ -512,9 +427,11 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #visor{position:fixed;inset:0;z-index:60;background-color:rgba(26,28,29,.97);
   display:none;place-items:center;padding:clamp(54px,9vw,70px) clamp(12px,4vw,30px)}
 #visor.abierto{display:grid}
-#visor img{max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px}
+#visor img{max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px;
+  box-shadow:0 0 0 1px var(--borde-tinta)}
 #visor button{position:absolute;display:grid;place-items:center;width:52px;height:52px;
-  border-radius:50%;color:var(--marfil);background-color:rgba(246,241,232,.12)}
+  border-radius:50%;color:var(--marfil);background-color:rgba(246,241,232,.1);
+  border:1px solid var(--borde-tinta)}
 #visor button:active{transform:scale(.94)}
 #visor .cerrar{top:clamp(8px,2.4vw,16px);right:clamp(8px,2.4vw,16px);font-size:21px;
   line-height:1}
@@ -534,8 +451,13 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    que no mandaron se pregunta, no se completa.
    ══════════════════════════════════════════════════════════════════ */
 .faq{margin:clamp(28px,5vh,40px) auto 0;max-width:520px;text-align:left}
-.faq details{border-top:1px solid rgba(51,54,56,.25)}
-.faq details:last-of-type{border-bottom:1px solid rgba(51,54,56,.25)}
+.faq details{border-top:1px solid var(--borde-verde)}
+.faq details:last-of-type{border-bottom:1px solid var(--borde-verde)}
+.papel .faq details,.papel .faq details:last-of-type{border-color:var(--borde-papel)}
+.tinta .faq details,.tinta .faq details:last-of-type{border-color:var(--borde-tinta)}
+.faq summary i{color:var(--salvia-honda)}
+.papel .faq summary i{color:var(--oro-hondo)}
+.tinta .faq summary i{color:var(--champan)}
 .faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;
   justify-content:space-between;gap:16px;min-height:56px;padding:13px 2px;
   font-family:var(--titulos);font-weight:400;font-size:clamp(16px,4.2vw,19px);
@@ -555,7 +477,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    ══════════════════════════════════════════════════════════════════ */
 .mapa{display:inline-flex;align-items:center;justify-content:center;gap:9px;
   min-height:48px;margin-top:22px;padding:14px 26px;border-radius:999px;
-  border:1px solid rgba(94,107,82,.5);color:var(--salvia-honda);
+  border:1px solid var(--borde-verde);color:var(--salvia-honda);
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
   text-decoration:none;transition:transform .3s var(--e),background-color .3s}
 .mapa svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.4}
@@ -568,6 +490,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .dos{display:grid;gap:clamp(14px,3vw,20px);margin-top:clamp(26px,5vh,38px)}
 @media (min-width:620px){ .dos{grid-template-columns:1fr 1fr;align-items:stretch} }
 .ficha{background-color:var(--marfil);color:var(--antracita);border-radius:6px;
+  border:1px solid var(--borde-papel);
   padding:clamp(26px,6vw,34px) clamp(20px,5vw,26px);text-align:center;
   box-shadow:0 18px 40px -30px rgba(38,41,43,.5);
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
@@ -596,7 +519,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    ══════════════════════════════════════════════════════════════════ */
 .corazon{width:1em;height:1em;vertical-align:-.12em;fill:var(--oro-hondo)}
 .alias-caja{margin-top:clamp(24px,4.6vh,34px);padding:24px 20px;border-radius:6px;
-  border:1px solid rgba(142,115,66,.42);background-color:rgba(217,197,164,.2)}
+  border:1px solid var(--borde-papel);background-color:rgba(217,197,164,.2)}
 .rotulo-alias{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
   color:var(--oro-hondo);font-weight:500}
 #alias{display:block;margin-top:10px;font-family:var(--texto-f);font-weight:600;
@@ -613,9 +536,10 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .btn[hidden]{display:none}
 .btn:active{transform:scale(.975)}
 @media (hover:hover){ .btn:hover{filter:brightness(1.04)} }
-.btn.hueco{background-color:transparent;border:1px solid rgba(142,115,66,.5);
+.btn.hueco{background-color:transparent;border:1px solid var(--borde-papel);
   color:var(--oro-hondo)}
-.tinta .btn.hueco{border-color:rgba(217,197,164,.5);color:var(--champan)}
+.tinta .btn.hueco{border-color:var(--borde-tinta);color:var(--champan)}
+.verde .btn.hueco{border-color:var(--borde-verde);color:#2F3A28}
 
 /* ══════════════════════════════════════════════════════════════════
    10 · LA CONFIRMACIÓN
@@ -735,11 +659,6 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .js .abierta .fecha-num{opacity:1;transition:opacity .9s var(--e) 1.2s}
 .js .abierta .ramita{opacity:1;transition:opacity .9s var(--e) 1.35s}
 .js .abierta .port-baja{opacity:1;transition:opacity .9s var(--e) 1.75s}
-/* la portada se ASIENTA mientras la carta se va: las dos cosas pasan
-   a la vez y por eso no se nota el empalme. */
-.js #portada.cruzando{opacity:.45;transform:scale(1.035)}
-.js #portada.abierta{opacity:1;transform:none;
-  transition:opacity 1.1s var(--e),transform 1.1s var(--e)}
 .port-baja svg{animation:rebote 2.6s ease-in-out infinite}
 @keyframes rebote{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
@@ -754,10 +673,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .js .nombres .n1,.js .nombres .n2,.js .nombres .ye,.js .monograma,
   .js .port-player,.js .port-foto,.js .fecha-num,.js .ramita,
   .js .port-baja{opacity:1;transform:none}
-  .js #portada.cruzando{opacity:1;transform:none}
   .js #calendario td.elDia svg{transform:none}
-  #sobre.abierto{opacity:0;visibility:hidden;transition:opacity .25s linear}
-  #sobre.abierto .carta{transform:none}
   #fotos img{transform:none}
 }
 
@@ -767,38 +683,8 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .firma a,.aviso-datos a{padding-left:12px;padding-right:12px}
 }
 </style>
-<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
-
-<!-- ══════════ 1 · el sobre (referencia 6) ══════════
-     Lo dibuja el HTML y no el JS, así que el que llega lo ve aunque
-     el script tarde. Sin JS no existe: el CSS lo esconde recién con
-     la clase `.js`, que pone el propio script — si no, la invitación
-     quedaría tapada para siempre por una capa que nadie puede abrir,
-     y eso no tira ningún error. -->
-<div id="sobre" hidden>
-  <div>
-    <p class="sobre-ante">Invitación<b>a nuestro casamiento</b></p>
-    <p class="sobre-nom">Facundo<i>y</i>Maximiliano</p>
-
-    <div class="paquete">
-      <div class="carta">
-        <p>Te invitamos<br>a casarnos</p>
-        <span class="hilito"></span>
-      </div>
-      <div class="sb">
-        <i class="abajo"></i><i class="izq"></i><i class="der"></i>
-        <i class="solapa"></i>
-        <div class="sello" aria-hidden="true">F&nbsp;·&nbsp;M</div>
-        <div class="quiebre" aria-hidden="true"><i></i><i></i></div>
-      </div>
-    </div>
-
-    <button id="abrir" type="button">Abrir el sobre</button>
-    <p class="sobre-pie">Tocá el sobre para abrirlo</p>
-  </div>
-</div>
 
 <!-- ══════════ 2 · la portada (referencia nueva) ══════════
      Arriba el reproductor, en el medio la foto y abajo la banda de
@@ -931,10 +817,10 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
           <p class="ante">Nuestra canción</p>
           <h3 id="cancionNom"></h3>
           <p class="cancion-aut" id="cancionAut"></p>
-          <!-- El dibujo del reproductor vive en la portada; acá va el
-               mismo enlace como botón. Dos entradas a un enlace es
-               normal; dos dibujos de lo mismo no. -->
-          <a class="btn hueco" id="escuchar" href="#" target="_blank" rel="noopener">Escuchar</a>
+          <!-- El reproductor vive arriba, en la portada, y es el único:
+               dos botones para escuchar la misma canción no son dos
+               entradas, son dos cosas que hacen lo mismo. -->
+          <p class="chico">Suena arriba, en la portada.</p>
         </div>
       </div>
     </div>
@@ -1131,12 +1017,21 @@ const CONFIG = {
   dress: { titulo: "Elegante sport", detalle: "O elegante de fiesta." },
   /* Los círculos son la paleta que mandaron ellos, en su orden. */
   paleta: ["#A3AD95", "#D9C5A4", "#B79A68", "#F6F1E8", "#333638"],
-  /* La canción de ellos. NO suena adentro de la invitación: el
-     archivo no es nuestro y la CSP no deja incrustar un reproductor
-     de terceros —que además sería un tercero corriendo código en la
-     pantalla del invitado—. El reproductor es un DIBUJO y el play
-     lleva a escucharla, y el renglón de abajo lo dice. */
-  cancion: { nombre: "Bellísimo así", autor: "Laura Pausini" },
+  /* La canción de ellos, y SUENA. */
+  cancion: { nombre: "Bellísimo así", autor: "Laura Pausini",
+             /* DOS FUENTES y el navegador baja UNA: el iPhone —que es
+                donde están los invitados— toca el AAC y el que no
+                puede con ese formato cae al Opus. Y `preload` en
+                "metadata": son 2,3 MB que no se bajan hasta que
+                alguien toca el corazón. */
+             archivos: ["musica.m4a", "musica.ogg"],
+             /* Cuánto dura, EN SEGUNDOS, y no es un adorno: un Ogg
+                todavía sin bajar entero devuelve `Infinity` de
+                duración, y ahí la cuenta del avance da 0 para
+                siempre — la rayita se queda clavada a la izquierda
+                toda la canción, sin un solo error que lo diga. El
+                número sale del archivo, no de un cálculo. */
+             dura: 229 },
   /* A quién le escriben los invitados el día de la fiesta. Vacío NO
      inventa a nadie: el WhatsApp de Click Eterno no va acá, porque
      nosotros no organizamos la fiesta. */
@@ -1148,8 +1043,16 @@ const CONFIG = {
      la galería se esconden enteras. Falta además la de las
      mascotas, que todavía no se sacaron: entra sola agregando un
      renglón acá. */
-  portada: "",                   // fotos/portada.webp
-  fotos: [],                     // {foto:"fotos/1.webp", alt:"…"}
+  portada: "fotos/portada.webp", // la del jardín al atardecer, que es la que eligieron
+  /* Las cuatro que mandaron. El orden es el del mosaico: la primera
+     es la ALTA de la columna izquierda —por eso va la de cuerpo
+     entero— y la última es la ANCHA de abajo. */
+  fotos: [
+    { foto: "fotos/1.webp", alt: "Facundo y Maximiliano de traje" },
+    { foto: "fotos/2.webp", alt: "Facundo y Maximiliano mostrando los anillos" },
+    { foto: "fotos/3.webp", alt: "Facundo y Maximiliano de noche, con las luces" },
+    { foto: "fotos/4.webp", alt: "Facundo y Maximiliano frente al mar" }
+  ],
   /* Se escribe TAL CUAL lo mandaron, sin "arreglarle" nada: un alias
      no se adivina, y en mia15 el punto del final resultó ser parte
      del alias y por poco se lo sacamos. */
@@ -1363,30 +1266,83 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
   const c = CONFIG.cancion || {};
   $('#cancionNom').textContent = c.nombre || '';
   $('#cancionAut').textContent = c.autor || '';
-  if (c.nombre){
-    const url = 'https://open.spotify.com/search/' +
-                encodeURIComponent(c.nombre + ' ' + (c.autor || ''));
-    /* Los dos mandos de los costados se DIBUJAN como en la captura,
-       pero con una sola canción no pueden hacer nada: van declarados
-       decoración, que es como el medidor y el barrido saltean un
-       dibujo. Lo que se toca es el corazón, y LLEVA a escucharla. */
+  if (c.nombre && (c.archivos || []).length){
+    /* EL REPRODUCTOR SUENA. En `facuymaxi` estaba dibujado y el play
+       llevaba a Spotify, porque el archivo no es nuestro; el dueño
+       pidió lo contrario el 01/11/2026, igual que en `ambar15`, y es
+       la misma excepción: se le dijo y la sostuvo. Lo que NO cambia
+       es la mitad técnica —ningún reproductor de un tercero: la CSP
+       no lo deja y además sería un tercero corriendo código en la
+       pantalla del invitado—. */
+    const a = document.createElement('audio');
+    a.loop = false;
+    a.preload = 'metadata';
+    /* Con `<source>` adentro, el error llega al ELEMENTO recién
+       cuando fallaron TODAS las fuentes: con un `src` suelto, un
+       navegador que no decodifica el primero se quedaba sin
+       reproductor teniendo el otro al lado. */
+    a.addEventListener('error', () => { const n = $('.port-player'); if (n) n.remove(); });
+    c.archivos.forEach(u => {
+      const f = document.createElement('source');
+      f.src = u;
+      if (/\.ogg$/i.test(u)) f.type = 'audio/ogg; codecs=opus';
+      else if (/\.m4a$/i.test(u)) f.type = 'audio/mp4; codecs="mp4a.40.2"';
+      a.appendChild(f);
+    });
+    const caja = $('#player');
+    caja.appendChild(a);
+
+    const ico = d => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + d + '</svg>';
+    const PLAY  = corazonSVG('');
+    const PAUSA = ico('<rect x="6.6" y="4.8" width="3.8" height="14.4" rx="1.2"/>' +
+                      '<rect x="13.6" y="4.8" width="3.8" height="14.4" rx="1.2"/>');
+    /* Los dos de los costados vuelven al principio del tema, que es lo
+       que hacen en cualquier reproductor con una sola canción. */
     const mando = giro =>
-      '<svg viewBox="0 0 24 24" aria-hidden="true" style="pointer-events:none"' +
-      (giro ? ' transform="scale(-1,1)"' : '') +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"' + (giro ? ' transform="scale(-1,1)"' : '') +
       '><path d="M17 4h2v16h-2zM5 4l10 8-10 8z"/></svg>';
-    $('#player').innerHTML =
+    caja.insertAdjacentHTML('beforeend',
       '<div class="barra" aria-hidden="true" style="pointer-events:none"><i></i><b></b></div>' +
-      '<div class="mandos">' + mando(true) +
-        '<a class="play" href="' + url + '" target="_blank" rel="noopener"' +
-          ' aria-label="Escuchar ' + esc(c.nombre) + ' de ' + esc(c.autor || '') + '">' +
-          corazonSVG('') + '</a>' + mando(false) +
+      '<div class="mandos">' +
+        '<button type="button" class="salto" id="rAtras" aria-label="Volver al principio">' +
+          mando(true) + '</button>' +
+        '<button type="button" class="play" id="rPlay" aria-label="Escuchar la canción">' +
+          PLAY + '</button>' +
+        '<button type="button" class="salto" id="rAde" aria-label="Volver al principio">' +
+          mando(false) + '</button>' +
       '</div>' +
-      '<p class="pie-player">Es ' + esc(c.nombre) + ', de ' + esc(c.autor || '') +
-      '. El corazón te lleva a escucharla.</p>';
-    $('#escuchar').href = url;
+      '<p class="pie-player">Es ' + esc(c.nombre) + ', de ' + esc(c.autor || '') + '.</p>');
+
+    const bPlay = $('#rPlay'), llena = $('.barra i', caja), punta = $('.barra b', caja);
+    const pintar = () => {
+      bPlay.innerHTML = a.paused ? PLAY : PAUSA;
+      bPlay.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción');
+    };
+    const avance = pc => { llena.style.width = pc + '%'; punta.style.left = pc + '%'; };
+    a.addEventListener('play', pintar);
+    a.addEventListener('pause', pintar);
+    /* Terminada se REBOBINA: parada en el final, el primer toque del
+       play no suena — y eso no tira ningún error, sólo un botón que
+       parece roto. */
+    a.addEventListener('ended', () => { a.pause(); a.currentTime = 0; avance(0); pintar(); });
+    /* Lo que dice el navegador si lo sabe, y si no el número del
+       CONFIG: así la rayita avanza igual con el Ogg a medio bajar. */
+    const total = () => (isFinite(a.duration) && a.duration) || +c.dura || 0;
+    a.addEventListener('timeupdate', () => {
+      const d = total();
+      if (!d) return;
+      avance(Math.max(0, Math.min(100, (a.currentTime / d) * 100)));
+    });
+    bPlay.addEventListener('click', () => {
+      if (a.paused) a.play().catch(() => {}); else a.pause();
+    });
+    const alPrincipio = () => { a.currentTime = 0; a.play().catch(() => {}); };
+    $('#rAtras').addEventListener('click', alPrincipio);
+    $('#rAde').addEventListener('click', alPrincipio);
+    avance(0);
+    pintar();
   } else {
-    $('.port-player').remove();
-    $('#escuchar').remove();
+    const n = $('.port-player'); if (n) n.remove();
   }
 
   /* el contacto del día de la fiesta */
@@ -1673,50 +1629,16 @@ function cargarFoto(src, alt){
   });
 })();
 
-/* ══════════ el sobre (referencia 6) ══════════
-   EL CRUCE, y es lo que separa una transición de un corte: la carta
-   crece y se disuelve MIENTRAS la portada se asienta. Las dos cosas
-   pasan a la vez, y por eso no se nota el empalme.
-   Cuánto tiene que crecer la carta lo calcula el JS con la caja de
-   verdad contra la pantalla de verdad: un número escrito a mano se
-   queda corto en una tablet y se pasa en un iPhone SE, y en los dos
-   casos se ve el borde del papel cruzando la pantalla a mitad de la
-   animación. */
+/* ══════════ la portada entra sola ══════════
+   Ya no hay sobre que la destape, así que la cascada arranca al
+   cargar. Va en el cuadro SIGUIENTE y no en éste: puesta en el mismo,
+   el navegador junta los dos estados en uno y no hay transición que
+   ver — se dibuja ya entera y la cascada no existe, sin un solo error
+   que lo diga. */
 (function(){
-  const sobre = $('#sobre'), port = $('#portada'), boton = $('#abrir');
-  const abrirPortada = () => {
-    port.classList.add('abierta');
-  };
-  if (!sobre || !boton){ port.classList.add('abierta'); return; }
-  sobre.hidden = false;
-  document.body.style.overflow = 'hidden';
-
-  let yendo = false;
-  function abrir(){
-    if (yendo) return;
-    yendo = true;
-    const carta = $('.carta', sobre);
-    if (carta && !menosMovimiento){
-      const b = carta.getBoundingClientRect();
-      /* Tope de 2,8: más que eso la carta tapa la pantalla entera y
-         lo que se ve es un corte, no un cruce. */
-      const e = Math.min(2.8, Math.max(1.6, (innerWidth * .94) / Math.max(b.width, 1)));
-      carta.style.transform = 'translateY(' + (innerHeight * .12).toFixed(0) + 'px) scale(' + e.toFixed(2) + ')';
-    }
-    sobre.classList.add('abierto');
-    port.classList.add('cruzando');
-    setTimeout(abrirPortada, menosMovimiento ? 60 : 1050);
-    setTimeout(() => {
-      /* El sobre se SACA del DOM: escondido sigue existiendo y una
-         capa fija que existe se puede volver a comer un dedo. */
-      sobre.remove();
-      document.body.style.overflow = '';
-    }, menosMovimiento ? 400 : 2000);
-  }
-  boton.addEventListener('click', abrir);
-  /* "Tocá el sobre para abrirlo": el sobre entero también abre. */
-  const paquete = $('.paquete', sobre);
-  if (paquete) paquete.addEventListener('click', abrir);
+  const port = $('#portada');
+  if (!port) return;
+  requestAnimationFrame(() => requestAnimationFrame(() => port.classList.add('abierta')));
 })();
 
 /* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════
