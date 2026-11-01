@@ -5585,6 +5585,136 @@ link no se haya repartido: la dirección es
 `clicketerno.com.ar/facuymaxi` y sale del alias que eligieron ellos. Un
 link repartido no se puede mover; uno que nadie tiene, sí.
 
+#### Las tres referencias nuevas, y lo que cambió con ellas
+
+El dueño mandó tres capturas más —una portada rusa con el reproductor
+arriba, un timing marrón con el calendario enmarcado y un cronograma
+que serpentea, y una galería en mosaico con sus preguntas— y una
+línea: *"me gustaría que haya ese estilo y pongas todo lo que te piden
+en ese texto"*. La pieza se rehizo alrededor de ellas; lo que piden
+los novios ya estaba y no se tocó.
+
+**La portada es otra.** Ahora es el REPRODUCTOR arriba de todo sobre
+el papel, la FOTO a sangre en el medio, y abajo una BANDA DE TINTA con
+el monograma de dos iniciales separadas por una raya, los nombres en
+capitulares espaciadas, la fecha en números (`22.05.2027`) y la
+flecha. Se fueron el marco de ramas y el borde ondulado de la foto:
+eran de la referencia anterior y la nueva corta derecho, que además es
+lo que hace que la foto y la banda se lean como una sola pieza.
+
+**Es UNA sola maqueta, con foto y sin foto.** Lo único que se esconde
+es la foto; todo lo demás está en los dos casos. Así no hay dos
+portadas que medir y el día que llegue el archivo no se mueve nada
+más — al revés de `mia15`, donde la portada con foto y la tipográfica
+son dos caminos distintos y cada cambio hay que mirarlo dos veces.
+
+**El reproductor se mudó y por eso se fue de la ficha.** Estaba
+dibujado en la tarjeta de "nuestra canción" y ahora vive en la
+portada; la tarjeta quedó con el nombre, el autor y un botón que lleva
+al mismo lado. Dibujarlo en los dos lugares es *dos dibujos para lo
+mismo, y uno se queda atrás*. Y los dos mandos de los costados van
+declarados decoración (`aria-hidden` + `pointer-events:none`): con una
+sola canción no pueden hacer nada, y *un botón que no puede hacer su
+trabajo molesta más que no estar*.
+
+**La frase y el lugar se fueron de la portada, y no es de gusto.**
+Medido: con los dos renglones puestos la portada daba **973px en un
+iPhone de 844**, así que "Deslizá" —lo único que avisa que hay más
+abajo— quedaba debajo del borde. La frase bajó a "Queremos que estés",
+donde encima se lee mejor, y el lugar ya vivía en "dónde y cuándo".
+Con eso la portada mide **836** y entra entera. Es la misma lección ya
+escrita para `ambar15`: *un renglón que se agrega a una portada no es
+un renglón, es todo lo que estaba abajo, movido*.
+
+**El calendario pasó del arco al MARCO**, con sus cuatro esquinas
+floreadas y la barra del horario de inicio abajo ("EMPIEZA · 21:00",
+que es el "START 14:30" de la captura). Y el corazón del día pasó a
+ser **de contorno**, que además arregla una medición: con uno relleno
+hay que elegir un color de número que funcione contra el corazón Y
+contra el fondo, porque *el medidor ve una cosa y el invitado ve la
+otra*; de contorno no hay dos cosas, el número cae sobre el fondo
+macizo de la tarjeta y lo que informa el medidor es lo que se ve.
+
+**El cronograma serpentea**, con los iconos dibujados a los costados y
+los nodos de corazón sobre la línea. Tres cosas que costaron una
+vuelta cada una y **ninguna tiraba un error**:
+
+- **La línea se MIDE, no se estira.** La primera versión era un SVG de
+  `viewBox` fijo estirado al alto de la lista con
+  `preserveAspectRatio:none`: estirada así, la curva cruza el centro
+  en los BORDES de cada renglón y no en su medio, así que los
+  corazones —que van centrados en su renglón— caían justo donde la
+  curva está más lejos y se veían **flotando al costado de la línea**.
+  Y los renglones no miden todos lo mismo, porque el texto envuelve.
+  Ahora el camino se arma con las cajas de verdad (`offsetTop` +
+  `offsetHeight/2`) y se vuelve a dibujar al cambiar el tamaño y
+  **cuando terminan de bajar las letras**: una curva medida contra la
+  tipografía de respaldo pasa al lado de los corazones.
+- **`nth-of-type` y no `nth-child`.** El primer hijo de la lista es el
+  SVG de la línea, así que contando HIJOS el primer renglón salía del
+  lado equivocado — y eso se ve perfecto, sólo que espejado.
+- **Un icono que no está en la tabla no dibuja nada y el renglón igual
+  se ve.** Los iconos van por NOMBRE en `CONFIG.timing`: agregar una
+  hora del resto de la noche tiene que ser una línea, no un dibujo.
+
+**La galería es un MOSAICO con su visor.** Una alta a la izquierda,
+dos cuadradas a la derecha y el resto fluyendo. **La ancha de cierre
+no es decoración**: la alta se come dos filas de la columna
+izquierda, así que con una cantidad PAR de fotos queda siempre un
+hueco al final, y la última ocupando las dos columnas es lo que lo
+tapa — con cualquier cantidad el mosaico no tiene un agujero. La
+altura de las filas la fijan las cuadradas, así que la alta se estira
+sola sin que nadie calcule nada.
+
+**Y el botón "Ver todas las fotos" hace un trabajo de verdad**: en el
+mosaico van recortadas y en el visor se ven enteras. Las imágenes son
+LAS MISMAS que ya están en la página, así que abrirlo no baja un solo
+byte más. Cierra con ✕ y con Escape, y devuelve el scroll del body.
+Si no hay fotos el botón no existe.
+
+**Las preguntas, y SOLO las que ellos contestaron.** "¿Pueden ir
+chicos?" y "¿hay estacionamiento?" están en la captura y no van: una
+respuesta inventada ahí hace venir a una familia entera a una fiesta
+donde no la esperan. Son cinco y las cinco salen de lo que mandaron
+—la hora, el lugar, el dress code, "durante marzo de 2027" y el
+alias—. Entran solas agregando un renglón el día que manden más.
+
+#### Y midiendo eso apareció otra, en CINCO invitaciones a la vez
+
+**Sin JavaScript, el sobre tapaba la invitación entera y no se podía
+abrir.** `#sobre` es una capa `position:fixed` que cubre la pantalla y
+su botón lo abre el JS: si el script no corre —o revienta en la
+primera línea— el invitado se queda mirando un sobre cerrado y un
+botón que no hace nada, **para siempre y sin un solo error a la
+vista**. Comprobado preguntándole al navegador quién ataja el dedo en
+el medio de la pantalla con el JS apagado: en `mia15`, `almi15`,
+`ambar15`, `mateoylucas` y `facuymaxi` contestaba el sobre.
+
+Y el comentario del propio archivo decía lo contrario —*"sin JS no
+existe: el CSS lo esconde"*—, así que estaba escrito como resuelto. En
+`facuymaxi` el JS hasta hacía `sobre.hidden = false`, o sea que la
+intención estaba: lo que fallaba es que **`#sobre{display:grid}` le
+gana al `hidden` del HTML**, que es exactamente la trampa de abajo.
+
+Se arregla con `html:not(.js) #sobre{display:none}` **más un script de
+una línea en el `<head>`** que pone esa clase. Los dos juntos: sin la
+clase puesta antes de pintar, la invitación se vería un cuadro y
+después aparecería el sobre encima, que es peor que el bug.
+`claraybruno` y `juliayfranco` ya estaban bien.
+
+**La lección es la de siempre y por eso vale repetirla**: una trampa
+que se arregla en un lugar hay que ir a buscarla a los otros, y un
+comentario que dice que algo está resuelto no es una medición. Ésta
+apareció midiendo otra cosa.
+
+**Una trampa de CSS que volvió a morder: `hidden` lo pisa cualquier
+`display` escrito después.** `.port-foto{display:block}` y
+`.btn[hidden]` sin su regla hacían que la foto vacía y el botón de la
+galería se dibujaran igual estando ocultos. No tira ningún error: lo
+que se ve es una caja negra donde no va nada. No se puede arreglar con
+un `[hidden]{display:none!important}` global, porque el sobre depende
+justamente de que su `display:grid` le gane al `hidden` del HTML.
+
 ### Probar el listado de una fiesta antes de que lo use gente
 
 Pedido del dueño el 31/10/2026 para `ambar15`: *"necesito que armemos

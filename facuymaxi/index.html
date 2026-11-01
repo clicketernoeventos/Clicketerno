@@ -30,19 +30,28 @@
    marfil, champagne, dorado suave y antracita— y no a la de la
    captura. Lo que se copia es el RECURSO, no el color de otro.
 
-   1 · Alejandra y Mateo → el MONOGRAMA de las dos iniciales en su
-       marco de ramas, "NOS CASAMOS", la FECHA EN UNA LÍNEA con
-       separadores, la ramita, la foto con el BORDE ONDULADO, la
-       frase en cursiva y el REPRODUCTOR de la canción.
-   2 · Darya y Nikolay → la GALERÍA EN TRÍO escalonado.
-   3 · Timing / Dress code → el CRONOGRAMA de horas colgando de una
-       línea, los TÍTULOS CON ECO (la palabra en capitular y la misma
-       en cursiva corrida encima) y los CÍRCULOS de la paleta.
-   4 · El calendario → el ARCO oscuro y el día marcado con un CORAZÓN.
+   1 · Alejandra y Mateo → "NOS CASAMOS", la ramita, la frase en
+       cursiva y el REPRODUCTOR de la canción.
+   2 · Darya y Nikolay → la galería corriendo de a varias.
+   3 · Timing / Dress code → los TÍTULOS CON ECO (la palabra en
+       capitular y la misma en cursiva corrida encima) y los
+       CÍRCULOS de la paleta.
+   4 · El calendario → el día marcado con un CORAZÓN.
    5 · Confirmación y contactos → la CUENTA REGRESIVA EN FICHAS y la
        sección de CONTACTO con WhatsApp.
    6 · Mark & Esenia → EL SOBRE de entrada con su sello de lacre y
        "tocá el sobre para abrirlo".
+
+   Y LAS TRES QUE MANDÓ DESPUÉS, que son las que mandan hoy:
+   7 · Иван & Вероника → LA PORTADA: el reproductor arriba de todo,
+       la foto a sangre y la banda de tinta con el monograma de dos
+       iniciales separadas por una raya, los nombres en capitulares
+       espaciadas y la fecha en números.
+   8 · El timing marrón → el CALENDARIO EN SU MARCO con las esquinas
+       floreadas y la barra del horario de inicio, y el CRONOGRAMA
+       QUE SERPENTEA con sus iconos dibujados y sus nodos de corazón.
+   9 · La galería gris → la GALERÍA EN MOSAICO con su botón de ver
+       las fotos enteras, y las PREGUNTAS en acordeón.
 
    Y LO QUE SE SOSTIENE DE LA VUELTA ANTERIOR, porque es de esta
    pareja y no de una referencia:
@@ -112,6 +121,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stro
    ══════════════════════════════════════════════════════════════════ */
 #sobre{position:fixed;inset:0;z-index:40;display:grid;place-items:center;
   padding:var(--gutter);text-align:center;perspective:1400px}
+/* SIN JAVASCRIPT EL SOBRE NO EXISTE.
+   `#sobre` es una capa fija que tapa la invitación entera, y su
+   botón lo abre el JS: si el script no corre —o revienta en la
+   primera línea— el invitado se queda mirando un sobre cerrado y un
+   botón que no hace nada, para siempre y sin un solo error a la
+   vista. El `.js` lo pone un script de una línea en el `<head>`, así
+   que esto no parpadea: el sobre no se dibuja hasta que se sabe que
+   hay JS. */
+html:not(.js) #sobre{display:none}
 /* El fondo vive en su PROPIA capa y no en `#sobre`: fundiendo
    `#sobre` se funde también la carta, que es su hija, y entonces no
    hay cruce sino dos cosas apagándose juntas. */
@@ -252,6 +270,10 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   letter-spacing:-.01em;margin:0}
 .cuerpo{font-size:clamp(15px,4vw,17px);font-weight:300;line-height:1.82;
   max-width:33em;margin:18px auto 0}
+/* La frase: vive abajo de "Queremos que estés", no en la portada. */
+.port-frase{font-family:var(--titulos);font-style:italic;font-weight:300;
+  font-size:clamp(17px,4.6vw,21px);line-height:1.6;max-width:21em;
+  margin:16px auto 0;color:var(--salvia-honda)}
 .tinta .cuerpo{color:#E7E2D9}
 .dato{font-family:var(--titulos);font-size:clamp(19px,5vw,24px);font-weight:400;
   line-height:1.5;margin-top:6px}
@@ -268,60 +290,87 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   background-color:rgba(246,241,232,.4)}
 
 /* ══════════════════════════════════════════════════════════════════
-   2 · LA PORTADA (referencia 1)
-   Papel arriba —monograma, nombres, fecha en una línea—, la foto a
-   todo lo ancho con el borde ondulado, y abajo la frase en cursiva.
-   Sin foto no queda ningún hueco: la banda se esconde entera y la
-   portada tipográfica se sostiene sola.
+   2 · LA PORTADA (referencia nueva: Иван & Вероника)
+   Arriba el REPRODUCTOR sobre el papel, en el medio la FOTO a
+   sangre, y abajo la BANDA DE TINTA con el monograma de dos
+   iniciales separadas por una raya, los nombres en capitulares
+   espaciadas, la fecha en números y la flecha.
+
+   ES UNA SOLA MAQUETA, con foto y sin foto: lo único que se esconde
+   es la foto. Así no hay dos portadas que medir, y el día que llegue
+   el archivo no se mueve nada más.
    ══════════════════════════════════════════════════════════════════ */
 #portada{position:relative;background-color:var(--marfil);color:var(--antracita);
-  padding:clamp(30px,6vh,52px) var(--gutter) clamp(54px,8vh,74px);text-align:center;
-  overflow:hidden}
+  text-align:center;overflow:hidden}
 #portada>*{position:relative;z-index:1}
-#portada .port-banda{position:relative;z-index:0}
-.monograma{width:clamp(96px,27vw,124px);margin:0 auto;color:var(--oro-hondo)}
-.monograma svg{width:100%;height:auto}
-.port-ante{margin-top:clamp(14px,2.6vh,22px);
-  font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.44em;text-transform:uppercase;
-  color:var(--oro-hondo);font-weight:500}
-/* LOS DOS NOMBRES, DEL MISMO TAMAÑO Y DEL MISMO PESO. */
-.nombres{font-family:var(--titulos);font-weight:300;line-height:1.02;
-  font-size:clamp(34px,10.4vw,70px);letter-spacing:.01em;margin-top:clamp(10px,2vh,18px);
-  text-transform:uppercase}
-.nombres span{display:block}
-.nombres .ye{font-family:var(--mano);font-weight:400;text-transform:none;
-  color:var(--oro-hondo);font-size:.62em;line-height:1.5;letter-spacing:0}
-/* ── LA FECHA EN UNA LÍNEA, con sus separadores ── */
-.fecha-linea{display:flex;align-items:center;justify-content:center;
-  gap:clamp(10px,3.4vw,18px);margin-top:clamp(16px,3vh,26px);
-  font-size:clamp(11.5px,3.2vw,14px);letter-spacing:.26em;text-transform:uppercase;
-  font-weight:500;color:var(--antracita)}
-.fecha-linea i{display:block;width:1px;height:15px;background-color:var(--oro-hondo);
-  opacity:.65}
+
+/* ── 2a · el reproductor, arriba de todo ──
+   Es un DIBUJO y el corazón LLEVA a escucharla: el archivo no es
+   nuestro y la CSP no deja incrustar un reproductor de terceros
+   —que además sería un tercero corriendo código en la pantalla del
+   invitado—. Los dos mandos de los costados se dibujan igual que en
+   la referencia, pero con UNA sola canción no pueden hacer nada, así
+   que van declarados decoración (`aria-hidden` + `pointer-events:
+   none`): se ve igual que la captura y no queda nada que se toque y
+   no responda. Es la misma salida que ya se usó en `ambar15/`. */
+.port-player{padding:clamp(16px,3vh,26px) var(--gutter) clamp(13px,2.4vh,20px)}
+.port-player .rot{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.34em;
+  text-transform:uppercase;color:var(--oro-hondo);font-weight:500}
+.player{width:100%;max-width:320px;margin:14px auto 0}
+.player .barra{position:relative;height:1px;background-color:rgba(142,115,66,.35)}
+.player .barra i{position:absolute;left:0;top:-1px;height:3px;width:26%;
+  background-color:var(--oro-hondo)}
+.player .barra b{position:absolute;left:26%;top:50%;width:0;height:0;
+  margin:-4px 0 0 -3px;border:4px solid transparent;
+  border-left:6px solid var(--oro-hondo)}
+.player .mandos{display:flex;align-items:center;justify-content:center;
+  gap:clamp(18px,6vw,30px);margin-top:14px;color:var(--oro-hondo)}
+.player .mandos svg{width:17px;height:17px;fill:currentColor;opacity:.6}
+.player .play{display:inline-flex;align-items:center;justify-content:center;
+  width:56px;height:56px;border-radius:50%;background-color:var(--antracita);
+  color:var(--marfil);text-decoration:none;flex:none;
+  transition:transform .3s var(--e)}
+.player .play svg{width:21px;height:21px;fill:currentColor;opacity:1}
+.player .play:active{transform:scale(.94)}
+.player .pie-player{margin-top:13px;font-size:11.5px;line-height:1.6;color:var(--gris)}
+
+/* ── 2b · la foto, a sangre ──
+   Sin archivo la banda no se dibuja y la portada se sostiene sola:
+   nunca un cuadrado roto ni un marco alrededor de nada. */
+.port-foto{background-color:var(--antracita);line-height:0}
+.port-foto img{width:100%;max-height:38svh;object-fit:cover;object-position:center 30%}
+
+/* ── 2c · la banda de tinta ──
+   EL MONOGRAMA SON LAS DOS INICIALES DEL MISMO TAMAÑO, separadas por
+   una raya. En una invitación hétero hay un orden heredado —la novia
+   primero—; acá cualquier jerarquía sería una declaración, así que
+   no hay ninguna. Es la regla que ya está escrita para
+   `mateoylucas/`. */
+.port-banda{background-color:var(--antracita);color:var(--marfil);
+  padding:clamp(26px,4.4vh,42px) var(--gutter) clamp(20px,3.4vh,32px)}
+.monograma{display:flex;align-items:stretch;justify-content:center;
+  gap:clamp(14px,4.4vw,24px);font-family:var(--titulos);font-weight:300;
+  font-size:clamp(44px,14vw,82px);line-height:1}
+.monograma span{display:block}
+.monograma i{display:block;width:1px;background-color:rgba(246,241,232,.5)}
+.nombres{margin-top:clamp(16px,2.8vh,24px);font-family:var(--texto-f);font-weight:400;
+  font-size:clamp(13px,3.8vw,18px);letter-spacing:clamp(.14em,.6vw,.3em);
+  text-transform:uppercase;line-height:1.6;color:var(--marfil)}
+.nombres span{display:inline}
+/* El aire alrededor de la "y" va en el CSS y no con espacios en el
+   HTML: entre dos `<span>` el navegador se come el de un lado y
+   queda "FACUNDO yMAXIMILIANO". */
+.nombres .ye{font-family:var(--titulos);font-style:italic;text-transform:none;
+  letter-spacing:0;color:var(--champan);padding:0 .35em;font-size:1.1em}
+.fecha-num{margin-top:clamp(12px,2.2vh,18px);font-family:var(--titulos);font-weight:300;
+  font-size:clamp(21px,6vw,30px);letter-spacing:.06em;color:var(--marfil);
+  font-variant-numeric:lining-nums tabular-nums}
 .ramita{width:clamp(54px,15vw,74px);margin:clamp(16px,3vh,24px) auto 0;
-  color:var(--oro-hondo)}
+  color:var(--champan)}
 .ramita svg{width:100%;height:auto}
-/* ── LA BANDA DE FOTO CON EL BORDE ONDULADO ──
-   La onda es un SVG relleno del color del papel, apoyado arriba y
-   abajo de la foto: lo que se ve es el papel comiéndose el borde,
-   como una pincelada. El camino sale de una SEMILLA fija —la fecha
-   de la fiesta— y no de `Math.random()`: cambiando en cada carga,
-   dos capturas de la misma invitación saldrían distintas. */
-.port-banda{margin:clamp(22px,4vh,34px) calc(-1 * var(--gutter)) 0;position:relative;
-  background-color:var(--antracita)}
-.port-banda img{width:100%;height:auto;max-height:62svh;object-fit:cover}
-.onda{position:absolute;left:0;right:0;width:100%;height:clamp(22px,5vw,34px);
-  display:block;color:var(--marfil);pointer-events:none}
-.onda.arriba{top:-1px}
-.onda.abajo{bottom:-1px}
-.port-frase{font-family:var(--titulos);font-style:italic;font-weight:300;
-  font-size:clamp(16px,4.4vw,20px);line-height:1.6;max-width:22em;
-  margin:clamp(24px,4.6vh,36px) auto 0;color:var(--antracita)}
-.port-donde{margin-top:14px;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--gris)}
-.port-baja{margin-top:clamp(22px,4vh,34px);
+.port-baja{margin-top:clamp(20px,3.6vh,30px);
   display:flex;flex-direction:column;align-items:center;gap:7px;
-  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gris)}
+  font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:#CFCAC1}
 .port-baja svg{width:13px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3}
 
 /* ══════════════════════════════════════════════════════════════════
@@ -343,77 +392,163 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   text-transform:uppercase;color:var(--salvia-honda)}
 
 /* ══════════════════════════════════════════════════════════════════
-   4 · EL CALENDARIO EN SU ARCO (referencia 4)
+   4 · EL CALENDARIO EN SU MARCO (referencia nueva: el timing)
+   Un marco fino con sus cuatro esquinas floreadas, el día marcado
+   con un CORAZÓN DIBUJADO A MANO —de contorno, no relleno— y abajo
+   la barra del horario de inicio.
+
+   EL CORAZÓN DE CONTORNO ADEMÁS SE MIDE BIEN. Con uno relleno hay
+   que elegir un color de número que funcione contra el corazón Y
+   contra el fondo, porque el medidor de contraste ve el fondo
+   macizo de la tarjeta y el invitado ve la forma; de contorno no hay
+   dos cosas: el número cae sobre el fondo de la tarjeta (10,8:1) y
+   es exactamente lo que el medidor informa.
    ══════════════════════════════════════════════════════════════════ */
-#calendario{max-width:340px;margin:clamp(26px,5vh,38px) auto 0;
-  background-color:var(--antracita);color:var(--marfil);
-  border-radius:50% 50% 8px 8px / 26% 26% 8px 8px;
-  padding:clamp(40px,9vw,54px) clamp(16px,4.4vw,24px) 26px;
+#calendario{position:relative;max-width:340px;margin:clamp(26px,5vh,38px) auto 0;
+  background-color:var(--antracita);color:var(--marfil);border-radius:3px;
+  padding:clamp(30px,7vw,40px) clamp(18px,5vw,26px) clamp(22px,5vw,28px);
   box-shadow:0 22px 46px -30px rgba(38,41,43,.7)}
-#calendario .mes{font-family:var(--titulos);font-size:19px;font-weight:400;
-  letter-spacing:.03em;margin-bottom:16px}
+#calendario .marco{position:absolute;inset:clamp(9px,2.4vw,13px);
+  border:1px solid rgba(217,197,164,.42);pointer-events:none}
+#calendario .esq{position:absolute;width:clamp(24px,6.6vw,32px);color:var(--champan);
+  pointer-events:none;line-height:0}
+#calendario .esq svg{width:100%;height:auto}
+#calendario .e1{left:clamp(5px,1.6vw,8px);top:clamp(5px,1.6vw,8px)}
+#calendario .e2{right:clamp(5px,1.6vw,8px);top:clamp(5px,1.6vw,8px);transform:scaleX(-1)}
+#calendario .e3{left:clamp(5px,1.6vw,8px);bottom:clamp(5px,1.6vw,8px);transform:scaleY(-1)}
+#calendario .e4{right:clamp(5px,1.6vw,8px);bottom:clamp(5px,1.6vw,8px);transform:scale(-1)}
+#calendario .cal-tope{display:flex;align-items:baseline;justify-content:space-between;
+  gap:10px;font-family:var(--titulos);font-size:clamp(14px,4vw,17px);font-weight:400;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:15px}
 #calendario table{width:100%;border-collapse:collapse;
   font-variant-numeric:lining-nums tabular-nums}
 #calendario th{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--champan);font-weight:500;padding-bottom:10px}
-#calendario td{font-size:13.5px;font-weight:300;padding:7px 0;color:var(--marfil)}
-/* ── EL DÍA MARCADO CON UN CORAZÓN ──
-   El corazón va en oro hondo y el número en marfil: así el número se
-   lee TANTO sobre el corazón (3,99:1) como sobre el fondo del arco
-   (10,8:1), que es lo que mide el medidor. Un corazón claro con el
-   número oscuro encima mide bien y se lee mal, o al revés: el color
-   del texto tiene que funcionar contra las dos cosas, porque el
-   medidor ve una y el invitado ve la otra. */
-#calendario td.elDia{position:relative;z-index:0;color:var(--marfil);font-weight:500}
-#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:34px;height:34px;
-  margin:-17px 0 0 -17px;z-index:-1;fill:var(--oro-hondo)}
-#calendario .corte{border:0;border-top:1px solid rgba(217,197,164,.3);margin:18px 0 12px}
-#calendario .hora-txt{font-size:12.5px;line-height:1.7;color:#DCD6CA;font-weight:300}
+#calendario td{font-size:13.5px;font-weight:300;padding:8px 0;color:var(--marfil)}
+#calendario td.elDia{position:relative;color:var(--marfil);font-weight:500}
+#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:42px;height:38px;
+  margin:-19px 0 0 -21px;fill:none;stroke:var(--champan);stroke-width:1.1;
+  stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+/* ── la barra del horario de inicio (el "START 14:30" de la captura) ── */
+#calendario .inicio{display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-top:clamp(16px,4vw,22px);padding:13px 16px;border-radius:3px;
+  border:1px solid rgba(217,197,164,.32);background-color:rgba(217,197,164,.14)}
+#calendario .inicio span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--champan)}
+#calendario .inicio b{font-family:var(--titulos);font-weight:300;
+  font-size:clamp(18px,5vw,22px);letter-spacing:.04em;color:var(--marfil);
+  font-variant-numeric:lining-nums tabular-nums}
 .mano{font-family:var(--mano);font-weight:400;font-size:clamp(26px,7.6vw,36px);
   line-height:1.3;margin-top:clamp(18px,3.4vh,28px);color:var(--salvia-honda)}
 .verde .mano{color:#2F3A28}
 
 /* ══════════════════════════════════════════════════════════════════
-   5 · EL CRONOGRAMA (referencia 3)
+   5 · EL CRONOGRAMA QUE SERPENTEA (referencia nueva: el timing)
+   Una línea que baja ondulando, los iconos dibujados a los costados
+   —uno a cada lado, alternados— y los nodos de corazón sobre la
+   línea.
+
+   LA LÍNEA ES UN SOLO SVG estirado al alto de la lista, y por eso
+   lleva `vector-effect:non-scaling-stroke`: estirado sin eso, el
+   trazo se deforma con el dibujo y sale grueso de un lado y fino del
+   otro. Estirarlo es lo que hace que la curva valga para dos tramos
+   o para seis sin tocar nada.
    ══════════════════════════════════════════════════════════════════ */
-.timing{margin:clamp(26px,5vh,38px) auto 0;max-width:330px}
-.timing li{list-style:none;position:relative;padding:clamp(14px,2.6vh,20px) 0}
-/* la línea que une las horas */
-.timing li:not(:last-child):after{content:'';position:absolute;left:50%;bottom:0;
-  width:1px;height:clamp(14px,2.6vh,20px);margin-left:-.5px;
-  background-color:var(--oro-hondo);opacity:.4}
-.timing b{display:block;font-family:var(--titulos);font-weight:300;
-  font-size:clamp(28px,8vw,40px);line-height:1;letter-spacing:-.01em;
-  font-variant-numeric:lining-nums tabular-nums}
-.timing span{display:block;margin-top:9px;font-size:10.5px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--salvia-honda)}
+.timing{position:relative;margin:clamp(30px,5.4vh,44px) auto 0;max-width:430px;
+  list-style:none}
+.timing .hilo{position:absolute;left:0;top:0;width:100%;height:100%;
+  fill:none;stroke:var(--oro-hondo);stroke-width:1;opacity:.55;pointer-events:none}
+.timing li{position:relative;display:grid;
+  grid-template-columns:1fr clamp(34px,10vw,46px) 1fr;
+  align-items:center;gap:clamp(8px,2.6vw,16px);padding:clamp(10px,2vh,16px) 0}
+.timing .lado{min-width:0;text-align:center}
+/* `nth-of-type` y NO `nth-child`: el primer hijo de la lista es el
+   SVG de la línea, así que contando hijos el primer renglón sale del
+   lado equivocado. */
+.timing li:nth-of-type(odd) .lado{grid-column:1}
+.timing li:nth-of-type(even) .lado{grid-column:3}
+.timing .ico{width:clamp(36px,9.4vw,46px);height:clamp(36px,9.4vw,46px);
+  color:var(--oro-hondo);fill:none;stroke:currentColor;stroke-width:1.05;
+  stroke-linecap:round;stroke-linejoin:round}
+.timing h3{margin-top:9px;font-family:var(--texto-f);font-weight:600;
+  font-size:clamp(11px,3vw,12.5px);letter-spacing:.17em;text-transform:uppercase;
+  line-height:1.5;color:var(--salvia-honda)}
+.timing .hora{display:block;margin-top:5px;font-family:var(--titulos);font-weight:300;
+  font-size:clamp(23px,6.4vw,30px);line-height:1.1;letter-spacing:.01em;
+  color:var(--antracita);font-variant-numeric:lining-nums tabular-nums}
+.timing .nodo{grid-column:2;justify-self:center;width:clamp(22px,6vw,26px);height:auto;
+  fill:var(--champan);stroke:var(--oro-hondo);stroke-width:1}
 
 /* ══════════════════════════════════════════════════════════════════
-   6 · LA GALERÍA EN TRÍO (referencia 2)
-   La del medio más alta y las dos de los costados desplazadas, una
-   para arriba y otra para abajo. Las dos de los costados son
-   IGUALES entre ellas, que es la misma regla que los dos nombres.
-   Con más de tres fotos, las que siguen caen en una fila de a dos.
+   6 · LA GALERÍA EN MOSAICO (referencia nueva: la galería)
+   Una alta a la izquierda, dos cuadradas a la derecha y el resto
+   fluyendo de a dos, con una ANCHA de cierre cuando hace falta.
+
+   LA ANCHA NO ES DECORACIÓN: la alta se come dos filas de la columna
+   izquierda, así que con una cantidad PAR de fotos queda siempre un
+   hueco al final. La última pasa a ocupar las dos columnas
+   justamente ahí, y con eso el mosaico no tiene un agujero con
+   ninguna cantidad. La altura de las filas la fijan las cuadradas,
+   así que la alta se estira sola sin que nadie calcule nada.
    ══════════════════════════════════════════════════════════════════ */
 #galeria{background-color:var(--antracita);color:var(--marfil)}
-#fotos{display:grid;grid-template-columns:1fr 1.22fr 1fr;align-items:center;
-  gap:clamp(8px,2vw,14px);margin-top:clamp(28px,5vh,42px)}
-#fotos figure{margin:0;overflow:hidden;background-color:#2B2E30;border-radius:2px}
-#fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:3/4;
+#fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vw,14px);
+  margin-top:clamp(28px,5vh,42px)}
+#fotos .toque{display:block;width:100%;padding:0;overflow:hidden;border-radius:2px;
+  background-color:#2B2E30;line-height:0}
+#fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:1/1;
   transform:scale(1.06);transition:transform 1.4s var(--e)}
-#fotos figure.entro img{transform:none}
-#fotos .lado-1{transform:translateY(-7%)}
-#fotos .lado-2{transform:translateY(7%)}
-#fotos .centro img{aspect-ratio:3/4.5}
-/* las que sobran, de a dos y a todo el ancho de la grilla */
-#fotos .resto{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;
-  gap:clamp(8px,2vw,14px);margin-top:clamp(8px,2vw,14px)}
-#fotos .resto figure{overflow:hidden}
-@media (max-width:359px){
-  #fotos{grid-template-columns:1fr 1fr}
-  #fotos .centro{grid-column:1/-1;order:-1}
-  #fotos .lado-1,#fotos .lado-2{transform:none}
-}
+#fotos .entro img{transform:none}
+#fotos .alta{grid-column:1;grid-row:1/span 2}
+#fotos .alta img{height:100%;aspect-ratio:auto}
+#fotos .ancha{grid-column:1/-1}
+#fotos .ancha img{aspect-ratio:2.1/1}
+@media (hover:hover){ #fotos .toque:hover img{transform:scale(1.04)} }
+#fotos .toque:active{opacity:.86}
+
+/* ── el visor: la foto entera, que en el mosaico va recortada ──
+   Se dibuja la primera vez que se abre y las imágenes son LAS
+   MISMAS que ya están cargadas, así que no baja un solo byte más. */
+#visor{position:fixed;inset:0;z-index:60;background-color:rgba(26,28,29,.97);
+  display:none;place-items:center;padding:clamp(54px,9vw,70px) clamp(12px,4vw,30px)}
+#visor.abierto{display:grid}
+#visor img{max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px}
+#visor button{position:absolute;display:grid;place-items:center;width:52px;height:52px;
+  border-radius:50%;color:var(--marfil);background-color:rgba(246,241,232,.12)}
+#visor button:active{transform:scale(.94)}
+#visor .cerrar{top:clamp(8px,2.4vw,16px);right:clamp(8px,2.4vw,16px);font-size:21px;
+  line-height:1}
+#visor .ant{left:clamp(8px,2.4vw,16px);top:50%;margin-top:-26px}
+#visor .sig{right:clamp(8px,2.4vw,16px);top:50%;margin-top:-26px}
+#visor .nav svg{width:15px;height:24px;fill:none;stroke:currentColor;stroke-width:1.4;
+  stroke-linecap:round;stroke-linejoin:round}
+#visor .cuenta{position:absolute;left:0;right:0;bottom:clamp(14px,3.4vw,24px);
+  text-align:center;font-size:11px;letter-spacing:.24em;color:#CFCAC1;
+  font-variant-numeric:lining-nums tabular-nums}
+
+/* ══════════════════════════════════════════════════════════════════
+   6b · LAS PREGUNTAS (referencia nueva: la galería)
+   Un acordeón, y SOLO con las preguntas que ellos contestaron. Una
+   respuesta inventada acá manda a la gente a la hora equivocada o la
+   hace venir con los chicos a una fiesta donde no los esperan: lo
+   que no mandaron se pregunta, no se completa.
+   ══════════════════════════════════════════════════════════════════ */
+.faq{margin:clamp(28px,5vh,40px) auto 0;max-width:520px;text-align:left}
+.faq details{border-top:1px solid rgba(51,54,56,.25)}
+.faq details:last-of-type{border-bottom:1px solid rgba(51,54,56,.25)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;gap:16px;min-height:56px;padding:13px 2px;
+  font-family:var(--titulos);font-weight:400;font-size:clamp(16px,4.2vw,19px);
+  line-height:1.4}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary i{flex:none;width:10px;height:10px;margin-bottom:4px;
+  border-right:1px solid currentColor;border-bottom:1px solid currentColor;
+  transform:rotate(45deg);transition:transform .3s var(--e)}
+.faq details[open] summary i{transform:rotate(-135deg);margin:0 0 0 2px}
+.faq p{font-size:14.5px;font-weight:300;line-height:1.8;padding:0 2px 20px;
+  max-width:none}
+.verde .faq p{color:#2F3A28}
+.faq summary:active{opacity:.7}
 
 /* ══════════════════════════════════════════════════════════════════
    7 · DÓNDE
@@ -451,27 +586,10 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   box-shadow:inset 0 0 0 1px rgba(51,54,56,.18)}
 .dress-eti{margin-top:16px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;
   font-weight:600;color:var(--oro-hondo)}
-/* ── EL REPRODUCTOR DE LA CANCIÓN (referencia 1) ──
-   Es un dibujo, y por eso el botón de play no "reproduce": LLEVA a
-   escucharla. Un play que no suena es la mentira de siempre, así que
-   el renglón de abajo lo dice con todas las letras. */
-.player{width:100%;margin-top:18px}
-.player .barra{position:relative;height:3px;border-radius:3px;
-  background-color:rgba(142,115,66,.28)}
-.player .barra i{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:3px;
-  background-color:var(--oro-hondo)}
-.player .barra b{position:absolute;left:26%;top:50%;width:9px;height:9px;
-  margin:-4.5px 0 0 -4.5px;border-radius:50%;background-color:var(--oro-hondo)}
-.player .mandos{display:flex;align-items:center;justify-content:center;
-  gap:clamp(14px,5vw,22px);margin-top:16px;color:var(--oro-hondo)}
-.player .mandos svg{width:17px;height:17px;fill:currentColor;opacity:.55}
-.player .mandos .play{display:inline-flex;align-items:center;justify-content:center;
-  width:54px;height:54px;border-radius:50%;background-color:var(--oro-hondo);
-  color:var(--marfil);text-decoration:none;flex:none;
-  transition:transform .3s var(--e)}
-.player .mandos .play svg{width:19px;height:19px;opacity:1;margin-left:2px}
-.player .mandos .play:active{transform:scale(.94)}
-.player .pie-player{margin-top:12px;font-size:11.5px;color:var(--gris)}
+/* El reproductor vive ARRIBA, en la portada: acá la ficha dice qué
+   canción es y lleva al mismo lado con un botón. Dibujarlo dos veces
+   sería dos dibujos para lo mismo, y uno se queda atrás. */
+.ficha .btn{margin-top:18px}
 
 /* ══════════════════════════════════════════════════════════════════
    9 · EL REGALO
@@ -492,6 +610,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   background-color:var(--champan);color:var(--antracita);
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
   text-decoration:none;transition:transform .3s var(--e),filter .3s}
+.btn[hidden]{display:none}
 .btn:active{transform:scale(.975)}
 @media (hover:hover){ .btn:hover{filter:brightness(1.04)} }
 .btn.hueco{background-color:transparent;border:1px solid rgba(142,115,66,.5);
@@ -605,17 +724,16 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    gasta el único momento de sorpresa que tiene la pieza. */
 .js .nombres .n1{opacity:0;transform:translateX(-30px)}
 .js .nombres .n2{opacity:0;transform:translateX(30px)}
-.js .nombres .ye,.js .monograma,.js .port-ante,.js .fecha-linea,
-.js .ramita,.js .port-frase,.js .port-donde,.js .port-baja{opacity:0}
+.js .nombres .ye,.js .monograma,.js .port-player,.js .port-foto,
+.js .fecha-num,.js .ramita,.js .port-baja{opacity:0}
 .js .abierta .n1,.js .abierta .n2{opacity:1;transform:none;
-  transition:opacity 1.1s var(--e),transform 1.35s var(--e)}
-.js .abierta .ye{opacity:1;transition:opacity .85s var(--e) .9s}
-.js .abierta .monograma{opacity:1;transition:opacity 1s var(--e) .1s}
-.js .abierta .port-ante{opacity:1;transition:opacity .9s var(--e) .25s}
-.js .abierta .fecha-linea{opacity:1;transition:opacity .9s var(--e) 1.2s}
+  transition:opacity 1.1s var(--e) .45s,transform 1.35s var(--e) .45s}
+.js .abierta .ye{opacity:1;transition:opacity .85s var(--e) 1s}
+.js .abierta .port-player{opacity:1;transition:opacity .9s var(--e) .1s}
+.js .abierta .port-foto{opacity:1;transition:opacity 1.1s var(--e) .2s}
+.js .abierta .monograma{opacity:1;transition:opacity 1s var(--e) .35s}
+.js .abierta .fecha-num{opacity:1;transition:opacity .9s var(--e) 1.2s}
 .js .abierta .ramita{opacity:1;transition:opacity .9s var(--e) 1.35s}
-.js .abierta .port-frase{opacity:1;transition:opacity .9s var(--e) 1.5s}
-.js .abierta .port-donde{opacity:1;transition:opacity .9s var(--e) 1.6s}
 .js .abierta .port-baja{opacity:1;transition:opacity .9s var(--e) 1.75s}
 /* la portada se ASIENTA mientras la carta se va: las dos cosas pasan
    a la vez y por eso no se nota el empalme. */
@@ -634,8 +752,8 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .js .seccion:after{opacity:.5}
   .js .verde:after{opacity:.55}
   .js .nombres .n1,.js .nombres .n2,.js .nombres .ye,.js .monograma,
-  .js .port-ante,.js .fecha-linea,.js .ramita,.js .port-frase,
-  .js .port-donde,.js .port-baja{opacity:1;transform:none}
+  .js .port-player,.js .port-foto,.js .fecha-num,.js .ramita,
+  .js .port-baja{opacity:1;transform:none}
   .js #portada.cruzando{opacity:1;transform:none}
   .js #calendario td.elDia svg{transform:none}
   #sobre.abierto{opacity:0;visibility:hidden;transition:opacity .25s linear}
@@ -649,6 +767,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .firma a,.aviso-datos a{padding-left:12px;padding-right:12px}
 }
 </style>
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 
@@ -681,28 +800,34 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   </div>
 </div>
 
-<!-- ══════════ 2 · la portada (referencia 1) ══════════ -->
+<!-- ══════════ 2 · la portada (referencia nueva) ══════════
+     Arriba el reproductor, en el medio la foto y abajo la banda de
+     tinta con el monograma, los nombres, la fecha y la flecha. -->
 <header id="portada">
-  <div class="monograma" id="monograma" aria-hidden="true" style="pointer-events:none"></div>
-  <p class="port-ante">Nos casamos</p>
-  <h1 class="nombres">
-    <span class="n1">Facundo</span>
-    <span class="ye">y</span>
-    <span class="n2">Maximiliano</span>
-  </h1>
-  <p class="fecha-linea" id="fechaLinea"></p>
-  <div class="ramita" id="ramita" aria-hidden="true" style="pointer-events:none"></div>
 
-  <!-- La banda de foto, con su borde ondulado arriba y abajo. Sin
-       foto se esconde entera: un marco alrededor de nada es peor que
-       no estar. -->
-  <div class="port-banda" id="portBanda" hidden></div>
+  <div class="port-player">
+    <p class="rot">Tocá el corazón</p>
+    <div class="player" id="player"></div>
+  </div>
 
-  <p class="port-frase" id="portFrase"></p>
-  <p class="port-donde" id="portDonde"></p>
-  <div class="port-baja" aria-hidden="true" style="pointer-events:none">
-    <span>Deslizá</span>
-    <svg viewBox="0 0 14 22"><path d="M7 1v18M2 14l5 6 5-6"/></svg>
+  <!-- La foto a sangre. Sin archivo no se dibuja: nunca un cuadrado
+       roto, y la portada se sostiene sola. -->
+  <div class="port-foto" id="portFoto" hidden></div>
+
+  <div class="port-banda">
+    <!-- Las dos iniciales DEL MISMO TAMAÑO, separadas por una raya. -->
+    <div class="monograma" id="monograma" aria-hidden="true" style="pointer-events:none"></div>
+    <h1 class="nombres">
+      <span class="n1">Facundo</span>
+      <span class="ye"> y </span>
+      <span class="n2">Maximiliano</span>
+    </h1>
+    <p class="fecha-num" id="fechaNum"></p>
+    <div class="ramita" id="ramita" aria-hidden="true" style="pointer-events:none"></div>
+    <div class="port-baja" aria-hidden="true" style="pointer-events:none">
+      <span>Deslizá</span>
+      <svg viewBox="0 0 14 22"><path d="M7 1v18M2 14l5 6 5-6"/></svg>
+    </div>
   </div>
 </header>
 
@@ -713,6 +838,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
     <div class="caja">
       <p class="ante ap">Sábado 22 de mayo de 2027</p>
       <h2 class="ap d1" data-eco="Queremos que estés">Queremos que estés</h2>
+      <p class="port-frase ap d2" id="portFrase"></p>
       <p class="cuerpo ap d2">Después de un montón de años juntos, elegimos una
         noche para festejarlo con la gente que queremos. Vas a estar vos, va a
         estar la música, y vamos a estar nosotros dos diciendo que sí.</p>
@@ -735,7 +861,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
     </div>
   </section>
 
-  <!-- ══════════ 5 · el cronograma (referencia 3) ══════════ -->
+  <!-- ══════════ 5 · el cronograma que serpentea (referencia nueva) ══════════ -->
   <section class="seccion papel" id="timing">
     <div class="caja">
       <p class="ante ap">La noche</p>
@@ -744,12 +870,17 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
     </div>
   </section>
 
-  <!-- ══════════ 6 · la galería en trío (referencia 2) ══════════ -->
+  <!-- ══════════ 6 · la galería en mosaico (referencia nueva) ══════════ -->
   <section class="seccion tinta" id="galeria" hidden>
     <div class="caja">
       <p class="ante ap">Nosotros</p>
       <h2 class="ap d1" data-eco="Nuestra historia">Nuestra historia</h2>
       <div id="fotos"></div>
+      <!-- El botón sólo existe si hay fotos, y hace un trabajo de
+           verdad: en el mosaico van recortadas y acá se ven enteras.
+           Un botón que no puede hacer su trabajo molesta más que no
+           estar. -->
+      <button class="btn hueco" id="verTodas" type="button" hidden>Ver todas las fotos</button>
     </div>
   </section>
 
@@ -800,8 +931,10 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
           <p class="ante">Nuestra canción</p>
           <h3 id="cancionNom"></h3>
           <p class="cancion-aut" id="cancionAut"></p>
-          <!-- el reproductor dibujado (referencia 1) -->
-          <div class="player" id="player"></div>
+          <!-- El dibujo del reproductor vive en la portada; acá va el
+               mismo enlace como botón. Dos entradas a un enlace es
+               normal; dos dibujos de lo mismo no. -->
+          <a class="btn hueco" id="escuchar" href="#" target="_blank" rel="noopener">Escuchar</a>
         </div>
       </div>
     </div>
@@ -824,6 +957,15 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
         <button class="btn hueco" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
       </div>
       <p class="cuerpo ap d3">¡Gracias por ser parte de nuestra historia!</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 9b · las preguntas (referencia nueva) ══════════ -->
+  <section class="seccion verde" id="faq" hidden>
+    <div class="caja">
+      <p class="ante ap">Por las dudas</p>
+      <h2 class="ap d1" data-eco="Preguntas">Preguntas</h2>
+      <div class="faq ap d2" id="faqLista"></div>
     </div>
   </section>
 
@@ -963,8 +1105,28 @@ const CONFIG = {
      final a las 4. Una hora inventada manda a la gente a la hora
      equivocada, así que lo que falta se pide, no se completa. */
   timing: [
-    { hora: "21:00", que: "Ceremonia civil y recepción" },
-    { hora: "04:00", que: "Fin de la fiesta" }
+    { hora: "21:00", que: "Ceremonia civil y recepción", ico: "anillos" },
+    { hora: "04:00", que: "Fin de la fiesta", ico: "luna" }
+  ],
+  /* LAS PREGUNTAS, y SOLO las que ellos contestaron. "¿Pueden ir
+     chicos?" y "¿hay estacionamiento?" están en la referencia y no
+     van: una respuesta inventada acá hace venir a una familia entera
+     a una fiesta donde no la esperan. Entran solas agregando un
+     renglón el día que las manden. */
+  faq: [
+    { q: "¿A qué hora llego?",
+      a: "A las 21. La ceremonia civil es esa misma noche y en el mismo salón, " +
+         "así que conviene no llegar tarde." },
+    { q: "¿Dónde es?",
+      a: "En La Mansión del Rey, Vera Mujica 68, Rosario. La ceremonia y la fiesta " +
+         "son las dos ahí: no hay que moverse de lugar." },
+    { q: "¿Qué me pongo?",
+      a: "Elegante sport o elegante de fiesta." },
+    { q: "¿Hasta cuándo puedo confirmar?",
+      a: "Durante marzo de 2027. Te vamos a avisar el día exacto." },
+    { q: "¿Cómo les hago un regalo?",
+      a: "Con el alias FACUYMAXI.BODA, que está más arriba con un botón para copiarlo. " +
+         "Lo van a usar para la luna de miel." }
   ],
   dress: { titulo: "Elegante sport", detalle: "O elegante de fiesta." },
   /* Los círculos son la paleta que mandaron ellos, en su orden. */
@@ -1015,41 +1177,7 @@ function falta(que){
   return n;
 }
 
-/* ══════════ el monograma y la ramita (referencia 1) ══════════
-   Dos iniciales DEL MISMO TAMAÑO adentro de un marco de ramas. Las
-   hojas se calculan sobre la curva del marco —no van escritas una
-   por una— así que el marco y las hojas no se pueden desalinear. */
-function puntoQ(t, p0, c, p1){
-  const u = 1 - t;
-  return [u*u*p0[0] + 2*u*t*c[0] + t*t*p1[0],
-          u*u*p0[1] + 2*u*t*c[1] + t*t*p1[1]];
-}
-function rama(p0, c, p1, lado){
-  let d = 'M' + p0[0] + ' ' + p0[1] + 'Q' + c[0] + ' ' + c[1] + ' ' + p1[0] + ' ' + p1[1];
-  let hojas = '';
-  for (let i = 0; i < 7; i++){
-    const t = .12 + i * .13;
-    const p = puntoQ(t, p0, c, p1);
-    const q = puntoQ(t + .01, p0, c, p1);
-    const ang = Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI;
-    const giro = ang + (i % 2 ? 38 : -38) * lado;
-    hojas += '<ellipse cx="0" cy="0" rx="7.4" ry="2.9" fill="currentColor" opacity=".85"' +
-             ' transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' +
-             giro.toFixed(1) + ') translate(' + (7 * lado) + ' 0)"/>';
-  }
-  return '<path d="' + d + '"/>' + hojas;
-}
-function monogramaSVG(a, b){
-  return '<svg class="linea" viewBox="0 0 120 148" role="presentation" stroke-width="1.1">' +
-    rama([60, 140], [4, 74], [60, 8], -1) +
-    rama([60, 140], [116, 74], [60, 8], 1) +
-    '<text x="60" y="66" text-anchor="middle" font-family="Newsreader,Georgia,serif"' +
-      ' font-size="34" font-weight="300" fill="currentColor" stroke="none">' + esc(a) + '</text>' +
-    '<path d="M54 78h12" opacity=".7"/>' +
-    '<text x="60" y="112" text-anchor="middle" font-family="Newsreader,Georgia,serif"' +
-      ' font-size="34" font-weight="300" fill="currentColor" stroke="none">' + esc(b) + '</text>' +
-  '</svg>';
-}
+/* ══════════ la ramita ══════════ */
 function ramitaSVG(){
   let hojas = '';
   for (let i = 0; i < 6; i++){
@@ -1061,35 +1189,83 @@ function ramitaSVG(){
     '<path d="M8 10h76"/>' + hojas + '</svg>';
 }
 
-/* ══════════ el borde ondulado de la foto (referencia 1) ══════════
-   Un SVG relleno del color del PAPEL apoyado arriba y abajo de la
-   banda: lo que se ve es el papel comiéndose el borde, como una
-   pincelada. Sale de una SEMILLA fija —la fecha de la fiesta—: con
-   `Math.random()` dos capturas de la misma invitación saldrían
-   distintas. */
-function ondaPath(semilla, arriba){
-  let x = (semilla * 2654435761) % 2147483647;
-  const az = () => { x = (x * 1103515245 + 12345) & 0x7fffffff; return x / 0x7fffffff; };
-  const W = 100, pasos = 5;
-  let d = arriba ? 'M0 0 L100 0 L100 ' : 'M0 20 L100 20 L100 ';
-  const base = arriba ? 13 : 7;
-  let y = base + (az() - .5) * 5;
-  d += y.toFixed(1);
-  for (let i = pasos - 1; i >= 0; i--){
-    const xx = (W / pasos) * i;
-    const ny = base + (az() - .5) * 7;
-    const cx = xx + (W / pasos) / 2;
-    d += 'Q' + cx.toFixed(1) + ' ' + ((y + ny) / 2 + (az() - .5) * 8).toFixed(1) +
-         ' ' + xx.toFixed(1) + ' ' + ny.toFixed(1);
-    y = ny;
-  }
-  return d + 'Z';
+/* ══════════ el corazón ══════════
+   Uno solo para los tres lugares que lo usan —el día del
+   calendario, los nodos del cronograma y el regalo—: dibujado tres
+   veces, el día que se cambie uno se queda atrás. El del calendario
+   va de CONTORNO y el del cronograma RELLENO, y eso es lo único que
+   cambia entre ellos. */
+const CORAZON_D = 'M12 21.2C12 21.2 3.6 16 3.6 10.4 3.6 7.5 5.9 5.2 8.7 5.2' +
+                  ' 10.2 5.2 11.4 5.9 12 7 12.6 5.9 13.8 5.2 15.3 5.2' +
+                  ' 18.1 5.2 20.4 7.5 20.4 10.4 20.4 16 12 21.2 12 21.2Z';
+function corazonSVG(clase){
+  return '<svg class="' + clase + '" viewBox="0 0 24 24" aria-hidden="true">' +
+         '<path d="' + CORAZON_D + '"/></svg>';
 }
-function ondaSVG(arriba){
-  const semilla = 20270522;
-  return '<svg class="onda ' + (arriba ? 'arriba' : 'abajo') + '" viewBox="0 0 100 20"' +
-    ' preserveAspectRatio="none" aria-hidden="true">' +
-    '<path d="' + ondaPath(semilla + (arriba ? 0 : 7), arriba) + '" fill="currentColor"/></svg>';
+
+/* ══════════ los iconos del cronograma (referencia nueva) ══════════
+   Van por NOMBRE y no escritos adentro de cada renglón: agregar una
+   hora del resto de la noche tiene que ser una línea de CONFIG, no
+   un dibujo. Lo que no está en la tabla no dibuja nada y el renglón
+   igual se ve: una hora sin icono es mejor que una hora que falta. */
+const ICOS = {
+  /* dos alianzas IGUALES entrelazadas, no un anillo de compromiso y
+     una alianza: todo va de a dos y del mismo tamaño */
+  anillos: '<circle cx="9.4" cy="14" r="5.6"/><circle cx="14.6" cy="14" r="5.6"/>' +
+           '<path d="M12 8.4 10.2 5.6h3.6z"/><path d="M8.6 4.2h6.8"/>',
+  copas:   '<path d="M5.6 4.4h5.2l-1 4.2a1.6 1.6 0 0 1-3.2 0z"/>' +
+           '<path d="M8.2 8.8v4.4M6.4 13.2h3.6"/>' +
+           '<path d="M13.2 4.4h5.2l-1 4.2a1.6 1.6 0 0 1-3.2 0z"/>' +
+           '<path d="M15.8 8.8v4.4M14 13.2h3.6"/>' +
+           '<path d="M9.4 15.4h5.2l-1 4.2a1.6 1.6 0 0 1-3.2 0z"/>',
+  mesa:    '<ellipse cx="12" cy="9.4" rx="8.4" ry="3"/>' +
+           '<path d="M12 12.4v7.2M8 19.6h8"/><path d="M9.6 6.2v-2M14.4 6.2v-2"/>',
+  torta:   '<path d="M4.6 12.6h14.8v6.8H4.6z"/><path d="M4.6 15.6h14.8"/>' +
+           '<path d="M12 12.6V9.4M12 7.6v-.2"/><path d="M8.4 12.6v-2M15.6 12.6v-2"/>',
+  baile:   '<circle cx="9" cy="5.6" r="2"/><circle cx="16.2" cy="5.6" r="2"/>' +
+           '<path d="M9 7.6v5l-2.4 6M9 12.6l2.6 5.8"/>' +
+           '<path d="M16.2 7.6v5l2.4 6M16.2 12.6l-2.6 5.8"/>',
+  foto:    '<path d="M3.6 7.8h4l1.4-2h6l1.4 2h4v11h-16.8z"/><circle cx="12" cy="13" r="3.6"/>',
+  luna:    '<path d="M19 14.6A8 8 0 0 1 9.4 5a8 8 0 1 0 9.6 9.6z"/>' +
+           '<path d="M16.4 4.4l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"/>'
+};
+/* LA LÍNEA SE MIDE, NO SE ESTIRA. Estirada a la fuerza, cruza el
+   centro en los BORDES de cada renglón y no en su medio, así que los
+   corazones —que van centrados en su renglón— caen justo donde la
+   curva está más lejos: se ven flotando al costado de la línea. Y
+   los renglones no miden todos lo mismo, porque el texto envuelve.
+   Así que el camino se arma con las cajas de verdad y pasa por el
+   centro de cada uno. Se vuelve a dibujar al cambiar el tamaño. */
+function pintarHilo(ul){
+  const svg = $('.hilo', ul);
+  if (!svg) return;
+  const W = ul.clientWidth, H = ul.clientHeight;
+  if (!W || !H) return;
+  const x = W / 2, bulto = Math.min(W * .2, 44);
+  const ys = [0].concat($$('li', ul).map(li => li.offsetTop + li.offsetHeight / 2))
+                .concat([H]);
+  let d = 'M' + x.toFixed(1) + ' 0';
+  for (let i = 0; i < ys.length - 1; i++){
+    const y0 = ys[i], y1 = ys[i+1], cx = x + (i % 2 ? -bulto : bulto);
+    d += 'C' + cx.toFixed(1) + ' ' + (y0 + (y1 - y0) * .34).toFixed(1) +
+         ',' + cx.toFixed(1) + ' ' + (y0 + (y1 - y0) * .66).toFixed(1) +
+         ',' + x.toFixed(1) + ' ' + y1.toFixed(1);
+  }
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  $('path', svg).setAttribute('d', d);
+}
+function hiloSVG(){
+  return '<svg class="hilo" aria-hidden="true"><path d=""/></svg>';
+}
+
+/* ══════════ la esquina floreada del calendario ══════════ */
+function esquinaSVG(){
+  return '<svg class="linea" viewBox="0 0 34 34" role="presentation" stroke-width="1">' +
+    '<path d="M2 14C2 7 7 2 14 2"/>' +
+    '<path d="M6 14c0-5 3-8 8-8"/>' +
+    '<path d="M14 6c-2.6 0-4 1.6-4 3.4 0 1.4 1.1 2.2 2.1 2.2 1.1 0 1.9-.8 1.9-1.8"/>' +
+    '<circle cx="19.6" cy="2.4" r="1.1" fill="currentColor" stroke="none"/>' +
+    '<circle cx="2.4" cy="19.6" r="1.1" fill="currentColor" stroke="none"/></svg>';
 }
 
 /* ══════════ lo que sale de CONFIG ══════════ */
@@ -1111,14 +1287,21 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
 
 (function(){
   const nom = String(CONFIG.quien || '').split(/\s+y\s+/);
-  $('#monograma').innerHTML = monogramaSVG((nom[0]||'')[0] || '', (nom[1]||'')[0] || '');
+  /* Las dos iniciales van como TEXTO y no como dibujo: dibujadas en
+     un SVG sin color propio el medidor de contraste informaría
+     1,00:1 y tendría razón según lo que mide. */
+  $('#monograma').innerHTML =
+    '<span>' + esc((nom[0]||'')[0] || '') + '</span><i></i>' +
+    '<span>' + esc((nom[1]||'')[0] || '') + '</span>';
   $('#ramita').innerHTML = ramitaSVG();
 
   if (F){
     const fechaLarga = diaSemana + ' ' + F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
-    /* LA FECHA EN UNA LÍNEA con sus separadores (referencia 1). */
-    $('#fechaLinea').innerHTML =
-      '<span>' + F.dia + '</span><i></i><span>' + MESES[F.mes-1] + '</span><i></i><span>' + F.anio + '</span>';
+    /* LA FECHA EN NÚMEROS, como la captura: 22.05.2027. La completa
+       —"Sábado 22 de mayo de 2027"— está en la sección de abajo y en
+       "dónde y cuándo", así que acá no hace falta repetirla. */
+    const dd = n => String(n).padStart(2,'0');
+    $('#fechaNum').textContent = dd(F.dia) + '.' + dd(F.mes) + '.' + F.anio;
     /* El final va como hora suelta y no como fecha: las 4 son del día
        siguiente, y escribirlas como fecha completa haría que la
        invitación dijera "23 de mayo" en algún lado. */
@@ -1127,7 +1310,6 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
     $('#teEspero').textContent = 'Te esperamos el ' + F.dia + ' de ' + MESES[F.mes-1] + '.';
   }
   $('#portFrase').textContent = CONFIG.frase || '';
-  $('#portDonde').textContent = CONFIG.lugar + ' · Rosario';
   $('#lugar').textContent = CONFIG.lugar;
   $('#lugar').setAttribute('data-eco', CONFIG.lugar);
   $('#calle').textContent = CONFIG.calle;
@@ -1141,12 +1323,41 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
     .map(c => '<i style="background-color:' + esc(c) + '"></i>').join('');
   if ((CONFIG.paleta || []).length) $('#dressEti').textContent = 'Los colores de la fiesta';
 
-  /* el cronograma */
-  const cro = $('#cronograma');
-  cro.innerHTML = (CONFIG.timing || []).map(t =>
-    '<li><b>' + esc(t.hora) + '</b><span>' + esc(t.que) + '</span></li>').join('');
+  /* ── el cronograma que serpentea (referencia nueva) ──
+     La línea es un solo SVG estirado al alto de la lista, así que
+     vale para dos tramos o para seis sin tocar nada. */
+  const cro = $('#cronograma'), tramos = (CONFIG.timing || []);
+  cro.innerHTML = hiloSVG() + tramos.map(t =>
+    '<li><div class="lado">' +
+      (ICOS[t.ico] ? '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' +
+                     ICOS[t.ico] + '</svg>' : '') +
+      '<h3>' + esc(t.que) + '</h3>' +
+      '<b class="hora">' + esc(t.hora) + '</b>' +
+    '</div>' + corazonSVG('nodo') + '</li>').join('');
   if (CONFIG.borrador)
     cro.insertAdjacentElement('afterend', falta('los horarios del resto de la noche'));
+  pintarHilo(cro);
+  /* Las letras cambian el alto de los renglones cuando terminan de
+     bajar, así que se vuelve a medir ahí y en cada cambio de
+     tamaño: una curva medida contra la tipografía de respaldo pasa
+     al lado de los corazones. */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => pintarHilo(cro));
+  let reloj;
+  addEventListener('resize', () => {
+    clearTimeout(reloj);
+    reloj = setTimeout(() => pintarHilo(cro), 140);
+  });
+
+  /* ── las preguntas (referencia nueva) ──
+     Sólo las que ellos contestaron. Sin ninguna, la sección entera
+     no existe: un acordeón vacío es peor que no estar. */
+  const pregs = (CONFIG.faq || []).filter(f => f && f.q && f.a);
+  if (pregs.length){
+    $('#faqLista').innerHTML = pregs.map(f =>
+      '<details><summary>' + esc(f.q) + '<i aria-hidden="true"></i></summary>' +
+      '<p>' + esc(f.a) + '</p></details>').join('');
+    $('#faq').hidden = false;
+  }
 
   /* la canción y su reproductor dibujado */
   const c = CONFIG.cancion || {};
@@ -1155,17 +1366,28 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
   if (c.nombre){
     const url = 'https://open.spotify.com/search/' +
                 encodeURIComponent(c.nombre + ' ' + (c.autor || ''));
+    /* Los dos mandos de los costados se DIBUJAN como en la captura,
+       pero con una sola canción no pueden hacer nada: van declarados
+       decoración, que es como el medidor y el barrido saltean un
+       dibujo. Lo que se toca es el corazón, y LLEVA a escucharla. */
+    const mando = giro =>
+      '<svg viewBox="0 0 24 24" aria-hidden="true" style="pointer-events:none"' +
+      (giro ? ' transform="scale(-1,1)"' : '') +
+      '><path d="M17 4h2v16h-2zM5 4l10 8-10 8z"/></svg>';
     $('#player').innerHTML =
-      '<div class="barra" aria-hidden="true"><i></i><b></b></div>' +
-      '<div class="mandos">' +
-        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4h2v16h-2zM5 4l10 8-10 8z" transform="scale(-1,1) translate(-24,0)"/></svg>' +
+      '<div class="barra" aria-hidden="true" style="pointer-events:none"><i></i><b></b></div>' +
+      '<div class="mandos">' + mando(true) +
         '<a class="play" href="' + url + '" target="_blank" rel="noopener"' +
-          ' aria-label="Escuchar ' + esc(c.nombre) + ' en Spotify">' +
-          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></a>' +
-        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4h2v16h-2zM5 4l10 8-10 8z"/></svg>' +
+          ' aria-label="Escuchar ' + esc(c.nombre) + ' de ' + esc(c.autor || '') + '">' +
+          corazonSVG('') + '</a>' + mando(false) +
       '</div>' +
-      '<p class="pie-player">El play te lleva a escucharla en Spotify.</p>';
-  } else $('#player').remove();
+      '<p class="pie-player">Es ' + esc(c.nombre) + ', de ' + esc(c.autor || '') +
+      '. El corazón te lleva a escucharla.</p>';
+    $('#escuchar').href = url;
+  } else {
+    $('.port-player').remove();
+    $('#escuchar').remove();
+  }
 
   /* el contacto del día de la fiesta */
   const ct = CONFIG.contacto || {};
@@ -1225,32 +1447,37 @@ function cargarFoto(src, alt){
   });
 }
 
-/* ── la banda de foto de la portada ── */
+/* ── la foto de la portada ── */
 (function(){
-  const banda = $('#portBanda');
+  const caja = $('#portFoto');
   if (!CONFIG.portada){
     if (CONFIG.borrador){
-      banda.hidden = false;
-      banda.style.background = 'none';
-      banda.appendChild(falta('la foto de portada (el jardín al atardecer)'));
+      caja.hidden = false;
+      caja.style.background = 'none';
+      caja.style.padding = '0 var(--gutter) 10px';
+      caja.appendChild(falta('la foto de portada (el jardín al atardecer)'));
     }
     return;
   }
   cargarFoto(CONFIG.portada, 'Facundo y Maximiliano').then(im => {
     if (!im) return;                 /* se queda escondida: nunca un cuadrado roto */
-    banda.appendChild(im);
-    banda.insertAdjacentHTML('beforeend', ondaSVG(true) + ondaSVG(false));
-    banda.hidden = false;
+    caja.appendChild(im);
+    caja.hidden = false;
   });
 })();
 
-/* ── la galería en trío (referencia 2) ──
-   Se arma recién con las que CARGARON, y en el orden de CONFIG: la
+/* ── la galería en mosaico y su visor (referencia nueva) ──
+   Se arma recién con las que CARGARON y en el orden de CONFIG: la
    que falló no deja su lugar vacío. Si no queda ninguna, la sección
-   entera se esconde. Las dos de los costados son IGUALES entre
-   ellas, que es la misma regla que los dos nombres. */
+   entera se esconde.
+
+   LA ANCHA DE CIERRE NO ES DECORACIÓN: la alta se come dos filas de
+   la columna izquierda, así que con una cantidad PAR de fotos queda
+   siempre un hueco al final, y la última ocupando las dos columnas
+   es lo que lo tapa. Con cualquier cantidad, el mosaico no tiene un
+   agujero. */
 (function(){
-  const sec = $('#galeria'), caja = $('#fotos');
+  const sec = $('#galeria'), caja = $('#fotos'), boton = $('#verTodas');
   const lista = (CONFIG.fotos || []).filter(f => f && f.foto);
   if (!lista.length){
     if (CONFIG.borrador){
@@ -1262,37 +1489,81 @@ function cargarFoto(src, alt){
   Promise.all(lista.map(f => cargarFoto(f.foto, f.alt || ''))).then(ims => {
     const vivas = ims.filter(Boolean);
     if (!vivas.length) return;
-    const fig = (im, clase) => {
-      const f = document.createElement('figure');
-      if (clase) f.className = clase;
-      f.appendChild(im);
-      return f;
-    };
-    /* El trío: izquierda arriba, centro grande, derecha abajo. Con
-       menos de tres, las que hay van una al lado de la otra. */
-    if (vivas.length >= 3){
-      caja.appendChild(fig(vivas[0], 'lado-1'));
-      caja.appendChild(fig(vivas[1], 'centro'));
-      caja.appendChild(fig(vivas[2], 'lado-2'));
-      if (vivas.length > 3){
-        const resto = document.createElement('div');
-        resto.className = 'resto';
-        vivas.slice(3).forEach(im => resto.appendChild(fig(im)));
-        caja.appendChild(resto);
-      }
-    } else {
-      caja.style.gridTemplateColumns = 'repeat(' + vivas.length + ',1fr)';
-      vivas.forEach(im => caja.appendChild(fig(im)));
-    }
+    const n = vivas.length;
+    vivas.forEach((im, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'toque' +
+        (n >= 3 && i === 0 ? ' alta' : '') +
+        (n >= 4 && n % 2 === 0 && i === n - 1 ? ' ancha' : '');
+      b.setAttribute('aria-label', 'Ver la foto ' + (i + 1) + ' de ' + n);
+      b.appendChild(im);
+      b.addEventListener('click', () => abrir(i));
+      caja.appendChild(b);
+    });
     sec.hidden = false;
+    boton.hidden = false;
+    boton.addEventListener('click', () => abrir(0));
     /* El observador ya pasó por acá cuando esto se dibuja, así que se
        destapa a mano: sin esto queda en opacidad 0 y no hay ningún
        error que lo diga. */
     requestAnimationFrame(() => {
-      $$('#fotos figure').forEach(f => f.classList.add('entro'));
-      $$('.ap', sec).forEach(n => n.classList.add('entro'));
+      $$('#fotos .toque').forEach(f => f.classList.add('entro'));
+      $$('.ap', sec).forEach(x => x.classList.add('entro'));
       sec.classList.add('entro');
     });
+
+    /* ── el visor ──
+       Las imágenes son LAS MISMAS que ya están en la página, así que
+       abrirlo no baja un solo byte más. */
+    let visor = null, img = null, cuenta = null, donde = 0;
+    const flecha = izq => '<svg viewBox="0 0 16 26" aria-hidden="true"><path d="' +
+      (izq ? 'M12 2 3 13l9 11' : 'M4 2l9 11-9 11') + '"/></svg>';
+    function armar(){
+      visor = document.createElement('div');
+      visor.id = 'visor';
+      visor.setAttribute('role', 'dialog');
+      visor.setAttribute('aria-label', 'Las fotos de Facundo y Maximiliano');
+      visor.innerHTML =
+        '<button class="cerrar" type="button" aria-label="Cerrar">\u2715</button>' +
+        (n > 1 ? '<button class="ant nav" type="button" aria-label="Anterior">' +
+                 flecha(true) + '</button>' +
+                 '<button class="sig nav" type="button" aria-label="Siguiente">' +
+                 flecha(false) + '</button>' : '') +
+        '<img alt="">' +
+        (n > 1 ? '<p class="cuenta"></p>' : '');
+      document.body.appendChild(visor);
+      img = $('img', visor); cuenta = $('.cuenta', visor);
+      $('.cerrar', visor).addEventListener('click', cerrar);
+      visor.addEventListener('click', e => { if (e.target === visor) cerrar(); });
+      if (n > 1){
+        $('.ant', visor).addEventListener('click', () => mover(-1));
+        $('.sig', visor).addEventListener('click', () => mover(1));
+      }
+      addEventListener('keydown', e => {
+        if (!visor.classList.contains('abierto')) return;
+        if (e.key === 'Escape') cerrar();
+        if (e.key === 'ArrowLeft')  mover(-1);
+        if (e.key === 'ArrowRight') mover(1);
+      });
+    }
+    function pintar(){
+      img.src = vivas[donde].src;
+      img.alt = vivas[donde].alt || '';
+      if (cuenta) cuenta.textContent = (donde + 1) + ' / ' + n;
+    }
+    const mover = d => { donde = (donde + d + n) % n; pintar(); };
+    function abrir(i){
+      if (!visor) armar();
+      donde = i; pintar();
+      visor.classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+      $('.cerrar', visor).focus();
+    }
+    function cerrar(){
+      visor.classList.remove('abierto');
+      document.body.style.overflow = '';
+    }
   });
 })();
 
@@ -1322,7 +1593,7 @@ function cargarFoto(src, alt){
   if (!vuelta()) setInterval(vuelta, 1000);
 })();
 
-/* ══════════ el calendario en su arco (referencia 4) ══════════
+/* ══════════ el calendario en su marco (referencia nueva) ══════════
    Las cuentas se hacen con `new Date(anio, mes-1, 1)`, que se
    construye por componentes y no mete zona horaria. La semana
    arranca el lunes, como el calendario de la pared de acá. */
@@ -1338,31 +1609,31 @@ function cargarFoto(src, alt){
   for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
   while (celdas.length % 7) celdas.push('');
 
-  /* El corazón va DETRÁS del número y en oro hondo, y el número en
-     marfil: así se lee tanto sobre el corazón (3,99:1) como sobre el
-     fondo del arco (10,8:1), que es lo que mide el medidor de
-     contraste. El color del texto tiene que funcionar contra las dos
-     cosas, porque el medidor ve una y el invitado ve la otra. */
-  const corazon = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-    '<path d="M12 21.4s-8.6-5.2-8.6-10.8a4.8 4.8 0 0 1 8.6-3.2 4.8 4.8 0 0 1 8.6 3.2c0 5.6-8.6 10.8-8.6 10.8z"/></svg>';
-
+  /* EL CORAZÓN VA DE CONTORNO, como la captura. Y de paso se mide
+     bien: el número cae sobre el fondo macizo de la tarjeta
+     (10,8:1), que es exactamente lo que informa el medidor de
+     contraste. Con un corazón relleno hay que elegir un color que
+     funcione contra las dos cosas, porque el medidor ve una y el
+     invitado ve la otra. */
   let filas = '';
   for (let i = 0; i < celdas.length; i += 7){
     filas += '<tr>' + celdas.slice(i, i+7).map(dia =>
       dia === '' ? '<td></td>'
-                 : dia === F.dia ? '<td class="elDia">' + corazon + dia + '</td>'
+                 : dia === F.dia ? '<td class="elDia">' + corazonSVG('') + dia + '</td>'
                                  : '<td>' + dia + '</td>'
     ).join('') + '</tr>';
   }
 
+  const hora = (F.hora + (F.min ? ':' + String(F.min).padStart(2,'0') : ':00'));
   caja.innerHTML =
-    '<p class="mes">' + MESES_T[F.mes-1] + ' ' + F.anio + '</p>' +
+    '<div class="marco" aria-hidden="true"></div>' +
+    ['e1','e2','e3','e4'].map(c =>
+      '<div class="esq ' + c + '" aria-hidden="true">' + esquinaSVG() + '</div>').join('') +
+    '<div class="cal-tope"><span>' + MESES_T[F.mes-1] + '</span><span>' + F.anio + '</span></div>' +
     '<table role="presentation"><thead><tr>' +
       DIAS.map(x => '<th>' + x + '</th>').join('') +
     '</tr></thead><tbody>' + filas + '</tbody></table>' +
-    '<hr class="corte">' +
-    '<p class="hora-txt">' + esc(F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio) +
-    (horaTexto() ? '<br>' + esc(horaTexto()) : '') + '</p>';
+    '<p class="inicio"><span>Empieza</span><b>' + esc(hora) + '</b></p>';
 })();
 
 /* ══════════ el eco de los títulos ══════════
