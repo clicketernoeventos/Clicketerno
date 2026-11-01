@@ -450,8 +450,34 @@ function puntaAPunta(quien, api, c, ev) {
 
 const MAESTRA_PRUEBA = 'maestra-de-prueba-1234';
 
-console.log('\n─── de punta a punta con los campos DE VERDAD de mia15 ───');
-puntaAPunta('mia15', cargar(), camposDe('mia15'));
+/* Las que tienen su PROPIA planilla —Pía, Mia, y desde el 01/11/2026
+   Ámbar— corren contra `evento-nuevo.gs.txt`, que es el otro .gs.txt.
+   La lista no se escribe acá: son las carpetas de listado que declaran
+   su `appsScriptUrl`. Escrita a mano se queda corta el día que una
+   fiesta se pasa a planilla propia — que es justo el día en que algo
+   se puede haber quedado sin conectar. */
+for (const ev of fs.readdirSync(path.join(__dirname, '..'))
+       .filter(d => fs.existsSync(path.join(__dirname, '..', d, 'listado', 'index.html')))
+       .filter(d => /appsScriptUrl: "https/.test(fs.readFileSync(
+         path.join(__dirname, '..', d, 'listado', 'index.html'), 'utf8')))) {
+  const suyo = path.join(__dirname, '..', ev, 'index.html');
+  /* El formulario de Pía no vive en su raíz sino en pia/nueva: sin
+     form que leer no hay nada que postear, y eso se DICE en vez de
+     inventar una falla. */
+  if (!fs.existsSync(suyo) || !/<form id="rsvp"/.test(fs.readFileSync(suyo, 'utf8'))) {
+    bien(`(${ev} tiene planilla propia y su formulario no está en ${ev}/index.html: no se mide acá)`);
+    continue;
+  }
+  console.log(`\n─── de punta a punta: ${ev} con su propia planilla ───`);
+  /* Con planilla propia, `CONFIG.evento` tiene que estar VACÍO: con
+     las dos puestas la confirmación se va a la central y la fila cae
+     en otro archivo, sin un solo error a la vista. */
+  const dice = (fs.readFileSync(suyo, 'utf8').match(/evento *: *"([^"]*)"/) || [])[1];
+  es(!dice, dice
+    ? `${ev} tiene su propia planilla y además CONFIG.evento = "${dice}": la fila se va a la central`
+    : `${ev} no apunta a la planilla central, como corresponde`);
+  puntaAPunta(ev, cargar(), camposDe(ev));
+}
 
 /* ════════════════════════════════════════════════════════════════
    LA PLANILLA CENTRAL · apps-script/planilla-central.gs.txt

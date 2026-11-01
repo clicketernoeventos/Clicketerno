@@ -132,7 +132,7 @@ var LISTA_EVENTOS = 'https://clicketerno.com.ar/lib/planillas.json';
    El piso puede quedarse corto, NUNCA ser más ancho que la lista del
    sitio: habilitaría una pestaña que nosotros ya no habilitamos. Lo
    cuida pruebas/invitaciones.js. */
-var EVENTOS_EN_EL_CODIGO = ['almi15', 'facuymaxi', 'ambar15'];
+var EVENTOS_EN_EL_CODIGO = ['almi15', 'facuymaxi'];
 
 /* Los títulos que el resumen necesita entender. Cualquier otra
    pregunta de la invitación se crea sola como columna la primera vez

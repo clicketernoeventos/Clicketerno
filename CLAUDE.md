@@ -5679,6 +5679,47 @@ sitio, nunca**, y eso lo cuida `pruebas/invitaciones.js`.
 claves. Las tres cosas —la maestra, la clave elegida y el piso— se
 hacen en el mismo viaje al editor.
 
+#### Y al final se volvió atrás: una planilla POR FIESTA
+
+Decisión del dueño el 01/11/2026, mirando todo esto: *"nosotros nos
+vamos a seguir manejando como siempre. Un sheet para cada fiesta.
+Siempre separado."* Se le explicó qué cuesta —cada invitación nueva
+vuelve a costarle los cinco pasos en Google, que es exactamente el
+problema que la central vino a sacar— y lo sostuvo. **Ámbar ya tiene
+la suya**, con su propio `/exec` en `CONFIG.endpoint` y en su listado,
+igual que Pía y Mia.
+
+**Lo que NO se desarmó**: `almi15` y `facuymaxi` siguen en la central,
+porque ya están andando y moverlas no le suma nada a nadie. O sea que
+el sistema sostiene las dos formas a la vez, que es como nació.
+
+Tres cosas que esto obligó a mirar, y **ninguna tira un error**:
+
+- **`CONFIG.evento` tiene que quedar VACÍO.** Con las dos puestas
+  —`evento` y `endpoint` propio— el arranque pisa el endpoint con el
+  de la central y la fila cae en otro archivo. La invitación se dibuja
+  igual y la pantalla dice "listo".
+- **Un `evento` vacío en el POST es una COLUMNA.** El `doPost` del
+  script propio crea una columna con el nombre de cada campo que le
+  llega, así que `fd.set('evento','')` le dejaba al cliente una
+  columna "evento" vacía en su planilla. Va sólo si hay evento.
+- **Y hay que sacarla de las DOS listas de la central** —
+  `lib/planillas.json` y el piso del Apps Script—: dejarla ahí no
+  rompe nada hoy, pero es una pestaña habilitada que ya no usa nadie,
+  y el piso no puede ser más ancho que la lista del sitio.
+
+**Y la prueba se fue con ella.** El recorrido de punta a punta
+recorría las fiestas de `lib/planillas.json`, así que sacar a Ámbar de
+ahí la dejaba sin medir — un cambio que se lleva puesta su propia
+medición. Ahora `pruebas/rsvp.js` recorre **las dos familias**: las de
+la central salen de `lib/planillas.json` y las de planilla propia
+salen de **qué carpetas de listado declaran su `appsScriptUrl`**,
+contra el `.gs.txt` que corresponde a cada una. Ninguna de las dos
+listas se escribe en la prueba. La de Pía se saltea sola **diciéndolo**:
+su formulario no vive en `pia/index.html` sino en `pia/nueva/`.
+Verificado rompiéndolo a propósito —dejándole a Ámbar el `evento`
+puesto además del endpoint— da **1 falla**.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
