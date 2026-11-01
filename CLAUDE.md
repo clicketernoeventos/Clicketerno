@@ -237,6 +237,17 @@ quede a medio hacer.
 - **El negocio está en Rosario (UTC−3).** Todo lo de fechas y horas se
   piensa desde ahí, no desde UTC. Ya costó un bug fatal.
 - El teléfono del negocio es **341 250-6451** y no se cambia.
+- **Un link nunca se entrega pelado: va con un texto SENTIDO para el que
+  lo recibe.** Dicho el 01/11/2026: *"siempre que te pida para entregar el
+  link sea con un texto sentido para el que lo reciba"*. La primera vuelta
+  salió como una ficha —lugar, fecha, dress code y el link— y eso no es una
+  invitación, es un dato: el que lo recibe no siente nada y la pieza que
+  hay del otro lado es justamente lo contrario. El texto va **en la voz de
+  quien invita**, no en la nuestra, y dice por qué querría que esa persona
+  esté; los datos van abajo, cortos, porque la invitación ya los tiene. Lo
+  mismo vale para el link del tablero que se le manda al cliente.
+  **Lo único que no se toca es el DATO**: una hora, un lugar o una fecha que
+  no mandó el cliente no se inventan para que la frase cierre mejor.
 
 ## Arrancar
 
