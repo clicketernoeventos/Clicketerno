@@ -123,7 +123,16 @@ var LISTA_EVENTOS = 'https://clicketerno.com.ar/lib/planillas.json';
    sitio existe para que una invitación nueva no cueste un paso del
    lado de Google; ésta existe para que un problema nuestro no le
    cueste una confirmación a un cliente. Valen las dos juntas. */
-var EVENTOS_EN_EL_CODIGO = ['almi15'];
+/* Están las fiestas de clientes que YA existen y ya repartieron —o
+   están por repartir— su link: ésas son las que no se pueden permitir
+   perder una confirmación por un problema nuestro. Una invitación
+   NUEVA sigue yendo en lib/planillas.json y nada más, que es el punto
+   de la planilla central; el día que alguna pase a ser de verdad, se
+   le agrega acá en el próximo pegado y listo.
+   El piso puede quedarse corto, NUNCA ser más ancho que la lista del
+   sitio: habilitaría una pestaña que nosotros ya no habilitamos. Lo
+   cuida pruebas/invitaciones.js. */
+var EVENTOS_EN_EL_CODIGO = ['almi15', 'facuymaxi', 'ambar15'];
 
 /* Los títulos que el resumen necesita entender. Cualquier otra
    pregunta de la invitación se crea sola como columna la primera vez

@@ -5651,6 +5651,34 @@ poner las suyas y con una clave escrita ya no matchean.
 código y no un dato guardado. La maestra y la inventada por la
 planilla viven en las propiedades del proyecto y no lo piden.
 
+#### La pestaña del sheet no se arma a mano: se crea sola
+
+Preguntado por el dueño —*"pero hay que armar el sheet"*— y la
+respuesta es que no, y ése **es** el punto de la planilla central: la
+pestaña de una fiesta la crea el Apps Script la primera vez que llega
+una confirmación suya. No hay nada que abrir en Google.
+
+**Lo único que decide si se crea es la lista**, y hay dos: la del
+sitio (`lib/planillas.json`) y el piso escrito en el código del Apps
+Script. Con el piso en `['almi15']`, las confirmaciones de `ambar15` y
+`facuymaxi` dependían enteras de que el Apps Script pudiera LEER el
+sitio — y si no podía, no entraban: el invitado ve que no se pudo y la
+planilla queda vacía, sin un solo error a la vista. Es exactamente la
+falla que ya está contada más arriba, esperando a las dos fiestas que
+todavía no la habían pisado.
+
+El piso pasó a ser `['almi15', 'facuymaxi', 'ambar15']`: **las de
+clientes que ya existen**. Una invitación nueva sigue yendo en
+`lib/planillas.json` y nada más —si no, cada tarjeta volvería a costar
+un paso del lado de Google, que es justo lo que esto vino a sacar—; el
+día que una pase a ser de un cliente de verdad, se le agrega en el
+próximo pegado. **Corto puede quedarse; más ancho que la lista del
+sitio, nunca**, y eso lo cuida `pruebas/invitaciones.js`.
+
+**El precio es que hay que volver a pegar el código**, igual que las
+claves. Las tres cosas —la maestra, la clave elegida y el piso— se
+hacen en el mismo viaje al editor.
+
 ### La clave maestra de los listados
 
 Pedido del dueño el 20/10/2026, junto con `almi15`: *"que se pueda
