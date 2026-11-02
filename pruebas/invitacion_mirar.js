@@ -314,6 +314,18 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     if (conFoto){
       const renglones = await pag.evaluate(() => {
         const port = document.querySelector('#portada, header');
+        /* SÓLO lo que de verdad CAE SOBRE LA FOTO. Hay dos formas de
+           hacer una portada con foto: el texto encima (mia15, almi15,
+           ambar15) y la foto como una banda con el texto DEBAJO, sobre
+           un fondo macizo (facuymaxi). Midiendo todos los renglones de
+           la portada, en el segundo caso se esconde la banda que es su
+           propio fondo y lo que queda atrás no es lo que ve nadie: la
+           suite informaba el monograma a 1,00:1 con el texto
+           perfectamente legible. Se cruza cada caja con la de la foto. */
+        const foto = port.querySelector('img');
+        const f = foto ? foto.getBoundingClientRect() : null;
+        const encima = r => f && r.left < f.right && r.right > f.left &&
+                                 r.top < f.bottom && r.bottom > f.top;
         const out = [];
         for (const n of port.querySelectorAll('*')){
           if (n.closest('img') || n.tagName === 'IMG' || n.tagName === 'SVG') continue;
@@ -327,6 +339,7 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
           const r = n.getBoundingClientRect();
           if (r.width < 2 || r.height < 2) continue;
           if (r.bottom < 0 || r.top > innerHeight) continue;
+          if (!encima(r)) continue;
           out.push({ txt:(n.textContent||'').trim().replace(/\s+/g,' ').slice(0,28), color:cs.color,
                      x:r.left, y:r.top, w:r.width, h:r.height });
         }
@@ -362,8 +375,10 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       }
       es(malos.length === 0,
          malos.length ? 'sobre la foto no se leen: ' + malos.slice(0,4).join(' · ')
-                      : renglones.length + ' renglones sobre la foto, el peor ' +
-                        (peorFoto ? peorFoto.r.toFixed(2) + ':1 "' + peorFoto.txt + '"' : '—'));
+                      : renglones.length === 0
+                        ? 'la foto de la portada no lleva texto encima'
+                        : renglones.length + ' renglones sobre la foto, el peor ' +
+                          (peorFoto ? peorFoto.r.toFixed(2) + ':1 "' + peorFoto.txt + '"' : '—'));
     }
 
     /* ── 5b · el texto que cae SOBRE UN FONDO DIBUJADO ──
@@ -773,6 +788,8 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     });
     const franjas = await pagL.evaluate(
       () => typeof CONFIG === 'undefined' ? [] : Object.keys(CONFIG.franjas || {}));
+    const portada = await pagL.evaluate(
+      () => typeof CONFIG === 'undefined' ? '' : (CONFIG.portada || ''));
     await ctxL.close();
 
     if (!cuantas) bien('esta invitación no tiene fotos: nada que medir');
@@ -780,10 +797,18 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       /* a · se cae UNA: se va ella y se va su puntito */
       const ctx1 = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
       const pag1 = await ctx1.newPage();
+      /* La que se tira tiene que ser una de la GALERÍA. Tirando la
+         PRIMERA que pida el navegador se tira la de la portada —que
+         en facuymaxi se pide antes— y entonces la galería queda
+         entera: la cuenta daba "quedaron 4 de las 3" y parecía que
+         la foto caída no se iba, cuando lo que no se había caído era
+         una foto de la galería. La portada tiene su propio bloque
+         más abajo. */
       let primera = null;
+      const esPortada = u => portada && u.split('?')[0].endsWith(portada.split('/').pop());
       await pag1.route('**/*', r => {
         const u = r.request().url();
-        if (r.request().resourceType() === 'image' && /\/fotos\//.test(u)){
+        if (r.request().resourceType() === 'image' && /\/fotos\//.test(u) && !esPortada(u)){
           if (!primera) primera = u;
           if (u === primera) return r.fulfill({status:404, body:''});
         }
@@ -947,17 +972,22 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await pagM.goto(URL, {waitUntil:'domcontentloaded'});
     if (await pagM.locator('#abrir').count()){ await pagM.click('#abrir'); await pagM.waitForTimeout(2700); }
     await pagM.waitForTimeout(600);
-    const hay = await pagM.evaluate(() => !!document.querySelector('.repro audio'));
+    /* El reproductor no se llama igual en todas: `ambar15` lo tiene
+       en `.repro` y `facuymaxi` en `.player`. Lo que se busca es el
+       `<audio>`, que es lo único que toda invitación con canción
+       tiene sí o sí — con el selector de UNA, la suite informaba
+       "esta invitación no trae canción" con la canción puesta. */
+    const hay = await pagM.evaluate(() => !!document.querySelector('audio'));
     if (!hay) bien('esta invitación no trae canción');
     else {
-      const enBucle = await pagM.evaluate(() => document.querySelector('.repro audio').loop);
+      const enBucle = await pagM.evaluate(() => document.querySelector('audio').loop);
       es(!enBucle, enBucle ? 'la canción queda en BUCLE: no se la puede dejar de escuchar'
                            : 'la canción no queda en bucle');
       /* Se fuerza el final: en el camino normal hay que esperar la
          canción entera, así que esto no se recorre nunca. */
       const fin = await pagM.evaluate(async () => {
-        const a = document.querySelector('.repro audio'),
-              b = document.querySelector('.repro .play');
+        const a = document.querySelector('audio'),
+              b = document.querySelector('.repro .play, .player .play');
         a.dispatchEvent(new Event('ended'));
         await new Promise(r => setTimeout(r, 120));
         return { t: a.currentTime, et: b ? (b.getAttribute('aria-label') || '') : '' };

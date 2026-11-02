@@ -147,6 +147,15 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
    fundiendo `#sobre` se funde también la carta, que es su hija. */
 #sobre{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:0 var(--gutter);
   transition:visibility 0s linear 2.4s}
+/* SIN JAVASCRIPT EL SOBRE NO EXISTE.
+   `#sobre` es una capa fija que tapa la invitación entera, y su
+   botón lo abre el JS: si el script no corre —o revienta en la
+   primera línea— el invitado se queda mirando un sobre cerrado y un
+   botón que no hace nada, para siempre y sin un solo error a la
+   vista. El `.js` lo pone un script de una línea en el `<head>`, así
+   que esto no parpadea: el sobre no se dibuja hasta que se sabe que
+   hay JS. */
+html:not(.js) #sobre{display:none}
 #sobre:before{content:'';position:absolute;inset:0;z-index:0;
   background-color:var(--vino-hondo);
   background-image:radial-gradient(120% 90% at 50% 12%,#7C2540,var(--vino-hondo) 58%,var(--vino-noche));
@@ -690,6 +699,7 @@ h2{font-family:var(--titulos);font-weight:500;line-height:1.08;
   .firma a,.aviso-datos a{padding-left:12px;padding-right:12px}
 }
 </style>
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 

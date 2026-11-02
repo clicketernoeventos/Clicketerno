@@ -5526,17 +5526,14 @@ h"* se partía y dejaba un `h.` solo en el renglón de abajo. La tercera
 familia (Parisienne) es **solo** para la "y" y la frase manuscrita: no
 lleva un solo texto largo.
 
-**La canción no suena adentro de la invitación.** Mandaron *"Bellísimo
-así", de Laura Pausini*: el archivo no es nuestro y la CSP no deja
-incrustar un reproductor de terceros —en `ambar15/` el dueño después
-pidió lo contrario y está contado ahí; acá sigue valiendo porque ellos
-no pidieron que sonara— —que además sería un tercero
-corriendo código en la pantalla del invitado—. El reproductor de la
-referencia 1 **está dibujado** y el play LLEVA a escucharla, y el
-renglón de abajo lo dice: un play que no suena es la mentira de siempre.
-El enlace es una **búsqueda** y no la dirección de un tema: una
-dirección de tema se adivina, y mandar a la canción equivocada es peor
-que no mandar a ninguna.
+**La canción SUENA** desde el 01/11/2026 — está contado abajo, en
+*"Sin sobre, con las fotos, con la canción sonando y con SU paleta"*.
+Hasta ese día el reproductor era un dibujo y el play LLEVABA a
+escucharla, porque *el archivo no es nuestro*; el dueño pidió lo
+contrario y es la misma excepción que `ambar15/`. Lo que no se afloja
+es la mitad técnica: ningún reproductor de un tercero, que la CSP no
+lo deja y además sería un tercero corriendo código en la pantalla del
+invitado.
 
 **El cronograma solo tiene lo que mandaron**: la ceremonia a las 21 y el
 final a las 4. Una hora inventada manda a la gente a la hora
@@ -5584,6 +5581,216 @@ de Trabajos ni en `/invitaciones`**, por lo mismo que `mia15`, `almi15` y
 link no se haya repartido: la dirección es
 `clicketerno.com.ar/facuymaxi` y sale del alias que eligieron ellos. Un
 link repartido no se puede mover; uno que nadie tiene, sí.
+
+#### Las tres referencias nuevas, y lo que cambió con ellas
+
+El dueño mandó tres capturas más —una portada rusa con el reproductor
+arriba, un timing marrón con el calendario enmarcado y un cronograma
+que serpentea, y una galería en mosaico con sus preguntas— y una
+línea: *"me gustaría que haya ese estilo y pongas todo lo que te piden
+en ese texto"*. La pieza se rehizo alrededor de ellas; lo que piden
+los novios ya estaba y no se tocó.
+
+**La portada es otra.** Ahora es el REPRODUCTOR arriba de todo sobre
+el papel, la FOTO a sangre en el medio, y abajo una BANDA DE TINTA con
+el monograma de dos iniciales separadas por una raya, los nombres en
+capitulares espaciadas, la fecha en números (`22.05.2027`) y la
+flecha. Se fueron el marco de ramas y el borde ondulado de la foto:
+eran de la referencia anterior y la nueva corta derecho, que además es
+lo que hace que la foto y la banda se lean como una sola pieza.
+
+**Es UNA sola maqueta, con foto y sin foto.** Lo único que se esconde
+es la foto; todo lo demás está en los dos casos. Así no hay dos
+portadas que medir y el día que llegue el archivo no se mueve nada
+más — al revés de `mia15`, donde la portada con foto y la tipográfica
+son dos caminos distintos y cada cambio hay que mirarlo dos veces.
+
+**El reproductor se mudó y por eso se fue de la ficha.** Estaba
+dibujado en la tarjeta de "nuestra canción" y ahora vive en la
+portada; la tarjeta quedó con el nombre, el autor y un botón que lleva
+al mismo lado. Dibujarlo en los dos lugares es *dos dibujos para lo
+mismo, y uno se queda atrás*. Y los dos mandos de los costados van
+declarados decoración (`aria-hidden` + `pointer-events:none`): con una
+sola canción no pueden hacer nada, y *un botón que no puede hacer su
+trabajo molesta más que no estar*.
+
+**La frase y el lugar se fueron de la portada, y no es de gusto.**
+Medido: con los dos renglones puestos la portada daba **973px en un
+iPhone de 844**, así que "Deslizá" —lo único que avisa que hay más
+abajo— quedaba debajo del borde. La frase bajó a "Queremos que estés",
+donde encima se lee mejor, y el lugar ya vivía en "dónde y cuándo".
+Con eso la portada mide **836** y entra entera. Es la misma lección ya
+escrita para `ambar15`: *un renglón que se agrega a una portada no es
+un renglón, es todo lo que estaba abajo, movido*.
+
+**El calendario pasó del arco al MARCO**, con sus cuatro esquinas
+floreadas y la barra del horario de inicio abajo ("EMPIEZA · 21:00",
+que es el "START 14:30" de la captura). Y el corazón del día pasó a
+ser **de contorno**, que además arregla una medición: con uno relleno
+hay que elegir un color de número que funcione contra el corazón Y
+contra el fondo, porque *el medidor ve una cosa y el invitado ve la
+otra*; de contorno no hay dos cosas, el número cae sobre el fondo
+macizo de la tarjeta y lo que informa el medidor es lo que se ve.
+
+**El cronograma serpentea**, con los iconos dibujados a los costados y
+los nodos de corazón sobre la línea. Tres cosas que costaron una
+vuelta cada una y **ninguna tiraba un error**:
+
+- **La línea se MIDE, no se estira.** La primera versión era un SVG de
+  `viewBox` fijo estirado al alto de la lista con
+  `preserveAspectRatio:none`: estirada así, la curva cruza el centro
+  en los BORDES de cada renglón y no en su medio, así que los
+  corazones —que van centrados en su renglón— caían justo donde la
+  curva está más lejos y se veían **flotando al costado de la línea**.
+  Y los renglones no miden todos lo mismo, porque el texto envuelve.
+  Ahora el camino se arma con las cajas de verdad (`offsetTop` +
+  `offsetHeight/2`) y se vuelve a dibujar al cambiar el tamaño y
+  **cuando terminan de bajar las letras**: una curva medida contra la
+  tipografía de respaldo pasa al lado de los corazones.
+- **`nth-of-type` y no `nth-child`.** El primer hijo de la lista es el
+  SVG de la línea, así que contando HIJOS el primer renglón salía del
+  lado equivocado — y eso se ve perfecto, sólo que espejado.
+- **Un icono que no está en la tabla no dibuja nada y el renglón igual
+  se ve.** Los iconos van por NOMBRE en `CONFIG.timing`: agregar una
+  hora del resto de la noche tiene que ser una línea, no un dibujo.
+
+**La galería es un MOSAICO con su visor.** Una alta a la izquierda,
+dos cuadradas a la derecha y el resto fluyendo. **La ancha de cierre
+no es decoración**: la alta se come dos filas de la columna
+izquierda, así que con una cantidad PAR de fotos queda siempre un
+hueco al final, y la última ocupando las dos columnas es lo que lo
+tapa — con cualquier cantidad el mosaico no tiene un agujero. La
+altura de las filas la fijan las cuadradas, así que la alta se estira
+sola sin que nadie calcule nada.
+
+**Y el botón "Ver todas las fotos" hace un trabajo de verdad**: en el
+mosaico van recortadas y en el visor se ven enteras. Las imágenes son
+LAS MISMAS que ya están en la página, así que abrirlo no baja un solo
+byte más. Cierra con ✕ y con Escape, y devuelve el scroll del body.
+Si no hay fotos el botón no existe.
+
+**Las preguntas, y SOLO las que ellos contestaron.** "¿Pueden ir
+chicos?" y "¿hay estacionamiento?" están en la captura y no van: una
+respuesta inventada ahí hace venir a una familia entera a una fiesta
+donde no la esperan. Son cinco y las cinco salen de lo que mandaron
+—la hora, el lugar, el dress code, "durante marzo de 2027" y el
+alias—. Entran solas agregando un renglón el día que manden más.
+
+#### Sin sobre, con las fotos, con la canción sonando y con SU paleta
+
+Cuatro pedidos del dueño el 01/11/2026, con las fotos y el audio.
+
+**1 · "No quiero que tenga sobre. Que arranque directo en la portada.
+Va a quedar más prolijo."** Se fue entero: la capa, su CSS y su JS, y
+la cascada de la portada —que esperaba a que el sobre se abriera—
+arranca ahora al cargar, en el cuadro SIGUIENTE y no en éste (puesta
+en el mismo, el navegador junta los dos estados y no hay transición
+que ver, sin un solo error que lo diga).
+De paso se fue sola la falla de abajo: **acá ya no hay capa fija que
+pueda tapar nada si el script no corre.**
+
+**2 · Las cinco fotos.** La del jardín al atardecer es la portada —la
+que eligieron ellos— y las otras cuatro son el mosaico. **Van en
+COLOR**, al revés que `mia15`, `almi15` y `ambar15`: ahí la paleta era
+de tres colores y una foto a color metía los suyos; acá la paleta que
+mandaron es cálida y natural, y el atardecer y las guirnaldas SON el
+champagne y el dorado de su lista. Además eligieron esa foto por eso
+mismo —*"el jardín al atardecer, con las luces de fondo"*—: en blanco
+y negro se borra justo lo que la hizo elegir. Se montaron las dos y se
+eligió mirando.
+
+**Los recortes son la mitad del trabajo.** La de la portada se recortó
+a 1,1:1 alrededor de las caras: entera es vertical de cuerpo entero y
+en la banda de la portada se habría visto una tira de torsos. Y **la
+ancha del mosaico pasó de 2,1:1 a 1,55:1**, porque las cuatro son
+selfies verticales y en una banda tan angosta no entra una cara
+entera: *el ancho de la ranura se elige por lo que hay que mostrar, no
+al revés*.
+
+**3 · La canción SUENA.** Más arriba está escrito que acá no sonaba
+porque *"el archivo no es nuestro"*; el dueño pidió lo contrario, igual
+que en `ambar15`, y es la misma excepción: se le dijo y la sostuvo. La
+mitad técnica no se afloja —ningún reproductor de un tercero: la CSP
+no lo deja y además sería un tercero corriendo código en la pantalla
+del invitado—. El audio sale del video que mandó, normalizado, en AAC
+y en Opus: el navegador baja UNO.
+
+**`preload="metadata"`, y no es un detalle**: son 2,3 MB que no se
+bajan hasta que alguien toca el corazón. Y el reproductor **trae
+escrito cuánto dura**, porque un Ogg todavía sin bajar entero devuelve
+`Infinity` de duración y ahí la cuenta del avance da 0 para siempre —
+la rayita se queda clavada a la izquierda toda la canción, sin un solo
+error que lo diga.
+**Y el reproductor es UNO**: la tarjeta de "nuestra canción" perdió su
+botón y dice dónde suena. Dos botones para escuchar la misma canción no
+son dos entradas, son dos cosas haciendo lo mismo.
+
+**4 · "Necesito que juegues con estos colores. Los bordes, las letras,
+todo. No improvises."** Ninguna raya de la invitación es un gris
+inventado: hay **una variable de borde por cada fondo**
+(`--borde-papel`, `--borde-tinta`, `--borde-verde`), sacadas del
+dorado, del champagne y de la salvia que mandaron ellos, y las usan el
+hilo que cose las secciones, el filete de la banda de la portada, el
+contorno de cada foto del mosaico, las dos tarjetas, las preguntas, el
+marco del calendario, la barra del horario, las fichas de la cuenta
+regresiva, la caja del alias y los botones.
+**El hilo dejó de ir en `currentColor`**, que ahí era el color del
+texto, o sea un gris: va en el dorado sobre el papel, en el champagne
+sobre la tinta y en la salvia honda sobre el verde.
+
+##### Dos cosas que la suite medía con el selector de OTRA invitación
+
+Las dos daban verde o una falla falsa, y las dos son la misma lección
+—*una comprobación escrita para una invitación mide a esa invitación*—:
+
+- **La foto que se tira tenía que ser una de la GALERÍA.** La prueba
+  404ea la PRIMERA imagen de `fotos/` que pide el navegador, y acá esa
+  es la de la PORTADA: la galería quedaba entera y la cuenta informaba
+  *"quedaron 4 de las 3"*. Parecía que la foto caída no se iba, cuando
+  lo que no se había caído era una foto de la galería. Ahora saltea la
+  portada, que tiene su propio bloque.
+- **El reproductor se buscaba por `.repro audio`**, que es la clase de
+  `ambar15`. Acá es `.player`, así que la suite informaba *"esta
+  invitación no trae canción"* con la canción puesta y las tres
+  comprobaciones del bucle y el rebobinado **no se corrían**. Se busca
+  el `<audio>`, que es lo único que toda invitación con canción tiene
+  sí o sí.
+
+#### Y midiendo eso apareció otra, en CINCO invitaciones a la vez
+
+**Sin JavaScript, el sobre tapaba la invitación entera y no se podía
+abrir.** `#sobre` es una capa `position:fixed` que cubre la pantalla y
+su botón lo abre el JS: si el script no corre —o revienta en la
+primera línea— el invitado se queda mirando un sobre cerrado y un
+botón que no hace nada, **para siempre y sin un solo error a la
+vista**. Comprobado preguntándole al navegador quién ataja el dedo en
+el medio de la pantalla con el JS apagado: en `mia15`, `almi15`,
+`ambar15`, `mateoylucas` y `facuymaxi` contestaba el sobre.
+
+Y el comentario del propio archivo decía lo contrario —*"sin JS no
+existe: el CSS lo esconde"*—, así que estaba escrito como resuelto. En
+`facuymaxi` el JS hasta hacía `sobre.hidden = false`, o sea que la
+intención estaba: lo que fallaba es que **`#sobre{display:grid}` le
+gana al `hidden` del HTML**, que es exactamente la trampa de abajo.
+
+Se arregla con `html:not(.js) #sobre{display:none}` **más un script de
+una línea en el `<head>`** que pone esa clase. Los dos juntos: sin la
+clase puesta antes de pintar, la invitación se vería un cuadro y
+después aparecería el sobre encima, que es peor que el bug.
+`claraybruno` y `juliayfranco` ya estaban bien.
+
+**La lección es la de siempre y por eso vale repetirla**: una trampa
+que se arregla en un lugar hay que ir a buscarla a los otros, y un
+comentario que dice que algo está resuelto no es una medición. Ésta
+apareció midiendo otra cosa.
+
+**Una trampa de CSS que volvió a morder: `hidden` lo pisa cualquier
+`display` escrito después.** `.port-foto{display:block}` y
+`.btn[hidden]` sin su regla hacían que la foto vacía y el botón de la
+galería se dibujaran igual estando ocultos. No tira ningún error: lo
+que se ve es una caja negra donde no va nada. No se puede arreglar con
+un `[hidden]{display:none!important}` global, porque el sobre depende
+justamente de que su `display:grid` le gane al `hidden` del HTML.
 
 ### Probar el listado de una fiesta antes de que lo use gente
 
@@ -6213,10 +6420,11 @@ dejaría peor parados.
   esté, su listado abre con la clave que inventó la planilla (se lee
   entrando con la maestra) y no con el correo. En el repositorio ese
   valor **no va nunca**, y ahora hay una prueba que lo cuida.
-- **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos**: las
-  **cinco fotos** (la de portada es la del jardín al atardecer, que es
-  la que eligieron; falta además la de las mascotas), **los horarios
-  del resto de la noche** para el cronograma, **hasta cuándo se puede
+- **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos.** Las
+  fotos YA LLEGARON (01/11/2026): la del jardín al atardecer es la
+  portada y las otras cuatro son el mosaico; **falta la de las
+  mascotas**, que todavía no se sacaron. Quedan **los horarios del
+  resto de la noche** para el cronograma, **hasta cuándo se puede
   confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
   cuenta** del alias `FACUYMAXI.BODA` y **a quién le escriben los
   invitados el día de la fiesta**, que no podemos ser nosotros.

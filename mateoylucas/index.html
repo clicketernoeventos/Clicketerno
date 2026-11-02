@@ -142,6 +142,15 @@ h3{font-family:var(--serif);font-weight:500;font-size:clamp(23px,5.6vw,28px);lin
   background:radial-gradient(130% 100% at 50% 0%,var(--tinta-3),var(--tinta) 62%);
   padding:var(--gutter);text-align:center;
   transition:opacity .9s var(--e),visibility .9s}
+/* SIN JAVASCRIPT EL SOBRE NO EXISTE.
+   `#sobre` es una capa fija que tapa la invitación entera, y su
+   botón lo abre el JS: si el script no corre —o revienta en la
+   primera línea— el invitado se queda mirando un sobre cerrado y un
+   botón que no hace nada, para siempre y sin un solo error a la
+   vista. El `.js` lo pone un script de una línea en el `<head>`, así
+   que esto no parpadea: el sobre no se dibuja hasta que se sabe que
+   hay JS. */
+html:not(.js) #sobre{display:none}
 #sobre.abierto{opacity:0;visibility:hidden;pointer-events:none}
 .sobre-caja{max-width:420px;display:grid;gap:26px;justify-items:center}
 .sobre-caja .chico{color:var(--texto-suave)}
@@ -415,6 +424,7 @@ form .boton{justify-self:center;margin-top:6px;width:100%;max-width:300px}
 #avance{position:fixed;top:0;left:0;height:2px;width:0;z-index:50;pointer-events:none;
   background:linear-gradient(90deg,var(--oro),var(--plata))}
 </style>
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 
