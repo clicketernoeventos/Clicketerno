@@ -5747,6 +5747,56 @@ regresiva, la caja del alias y los botones.
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
 
+#### "Que sea así en general": dos colores y el borde rasgado
+
+Cuarta corrección seguida del dueño sobre la misma invitación, con
+una referencia de bandas **blancas y negras que se alternan con el
+borde RASGADO**. Las tres anteriores —la portada, el mosaico, el
+calendario— eran la misma observación en pedazos; ésta la dice
+entera.
+
+**Las pieles pasaron de tres a DOS.** Eran marfil, salvia y
+antracita. La salvia era "el respiro", y en una pieza de dos colores
+es exactamente lo que no deja que haya dos colores: tres grises
+cálidos apilados no hacen contraste, hacen barro — la misma lección
+que ya había costado la portada. Y el antracita `#333638` subió al
+casi negro de la portada (`--tinta-port`), así que **la pieza entera
+tiene un solo negro y un solo blanco**.
+
+**Lo que queda de la paleta que ellos mandaron son los ACENTOS**: el
+oro de los rótulos sobre el papel, el champagne sobre la tinta, los
+hilos, los filetes de las fotos — y la salvia, que sigue entera en
+los círculos del dress code, donde es un DATO y no una decoración.
+Esto no contradice *"jugá con estos colores, no improvises"*: los
+cinco siguen estando, lo que cambió es cuál manda.
+
+**El borde rasgado se pone SOLO, y SOLO donde el color cambia.**
+Escrito a mano en el HTML, el día que una sección se esconda —la
+galería si no hay fotos, las preguntas si no hay ninguna— quedarían
+dos bandas del mismo color pegadas con un rasgado en el medio. Y por
+eso `rasgar()` **es una función y no un IIFE**: la galería aparece
+recién cuando las fotos cargaron, o sea después de la primera
+pasada, así que hay que volver a rasgar o queda una juntura recta de
+los dos lados.
+
+**Y la sección que se rasga PIERDE SU HILO.** El hilo con su rombo y
+el rasgado son dos separadores; puestos juntos se leen como un error
+de maqueta. Es la misma lección ya escrita para el encaje de
+`ambar15`, que *reemplaza* al corte en curva y no se suma. Además el
+rasgado se dibuja encima y le comería la mitad.
+
+**Un rasgado no es una sierra**, y eso costó una vuelta. La primera
+versión ponía cada punto al azar entre 9 y 39: picos independientes,
+y lo que se ve es papel picado —la misma falla que ya está anotada
+para la sierra de `ambar15`—. Un papel rasgado es un camino que
+**camina**: cada punto cerca del anterior, con alguna muesca más
+honda de vez en cuando. Y tiene que **volver al medio**: un paseo
+aleatorio puro se pega al tope y deja una recta de doscientos
+píxeles, que es justo lo que un rasgado no tiene. Los caminos salen
+de una **semilla fija** —la fecha de la boda—, como en `mia15`: con
+`Math.random()` dos capturas de la misma invitación saldrían
+distintas.
+
 #### El calendario vuelve a su arco, y el corazón se rellena
 
 *"Así el calendario pero en la paleta que pidieron"*, con una
