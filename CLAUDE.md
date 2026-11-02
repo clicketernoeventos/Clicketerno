@@ -5747,6 +5747,57 @@ regresiva, la caja del alias y los botones.
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
 
+#### El cierre es la foto del mar, con "te esperamos" encima
+
+*"Esta foto quiero que sea como la primera pero que diga te esperamos
+y la fecha con las iniciales de ellos. Que sea en color champagne con
+ese código el borde en gris"*, con la referencia al lado: una foto a
+sangre y el saludo escrito encima, abajo.
+
+**Sale del mosaico.** Era la ancha del cierre del mosaico; puesta
+además acá sería la misma foto dos veces. Con tres el mosaico no tiene
+agujero igual —la alta se come dos filas y las dos cuadradas las
+llenan—, que es justo lo que la regla del "ancha" estaba cuidando.
+
+**Se RECORTÓ de nuevo del original**, y es la mitad del trabajo: la
+que estaba en el repo ya venía recortada a 1,55:1 para la ranura
+ancha, así que el saludo aterrizaba **sobre las dos caras**. El
+recorte nuevo deja las caras arriba y los hombros abajo, que es donde
+cae el texto. *El encuadre se arregla en el archivo, no en el CSS.*
+
+**El velo se midió CON EL PÍXEL, no a ojo.** El texto va en champagne
+—un color claro— y debajo hay un cielo, el pasto y la piel de los dos.
+Con el primer velo, en un monitor ancho *"Te esperamos"* caía sobre un
+gris de 126 y daba **2,38:1**, o sea que no estaba; en un teléfono el
+MISMO velo daba 4,7. La foto escala distinto en cada pantalla y la
+raya del degradé no — la misma lección del velo de `almi15`. Con el
+velo repartido: **4,45 a 9,48:1** en los cuatro aparatos.
+
+**Y esto es un PUNTO CIEGO del medidor compartido**, igual que la
+portada de `mia15`: `.cierre-foto` tiene un `background-color` opaco,
+así que el medidor informa champagne sobre casi negro y da un número
+perfecto mientras el renglón puede estar cayendo sobre el cielo. Por
+eso se midió a mano con `pruebas/png.js`.
+
+**El borde gris de la letra lo pidió el dueño**, y de paso protege el
+caso en que el velo no alcance. Va adentro de `@supports (paint-order:
+stroke)` y con `paint-order:stroke fill`: sin eso el trazo se centra
+sobre el contorno, se mete para adentro y empasta la manuscrita.
+**Y el grosor va en `em`, que es el del ELEMENTO**: `.055em` en un
+rótulo de 9,5px es un hilo de medio píxel, o sea una declaración que
+no hace nada. Lo agarró la prueba, no el ojo — es exactamente la misma
+falla ya escrita para el "15" de `mia15`.
+
+**Las iniciales salen de `CONFIG.quien`**, como el monograma de la
+portada: escritas a mano, la próxima invitación que se copie de ésta
+las trae de otra pareja — que es lo que ya pasó en `ambar15` con el
+nombre de Almi.
+
+**Y el renglón "Te esperamos el 22 de mayo" se va cuando la foto
+carga**: la foto lo dice, y dicho dos veces una encima de la otra es
+un error de maqueta. Si el archivo falta, el cierre queda como estaba
+y no un cuadrado roto.
+
 #### El dress code, con los círculos encimados
 
 *"Esto para el dress code con la paleta que te pidieron"*, con la
@@ -6604,8 +6655,8 @@ dejaría peor parados.
   valor **no va nunca**, y ahora hay una prueba que lo cuida.
 - **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos.** Las
   fotos YA LLEGARON (01/11/2026): la del jardín al atardecer es la
-  portada y las otras cuatro son el mosaico; **falta la de las
-  mascotas**, que todavía no se sacaron. Quedan **los horarios del
+  portada, la del mar es el cierre y las otras tres son el mosaico;
+  **falta la de las mascotas**, que todavía no se sacaron. Quedan **los horarios del
   resto de la noche** para el cronograma, **hasta cuándo se puede
   confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
   cuenta** del alias `FACUYMAXI.BODA` y **a quién le escriben los
