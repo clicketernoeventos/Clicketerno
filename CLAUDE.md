@@ -5747,6 +5747,40 @@ regresiva, la caja del alias y los botones.
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
 
+#### El dress code, con los círculos encimados
+
+*"Esto para el dress code con la paleta que te pidieron"*, con la
+referencia: el título, una línea corta, el nombre del dress code en
+**capitular espaciada** y abajo tres discos **encimados**.
+
+**En fila y separados, cinco bolitas son una leyenda de colores;
+encimados son una paleta.** Es el mismo gesto que una carta de
+pinturas, y cuesta un margen negativo.
+
+**Cada disco lleva un aro del color de la ficha, y no es un adorno**:
+encimados sin aro, dos colores vecinos parecidos —acá el champagne y
+el dorado— se funden en una sola mancha y la paleta deja de tener
+cinco colores. El marfil lleva además su filete gris, porque un
+círculo del color del fondo no es un círculo.
+
+**El rótulo va ARRIBA de los círculos**, que es donde la referencia
+pone la línea que los explica: una fila de bolitas sin rótulo es un
+adorno, y esto es un DATO — la misma lección ya escrita para
+`ambar15`. Y dice *"los colores de la boda"* y no *"vestite así"*:
+ellos mandaron su paleta, nunca dijeron cómo tiene que ir vestido el
+invitado, y eso no se inventa.
+
+**El nombre del dress code va en capitular espaciada por `id` y no en
+el `h3`**: el otro `h3` de la fila es el nombre de la canción, que en
+mayúsculas sería otra cosa.
+
+**Y de paso se encontró un verde que había quedado suelto.** El botón
+"Cómo llegar" seguía con `--borde-verde` y `--salvia-honda`, que es
+la piel que esta invitación ya no tiene: se dibujaba perfecto, no
+tiraba ningún error, y era el único verde de toda la pieza. Es la de
+siempre: **una variable que sobrevive a la skin que la creó no
+avisa**.
+
 #### "Que sea así en general": dos colores y el borde rasgado
 
 Cuarta corrección seguida del dueño sobre la misma invitación, con

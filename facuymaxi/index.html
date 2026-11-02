@@ -550,12 +550,12 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    ══════════════════════════════════════════════════════════════════ */
 .mapa{display:inline-flex;align-items:center;justify-content:center;gap:9px;
   min-height:48px;margin-top:22px;padding:14px 26px;border-radius:999px;
-  border:1px solid var(--borde-verde);color:var(--salvia-honda);
+  border:1px solid var(--borde-papel);color:var(--oro-hondo);
   font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
   text-decoration:none;transition:transform .3s var(--e),background-color .3s}
 .mapa svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.4}
 .mapa:active{transform:scale(.975)}
-@media (hover:hover){ .mapa:hover{background-color:rgba(163,173,149,.2)} }
+@media (hover:hover){ .mapa:hover{background-color:rgba(217,197,164,.28)} }
 
 /* ══════════════════════════════════════════════════════════════════
    8 · LOS DETALLES: dos tarjetas iguales
@@ -572,16 +572,30 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .ficha p{font-size:15px;font-weight:300;line-height:1.75;margin-top:10px}
 .ficha .ico{width:28px;height:28px;fill:none;stroke:var(--oro-hondo);stroke-width:1.2;
   stroke-linecap:round;stroke-linejoin:round}
-/* ── LOS CÍRCULOS DE LA PALETA (referencia 3) ──
-   La referencia pone tres bolitas y abajo "TOTAL BLACK". Acá son los
-   colores que mandaron ellos, y el marfil lleva su aro para que se
-   vea sobre el papel: un círculo del color del fondo no es un
-   círculo. */
-.paleta{display:flex;justify-content:center;gap:11px;margin-top:16px}
-.paleta i{display:block;width:26px;height:26px;border-radius:50%;
-  box-shadow:inset 0 0 0 1px rgba(51,54,56,.18)}
-.dress-eti{margin-top:16px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;
+/* ── LOS CÍRCULOS DE LA PALETA ──
+   VAN ENCIMADOS, como la referencia que mandó el dueño: tres discos
+   que se montan uno sobre otro. En fila y separados son una leyenda
+   de colores; encimados son una paleta.
+   Cada uno lleva un ARO DEL COLOR DE LA FICHA, y eso no es un
+   adorno: encimados sin aro, dos colores vecinos parecidos se funden
+   en una sola mancha y la paleta deja de tener cinco colores. Y el
+   marfil lleva además su filete gris, porque un círculo del color
+   del fondo no es un círculo.
+   El último va ARRIBA de todos (`z-index` al revés), que es como se
+   apilan en la referencia. */
+.paleta{display:flex;justify-content:center;margin-top:14px}
+.paleta i{display:block;width:34px;height:34px;border-radius:50%;
+  margin-left:-10px;position:relative;
+  box-shadow:0 0 0 2px var(--marfil),inset 0 0 0 1px rgba(51,54,56,.2)}
+.paleta i:first-child{margin-left:0}
+.dress-eti{margin-top:18px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
   font-weight:600;color:var(--oro-hondo)}
+/* El nombre del dress code en capitular espaciada, como el
+   "TOTAL BLACK" de la referencia. Va por `id` y no en el `h3`: el
+   otro `h3` de la fila es el nombre de la canción, que en
+   mayúsculas sería otra cosa. */
+#dressTitulo{font-size:clamp(18px,4.8vw,23px);letter-spacing:.16em;
+  text-transform:uppercase;font-weight:400}
 /* El reproductor vive ARRIBA, en la portada: acá la ficha dice qué
    canción es y lleva al mismo lado con un botón. Dibujarlo dos veces
    sería dos dibujos para lo mismo, y uno se queda atrás. */
@@ -875,9 +889,11 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
           <p class="ante">Dress code</p>
           <h3 id="dressTitulo"></h3>
           <p id="dressTexto"></p>
-          <!-- los círculos de la paleta (referencia 3) -->
-          <div class="paleta" id="paleta" aria-hidden="true" style="pointer-events:none"></div>
+          <!-- El rótulo va ARRIBA de los círculos, como el texto que
+               en la referencia explica la paleta: una fila de bolitas
+               sin rótulo es un adorno, y esto es un dato. -->
           <p class="dress-eti" id="dressEti"></p>
+          <div class="paleta" id="paleta" aria-hidden="true" style="pointer-events:none"></div>
         </div>
         <div class="ficha ap d3">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
@@ -1293,8 +1309,8 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
 
   /* los círculos de la paleta */
   $('#paleta').innerHTML = (CONFIG.paleta || [])
-    .map(c => '<i style="background-color:' + esc(c) + '"></i>').join('');
-  if ((CONFIG.paleta || []).length) $('#dressEti').textContent = 'Los colores de la fiesta';
+    .map((c, i) => '<i style="background-color:' + esc(c) + ';z-index:' + (i+1) + '"></i>').join('');
+  if ((CONFIG.paleta || []).length) $('#dressEti').textContent = 'Los colores de la boda';
 
   /* ── el cronograma que serpentea (referencia nueva) ──
      La línea es un solo SVG estirado al alto de la lista, así que
