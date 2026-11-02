@@ -335,43 +335,56 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   text-transform:uppercase;color:var(--salvia-honda)}
 
 /* ══════════════════════════════════════════════════════════════════
-   4 · EL CALENDARIO EN SU MARCO (referencia nueva: el timing)
-   Un marco fino con sus cuatro esquinas floreadas, el día marcado
-   con un CORAZÓN DIBUJADO A MANO —de contorno, no relleno— y abajo
-   la barra del horario de inicio.
+   4 · EL CALENDARIO EN SU ARCO
+   El dueño mandó la referencia: un ARCO oscuro, el mes y el año
+   arriba, la grilla en serif clara y el día marcado con un CORAZÓN
+   RELLENO con el número adentro. "Así el calendario pero en la
+   paleta que pidieron", o sea con el antracita, el champagne y el
+   marfil de ellos.
 
-   EL CORAZÓN DE CONTORNO ADEMÁS SE MIDE BIEN. Con uno relleno hay
-   que elegir un color de número que funcione contra el corazón Y
-   contra el fondo, porque el medidor de contraste ve el fondo
-   macizo de la tarjeta y el invitado ve la forma; de contorno no hay
-   dos cosas: el número cae sobre el fondo de la tarjeta (10,8:1) y
-   es exactamente lo que el medidor informa.
+   EL ARCO NO ES UN `border-radius` A OJO: el radio horizontal es el
+   50% —o sea la mitad del ancho, siempre— y el vertical un 34% del
+   alto, que es lo que lo deja apenas achatado como en la captura.
+   Escrito en píxeles se vuelve un semicírculo en una tarjeta angosta
+   y una cúpula en una ancha.
+
+   Y EL CORAZÓN RELLENO TRAE DE VUELTA LA TRAMPA QUE EL DE CONTORNO
+   ESQUIVABA: el medidor de contraste sube por el árbol hasta el
+   primer fondo OPACO, y un corazón es una FORMA, no un fondo — así
+   que informaría el número contra el antracita del arco (1,4:1) y
+   tendría razón según lo que mide, mientras el invitado lo ve sobre
+   marfil. Se arregla haciendo que lo que el medidor ve SEA lo que
+   el invitado ve: el número vive adentro de un `<b>` con el marfil
+   del corazón de fondo de verdad, metido entero en la panza del
+   corazón, donde no se nota. No es esconderle un color al medidor:
+   es decirle la verdad.
    ══════════════════════════════════════════════════════════════════ */
 #calendario{position:relative;max-width:340px;margin:clamp(26px,5vh,38px) auto 0;
-  background-color:var(--antracita);color:var(--marfil);border-radius:3px;
-  padding:clamp(30px,7vw,40px) clamp(18px,5vw,26px) clamp(22px,5vw,28px);
+  background-color:var(--antracita);color:var(--marfil);
+  border-radius:50% 50% 3px 3px/34% 34% 3px 3px;
+  padding:clamp(86px,25vw,112px) clamp(20px,6vw,30px) clamp(26px,6vw,34px);
   box-shadow:0 22px 46px -30px rgba(38,41,43,.7)}
-#calendario .marco{position:absolute;inset:clamp(9px,2.4vw,13px);
-  border:1px solid var(--borde-tinta);pointer-events:none}
-#calendario .esq{position:absolute;width:clamp(24px,6.6vw,32px);color:var(--champan);
-  pointer-events:none;line-height:0}
-#calendario .esq svg{width:100%;height:auto}
-#calendario .e1{left:clamp(5px,1.6vw,8px);top:clamp(5px,1.6vw,8px)}
-#calendario .e2{right:clamp(5px,1.6vw,8px);top:clamp(5px,1.6vw,8px);transform:scaleX(-1)}
-#calendario .e3{left:clamp(5px,1.6vw,8px);bottom:clamp(5px,1.6vw,8px);transform:scaleY(-1)}
-#calendario .e4{right:clamp(5px,1.6vw,8px);bottom:clamp(5px,1.6vw,8px);transform:scale(-1)}
-#calendario .cal-tope{display:flex;align-items:baseline;justify-content:space-between;
-  gap:10px;font-family:var(--titulos);font-size:clamp(14px,4vw,17px);font-weight:400;
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:15px}
+#calendario .cal-tope{font-family:var(--titulos);font-weight:400;
+  font-size:clamp(15px,4.3vw,18px);letter-spacing:.12em;text-transform:uppercase;
+  text-align:center;margin-bottom:clamp(14px,3.6vw,18px)}
 #calendario table{width:100%;border-collapse:collapse;
   font-variant-numeric:lining-nums tabular-nums}
 #calendario th{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--champan);font-weight:500;padding-bottom:10px}
-#calendario td{font-size:13.5px;font-weight:300;padding:8px 0;color:var(--marfil)}
-#calendario td.elDia{position:relative;color:var(--marfil);font-weight:500}
-#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:42px;height:38px;
-  margin:-19px 0 0 -21px;fill:none;stroke:var(--champan);stroke-width:1.1;
-  stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#calendario td{font-size:13.5px;font-weight:300;padding:8px 0;color:var(--marfil);
+  text-align:center}
+#calendario td.elDia{position:relative}
+/* el corazón va corrido ABAJO a propósito: su panza —la parte ancha—
+   queda entonces a la altura del número, que es donde el número tiene
+   que caer. Centrado, el número aterriza en la muesca de arriba. */
+#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:48px;height:44px;
+  margin:-17px 0 0 -24px;fill:var(--marfil);stroke:none;pointer-events:none}
+/* el número, adentro de la panza del corazón: la caja es más chica
+   que la forma y del mismo color, así que no se ve — y el medidor
+   lee el fondo sobre el que el número de verdad está. */
+#calendario td.elDia b{position:relative;z-index:1;display:inline-block;
+  padding:0 1px;line-height:1.05;font-size:12.5px;font-weight:600;
+  background-color:var(--marfil);color:var(--antracita)}
 /* ── la barra del horario de inicio (el "START 14:30" de la captura) ── */
 #calendario .inicio{display:flex;align-items:center;justify-content:space-between;
   gap:12px;margin-top:clamp(16px,4vw,22px);padding:13px 16px;border-radius:3px;
@@ -1611,27 +1624,22 @@ function cargarFoto(src, alt){
   for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
   while (celdas.length % 7) celdas.push('');
 
-  /* EL CORAZÓN VA DE CONTORNO, como la captura. Y de paso se mide
-     bien: el número cae sobre el fondo macizo de la tarjeta
-     (10,8:1), que es exactamente lo que informa el medidor de
-     contraste. Con un corazón relleno hay que elegir un color que
-     funcione contra las dos cosas, porque el medidor ve una y el
-     invitado ve la otra. */
+  /* EL CORAZÓN VA RELLENO, como la captura, y el número adentro va
+     en un `<b>` con el marfil del corazón de fondo: ver el comentario
+     del CSS. El medidor de contraste no puede ver una forma, así que
+     lo que hay que darle es el color de verdad. */
   let filas = '';
   for (let i = 0; i < celdas.length; i += 7){
     filas += '<tr>' + celdas.slice(i, i+7).map(dia =>
       dia === '' ? '<td></td>'
-                 : dia === F.dia ? '<td class="elDia">' + corazonSVG('') + dia + '</td>'
+                 : dia === F.dia ? '<td class="elDia">' + corazonSVG('') + '<b>' + dia + '</b></td>'
                                  : '<td>' + dia + '</td>'
     ).join('') + '</tr>';
   }
 
   const hora = (F.hora + (F.min ? ':' + String(F.min).padStart(2,'0') : ':00'));
   caja.innerHTML =
-    '<div class="marco" aria-hidden="true"></div>' +
-    ['e1','e2','e3','e4'].map(c =>
-      '<div class="esq ' + c + '" aria-hidden="true">' + esquinaSVG() + '</div>').join('') +
-    '<div class="cal-tope"><span>' + MESES_T[F.mes-1] + '</span><span>' + F.anio + '</span></div>' +
+    '<div class="cal-tope">' + MESES_T[F.mes-1] + ' ' + F.anio + '</div>' +
     '<table role="presentation"><thead><tr>' +
       DIAS.map(x => '<th>' + x + '</th>').join('') +
     '</tr></thead><tbody>' + filas + '</tbody></table>' +

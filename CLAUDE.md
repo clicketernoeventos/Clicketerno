@@ -5631,6 +5631,8 @@ hay que elegir un color de número que funcione contra el corazón Y
 contra el fondo, porque *el medidor ve una cosa y el invitado ve la
 otra*; de contorno no hay dos cosas, el número cae sobre el fondo
 macizo de la tarjeta y lo que informa el medidor es lo que se ve.
+**Las dos cosas se dieron vuelta después**, con otra referencia del
+dueño: está abajo, en *"El calendario vuelve a su arco"*.
 
 **El cronograma serpentea**, con los iconos dibujados a los costados y
 los nodos de corazón sobre la línea. Tres cosas que costaron una
@@ -5744,6 +5746,45 @@ regresiva, la caja del alias y los botones.
 **El hilo dejó de ir en `currentColor`**, que ahí era el color del
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
+
+#### El calendario vuelve a su arco, y el corazón se rellena
+
+*"Así el calendario pero en la paleta que pidieron"*, con una
+referencia: un **arco** oscuro, el mes y el año arriba, la grilla en
+serif clara y el día marcado con un **corazón relleno** con el número
+adentro. Los colores siguen siendo los de ellos —antracita, champagne
+y marfil—; lo que cambia es la forma.
+
+**El arco no es un `border-radius` a ojo.** El radio horizontal es el
+**50%** —o sea la mitad del ancho, siempre— y el vertical un **34%
+del alto**, que es lo que lo deja apenas achatado como en la captura.
+Escrito en píxeles se vuelve un semicírculo en una tarjeta angosta y
+una cúpula en una ancha. Y el relleno de arriba tiene que ser grande:
+el mes vive ADENTRO del arco, debajo de su corona, y con el relleno
+de antes quedaba montado sobre la curva.
+
+**Y el corazón relleno trae de vuelta la trampa que el de contorno
+esquivaba.** El medidor de contraste sube por el árbol hasta el
+primer fondo OPACO, y **un corazón es una forma, no un fondo**: así
+que informaría el número contra el antracita del arco —**1,00:1**, o
+sea que el número no está— y tendría razón según lo que mide,
+mientras el invitado lo ve en marfil sobre marfil. Dos párrafos más
+arriba, en la vuelta anterior, eso se había resuelto **sacando el
+relleno**; ahora el relleno es el pedido, así que se resuelve al
+revés: el número vive adentro de un `<b>` que lleva **el marfil del
+corazón de fondo de verdad**, metido entero en la panza del corazón,
+donde no se nota porque es el mismo color. No es esconderle un color
+al medidor —que es la trampa que este archivo ya tiene escrita tres
+veces—: es **decirle la verdad**, porque ése ES el color sobre el que
+el número está.
+Verificado sacándole ese fondo al `<b>`: da **4 fallas**, una por
+aparato, con el "22" a 1,00:1.
+
+**Y el corazón va corrido ABAJO a propósito.** Su panza —la parte
+ancha— queda entonces a la altura del número. Centrado, el número
+aterriza justo en la muesca de arriba y el `<b>` asoma por los dos
+costados: deja de leerse como un corazón y pasa a leerse como una
+insignia. Se ve mirando, no leyendo el código.
 
 #### "Es muy apagada. Cero diseño": la portada en blanco y negro
 
