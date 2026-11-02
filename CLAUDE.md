@@ -5631,6 +5631,8 @@ hay que elegir un color de número que funcione contra el corazón Y
 contra el fondo, porque *el medidor ve una cosa y el invitado ve la
 otra*; de contorno no hay dos cosas, el número cae sobre el fondo
 macizo de la tarjeta y lo que informa el medidor es lo que se ve.
+**Las dos cosas se dieron vuelta después**, con otra referencia del
+dueño: está abajo, en *"El calendario vuelve a su arco"*.
 
 **El cronograma serpentea**, con los iconos dibujados a los costados y
 los nodos de corazón sobre la línea. Tres cosas que costaron una
@@ -5690,14 +5692,21 @@ De paso se fue sola la falla de abajo: **acá ya no hay capa fija que
 pueda tapar nada si el script no corre.**
 
 **2 · Las cinco fotos.** La del jardín al atardecer es la portada —la
-que eligieron ellos— y las otras cuatro son el mosaico. **Van en
-COLOR**, al revés que `mia15`, `almi15` y `ambar15`: ahí la paleta era
-de tres colores y una foto a color metía los suyos; acá la paleta que
-mandaron es cálida y natural, y el atardecer y las guirnaldas SON el
-champagne y el dorado de su lista. Además eligieron esa foto por eso
-mismo —*"el jardín al atardecer, con las luces de fondo"*—: en blanco
-y negro se borra justo lo que la hizo elegir. Se montaron las dos y se
-eligió mirando.
+que eligieron ellos— y las otras cuatro son el mosaico. **Las cinco
+van en BLANCO Y NEGRO**, con el filtro en el CSS y no quemado en el
+archivo: el original queda entero. La primera versión las puso a
+color, razonando que la paleta que mandaron es cálida y natural; el
+dueño bajó las dos cosas, primero la portada (*"es muy apagada"*) y
+después el mosaico (*"así tienen que ir las otras fotos"*, con la
+referencia al lado). Tenía razón las dos veces y el motivo es el
+mismo: **una foto a color mete SU paleta**, y cuatro fotos distintas
+meten cuatro —el verde del pasto, el azul de un traje, el beige del
+salón—, así que el bloque se lee como un collage y no como una pieza.
+En blanco y negro las cinco son lo mismo, luz y sombra, y lo que
+queda de color es la paleta de ellos: el champagne del filete, el oro
+de los rótulos, la salvia de las bandas.
+**Y el visor va en blanco y negro también**: tocar una miniatura
+monocroma y que se abra a color se lee como un error de carga.
 
 **Los recortes son la mitad del trabajo.** La de la portada se recortó
 a 1,1:1 alrededor de las caras: entera es vertical de cuerpo entero y
@@ -5737,6 +5746,179 @@ regresiva, la caja del alias y los botones.
 **El hilo dejó de ir en `currentColor`**, que ahí era el color del
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
+
+#### El dress code, con los círculos encimados
+
+*"Esto para el dress code con la paleta que te pidieron"*, con la
+referencia: el título, una línea corta, el nombre del dress code en
+**capitular espaciada** y abajo tres discos **encimados**.
+
+**En fila y separados, cinco bolitas son una leyenda de colores;
+encimados son una paleta.** Es el mismo gesto que una carta de
+pinturas, y cuesta un margen negativo.
+
+**Cada disco lleva un aro del color de la ficha, y no es un adorno**:
+encimados sin aro, dos colores vecinos parecidos —acá el champagne y
+el dorado— se funden en una sola mancha y la paleta deja de tener
+cinco colores. El marfil lleva además su filete gris, porque un
+círculo del color del fondo no es un círculo.
+
+**El rótulo va ARRIBA de los círculos**, que es donde la referencia
+pone la línea que los explica: una fila de bolitas sin rótulo es un
+adorno, y esto es un DATO — la misma lección ya escrita para
+`ambar15`. Y dice *"los colores de la boda"* y no *"vestite así"*:
+ellos mandaron su paleta, nunca dijeron cómo tiene que ir vestido el
+invitado, y eso no se inventa.
+
+**El nombre del dress code va en capitular espaciada por `id` y no en
+el `h3`**: el otro `h3` de la fila es el nombre de la canción, que en
+mayúsculas sería otra cosa.
+
+**Y de paso se encontró un verde que había quedado suelto.** El botón
+"Cómo llegar" seguía con `--borde-verde` y `--salvia-honda`, que es
+la piel que esta invitación ya no tiene: se dibujaba perfecto, no
+tiraba ningún error, y era el único verde de toda la pieza. Es la de
+siempre: **una variable que sobrevive a la skin que la creó no
+avisa**.
+
+#### "Que sea así en general": dos colores y el borde rasgado
+
+Cuarta corrección seguida del dueño sobre la misma invitación, con
+una referencia de bandas **blancas y negras que se alternan con el
+borde RASGADO**. Las tres anteriores —la portada, el mosaico, el
+calendario— eran la misma observación en pedazos; ésta la dice
+entera.
+
+**Las pieles pasaron de tres a DOS.** Eran marfil, salvia y
+antracita. La salvia era "el respiro", y en una pieza de dos colores
+es exactamente lo que no deja que haya dos colores: tres grises
+cálidos apilados no hacen contraste, hacen barro — la misma lección
+que ya había costado la portada. Y el antracita `#333638` subió al
+casi negro de la portada (`--tinta-port`), así que **la pieza entera
+tiene un solo negro y un solo blanco**.
+
+**Lo que queda de la paleta que ellos mandaron son los ACENTOS**: el
+oro de los rótulos sobre el papel, el champagne sobre la tinta, los
+hilos, los filetes de las fotos — y la salvia, que sigue entera en
+los círculos del dress code, donde es un DATO y no una decoración.
+Esto no contradice *"jugá con estos colores, no improvises"*: los
+cinco siguen estando, lo que cambió es cuál manda.
+
+**El borde rasgado se pone SOLO, y SOLO donde el color cambia.**
+Escrito a mano en el HTML, el día que una sección se esconda —la
+galería si no hay fotos, las preguntas si no hay ninguna— quedarían
+dos bandas del mismo color pegadas con un rasgado en el medio. Y por
+eso `rasgar()` **es una función y no un IIFE**: la galería aparece
+recién cuando las fotos cargaron, o sea después de la primera
+pasada, así que hay que volver a rasgar o queda una juntura recta de
+los dos lados.
+
+**Y la sección que se rasga PIERDE SU HILO.** El hilo con su rombo y
+el rasgado son dos separadores; puestos juntos se leen como un error
+de maqueta. Es la misma lección ya escrita para el encaje de
+`ambar15`, que *reemplaza* al corte en curva y no se suma. Además el
+rasgado se dibuja encima y le comería la mitad.
+
+**Un rasgado no es una sierra**, y eso costó una vuelta. La primera
+versión ponía cada punto al azar entre 9 y 39: picos independientes,
+y lo que se ve es papel picado —la misma falla que ya está anotada
+para la sierra de `ambar15`—. Un papel rasgado es un camino que
+**camina**: cada punto cerca del anterior, con alguna muesca más
+honda de vez en cuando. Y tiene que **volver al medio**: un paseo
+aleatorio puro se pega al tope y deja una recta de doscientos
+píxeles, que es justo lo que un rasgado no tiene. Los caminos salen
+de una **semilla fija** —la fecha de la boda—, como en `mia15`: con
+`Math.random()` dos capturas de la misma invitación saldrían
+distintas.
+
+#### El calendario vuelve a su arco, y el corazón se rellena
+
+*"Así el calendario pero en la paleta que pidieron"*, con una
+referencia: un **arco** oscuro, el mes y el año arriba, la grilla en
+serif clara y el día marcado con un **corazón relleno** con el número
+adentro. Los colores siguen siendo los de ellos —antracita, champagne
+y marfil—; lo que cambia es la forma.
+
+**El arco no es un `border-radius` a ojo.** El radio horizontal es el
+**50%** —o sea la mitad del ancho, siempre— y el vertical un **34%
+del alto**, que es lo que lo deja apenas achatado como en la captura.
+Escrito en píxeles se vuelve un semicírculo en una tarjeta angosta y
+una cúpula en una ancha. Y el relleno de arriba tiene que ser grande:
+el mes vive ADENTRO del arco, debajo de su corona, y con el relleno
+de antes quedaba montado sobre la curva.
+
+**Y el corazón relleno trae de vuelta la trampa que el de contorno
+esquivaba.** El medidor de contraste sube por el árbol hasta el
+primer fondo OPACO, y **un corazón es una forma, no un fondo**: así
+que informaría el número contra el antracita del arco —**1,00:1**, o
+sea que el número no está— y tendría razón según lo que mide,
+mientras el invitado lo ve en marfil sobre marfil. Dos párrafos más
+arriba, en la vuelta anterior, eso se había resuelto **sacando el
+relleno**; ahora el relleno es el pedido, así que se resuelve al
+revés: el número vive adentro de un `<b>` que lleva **el marfil del
+corazón de fondo de verdad**, metido entero en la panza del corazón,
+donde no se nota porque es el mismo color. No es esconderle un color
+al medidor —que es la trampa que este archivo ya tiene escrita tres
+veces—: es **decirle la verdad**, porque ése ES el color sobre el que
+el número está.
+Verificado sacándole ese fondo al `<b>`: da **4 fallas**, una por
+aparato, con el "22" a 1,00:1.
+
+**Y el corazón va corrido ABAJO a propósito.** Su panza —la parte
+ancha— queda entonces a la altura del número. Centrado, el número
+aterriza justo en la muesca de arriba y el `<b>` asoma por los dos
+costados: deja de leerse como un corazón y pasa a leerse como una
+insignia. Se ve mirando, no leyendo el código.
+
+#### "Es muy apagada. Cero diseño": la portada en blanco y negro
+
+El dueño la miró publicada y la bajó con tres palabras. Tenía razón y
+el motivo se puede decir en una línea: **la portada eran tres grises
+cálidos apilados** —el papel crema arriba, la foto a color de un
+atardecer en el medio, la banda en antracita abajo—, y tres cosas
+cálidas y medias una encima de otra no hacen contraste, hacen barro.
+En una captura de escritorio pasa por sobria; en un teléfono se lee
+como una pantalla sin terminar.
+
+Son tres decisiones y ninguna es de gusto:
+
+- **La foto va en BLANCO Y NEGRO**, con el filtro en el CSS y no
+  quemado en el archivo — el original queda entero por si algún día se
+  la quiere a color. Acá estaba escrito lo contrario (*"van en COLOR…
+  el atardecer y las guirnaldas SON el champagne y el dorado de su
+  lista"*) y era justamente eso lo que el dueño rechazó: el dorado de
+  la foto no suma a la paleta, **se funde con ella**.
+- **La portada es oscura de punta a punta.** El papel no entra: el
+  reproductor, la foto y la banda caen sobre el mismo casi negro
+  (`--tinta-port`, `#101214`), así que la foto y el bloque de texto se
+  leen como UNA pieza y no como dos franjas pegadas. El antracita
+  `#333638` es un gris cálido y apagaba las dos.
+- **El monograma va en el corte DISPLAY de la misma tipografía.**
+  `opsz` es el eje de tamaño óptico de la Newsreader: en 72 los finos
+  se afinan y los gruesos engordan, que es el contraste de una didona.
+  Acá se puede y en el cuerpo del texto no —*lo que se parte en un
+  teléfono es una didona a 15px, y esto mide noventa*— y **no cuesta
+  una descarga más**, porque es la misma familia que ya está pedida.
+
+Dos cosas que costaron una vuelta cada una:
+
+- **El degradé de abajo de la foto no es un adorno.** Sin él queda una
+  juntura recta a lo ancho de la pantalla justo donde la foto termina,
+  y ahí se vuelven a leer como dos cosas pegadas. Con la foto fundida
+  en el negro, el monograma parece salir de ella.
+- **El botón del corazón va AL REVÉS que antes**: círculo claro y
+  corazón oscuro. Sobre el casi negro, un círculo de tinta no existe —
+  es *si un bloque trae su propio fondo, trae su propia tinta* por el
+  lado del fondo que cambió abajo del bloque.
+
+**Y el aire alrededor de la "y" quedó torcido.** El `letter-spacing`
+de los nombres deja su espacio DESPUÉS de la última letra de
+"FACUNDO", así que un padding simétrico en la "y" da más hueco de un
+lado que del otro. Se ve en una captura y no leyendo el código.
+
+Medido: la portada mide **799px en un iPhone de 844**, así que
+"Deslizá" —lo único que avisa que hay más abajo— sigue entrando
+entero, y la suite informa **122 textos y ninguno abajo de 3:1**.
 
 ##### Dos cosas que la suite medía con el selector de OTRA invitación
 
