@@ -80,11 +80,6 @@
   /* y las versiones hondas, que existen para que el texto se lea */
   --oro-hondo:#8E7342;     /* 3,99:1 sobre marfil · 3,99:1 al revés */
   --salvia-honda:#5E6B52;  /* 5,04:1 sobre marfil */
-  --tinta-hondo:#26292B;
-  /* el casi negro de la portada: la foto en blanco y negro y la
-     banda tienen que leerse como una sola pieza, y el antracita
-     —que es un gris cálido— lo que hacía era apagarlas a las dos. */
-  --tinta-port:#101214;
   --marfil-vivo:#FCFAF5;
   --gris:#5B5F61;          /* 5,74:1 sobre marfil · es el antracita aclarado */
   /* LOS BORDES. Ninguna raya de la invitación es un gris inventado:
@@ -145,7 +140,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stro
 .seccion{position:relative;padding:clamp(70px,10vh,112px) var(--gutter)}
 .seccion .caja{max-width:640px;margin:0 auto;text-align:center}
 .papel{background-color:var(--marfil);color:var(--antracita)}
-.tinta{background-color:var(--tinta-port);color:var(--marfil)}
+.tinta{background-color:var(--antracita);color:var(--marfil)}
 
 /* ── EL BORDE RASGADO ──
    Va arriba de la sección y pintado del color de la que viene
@@ -169,7 +164,11 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stro
 .seccion:after{content:'';position:absolute;left:50%;top:clamp(36px,6vh,56px);
   width:5px;height:5px;margin:-3px 0 0 -3px;transform:rotate(45deg);
   background-color:var(--oro-hondo)}
-.tinta:before,.tinta:after{background-color:var(--champan)}
+/* El hilo de la banda oscura va en el DORADO SUAVE, que es el quinto
+   de los cinco que mandaron: sobre el antracita se ve y es el único
+   lugar donde ese dorado entra sin pelearse con el champagne de los
+   rótulos. Los cinco colores están, y los cinco son los suyos. */
+.tinta:before,.tinta:after{background-color:var(--oro)}
 .sin-hilo:before,.sin-hilo:after{display:none}
 
 /* ══════════ piezas compartidas ══════════ */
@@ -199,6 +198,9 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   font-size:clamp(17px,4.6vw,21px);line-height:1.6;max-width:21em;
   margin:16px auto 0;color:var(--oro-hondo)}
 .tinta .cuerpo{color:#E7E2D9}
+/* El oro hondo está hecho para el papel: sobre el antracita no se
+   lee. Si un bloque trae su propio fondo, trae su propia tinta. */
+.tinta .port-frase{color:var(--champan)}
 .dato{font-family:var(--titulos);font-size:clamp(19px,5vw,24px);font-weight:400;
   line-height:1.5;margin-top:6px}
 .chico{font-size:13.5px;font-weight:300;line-height:1.7;margin-top:8px;color:var(--gris)}
@@ -229,7 +231,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    apilados no hacen contraste, hacen barro. Ahora el papel no entra
    en la portada, la foto va en blanco y negro y la tinta es casi
    negra: la foto y la banda se leen como UNA sola pieza. */
-#portada{position:relative;background-color:var(--tinta-port);color:var(--marfil);
+#portada{position:relative;background-color:var(--antracita);color:var(--marfil);
   text-align:center;overflow:hidden}
 #portada>*{position:relative;z-index:1}
 
@@ -261,7 +263,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    Sobre el casi negro, un círculo de tinta no existe. */
 .player .play{display:inline-flex;align-items:center;justify-content:center;
   width:50px;height:50px;border-radius:50%;background-color:var(--marfil);
-  color:var(--tinta-port);text-decoration:none;flex:none;
+  color:var(--antracita);text-decoration:none;flex:none;
   transition:transform .3s var(--e)}
 .player .play svg{width:19px;height:19px;fill:currentColor;opacity:1}
 .player .play:active{transform:scale(.94)}
@@ -279,12 +281,12 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    El degradé de abajo funde la foto con la banda: sin él queda una
    juntura recta a lo ancho de la pantalla y se leen como dos cosas
    pegadas, no como una sola pieza. */
-.port-foto{position:relative;background-color:var(--tinta-port);line-height:0}
+.port-foto{position:relative;background-color:var(--antracita);line-height:0}
 .port-foto img{width:100%;max-height:46svh;object-fit:cover;object-position:center 28%;
   filter:grayscale(1) contrast(1.16) brightness(1.03)}
 .port-foto:after{content:'';position:absolute;left:0;right:0;bottom:-1px;
   height:26%;pointer-events:none;
-  background-image:linear-gradient(to bottom,rgba(16,18,20,0),var(--tinta-port) 92%)}
+  background-image:linear-gradient(to bottom,rgba(51,54,56,0),var(--antracita) 92%)}
 
 /* ── 2c · la banda de tinta ──
    EL MONOGRAMA SON LAS DOS INICIALES DEL MISMO TAMAÑO, separadas por
@@ -292,7 +294,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    primero—; acá cualquier jerarquía sería una declaración, así que
    no hay ninguna. Es la regla que ya está escrita para
    `mateoylucas/`. */
-.port-banda{position:relative;background-color:var(--tinta-port);color:var(--marfil);
+.port-banda{position:relative;background-color:var(--antracita);color:var(--marfil);
   padding:clamp(4px,1vh,10px) var(--gutter) clamp(18px,3vh,28px)}
 /* EL MONOGRAMA VA EN EL CORTE DISPLAY DE LA NEWSREADER.
    `opsz` es el eje de tamaño óptico de la familia: en 72 los finos se
@@ -303,16 +305,16 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .monograma{display:flex;align-items:stretch;justify-content:center;
   gap:clamp(16px,5vw,28px);font-family:var(--titulos);font-weight:300;
   font-variation-settings:'opsz' 72;font-optical-sizing:none;
-  font-size:clamp(62px,21vw,112px);line-height:1;color:#FFFFFF}
+  font-size:clamp(62px,21vw,112px);line-height:1;color:var(--marfil)}
 .monograma span{display:block}
 /* la raya se centra y mide lo que mide una capitular: estirada al
    alto de la caja asoma por debajo de la base de las letras y deja
    de leerse como un separador. */
 .monograma i{display:block;align-self:center;width:1px;height:.7em;
-  transform:translateY(-.12em);background-color:rgba(255,255,255,.4)}
+  transform:translateY(-.12em);background-color:rgba(246,241,232,.45)}
 .nombres{margin-top:clamp(14px,2.4vh,22px);font-family:var(--texto-f);font-weight:500;
   font-size:clamp(12.5px,3.5vw,17px);letter-spacing:clamp(.2em,.85vw,.36em);
-  text-transform:uppercase;line-height:1.7;color:#FFFFFF}
+  text-transform:uppercase;line-height:1.7;color:var(--marfil)}
 .nombres span{display:inline}
 /* El aire alrededor de la "y" va en el CSS y no con espacios en el
    HTML: entre dos `<span>` el navegador se come el de un lado y
@@ -321,7 +323,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   letter-spacing:0;color:var(--champan);padding:0 .42em 0 .06em;font-size:1.1em}
 .fecha-num{margin-top:clamp(11px,2vh,16px);font-family:var(--titulos);font-weight:300;
   font-variation-settings:'opsz' 72;font-optical-sizing:none;
-  font-size:clamp(25px,7.4vw,36px);letter-spacing:.1em;color:rgba(255,255,255,.92);
+  font-size:clamp(25px,7.4vw,36px);letter-spacing:.1em;color:rgba(246,241,232,.94);
   font-variant-numeric:lining-nums tabular-nums}
 .ramita{width:clamp(50px,14vw,70px);margin:clamp(13px,2.4vh,20px) auto 0;
   color:var(--champan)}
@@ -332,22 +334,39 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .port-baja svg{width:13px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3}
 
 /* ══════════════════════════════════════════════════════════════════
-   3 · LA CUENTA REGRESIVA EN FICHAS (referencia 5)
+   3 · LA CUENTA REGRESIVA, EN UNA FILA (referencia nueva)
+   Los cuatro números en fila, en serif grande, cada uno con su
+   rótulo chico espaciado abajo y SIN fichas. Cuatro recuadros se
+   leen como un tablero; una fila corrida se lee como un reloj.
+
+   "QUE SEA COLOR MARFIL CON BORDE COLOR CHAMPAGNE LAS LETRAS", y
+   eso es lo que decidió la BANDA: el marfil sobre el papel marfil
+   no existe, así que esta sección pasó a ser de TINTA. Es la regla
+   de siempre —si un bloque trae su propio fondo, trae su propia
+   tinta— vista al revés: el color de letra que se pide es el que
+   elige sobre qué puede caer.
+
+   EL GROSOR DEL BORDE VA EN `em` Y EL `em` ES EL DEL ELEMENTO: el
+   tamaño del número vive en el `b` y no en la fila, así que escrito
+   en el padre se resuelve contra 16px y sale un hilo de medio
+   píxel — una declaración que no hace nada. Ya pasó con el "15" de
+   mia15 y con el rótulo del cierre.
+   Y el rótulo NO lleva borde: ya es champagne, así que un trazo
+   champagne alrededor es exactamente eso, nada.
    ══════════════════════════════════════════════════════════════════ */
-.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(7px,2.2vw,14px);
+.reloj{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(4px,1.6vw,12px);
   max-width:430px;margin:clamp(26px,5vh,40px) auto 0}
 .reloj div{display:flex;flex-direction:column;align-items:center}
-.reloj b{position:relative;display:block;width:100%;padding:13px 2px 14px;
-  border:1px solid var(--borde-papel);border-radius:5px;
-  background-color:rgba(217,197,164,.22);
-  font-family:var(--titulos);font-weight:300;
-  font-size:clamp(25px,7.4vw,38px);line-height:1;letter-spacing:-.01em;
-  font-variant-numeric:lining-nums tabular-nums}
-/* la rayita del medio de la ficha, que es lo que la hace ficha */
-.reloj b:after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;
-  background-color:rgba(142,115,66,.3)}
-.reloj span{display:block;margin-top:10px;font-size:9px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--salvia-honda)}
+.reloj b{display:block;font-family:var(--titulos);font-weight:300;
+  font-variation-settings:'opsz' 72;font-optical-sizing:none;
+  font-size:clamp(38px,11.4vw,58px);line-height:1;letter-spacing:.01em;
+  color:var(--marfil);font-variant-numeric:lining-nums tabular-nums}
+.reloj span{display:block;margin-top:clamp(7px,1.6vw,11px);
+  font-size:clamp(8.5px,2.3vw,10px);letter-spacing:.24em;text-transform:uppercase;
+  font-weight:500;color:var(--champan)}
+@supports (paint-order: stroke){
+  .reloj b{paint-order:stroke fill;-webkit-text-stroke:.026em var(--champan)}
+}
 
 /* ══════════════════════════════════════════════════════════════════
    4 · EL CALENDARIO EN SU ARCO
@@ -375,7 +394,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    es decirle la verdad.
    ══════════════════════════════════════════════════════════════════ */
 #calendario{position:relative;max-width:340px;margin:clamp(26px,5vh,38px) auto 0;
-  background-color:var(--tinta-port);color:var(--marfil);
+  background-color:var(--antracita);color:var(--marfil);
   border-radius:50% 50% 3px 3px/34% 34% 3px 3px;
   padding:clamp(86px,25vw,112px) clamp(20px,6vw,30px) clamp(26px,6vw,34px);
   box-shadow:0 22px 46px -30px rgba(38,41,43,.7)}
@@ -414,80 +433,91 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .tinta .mano{color:var(--champan)}
 
 /* ══════════════════════════════════════════════════════════════════
-   5 · EL CRONOGRAMA QUE SERPENTEA (referencia nueva: el timing)
-   Una línea que baja ondulando, los iconos dibujados a los costados
-   —uno a cada lado, alternados— y los nodos de corazón sobre la
-   línea.
+   5 · LOS HORARIOS EN COLUMNAS (referencia nueva: el bloque de
+   arriba de la primera captura)
+   Cada horario es una columna: el icono arriba, la hora en serif
+   grande y qué pasa en capitular espaciada, separadas por una raya
+   fina.
 
-   LA LÍNEA ES UN SOLO SVG estirado al alto de la lista, y por eso
-   lleva `vector-effect:non-scaling-stroke`: estirado sin eso, el
-   trazo se deforma con el dibujo y sale grueso de un lado y fino del
-   otro. Estirarlo es lo que hace que la curva valga para dos tramos
-   o para seis sin tocar nada.
+   LAS RAYAS SON `border-left` Y SE SACAN EN EL PRIMERO DE CADA FILA,
+   no un separador puesto entre columna y columna: con un separador
+   aparte, el día que entre un horario más queda una raya colgando al
+   final de la fila. En un teléfono son DOS columnas —cuatro no
+   entran— así que el primero de cada fila es el impar; arriba de
+   700px son cuatro y el primero es el `4n+1`.
    ══════════════════════════════════════════════════════════════════ */
-.timing{position:relative;margin:clamp(30px,5.4vh,44px) auto 0;max-width:430px;
-  list-style:none}
-.timing .hilo{position:absolute;left:0;top:0;width:100%;height:100%;
-  fill:none;stroke:var(--oro-hondo);stroke-width:1;opacity:.55;pointer-events:none}
-.timing li{position:relative;display:grid;
-  grid-template-columns:1fr clamp(34px,10vw,46px) 1fr;
-  align-items:center;gap:clamp(8px,2.6vw,16px);padding:clamp(10px,2vh,16px) 0}
-.timing .lado{min-width:0;text-align:center}
-/* `nth-of-type` y NO `nth-child`: el primer hijo de la lista es el
-   SVG de la línea, así que contando hijos el primer renglón sale del
-   lado equivocado. */
-.timing li:nth-of-type(odd) .lado{grid-column:1}
-.timing li:nth-of-type(even) .lado{grid-column:3}
-.timing .ico{width:clamp(36px,9.4vw,46px);height:clamp(36px,9.4vw,46px);
-  color:var(--oro-hondo);fill:none;stroke:currentColor;stroke-width:1.05;
+.horarios{display:grid;grid-template-columns:1fr 1fr;list-style:none;
+  max-width:560px;margin:clamp(30px,5.4vh,44px) auto 0}
+.horarios li{padding:clamp(18px,4.4vw,26px) clamp(8px,2.4vw,16px);
+  border-left:1px solid var(--borde-papel);text-align:center}
+.horarios li:nth-of-type(odd){border-left:0}
+.horarios li:nth-of-type(n+3){border-top:1px solid var(--borde-papel)}
+.horarios .ico{width:clamp(30px,8vw,36px);height:clamp(30px,8vw,36px);
+  color:var(--oro-hondo);fill:none;stroke:currentColor;stroke-width:1.1;
   stroke-linecap:round;stroke-linejoin:round}
-.timing h3{margin-top:9px;font-family:var(--texto-f);font-weight:600;
-  font-size:clamp(11px,3vw,12.5px);letter-spacing:.17em;text-transform:uppercase;
-  line-height:1.5;color:var(--salvia-honda)}
-.timing .hora{display:block;margin-top:5px;font-family:var(--titulos);font-weight:300;
-  font-size:clamp(23px,6.4vw,30px);line-height:1.1;letter-spacing:.01em;
+.horarios .hora{display:block;margin-top:clamp(9px,2.2vw,13px);
+  font-family:var(--titulos);font-weight:300;
+  font-size:clamp(25px,7vw,33px);line-height:1.05;letter-spacing:.01em;
   color:var(--antracita);font-variant-numeric:lining-nums tabular-nums}
-.timing .nodo{grid-column:2;justify-self:center;width:clamp(22px,6vw,26px);height:auto;
-  fill:var(--champan);stroke:var(--oro-hondo);stroke-width:1}
+.horarios h3{margin-top:clamp(7px,1.8vw,10px);font-family:var(--texto-f);
+  font-weight:600;font-size:clamp(10px,2.7vw,11.5px);letter-spacing:.17em;
+  text-transform:uppercase;line-height:1.6;color:var(--salvia-honda)}
+@media (min-width:700px){
+  .horarios{grid-template-columns:repeat(4,1fr);max-width:none}
+  .horarios li:nth-of-type(odd){border-left:1px solid var(--borde-papel)}
+  .horarios li:nth-of-type(4n+1){border-left:0}
+  .horarios li:nth-of-type(n+3){border-top:0}
+  .horarios li:nth-of-type(n+5){border-top:1px solid var(--borde-papel)}
+}
 
 /* ══════════════════════════════════════════════════════════════════
-   6 · LA GALERÍA EN MOSAICO (referencia nueva: la galería)
-   Una alta a la izquierda, dos cuadradas a la derecha y el resto
-   fluyendo de a dos, con una ANCHA de cierre cuando hace falta.
+   6 · LA TIRA DE FOTOS, A SANGRE (referencia nueva: la tira de abajo
+   de la primera captura)
+   Las fotos una al lado de la otra, de borde a borde de la pantalla.
 
-   LA ANCHA NO ES DECORACIÓN: la alta se come dos filas de la columna
-   izquierda, así que con una cantidad PAR de fotos queda siempre un
-   hueco al final. La última pasa a ocupar las dos columnas
-   justamente ahí, y con eso el mosaico no tiene un agujero con
-   ninguna cantidad. La altura de las filas la fijan las cuadradas,
-   así que la alta se estira sola sin que nadie calcule nada.
+   LO QUE LA VUELVE UNA TIRA ES QUE VAYA A SANGRE: con el `padding`
+   de la sección puesto son tres fotos en una fila, que es otra cosa.
+   Los márgenes negativos se comen ese padding, igual que la foto del
+   cierre. Y por eso la tira NO vive adentro de `.caja`, que está
+   topada en 640px: encerrada ahí, los márgenes negativos sólo
+   descuentan el padding y la tira queda en el medio de un monitor
+   —medido, 730 de 1280—. Va de hija directa de la sección, con el
+   rótulo arriba en su caja y el botón abajo en otra.
+
+   EL ANCHO SALE DE LA CANTIDAD (`--n`, que lo pone el JS) y el alto
+   sale del ANCHO, con `aspect-ratio` en la ranura y no con un alto
+   escrito: un alto fijo cambia la proporción de la ranura en cada
+   pantalla, así que un recorte que en el teléfono deja las dos caras
+   adentro en un monitor las corta. Escrito en el CSS, además, el día
+   que llegue la foto de las mascotas la tira quedaría con un hueco o
+   con una cuarta columna que nadie declaró. El tope de cuatro es el
+   de la referencia; de ahí para arriba envuelve.
+
+   LA RANURA ES 4:5 Y NO UNA TIRA FINA, y eso lo deciden las FOTOS:
+   dos de las tres son cuadradas con las dos caras una al lado de la
+   otra, así que una ranura angosta le come la cara a uno. Es la
+   regla que esta misma invitación ya tenía escrita para la foto
+   ancha del mosaico: el ancho de la ranura se elige por lo que hay
+   que mostrar, no al revés.
+
+   EN BLANCO Y NEGRO, igual que la portada y el cierre, y el filtro
+   va en el CSS: el archivo original queda entero. A color la tira
+   traía el verde del pasto, el azul de un traje y el beige del
+   salón —tres paletas peleándose adentro de un mismo bloque— y lo
+   que se veía era un collage, no una pieza.
    ══════════════════════════════════════════════════════════════════ */
-#galeria{background-color:var(--tinta-port);color:var(--marfil)}
-#fotos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,2vw,14px);
-  margin-top:clamp(28px,5vh,42px)}
-#fotos .toque{display:block;width:100%;padding:0;overflow:hidden;border-radius:2px;
-  background-color:#2B2E30;line-height:0;position:relative}
-/* El filete va ENCIMA de la foto y no como `border`: un borde
-   agranda la caja y rompe la cuenta de las filas del mosaico. */
-#fotos .toque:after{content:'';position:absolute;inset:0;border-radius:2px;
-  box-shadow:inset 0 0 0 1px var(--borde-tinta);pointer-events:none}
-/* EN BLANCO Y NEGRO, igual que la portada, y el filtro va en el CSS:
-   el archivo original queda entero. Con las cuatro a color el mosaico
-   traía el verde del pasto, el azul de un traje y el beige del salón
-   —cuatro paletas peleándose adentro de un mismo bloque— y lo que se
-   veía era un collage, no una pieza. En blanco y negro las cuatro son
-   lo mismo: luz y sombra, con el filete de champagne de marco. */
-#fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:1/1;
+#galeria{background-color:var(--antracita);color:var(--marfil)}
+#fotos{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:2px;
+  margin:clamp(28px,5vh,42px) calc(var(--gutter) * -1) 0}
+#fotos .toque{display:block;width:100%;aspect-ratio:4/5;padding:0;overflow:hidden;
+  background-color:var(--antracita);line-height:0;position:relative}
+/* El recorte se apoya ARRIBA: centrado, en la foto de cuerpo entero
+   la ranura corta las cabezas. */
+#fotos img{width:100%;height:100%;object-fit:cover;object-position:center 24%;
   filter:grayscale(1) contrast(1.14) brightness(1.03);
   transform:scale(1.06);transition:transform 1.4s var(--e)}
 #fotos .entro img{transform:none}
-#fotos .alta{grid-column:1;grid-row:1/span 2}
-#fotos .alta img{height:100%;aspect-ratio:auto}
-#fotos .ancha{grid-column:1/-1}
-/* 1,55 y no 2,1: son todas selfies verticales y en una banda tan
-   angosta no entra una cara entera. El ancho de la ranura se elige
-   por lo que hay que mostrar, no al revés. */
-#fotos .ancha img{aspect-ratio:1.55/1}
+#fotos + .caja{margin-top:clamp(24px,4vh,34px)}
 @media (hover:hover){ #fotos .toque:hover img{transform:scale(1.04)} }
 #fotos .toque:active{opacity:.86}
 
@@ -643,7 +673,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .campo select{appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23D9C5A4' stroke-width='1.6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 15px center}
-.campo select option{background-color:#2B2E30;color:#F6F1E8}
+.campo select option{background-color:var(--antracita);color:var(--marfil)}
 .radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .radios label{display:flex;align-items:center;justify-content:center;gap:9px;
   min-height:52px;padding:13px 8px;border-radius:3px;cursor:pointer;
@@ -715,7 +745,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
      bordes y el pie arranca pegado a ella. */
 #cierre{padding-bottom:0}
 .cierre-foto{position:relative;margin:clamp(30px,5vh,46px) calc(var(--gutter) * -1) 0;
-  line-height:0;background-color:var(--tinta-port)}
+  line-height:0;background-color:var(--antracita)}
 /* La foto está RECORTADA para esto —*el encuadre se arregla en el
    archivo, no en el CSS*— con las caras arriba y los hombros abajo,
    que es donde cae el texto. Con el recorte del mosaico encima, el
@@ -729,8 +759,8 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    raya del degradé no, que es la misma lección del velo de `almi15`. */
 .cierre-foto:after{content:'';position:absolute;left:0;right:0;bottom:0;height:78%;
   pointer-events:none;
-  background-image:linear-gradient(to bottom,rgba(16,18,20,0),rgba(16,18,20,.5) 46%,
-    rgba(16,18,20,.9) 74%,rgba(16,18,20,.94))}
+  background-image:linear-gradient(to bottom,rgba(51,54,56,0),rgba(51,54,56,.62) 40%,
+    rgba(51,54,56,.96) 66%,rgba(51,54,56,.99))}
 .cierre-txt{position:absolute;left:0;right:0;bottom:0;z-index:1;
   padding:0 var(--gutter) clamp(24px,5vw,38px);text-align:center;line-height:1.3;
   color:var(--champan)}
@@ -750,7 +780,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .cierre-txt .ce-fecha{-webkit-text-stroke-width:.055em}
   .cierre-txt .ce-ante{-webkit-text-stroke-width:.095em}
 }
-#pie{background-color:var(--tinta-port);color:#BFBAB1;padding:34px var(--gutter) 40px;
+#pie{background-color:var(--antracita);color:#BFBAB1;padding:34px var(--gutter) 40px;
   text-align:center}
 #pie:before,#pie:after{display:none}
 .firma{font-size:10px;letter-spacing:.3em;text-transform:uppercase}
@@ -858,7 +888,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 <main>
 
   <!-- ══════════ 3 · la invitación y la cuenta regresiva ══════════ -->
-  <section class="seccion papel" id="invitacion">
+  <section class="seccion tinta" id="invitacion">
     <div class="caja">
       <p class="ante ap">Sábado 22 de mayo de 2027</p>
       <h2 class="ap d1" data-eco="Queremos que estés">Queremos que estés</h2>
@@ -869,8 +899,8 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
       <div class="reloj ap d3" aria-label="Cuánto falta">
         <div><b id="cD">0</b><span>Días</span></div>
         <div><b id="cH">00</b><span>Horas</span></div>
-        <div><b id="cM">00</b><span>Min</span></div>
-        <div><b id="cS">00</b><span>Seg</span></div>
+        <div><b id="cM">00</b><span>Minutos</span></div>
+        <div><b id="cS">00</b><span>Segundos</span></div>
       </div>
     </div>
   </section>
@@ -890,7 +920,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
     <div class="caja">
       <p class="ante ap">La noche</p>
       <h2 class="ap d1" data-eco="Timing">Cómo va a ser</h2>
-      <ul class="timing ap d2" id="cronograma"></ul>
+      <ul class="horarios ap d2" id="cronograma"></ul>
     </div>
   </section>
 
@@ -899,9 +929,11 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
     <div class="caja">
       <p class="ante ap">Nosotros</p>
       <h2 class="ap d1" data-eco="Nuestra historia">Nuestra historia</h2>
-      <div id="fotos"></div>
+    </div>
+    <div id="fotos"></div>
+    <div class="caja">
       <!-- El botón sólo existe si hay fotos, y hace un trabajo de
-           verdad: en el mosaico van recortadas y acá se ven enteras.
+           verdad: en la tira van recortadas y acá se ven enteras.
            Un botón que no puede hacer su trabajo molesta más que no
            estar. -->
       <button class="btn hueco" id="verTodas" type="button" hidden>Ver todas las fotos</button>
@@ -1131,12 +1163,16 @@ const CONFIG = {
      ninguna. Está acá arriba para que se cambie en un renglón el día
      que escriban la suya. */
   frase: "Un día para celebrar el amor y la vida que elegimos juntos.",
-  /* El cronograma. Solo lo que mandaron: la ceremonia a las 21 y el
-     final a las 4. Una hora inventada manda a la gente a la hora
-     equivocada, así que lo que falta se pide, no se completa. */
+  /* El cronograma, tal cual lo mandó el dueño el 02/11/2026. Antes
+     eran dos horarios —la ceremonia y el final— y el resto estaba
+     como hueco: una hora inventada manda a la gente a la hora
+     equivocada, así que se esperó. Las horas se escriben como se
+     dicen ("21 h", "4 am"), igual que el "de 21 a 4 h" de abajo. */
   timing: [
-    { hora: "21:00", que: "Ceremonia civil y recepción", ico: "anillos" },
-    { hora: "04:00", que: "Fin de la fiesta", ico: "luna" }
+    { hora: "21 h",  que: "Apertura de puertas",       ico: "puerta"  },
+    { hora: "21:30", que: "Ceremonia",                 ico: "anillos" },
+    { hora: "22 h",  que: "Comenzamos con la fiesta",  ico: "musica"  },
+    { hora: "4 am",  que: "Finaliza el evento",        ico: "luna"    }
   ],
   /* LAS PREGUNTAS, y SOLO las que ellos contestaron. "¿Pueden ir
      chicos?" y "¿hay estacionamiento?" están en la referencia y no
@@ -1188,9 +1224,8 @@ const CONFIG = {
      mascotas, que todavía no se sacaron: entra sola agregando un
      renglón acá. */
   portada: "fotos/portada.webp", // la del jardín al atardecer, que es la que eligieron
-  /* Las cuatro que mandaron. El orden es el del mosaico: la primera
-     es la ALTA de la columna izquierda —por eso va la de cuerpo
-     entero— y la última es la ANCHA de abajo. */
+  /* Las tres de la tira, en el orden en que se ven. La del mar no
+     está acá: es el cierre. */
   fotos: [
     { foto: "fotos/1.webp", alt: "Facundo y Maximiliano de traje" },
     { foto: "fotos/2.webp", alt: "Facundo y Maximiliano mostrando los anillos" },
@@ -1272,42 +1307,21 @@ const ICOS = {
            '<path d="M12 12.4v7.2M8 19.6h8"/><path d="M9.6 6.2v-2M14.4 6.2v-2"/>',
   torta:   '<path d="M4.6 12.6h14.8v6.8H4.6z"/><path d="M4.6 15.6h14.8"/>' +
            '<path d="M12 12.6V9.4M12 7.6v-.2"/><path d="M8.4 12.6v-2M15.6 12.6v-2"/>',
-  baile:   '<circle cx="9" cy="5.6" r="2"/><circle cx="16.2" cy="5.6" r="2"/>' +
-           '<path d="M9 7.6v5l-2.4 6M9 12.6l2.6 5.8"/>' +
-           '<path d="M16.2 7.6v5l2.4 6M16.2 12.6l-2.6 5.8"/>',
+  /* Acá hubo dos monigotes bailando y a 36px se leían como una
+     TIJERA: las dos cabezas eran los ojos y las piernas cruzadas,
+     las hojas. Lo que no se lee a 36 no va — la lección es la misma
+     de los iconos de ambar15. Va una corchea doble, que se reconoce
+     de un vistazo y dice lo mismo. */
+  musica:  '<path d="M9.6 17.4V5.8l8.8-1.9v11.6"/>' +
+           '<ellipse cx="7.2" cy="18.1" rx="2.5" ry="2.1" fill="currentColor" stroke="none"/>' +
+           '<ellipse cx="15.9" cy="16.2" rx="2.5" ry="2.1" fill="currentColor" stroke="none"/>',
   foto:    '<path d="M3.6 7.8h4l1.4-2h6l1.4 2h4v11h-16.8z"/><circle cx="12" cy="13" r="3.6"/>',
+  /* la puerta que se abre: un arco, su piso y el picaporte */
+  puerta:  '<path d="M6.6 20V9.8a5.4 5.4 0 0 1 10.8 0V20z"/><path d="M4.2 20h15.6"/>' +
+           '<circle cx="14.6" cy="14.4" r=".95" fill="currentColor" stroke="none"/>',
   luna:    '<path d="M19 14.6A8 8 0 0 1 9.4 5a8 8 0 1 0 9.6 9.6z"/>' +
            '<path d="M16.4 4.4l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"/>'
 };
-/* LA LÍNEA SE MIDE, NO SE ESTIRA. Estirada a la fuerza, cruza el
-   centro en los BORDES de cada renglón y no en su medio, así que los
-   corazones —que van centrados en su renglón— caen justo donde la
-   curva está más lejos: se ven flotando al costado de la línea. Y
-   los renglones no miden todos lo mismo, porque el texto envuelve.
-   Así que el camino se arma con las cajas de verdad y pasa por el
-   centro de cada uno. Se vuelve a dibujar al cambiar el tamaño. */
-function pintarHilo(ul){
-  const svg = $('.hilo', ul);
-  if (!svg) return;
-  const W = ul.clientWidth, H = ul.clientHeight;
-  if (!W || !H) return;
-  const x = W / 2, bulto = Math.min(W * .2, 44);
-  const ys = [0].concat($$('li', ul).map(li => li.offsetTop + li.offsetHeight / 2))
-                .concat([H]);
-  let d = 'M' + x.toFixed(1) + ' 0';
-  for (let i = 0; i < ys.length - 1; i++){
-    const y0 = ys[i], y1 = ys[i+1], cx = x + (i % 2 ? -bulto : bulto);
-    d += 'C' + cx.toFixed(1) + ' ' + (y0 + (y1 - y0) * .34).toFixed(1) +
-         ',' + cx.toFixed(1) + ' ' + (y0 + (y1 - y0) * .66).toFixed(1) +
-         ',' + x.toFixed(1) + ' ' + y1.toFixed(1);
-  }
-  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  $('path', svg).setAttribute('d', d);
-}
-function hiloSVG(){
-  return '<svg class="hilo" aria-hidden="true"><path d=""/></svg>';
-}
-
 /* ══════════ la esquina floreada del calendario ══════════ */
 function esquinaSVG(){
   return '<svg class="linea" viewBox="0 0 34 34" role="presentation" stroke-width="1">' +
@@ -1373,30 +1387,18 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
     .map((c, i) => '<i style="background-color:' + esc(c) + ';z-index:' + (i+1) + '"></i>').join('');
   if ((CONFIG.paleta || []).length) $('#dressEti').textContent = 'Los colores de la boda';
 
-  /* ── el cronograma que serpentea (referencia nueva) ──
-     La línea es un solo SVG estirado al alto de la lista, así que
-     vale para dos tramos o para seis sin tocar nada. */
+  /* ── los horarios en columnas (referencia nueva) ──
+     Un renglón por horario y el icono por NOMBRE: agregar una hora
+     es una línea en CONFIG, no un dibujo. Un nombre que no está en
+     la tabla no dibuja nada y el horario se ve igual. */
   const cro = $('#cronograma'), tramos = (CONFIG.timing || []);
-  cro.innerHTML = hiloSVG() + tramos.map(t =>
-    '<li><div class="lado">' +
+  cro.innerHTML = tramos.map(t =>
+    '<li>' +
       (ICOS[t.ico] ? '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' +
                      ICOS[t.ico] + '</svg>' : '') +
-      '<h3>' + esc(t.que) + '</h3>' +
       '<b class="hora">' + esc(t.hora) + '</b>' +
-    '</div>' + corazonSVG('nodo') + '</li>').join('');
-  if (CONFIG.borrador)
-    cro.insertAdjacentElement('afterend', falta('los horarios del resto de la noche'));
-  pintarHilo(cro);
-  /* Las letras cambian el alto de los renglones cuando terminan de
-     bajar, así que se vuelve a medir ahí y en cada cambio de
-     tamaño: una curva medida contra la tipografía de respaldo pasa
-     al lado de los corazones. */
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => pintarHilo(cro));
-  let reloj;
-  addEventListener('resize', () => {
-    clearTimeout(reloj);
-    reloj = setTimeout(() => pintarHilo(cro), 140);
-  });
+      '<h3>' + esc(t.que) + '</h3>' +
+    '</li>').join('');
 
   /* ── las preguntas (referencia nueva) ──
      Sólo las que ellos contestaron. Sin ninguna, la sección entera
@@ -1574,11 +1576,11 @@ function cargarFoto(src, alt){
    que falló no deja su lugar vacío. Si no queda ninguna, la sección
    entera se esconde.
 
-   LA ANCHA DE CIERRE NO ES DECORACIÓN: la alta se come dos filas de
-   la columna izquierda, así que con una cantidad PAR de fotos queda
-   siempre un hueco al final, y la última ocupando las dos columnas
-   es lo que lo tapa. Con cualquier cantidad, el mosaico no tiene un
-   agujero. */
+   LA CANTIDAD DE COLUMNAS LA PONE EL JS (`--n`), porque sólo él
+   sabe cuántas fotos CARGARON: una que falla se saca, y con el
+   número escrito en el CSS la tira quedaría con un hueco donde
+   estaba. El tope es cuatro, que es el de la referencia; de ahí
+   para arriba envuelve. */
 (function(){
   const sec = $('#galeria'), caja = $('#fotos'), boton = $('#verTodas');
   const lista = (CONFIG.fotos || []).filter(f => f && f.foto);
@@ -1593,12 +1595,11 @@ function cargarFoto(src, alt){
     const vivas = ims.filter(Boolean);
     if (!vivas.length) return;
     const n = vivas.length;
+    caja.style.setProperty('--n', Math.min(n, 4));
     vivas.forEach((im, i) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'toque' +
-        (n >= 3 && i === 0 ? ' alta' : '') +
-        (n >= 4 && n % 2 === 0 && i === n - 1 ? ' ancha' : '');
+      b.className = 'toque';
       b.setAttribute('aria-label', 'Ver la foto ' + (i + 1) + ' de ' + n);
       b.appendChild(im);
       b.addEventListener('click', () => abrir(i));
@@ -1815,7 +1816,7 @@ function rasgar(){
     const antes = !secs[k-1].classList.contains('papel');
     const esta  = !secs[k].classList.contains('papel');
     if (antes === esta) continue;   /* mismo color: no hay nada que rasgar */
-    const color = antes ? 'var(--tinta-port)' : 'var(--marfil)';
+    const color = antes ? 'var(--antracita)' : 'var(--marfil)';
     secs[k].insertBefore(rasgo(BORDES[i++ % BORDES.length], color), secs[k].firstChild);
     secs[k].classList.add('rasgada','sin-hilo');
   }

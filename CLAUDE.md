@@ -5444,7 +5444,7 @@ rehizo alrededor de ellas, y **cada captura tiene su lugar**:
 | Referencia | Qué se tomó | Dónde está |
 |---|---|---|
 | Alejandra y Mateo | el monograma de iniciales en su marco de ramas, "NOS CASAMOS", la **fecha en una línea** con separadores, la ramita, la foto con el **borde ondulado**, la frase en cursiva y el **reproductor** de la canción | la portada y la tarjeta de la canción |
-| Darya y Nikolay | la **galería en trío** escalonado | `#galeria` |
+| Darya y Nikolay | la **galería en trío** escalonado (después la reemplazó la tira a sangre) | `#galeria` |
 | Timing / Dress code | el **cronograma** de horas colgando de una línea, los **títulos con eco** y los **círculos** de la paleta | `#timing` y la tarjeta de dress code |
 | El calendario | el **arco** oscuro y el día marcado con un **corazón** | `#fecha` |
 | Confirmación y contactos | la **cuenta regresiva en fichas** y la sección de **contacto** con WhatsApp | `#invitacion` y `#contacto` |
@@ -5553,12 +5553,13 @@ se escribe tal cual lo mandaron.**
 **LOS HUECOS.** `CONFIG.borrador` dibuja una píldora donde falta un
 dato, igual que en `ambar15` — un dato que no mandaron no se inventa y
 tampoco se deja en blanco, porque en blanco nadie se acuerda y se
-publica así. Hoy son cinco: **la foto de portada**, **las fotos de la
-galería** (no llegaron los archivos; falta además la de las mascotas,
-que todavía no se sacaron), **los horarios del resto de la noche**,
-**hasta cuándo se puede confirmar** (dijeron "durante marzo de 2027,
-confirmamos el día exacto", y eso no es una fecha) y **el titular de la
-cuenta** del alias. Acá la píldora cuelga de una bandera explícita y no
+publica así. **Hoy son tres**: **hasta cuándo se puede confirmar**
+(dijeron "durante marzo de 2027, confirmamos el día exacto", y eso no
+es una fecha), **el titular de la cuenta** del alias y **a quién le
+escriben los invitados el día de la fiesta**. Eran cinco: las fotos
+llegaron el 01/11 y los horarios el 02/11, y cada píldora desapareció
+sola el día que el dato existió —que es lo único que hace que esto no
+se publique con un hueco olvidado—. Acá la píldora cuelga de una bandera explícita y no
 de `CONFIG.evento` como en `ambar15`, porque esta invitación nace con su
 pestaña de planilla andando: la confirmación entra desde el primer día.
 
@@ -6024,6 +6025,78 @@ galería se dibujaran igual estando ocultos. No tira ningún error: lo
 que se ve es una caja negra donde no va nada. No se puede arreglar con
 un `[hidden]{display:none!important}` global, porque el sobre depende
 justamente de que su `display:grid` le gane al `hidden` del HTML.
+
+#### El countdown en fila, la tira de fotos y los horarios en columnas
+
+Tres pedidos de una vez, con cinco capturas: el countdown ruso
+(*"ese quiero que sea el countdown y que sea color marfil con borde
+color champagne las letras"*), la tira de fotos de abajo de una
+página de wedding planner (*"hacé lo mismo que en la primera foto
+con las otras tres"*) y el bloque de columnas de arriba de esa misma
+página (*"arriba lo de la ceremonia quiero que lo copies para la
+parte donde dice los horarios"*). Y, por fin, **los horarios de
+verdad**: 21 h apertura de puertas, 21:30 ceremonia, 22 h comienza
+la fiesta, 4 am finaliza el evento. Con eso se fue la píldora de
+*"falta: los horarios del resto de la noche"*, que era uno de los
+cinco huecos.
+
+**1 · El countdown pasó de fichas a una fila, y el COLOR eligió la
+banda.** Cuatro recuadros con su rayita se leen como un tablero; los
+cuatro números corridos, en serif grande y con su rótulo chico
+abajo, se leen como un reloj. Pero *"marfil con borde champagne"*
+sobre el papel marfil es texto que no está: así que **`#invitacion`
+pasó a ser de TINTA**. Es la regla de siempre —*si un bloque trae su
+propio fondo, trae su propia tinta*— vista al revés: **el color de
+letra que se pide es el que elige sobre qué puede caer.** De paso la
+portada y la invitación quedaron en un solo bloque oscuro de
+apertura, y el papel empieza en "guardá la fecha"; los bordes
+rasgados se recalculan solos, porque los pone `rasgar()` y sólo
+donde el color cambia (8 antes, 8 ahora).
+**El borde va en `em` y el `em` es el del ELEMENTO**: el tamaño del
+número vive en el `b`, así que escrito en la fila se resolvía contra
+16px y salía un hilo de medio píxel. Es la misma falla ya escrita
+para el "15" de `mia15` y para el rótulo del cierre. Y el rótulo de
+abajo **no lleva borde**: ya es champagne, y un trazo champagne
+alrededor de una letra champagne es una declaración que no hace
+nada.
+
+**2 · La tira de fotos va A SANGRE, y eso NO es sacarle el padding a
+la sección.** La primera versión le puso los márgenes negativos de
+siempre y en un teléfono quedó perfecta; en un monitor la tira medía
+**730 de 1280**, encerrada en el medio. El culpable es `.caja`, que
+está topada en 640px: adentro de ella, el margen negativo descuenta
+el padding de la sección y nada más. La tira pasó a ser **hija
+directa de la sección**, con el rótulo arriba en su caja y el botón
+abajo en otra.
+**Y la ranura es 4:5, no una tira fina, y eso lo deciden las FOTOS.**
+Dos de las tres son cuadradas con las dos caras una al lado de la
+otra: con una ranura angosta —que es lo lindo de la referencia— una
+de las dos caras queda cortada en cada foto. Es la regla que esta
+misma invitación ya tenía escrita para la foto ancha del mosaico:
+*el ancho de la ranura se elige por lo que hay que mostrar, no al
+revés.*
+**El alto sale del ancho con `aspect-ratio`, no de un alto escrito**:
+un alto fijo cambia la proporción de la ranura en cada pantalla, así
+que un recorte que en el teléfono deja las dos caras adentro en un
+monitor las corta. Y la cantidad de columnas la pone el JS (`--n`),
+porque sólo él sabe cuántas fotos CARGARON: con el número escrito en
+el CSS, una foto que falla deja un hueco donde estaba.
+
+**3 · Los horarios son columnas con una raya fina en el medio, y las
+rayas son `border-left`.** Un separador puesto a mano entre columna y
+columna deja una raya colgando al final de la fila el día que entre
+un horario más; con `border-left` se saca en el primero de cada fila
+y listo: el impar en un teléfono (dos columnas) y el `4n+1` arriba de
+700px (cuatro). Se fue con esto la línea que serpenteaba y su
+`pintarHilo`, que medía las cajas de verdad para que los corazones no
+quedaran flotando — un trabajo bien hecho que el pedido dejó sin uso.
+
+**Y el icono de la fiesta se leía como una TIJERA.** Eran dos
+monigotes bailando: a 36px las dos cabezas son los ojos y las piernas
+cruzadas, las hojas. Va una corchea doble, que se reconoce de un
+vistazo. *Lo que no se lee a 36 no va* — la misma lección que ya
+costó cuatro vueltas con la bolsa de `ambar15`, y que no se descubre
+leyendo el código: se descubre mirando la captura.
 
 ### Probar el listado de una fiesta antes de que lo use gente
 
@@ -6655,10 +6728,11 @@ dejaría peor parados.
   valor **no va nunca**, y ahora hay una prueba que lo cuida.
 - **Lo que falta de `facuymaxi/`, y lo tienen que mandar ellos.** Las
   fotos YA LLEGARON (01/11/2026): la del jardín al atardecer es la
-  portada, la del mar es el cierre y las otras tres son el mosaico;
-  **falta la de las mascotas**, que todavía no se sacaron. Quedan **los horarios del
-  resto de la noche** para el cronograma, **hasta cuándo se puede
-  confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
+  portada, la del mar es el cierre y las otras tres son la tira;
+  **falta la de las mascotas**, que todavía no se sacaron. **Los
+  horarios ya están** (02/11/2026): 21 h apertura de puertas, 21:30
+  ceremonia, 22 h la fiesta, 4 am el final. Quedan **hasta cuándo se
+  puede confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
   cuenta** del alias `FACUYMAXI.BODA` y **a quién le escriben los
   invitados el día de la fiesta**, que no podemos ser nosotros.
   Mientras tanto cada uno tiene su píldora en la pantalla. Y hay dos
