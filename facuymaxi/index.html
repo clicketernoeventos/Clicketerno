@@ -81,6 +81,10 @@
   --oro-hondo:#8E7342;     /* 3,99:1 sobre marfil · 3,99:1 al revés */
   --salvia-honda:#5E6B52;  /* 5,04:1 sobre marfil */
   --tinta-hondo:#26292B;
+  /* el casi negro de la portada: la foto en blanco y negro y la
+     banda tienen que leerse como una sola pieza, y el antracita
+     —que es un gris cálido— lo que hacía era apagarlas a las dos. */
+  --tinta-port:#101214;
   --marfil-vivo:#FCFAF5;
   --gris:#5B5F61;          /* 5,74:1 sobre marfil · es el antracita aclarado */
   /* LOS BORDES. Ninguna raya de la invitación es un gris inventado:
@@ -203,7 +207,14 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    es la foto. Así no hay dos portadas que medir, y el día que llegue
    el archivo no se mueve nada más.
    ══════════════════════════════════════════════════════════════════ */
-#portada{position:relative;background-color:var(--marfil);color:var(--antracita);
+/* LA PORTADA ES OSCURA DE PUNTA A PUNTA, y eso no es un gusto: la
+   primera versión tenía el tercio de arriba en papel crema, la foto
+   en color y la banda en antracita, y el dueño la bajó con tres
+   palabras —"es muy apagada"—. Tenía razón: tres grises cálidos
+   apilados no hacen contraste, hacen barro. Ahora el papel no entra
+   en la portada, la foto va en blanco y negro y la tinta es casi
+   negra: la foto y la banda se leen como UNA sola pieza. */
+#portada{position:relative;background-color:var(--tinta-port);color:var(--marfil);
   text-align:center;overflow:hidden}
 #portada>*{position:relative;z-index:1}
 
@@ -214,36 +225,51 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    adorno. El audio sale del video que mandó el dueño; no hay ningún
    reproductor de un tercero, que la CSP no deja y además sería un
    tercero corriendo código en la pantalla del invitado. */
-.port-player{padding:clamp(16px,3vh,26px) var(--gutter) clamp(13px,2.4vh,20px)}
-.port-player .rot{font-size:clamp(9.5px,2.6vw,11px);letter-spacing:.34em;
-  text-transform:uppercase;color:var(--oro-hondo);font-weight:500}
-.player{width:100%;max-width:320px;margin:14px auto 0}
-.player .barra{position:relative;height:1px;background-color:var(--borde-papel)}
+.port-player{padding:clamp(13px,2.4vh,20px) var(--gutter) clamp(11px,2vh,16px)}
+.port-player .rot{font-size:clamp(9px,2.5vw,10.5px);letter-spacing:.34em;
+  text-transform:uppercase;color:var(--champan);font-weight:500}
+.player{width:100%;max-width:300px;margin:11px auto 0}
+.player .barra{position:relative;height:1px;background-color:rgba(217,197,164,.3)}
 .player .barra i{position:absolute;left:0;top:-1px;height:3px;width:0;
-  background-color:var(--oro-hondo);transition:width .25s linear}
+  background-color:var(--champan);transition:width .25s linear}
 .player .barra b{position:absolute;left:0;top:50%;width:0;height:0;
   margin:-4px 0 0 -3px;border:4px solid transparent;
-  border-left:6px solid var(--oro-hondo);transition:left .25s linear}
+  border-left:6px solid var(--champan);transition:left .25s linear}
 .player .mandos{display:flex;align-items:center;justify-content:center;
-  gap:clamp(18px,6vw,30px);margin-top:14px;color:var(--oro-hondo)}
-.player .mandos svg{width:17px;height:17px;fill:currentColor;opacity:.75}
+  gap:clamp(18px,6vw,30px);margin-top:10px;color:var(--champan)}
+.player .mandos svg{width:16px;height:16px;fill:currentColor;opacity:.75}
 .player .salto{display:inline-flex;align-items:center;justify-content:center;
-  width:46px;height:46px;border-radius:50%;color:var(--oro-hondo);flex:none;
+  width:46px;height:46px;border-radius:50%;color:var(--champan);flex:none;
   transition:transform .3s var(--e)}
 .player .salto:active{transform:scale(.94)}
+/* EL BOTÓN VA AL REVÉS QUE ANTES: círculo claro y corazón oscuro.
+   Sobre el casi negro, un círculo de tinta no existe. */
 .player .play{display:inline-flex;align-items:center;justify-content:center;
-  width:56px;height:56px;border-radius:50%;background-color:var(--antracita);
-  color:var(--marfil);text-decoration:none;flex:none;
+  width:50px;height:50px;border-radius:50%;background-color:var(--marfil);
+  color:var(--tinta-port);text-decoration:none;flex:none;
   transition:transform .3s var(--e)}
-.player .play svg{width:21px;height:21px;fill:currentColor;opacity:1}
+.player .play svg{width:19px;height:19px;fill:currentColor;opacity:1}
 .player .play:active{transform:scale(.94)}
-.player .pie-player{margin-top:13px;font-size:11.5px;line-height:1.6;color:var(--gris)}
+.player .pie-player{margin-top:10px;font-size:11px;line-height:1.6;
+  color:rgba(246,241,232,.72)}
 
 /* ── 2b · la foto, a sangre ──
    Sin archivo la banda no se dibuja y la portada se sostiene sola:
    nunca un cuadrado roto ni un marco alrededor de nada. */
-.port-foto{background-color:var(--antracita);line-height:0}
-.port-foto img{width:100%;max-height:38svh;object-fit:cover;object-position:center 30%}
+/* EN BLANCO Y NEGRO, y el filtro está en el CSS: el archivo original
+   queda entero por si algún día se la quiere a color. Es la misma
+   decisión que ya estaba tomada en `mia15`, `almi15` y `ambar15`, y
+   acá además es lo que pidió el dueño: en color, contra el papel
+   crema y el dorado, la portada entera quedaba de un solo beige.
+   El degradé de abajo funde la foto con la banda: sin él queda una
+   juntura recta a lo ancho de la pantalla y se leen como dos cosas
+   pegadas, no como una sola pieza. */
+.port-foto{position:relative;background-color:var(--tinta-port);line-height:0}
+.port-foto img{width:100%;max-height:46svh;object-fit:cover;object-position:center 28%;
+  filter:grayscale(1) contrast(1.16) brightness(1.03)}
+.port-foto:after{content:'';position:absolute;left:0;right:0;bottom:-1px;
+  height:26%;pointer-events:none;
+  background-image:linear-gradient(to bottom,rgba(16,18,20,0),var(--tinta-port) 92%)}
 
 /* ── 2c · la banda de tinta ──
    EL MONOGRAMA SON LAS DOS INICIALES DEL MISMO TAMAÑO, separadas por
@@ -251,32 +277,41 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    primero—; acá cualquier jerarquía sería una declaración, así que
    no hay ninguna. Es la regla que ya está escrita para
    `mateoylucas/`. */
-.port-banda{position:relative;background-color:var(--antracita);color:var(--marfil);
-  padding:clamp(26px,4.4vh,42px) var(--gutter) clamp(20px,3.4vh,32px)}
-/* el filete de champagne que separa la foto de la banda */
-.port-banda:before{content:'';position:absolute;left:var(--gutter);right:var(--gutter);
-  top:0;height:1px;background-color:var(--borde-tinta)}
+.port-banda{position:relative;background-color:var(--tinta-port);color:var(--marfil);
+  padding:clamp(4px,1vh,10px) var(--gutter) clamp(18px,3vh,28px)}
+/* EL MONOGRAMA VA EN EL CORTE DISPLAY DE LA NEWSREADER.
+   `opsz` es el eje de tamaño óptico de la familia: en 72 los finos se
+   afinan y los gruesos engordan, que es el contraste de una didona.
+   Acá se puede y abajo no: lo que se parte en un teléfono es una
+   didona a 15px, y esto mide noventa. Y no cuesta una descarga más,
+   porque es la misma familia que ya está pedida. */
 .monograma{display:flex;align-items:stretch;justify-content:center;
-  gap:clamp(14px,4.4vw,24px);font-family:var(--titulos);font-weight:300;
-  font-size:clamp(44px,14vw,82px);line-height:1}
+  gap:clamp(16px,5vw,28px);font-family:var(--titulos);font-weight:300;
+  font-variation-settings:'opsz' 72;font-optical-sizing:none;
+  font-size:clamp(62px,21vw,112px);line-height:1;color:#FFFFFF}
 .monograma span{display:block}
-.monograma i{display:block;width:1px;background-color:rgba(246,241,232,.5)}
-.nombres{margin-top:clamp(16px,2.8vh,24px);font-family:var(--texto-f);font-weight:400;
-  font-size:clamp(13px,3.8vw,18px);letter-spacing:clamp(.14em,.6vw,.3em);
-  text-transform:uppercase;line-height:1.6;color:var(--marfil)}
+/* la raya se centra y mide lo que mide una capitular: estirada al
+   alto de la caja asoma por debajo de la base de las letras y deja
+   de leerse como un separador. */
+.monograma i{display:block;align-self:center;width:1px;height:.7em;
+  transform:translateY(-.12em);background-color:rgba(255,255,255,.4)}
+.nombres{margin-top:clamp(14px,2.4vh,22px);font-family:var(--texto-f);font-weight:500;
+  font-size:clamp(12.5px,3.5vw,17px);letter-spacing:clamp(.2em,.85vw,.36em);
+  text-transform:uppercase;line-height:1.7;color:#FFFFFF}
 .nombres span{display:inline}
 /* El aire alrededor de la "y" va en el CSS y no con espacios en el
    HTML: entre dos `<span>` el navegador se come el de un lado y
    queda "FACUNDO yMAXIMILIANO". */
 .nombres .ye{font-family:var(--titulos);font-style:italic;text-transform:none;
-  letter-spacing:0;color:var(--champan);padding:0 .35em;font-size:1.1em}
-.fecha-num{margin-top:clamp(12px,2.2vh,18px);font-family:var(--titulos);font-weight:300;
-  font-size:clamp(21px,6vw,30px);letter-spacing:.06em;color:var(--marfil);
+  letter-spacing:0;color:var(--champan);padding:0 .42em 0 .06em;font-size:1.1em}
+.fecha-num{margin-top:clamp(11px,2vh,16px);font-family:var(--titulos);font-weight:300;
+  font-variation-settings:'opsz' 72;font-optical-sizing:none;
+  font-size:clamp(25px,7.4vw,36px);letter-spacing:.1em;color:rgba(255,255,255,.92);
   font-variant-numeric:lining-nums tabular-nums}
-.ramita{width:clamp(54px,15vw,74px);margin:clamp(16px,3vh,24px) auto 0;
+.ramita{width:clamp(50px,14vw,70px);margin:clamp(13px,2.4vh,20px) auto 0;
   color:var(--champan)}
 .ramita svg{width:100%;height:auto}
-.port-baja{margin-top:clamp(20px,3.6vh,30px);
+.port-baja{margin-top:clamp(14px,2.6vh,22px);
   display:flex;flex-direction:column;align-items:center;gap:7px;
   font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:#CFCAC1}
 .port-baja svg{width:13px;height:20px;fill:none;stroke:currentColor;stroke-width:1.3}

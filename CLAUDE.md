@@ -5690,14 +5690,16 @@ De paso se fue sola la falla de abajo: **acá ya no hay capa fija que
 pueda tapar nada si el script no corre.**
 
 **2 · Las cinco fotos.** La del jardín al atardecer es la portada —la
-que eligieron ellos— y las otras cuatro son el mosaico. **Van en
-COLOR**, al revés que `mia15`, `almi15` y `ambar15`: ahí la paleta era
-de tres colores y una foto a color metía los suyos; acá la paleta que
-mandaron es cálida y natural, y el atardecer y las guirnaldas SON el
-champagne y el dorado de su lista. Además eligieron esa foto por eso
-mismo —*"el jardín al atardecer, con las luces de fondo"*—: en blanco
-y negro se borra justo lo que la hizo elegir. Se montaron las dos y se
-eligió mirando.
+que eligieron ellos— y las otras cuatro son el mosaico. **Las del
+mosaico van en COLOR**, al revés que `mia15`, `almi15` y `ambar15`:
+ahí la paleta era de tres colores y una foto a color metía los suyos;
+acá la paleta que mandaron es cálida y natural, y el atardecer y las
+guirnaldas SON el champagne y el dorado de su lista.
+**La de la PORTADA no**: ahí la foto cae pegada a un bloque de texto y
+a la paleta entera, y en color la portada quedaba de un solo beige —
+el dueño la bajó por eso. Está contado abajo, en *"Es muy apagada"*.
+Es la misma lección que la del velo: una foto suelta y una foto con
+texto encima no se juzgan igual.
 
 **Los recortes son la mitad del trabajo.** La de la portada se recortó
 a 1,1:1 alrededor de las caras: entera es vertical de cuerpo entero y
@@ -5737,6 +5739,56 @@ regresiva, la caja del alias y los botones.
 **El hilo dejó de ir en `currentColor`**, que ahí era el color del
 texto, o sea un gris: va en el dorado sobre el papel, en el champagne
 sobre la tinta y en la salvia honda sobre el verde.
+
+#### "Es muy apagada. Cero diseño": la portada en blanco y negro
+
+El dueño la miró publicada y la bajó con tres palabras. Tenía razón y
+el motivo se puede decir en una línea: **la portada eran tres grises
+cálidos apilados** —el papel crema arriba, la foto a color de un
+atardecer en el medio, la banda en antracita abajo—, y tres cosas
+cálidas y medias una encima de otra no hacen contraste, hacen barro.
+En una captura de escritorio pasa por sobria; en un teléfono se lee
+como una pantalla sin terminar.
+
+Son tres decisiones y ninguna es de gusto:
+
+- **La foto va en BLANCO Y NEGRO**, con el filtro en el CSS y no
+  quemado en el archivo — el original queda entero por si algún día se
+  la quiere a color. Acá estaba escrito lo contrario (*"van en COLOR…
+  el atardecer y las guirnaldas SON el champagne y el dorado de su
+  lista"*) y era justamente eso lo que el dueño rechazó: el dorado de
+  la foto no suma a la paleta, **se funde con ella**.
+- **La portada es oscura de punta a punta.** El papel no entra: el
+  reproductor, la foto y la banda caen sobre el mismo casi negro
+  (`--tinta-port`, `#101214`), así que la foto y el bloque de texto se
+  leen como UNA pieza y no como dos franjas pegadas. El antracita
+  `#333638` es un gris cálido y apagaba las dos.
+- **El monograma va en el corte DISPLAY de la misma tipografía.**
+  `opsz` es el eje de tamaño óptico de la Newsreader: en 72 los finos
+  se afinan y los gruesos engordan, que es el contraste de una didona.
+  Acá se puede y en el cuerpo del texto no —*lo que se parte en un
+  teléfono es una didona a 15px, y esto mide noventa*— y **no cuesta
+  una descarga más**, porque es la misma familia que ya está pedida.
+
+Dos cosas que costaron una vuelta cada una:
+
+- **El degradé de abajo de la foto no es un adorno.** Sin él queda una
+  juntura recta a lo ancho de la pantalla justo donde la foto termina,
+  y ahí se vuelven a leer como dos cosas pegadas. Con la foto fundida
+  en el negro, el monograma parece salir de ella.
+- **El botón del corazón va AL REVÉS que antes**: círculo claro y
+  corazón oscuro. Sobre el casi negro, un círculo de tinta no existe —
+  es *si un bloque trae su propio fondo, trae su propia tinta* por el
+  lado del fondo que cambió abajo del bloque.
+
+**Y el aire alrededor de la "y" quedó torcido.** El `letter-spacing`
+de los nombres deja su espacio DESPUÉS de la última letra de
+"FACUNDO", así que un padding simétrico en la "y" da más hueco de un
+lado que del otro. Se ve en una captura y no leyendo el código.
+
+Medido: la portada mide **799px en un iPhone de 844**, así que
+"Deslizá" —lo único que avisa que hay más abajo— sigue entrando
+entero, y la suite informa **122 textos y ninguno abajo de 3:1**.
 
 ##### Dos cosas que la suite medía con el selector de OTRA invitación
 
