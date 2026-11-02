@@ -5690,16 +5690,21 @@ De paso se fue sola la falla de abajo: **acá ya no hay capa fija que
 pueda tapar nada si el script no corre.**
 
 **2 · Las cinco fotos.** La del jardín al atardecer es la portada —la
-que eligieron ellos— y las otras cuatro son el mosaico. **Las del
-mosaico van en COLOR**, al revés que `mia15`, `almi15` y `ambar15`:
-ahí la paleta era de tres colores y una foto a color metía los suyos;
-acá la paleta que mandaron es cálida y natural, y el atardecer y las
-guirnaldas SON el champagne y el dorado de su lista.
-**La de la PORTADA no**: ahí la foto cae pegada a un bloque de texto y
-a la paleta entera, y en color la portada quedaba de un solo beige —
-el dueño la bajó por eso. Está contado abajo, en *"Es muy apagada"*.
-Es la misma lección que la del velo: una foto suelta y una foto con
-texto encima no se juzgan igual.
+que eligieron ellos— y las otras cuatro son el mosaico. **Las cinco
+van en BLANCO Y NEGRO**, con el filtro en el CSS y no quemado en el
+archivo: el original queda entero. La primera versión las puso a
+color, razonando que la paleta que mandaron es cálida y natural; el
+dueño bajó las dos cosas, primero la portada (*"es muy apagada"*) y
+después el mosaico (*"así tienen que ir las otras fotos"*, con la
+referencia al lado). Tenía razón las dos veces y el motivo es el
+mismo: **una foto a color mete SU paleta**, y cuatro fotos distintas
+meten cuatro —el verde del pasto, el azul de un traje, el beige del
+salón—, así que el bloque se lee como un collage y no como una pieza.
+En blanco y negro las cinco son lo mismo, luz y sombra, y lo que
+queda de color es la paleta de ellos: el champagne del filete, el oro
+de los rótulos, la salvia de las bandas.
+**Y el visor va en blanco y negro también**: tocar una miniatura
+monocroma y que se abra a color se lee como un error de carga.
 
 **Los recortes son la mitad del trabajo.** La de la portada se recortó
 a 1,1:1 alrededor de las caras: entera es vertical de cuerpo entero y

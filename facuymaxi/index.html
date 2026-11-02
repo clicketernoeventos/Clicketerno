@@ -443,7 +443,14 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    agranda la caja y rompe la cuenta de las filas del mosaico. */
 #fotos .toque:after{content:'';position:absolute;inset:0;border-radius:2px;
   box-shadow:inset 0 0 0 1px var(--borde-tinta);pointer-events:none}
+/* EN BLANCO Y NEGRO, igual que la portada, y el filtro va en el CSS:
+   el archivo original queda entero. Con las cuatro a color el mosaico
+   traía el verde del pasto, el azul de un traje y el beige del salón
+   —cuatro paletas peleándose adentro de un mismo bloque— y lo que se
+   veía era un collage, no una pieza. En blanco y negro las cuatro son
+   lo mismo: luz y sombra, con el filete de champagne de marco. */
 #fotos img{width:100%;height:100%;object-fit:cover;aspect-ratio:1/1;
+  filter:grayscale(1) contrast(1.14) brightness(1.03);
   transform:scale(1.06);transition:transform 1.4s var(--e)}
 #fotos .entro img{transform:none}
 #fotos .alta{grid-column:1;grid-row:1/span 2}
@@ -462,7 +469,11 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #visor{position:fixed;inset:0;z-index:60;background-color:rgba(26,28,29,.97);
   display:none;place-items:center;padding:clamp(54px,9vw,70px) clamp(12px,4vw,30px)}
 #visor.abierto{display:grid}
+/* El visor muestra la MISMA foto que la miniatura: a color, tocar una
+   miniatura en blanco y negro abriría otra cosa y se lee como un
+   error de carga. */
 #visor img{max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px;
+  filter:grayscale(1) contrast(1.14) brightness(1.03);
   box-shadow:0 0 0 1px var(--borde-tinta)}
 #visor button{position:absolute;display:grid;place-items:center;width:52px;height:52px;
   border-radius:50%;color:var(--marfil);background-color:rgba(246,241,232,.1);
