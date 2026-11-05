@@ -6157,6 +6157,190 @@ Excluir la portada a mano era la misma curita una foto tarde. Ahora la
 prueba lee de `CONFIG` **cuáles son las de la galería** y tira una de
 ésas. Contra el código anterior da **1 falla**.
 
+### `magali15/`: la cuarta de un cliente — Magali
+
+13 de febrero de 2027 · Salón Vilmar · de 21 a 5 h. Quince años.
+Alias `magali.loor`, dress code **Elegante sport** —*"el outfit con el
+que te sientas más cómodo para bailar toda la noche"*— y dos colores
+que mandó escritos: **#7B5354 y #3D2E2B**.
+
+**La portada es el armado de SU PROPIA TARJETA.** El dueño mandó la
+captura de la invitación de Canva que ella ya tenía: "MIS XV" en
+capitular espaciada y **"Magali" en una manuscrita grande cruzándolo
+por encima**. Eso es la portada, y el cruce es lo que la hace — sin él
+son dos renglones apilados. El margen negativo que lo produce va en
+`em` y no en píxeles: en `em` se mueve con la letra, así que el cruce
+es el mismo en un iPhone SE y en un monitor. Y el `em` es el **del
+elemento**: escrito en el padre se resolvería contra los 16px del body
+y el cruce no existiría, que es la misma trampa del borde de letra de
+`mia15`.
+
+**Y "una planta entre secciones"**, con esas palabras. El lugar es la
+cumbre de cada corte en curva, que es exactamente donde iba la
+filigrana de rombos de `almi15`: la curva ya dice que empezó otra cosa
+y la planta es lo que la remata.
+
+#### De las cinco tipografías que pidió, TRES no existen
+
+Pidió *"Gilda display / Parfumerie script pro / Frasa display / Bebas
+neue / Bright"*. Comprobado contra `fonts.googleapis.com`: **Gilda
+Display y Bebas Neue contestan 200; Parfumerie Script Pro, Frasa,
+Frasa Display y Bright contestan 400.** Son de Canva o comerciales y
+no se pueden servir desde acá — y meterlas en el `<link>` igual no
+tira ningún error: el navegador cae a la letra de respaldo del sistema
+y la pieza sale con otra tipografía sin que nadie se entere.
+
+Así que van las dos que existen y **la manuscrita se eligió MIRANDO**,
+montando la misma portada con seis candidatas (`pruebas/letras.js`).
+Quedó **Mrs Saint Delafield**, que es la que reproduce el cruce de
+swashes de la referencia. Es la misma forma de trabajar que ya está
+escrita para la tipografía de `mia15`, para el monograma y para la
+bolsa de `ambar15`: *mostrar, no describir*. "Bright" —que es un sans
+de texto— se reemplaza por Hanken Grotesk, que es la del resto del
+proyecto.
+
+**Gilda Display viene en UN solo peso (400) y SIN bastardilla.** Los
+cinco `font-weight:500` que heredaba la pieza y los tres
+`font-style:italic` eran, los ocho, pedirle al navegador que invente
+una negrita o una oblicua — y eso no avisa. Los pesos bajaron a 400 y
+**lo que iba en cursiva pasó a la manuscrita**, que además es el gesto
+de la referencia: capitular más letra escrita a mano. El arreglo y el
+diseño van para el mismo lado.
+Y los rótulos chicos en versalitas van en **Bebas Neue**, que es la
+otra que pidió y la única de las cinco que sirve para eso: no tiene
+minúsculas y acá está todo en mayúsculas igual. Sube un punto de
+tamaño porque es condensada, y va en 400 por lo mismo de arriba.
+
+#### Los dos colores que mandó, uno sobre el otro, dan 1,99:1
+
+O sea que **el texto no está**. Calculado, no opinado. Por eso la
+paleta tuvo que CRECER, exactamente como ya había pasado en
+`facuymaxi`:
+
+- **#3D2E2B** es la banda oscura y la tinta sobre el papel (10,8:1).
+- **#7B5354** es el acento **sobre el papel** (5,47:1).
+- **#C9A3A4**, un malva claro, es el acento **sobre la banda oscura**
+  (5,70:1). El de ella ahí daría 1,99; el claro sobre el papel daría
+  1,97 — la misma trampa dada vuelta.
+- **#F2E9E3** es el papel y **#6B5856** el gris de los párrafos
+  (5,56:1).
+
+Es la regla de siempre: *si un bloque trae su propio fondo, trae su
+propia tinta*. La suite mide 32 textos y el más flojo da **5,47:1**.
+
+#### El dibujo del salón reemplaza al medallón
+
+Lo mandó con la referencia: el lugar se anuncia con el dibujo del
+salón en línea, no con un icono genérico. Así que el dibujo **ocupa el
+lugar del medallón** de "dónde nos vemos" — donde el bloque trae su
+propio emblema, un medallón arriba son dos emblemas apilados, que es
+la misma decisión ya tomada en `ambar15` con el pase VIP.
+
+**Va con el fondo blanco SACADO y las líneas teñidas** en el malva de
+la clienta: puesto tal cual, un rectángulo blanco en el medio del
+papel crema se ve a la legua. Pesa 74 KB. Y se pone recién cuando el
+archivo CARGÓ de verdad, y recién entonces se saca el medallón: si
+faltara queda el pin dibujado, que se sostiene solo, y nunca un
+cuadrado roto arriba del título.
+
+#### La planta se eligió mirando, y tiene dos reglas
+
+Se montaron **ocho armados** al tamaño al que se ve de verdad (132px)
+sobre el papel y sobre el marrón. Ganó la rama doble con hojas
+alternadas y un brote en el medio. Las dos cosas que la hacían fallar
+no se ven leyendo el código:
+
+- **Una hoja SALE del tallo, no lo cruza.** La elipse va corrida casi
+  un radio entero a lo largo de su eje; centrada en el tallo lo
+  atraviesa y lo que se ve no es una hoja, es un lazo. La primera
+  versión eran nueve lazos.
+- **Y las hojas no se tocan entre ellas.** Amontonadas, el conjunto se
+  lee como una greca y no como una planta: las de afuera van más
+  chicas y más separadas.
+
+#### Una capa de foto VACÍA es un velo opaco sobre la portada
+
+Lo más caro de esta pieza, y no tiraba ningún error. `.port-foto` es
+un `position:absolute` con fondo **opaco** que existe siempre, haya
+foto o no. Y una capa posicionada pinta por encima de todo lo que
+**no** está posicionado: lo que lleva `.ap` se salva —su `transform`
+le arma su propio contexto— y lo que no, desaparece.
+
+Acá desaparecieron dos cosas. El **swash de abajo del nombre**, que se
+dibujaba perfecto —con su color, su geometría y su caja en el lugar
+justo, comprobado con `getBoundingClientRect`— y no se veía; y el
+**degradé de la portada**, que quedaba tapado por un marrón plano.
+Media hora buscando por qué un trazo que el DOM declara dibujado no
+aparece en la captura. Ahora, sin foto, esa capa **se saca**.
+
+Es la caja de 0x0 otra vez, al revés: la caja estaba, lo que faltaba
+era que se PINTARA. Y vale para cualquier invitación con una capa de
+foto condicional.
+
+#### Y un color de la piel vieja sobrevivió URL-encodeado
+
+El barrido de colores pedía todos los `#RRGGBB` del archivo y exigía
+que estuvieran en la paleta nueva — y daba limpio. Pero la flecha de
+los `<select>` es un SVG en un `data:` URI, donde el `#` va escrito
+`%23`: ahí quedó el **dorado** de la pieza anterior, el único amarillo
+de toda la tarjeta, en la pantalla donde el invitado confirma. Se ve
+en una captura y no se ve en un `grep`. Un barrido de colores tiene
+que pedir las dos formas.
+
+#### Lo que NO se inventó
+
+- **La dirección del salón.** Mandó el nombre y un link corto de
+  Google que desde acá no se puede resolver —el proxy lo rechaza—, así
+  que el renglón de la calle **no se dibuja** y el botón "Cómo llegar"
+  lleva igual al punto exacto. Mandar a los invitados a una calle
+  adivinada no se arregla la noche de la fiesta.
+- **El titular de la cuenta** del alias `magali.loor`: sin él ese
+  renglón no existe. Y el alias se escribe **tal cual lo mandó**, sin
+  "arreglarle" nada: en `mia15` el punto del final resultó ser parte
+  del alias.
+- **El valor de la tarjeta ($50.000) y la fecha para confirmar
+  (15/12/26) salen de SU PROPIA tarjeta de Canva**, no del mensaje del
+  dueño. Son datos de la clienta y por eso están; queda anotado para
+  que se sepa de dónde salieron y se puedan sacar con una palabra.
+- **La primera línea de "¿Venís?" es de ella**, también de su Canva:
+  *"Tu compañía hace que este día sea aún más especial."* Es su voz y
+  no la nuestra.
+
+#### Va con su propia planilla, no con la central
+
+Como decidió el dueño el 01/11/2026 —*"un sheet para cada fiesta,
+siempre separado"*—. Por eso `CONFIG.evento` no existe y la dirección
+de `lib/planilla.js` **no se carga**: con la central puesta y sin
+pestaña, la planilla contesta `sin_evento` y el invitado ve un error
+que no es suyo. Hasta que exista su `/exec`, `CONFIG.endpoint` está
+vacío y la confirmación **dice con todas las letras que no se mandó a
+ningún lado**.
+`magali15/listado/` todavía no existe, y eso está bien: se crea el día
+que exista la dirección, copiando la plantilla con sus dos líneas de
+`CONFIG`. `pruebas/invitaciones.js` falla si una carpeta de listado
+tiene el `appsScriptUrl` vacío, porque esa pantalla no traería nada.
+
+**El correo que mandó la clienta es la clave de su tablero**, cuarta
+vez después de `mia15`, `almi15` y `ambar15`, y vale la misma
+advertencia: un correo es público y adivinable, y lo que abre es la
+lista entera de invitados con sus nombres y sus comidas. **En el
+repositorio no va nunca**: vive en `CLAVES_ELEGIDAS`, en la copia del
+editor de Apps Script del dueño, y `pruebas/rsvp.js` falla si lo
+versionado deja de estar vacío.
+
+**No está en la galería de Trabajos ni en `/invitaciones`**, por lo
+mismo que las otras cuatro: es la fiesta de una clienta de verdad,
+lleva `noindex` y en el formulario se juntan nombres de invitados y
+comidas. Y lleva su propia `og.jpg` (1200x630, 33 KB), tipográfica:
+nunca una foto de la fiesta, que viajaría en la vista previa de cada
+chat por el que pase el link.
+
+**No mandó ninguna foto**, así que la portada es la tipográfica —que
+es justamente el armado de su Canva— y las dos franjas se esconden
+enteras. El día que lleguen es un renglón en `CONFIG`; ahí hay que
+sacarle la curva a la sección que sigue a la franja, y eso lo hace el
+JS solo.
+
 ### Probar el listado de una fiesta antes de que lo use gente
 
 Pedido del dueño el 31/10/2026 para `ambar15`: *"necesito que armemos
@@ -6802,6 +6986,21 @@ dejaría peor parados.
   `mateoylucas/` sobre la Ley 26.618 —no se pone sin preguntar— y si
   la frase de la portada se queda como está, porque **esa frase es
   nuestra**: no mandaron ninguna.
+- **Lo que falta de `magali15/`.** Del lado de la clienta: el
+  **titular de la cuenta** del alias `magali.loor` —el nombre que le
+  muestra el banco al invitado cuando lo pega— y la **dirección del
+  salón**, porque mandó el nombre y un link corto de Google que desde
+  acá no se puede resolver. Los dos, vacíos, no dibujan su renglón.
+  **Y dos cosas para confirmar con el dueño**, porque salieron de la
+  tarjeta de Canva de ella y no de su mensaje: el **valor de la
+  tarjeta ($50.000)** y la **fecha para confirmar (15/12/26)**.
+  Del lado del dueño, dos pasos en Google: **crear la planilla de
+  esta fiesta** —va con la suya, no con la central— y pegar su `/exec`
+  en `CONFIG.endpoint`, y poner el correo que mandó la clienta como
+  clave de su tablero en `CLAVES_ELEGIDAS`, **que en el repositorio no
+  va nunca**. Hasta que la planilla exista, la confirmación se
+  completa entera y DICE que no se mandó a ningún lado, y
+  `magali15/listado/` no se crea.
 - **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
   "la portada APARECE de golpe, no hay cruce con la carta". El cruce
   se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado
