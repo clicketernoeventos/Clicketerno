@@ -6422,6 +6422,16 @@ guirnalda arriba y abajo y los tres bloques separados por una ramita.
   el nombre.** También del 05/11. El renglón chico es la frase y el
   manuscrito grande es la firma, que es el orden en que se escribe una
   tarjeta a mano.
+- **Y ahí la M del nombre salía CORTADA.** Lo vio el dueño. Los swashes
+  de la manuscrita suben bastante más que su línea —o sea que la letra
+  se sale de su propia caja— y el telón de `.ap` recorta JUSTO en la
+  caja: la M quedaba cortada al ras, sin un solo error y perfecta en
+  todo lo demás. Se arregla dándole aire arriba al bloque, con un
+  margen negativo que le devuelve el lugar para que en pantalla no se
+  mueva nada. **Es la misma regla que ya costó una vuelta en `ambar15`
+  con el corazón del reproductor: el que recorta no puede ser más chico
+  que lo que tiene que mostrar** — y vale para cualquier manuscrita
+  metida adentro de un bloque con telón.
 
 #### El dibujo de flor del final, y por qué un adorno de esquina se queda en la esquina
 
