@@ -6319,10 +6319,10 @@ que pedir las dos formas.
   renglón no existe. Y el alias se escribe **tal cual lo mandó**, sin
   "arreglarle" nada: en `mia15` el punto del final resultó ser parte
   del alias.
-- **El valor de la tarjeta ($50.000) y la fecha para confirmar
-  (15/12/26) salen de SU PROPIA tarjeta de Canva**, no del mensaje del
-  dueño. Son datos de la clienta y por eso están; queda anotado para
-  que se sepa de dónde salieron y se puedan sacar con una palabra.
+- **El valor de la tarjeta ($50.000) sale de SU PROPIA tarjeta de
+  Canva**, no del mensaje del dueño; queda anotado para que se sepa de
+  dónde salió y se pueda sacar con una palabra. **La fecha para
+  confirmar la mandó el dueño** el 05/11/2026: 10 de enero de 2027.
 - **La primera línea de "¿Venís?" es de ella**, también de su Canva:
   *"Tu compañía hace que este día sea aún más especial."* Es su voz y
   no la nuestra.
@@ -6410,9 +6410,18 @@ guirnalda arriba y abajo y los tres bloques separados por una ramita.
 - **El valor es un DATO, no una frase.** La primera versión decía *"El
   valor de la tarjeta es de $50.000."* abajo de un título que ya dice
   "Valor de la tarjeta": dos veces lo mismo, y encima partido en dos
-  renglones. Dice **$50.000**. Y sin valor **no se dibuja el bloque
-  entero**, no sólo el renglón: un título arriba de nada es peor que
-  no estar.
+  renglones. Dice **$50.000**.
+- **Y el bloque del regalo se fue: son DOS bloques, no tres.** Lo pidió
+  el dueño el 05/11/2026 —*"la parte del regalo hay que sacarla, poner
+  sólo valor de la tarjeta y abajo el alias"*—. Tiene razón: el alias
+  es dónde se paga el valor que está justo arriba, así que partidos en
+  dos se leían como dos pedidos de plata distintos. Ahora el bloque
+  desaparece sólo si no hay NI valor NI alias: escondido por falta de
+  valor se llevaría puesto el único dato para transferir.
+- **El cierre va al revés: primero "te espero el 13 de febrero" y abajo
+  el nombre.** También del 05/11. El renglón chico es la frase y el
+  manuscrito grande es la firma, que es el orden en que se escribe una
+  tarjeta a mano.
 
 #### El dibujo de flor del final, y por qué un adorno de esquina se queda en la esquina
 
@@ -7123,9 +7132,10 @@ dejaría peor parados.
   **titular de la cuenta** del alias `magali.loor` —el nombre que le
   muestra el banco al invitado cuando lo pega—. Vacío no dibuja su
   renglón. (La dirección del salón ya llegó: Campo Timbó.)
-  **Y dos cosas para confirmar con el dueño**, porque salieron de la
-  tarjeta de Canva de ella y no de su mensaje: el **valor de la
-  tarjeta ($50.000)** y la **fecha para confirmar (15/12/26)**.
+  **Y el valor de la tarjeta ($50.000) salió de la tarjeta de Canva de
+  ella y no del mensaje del dueño**, así que queda anotado de dónde
+  vino. La fecha para confirmar la mandó él el 05/11/2026: **10 de
+  enero de 2027**.
   Y si la clienta quiere **la tipografía exacta** de su tarjeta:
   Parfumerie Script Pro se compra con licencia web en MyFonts o
   Fontspring; con el archivo en la mano es una línea. Las otras dos

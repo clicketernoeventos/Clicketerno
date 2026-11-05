@@ -786,7 +786,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .flor-rincon.der{right:0;transform:scaleX(-1)}
 @media (min-width:760px){ .flor-rincon{width:230px} }
 .cierre-n{font-family:var(--mano);font-weight:400;
-  font-size:clamp(52px,17vw,92px);color:var(--malva);line-height:1.05;margin-top:12px}
+  font-size:clamp(52px,17vw,92px);color:var(--malva);line-height:1.05;margin-top:6px}
 .firma{margin-top:36px;font-family:var(--rotulos);font-size:11.5px;
   letter-spacing:.3em;text-transform:uppercase;
   color:var(--gris)}
@@ -996,17 +996,12 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 
       <div class="cap-corte" aria-hidden="true"></div>
 
+      <!-- El valor y el alias son UN bloque: el alias es dónde se paga el
+           valor que está arriba, así que partidos en dos se leían como dos
+           pedidos distintos. -->
       <div class="bloque" id="bValor">
         <h3>Valor de la tarjeta</h3>
         <p class="cap-dato" id="valorTarjeta"></p>
-      </div>
-
-      <div class="cap-corte" aria-hidden="true"></div>
-
-      <div class="bloque">
-        <h3>Regalo</h3>
-        <p class="cap-txt">El mejor regalo es que vengas. Si querés hacerme
-           un presente, podés colaborar con mis sueños y mis ganas de festejar.</p>
         <p class="rotulo-alias">Alias para transferir</p>
         <b id="alias"></b>
         <p id="titular"></p>
@@ -1115,8 +1110,8 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   <section class="seccion claro arco" id="cierre">
     <div class="caja">
       <div class="filete ap"><i></i><b></b><i></i></div>
-      <p class="cierre-n ap d1 elNom"></p>
-      <p class="cuerpo ap d2" id="teEspero"></p>
+      <p class="cuerpo ap d1" id="teEspero"></p>
+      <p class="cierre-n ap d2 elNom"></p>
     </div>
     <div class="flor-rincon izq" aria-hidden="true"></div>
     <div class="flor-rincon der" aria-hidden="true"></div>
@@ -1151,7 +1146,7 @@ const CONFIG = {
   /* La mandó ella en su propia tarjeta ("antes del 15/12/26"). Vacío NO
      dibuja el renglón: una fecha puesta a ojo le cierra las mesas al
      invitado el día que no es. */
-  confirmarHasta: "15 de diciembre de 2026",
+  confirmarHasta: "10 de enero de 2027",
   lugar: "Salón Valmar",
   /* La mandó el dueño el 05/11/2026. Vacía no dibujaría el renglón:
      mandar a los invitados a una calle adivinada no se arregla la
@@ -1719,10 +1714,13 @@ function horaTexto(){
   $('#mapa').href = CONFIG.mapa;
   $('#dressTitulo').textContent = CONFIG.dressTitulo;
   $('#dressTexto').textContent = CONFIG.dressTexto;
-  /* Sin valor NO se dibuja el bloque entero, no sólo el renglón: un
-     título "Valor de la tarjeta" arriba de nada es peor que no estar. */
+  /* El bloque entero desaparece sólo si no hay NI valor NI alias: un
+     título "Valor de la tarjeta" arriba de nada es peor que no estar, y
+     el alias vive adentro, así que esconderlo por falta de valor se
+     llevaría puesto el único dato para transferir. */
   if (CONFIG.valorTarjeta) $('#valorTarjeta').textContent = CONFIG.valorTarjeta;
-  else $('#bValor').hidden = true;
+  else $('#valorTarjeta').hidden = true;
+  if (!CONFIG.valorTarjeta && !CONFIG.alias) $('#bValor').hidden = true;
   /* El nombre de la clienta, en los cuatro renglones que la nombran. */
   $$('.elNom').forEach(n => { n.textContent = CONFIG.quien || '\u2026'; });
   $('#alias').textContent = CONFIG.alias;
