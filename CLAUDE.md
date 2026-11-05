@@ -6309,11 +6309,12 @@ que pedir las dos formas.
 
 #### Lo que NO se inventó
 
-- **La dirección del salón.** Mandó el nombre y un link corto de
-  Google que desde acá no se puede resolver —el proxy lo rechaza—, así
-  que el renglón de la calle **no se dibuja** y el botón "Cómo llegar"
-  lleva igual al punto exacto. Mandar a los invitados a una calle
-  adivinada no se arregla la noche de la fiesta.
+- **La dirección del salón.** La mandó el dueño el 05/11/2026 —**Salón
+  Valmar, Campo Timbó**— y recién ahí se escribió. Hasta ese día el
+  renglón de la calle no se dibujaba: mandar a los invitados a una
+  calle adivinada no se arregla la noche de la fiesta, y el link corto
+  de Google que había desde acá no se puede resolver porque el proxy
+  lo rechaza.
 - **El titular de la cuenta** del alias `magali.loor`: sin él ese
   renglón no existe. Y el alias se escribe **tal cual lo mandó**, sin
   "arreglarle" nada: en `mia15` el punto del final resultó ser parte
@@ -7120,9 +7121,8 @@ dejaría peor parados.
   nuestra**: no mandaron ninguna.
 - **Lo que falta de `magali15/`.** Del lado de la clienta: el
   **titular de la cuenta** del alias `magali.loor` —el nombre que le
-  muestra el banco al invitado cuando lo pega— y la **dirección del
-  salón**, porque mandó el nombre y un link corto de Google que desde
-  acá no se puede resolver. Los dos, vacíos, no dibujan su renglón.
+  muestra el banco al invitado cuando lo pega—. Vacío no dibuja su
+  renglón. (La dirección del salón ya llegó: Campo Timbó.)
   **Y dos cosas para confirmar con el dueño**, porque salieron de la
   tarjeta de Canva de ella y no de su mensaje: el **valor de la
   tarjeta ($50.000)** y la **fecha para confirmar (15/12/26)**.
