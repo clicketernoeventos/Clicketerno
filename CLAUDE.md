@@ -6464,21 +6464,37 @@ Como decidió el dueño el 01/11/2026 —*"un sheet para cada fiesta,
 siempre separado"*—. Por eso `CONFIG.evento` no existe y la dirección
 de `lib/planilla.js` **no se carga**: con la central puesta y sin
 pestaña, la planilla contesta `sin_evento` y el invitado ve un error
-que no es suyo. Hasta que exista su `/exec`, `CONFIG.endpoint` está
-vacío y la confirmación **dice con todas las letras que no se mandó a
-ningún lado**.
-`magali15/listado/` todavía no existe, y eso está bien: se crea el día
-que exista la dirección, copiando la plantilla con sus dos líneas de
-`CONFIG`. `pruebas/invitaciones.js` falla si una carpeta de listado
-tiene el `appsScriptUrl` vacío, porque esa pantalla no traería nada.
+que no es suyo.
+
+**IMPLEMENTADA el 05/11/2026.** El dueño creó la planilla, pegó
+`apps-script/evento-nuevo.gs.txt`, corrió `preparar()` e implementó: su
+`/exec` está en `CONFIG.endpoint` y en `magali15/listado/`, que se armó
+copiando la plantilla con sus dos líneas de `CONFIG`.
+`pruebas/invitaciones.js` falla si una carpeta de listado tiene el
+`appsScriptUrl` vacío, porque esa pantalla no traería nada.
+
+**Y conectarla destapó dos renglones que habrían ensuciado la planilla
+de la clienta, los dos heredados de `almi15`, que va con la central.**
+Ninguno tira un error:
+
+- **`CONFIG.evento` acá no existe, y mandado igual viaja como la cadena
+  `"undefined"`.** `fd.set('evento', CONFIG.evento)` le habría dejado a
+  Magali una columna **"evento"** llena de `undefined` en su planilla: el
+  `doPost` crea una columna con el nombre de cada campo que le llega. Va
+  sólo si hay evento, igual que en `ambar15`. Lo mismo la pregunta de
+  *"¿llegó lo mío?"*, que salía con `?evento=undefined&confirmado=…`.
+- **La regla, que es la de siempre con otra cara**: una invitación nueva
+  se copia de la anterior, así que lo que se queda viejo no es el código
+  — es el renglón escrito para la planilla de la OTRA.
 
 **El correo que mandó la clienta es la clave de su tablero**, cuarta
 vez después de `mia15`, `almi15` y `ambar15`, y vale la misma
 advertencia: un correo es público y adivinable, y lo que abre es la
 lista entera de invitados con sus nombres y sus comidas. **En el
-repositorio no va nunca**: vive en `CLAVES_ELEGIDAS`, en la copia del
-editor de Apps Script del dueño, y `pruebas/rsvp.js` falla si lo
-versionado deja de estar vacío.
+repositorio no va nunca**: como ésta tiene su propio proyecto, vive en
+`CLAVE_ELEGIDA` de la copia del editor del dueño —no en
+`CLAVES_ELEGIDAS`, que es el mapa de la central—, y `pruebas/rsvp.js`
+falla si lo versionado deja de estar vacío.
 
 **No está en la galería de Trabajos ni en `/invitaciones`**, por lo
 mismo que las otras cuatro: es la fiesta de una clienta de verdad,
@@ -7152,13 +7168,15 @@ dejaría peor parados.
   que pidió (Frasa Display y Bright) son de Canva y no se pueden
   incrustar en un sitio — su papel ya lo hacen Gilda Display y Hanken
   Grotesk.
-  Del lado del dueño, dos pasos en Google: **crear la planilla de
-  esta fiesta** —va con la suya, no con la central— y pegar su `/exec`
-  en `CONFIG.endpoint`, y poner el correo que mandó la clienta como
-  clave de su tablero en `CLAVES_ELEGIDAS`, **que en el repositorio no
-  va nunca**. Hasta que la planilla exista, la confirmación se
-  completa entera y DICE que no se mandó a ningún lado, y
-  `magali15/listado/` no se crea.
+  **La planilla ya está** (05/11/2026): el dueño la creó, pegó el
+  código, corrió `preparar()` e implementó, así que la confirmación
+  entra y el tablero vive en `clicketerno.com.ar/magali15/listado`.
+  Del lado del dueño queda **un** paso en el editor de Apps Script:
+  poner el correo que mandó la clienta en `CLAVE_ELEGIDA` y volver a
+  correr `preparar()` —es un dato guardado, así que NO hace falta
+  volver a implementar—. Hasta entonces el tablero abre con la clave
+  que inventó la planilla, que es la que mostró `preparar()`. Ese
+  valor **en el repositorio no va nunca**.
 - **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
   "la portada APARECE de golpe, no hay cruce con la carta". El cruce
   se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado
