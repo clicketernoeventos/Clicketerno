@@ -1199,9 +1199,9 @@ const CONFIG = {
      separado"—. Por eso acá NO va `evento` ni la dirección de
      lib/planilla.js: con la central puesta y sin pestaña, la planilla
      contesta `sin_evento` y el invitado ve un error que no es suyo.
-     Vacío = muestra: la confirmación se completa entera y DICE que no
-     se mandó a ningún lado. Nunca dice "listo". */
-  endpoint: ""
+     Vacío sería muestra: la confirmación se completaría entera y
+     DIRÍA que no se mandó a ningún lado. Nunca dice "listo". */
+  endpoint: "https://script.google.com/macros/s/AKfycby09VV9fqKG0hrIaeXzW29BCnHHZo2xNax-C3jk6U0-p9N98di7cy_G8uUdnyFjl6FxOg/exec"
 };
 
 const $  = (s, d) => (d || document).querySelector(s);
@@ -2028,8 +2028,11 @@ function horaTexto(){
      se guardó, y el invitado la manda de nuevo. */
   async function llego(nombre){
     try{
-      const r = await fetch(CONFIG.endpoint + '?evento=' + encodeURIComponent(CONFIG.evento) +
-                            '&confirmado=' + encodeURIComponent(nombre),
+      /* `evento` es de la planilla CENTRAL y acá no hay: ésta tiene la
+         suya. Mandado igual viajaría la cadena "undefined". */
+      const r = await fetch(CONFIG.endpoint +
+                            (CONFIG.evento ? '?evento=' + encodeURIComponent(CONFIG.evento) + '&' : '?') +
+                            'confirmado=' + encodeURIComponent(nombre),
                             {cache:'no-store'});
       if (!r.ok) return false;
       const t = (await r.text()).trim();
@@ -2192,7 +2195,10 @@ function horaTexto(){
     /* A qué pestaña de la planilla central va. No es una respuesta de
        nadie: la planilla lo usa para elegir la hoja y no lo guarda como
        columna. */
-    fd.set('evento', CONFIG.evento);
+    /* Sólo si hay: el doPost crea una columna con el nombre de cada
+       campo que le llega, así que un `evento` vacío le deja al cliente
+       una columna "evento" inútil en su planilla. */
+    if (CONFIG.evento) fd.set('evento', CONFIG.evento);
     $$('select', form).forEach(se => {
       if (se.name && se.value === 'Otro'){
         const otro = document.getElementById(se.id + 'Otro');
