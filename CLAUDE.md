@@ -268,13 +268,33 @@ pueden verlo**: comprobado, ninguna prueba del rollo nombra una
 invitación ni ese medidor. Ahí alcanza con
 `node pruebas/invitacion_mirar.js <evento>` y `todo.sh muro`.
 
-**Y la del muro SÍ hay que correrla, aunque el nombre diga otra cosa.**
-Quince de sus pruebas miran las invitaciones: el peso y los nombres de
-las carpetas (`invitaciones`), el tablero (`listado`), el Apps Script
-(`rsvp`), el flyer (`guia`), la página de invitaciones (`vitrina`), el
-contraste y el barrido. Las pruebas están agrupadas por **dónde viven**
-—el servidor que necesitan— y no por lo que miden, así que el nombre de
-la tanda no dice qué cubre.
+**Y la tanda entera del muro TAMPOCO va.** Dicho por el dueño el
+05/11/2026, después de que se corrieran las 31 suites por una
+invitación: *"¿qué parte no entendés que me tenés que ahorrar tokens?
+¿Para qué ejecutás muro si estás con una invitación?"*. Tenía razón y
+la regla de más arriba estaba escrita de más: de esas 31, **una sola**
+puede ver una invitación —`invitaciones`, que le mira el peso, el
+nombre de la carpeta, que no use caminos absolutos y que no nombre a
+la clienta de otra—. Las demás miran el muro, la página pública, el
+flyer o la vitrina, y una invitación que no está en la galería no
+aparece en ninguna.
+
+Así que para una invitación son **DOS comandos y nada más**:
+
+    node pruebas/invitacion_mirar.js <carpeta>
+    node pruebas/invitaciones.js
+
+Se suman **sólo si el cambio las toca**: `listado` y `rsvp` si se
+toca el tablero o el Apps Script, `vitrina` y `contraste` si la
+invitación entra en la galería de Trabajos o en `/invitaciones`, y
+`guia` si se toca el flyer. **Ninguna de esas cuatro ve una invitación
+de un cliente**, que por definición no está en la galería.
+
+La regla sigue siendo la misma de siempre, dicha bien: no se corre
+una tanda por su nombre, se corre **lo que puede ver el cambio**. Las
+pruebas están agrupadas por dónde viven —el servidor que necesitan— y
+no por lo que miden, así que el nombre de la tanda no dice qué cubre,
+y eso vale para decidir qué correr **y también qué NO**.
 
 En cuanto se toca cualquier cosa de afuera de esa carpeta —`lib/`,
 `index.html`, las dos apps, `_headers`, `sql/`, o cualquier otra
