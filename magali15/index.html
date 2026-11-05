@@ -785,8 +785,17 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .flor-rincon.izq{left:0}
 .flor-rincon.der{right:0;transform:scaleX(-1)}
 @media (min-width:760px){ .flor-rincon{width:230px} }
+/* EL AIRE DE ARRIBA NO ES AIRE: es lo que hace que entre la M.
+   Los swashes de la manuscrita suben bastante más que su línea, o sea
+   que la letra se sale de su propia caja — y el telón de `.ap` recorta
+   JUSTO en la caja, así que la M del nombre quedaba cortada al ras.
+   Es la misma regla que ya costó una vuelta en ambar15 con el corazón
+   del reproductor: el que recorta no puede ser más chico que lo que
+   tiene que mostrar. El margen negativo le devuelve el lugar, así que
+   en pantalla no se movió nada. */
 .cierre-n{font-family:var(--mano);font-weight:400;
-  font-size:clamp(52px,17vw,92px);color:var(--malva);line-height:1.05;margin-top:6px}
+  font-size:clamp(52px,17vw,92px);color:var(--malva);line-height:1.05;
+  padding-top:.28em;margin-top:calc(6px - .28em)}
 .firma{margin-top:36px;font-family:var(--rotulos);font-size:11.5px;
   letter-spacing:.3em;text-transform:uppercase;
   color:var(--gris)}
