@@ -6487,6 +6487,28 @@ Ninguno tira un error:
   se copia de la anterior, así que lo que se queda viejo no es el código
   — es el renglón escrito para la planilla de la OTRA.
 
+**Y volver a pegar el código CAMBIA la dirección si se crea una
+implementación NUEVA.** Pasó el mismo día: el dueño volvió al editor a
+llenar las dos claves y, en vez de *Administrar implementaciones →
+editar → Versión: nueva*, hizo *Nueva implementación*. La `/exec` vieja
+sigue viva y vacía, y la invitación publicada seguía apuntando ahí: la
+confirmación entraba en una planilla que ya no mira nadie. **No tira
+ningún error** —las dos direcciones contestan 200—, y desde acá se vio
+porque la dirección nueva contestaba `sin_clave_configurada` y la vieja
+no. El aviso ya estaba escrito en la cabecera del `.gs.txt`; lo que
+faltaba era decirlo al entregar el código.
+
+**Y la segunda mitad: pegar el código NO alcanza, hay que correr
+`preparar()`.** Es lo que escribe las claves en las propiedades del
+proyecto. Sin eso la puerta del listado contesta
+`sin_clave_configurada` para cualquier clave, la maestra incluida —
+mientras la confirmación del invitado entra perfecto, porque el
+`doPost` no depende de ninguna clave. O sea: **el invitado anda y el
+cliente no puede entrar a su tablero**, que es exactamente la clase de
+falla que no se descubre hasta que alguien la busca. Es *un paso de
+instalación que no se puede saltear sin que algo avise, se va a
+saltear*, por tercera vez.
+
 **El correo que mandó la clienta es la clave de su tablero**, cuarta
 vez después de `mia15`, `almi15` y `ambar15`, y vale la misma
 advertencia: un correo es público y adivinable, y lo que abre es la
