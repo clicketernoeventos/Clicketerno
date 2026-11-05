@@ -6573,11 +6573,30 @@ Verificado rompiendo a propósito, sobre `ambar15`: vaciarle
 **5**, entre ellas el síntoma que importa — *"2 · 0 confirmados"* con
 la planilla llena.
 
-**Lo que desde acá no se puede probar, y lo hace una persona**: el
-proxy no deja salir ni a `clicketerno.com.ar` ni a
-`script.google.com`, así que la vuelta de verdad —confirmar en
-`/ambar15` como un invitado y ver la fila en la pestaña `ambar15`— la
-da el dueño. Para entrar al tablero se usa la **maestra**, que además
+**Y la vuelta de verdad SÍ se puede dar desde acá** (05/11/2026). El
+proxy no dejaba salir a `script.google.com`, así que esto estaba
+escrito como "lo hace una persona"; son tres hosts en la lista de la
+sesión —`script.google.com`, `script.googleusercontent.com` y
+`clicketerno.com.ar`— y pasa a ser una medición más.
+**Cómo se hace, porque tiene una trampa**: el navegador de las pruebas
+NO sale a internet —hace su propio DNS y no usa el proxy—, así que no
+alcanza con apuntarlo a la `/exec`. Se intercepta
+`**script.google.com/**` con `page.route`, se hace el pedido con el
+`fetch` de NODE —que sí pasa por el proxy, igual que el de
+`letras.js`— y se le devuelve la respuesta al navegador. Así lo que se
+mide es lo que hace la PÁGINA: cuántos viajes, qué manda y qué dice
+después. Medido contra la planilla de `magali15`: **un viaje, 9 s, "¡Listo,
+Invitado!"**, la fila en la planilla con sus columnas (`Cuántos`,
+`Canción`, `Comida 2`) y el resumen en **2 respuestas · 4 personas**.
+**Y lo que se escribe queda escrito**: la planilla es la del cliente,
+así que la fila de prueba hay que ir a borrarla a mano.
+**Ojo con `curl --data-urlencode`**: encodea el VALOR y no el NOMBRE
+del campo, así que `Cuántos=2` le llega al Apps Script como `Cuntos` y
+le crea esa columna —y con eso `resumen.personas` da 1 en vez de 2,
+que es exactamente el bug que el dueño ya había reportado—. Parece una
+falla del producto y es de la prueba. El nombre va encodeado a mano
+(`Cu%C3%A1ntos`), o se mide desde el navegador, que lo hace bien.
+Lo que sigue necesitando a una persona es el editor de Apps Script. Para entrar al tablero se usa la **maestra**, que además
 devuelve escrita la clave propia de esa fiesta y el enlace parado en
 su pestaña; la del cliente no hay que elegirla ni ir a buscarla.
 
@@ -7124,9 +7143,9 @@ dejaría peor parados.
   dirección está en `lib/planilla.js` y `almi15/listado/` existe. Lo
   único que falta de eso es **verlo entrar una vez**: confirmar en
   `/almi15` como si fuera un invitado y mirar que aparezca la fila en
-  la pestaña `almi15`. Desde acá no se puede comprobar —el proxy no
-  deja salir ni a `clicketerno.com.ar` ni a `script.google.com`—, así
-  que esa vuelta la da una persona.
+  la pestaña `almi15`. **Eso ya se puede medir desde acá** desde el
+  05/11/2026 —ver *"Probar el listado de una fiesta antes de que lo use
+  gente"*—, y está hecho para `magali15`; falta correrlo para ésta.
   La clave de cada cliente **no hay que elegirla ni ir a buscarla**: la
   inventa la planilla y se lee abriendo el listado de ese cliente con la
   maestra. La de `almi15` la eligió la clienta y está en
@@ -7193,12 +7212,15 @@ dejaría peor parados.
   **La planilla ya está** (05/11/2026): el dueño la creó, pegó el
   código, corrió `preparar()` e implementó, así que la confirmación
   entra y el tablero vive en `clicketerno.com.ar/magali15/listado`.
-  Del lado del dueño queda **un** paso en el editor de Apps Script:
-  poner el correo que mandó la clienta en `CLAVE_ELEGIDA` y volver a
-  correr `preparar()` —es un dato guardado, así que NO hace falta
-  volver a implementar—. Hasta entonces el tablero abre con la clave
-  que inventó la planilla, que es la que mostró `preparar()`. Ese
-  valor **en el repositorio no va nunca**.
+  **El tablero abre** (05/11/2026): con la maestra y con el correo que
+  mandó la clienta. Medido de punta a punta desde acá —un invitado
+  confirmando en la invitación de verdad, un viaje, la fila en la
+  planilla y el resumen en gente y no en respuestas—. Ese correo
+  **en el repositorio no va nunca**: vive en `CLAVE_ELEGIDA` de la
+  copia del editor del dueño.
+  Quedó para borrar a mano en su planilla lo que dejó la prueba: las
+  dos filas que dicen "PRUEBA" y dos columnas vacías, `Cancin` y
+  `Cuntos`, que creó un `curl` mal encodeado (ver más abajo).
 - **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
   "la portada APARECE de golpe, no hay cruce con la carta". El cruce
   se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado
