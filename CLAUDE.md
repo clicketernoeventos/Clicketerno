@@ -5553,7 +5553,11 @@ se escribe tal cual lo mandaron.**
 **LOS HUECOS.** `CONFIG.borrador` dibuja una píldora donde falta un
 dato, igual que en `ambar15` — un dato que no mandaron no se inventa y
 tampoco se deja en blanco, porque en blanco nadie se acuerda y se
-publica así. **Hoy son tres**: **hasta cuándo se puede confirmar**
+publica así. **Hoy la bandera está en `false`** y no se dibuja
+ninguna: las mandó sacar el dueño el 02/11/2026. Lo que falta sigue
+siendo lo mismo y sigue sin inventarse —su renglón no se dibuja—,
+pero el recordatorio ya no está en la pantalla, sólo en este archivo.
+Son tres: **hasta cuándo se puede confirmar**
 (dijeron "durante marzo de 2027, confirmamos el día exacto", y eso no
 es una fecha), **el titular de la cuenta** del alias y **a quién le
 escriben los invitados el día de la fiesta**. Eran cinco: las fotos
@@ -6097,6 +6101,61 @@ cruzadas, las hojas. Va una corchea doble, que se reconoce de un
 vistazo. *Lo que no se lee a 36 no va* — la misma lección que ya
 costó cuatro vueltas con la bolsa de `ambar15`, y que no se descubre
 leyendo el código: se descubre mirando la captura.
+
+#### Las manos con los anillos, el corazón descentrado y los huecos
+
+Tres cosas de un reporte: *"probá poner esta imagen en donde está el
+cuenta atrás. Fíjate que el corazón del calendario está descentrado.
+Borrá lo que dice falta tal información."*
+
+**1 · La foto de las manos va ENMARCADA y no a sangre.** Es una foto
+de fondo BLANCO y la sección de la cuenta regresiva es casi negra: a
+sangre, ese blanco es un agujero del tamaño de la pantalla y se lee
+como un error de carga. Contenida, con su hilo de champagne, se lee
+como una copia apoyada sobre una pared oscura — que es lo que es.
+**El hilo va por AFUERA y no `inset`**, al revés que las fotos de la
+tira: por dentro cae sobre el blanco de la foto y no se ve, o sea una
+declaración que no hace nada.
+No lleva el `grayscale` del CSS: **ya viene en blanco y negro**, así
+que el filtro sería una capa que no cambia nada. Y se recortó a 4:5
+alrededor de los anillos: entera son 941x1672 y en la sección se
+habría visto una tira de brazo. Pesa 29 KB contra 1,8 MB del PNG.
+Como todas las demás, se pone recién cuando el archivo cargó de
+verdad: si faltara, la sección queda como estaba.
+
+**2 · El corazón del calendario se ubica por la FORMA, no por la
+caja.** Su `viewBox` es `0 0 24 24` y el dibujo vive en x 3,6..20,4 e
+y 5,2..21,2: la forma **no está centrada en su propia caja**, le sobra
+aire arriba y a los costados. Posicionado contra la caja —que es lo
+que parece obvio— el número caía al **28% del alto del corazón**,
+pegado a la muesca de arriba, y la punta se metía en la fila de abajo.
+Ahora los números salen de esa cuenta: la caja mide 52 para dibujar 36
+de ancho y el `-26px` sube el corazón hasta que el número queda al
+**42% de la forma**, que es donde se ve centrado — y de paso el
+corazón se lee como un corazón y no como un cuadrado con punta.
+**La caja va CUADRADA a propósito**: con una rectangular, el `meet`
+del SVG mete un recorte más en la cuenta y hay que volver a resolver
+todo. Si se cambia el tamaño, se recalcula: a ojo vuelve a quedar
+descentrado y no lo dice nadie.
+
+**3 · Se fueron las píldoras de "falta".** `CONFIG.borrador` pasó a
+`false` por pedido del dueño. **Lo que NO cambia es que el dato no se
+inventa**: el titular de la cuenta, la fecha límite para confirmar y
+el contacto del día de la fiesta siguen sin escribirse, y sus
+renglones simplemente **no se dibujan** — que es lo que ya hacían
+`mia15` y `almi15`. Lo que se pierde es el recordatorio en pantalla,
+así que el pendiente vive ahora sólo en este archivo.
+
+##### Y una foto suelta en `fotos/` rompió la prueba del 404
+
+La comprobación que tira una foto y mira que se vaya elegía **la
+primera que pidiera el navegador**, salteando la portada a mano. Con
+la foto de las manos —que vive en `fotos/` y no es de la galería— la
+que se tiraba era ésa: la galería quedaba entera y la prueba informaba
+*"quedaron 3 de las 2"*, como si la foto caída no se hubiera ido.
+Excluir la portada a mano era la misma curita una foto tarde. Ahora la
+prueba lee de `CONFIG` **cuáles son las de la galería** y tira una de
+ésas. Contra el código anterior da **1 falla**.
 
 ### Probar el listado de una fiesta antes de que lo use gente
 
@@ -6735,7 +6794,10 @@ dejaría peor parados.
   puede confirmar** —dijeron "durante marzo de 2027"—, el **titular de la
   cuenta** del alias `FACUYMAXI.BODA` y **a quién le escriben los
   invitados el día de la fiesta**, que no podemos ser nosotros.
-  Mientras tanto cada uno tiene su píldora en la pantalla. Y hay dos
+  **Y desde el 02/11/2026 ya NO hay píldora en la pantalla** que lo
+  recuerde —el dueño las mandó sacar—, así que este renglón es lo
+  único que queda: el dato sigue sin inventarse y su renglón no se
+  dibuja. Y hay dos
   cosas para preguntarles: si quieren una sección como la de
   `mateoylucas/` sobre la Ley 26.618 —no se pone sin preguntar— y si
   la frase de la portada se queda como está, porque **esa frase es

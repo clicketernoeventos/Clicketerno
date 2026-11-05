@@ -368,6 +368,25 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .reloj b{paint-order:stroke fill;-webkit-text-stroke:.026em var(--champan)}
 }
 
+/* ── LA FOTO DE LAS MANOS, arriba de la cuenta ──
+   Es una foto de fondo BLANCO sobre una banda casi negra, así que va
+   enmarcada y no a sangre: a sangre, el blanco es un agujero del
+   tamaño de la pantalla y se lee como un error de carga. Con su
+   filete de champagne —el mismo de las fotos de la tira— se lee como
+   una copia apoyada sobre la pared oscura, que es lo que es.
+   Y por eso tampoco lleva el `grayscale` del resto: ya es blanco y
+   negro de origen.
+
+   EL FILETE VA POR AFUERA Y NO `inset`, al revés que las fotos de la
+   tira: la foto es BLANCA, así que un hilo de champagne por dentro
+   no se ve — es una declaración que no hace nada. Por fuera cae
+   sobre el antracita y ahí sí separa. */
+.manos{position:relative;width:min(300px,76%);margin:clamp(30px,5.4vh,44px) auto 0;
+  line-height:0;background-color:var(--antracita);
+  box-shadow:0 0 0 1px var(--borde-tinta)}
+.manos img{width:100%;height:auto;display:block;
+  filter:contrast(1.05) brightness(1.01)}
+
 /* ══════════════════════════════════════════════════════════════════
    4 · EL CALENDARIO EN SU ARCO
    El dueño mandó la referencia: un ARCO oscuro, el mes y el año
@@ -408,11 +427,20 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #calendario td{font-size:13.5px;font-weight:300;padding:8px 0;color:var(--marfil);
   text-align:center}
 #calendario td.elDia{position:relative}
-/* el corazón va corrido ABAJO a propósito: su panza —la parte ancha—
-   queda entonces a la altura del número, que es donde el número tiene
-   que caer. Centrado, el número aterriza en la muesca de arriba. */
-#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:48px;height:44px;
-  margin:-17px 0 0 -24px;fill:var(--marfil);stroke:none;pointer-events:none}
+/* EL CORAZÓN SE UBICA POR LA FORMA, NO POR LA CAJA. Su `viewBox` es
+   0 0 24 24 y el dibujo vive en x 3,6..20,4 e y 5,2..21,2, o sea que
+   la forma NO está centrada en su caja: le sobra aire arriba y a los
+   costados. Puesto el `margin` contra la caja, el número caía al 28%
+   del alto del corazón —arriba de la panza, pegado a la muesca— y la
+   punta se metía en la fila de abajo. Los números de acá salen de esa
+   cuenta: el corazón mide 52 de caja para dibujar 36 de ancho, y el
+   `-26` lo sube hasta que el número queda al 42% de la FORMA, que es
+   donde se ve centrado. La caja es CUADRADA a propósito: con una
+   rectangular el `meet` del SVG mete un recorte más en la cuenta.
+   Si se cambia el tamaño, se recalcula — a ojo vuelve a quedar
+   descentrado y no lo dice nadie. */
+#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:52px;height:52px;
+  margin:-26px 0 0 -26px;fill:var(--marfil);stroke:none;pointer-events:none}
 /* el número, adentro de la panza del corazón: la caja es más chica
    que la forma y del mismo color, así que no se ve — y el medidor
    lee el fondo sobre el que el número de verdad está. */
@@ -902,6 +930,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
         <div><b id="cM">00</b><span>Minutos</span></div>
         <div><b id="cS">00</b><span>Segundos</span></div>
       </div>
+      <figure class="manos ap d3" id="fotoManos" hidden></figure>
     </div>
   </section>
 
@@ -1235,6 +1264,9 @@ const CONFIG = {
      "te esperamos" encima, como la referencia que mandó el dueño.
      Puesta en los dos lados sería la misma foto dos veces. */
   cierreFoto: { foto: "fotos/cierre.webp", alt: "Facundo y Maximiliano frente al mar" },
+  /* Las manos con los anillos, arriba de la cuenta regresiva. Ya
+     viene en blanco y negro, así que no lleva el filtro del CSS. */
+  fotoManos: { foto: "fotos/manos.webp", alt: "Las manos de Facundo y Maximiliano con los anillos" },
   /* Se escribe TAL CUAL lo mandaron, sin "arreglarle" nada: un alias
      no se adivina, y en mia15 el punto del final resultó ser parte
      del alias y por poco se lo sacamos. */
@@ -1243,7 +1275,7 @@ const CONFIG = {
                                  // Sin saberlo NO se escribe nada
   evento: "facuymaxi",
   /* MIENTRAS ESTO SEA UN BORRADOR, lo que falta se DICE. */
-  borrador: true,
+  borrador: false,
   endpoint: (window.PLANILLA && window.PLANILLA.exec) || ""
 };
 
@@ -1551,6 +1583,21 @@ function cargarFoto(src, alt){
     if (im.complete && !im.naturalWidth) fallo();
   });
 }
+
+/* ── la foto de las manos, en la cuenta regresiva ──
+   Como todas las demás: el `<img>` lo crea el JS y se agrega recién
+   cuando cargó de verdad. Un `<img>` con `src` vacío le pide al
+   servidor la página entera de nuevo, y si el archivo falta lo que
+   queda es un cuadrado roto en el medio de la sección. */
+(function(){
+  const fig = $('#fotoManos'), c = CONFIG.fotoManos;
+  if (!fig || !c || !c.foto) return;
+  cargarFoto(c.foto, c.alt || '').then(im => {
+    if (!im) return;
+    fig.appendChild(im);
+    fig.hidden = false;
+  });
+})();
 
 /* ── la foto de la portada ── */
 (function(){
