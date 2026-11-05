@@ -790,6 +790,20 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       () => typeof CONFIG === 'undefined' ? [] : Object.keys(CONFIG.franjas || {}));
     const portada = await pagL.evaluate(
       () => typeof CONFIG === 'undefined' ? '' : (CONFIG.portada || ''));
+    /* Los archivos que SÍ son de la galería, por nombre. Sin esta
+       lista hay que adivinar cuál tirar por el orden en que el
+       navegador las pide, y ese orden cambia en cuanto la invitación
+       suma una foto suelta en `fotos/` que no es de la galería —la
+       de las manos de facuymaxi—: se tiraba ÉSA, la galería quedaba
+       entera y la cuenta informaba "quedaron 3 de las 2" como si la
+       foto caída no se hubiera ido. Excluir la portada a mano era la
+       misma curita, una foto tarde. */
+    const deGaleria = await pagL.evaluate(() => {
+      if (typeof CONFIG === 'undefined') return [];
+      return (CONFIG.fotos || []).map(f => f && f.foto).filter(Boolean)
+        .concat(Object.values(CONFIG.franjas || {}).map(f => f && (f.foto || f)).filter(x => typeof x === 'string'))
+        .map(u => u.split('/').pop());
+    });
     await ctxL.close();
 
     if (!cuantas) bien('esta invitación no tiene fotos: nada que medir');
@@ -806,9 +820,12 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
          más abajo. */
       let primera = null;
       const esPortada = u => portada && u.split('?')[0].endsWith(portada.split('/').pop());
+      const esGaleria = u => deGaleria.length
+        ? deGaleria.some(n => u.split('?')[0].endsWith(n))
+        : !esPortada(u);
       await pag1.route('**/*', r => {
         const u = r.request().url();
-        if (r.request().resourceType() === 'image' && /\/fotos\//.test(u) && !esPortada(u)){
+        if (r.request().resourceType() === 'image' && /\/fotos\//.test(u) && esGaleria(u)){
           if (!primera) primera = u;
           if (u === primera) return r.fulfill({status:404, body:''});
         }
