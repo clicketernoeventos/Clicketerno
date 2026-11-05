@@ -6179,7 +6179,7 @@ prueba lee de `CONFIG` **cuáles son las de la galería** y tira una de
 
 ### `magali15/`: la cuarta de un cliente — Magali
 
-13 de febrero de 2027 · Salón Vilmar · de 21 a 5 h. Quince años.
+13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
 Alias `magali.loor`, dress code **Elegante sport** —*"el outfit con el
 que te sientas más cómodo para bailar toda la noche"*— y dos colores
 que mandó escritos: **#7B5354 y #3D2E2B**.
@@ -6325,6 +6325,118 @@ que pedir las dos formas.
 - **La primera línea de "¿Venís?" es de ella**, también de su Canva:
   *"Tu compañía hace que este día sea aún más especial."* Es su voz y
   no la nuestra.
+
+#### "Forzá las fuentes": dos son de ella y tres no existen para web
+
+Segunda vuelta del dueño: *"quiero que fuerces lo de utilizar esas
+fuentes, son requisitos de la cumpleañera"*. Se forzó todo lo que se
+puede forzar, y lo que no se puede queda escrito con su precio:
+
+- **Gilda Display y Bebas Neue son de ella y están puestas.** Esas dos
+  existen y son gratis.
+- **Parfumerie Script Pro es PAGA.** La vende Typesenses en MyFonts y
+  Fontspring, y la licencia web se compra aparte. Publicarla sin
+  licencia es el mismo problema que publicar el logo de otro: es un
+  problema nuestro, no de la clienta.
+- **Frasa Display y Bright no existen como fuente web**: son de Canva,
+  cuya licencia cubre usarlas adentro de Canva y no incrustarlas en un
+  sitio. El papel de Frasa Display —una serif de display— lo hace
+  Gilda Display, que también pidió ella; el de Bright —un sans de
+  texto— lo hace Hanken Grotesk.
+
+**La manuscrita se volvió a elegir MIRANDO**, ahora contra doce
+candidatas y buscando lo que tiene Parfumerie: contraste fuerte,
+formas redondas y swashes en las capitulares. Quedó **Great Vibes**,
+que es más gruesa y más redonda que la primera elección (Mrs Saint
+Delafield, que al lado de su tarjeta se ve un pelo fina). Al cambiarla
+hubo que bajar un escalón los tres lugares donde vive: Great Vibes
+llena mucho más la caja, así que el mismo tamaño en píxeles se ve
+bastante más grande.
+
+**Y el día que se compre la licencia web de Parfumerie Script Pro esto
+es UNA línea**: el archivo va en la carpeta, su `@font-face` al lado
+del `:root` y `--mano` pasa a nombrarla. Para eso las familias viven
+en variables y no escritas quince veces en el CSS. Lo que NO se hace
+es bajar el archivo de cualquier lado y subirlo igual.
+
+#### La canción suena
+
+El dueño mandó el tema —*Loving Life Again*, de Ella Langley— con
+*"ese es el tema que debe sonar, poné un reproductor"*. Es el mismo
+reproductor de `ambar15` y `facuymaxi`: **tres mandos y los tres hacen
+algo** —con una sola canción, los de los costados vuelven al
+principio—, la línea con la flor es el AVANCE y va declarada
+decoración, **suena una sola vez** y al terminar **se rebobina** (
+parada en el final, el primer toque del play no sonaría, y eso no tira
+ningún error: sólo un botón que parece roto).
+
+**Arranca con el toque que abre el sobre.** Safari no deja sonar nada
+sin un gesto de la persona, y ese gesto ya existe: no hace falta
+inventarle otro botón ni dejar la invitación muda esperando que
+alguien descubra el play.
+
+Van **dos archivos y UNA sola descarga**: AAC para el iPhone —que es
+donde están los invitados— y Opus para el que no puede con ese
+formato. Con `preload="metadata"` no se baja nada hasta que alguien
+toca el play. Y el largo del tema va **escrito en el CONFIG**: un Ogg
+todavía sin bajar entero devuelve `Infinity` de duración y ahí la
+rayita del avance se queda clavada a la izquierda toda la canción.
+
+**El archivo NO es nuestro**, y vale la misma excepción ya escrita
+para `ambar15` y `facuymaxi`: es una grabación comercial publicada en
+una dirección nuestra. Lo decidió el dueño y se le dijo. Lo que no se
+afloja es la mitad técnica: ningún reproductor de un tercero, que la
+CSP no lo deja y además sería un tercero corriendo código en la
+pantalla del invitado.
+
+#### Los detalles, en UNA cápsula
+
+Pedido con una captura: el dress code, el valor de la tarjeta y el
+regalo dejan de ser dos tarjetas sueltas sobre la banda oscura y pasan
+a ser **una sola pieza de papel con los extremos redondeados**, con su
+guirnalda arriba y abajo y los tres bloques separados por una ramita.
+
+- **El radio va en PORCENTAJE** —50% del ancho por 9% del alto—, no en
+  píxeles: escrito en píxeles se vuelve un semicírculo en una pantalla
+  angosta y una cúpula en una ancha.
+- **El relleno de arriba y abajo tiene que dejar entrar la
+  guirnalda**: es una capa absoluta, así que no empuja a nadie, y sin
+  ese aire se le monta al primer título.
+- **El botón va MACIZO y no de contorno.** Adentro de la cápsula —que
+  es papel crema dentro de una sección oscura— el contorno hereda una
+  tinta pensada para la banda oscura y no se lee. Es la regla de
+  siempre, y acá además es lo que pide la referencia.
+- **El valor es un DATO, no una frase.** La primera versión decía *"El
+  valor de la tarjeta es de $50.000."* abajo de un título que ya dice
+  "Valor de la tarjeta": dos veces lo mismo, y encima partido en dos
+  renglones. Dice **$50.000**. Y sin valor **no se dibuja el bloque
+  entero**, no sólo el renglón: un título arriba de nada es peor que
+  no estar.
+
+#### El dibujo de flor del final, y por qué un adorno de esquina se queda en la esquina
+
+También con una captura: una composición botánica en los rincones de
+abajo del cierre. Sale del mismo **herbario** que la planta de los
+cortes y la guirnalda de la cápsula —hoja, flor, capullo—, así que las
+tres usan el mismo trazo y ninguna se queda atrás el día que se
+cambie. La hoja es una **almendra** y no una elipse: a este tamaño una
+elipse se lee como un lazo.
+
+**La primera versión era alta y angosta y le cruzaba el texto.** El
+tallo subía desde la esquina hasta pasarle por encima al nombre y al
+"te espero": el dibujo se lee perfecto y el texto queda encima de una
+flor. Un adorno de esquina tiene que quedarse en la esquina, así que
+la composición pasó a ser **ancha y baja**.
+
+**Y después quedaba cortada por la curva del pie.** Pegada al borde de
+abajo, el arco oscuro del pie le comía la mitad de las flores — y una
+flor cortada por una curva que no es suya se lee como un error de
+maqueta. Se levanta sobre esa curva.
+
+El rincón de la derecha es el mismo dibujo **espejado por CSS**: dos
+dibujos para lo mismo es uno que se queda atrás. Y el cierre **perdió
+su medallón**: la flor es su emblema, y dos emblemas apilados se leen
+como un error de maqueta.
 
 #### Va con su propia planilla, no con la central
 
@@ -7014,6 +7126,12 @@ dejaría peor parados.
   **Y dos cosas para confirmar con el dueño**, porque salieron de la
   tarjeta de Canva de ella y no de su mensaje: el **valor de la
   tarjeta ($50.000)** y la **fecha para confirmar (15/12/26)**.
+  Y si la clienta quiere **la tipografía exacta** de su tarjeta:
+  Parfumerie Script Pro se compra con licencia web en MyFonts o
+  Fontspring; con el archivo en la mano es una línea. Las otras dos
+  que pidió (Frasa Display y Bright) son de Canva y no se pueden
+  incrustar en un sitio — su papel ya lo hacen Gilda Display y Hanken
+  Grotesk.
   Del lado del dueño, dos pasos en Google: **crear la planilla de
   esta fiesta** —va con la suya, no con la central— y pegar su `/exec`
   en `CONFIG.endpoint`, y poner el correo que mandó la clienta como
