@@ -1043,6 +1043,90 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctxM.close();
   }
 
+  /* ── 8a-quinquies · LOS MANDOS DEL VISOR SE PUEDEN TOCAR ──
+     El visor de fotos está CERRADO cuando corre el barrido de los
+     44px y el de los controles tapados, así que sus flechas no las
+     mide nadie: hay que abrirlo.
+
+     Y lo que se mide es quién ATAJA EL DEDO, con cada foto abierta.
+     Una foto ancha llega hasta el borde de un teléfono y se le monta
+     a las flechas; y si además lleva un `filter`, se pinta en la capa
+     de los posicionados y le gana a un `absolute` sin z-index aunque
+     esté antes en el HTML. Medido: en un teléfono las dos flechas no
+     respondían y se dibujaban perfectas. En un monitor no pasa
+     —ahí la foto no llega al borde—, así que esto se mide angosto. */
+  titulo('los mandos del visor se pueden tocar');
+  {
+    const ctxV = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagV = await ctxV.newPage();
+    await pagV.goto(URL, {waitUntil:'domcontentloaded'});
+    await pagV.waitForTimeout(900);
+    const altoV = await pagV.evaluate(() => document.body.scrollHeight);
+    for (let y = 0; y < altoV; y += 700){
+      await pagV.evaluate(v => scrollTo({top:v, behavior:'instant'}), y);
+      await pagV.waitForTimeout(140);
+    }
+    await pagV.waitForTimeout(500);
+    const puerta = pagV.locator('#verTodas');
+    if (!await puerta.count() || !await puerta.isVisible()) bien('esta invitación no tiene visor de fotos');
+    else {
+      await puerta.click();
+      await pagV.waitForTimeout(600);
+      const cuantas = await pagV.evaluate(() => {
+        const c = document.querySelector('#visor .cuenta');
+        const m = c && c.textContent.match(/\/\s*(\d+)/);
+        return m ? +m[1] : 1;
+      });
+      const malos = [];
+      for (let k = 0; k < cuantas; k++){
+        if (k) { await pagV.evaluate(() => document.querySelector('#visor .sig').click()); await pagV.waitForTimeout(500); }
+        const r = await pagV.evaluate(() => {
+          const out = [];
+          for (const sel of ['.ant', '.sig', '.cerrar']){
+            const b = document.querySelector('#visor ' + sel);
+            if (!b) continue;
+            const c = b.getBoundingClientRect();
+            if (c.width < 44 || c.height < 44)
+              out.push(sel + ' mide ' + Math.round(c.width) + 'x' + Math.round(c.height));
+            const quien = document.elementFromPoint(c.x + c.width/2, c.y + c.height/2);
+            if (!b.contains(quien))
+              out.push(sel + ' lo tapa ' + (quien ? quien.tagName : 'nada'));
+          }
+          const c = document.querySelector('#visor .cuenta');
+          return {out, donde: c ? c.textContent.trim() : ''};
+        });
+        r.out.forEach(x => malos.push(r.donde + ': ' + x));
+      }
+      es(malos.length === 0, malos.length
+        ? 'mandos que no responden — ' + malos.slice(0,4).join(' · ')
+        : `las flechas y el cerrar responden con las ${cuantas} fotos abiertas`);
+
+      /* ── y se pasa DESLIZANDO ──
+         Las flechas quedan en los dos bordes de la pantalla: lo que
+         hace una persona con una foto en un teléfono es deslizar. No
+         se mide que exista un oyente, se mide que la foto CAMBIE.
+         Dos cosas se lo comen y ninguna tira un error: el arrastre
+         nativo de un `<img>` —que es arrastrable de fábrica— y el
+         `touch-action` del contenedor, que le deja el gesto
+         horizontal al navegador. */
+      if (cuantas > 1){
+        const leer = () => pagV.evaluate(() => (document.querySelector('#visor .cuenta')||{}).textContent);
+        const antes = await leer();
+        await pagV.mouse.move(300, 420); await pagV.mouse.down();
+        await pagV.mouse.move(110, 424, {steps:8}); await pagV.mouse.up();
+        await pagV.waitForTimeout(500);
+        const luego = await leer();
+        const abierto = await pagV.evaluate(() => document.querySelector('#visor').classList.contains('abierto'));
+        es(abierto && luego !== antes, !abierto
+          ? 'deslizando se CIERRA el visor en vez de pasar de foto'
+          : luego !== antes
+            ? `y deslizando se pasa de foto (${antes.trim()} → ${luego.trim()})`
+            : `deslizando no pasa nada: se queda en ${antes.trim()}`);
+      }
+    }
+    await ctxV.close();
+  }
+
   /* ── 8a-quater · LA CANCIÓN ARRANCA SOLA ──
      Sólo donde la invitación trae canción y NO tiene sobre: con
      sobre, el gesto que la enciende es el de abrirlo y eso ya está

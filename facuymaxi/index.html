@@ -645,17 +645,49 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 /* ── el visor: la foto entera, que en el mosaico va recortada ──
    Se dibuja la primera vez que se abre y las imágenes son LAS
    MISMAS que ya están cargadas, así que no baja un solo byte más. */
+/* `touch-action:pan-y` NO es un adorno: sin eso el navegador se queda
+   con el gesto horizontal —lo toma por un paneo— y en vez del
+   `pointerup` manda un `pointercancel`. Medido: el dedo arrastra, el
+   `pointerdown` llega y el `pointerup` no llega NUNCA, así que el
+   deslizamiento no pasa de foto y no hay un solo error que lo diga.
+   Es la misma trampa que ya costó una vuelta en el carrusel del
+   sitio, del otro lado: allá había que CANCELAR el toque y acá hay
+   que quedarse con él. */
 #visor{position:fixed;inset:0;z-index:60;background-color:rgba(26,28,29,.97);
-  display:none;place-items:center;padding:clamp(54px,9vw,70px) clamp(12px,4vw,30px)}
+  display:none;place-items:center;touch-action:pan-y;
+  padding:clamp(54px,9vw,70px) clamp(12px,4vw,30px)}
 #visor.abierto{display:grid}
 /* El visor muestra la MISMA foto que la miniatura: a color, tocar una
    miniatura en blanco y negro abriría otra cosa y se lee como un
    error de carga. */
-#visor img{max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px;
+/* LA FOTO NO SE ARRASTRA, y eso es lo que hacía que el deslizamiento
+   no existiera: un `<img>` es arrastrable de fábrica, así que el dedo
+   —o el mouse— que empieza encima inicia un arrastre nativo y el
+   navegador se queda con el gesto. Medido: llega el `pointerdown` y
+   el `pointerup` no llega NUNCA, ni en un teléfono ni en un
+   escritorio, y no hay un solo error que lo diga. */
+#visor img{-webkit-user-drag:none;user-select:none;
+  max-width:100%;max-height:76svh;object-fit:contain;border-radius:2px;
   filter:grayscale(1) contrast(1.14) brightness(1.03);
   box-shadow:0 0 0 1px var(--borde-tinta)}
-#visor button{position:absolute;display:grid;place-items:center;width:52px;height:52px;
-  border-radius:50%;color:var(--marfil);background-color:rgba(246,241,232,.1);
+/* LOS MANDOS VAN ARRIBA DE LA FOTO, y eso es un `z-index` que parece
+   de más y no lo es. La foto lleva `filter:grayscale(...)`, y un
+   elemento con filtro **se pinta en la capa de los posicionados**
+   aunque no esté posicionado: como viene DESPUÉS en el HTML, le
+   ganaba a las flechas, que son `absolute` sin z-index. Resultado
+   medido en un teléfono: con una foto ancha abierta, quien atajaba el
+   dedo en el centro de las dos flechas era la IMG — o sea que no se
+   podía pasar de foto, y el botón se dibujaba perfecto. En un monitor
+   no pasa, porque ahí la foto no llega al borde: por eso nadie lo vio.
+
+   Y EL DISCO ES OSCURO Y NO CLARO. Puesto arriba de la foto, un disco
+   al 10% de marfil con una flecha marfil desaparece sobre cualquier
+   zona clara de la imagen. Oscuro, la flecha se lee sobre lo que
+   venga, y sobre el fondo del visor —que ya es casi negro— lo que la
+   dibuja es el filete. */
+#visor button{position:absolute;z-index:2;display:grid;place-items:center;
+  width:52px;height:52px;
+  border-radius:50%;color:var(--marfil);background-color:rgba(20,22,23,.62);
   border:1px solid var(--borde-tinta)}
 #visor button:active{transform:scale(.94)}
 #visor .cerrar{top:clamp(8px,2.4vw,16px);right:clamp(8px,2.4vw,16px);font-size:21px;
@@ -1874,12 +1906,33 @@ function cargarFoto(src, alt){
                  flecha(true) + '</button>' +
                  '<button class="sig nav" type="button" aria-label="Siguiente">' +
                  flecha(false) + '</button>' : '') +
-        '<img alt="">' +
+        '<img alt="" draggable="false">' +
         (n > 1 ? '<p class="cuenta"></p>' : '');
       document.body.appendChild(visor);
       img = $('img', visor); cuenta = $('.cuenta', visor);
       $('.cerrar', visor).addEventListener('click', cerrar);
-      visor.addEventListener('click', e => { if (e.target === visor) cerrar(); });
+      /* SE PASA DESLIZANDO, que es lo que hace una persona con una
+         foto en un teléfono: las flechas quedan en los dos bordes de
+         la pantalla y acertarles con el pulgar es un trámite.
+         El deslizamiento CANCELA el click que viene después: sin eso,
+         un dedo que arranca sobre la foto y termina sobre el fondo
+         dispara el `click` del fondo y el visor se cierra justo
+         cuando la persona quiso pasar de foto. */
+      let x0 = null, deslizo = false;
+      visor.addEventListener('pointerdown', e => { x0 = e.clientX; deslizo = false; });
+      visor.addEventListener('pointercancel', () => { x0 = null; });
+      visor.addEventListener('pointerup', e => {
+        if (x0 === null) return;
+        const dx = e.clientX - x0;
+        x0 = null;
+        if (Math.abs(dx) < 42 || n < 2) return;
+        deslizo = true;
+        mover(dx < 0 ? 1 : -1);
+      });
+      visor.addEventListener('click', e => {
+        if (deslizo){ deslizo = false; return; }
+        if (e.target === visor) cerrar();
+      });
       if (n > 1){
         $('.ant', visor).addEventListener('click', () => mover(-1));
         $('.sig', visor).addEventListener('click', () => mover(1));

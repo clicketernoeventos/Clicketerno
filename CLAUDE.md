@@ -6461,6 +6461,57 @@ con el verde puesto, una banda verde contra una de papel se rasgaba en
 **antracita**, o sea una raya negra entre dos colores que no son el
 negro. Ahora se pregunta por el COLOR, no por la piel.
 
+#### Las flechas del visor no respondían, y se dibujaban perfectas
+
+*"No está bien puestas las flechas para pasar las fotos."* Medido con
+`elementFromPoint`, que es lo único que no miente: en un teléfono,
+**quien atajaba el dedo en el centro de las dos flechas era la IMG**.
+O sea que no se podía pasar de foto, con los dos botones dibujados y
+sin un solo error en la consola.
+
+**El culpable es el `filter` de la foto.** Un elemento con filtro se
+pinta **en la capa de los posicionados** aunque no esté posicionado; la
+foto lleva `grayscale(...)` y viene DESPUÉS en el HTML, así que le
+ganaba a las flechas, que son `absolute` sin `z-index`. Un `z-index:2`
+lo arregla. **En un monitor no pasa** —ahí la foto no llega al borde y
+las flechas quedan en el negro de los costados—, y por eso nadie lo
+vio: es la regla de siempre, lo que se mide angosto se rompe angosto.
+
+**Y el disco de la flecha pasó de claro a oscuro.** Puesta por encima
+de la foto, una flecha marfil adentro de un disco al 10% de marfil
+desaparece sobre cualquier zona clara de la imagen.
+
+#### Y en un teléfono lo que se hace es DESLIZAR
+
+Las flechas quedan en los dos bordes de la pantalla y acertarles con
+el pulgar es un trámite. **Dos cosas se comían el deslizamiento y
+ninguna tira un error**, las dos medidas —llega el `pointerdown` y el
+`pointerup` no llega NUNCA—:
+
+- **Un `<img>` es arrastrable de fábrica.** El dedo que empieza encima
+  de la foto inicia un arrastre nativo y el navegador se queda con el
+  gesto. Pasa igual en un escritorio con el mouse. Se apaga con
+  `-webkit-user-drag:none` y el `draggable="false"`.
+- **El `touch-action` del contenedor.** Sin `pan-y`, el navegador toma
+  el gesto horizontal por un paneo y en vez del `pointerup` manda un
+  `pointercancel`. Es la misma trampa que ya costó una vuelta en el
+  carrusel del sitio, **del otro lado**: allá había que CANCELAR el
+  toque y acá hay que quedarse con él.
+
+**Y el deslizamiento cancela el click que viene después**: sin eso, un
+dedo que arranca sobre la foto y termina sobre el fondo dispara el
+`click` del fondo y el visor se cierra justo cuando la persona quiso
+pasar de foto.
+
+**Lo mide `pruebas/invitacion_mirar.js`**, y hubo que ABRIR el visor
+para medirlo: cerrado, sus flechas no las ve ni el barrido de los 44px
+ni el de los controles tapados. Con cada foto abierta se pregunta
+quién ataja el dedo, y después se arrastra y se exige que la foto
+CAMBIE —no que exista un oyente—. Se saltea sola en una invitación sin
+visor. Verificada rompiendo las dos cosas a propósito: sacar el
+`z-index` da **1 falla** (*".ant lo tapa IMG"*) y dejar la foto
+arrastrable da **1** (*"deslizando no pasa nada"*).
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
