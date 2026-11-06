@@ -6344,6 +6344,44 @@ borde y no texto. El marfil de la banda sí entra en la cuenta de todo
 lo que cae encima, y ahí no cae ningún texto: lo único que hay adentro
 son las tres fotos.
 
+#### La canción arranca sola apenas se entra
+
+*"Que la música suene apenas entras a la invitación."* Acá no hay
+sobre que abrir —se lo sacó el dueño el 01/11— así que no existe el
+gesto con el que la canción arranca en `ambar15` y en `magali15`.
+
+**Y el navegador la va a bloquear, que es lo normal en un teléfono**:
+ni Safari ni Chrome dejan sonar nada antes de que la persona toque
+algo. Medido acá: el Chromium de las pruebas la bloquea igual.
+Así que son **dos caminos y hacen falta los dos**: se intenta al
+cargar, y si rebota suena con el **primer gesto** que haga la persona,
+en cualquier parte de la pantalla. Desde afuera eso es "apenas
+entrás", porque nadie mira una invitación sin tocarla.
+
+**Un scroll no alcanza**, y por eso no está en la lista de gestos: el
+navegador no lo cuenta como activación para esto. Los que sí valen son
+el toque y la tecla (`pointerdown`, `touchend`, `click`, `keydown`).
+
+**Y el primer toque en el propio reproductor no cuenta.** El oyente va
+en CAPTURA, o sea que corre antes que el botón: sin cuidarlo, el toque
+arranca la canción y después el `click` del play la encuentra sonando
+y la pausa — el botón se vería muerto justo en el único toque que de
+verdad lo usa. Se desarma y se deja pasar.
+
+**`preload="metadata"` se queda.** Bloqueada la primera vez, los 2,3 MB
+no se bajan hasta el gesto; y cuando suena, el audio arranca mientras
+se sigue bajando.
+
+**Lo que mide la suite es lo que hace la PÁGINA, no lo que decide el
+navegador**: comprobar "suena" mediría la política de Chromium. Se le
+pisa `play()` y se cuenta. Tres cosas: que al cargar se INTENTE sin
+que nadie toque nada; que, bloqueada, suene con el primer toque en
+cualquier parte; y que si ese primer toque cae en el play el botón no
+quede muerto. Se saltea sola en una invitación sin canción, y en una
+**con sobre** —ahí el gesto es abrirlo y eso ya está medido—.
+Verificada rompiéndola a propósito: sacar el arranque da **2 fallas**
+y sacar la exención del reproductor da **1**.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.

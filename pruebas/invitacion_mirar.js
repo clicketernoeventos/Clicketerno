@@ -1043,6 +1043,97 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctxM.close();
   }
 
+  /* ── 8a-quater · LA CANCIÓN ARRANCA SOLA ──
+     Sólo donde la invitación trae canción y NO tiene sobre: con
+     sobre, el gesto que la enciende es el de abrirlo y eso ya está
+     medido por el recorrido.
+
+     LO QUE SE MIDE ES LO QUE HACE LA PÁGINA, no lo que decide el
+     navegador: el Chromium de acá bloquea el autoplay igual que un
+     teléfono, así que comprobar "suena" mediría la política del
+     navegador y no el código. Se le pisa `play()` y se cuenta.
+     Son tres cosas y las tres hacen falta:
+       A · al cargar se INTENTA, sin que nadie toque nada;
+       B · bloqueada —que es lo que pasa en un teléfono— suena con el
+           PRIMER gesto, en cualquier parte de la pantalla;
+       C · y si ese primer gesto cae justo en el play, el botón no
+           queda muerto: el oyente va en captura y corre antes, así
+           que sin cuidarlo arranca la canción y después el botón la
+           pausa. */
+  titulo('la canción arranca sola');
+  {
+    const ctxA = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const base = await ctxA.newPage();
+    await base.goto(URL, {waitUntil:'domcontentloaded'});
+    await base.waitForTimeout(600);
+    const conCancion = await base.evaluate(() => !!document.querySelector('audio'));
+    const conSobre   = await base.locator('#sobre').count() > 0;
+    await base.close();
+
+    if (!conCancion) bien('esta invitación no trae canción');
+    else if (conSobre) bien('la canción arranca al abrir el sobre (medido en el recorrido)');
+    else {
+      /* A · se intenta al cargar */
+      const pA = await ctxA.newPage();
+      await pA.addInitScript(() => {
+        window.__intentos = 0;
+        const real = HTMLMediaElement.prototype.play;
+        HTMLMediaElement.prototype.play = function(){
+          window.__intentos++;
+          try { return real.apply(this, arguments).catch(() => {}); }
+          catch(e){ return Promise.resolve(); }
+        };
+      });
+      await pA.goto(URL, {waitUntil:'domcontentloaded'});
+      await pA.waitForTimeout(1800);
+      const intentos = await pA.evaluate(() => window.__intentos || 0);
+      es(intentos > 0, intentos > 0
+        ? 'al cargar se intenta sin que nadie toque nada'
+        : 'al cargar NO se intenta: hay que ir a buscar el play');
+      await pA.close();
+
+      /* B y C · con el navegador bloqueándola */
+      const BLOQUEO = () => {
+        const real = HTMLMediaElement.prototype.play;
+        let gesto = false;
+        for (const g of ['pointerdown','touchend','click','keydown'])
+          addEventListener(g, () => { gesto = true; }, true);
+        HTMLMediaElement.prototype.play = function(){
+          if (!gesto) return Promise.reject(new DOMException('bloqueado','NotAllowedError'));
+          return real.apply(this, arguments);
+        };
+      };
+      const suena = p => p.evaluate(() => { const a = document.querySelector('audio'); return !!a && !a.paused; });
+
+      const pB = await ctxA.newPage();
+      await pB.addInitScript(BLOQUEO);
+      await pB.goto(URL, {waitUntil:'domcontentloaded'});
+      await pB.waitForTimeout(1500);
+      es(!await suena(pB), 'bloqueada por el navegador, al cargar todavía no suena');
+      await pB.mouse.click(195, 700);
+      await pB.waitForTimeout(1500);
+      es(await suena(pB), await suena(pB)
+        ? 'y suena con el PRIMER toque, en cualquier parte'
+        : 'bloqueada, no vuelve a intentarlo nunca: la canción no suena');
+      await pB.close();
+
+      const pC = await ctxA.newPage();
+      await pC.addInitScript(BLOQUEO);
+      await pC.goto(URL, {waitUntil:'domcontentloaded'});
+      await pC.waitForTimeout(1500);
+      const play = pC.locator('.repro .play, .player .play').first();
+      if (await play.count()){
+        await play.click();
+        await pC.waitForTimeout(1500);
+        es(await suena(pC), await suena(pC)
+          ? 'y si ese primer toque es el play, el botón no queda muerto'
+          : 'el primer toque en el PLAY no la hace sonar: el arranque solo se la come');
+      }
+      await pC.close();
+    }
+    await ctxA.close();
+  }
+
   /* ── 8a-bis · EL AFICHE DE LA PORTADA ──
      Una invitación puede traer la portada ya hecha: una pieza que el
      cliente mandó armada, con su foto, su nombre y su letra adentro.

@@ -1623,6 +1623,38 @@ const diaSemana = F ? DIAS_S[new Date(F.anio, F.mes-1, F.dia).getDay()] : '';
     $('#rAde').addEventListener('click', alPrincipio);
     avance(0);
     pintar();
+
+    /* ── ARRANCA SOLA APENAS SE ENTRA ──
+       Pedido del dueño. Acá no hay sobre que abrir —se lo sacó él
+       mismo—, así que no existe el gesto con el que arranca en
+       `ambar15` y en `magali15`: hay que intentarlo al cargar.
+
+       Y EL NAVEGADOR LA VA A BLOQUEAR, que es lo normal en un
+       teléfono: ni Safari ni Chrome dejan sonar nada antes de que la
+       persona toque algo. Por eso son DOS caminos y hacen falta los
+       dos: se intenta al cargar y, si rebota, suena con el PRIMER
+       gesto que haga —el primer toque, en cualquier parte—. Desde
+       afuera eso es "apenas entrás", porque nadie mira una invitación
+       sin tocarla.
+
+       UN SCROLL NO ALCANZA y por eso no está en la lista: el
+       navegador no lo cuenta como gesto para esto. Los que sí valen
+       son el toque y la tecla.
+
+       Y EL PRIMER TOQUE EN EL PROPIO REPRODUCTOR NO LO CUENTA: el
+       oyente va en CAPTURA, o sea que corre antes que el botón, y si
+       arrancara la canción el `click` del play la encontraría sonando
+       y la pausaría — el botón se vería muerto en el único toque que
+       de verdad lo usa. */
+    const GESTOS = ['pointerdown', 'touchend', 'click', 'keydown'];
+    const desarmar = () => GESTOS.forEach(g => removeEventListener(g, alGesto, true));
+    function alGesto(ev){
+      desarmar();
+      if (ev.target && ev.target.closest && ev.target.closest('#player')) return;
+      a.play().catch(() => {});
+    }
+    a.play().then(desarmar).catch(() =>
+      GESTOS.forEach(g => addEventListener(g, alGesto, {capture:true, passive:true})));
   } else {
     const n = $('.port-player'); if (n) n.remove();
   }
