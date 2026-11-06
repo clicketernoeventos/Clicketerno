@@ -6177,6 +6177,70 @@ Excluir la portada a mano era la misma curita una foto tarde. Ahora la
 prueba lee de `CONFIG` **cuáles son las de la galería** y tira una de
 ésas. Contra el código anterior da **1 falla**.
 
+#### La cuenta regresiva pasa al papel, y la foto que se recortaba sola
+
+Dos capturas del dueño, mirándola publicada: *"mejora la foto porque
+queda recortado"* y *"la foto de las manos debe ir como en la foto 3.
+El contador también"* — la referencia es una cuenta regresiva en serif
+oscura sobre papel crema y, debajo, una foto a sangre.
+
+**1 · `#invitacion` pasó de TINTA a PAPEL**, y con eso se cayó solo el
+motivo por el que la foto de las manos iba enmarcada. Acá estaba
+escrito —y era cierto— que *"una foto de fondo BLANCO a sangre sobre
+antracita es un agujero del tamaño de la pantalla"*. Con la sección en
+crema, el agujero no existe. **Un argumento puede ser correcto y
+caducar el día que cambia lo que había debajo.**
+Esto da vuelta la decisión de *"marfil con borde champagne"* de la
+vuelta anterior, que había sido del dueño y para la banda oscura.
+
+**El número toma la tinta de SU banda** (`color:inherit`) y el borde de
+letra vive sólo sobre la oscura: el champagne alrededor de una cifra ya
+champagne no hace nada, y alrededor de una cifra oscura sobre papel la
+empasta. Es *si un bloque trae su propio fondo, trae su propia tinta*
+vista al revés — no cambió el bloque, cambió el fondo de abajo.
+
+**2 · El blanco de la foto se funde con el papel, y NO se tocó el
+archivo.** El fondo de la foto es `#F8F8F8` y el papel es `#F6F1E8`: a
+sangre quedaría un rectángulo blanco con su juntura a lo ancho de la
+pantalla. Con **`mix-blend-mode:multiply`** sobre el crema, el blanco se
+multiplica por el papel y desaparece —queda el papel— mientras los
+negros de las manos no se mueven. Es la misma decisión que el
+`grayscale` del resto: el filtro va en el CSS y el original queda
+entero. El `isolation:isolate` no es un adorno: sin él la mezcla se va
+a buscar lo que haya más atrás en la página.
+
+**3 · Un recorte que depende del ALTO de la ventana recorta distinto en
+cada aparato, y no lo decide nadie.** Eso era lo de *"queda
+recortado"*. La foto del cierre iba `width:100%` con `max-height:74svh`
+y `object-fit:cover`: en una pantalla ancha se agrandaba hasta el ancho
+entero y después el alto la cortaba. **Medido: en un monitor de 1280 se
+veía el 35% de la foto; en un teléfono con la barra del navegador, el
+83%** —que es exactamente la captura que mandó—. Se topa el **ancho** y
+no el alto: así el alto sale de la proporción de la foto y se ve el
+100% en cualquier pantalla. A sangre en un teléfono y como una columna
+centrada sobre la banda oscura en un monitor, que es lo que ya hace la
+portada entera de `mia15` y se lee editorial.
+
+**Y el velo hubo que volver a medirlo**, porque lo que cae debajo del
+texto cambió: antes se medía contra un recorte y ahora contra la foto
+entera. Es el punto ciego de siempre —`.cierre-foto` trae su propio
+`background-color` opaco, así que el medidor compartido informa
+champagne sobre antracita y da un número perfecto y falso—, así que se
+mide a mano con `pruebas/png.js`, escondiendo los HIJOS del texto y no
+el contenedor, que se llevaría el velo. Da **5,93 a 6,80:1** en los
+cuatro aparatos.
+
+**Lo que NO se pudo arreglar: la canción no arranca del principio.**
+Pedido del dueño, y el archivo no da. Medido con `ffmpeg`: los
+primeros 0,4 s son el fundido de entrada y **del 0,4 en adelante entra
+a todo volumen** (−17,6 dB, lo mismo que en el minuto uno), o sea que
+empieza en medio de una frase; el final, en cambio, baja solo
+(−21,7 dB), así que lo que falta está al principio y no al final. El
+audio salió de un video que el dueño mandó y ese video arrancaba con
+la canción empezada. **No se baja de ningún lado**: es una grabación
+comercial, y vale lo ya escrito. Hace falta que mande el tema desde el
+principio; cambiarlo es reemplazar los dos archivos y nada más.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.

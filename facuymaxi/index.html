@@ -360,31 +360,46 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .reloj b{display:block;font-family:var(--titulos);font-weight:300;
   font-variation-settings:'opsz' 72;font-optical-sizing:none;
   font-size:clamp(38px,11.4vw,58px);line-height:1;letter-spacing:.01em;
-  color:var(--marfil);font-variant-numeric:lining-nums tabular-nums}
+  color:inherit;font-variant-numeric:lining-nums tabular-nums}
 .reloj span{display:block;margin-top:clamp(7px,1.6vw,11px);
   font-size:clamp(8.5px,2.3vw,10px);letter-spacing:.24em;text-transform:uppercase;
-  font-weight:500;color:var(--champan)}
+  font-weight:500;color:var(--oro-hondo)}
+.tinta .reloj span{color:var(--champan)}
+/* EL NÚMERO TOMA LA TINTA DE SU BANDA (`color:inherit`) y el borde de
+   letra vive SÓLO sobre la banda oscura: el champagne alrededor de una
+   cifra ya champagne no hace nada, y alrededor de una cifra oscura
+   sobre papel la empasta. Es la regla de siempre vista al revés — no
+   cambió el bloque, cambió el fondo de abajo. */
 @supports (paint-order: stroke){
-  .reloj b{paint-order:stroke fill;-webkit-text-stroke:.026em var(--champan)}
+  .tinta .reloj b{paint-order:stroke fill;-webkit-text-stroke:.026em var(--champan)}
 }
 
-/* ── LA FOTO DE LAS MANOS, arriba de la cuenta ──
-   Es una foto de fondo BLANCO sobre una banda casi negra, así que va
-   enmarcada y no a sangre: a sangre, el blanco es un agujero del
-   tamaño de la pantalla y se lee como un error de carga. Con su
-   filete de champagne —el mismo de las fotos de la tira— se lee como
-   una copia apoyada sobre la pared oscura, que es lo que es.
-   Y por eso tampoco lleva el `grayscale` del resto: ya es blanco y
-   negro de origen.
+/* ── LA FOTO DE LAS MANOS, debajo de la cuenta ──
+   Va A SANGRE, como en la referencia que mandó el dueño. Antes iba
+   enmarcada, y el motivo era bueno mientras la sección era oscura: una
+   foto de fondo BLANCO a sangre sobre antracita es un agujero del
+   tamaño de la pantalla. Con la cuenta regresiva en PAPEL ese motivo
+   se cayó solo, y el marco pasó a sobrar.
 
-   EL FILETE VA POR AFUERA Y NO `inset`, al revés que las fotos de la
-   tira: la foto es BLANCA, así que un hilo de champagne por dentro
-   no se ve — es una declaración que no hace nada. Por fuera cae
-   sobre el antracita y ahí sí separa. */
-.manos{position:relative;width:min(300px,76%);margin:clamp(30px,5.4vh,44px) auto 0;
-  line-height:0;background-color:var(--antracita);
-  box-shadow:0 0 0 1px var(--borde-tinta)}
-.manos img{width:100%;height:auto;display:block;
+   EL BLANCO DE LA FOTO SE FUNDE CON EL PAPEL, y eso NO se hizo
+   tocando el archivo: el fondo de la foto es #F8F8F8 y el papel es
+   #F6F1E8, así que a sangre quedaría un rectángulo blanco con su
+   juntura a lo ancho de la pantalla. Con `mix-blend-mode:multiply`
+   sobre el crema, el blanco se multiplica por el papel y DESAPARECE
+   —queda el papel— mientras los negros de las manos no se mueven. El
+   original queda entero, igual que con el `grayscale` del resto.
+   El `isolation:isolate` no es un adorno: sin él la mezcla se va a
+   buscar lo que haya más atrás en la página.
+
+   Y EL ANCHO SE TOPA EN UN MONITOR. La foto es 4:5, así que a sangre
+   en 1280 mediría 1600 de alto. Topada, en un teléfono llena el ancho
+   —que es lo que pide la referencia— y en un monitor queda centrada
+   sobre el papel; como su fondo ya es el papel, no se ve ninguna caja.
+   No lleva el `grayscale` del resto: ya es blanco y negro de origen. */
+.manos{position:relative;margin:clamp(30px,5.4vh,44px) calc(var(--gutter) * -1) 0;
+  line-height:0;background-color:var(--marfil);isolation:isolate}
+.manos img{display:block;width:100%;max-width:min(100%,430px);height:auto;
+  margin:0 auto;mix-blend-mode:multiply;
   filter:contrast(1.05) brightness(1.01)}
 
 /* ══════════════════════════════════════════════════════════════════
@@ -774,12 +789,26 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #cierre{padding-bottom:0}
 .cierre-foto{position:relative;margin:clamp(30px,5vh,46px) calc(var(--gutter) * -1) 0;
   line-height:0;background-color:var(--antracita)}
-/* La foto está RECORTADA para esto —*el encuadre se arregla en el
+/* La foto está RECORTADA en el ARCHIVO —*el encuadre se arregla en el
    archivo, no en el CSS*— con las caras arriba y los hombros abajo,
    que es donde cae el texto. Con el recorte del mosaico encima, el
-   saludo aterrizaba sobre las dos caras. */
-.cierre-foto img{width:100%;max-height:74svh;object-fit:cover;object-position:center 22%;
-  filter:grayscale(1) contrast(1.14) brightness(1.02)}
+   saludo aterrizaba sobre las dos caras.
+
+   SE VE ENTERA, y por eso se topa el ANCHO y no el alto. Antes era
+   `width:100%` con `max-height:74svh` y `cover`, o sea: en una
+   pantalla ancha la foto se agrandaba hasta el ancho entero y después
+   el alto la cortaba. Medido: en un monitor de 1280 se veía el **35%
+   de la foto** y en un teléfono con la barra del navegador, el 83% —
+   que es la captura que mandó el dueño—. Un recorte que depende del
+   alto de la ventana recorta distinto en cada aparato y no lo decide
+   nadie.
+   Topando el ancho, el alto sale solo de la proporción de la foto y
+   se ve el 100% en cualquier pantalla: a sangre en un teléfono, y en
+   un monitor como una columna centrada sobre la banda oscura, que es
+   lo mismo que ya hace la portada entera de `mia15` y se lee
+   editorial. */
+.cierre-foto img{display:block;width:100%;max-width:min(100%,440px);height:auto;
+  margin:0 auto;filter:grayscale(1) contrast(1.14) brightness(1.02)}
 /* El velo se midió CON EL PÍXEL, no a ojo: con el primero —.82 a
    partir del 78%— en un monitor ancho "Te esperamos" caía sobre un
    gris de 126 y daba 2,38:1, o sea que no estaba. En un teléfono el
@@ -916,7 +945,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 <main>
 
   <!-- ══════════ 3 · la invitación y la cuenta regresiva ══════════ -->
-  <section class="seccion tinta" id="invitacion">
+  <section class="seccion papel" id="invitacion">
     <div class="caja">
       <p class="ante ap">Sábado 22 de mayo de 2027</p>
       <h2 class="ap d1" data-eco="Queremos que estés">Queremos que estés</h2>
@@ -930,8 +959,12 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
         <div><b id="cM">00</b><span>Minutos</span></div>
         <div><b id="cS">00</b><span>Segundos</span></div>
       </div>
-      <figure class="manos ap d3" id="fotoManos" hidden></figure>
     </div>
+    <!-- A SANGRE y FUERA de `.caja`, que está topada en 640px: adentro,
+         el margen negativo sólo descuenta el padding y la foto queda
+         encerrada en el medio de un monitor. Es el mismo armado que la
+         tira de `#fotos`. -->
+    <figure class="manos ap d3" id="fotoManos" hidden></figure>
   </section>
 
   <!-- ══════════ 4 · guardá la fecha, en su arco (referencia 4) ══════════ -->
