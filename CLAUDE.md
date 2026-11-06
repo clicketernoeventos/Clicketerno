@@ -6382,6 +6382,46 @@ quede muerto. Se saltea sola en una invitación sin canción, y en una
 Verificada rompiéndola a propósito: sacar el arranque da **2 fallas**
 y sacar la exención del reproductor da **1**.
 
+#### Los detalles, en UNA cápsula
+
+*"Que esas dos tarjetas estén dentro del modelo ese de la primera
+foto"*, con la referencia: una sola pieza de papel con los extremos
+redondeados y los dos bloques adentro. Dos recuadros sueltos sobre la
+banda oscura se leen como dos avisos; una cápsula se lee como una
+tarjeta. Es el mismo armado que ya tiene `magali15`.
+
+**El radio horizontal va en porcentaje y el vertical en una medida que
+sigue al ANCHO, no al alto.** La mitad está escrita en `magali15`: los
+dos en píxeles dan un semicírculo en una pantalla angosta y una cúpula
+en una ancha. La otra mitad es nueva y aparece acá porque **adentro
+hay dos bloques de texto**: un vertical en porcentaje se mide contra
+el ALTO, así que una línea más y la cúpula crece. La altura de la
+cúpula es una decisión de forma y tiene que depender de lo ancha que
+sea la tarjeta, no de cuánto texto le toque.
+
+**Y la cúpula se eligió MIRANDO.** La primera versión tenía el radio
+vertical en la mitad y lo que se veía no era una cápsula: era una
+lápida con las esquinas apenas redondeadas. En la referencia el alto
+de la cúpula es como tres cuartos de la mitad del ancho; con la mitad
+de eso el gesto no existe. No se ve leyendo el código.
+
+**El relleno de arriba y abajo tiene que ser más alto que una tarjeta
+común**: con el de antes, el primer icono aterriza sobre la curva.
+
+**Va en una sola columna siempre**, y por eso además se topa el ancho
+en 460: en dos columnas la cápsula queda ancha y baja y los extremos
+redondeados se leen como un botón gigante. La referencia es una
+cápsula vertical.
+
+**Lo que separa a los dos bloques es el aire**, como en la referencia:
+una raya en el medio volvería a partir en dos lo que la cápsula vino a
+juntar.
+
+**Y el `.ap` pasó a la cápsula.** Lo tenían las dos fichas, con sus
+retardos escalonados: una pieza continua que aparece en dos pedazos
+se lee como un error de carga. Es la misma decisión que la escena de
+la fecha.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
