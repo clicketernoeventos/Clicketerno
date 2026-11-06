@@ -6241,6 +6241,77 @@ la canción empezada. **No se baja de ningún lado**: es una grabación
 comercial, y vale lo ya escrito. Hace falta que mande el tema desde el
 principio; cambiarlo es reemplazar los dos archivos y nada más.
 
+#### La escena de la fecha: foto, arco y foto
+
+*"Proba este diseño con esas fotos"*, con la referencia —una foto a
+sangre arriba, un ARCO oscuro montado encima con el calendario adentro
+y el día marcado con un corazón, y otra foto a sangre abajo— más la
+foto de las manos y una **foto nueva de los dos en el lobby de un
+hotel**, que entró como `fotos/juntos.webp` (900x1490, 69 KB, el
+original queda entero: el blanco y negro va en el CSS).
+
+**Lo que hace que se lea como UNA pieza es que el arco SE SUPERPONE a
+las dos fotos.** Pegadas borde con borde son tres rectángulos
+apilados. El arco ya existía; lo que faltaba era la escena.
+
+**La foto de las manos se mudó de `#invitacion` a `#fecha`** y con eso
+no cambió de lugar en la pantalla —las dos secciones son de papel y
+van una detrás de la otra—, pero ahora el arco puede montársele
+encima.
+
+**EL ARCO VA ARRIBA EN EL APILADO, y eso no es un detalle de gusto**:
+la foto de las manos se funde con el papel con
+`mix-blend-mode:multiply`, así que dibujado DEBAJO el arco sería el
+fondo de esa mezcla y las manos se multiplicarían contra el antracita
+hasta desaparecer. El `isolation:isolate` de `.manos` mantiene la
+mezcla adentro de su caja y el arco la tapa por delante.
+Medido con el píxel, de paso: el blanco de la foto multiplicado da
+**exactamente** el papel (246,241,232 de los dos lados, ni un píxel más
+claro en toda la banda), así que no hay ninguna juntura a lo ancho.
+
+**Cuánto monta se eligió mirando LAS FOTOS, no la referencia.** Arriba
+el arco sube 68 a 94px, que es lo que deja al antebrazo tatuado debajo
+de la cúpula y a las manos enteras arriba; abajo baja 20 a 30px, que
+es lo que el aire que la foto tiene sobre las cabezas aguanta sin que
+el pie del arco les tape la cara. **Un encuadre no se mira solo: se
+mira con lo que le va a caer encima** — es la misma lección de las dos
+caras tapadas de `ambar15`, ahora por el lado del borde y no del
+texto.
+
+**El manuscrito pasó a vivir ADENTRO del arco**, como en la
+referencia, y su texto viaja en un `data-` de `#calendario`: el JS le
+pisa el `innerHTML` entero, así que escrito como hijo en el HTML se
+perdería sin que nada avise.
+
+**Y el ancho se topa**, igual que en el cierre: a sangre en un monitor
+la foto de los dos mediría 2100 de alto. Topada en 440, en un teléfono
+llena el ancho y en un monitor queda como una columna centrada con el
+arco —más angosto— encima.
+
+##### El corazón del día se quedó en `scale(0)`, y no avisó
+
+El arco dejó de llevar su propio `.ap` —entra con la escena entera, que
+es lo que hace que la composición no aparezca en tres pedazos
+escalonados—, y el latido del corazón colgaba de
+`#calendario.entro`. Sin ese `.entro`, el corazón se quedó en
+`scale(0)` **para siempre**: lo que quedaba era el número del 22
+flotando en un rectangulito blanco, perfecto y al revés. Ningún error.
+Ahora cuelga de la SECCIÓN (`#fecha.entro`), que nunca está escondida
+— es *el que se mira no puede ser el que se esconde* otra vez.
+
+**Y ahora se mide**, genérico y por la CAJA de verdad y no por que el
+nodo exista: la marca del día marcado tiene que llegar a 20x20. Se
+saltea sola en una invitación cuyo calendario no dibuja marca.
+Verificada rompiéndola a propósito: da **1 falla**, *"la marca del día
+está dibujada (0x0)"*.
+
+**Y la primera versión de esa comprobación inventaba la falla**:
+preguntaba sin haber scrolleado hasta el calendario, y quien destapa es
+un `.entro` que pone el observador, que avisa en otra vuelta del reloj.
+Sin llegar, la marca da 0x0 esté bien o mal el código. Es la regla ya
+escrita para la comprobación de los controles tapados —*preguntaba sin
+llegar*— por segunda vez en la misma suite.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
