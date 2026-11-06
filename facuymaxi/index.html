@@ -80,6 +80,15 @@
   /* y las versiones hondas, que existen para que el texto se lea */
   --oro-hondo:#8E7342;     /* 3,99:1 sobre marfil · 3,99:1 al revés */
   --salvia-honda:#5E6B52;  /* 5,04:1 sobre marfil */
+  /* EL VERDE DE BANDA. Es la salvia que mandaron ellos, honda: el
+     mismo tinte, bajada de luminosidad hasta que la tinta de las
+     bandas oscuras se lee encima sin cambiar una sola regla —marfil
+     7,6:1, champagne 5,0:1, oro 3,2:1—. En su valor claro
+     (`--salvia`) una banda entera no se puede escribir: ahí el
+     champagne da 1,4:1 y el oro 1,9:1, o sea que el rótulo de cada
+     sección no estaría. Por eso la salvia clara se queda donde es un
+     DATO —los círculos del dress code— y la banda usa ésta. */
+  --verde-banda:#46513C;
   --marfil-vivo:#FCFAF5;
   --gris:#5B5F61;          /* 5,74:1 sobre marfil · es el antracita aclarado */
   /* LOS BORDES. Ninguna raya de la invitación es un gris inventado:
@@ -140,7 +149,18 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round;stro
 .seccion{position:relative;padding:clamp(70px,10vh,112px) var(--gutter)}
 .seccion .caja{max-width:640px;margin:0 auto;text-align:center}
 .papel{background-color:var(--marfil);color:var(--antracita)}
-.tinta{background-color:var(--antracita);color:var(--marfil)}
+/* LA BANDA VERDE NO ES UNA PIEL NUEVA: es la oscura con otro fondo.
+   El dueño pidió más del verde que mandaron ellos —*"todo es mayoría
+   blanco y grafito"*— y el camino obvio, una tercera piel con sus
+   propias reglas de tinta, es el que ya falló una vez: quince reglas
+   `.tinta X` que hay que repetir, y a la que se escape le queda el
+   texto invisible. Acá el fondo viaja en una variable y `.verde` sólo
+   la cambia, así que TODA la tinta de la banda oscura —el rótulo
+   champagne, el cuerpo, los filetes, los botones— sigue valiendo sin
+   tocar una línea.
+   Y por eso la banda es la salvia HONDA y no la clara: ver la paleta. */
+.tinta{background-color:var(--banda,var(--antracita));color:var(--marfil)}
+.verde{--banda:var(--verde-banda)}
 
 /* ── EL BORDE RASGADO ──
    Va arriba de la sección y pintado del color de la que viene
@@ -456,9 +476,13 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    corazón, donde no se nota. No es esconderle un color al medidor:
    es decirle la verdad.
    ══════════════════════════════════════════════════════════════════ */
+/* EL ARCO VA EN EL VERDE DE BANDA y no en antracita: es la pieza más
+   grande de la mitad de arriba, y ahí arriba la invitación era toda
+   crema. Su tinta no cambia —marfil 7,6:1 y champagne 5,0:1 sobre el
+   verde—, así que es una línea. */
 #calendario{position:relative;z-index:1;max-width:340px;
   margin:calc(clamp(68px,18vw,94px) * -1) auto calc(clamp(20px,5.5vw,30px) * -1);
-  background-color:var(--antracita);color:var(--marfil);
+  background-color:var(--verde-banda);color:var(--marfil);
   border-radius:50% 50% 3px 3px/34% 34% 3px 3px;
   padding:clamp(86px,25vw,112px) clamp(20px,6vw,30px) clamp(26px,6vw,34px);
   box-shadow:0 22px 46px -30px rgba(38,41,43,.7)}
@@ -585,7 +609,6 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    salón —tres paletas peleándose adentro de un mismo bloque— y lo
    que se veía era un collage, no una pieza.
    ══════════════════════════════════════════════════════════════════ */
-#galeria{background-color:var(--antracita);color:var(--marfil)}
 /* LA TIRA VA SOBRE UNA BANDA DE PAPEL, con su filete dorado por foto,
    como la referencia que mandó el dueño. Lo que la hace leer como tres
    copias apoyadas —y no como tres recortes pegados— son las dos cosas
@@ -1080,7 +1103,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   </section>
 
   <!-- ══════════ 6 · la galería en mosaico (referencia nueva) ══════════ -->
-  <section class="seccion tinta" id="galeria" hidden>
+  <section class="seccion tinta verde" id="galeria" hidden>
     <div class="caja">
       <p class="ante ap">Nosotros</p>
       <h2 class="ap d1" data-eco="Nuestra historia">Nuestra historia</h2>
@@ -1117,7 +1140,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   </section>
 
   <!-- ══════════ 8 · los detalles: dos tarjetas iguales ══════════ -->
-  <section class="seccion tinta" id="detalles">
+  <section class="seccion tinta verde" id="detalles">
     <div class="caja">
       <p class="ante ap">Para la noche</p>
       <h2 class="ap d1" data-eco="Dos cosas">Dos cosas</h2>
@@ -1262,7 +1285,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   </section>
 
   <!-- ══════════ 11 · contacto (referencia 5) ══════════ -->
-  <section class="seccion tinta" id="contacto">
+  <section class="seccion tinta verde" id="contacto">
     <div class="caja">
       <p class="ante ap">Cualquier cosa</p>
       <h2 class="ap d1" data-eco="Contacto">Contacto</h2>
@@ -2027,12 +2050,17 @@ function rasgar(){
   $$('svg.rasgo').forEach(n => n.remove());
   $$('.rasgada').forEach(n => n.classList.remove('rasgada','sin-hilo'));
   const secs = $$('header#portada, section.seccion, footer#pie').filter(n => !n.hidden);
+  /* TRES COLORES Y NO DOS. Con el verde puesto, preguntar "¿es papel?"
+     daba el rasgado del color equivocado: una banda verde contra una
+     de papel se rasgaba en antracita, o sea una raya negra entre dos
+     colores que no son el negro. Se pregunta por el color. */
+  const colorDe = n => n.classList.contains('papel') ? 'var(--marfil)'
+                     : n.classList.contains('verde') ? 'var(--verde-banda)'
+                     : 'var(--antracita)';
   let i = 0;
   for (let k = 1; k < secs.length; k++){
-    const antes = !secs[k-1].classList.contains('papel');
-    const esta  = !secs[k].classList.contains('papel');
-    if (antes === esta) continue;   /* mismo color: no hay nada que rasgar */
-    const color = antes ? 'var(--antracita)' : 'var(--marfil)';
+    const color = colorDe(secs[k-1]);
+    if (color === colorDe(secs[k])) continue;   /* mismo color: nada que rasgar */
     secs[k].insertBefore(rasgo(BORDES[i++ % BORDES.length], color), secs[k].firstChild);
     secs[k].classList.add('rasgada','sin-hilo');
   }

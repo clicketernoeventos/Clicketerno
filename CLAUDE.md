@@ -6422,6 +6422,45 @@ retardos escalonados: una pieza continua que aparece en dos pedazos
 se lee como un error de carga. Es la misma decisión que la escena de
 la fecha.
 
+#### Más verde, que es uno de los cinco que mandaron
+
+*"Necesito que agregues más del verde solicitado porque todo es
+mayoría blanco y grafito."* Tenía razón, y la cuenta lo dice: de las
+trece bandas de la invitación, diez eran crema y tres grafito. El
+verde salvia era uno de los cinco colores que mandaron los novios y
+había quedado sólo en los círculos del dress code.
+
+**La banda verde NO es una piel nueva: es la oscura con otro fondo.**
+El camino obvio —una tercera piel con sus propias reglas de tinta— es
+el que ya falló cuando la salvia era una de tres: son quince reglas
+`.tinta X` que hay que repetir, y a la que se escape le queda el texto
+invisible. Acá el fondo viaja en una variable (`--banda`) y `.verde`
+sólo la cambia, así que **toda** la tinta de la banda oscura —el
+rótulo champagne, el cuerpo, los filetes, los botones— sigue valiendo
+sin tocar una línea.
+
+**Y la banda es la salvia HONDA, no la clara.** Calculado antes de
+escribir una línea de CSS: sobre `--salvia` (#A3AD95) el champagne da
+**1,4:1** y el oro **1,9:1**, o sea que el rótulo de cada sección no
+estaría. `--verde-banda` (#46513C) es el mismo tinte bajado de
+luminosidad: marfil 7,6:1, champagne 5,0:1, oro 3,2:1. La salvia clara
+se queda donde es un DATO —los círculos del dress code— y la banda usa
+la honda.
+
+**Dónde va, y es una decisión de ritmo.** Tres bandas —la galería, los
+detalles y el contacto— **y el ARCO del calendario**, que es la pieza
+más grande de la mitad de arriba y donde la invitación era toda crema
+de punta a punta. El arco costó una línea porque su tinta ya era la de
+la banda oscura. Y no van dos verdes pegados: `#timing` también era
+candidato y está justo antes de la galería, así que los dos juntos
+serían un solo bloque verde en vez de un ritmo.
+
+**El rasgado tuvo que aprender a contar hasta tres.** `rasgar()`
+preguntaba "¿es papel?" y pintaba el borde en antracita o en marfil:
+con el verde puesto, una banda verde contra una de papel se rasgaba en
+**antracita**, o sea una raya negra entre dos colores que no son el
+negro. Ahora se pregunta por el COLOR, no por la piel.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
