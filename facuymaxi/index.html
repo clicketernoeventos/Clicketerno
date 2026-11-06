@@ -374,7 +374,7 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
   .tinta .reloj b{paint-order:stroke fill;-webkit-text-stroke:.026em var(--champan)}
 }
 
-/* ── LA FOTO DE LAS MANOS, debajo de la cuenta ──
+/* ── LA FOTO DE LAS MANOS, la banda de arriba de la escena ──
    Va A SANGRE, como en la referencia que mandó el dueño. Antes iba
    enmarcada, y el motivo era bueno mientras la sección era oscura: una
    foto de fondo BLANCO a sangre sobre antracita es un agujero del
@@ -391,16 +391,45 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    El `isolation:isolate` no es un adorno: sin él la mezcla se va a
    buscar lo que haya más atrás en la página.
 
-   Y EL ANCHO SE TOPA EN UN MONITOR. La foto es 4:5, así que a sangre
-   en 1280 mediría 1600 de alto. Topada, en un teléfono llena el ancho
-   —que es lo que pide la referencia— y en un monitor queda centrada
-   sobre el papel; como su fondo ya es el papel, no se ve ninguna caja.
-   No lleva el `grayscale` del resto: ya es blanco y negro de origen. */
-.manos{position:relative;margin:clamp(30px,5.4vh,44px) calc(var(--gutter) * -1) 0;
-  line-height:0;background-color:var(--marfil);isolation:isolate}
-.manos img{display:block;width:100%;max-width:min(100%,430px);height:auto;
-  margin:0 auto;mix-blend-mode:multiply;
+   El ancho y el margen los pone la escena (abajo); de acá queda sólo
+   lo que es de ESTA foto. No lleva el `grayscale` del resto: ya es
+   blanco y negro de origen. */
+.manos{background-color:var(--marfil);isolation:isolate}
+.manos img{max-width:min(100%,430px);mix-blend-mode:multiply;
   filter:contrast(1.05) brightness(1.01)}
+
+/* ══════════════════════════════════════════════════════════════════
+   LA ESCENA DE LA FECHA: foto, arco, foto
+   La referencia que mandó el dueño es una composición CONTINUA: la
+   foto de las manos a sangre, el arco oscuro montado encima de ella,
+   y abajo la foto de los dos con el pie del arco apoyado. Lo que la
+   hace leer como una sola pieza —y no como tres bloques apilados— es
+   que el arco SE SUPERPONE a las dos: pegadas borde con borde serían
+   tres rectángulos.
+
+   EL ARCO VA ARRIBA (`z-index`), y eso no es un detalle: la foto de
+   las manos se funde con el papel con `mix-blend-mode:multiply`, así
+   que dibujado DEBAJO el arco sería el fondo de esa mezcla y las
+   manos se multiplicarían contra el antracita hasta desaparecer. El
+   `isolation:isolate` de `.manos` mantiene la mezcla adentro de su
+   propia caja y el arco la tapa por delante, que es lo que se quiere.
+
+   EL ANCHO SE TOPA, igual que en el cierre: a sangre en un monitor la
+   foto de los dos mediría 2100 de alto. Topada, en un teléfono llena
+   el ancho —que es lo que pide la referencia— y en un monitor queda
+   como una columna centrada sobre el papel.
+
+   Y CUÁNTO MONTA ARRIBA SE ELIGIÓ MIRANDO LA FOTO, no la referencia:
+   en la de las manos lo que queda debajo del arco es el antebrazo, y
+   en la de los dos lo que el pie del arco tapa es el aire que la foto
+   tiene arriba de las cabezas. Un encuadre no se mira solo: se mira
+   con lo que le va a caer encima.
+   ══════════════════════════════════════════════════════════════════ */
+.escena{position:relative;margin:clamp(30px,5.4vh,44px) calc(var(--gutter) * -1) 0}
+.escena-foto{margin:0;line-height:0}
+.escena-foto img{display:block;width:100%;max-width:min(100%,440px);height:auto;
+  margin:0 auto}
+.juntos img{filter:grayscale(1) contrast(1.1) brightness(1.02)}
 
 /* ══════════════════════════════════════════════════════════════════
    4 · EL CALENDARIO EN SU ARCO
@@ -427,7 +456,8 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
    corazón, donde no se nota. No es esconderle un color al medidor:
    es decirle la verdad.
    ══════════════════════════════════════════════════════════════════ */
-#calendario{position:relative;max-width:340px;margin:clamp(26px,5vh,38px) auto 0;
+#calendario{position:relative;z-index:1;max-width:340px;
+  margin:calc(clamp(68px,18vw,94px) * -1) auto calc(clamp(20px,5.5vw,30px) * -1);
   background-color:var(--antracita);color:var(--marfil);
   border-radius:50% 50% 3px 3px/34% 34% 3px 3px;
   padding:clamp(86px,25vw,112px) clamp(20px,6vw,30px) clamp(26px,6vw,34px);
@@ -471,6 +501,12 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 #calendario .inicio b{font-family:var(--titulos);font-weight:300;
   font-size:clamp(18px,5vw,22px);letter-spacing:.04em;color:var(--marfil);
   font-variant-numeric:lining-nums tabular-nums}
+/* El manuscrito vive ADENTRO del arco, como en la referencia, y por
+   eso su texto viaja en un `data-` del `#calendario`: el JS le pisa
+   el `innerHTML` entero, así que escrito como hijo en el HTML se
+   perdería sin que nada avise. */
+#calendario .mano{margin-top:clamp(13px,3.4vw,18px);color:var(--champan);
+  font-size:clamp(22px,6.3vw,28px);text-align:center}
 .mano{font-family:var(--mano);font-weight:400;font-size:clamp(26px,7.6vw,36px);
   line-height:1.3;margin-top:clamp(18px,3.4vh,28px);color:var(--oro-hondo)}
 .tinta .mano{color:var(--champan)}
@@ -868,7 +904,13 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
 .js .seccion:after{opacity:0}
 .js .seccion.entro:after{opacity:.5;transition:opacity .6s var(--e) .75s}
 .js #calendario td.elDia svg{transform:scale(0);transform-origin:center}
-.js #calendario.entro td.elDia svg{transform:none;transition:transform .8s var(--e) .4s}
+/* El latido del corazón cuelga de la SECCIÓN y no de `#calendario`:
+   el arco dejó de llevar su propio `.ap` —entra con la escena
+   entera— así que esperando su `.entro` el corazón se quedaba en
+   `scale(0)` para siempre, con el número flotando en un rectangulito
+   blanco. No tira ningún error: lo que se ve es un día marcado al
+   revés. */
+.js #fecha.entro td.elDia svg{transform:none;transition:transform .8s var(--e) .4s}
 /* los dos nombres que se encuentran: al ABRIR EL SOBRE, que es
    cuando hay alguien mirando. Corriendo detrás de una capa opaca se
    gasta el único momento de sorpresa que tiene la pieza. */
@@ -960,20 +1002,25 @@ h3{font-family:var(--titulos);font-weight:400;font-size:clamp(21px,5.4vw,26px);
         <div><b id="cS">00</b><span>Segundos</span></div>
       </div>
     </div>
-    <!-- A SANGRE y FUERA de `.caja`, que está topada en 640px: adentro,
-         el margen negativo sólo descuenta el padding y la foto queda
-         encerrada en el medio de un monitor. Es el mismo armado que la
-         tira de `#fotos`. -->
-    <figure class="manos ap d3" id="fotoManos" hidden></figure>
   </section>
 
-  <!-- ══════════ 4 · guardá la fecha, en su arco (referencia 4) ══════════ -->
+  <!-- ══════════ 4 · guardá la fecha: foto, arco y foto ══════════
+       La escena de la referencia que mandó el dueño: una foto A SANGRE
+       arriba, el ARCO oscuro montado encima de ella, y otra foto a
+       sangre abajo con el pie del arco apoyado. Las tres piezas van
+       FUERA de `.caja` —que está topada en 640px— y entran juntas: una
+       composición continua que aparece en tres pedazos escalonados se
+       lee como un error de carga, así que el `.ap` va en la escena y
+       no en cada una. -->
   <section class="seccion papel" id="fecha">
     <div class="caja">
       <p class="ante ap">Guardá la fecha</p>
       <h2 class="ap d1" data-eco="22 de mayo">22 de mayo</h2>
-      <div id="calendario" class="ap d2"></div>
-      <p class="mano ap d3">Dos historias, una fiesta</p>
+    </div>
+    <div class="escena ap d2">
+      <figure class="escena-foto manos" id="fotoManos" hidden></figure>
+      <div id="calendario" data-mano="Dos historias, una fiesta"></div>
+      <figure class="escena-foto juntos" id="fotoJuntos" hidden></figure>
     </div>
   </section>
 
@@ -1297,9 +1344,11 @@ const CONFIG = {
      "te esperamos" encima, como la referencia que mandó el dueño.
      Puesta en los dos lados sería la misma foto dos veces. */
   cierreFoto: { foto: "fotos/cierre.webp", alt: "Facundo y Maximiliano frente al mar" },
-  /* Las manos con los anillos, arriba de la cuenta regresiva. Ya
-     viene en blanco y negro, así que no lleva el filtro del CSS. */
+  /* LA ESCENA DE LA FECHA son estas dos y el arco en el medio. Las
+     manos ya vienen en blanco y negro, así que no llevan el filtro
+     del CSS; la de los dos sí, y el original queda entero. */
   fotoManos: { foto: "fotos/manos.webp", alt: "Las manos de Facundo y Maximiliano con los anillos" },
+  fotoJuntos: { foto: "fotos/juntos.webp", alt: "Facundo y Maximiliano" },
   /* Se escribe TAL CUAL lo mandaron, sin "arreglarle" nada: un alias
      no se adivina, y en mia15 el punto del final resultó ser parte
      del alias y por poco se lo sacamos. */
@@ -1617,18 +1666,21 @@ function cargarFoto(src, alt){
   });
 }
 
-/* ── la foto de las manos, en la cuenta regresiva ──
+/* ── las dos fotos de la escena de la fecha ──
    Como todas las demás: el `<img>` lo crea el JS y se agrega recién
    cuando cargó de verdad. Un `<img>` con `src` vacío le pide al
    servidor la página entera de nuevo, y si el archivo falta lo que
-   queda es un cuadrado roto en el medio de la sección. */
+   queda es un cuadrado roto en el medio de la sección. Faltando una,
+   el arco se queda sin esa banda y la escena se sostiene igual. */
 (function(){
-  const fig = $('#fotoManos'), c = CONFIG.fotoManos;
-  if (!fig || !c || !c.foto) return;
-  cargarFoto(c.foto, c.alt || '').then(im => {
-    if (!im) return;
-    fig.appendChild(im);
-    fig.hidden = false;
+  [['#fotoManos', CONFIG.fotoManos], ['#fotoJuntos', CONFIG.fotoJuntos]].forEach(([sel, c]) => {
+    const fig = $(sel);
+    if (!fig || !c || !c.foto) return;
+    cargarFoto(c.foto, c.alt || '').then(im => {
+      if (!im) return;
+      fig.appendChild(im);
+      fig.hidden = false;
+    });
   });
 })();
 
@@ -1816,7 +1868,10 @@ function cargarFoto(src, alt){
     '<table role="presentation"><thead><tr>' +
       DIAS.map(x => '<th>' + x + '</th>').join('') +
     '</tr></thead><tbody>' + filas + '</tbody></table>' +
-    '<p class="inicio"><span>Empieza</span><b>' + esc(hora) + '</b></p>';
+    '<p class="inicio"><span>Empieza</span><b>' + esc(hora) + '</b></p>' +
+    /* el manuscrito va ADENTRO del arco, como en la referencia; su
+       texto viaja en el `data-` porque acá se pisa el innerHTML */
+    (caja.dataset.mano ? '<p class="mano">' + esc(caja.dataset.mano) + '</p>' : '');
 })();
 
 /* ══════════ la foto del cierre ══════════

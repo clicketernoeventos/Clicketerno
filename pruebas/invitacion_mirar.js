@@ -610,6 +610,30 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
   if (await pag.locator('#calendario').count())
     es(cal === 1, 'el calendario marca un solo día (marcó ' + cal + ')');
 
+  /* ── y la marca del día está DIBUJADA ──
+     La marca (un corazón, un anillo) entra con una animación que la
+     arranca en `scale(0)`, y quien la destapa es el `.entro` de algún
+     ancestro. El día que ese ancestro cambie —porque el bloque se
+     reacomoda— la marca se queda en cero y lo que queda es el número
+     suelto en un rectangulito, sin un solo error a la vista. Se mide
+     la CAJA de verdad y no que el nodo exista: es la caja de 0x0 otra
+     vez, que pasa todas las cuentas. Se saltea sola donde no hay
+     marca dibujada. */
+  if (await pag.locator('#calendario .elDia svg').count()){
+    /* Hay que LLEGAR antes de preguntar: quien la destapa es un
+       `.entro` que pone el observador, y el observador avisa en otra
+       vuelta del reloj. Medida sin scrollear, la marca da 0x0 esté
+       bien o mal el código — una falla inventada. */
+    await pag.locator('#calendario').scrollIntoViewIfNeeded();
+    await pag.waitForTimeout(1600);
+    const marca = await pag.evaluate(() => {
+      const r = document.querySelector('#calendario .elDia svg').getBoundingClientRect();
+      return [Math.round(r.width), Math.round(r.height)];
+    });
+    es(marca[0] >= 20 && marca[1] >= 20,
+       'la marca del día está dibujada (' + marca[0] + 'x' + marca[1] + ')');
+  }
+
   /* ── las fotos se quedan atrás al deslizar ──
      El paralaje es el único efecto de la pieza que no pasa una sola
      vez, y si se rompe no tira ningún error: la foto simplemente deja
