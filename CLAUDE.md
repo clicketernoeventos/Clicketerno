@@ -6312,6 +6312,38 @@ Sin llegar, la marca da 0x0 esté bien o mal el código. Es la regla ya
 escrita para la comprobación de los controles tapados —*preguntaba sin
 llegar*— por segunda vez en la misma suite.
 
+#### La tira de fotos, sobre papel y con su filete dorado
+
+*"La primera foto quiero que lleve el estilo de la segunda. Igual los
+marcos pero con el borde dorado del código que te pasé (#b79a68) y el
+fondo sea color marfil (#f6f1e8)"* — con la captura de la tira
+publicada y una referencia donde las tres fotos van sobre una banda de
+papel claro.
+
+Los dos colores que pidió **son los que ya tiene la pieza**:
+`--oro` es `#B79A68` y `--marfil` es `#F6F1E8`, o sea la paleta que
+mandaron los novios. No entra ningún color nuevo.
+
+**Lo que la hace leer como tres copias apoyadas —y no como tres
+recortes pegados— son las dos cosas juntas**: el marfil que las separa
+y las rodea, y el filete. Con el marfil solo son tres fotos flotando;
+con el filete solo, sobre el antracita, el dorado casi no se despega
+del fondo. Por eso el pedido trae las dos.
+
+**La banda va A SANGRE y el papel nace y muere con ella.** No es un
+cambio de SECCIÓN, así que ahí no entra ningún borde rasgado: ésos los
+pone `rasgar()` sólo donde cambia el color de una sección, y los dos de
+`#galeria` siguen donde estaban.
+
+**El `padding` del bloque y el `gap` son lo mismo** —el margen del
+passepartout—, escritos aparte porque el de los costados descuenta el
+medio píxel del filete: si uno cambia, se miran los dos.
+
+**Y el filete no lo juzga el medidor de contraste**, porque es un
+borde y no texto. El marfil de la banda sí entra en la cuenta de todo
+lo que cae encima, y ahí no cae ningún texto: lo único que hay adentro
+son las tres fotos.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
