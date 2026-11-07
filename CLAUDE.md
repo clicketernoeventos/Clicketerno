@@ -3010,6 +3010,16 @@ meterla en la página que se le manda a cualquiera que pregunta es
 publicar esas fotos a un público que no es el de la fiesta. Si alguna vez
 se agrega, se pregunta primero a la familia.
 
+**Y la decisión del dueño (07/11/2026) es que TODAS las que hagamos se
+muestren acá**: *"sirve para que los clientes vean todas las que hicimos
+y para que le genere confianza que hagamos muchas"*. Tiene razón en el
+negocio y no cambia nada de lo de arriba: lo que entra es la **versión de
+muestra** de cada una —misma pieza, sin las fotos de personas, con nombre
+y fecha inventados y sin alias ni confirmación de verdad—, marcada con su
+píldora. El link del cliente entra sólo con su permiso preguntado.
+**Falta construir ese modo**: está en "Pendiente", y hasta entonces la
+galería sigue con las tres muestras nuestras.
+
 Lo mide `pruebas/vitrina.js`: que la dirección abra, que las dos páginas
 muestren el MISMO número de invitaciones, que cada ficha diga de quién es
 aunque el marco no haya cargado, que las muestras nuestras estén
@@ -3345,6 +3355,17 @@ dejaría peor parados.
   Quedó para borrar a mano en su planilla lo que dejó la prueba: las
   dos filas que dicen "PRUEBA" y dos columnas vacías, `Cancin` y
   `Cuntos`, que creó un `curl` mal encodeado (ver más abajo).
+- **Que toda tarjeta se muestre en `/invitaciones`**, decidido por el
+  dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Falta el modo
+  **`?muestra=1`** que lo hace posible sin exponer a la clienta: la misma
+  pieza con la portada tipográfica (sin las fotos de personas), un nombre
+  y una fecha inventados, y sin alias ni confirmación de verdad. Los tres
+  caminos ya existen y están medidos en cada invitación —vacío el
+  `CONFIG` de cada cosa, no se dibuja—, así que es una bandera que los
+  enciende juntos, más el renglón de cada una en `lib/trabajos.js` con su
+  `muestra:true`. Es una pasada de este chat, no del de la tarjeta.
+  **El link de verdad de un cliente va sólo con su permiso preguntado**, y
+  eso es un dato que no se inventa.
 - **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
   "la portada APARECE de golpe, no hay cruce con la carta". El cruce
   se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado

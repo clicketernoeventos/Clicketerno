@@ -344,7 +344,53 @@ cada tarjeta se lee y el trabajo sigue donde estaba.
 
 ---
 
-## 12. Al terminar
+## 12. Toda tarjeta termina mostrándose en la página
+
+Decisión del dueño: *"todas las invitaciones que hagamos se muestren en
+invitaciones de muestra en la página. Sirve para que los clientes vean
+todas las que hicimos y para que le genere confianza que hagamos
+muchas."*
+
+**Entonces no es opcional: una tarjeta no está terminada hasta que entra
+en la galería.** Y lo que entra es su **versión de muestra**, no el link
+del cliente.
+
+**Por qué no el link del cliente.** La tarjeta de un cliente lleva fotos
+de una menor, el nombre y el salón de su fiesta, el alias para transferir
+y un formulario que escribe en SU planilla. Publicado en la página que se
+le manda a cualquiera que pregunta, eso es: sus fotos a la vista de
+desconocidos (artículo 53, el que está en nuestros propios Términos), y
+cualquiera metiéndole confirmaciones falsas a la lista con la que arma las
+mesas. Por eso las de clientes llevan `noindex`.
+
+**Qué es la versión de muestra.** La misma pieza —el mismo diseño, la
+misma paleta, las mismas animaciones, las mismas secciones— con los tres
+datos que son de la clienta cambiados:
+
+- **sin las fotos de personas**: cae a la portada tipográfica y las
+  franjas se esconden, que es el camino que toda tarjeta ya tiene hecho y
+  medido;
+- **un nombre y una fecha inventados**, no los suyos;
+- **sin alias y sin confirmación de verdad**: el formulario se ve y se
+  completa, y dice con todas las letras que no se manda a ningún lado.
+
+**En la galería va marcada como muestra** (`muestra:true` pinta la píldora
+"Muestra nuestra"), porque la sección promete *"las mismas que recibieron
+los invitados"* y de una muestra eso no es cierto. Mostrar una pantalla
+como si fuera otra cosa es mentirle al cliente.
+
+**El link del cliente SÍ puede ir, pero sólo con su permiso**, preguntado
+y con la respuesta anotada en su crónica. Es un dato que no se inventa,
+como cualquier otro: hasta que no está, va la muestra.
+
+**Y la ficha la suma el chat de la página**, no el de la tarjeta: la
+galería vive en `lib/trabajos.js` y en `index.html`. Cuando la tarjeta
+está lista se avisa, con el nombre de la carpeta, el tipo de fiesta y los
+tres colores de la portada dibujada.
+
+---
+
+## 13. Al terminar
 
 - **Escribir la crónica** en `invitaciones/HISTORIA.md`: qué pidió el
   cliente con sus palabras, qué se descartó y por qué, y las fallas que se
