@@ -655,21 +655,48 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .pista-toque .aclara{display:inline-block;margin-top:8px;font-size:9.5px;
   letter-spacing:.14em;opacity:.78;text-transform:none}
 
-/* galería de trabajos */
-.trabajos{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;
-  gap:clamp(30px,4vw,52px);margin-top:64px;width:100%}
-.trabajo{flex:0 1 258px;width:100%;max-width:258px;margin-inline:auto;text-align:center;cursor:pointer}
-/* ── la galería en un teléfono: se desliza, no se apila ──
-   Son tres celulares idénticos uno abajo del otro y medían 2,3 pantallas
-   de las 21 de la página. Apilados obligan a scrollear tres veces para ver
-   lo mismo; al costado se ven los tres en una.
-   El `scroll-snap` es lo que hace que no quede a mitad de camino, y el
-   recorte del costado (el tercer celular asomando) es lo que le DICE al
-   que mira que hay más: un carrusel que no asoma nada parece una sola
-   tarjeta y nadie lo desliza.
-   Los márgenes negativos sacan la galería del padding del .wrap para que
-   el deslizado llegue hasta el borde de la pantalla; el padding propio se
-   lo devuelve al contenido. */
+/* ═══ el escaparate: UN teléfono y los cuadraditos ═══
+   Reemplaza al carrusel de seis celulares. Lo que se gana no es sólo
+   lugar: el carrusel mostraba una invitación y media por vez y bajaba
+   los seis marcos igual, mirara uno lo que mirara. Acá baja el que se
+   está mirando, y las seis portadas se ven juntas en los cuadraditos.
+   El cuadradito NO se dibuja a mano: su fondo, su tinta y su adorno
+   salen de la misma lista que la ficha grande (`lib/trabajos.js`), así
+   que una invitación nueva es un renglón ahí y nada más. Dibujados a
+   mano serían seis colores que el día que entre la séptima nadie
+   actualiza. */
+.escaparate{display:flex;flex-direction:column;align-items:center;
+  gap:clamp(20px,3vw,32px);margin-top:clamp(34px,5vw,64px)}
+/* El envoltorio del teléfono necesita ancho propio: adentro de una
+   columna con align-items:center su ancho sería el del contenido, y el
+   `width:100%` de la tarjeta no tendría contra qué resolverse. */
+.fono-uno{width:100%;display:flex;justify-content:center}
+.trabajo{width:100%;max-width:258px;margin-inline:auto;text-align:center;cursor:pointer}
+/* Los cuadraditos van en una fila, y el ancho mínimo NO es un número
+   escrito al lado de la cuenta: `minmax(46px,1fr)` es lo que garantiza
+   los 44px del dedo sin tener que saber cuántas invitaciones hay. Con
+   seis entran en una fila en un teléfono; el día que sean doce, pasan
+   solas a dos y nadie tiene que acordarse de cambiar un repeat(6). */
+.cuadritos{display:grid;grid-template-columns:repeat(auto-fit,minmax(46px,1fr));
+  gap:clamp(7px,1.4vw,12px);width:100%;max-width:min(100%,480px)}
+.cuadrito{position:relative;aspect-ratio:1;border:0;padding:0;cursor:pointer;
+  border-radius:clamp(10px,2.6vw,16px);overflow:hidden;container-type:inline-size;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  box-shadow:0 0 0 1px rgba(7,16,30,.12),0 10px 20px -16px rgba(7,16,30,.7);
+  transition:transform .3s var(--e),box-shadow .3s var(--e)}
+/* El tamaño va en `cqw` para que el adorno se vea igual de grande en un
+   cuadradito de 51px que en uno de 80. Ojo: eso vale para los HIJOS. En
+   el propio `.cuadrito`, que ES el contenedor, una unidad `cq*` no lo
+   mide a él sino al contenedor de más arriba —y si no hay ninguno, a la
+   pantalla—: un `gap:9cqw` escrito acá daba 129px en un monitor de 1440
+   y empujaba el adorno FUERA del cuadradito, que con `overflow:hidden`
+   se ve como seis cuadrados de color vacíos. Sin un solo error. */
+.cuadrito .ad-c{font-size:24cqw;line-height:1;white-space:nowrap}
+.cuadrito .ln-c{flex:none;width:34%;height:1px;opacity:.55}
+/* El anillo va en el celeste HONDO: el cuadradito cae sobre el papel
+   claro y el acento claro ahí no se ve (1,84:1 medido en su momento). */
+.cuadrito.hoy{transform:translateY(-3px);
+  box-shadow:0 0 0 2px var(--oro-hondo),0 16px 26px -16px rgba(7,16,30,.75)}
 .trabajo .cuerpo-t{--r-fuera:42px;--bisel:7px;
   transition:transform .6s var(--e),box-shadow .6s var(--e)}
 .trabajo:hover .cuerpo-t{transform:translateY(-12px);
@@ -718,70 +745,35 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .todas .es-muestra{background:var(--ambar);color:#13284A;border-color:transparent}
 .pista-toque{text-align:center;margin-top:46px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#566F8E}
 @media(max-width:860px){
-  .trabajos{flex-direction:column;flex-wrap:nowrap;gap:48px;align-items:center}
-  .trabajo{flex:0 0 auto;max-width:min(258px,72vw)}
+  .trabajo{max-width:min(258px,72vw)}
 }
-/* Este bloque va DESPUÉS del de 860px a propósito: aquel pone
-   flex-direction:column y, escrito antes, lo pisaba entero — la galería
-   seguía apilada y la medición decía 2,3 pantallas igual que sin tocar
-   nada. Dos reglas para lo mismo, gana la última. */
 @media(max-width:640px){
-  /* `width:auto` no es un detalle: la regla de arriba pone width:100%, que
-     es el 100% del .wrap YA descontado su padding. Con los márgenes
-     negativos encima, el carrusel quedaba de 342px en una pantalla de 390 y
-     la tarjeta siguiente se cortaba contra un borde invisible a 48px del
-     costado. Medido en un iPhone: se lee como una foto cortada, no como
-     algo que se desliza. */
-  .trabajos{flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;
-    align-items:flex-start;overflow-x:auto;width:auto;
-    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-    margin-inline:-24px;padding-inline:24px;padding-bottom:6px;
-    scroll-padding-inline:24px;
-    gap:18px;scrollbar-width:none}
-  .trabajos::-webkit-scrollbar{display:none}
-  /* ── el celular tiene que ENTRAR en la pantalla ──
+  /* ── el celular tiene que ENTRAR en la pantalla, con los cuadraditos ──
      El ancho solo no alcanza: la pantalla del celular es 9/19.5, así que
-     cada píxel de ancho son 2,17 de alto. Con el 78% pelado la tarjeta
+     cada píxel de ancho son 2,17 de alto. Con un 78% pelado la tarjeta
      medía 633px y en un iPhone —donde la barra del navegador se come unos
-     145— el nombre de la fiesta quedaba abajo del borde: se ve medio
-     teléfono cortado, que es lo mismo que no tener la foto entera.
-     Así que el ancho sale del ALTO disponible: lo que mide la tarjeta
-     entera es ancho*2,17 + 56 (el margen y el pie con el nombre), y eso
-     tiene que entrar en el 78% de la pantalla, dejando el resto para el
-     título de arriba. El 78% del ancho sigue siendo el techo: en una
-     pantalla alta manda ése y la tarjeta queda como estaba.
+     145— el nombre de la fiesta quedaba abajo del borde: se veía medio
+     teléfono, que es lo mismo que no tener la foto entera. El dueño lo
+     reportó dos veces con la misma palabra.
+     Así que el ancho sale del ALTO disponible. Lo que hay abajo del
+     teléfono ahora son tres cosas y no una: el pie con el nombre, la
+     fila de cuadraditos y la pista. Eso es lo que descuenta el 175, y es
+     lo único que se puede escribir a mano acá — por eso hay una prueba
+     que mide la caja de verdad a 700 y a 667.
      `svh` y no `vh` a propósito: `vh` en un iPhone es la pantalla CON las
      barras escondidas, que es justo el caso que no hay que medir. El
      `vh` de la primera línea es el respaldo para quien no tenga `svh`. */
-  .trabajo{flex:0 0 auto;margin-inline:0;scroll-snap-align:center;
-    width:min(78%, calc((78vh - 56px) / 2.17));max-width:none}
+  .trabajo{width:min(76%, calc((92vh - 175px) / 2.17));max-width:none}
   @supports (height:1svh){
-    .trabajo{width:min(78%, calc((78svh - 56px) / 2.17))}
+    .trabajo{width:min(76%, calc((92svh - 175px) / 2.17))}
   }
   /* El pie se compacta: cada píxel que se lleva el nombre se lo saca al
      celular, que es lo que hay que mostrar. */
   .trabajo .pie-t{margin-top:14px}
   .trabajo .pie-t b{font-size:18px}
   .trabajo .pie-t span{font-size:9.5px;margin-top:3px}
-  /* En el carrusel las tarjetas que esperan están FUERA de la pantalla
-     por el costado, así que el IntersectionObserver no se entera nunca de
-     ellas: se quedaban en opacidad 0 y al deslizar aparecía una tarjeta
-     en blanco. La aparición de a una tiene sentido apiladas, no en una
-     fila que se desliza: acá entra la fila entera y listo. */
-  .trabajo.ap{opacity:1;transform:none;animation:none}
   .pista-toque{margin-top:22px}
 }
-/* los puntitos: solo existen donde la galería se desliza.
-   El `display:flex` va en SU PROPIO bloque y DESPUÉS: metido adentro del
-   @media de arriba lo pisaba este mismo `display:none`, que viene después
-   y tiene la misma especificidad. Es la trampa de siempre. */
-.puntos{display:none;justify-content:center;gap:9px;margin-top:22px}
-.puntos span{width:7px;height:7px;border-radius:50%;background:#BACBE1;opacity:.45;
-  transition:opacity .3s,transform .3s var(--e),background .3s;cursor:pointer;
-  /* el área que ataja el dedo, sin agrandar el punto */
-  box-sizing:content-box;padding:14px 7px;background-clip:content-box}
-.puntos span.hoy{background:var(--oro);opacity:1;transform:scale(1.15)}
-@media(max-width:640px){.puntos{display:flex}}
 
 /* ── la pantalla con las cinco juntas ──
    Es una pantalla, no una maqueta: ocupa todo y scrollea. En un teléfono
@@ -1217,9 +1209,21 @@ footer .datos{line-height:1.6}
          El id `trabajos` se queda: ese ancla ya circuló —está en el menú y
          en enlaces de adentro— y un ancla repartida no puede quedar muerta. -->
     <div id="trabajos" class="galeria-invi ap">
-      <div class="trabajos" id="galeriaTrabajos"></div>
-      <div class="puntos" id="puntosTrabajos"></div>
-      <p class="pista-toque"><span class="solo-angosto">Deslizá para verlas. </span>Tocá cualquiera para abrirla y probarla<br>
+      <!-- ── UN teléfono y un cuadradito por invitación ──
+           Antes eran seis celulares en un carrusel. Dos cosas le pasaban:
+           en un teléfono se veía una y media, así que el que quería
+           comparar deslizaba seis veces y se acordaba de memoria; y los
+           seis marcos vivos bajaban igual, uno atrás del otro, aunque el
+           visitante mirara sólo el primero.
+           Ahora el cuadradito es la portada de cada invitación y el
+           teléfono muestra la elegida: se ven las seis de un saque —que
+           es lo que hay que mostrar, que hacemos muchas— y baja UN marco
+           a la vez, el que se está mirando. -->
+      <div class="escaparate">
+        <div class="fono-uno" id="fonoTrabajo" role="tabpanel"></div>
+        <div class="cuadritos" id="cuadritos" role="tablist" aria-label="Elegí una invitación"></div>
+      </div>
+      <p class="pista-toque">Tocá un cuadradito para verla. Tocá el teléfono para abrirla y probarla<br>
         <span class="aclara" id="aclaraTrabajos"></span></p>
       <!-- En un teléfono el carrusel muestra una y media por vez: el que
            quiere comparar tiene que deslizar cinco veces y acordarse. Acá
@@ -1825,53 +1829,74 @@ const fichaTrabajo=(t,i,tarde)=>`
   if(t) t.textContent = 'Las '+w(n)+' invitaciones';
 })();
 
-document.getElementById('galeriaTrabajos').innerHTML=TRABAJOS.map((t,i)=>fichaTrabajo(t,i,false)).join('');
-document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
-  io.observe(el);
-  /* ── un deslizado NO puede abrir el visor ──
-     En el teléfono la galería es un carrusel y el dedo arranca ARRIBA de
-     una tarjeta: sin esto, intentar pasar a la invitación siguiente abría
-     la invitación a pantalla completa. Desde afuera eso se lee como "no se
-     mueve", que es exactamente lo que reportó el dueño. Cuando el navegador
-     se queda con el gesto para scrollear manda `pointercancel`, así que
-     también cuenta como arrastre. */
-  let x0=0,y0=0,arrastro=false;
-  el.addEventListener('pointerdown',e=>{ x0=e.clientX; y0=e.clientY; arrastro=false; });
-  el.addEventListener('pointermove',e=>{
-    if(Math.abs(e.clientX-x0)>8||Math.abs(e.clientY-y0)>8) arrastro=true;
-  });
-  el.addEventListener('pointercancel',()=>{ arrastro=true; });
-  el.addEventListener('click',()=>{
-    if(arrastro){ arrastro=false; return; }
-    abrirVisor(el.dataset.url,'la invitación de '+el.dataset.nombre);
-  });
-});
-
-/* ── los puntitos del carrusel ──
-   Un carrusel sin nada que diga cuántos hay parece una tarjeta cortada.
-   Solo se ven abajo de 640px, que es donde la galería se desliza. */
+/* ═══ el escaparate: UN teléfono y un cuadradito por invitación ═══
+   Lo que el dueño pidió mirando otra página: "tocas cada cuadradito y te
+   aparece en el teléfono".
+   Antes esto era un carrusel de seis celulares. Dos cosas le pasaban: en
+   un teléfono se veía una y media, así que el que quería comparar
+   deslizó seis veces y se acordó de memoria; y los seis marcos vivos
+   bajaban igual, uno atrás del otro, aunque el visitante mirara sólo el
+   primero —en 4G eso es lo que ya costó caro en la vitrina—.
+   Ahora baja UN marco: el del que se está mirando. Al cambiar de
+   cuadradito se redibuja el teléfono, y eso SACA el iframe anterior, que
+   es la misma regla de los paneles de los servicios y de la pantalla de
+   todas juntas: un marco latiendo atrás de lo que nadie mira es la
+   visita entera pagando algo al aire. */
 (function(){
-  const g=document.getElementById('galeriaTrabajos'), ps=document.getElementById('puntosTrabajos');
-  if(!g||!ps) return;
-  const tar=[...g.children];
-  if(tar.length<2) return;
-  ps.innerHTML=tar.map((_,i)=>'<span'+(i?'':' class="hoy"')+'></span>').join('');
-  const puntos=[...ps.children];
-  let pedido=false;
-  const marcar=()=>{
-    pedido=false;
-    const centro=g.scrollLeft+g.clientWidth/2;
-    let mejor=0,cerca=Infinity;
-    tar.forEach((t,i)=>{
-      const d=Math.abs(t.offsetLeft+t.offsetWidth/2-centro);
-      if(d<cerca){ cerca=d; mejor=i; }
+  const fono=document.getElementById('fonoTrabajo'), cs=document.getElementById('cuadritos');
+  if(!fono||!cs) return;
+
+  /* El cuadradito es la portada de esa invitación, con SUS colores y SU
+     adorno, sacados de la misma lista que la ficha grande. El nombre no
+     se dibuja adentro a propósito: a 51px no se lee, y ya está abajo del
+     teléfono. Va en el `aria-label` y en el `title`, así el botón tiene
+     nombre y en escritorio se ve al pasar por encima. */
+  cs.innerHTML=TRABAJOS.map((t,i)=>`
+    <button class="cuadrito" type="button" role="tab" data-i="${i}"
+      aria-selected="false" aria-controls="fonoTrabajo"
+      aria-label="${t.nombre} — ${t.tipo}" title="${t.nombre}"
+      style="background:${t.fondo};color:${t.tinta}">
+      <span class="ad-c" style="color:${t.suave}">${t.ad}</span>
+      <span class="ln-c" style="background:${t.suave}"></span>
+    </button>`).join('');
+  const cuadros=[...cs.children];
+  let hoy=-1;
+
+  /* `toque` es false sólo en la primera, al cargar, y de eso dependen DOS
+     cosas: que no se mueva la pantalla, y que el marco lo prenda el
+     observador de siempre en vez de prenderlo acá. La galería vive en la
+     pantalla 6: prenderlo al cargar es hacerle bajar una invitación al
+     que todavía no llegó. Por eso el primer teléfono se dibuja SIN
+     `data-tarde` —así entra en la fila de la carga diferida— y los
+     siguientes con él, para prenderlos a mano en el momento del toque. */
+  const mostrar=(i,toque)=>{
+    if(i===hoy) return;
+    hoy=i;
+    cuadros.forEach((c,j)=>{
+      c.classList.toggle('hoy',j===i);
+      c.setAttribute('aria-selected',j===i?'true':'false');
     });
-    puntos.forEach((p,i)=>p.classList.toggle('hoy',i===mejor));
+    /* La ficha es la MISMA función que usa la pantalla de todas juntas:
+       dos plantillas para el mismo teléfono es una que se queda atrás. */
+    fono.innerHTML=fichaTrabajo(TRABAJOS[i],0,toque);
+    const tar=fono.firstElementChild;
+    /* Sin `.ap`: el bloque entero ya apareció una vez, y con la clase
+       puesta el teléfono nuevo nacería invisible esperando a un
+       observador que para él no va a disparar nunca. Es la trampa de la
+       caja de 0x0 al revés: se dibuja perfecto y no se ve. */
+    tar.classList.remove('ap'); tar.style.transitionDelay='';
+    tar.addEventListener('click',()=>abrirVisor(tar.dataset.url,'la invitación de '+tar.dataset.nombre));
+    if(toque){
+      const capa=tar.querySelector('.vivo');
+      if(capa && window.prenderVivo) window.prenderVivo(capa);
+      /* En un teléfono el teléfono dibujado puede quedar arriba del
+         borde: sin esto se toca un cuadradito y no pasa nada a la vista. */
+      requestAnimationFrame(()=>tar.scrollIntoView({behavior:'smooth',block:'nearest'}));
+    }
   };
-  g.addEventListener('scroll',()=>{ if(!pedido){ pedido=true; requestAnimationFrame(marcar); } },{passive:true});
-  puntos.forEach((p,i)=>p.addEventListener('click',()=>{
-    g.scrollTo({left:tar[i].offsetLeft-(g.clientWidth-tar[i].offsetWidth)/2,behavior:'smooth'});
-  }));
+
+  cuadros.forEach(c=>c.addEventListener('click',()=>mostrar(+c.dataset.i,true)));
+  mostrar(0,false);
 })();
 
 /* ═══ las invitaciones reales, en vivo dentro de cada celular ═══
@@ -1914,6 +1939,11 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
 
   const encender=async capa=>{
     if(capa.dataset.encendida) return;
+    /* Tocando varios cuadraditos seguidos, la capa de uno anterior ya no
+       está en el documento cuando le llega el turno en la fila: sin esto
+       se le hacía el pedido de "¿responde?" a un teléfono que nadie está
+       mirando. */
+    if(!capa.isConnected) return;
     capa.dataset.encendida='1';
     if(!(await responde(capa.dataset.vivo))) return capa.remove();
     if(!capa.isConnected) return;

@@ -59,77 +59,119 @@ const aServicios = async (p) => {
 (async () => {
   const browser = await chromium.launch();
 
-  /* ─────────── 1. el carrusel ─────────── */
-  titulo('la galería de trabajos, en un teléfono');
+  /* ─────────── 1. el escaparate ─────────── */
+  titulo('el escaparate de invitaciones, en un teléfono');
   {
     const { ctx, p, errs } = await abrir(browser);
-    await p.evaluate(() => document.getElementById('trabajos').scrollIntoView());
-    await p.waitForTimeout(900);
+    await p.evaluate(() => document.getElementById('trabajos')
+      .scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await p.waitForTimeout(3000);
 
     const m = await p.evaluate(() => {
-      const g = document.querySelector('.trabajos');
-      const r = g.getBoundingClientRect();
-      const tar = [...g.children].map((t) => {
-        const b = t.getBoundingClientRect();
-        return { x: Math.round(b.x), der: Math.round(b.right), w: Math.round(b.width) };
-      });
+      const cs = [...document.querySelectorAll('.cuadrito')];
+      const caja = (n) => {
+        const b = n.getBoundingClientRect();
+        return { x: Math.round(b.x), der: Math.round(b.right),
+                 w: Math.round(b.width), h: Math.round(b.height) };
+      };
       return {
-        x: Math.round(r.x), der: Math.round(r.right), ancho: Math.round(r.width),
-        pantalla: innerWidth, desplaza: g.scrollWidth > g.clientWidth + 10,
-        /* Un puntito por ficha, no "tres": el día que entró la cuarta
-           invitación esta prueba falló por contar, no por medir. Es la
-           misma lección que la de los clicks del alta del rollo. */
-        fichas: g.children.length,
-        puntos: document.querySelectorAll('#puntosTrabajos span').length,
-        /* Con `?.` porque contra el código anterior ese elemento no existe:
-           una prueba que revienta no informa nada, y lo que hay que ver es
-           la falla, no una excepción. */
-        puntosSeVen: !!document.getElementById('puntosTrabajos')
-          && getComputedStyle(document.getElementById('puntosTrabajos')).display !== 'none',
-        tar,
+        /* Un cuadradito por invitación, contado de la lista y no escrito:
+           el día que entró la cuarta, la prueba vieja falló por contar y
+           no por medir. */
+        cuadros: cs.length,
+        declaradas: (window.TRABAJOS || []).length,
+        telefonos: document.querySelectorAll('#fonoTrabajo .trabajo').length,
+        cajas: cs.map(caja),
+        pantalla: innerWidth,
+        /* Un cuadradito que se dibuja perfecto y no responde es la falla
+           que ya apareció dos veces acá: se le pregunta al navegador
+           quién atajaría el dedo en el centro de cada uno. */
+        tapados: cs.filter((c) => {
+          const b = c.getBoundingClientRect();
+          const e = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2);
+          return !(e === c || c.contains(e));
+        }).length,
+        /* Y el adorno de la portadita tiene que estar ADENTRO: con un
+           `gap` en unidades de contenedor escrito en el propio
+           contenedor, el adorno se iba fuera y quedaban seis cuadrados
+           de color vacíos, sin un solo error. */
+        adornosAfuera: cs.filter((c) => {
+          const a = c.querySelector('.ad-c');
+          if (!a) return true;
+          const rc = c.getBoundingClientRect(), ra = a.getBoundingClientRect();
+          return ra.x < rc.x - .5 || ra.y < rc.y - .5
+              || ra.right > rc.right + .5 || ra.bottom > rc.bottom + .5;
+        }).length,
+        marcos: document.querySelectorAll('#trabajos iframe').length,
+        elegidos: cs.filter((c) => c.classList.contains('hoy')).length,
+        nombre: (document.querySelector('#fonoTrabajo .pie-t b') || {}).textContent,
       };
     });
 
-    /* El carrusel tiene que llegar a los DOS bordes: si corta antes, lo
-       que asoma del siguiente no parece "hay más", parece un recorte. */
-    if (m.x > 1 || m.der < m.pantalla - 1)
-      mal(`el carrusel va de ${m.x} a ${m.der} en una pantalla de ${m.pantalla}: queda cortado contra un borde invisible`);
-    else bien(`el carrusel llega a los dos bordes (0 → ${m.der} de ${m.pantalla})`);
+    if (m.telefonos !== 1) mal(`hay ${m.telefonos} teléfonos y tiene que haber uno`);
+    else bien('un solo teléfono, el de la invitación elegida');
 
-    if (!m.desplaza) mal('la galería no se desliza: no hay nada de más para correr');
-    else bien('la galería se desliza');
+    if (!m.declaradas || m.cuadros !== m.declaradas)
+      mal(`se declaran ${m.declaradas} invitaciones y hay ${m.cuadros} cuadraditos`);
+    else bien(`un cuadradito por invitación: ${m.cuadros}`);
 
-    /* Y el siguiente tiene que ASOMAR de verdad adentro de la pantalla. */
-    const asoma = m.tar[1] ? m.pantalla - m.tar[1].x : 0;
-    if (asoma < 20)
-      mal(`la segunda tarjeta asoma ${asoma}px: nadie va a saber que hay más`);
-    else bien(`la segunda tarjeta asoma ${asoma}px`);
+    const chico = m.cajas.length ? Math.min(...m.cajas.map((c) => Math.min(c.w, c.h))) : 0;
+    if (chico < 44) mal(`el cuadradito más chico mide ${chico}px: no se acierta con el pulgar`);
+    else bien(`el más chico mide ${chico}px`);
 
-    if (m.puntos !== m.fichas || !m.puntosSeVen)
-      mal(`los puntitos no coinciden con las fichas: ${m.puntos} puntos para ${m.fichas} invitaciones (¿se ven? ${m.puntosSeVen})`);
-    else bien(`un puntito por invitación: ${m.puntos}`);
+    const salidos = m.cajas.filter((c) => c.x < -1 || c.der > m.pantalla + 1).length;
+    if (salidos) mal(`${salidos} cuadraditos se salen de la pantalla de ${m.pantalla}px`);
+    else bien('ninguno se sale por el costado');
 
-    /* ── un deslizado no puede abrir el visor ── */
-    const caja = await p.evaluate(() => {
-      const r = document.querySelector('.trabajo').getBoundingClientRect();
-      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
-    });
-    await p.mouse.move(caja.x, caja.y);
-    await p.mouse.down();
-    for (let i = 1; i <= 6; i++) await p.mouse.move(caja.x - i * 18, caja.y);
-    await p.mouse.up();
-    await p.waitForTimeout(600);
-    const abrioVisor = await p.evaluate(() => document.getElementById('visor').classList.contains('abierto'));
-    if (abrioVisor) mal('deslizar la galería ABRE la invitación a pantalla completa: por eso parece que no se mueve');
-    else bien('deslizar la galería no abre nada');
+    if (m.tapados) mal(`${m.tapados} cuadraditos están tapados: se dibujan y no responden`);
+    else bien('y a todos les llega el dedo');
 
-    /* Pero un toque limpio SÍ tiene que abrirla. */
-    await p.evaluate(() => { document.getElementById('visor').classList.remove('abierto'); });
-    await p.mouse.click(caja.x, caja.y);
-    await p.waitForTimeout(600);
-    const abrioAlTocar = await p.evaluate(() => document.getElementById('visor').classList.contains('abierto'));
-    if (!abrioAlTocar) mal('tocar una invitación ya no la abre');
-    else bien('tocar una invitación sigue abriéndola');
+    if (m.adornosAfuera)
+      mal(`${m.adornosAfuera} cuadraditos tienen la portadita fuera de su caja: se ven como un color y nada más`);
+    else bien('cada cuadradito muestra su portada');
+
+    if (m.elegidos !== 1) mal(`hay ${m.elegidos} cuadraditos marcados y tiene que haber uno`);
+    else bien('y uno solo marcado');
+
+    /* Lo que de verdad se ganó contra el carrusel: un marco a la vez. */
+    if (m.marcos > 1)
+      mal(`la galería tiene ${m.marcos} invitaciones bajando juntas: en 4G se estorban entre ellas`);
+    else bien(`baja un marco a la vez (${m.marcos})`);
+
+    /* ── tocar un cuadradito cambia el teléfono ── */
+    const antes = m.nombre;
+    await p.evaluate(() => document.querySelectorAll('.cuadrito')[1].click());
+    await p.waitForTimeout(2500);
+    const tras = await p.evaluate(() => ({
+      nombre: (document.querySelector('#fonoTrabajo .pie-t b') || {}).textContent,
+      marcado: [...document.querySelectorAll('.cuadrito')].findIndex((c) => c.classList.contains('hoy')),
+      elegidos: document.querySelectorAll('.cuadrito.hoy').length,
+      marcos: document.querySelectorAll('#trabajos iframe').length,
+      /* El teléfono se redibuja: si naciera con `.ap` quedaría invisible
+         esperando a un observador que para él no vuelve a disparar. */
+      opacidad: Number(getComputedStyle(document.querySelector('#fonoTrabajo .trabajo')).opacity),
+      visor: document.getElementById('visor').classList.contains('abierto'),
+    }));
+    if (tras.nombre === antes) mal('tocar un cuadradito no cambia la invitación del teléfono');
+    else bien(`tocar el segundo cambia el teléfono: ${antes} → ${tras.nombre}`);
+    if (tras.marcado !== 1 || tras.elegidos !== 1)
+      mal(`quedó marcado el cuadradito ${tras.marcado} (${tras.elegidos} marcados)`);
+    else bien('y queda marcado sólo ése');
+    if (tras.opacidad < 1) mal(`el teléfono nuevo quedó en opacidad ${tras.opacidad}: se dibuja y no se ve`);
+    else bien('el teléfono nuevo se ve');
+    if (tras.marcos > 1) mal(`quedó el marco anterior prendido: ${tras.marcos} marcos`);
+    else bien(`y el marco anterior se apagó (${tras.marcos})`);
+    if (tras.visor) mal('tocar un cuadradito abre la invitación a pantalla completa');
+    else bien('tocar un cuadradito no abre el visor');
+
+    /* ── y el teléfono SIGUE siendo la puerta al visor ── */
+    await p.evaluate(() => document.querySelector('#fonoTrabajo .trabajo').click());
+    await p.waitForTimeout(700);
+    const abrio = await p.evaluate(() => document.getElementById('visor').classList.contains('abierto'));
+    if (!abrio) mal('tocar el teléfono ya no abre la invitación');
+    else bien('tocar el teléfono abre la invitación');
+    await p.keyboard.press('Escape');
+    await p.waitForTimeout(400);
 
     if (errs.length) mal('error de JavaScript: ' + errs[0]);
     await ctx.close();

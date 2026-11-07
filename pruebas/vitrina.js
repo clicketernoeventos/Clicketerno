@@ -90,8 +90,11 @@ const ruido = (t) => /favicon|net::ERR_|ERR_CERT|fonts\.googleapis|fonts\.gstati
     const p2 = await ctx2.newPage();
     await p2.goto(BASE + '/', { waitUntil: 'load' });
     await p2.waitForTimeout(600);
+    /* En el inicio la galería dejó de ser seis celulares: es UN teléfono
+       y un cuadradito por invitación. Lo que hay que contar para saber si
+       las dos páginas muestran lo mismo son los cuadraditos. */
     const enInicio = await p2.evaluate(() =>
-      document.querySelectorAll('#galeriaTrabajos .trabajo').length);
+      document.querySelectorAll('#cuadritos .cuadrito').length);
     if (enInicio !== cuantas)
       mal(`el inicio muestra ${enInicio} invitaciones y /invitaciones ${cuantas}: una de las dos se quedó atrás`);
     else bien(`el inicio muestra las mismas ${enInicio}`);
