@@ -47,11 +47,11 @@
 <noscript><style>.ap{opacity:1!important;transform:none!important}</style></noscript>
 <style>
 :root{
-  --negro:#000; --carbon:#0A0908; --humo:#131110;
-  --crema:#F6F2EA; --crema2:#EDE6DA;
-  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#9B9287; --mute-claro:#7E766B;
-  --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26); --hilo2:rgba(217,174,114,.55);
+  --negro:#07101E; --carbon:#0C1A33; --humo:#13284A;
+  --crema:#F2F6FB; --crema2:#E3ECF6;
+  --oro:#A8C8EA; --oro-hondo:#2C5C96; --champan:#D7E6F7;
+  --texto:#F2F6FB; --mute:#9FB3CC; --mute-claro:#7D93AE;
+  --gris:rgba(255,255,255,.08); --hilo:rgba(168,200,234,.26); --hilo2:rgba(168,200,234,.55);
   --e:cubic-bezier(.22,.7,.24,1);
   --e-suave:cubic-bezier(.4,0,.2,1);
 }
@@ -96,7 +96,7 @@ section{padding:clamp(70px,10vw,130px) 0;position:relative}
 
 /* ═══ atmósfera ═══ */
 #brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(120% 70% at 50% -10%,rgba(217,174,114,.11),transparent 60%)}
+  background:radial-gradient(120% 70% at 50% -10%,rgba(168,200,234,.11),transparent 60%)}
 #polvo{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 #polvo i{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--oro);opacity:0;
   animation:titilar 8s var(--e) infinite;will-change:opacity,transform}
@@ -147,7 +147,7 @@ nav .links a:hover:after{width:100%}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 28px;
   font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;transition:.4s var(--e);cursor:pointer}
 .btn-oro{background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
-  color:#0A0806;font-weight:600;position:relative;overflow:hidden}
+  color:#07101E;font-weight:600;position:relative;overflow:hidden}
 .btn-oro:after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transition:left .7s var(--e)}
 .btn-oro:hover:after{left:130%}
@@ -202,7 +202,7 @@ nav .links a:hover:after{width:100%}
 .hero .logo-full{width:min(72%,290px);margin-bottom:32px}
 .hero h1{font-size:clamp(38px,5.6vw,66px);letter-spacing:-.01em}
 .hero h1 em{color:var(--oro);display:block}
-.hero .bajada{color:#B5AC9E;font-size:clamp(15px,1.7vw,17.5px);line-height:1.85;margin:26px 0 36px;max-width:40ch}
+.hero .bajada{color:#AEC0D6;font-size:clamp(15px,1.7vw,17.5px);line-height:1.85;margin:26px 0 36px;max-width:40ch}
 .hero .acciones{display:flex;gap:14px;flex-wrap:wrap}
 .hero .fino{margin-top:30px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);
   display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -289,14 +289,14 @@ nav .links a:hover:after{width:100%}
 /* barra de estado: es el detalle que hace que parezca una captura real */
 .barra-ios{position:absolute;top:0;left:0;right:0;z-index:6;height:8.6%;
   display:flex;align-items:center;justify-content:space-between;padding:0 8% 0 8.5%;
-  color:var(--tinta-p,#F3EDE0);
+  color:var(--tinta-p,#EFF4FA);
   font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Hanken Grotesk',system-ui,sans-serif}
 .barra-ios .hora{font-size:4.1cqw;font-weight:600;letter-spacing:-.02em;line-height:1}
 .barra-ios svg{width:16.5cqw;height:auto;display:block}
 /* indicador de inicio */
 .indicador{position:absolute;left:50%;bottom:1.2%;transform:translateX(-50%);z-index:7;
   width:33%;height:.5%;min-height:2px;border-radius:99px;
-  background:var(--tinta-p,#F3EDE0);opacity:.45}
+  background:var(--tinta-p,#EFF4FA);opacity:.45}
 /* reflejo del vidrio */
 .reflejo{position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
   background:linear-gradient(114deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,.06) 15%,
@@ -325,7 +325,7 @@ nav .links a:hover:after{width:100%}
 /* invitación de muestra */
 .invi{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:34px 20px;gap:14px;
-  --tinta:#F3EDE0; --suave:#9FBFA8; --borde:rgba(216,178,106,.35);
+  --tinta:#EFF4FA; --suave:#9FBFA8; --borde:rgba(216,178,106,.35);
   background:radial-gradient(120% 80% at 50% 0,#243329,#0F1512 60%,#080B09);
   transition:opacity .45s var(--e),background .7s var(--e)}
 .invi.cambiando{opacity:0}
@@ -379,7 +379,7 @@ nav .links a:hover:after{width:100%}
    "fiesta,en un solo lugar", como un error de tipeo. Va en el CSS y no en
    cada título para que no se olvide en el próximo. */
 .cabeza h2 em::before{content:" "}
-.cabeza p{color:#B3A99C;font-size:17px;line-height:1.75;margin-top:20px;max-width:50ch}
+.cabeza p{color:#A9BBD1;font-size:17px;line-height:1.75;margin-top:20px;max-width:50ch}
 .centrada{margin-inline:auto;text-align:center}
 .centrada .eyebrow{justify-content:center}
 .centrada p{margin-inline:auto}
@@ -456,8 +456,8 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    la vitrina: en 4G se estorban y no termina de cargar ninguno.
 
    ── Y EL FONDO ES NEGRO Y MACIZO, con la sección clara alrededor ──
-   `#app` es `class="clara"`, que pone `color:#1A1713`; la tinta del panel
-   —#B3A99C los párrafos, #CFC5B7 la lista— está escrita para la parte
+   `#app` es `class="clara"`, que pone `color:#13284A`; la tinta del panel
+   —#A9BBD1 los párrafos, #C3D4E8 la lista— está escrita para la parte
    negra. Sin fondo propio caía sobre el crema a **1,49:1**: las cuatro
    líneas de "qué incluye", que son lo que el panel vino a mostrar, NO
    ESTABAN. Quinta vez de la misma regla, y acá la respuesta es el fondo y
@@ -474,23 +474,23 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    propio fondo, y la activa es una pastilla maciza adentro — es lo que
    la hace leer como un conmutador y no como tres botones sueltos.
    El riel trae su propio fondo, así que trae su propia tinta: sobre el
-   crema de `.clara` el texto apagado va en un gris sólido (#5B534A,
+   crema de `.clara` el texto apagado va en un gris sólido (#4A5E7C,
    6,6:1) y NO en una opacidad, que el medidor de contraste tiene que
    poder calcular. La activa es tinta maciza con texto crema (14:1).
    Los 44px de alto son el mínimo de dedo, y en un teléfono el riel
    scrollea de costado en vez de envolver: envuelto deja de leerse como
    una fila y se come media pantalla. */
 .pastillas{display:flex;gap:4px;margin:0 auto 26px;padding:4px;width:max-content;max-width:100%;
-  border-radius:999px;background:rgba(26,23,19,.07);overflow-x:auto;scrollbar-width:none}
+  border-radius:999px;background:rgba(19,40,74,.07);overflow-x:auto;scrollbar-width:none}
 .pastillas::-webkit-scrollbar{display:none}
 .pastilla{flex:0 0 auto;min-height:44px;padding:0 22px;border:0;border-radius:999px;background:transparent;
-  font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;color:#5B534A;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;color:#4A5E7C;
   white-space:nowrap;cursor:pointer;transition:background .35s var(--e),color .35s var(--e)}
-.pastilla.activa{background:#1A1713;color:#F3EBDD}
-@media(hover:hover){.pastilla:not(.activa):hover{color:#1A1713}}
+.pastilla.activa{background:#13284A;color:#EDF3FA}
+@media(hover:hover){.pastilla:not(.activa):hover{color:#13284A}}
 @media(max-width:520px){.pastillas{width:100%;justify-content:flex-start}.pastilla{padding:0 16px;font-size:14px}}
-.prueba{border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
-  position:relative;background:#1B1916;color:var(--texto);
+.prueba{border:1px solid rgba(168,200,234,.2);border-radius:26px;padding:26px;
+  position:relative;background:#0E2242;color:var(--texto);
   animation:abrirPrueba .5s var(--e) both}
 @keyframes abrirPrueba{from{opacity:0;transform:translateY(-14px)}}
 .pr-caja{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;align-items:center}
@@ -504,9 +504,9 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 /* Sin esto el título sale pegado: "se proyectaen el salón". Es lo mismo
    que ya resuelve .cabeza h2 em. */
 .pr-texto h3 em::before{content:" "}
-.pr-texto>p{color:#B3A99C;font-size:15.5px;line-height:1.7}
+.pr-texto>p{color:#A9BBD1;font-size:15.5px;line-height:1.7}
 .pr-lista{list-style:none;margin:18px 0 24px;display:grid;gap:9px}
-.pr-lista li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.6;color:#CFC5B7}
+.pr-lista li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.6;color:#C3D4E8}
 .pr-lista li:before{content:'';position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--oro)}
 .pr-botones{display:flex;gap:12px;flex-wrap:wrap}
 /* Vivía adentro de un panel que nacía cerrado, así que medía 217x39 y no
@@ -528,32 +528,38 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .entrar{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
   margin-top:40px}
 .puerta-c{display:block;border:1px solid var(--hilo);padding:26px 24px;
-  background:rgba(217,174,114,.03);transition:.35s var(--e)}
-.puerta-c:hover{border-color:var(--oro);background:rgba(217,174,114,.07);transform:translateY(-3px)}
+  background:rgba(168,200,234,.03);transition:.35s var(--e)}
+.puerta-c:hover{border-color:var(--oro);background:rgba(168,200,234,.07);transform:translateY(-3px)}
 .puerta-c b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;
   font-weight:400;font-size:22px;color:var(--champan);margin-bottom:10px}
-.puerta-c p{color:#B3A99C;font-size:15.5px;line-height:1.7;margin:0}
+.puerta-c p{color:#A9BBD1;font-size:15.5px;line-height:1.7;margin:0}
 .puerta-c .mas{display:inline-block;margin-top:16px;font-size:11px;letter-spacing:.24em;
   text-transform:uppercase;color:var(--oro)}
 
 /* ═══ sección clara: invitaciones ═══ */
-.clara{background:var(--crema);color:#1A1713}
+.clara{background:var(--crema);color:#13284A}
 .clara .cabeza p{color:#51483F}
 .clara .eyebrow{color:var(--oro-hondo)}
+/* …pero el panel de la prueba es OSCURO aunque viva adentro de `.clara`,
+   así que ahí el rótulo vuelve al acento claro: con el azul hondo daba
+   2,32:1, o sea que "Andando ahora mismo" no estaba. Si un bloque trae
+   su propio fondo, trae su propia tinta. */
+.clara .prueba .eyebrow{color:var(--oro)}
+.clara .prueba .btn-hilo{border-color:var(--hilo2);color:var(--champan)}   /* el panel es oscuro: 13,8:1 */
 .clara .eyebrow:before{background:var(--oro-hondo)}
 .clara h2 em{color:var(--oro-hondo)}
-.clara .btn-hilo{border-color:var(--oro-hondo);color:#8A6232}   /* 4.86:1 sobre el crema */
-.clara .btn-hilo:hover{border-color:#1A1713;color:#1A1713}
+.clara .btn-hilo{border-color:var(--oro-hondo);color:var(--oro-hondo)}   /* 6.29:1 sobre el papel */
+.clara .btn-hilo:hover{border-color:#13284A;color:#13284A}
 .incluye{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,.1);
   border:1px solid rgba(0,0,0,.1)}
 /* La tinta va ACÁ, no heredada. La tarjeta clara nació adentro de la
-   sección clara (que pone color:#1A1713) y después se reusó para "qué
+   sección clara (que pone color:#13284A) y después se reusó para "qué
    incluye" del muro y del rollo, que están en la parte NEGRA: ahí heredaba
-   --texto, que es #F6F2EA, el mismo crema del fondo. Contraste 1.00:1,
+   --texto, que es #F2F6FB, el mismo crema del fondo. Contraste 1.00:1,
    o sea texto invisible. En el monitor no se ve porque uno mira la
    sección de arriba. Lo agarra pruebas/contraste.js.
    Regla: si un bloque trae su propio fondo, trae su propia tinta. */
-.inc{background:var(--crema);color:#1A1713;padding:24px 20px;transition:background .5s}
+.inc{background:var(--crema);color:#13284A;padding:24px 20px;transition:background .5s}
 .inc:hover{background:#fff}
 .inc .estrella{width:12px;height:12px;color:var(--oro-hondo);margin-bottom:16px}
 .inc b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:19px;font-weight:400;margin-bottom:6px}
@@ -577,30 +583,30 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .pieza:hover .marco-p{transform:translateY(-10px)}
 .pieza:active .marco-p{transform:translateY(-4px) scale(.995)}
 /* la pantalla del salón: una notebook */
-.pieza.sala .chasis{--r-fuera:12px;--bisel:9px;background:linear-gradient(160deg,#2A2724,#14120F);
+.pieza.sala .chasis{--r-fuera:12px;--bisel:9px;background:linear-gradient(160deg,#22395E,#0E1D36);
   box-shadow:0 30px 70px rgba(0,0,0,.5)}
 .pieza.sala .visor-p{border-radius:4px;aspect-ratio:16/9}
 .pieza.sala .base{height:11px;margin:0 auto;width:66%;border-radius:0 0 12px 12px;
-  background:linear-gradient(180deg,#2A2724,#0D0B09)}
-.pieza.sala .pata{height:4px;width:22%;margin:0 auto;border-radius:0 0 6px 6px;background:#0D0B09;opacity:.7}
+  background:linear-gradient(180deg,#22395E,#0A1526)}
+.pieza.sala .pata{height:4px;width:22%;margin:0 auto;border-radius:0 0 6px 6px;background:#0A1526;opacity:.7}
 /* el rollo: un celular, como los de Trabajos */
-.pieza.tel .chasis{--r-fuera:42px;--bisel:7px;background:linear-gradient(160deg,#2A2724,#14120F);
+.pieza.tel .chasis{--r-fuera:42px;--bisel:7px;background:linear-gradient(160deg,#22395E,#0E1D36);
   box-shadow:0 26px 60px rgba(0,0,0,.45)}
 .pieza.tel .visor-p{border-radius:36px;aspect-ratio:390/780}
-.pieza .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(10,8,6,.62);z-index:8;
+.pieza .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(7,16,30,.62);z-index:8;
   display:grid;place-items:center;opacity:0;transition:opacity .45s var(--e)}
 .pieza:hover .lupa,.pieza:focus-visible .lupa{opacity:1}
 .pieza .lupa span{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);
-  border:1px solid rgba(217,174,114,.5);border-radius:2px;padding:9px 16px}
+  border:1px solid rgba(168,200,234,.5);border-radius:2px;padding:9px 16px}
 .pieza .pie-p{margin-top:20px}
 .pieza .pie-p b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:20px;font-weight:400}
-.pieza .pie-p span{display:block;font-size:13px;line-height:1.7;color:#8A7F72;margin-top:6px}
+.pieza .pie-p span{display:block;font-size:13px;line-height:1.7;color:#7D93AE;margin-top:6px}
 /* Lo que se ve MIENTRAS baja el marco (y para siempre si nunca baja). Antes
    era una línea de texto suelta en un rectángulo negro: parecía un producto
    roto. La rayita que late dice "esto está viniendo". */
 .pieza .quieto{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;
   gap:14px;z-index:1;
-  color:#8A7F72;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-align:center;padding:20px}
+  color:#7D93AE;font-size:11px;letter-spacing:.2em;text-transform:uppercase;text-align:center;padding:20px}
 .pieza .quieto:after{content:'';width:34px;height:1px;background:var(--oro);opacity:.5;
   animation:respiraLinea 1.9s ease-in-out infinite}
 @keyframes respiraLinea{50%{opacity:.12;transform:scaleX(.45)}}
@@ -679,21 +685,26 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .trabajo .ln{width:15%;height:1px;opacity:.45}
 .trabajo .bt{font-size:3.4cqw;letter-spacing:.22em;text-transform:uppercase;border:1px solid currentColor;
   padding:4.2% 7%;margin-top:2%;opacity:.9}
-.trabajo .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(10,8,6,.62);z-index:8;
+.trabajo .lupa{position:absolute;inset:0;border-radius:inherit;background:rgba(7,16,30,.62);z-index:8;
   display:grid;place-items:center;opacity:0;transition:opacity .45s var(--e);z-index:6}
 .trabajo:hover .lupa{opacity:1}
 .trabajo .lupa span{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);
   border:1px solid var(--hilo2);padding:12px 20px;background:rgba(0,0,0,.35)}
 .trabajo .pie-t{margin-top:22px}
 .trabajo .pie-t b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:20px;font-weight:400}
-.trabajo .pie-t span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#8A7F72;margin-top:4px;display:block}
+.trabajo .pie-t span{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#566F8E;margin-top:4px;display:block}
 /* Las dos de casamiento son muestras nuestras, no de un cliente. La
    sección promete "las mismas que recibieron los invitados": decirlo en
    la ficha cuesta un renglón, y no decirlo es la mentira de siempre. */
 .trabajo .es-muestra{display:inline-block;margin-top:8px;font-style:normal;
   font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-hondo);
-  border:1px solid rgba(122,90,38,.35);border-radius:999px;padding:4px 10px}
-.pista-toque{text-align:center;margin-top:46px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#8A7F72}
+  border:1px solid rgba(44,92,150,.35);border-radius:999px;padding:4px 10px}
+/* La MISMA píldora cae sobre dos fondos: en el carrusel, sobre el papel
+   claro; adentro de la capa de "todas juntas", sobre el oscuro. Con una
+   sola tinta uno de los dos no se lee —2,79:1 en la capa—, así que cada
+   fondo le da la suya. */
+.todas .es-muestra{color:var(--oro);border-color:var(--hilo2)}
+.pista-toque{text-align:center;margin-top:46px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#566F8E}
 @media(max-width:860px){
   .trabajos{flex-direction:column;flex-wrap:nowrap;gap:48px;align-items:center}
   .trabajo{flex:0 0 auto;max-width:min(258px,72vw)}
@@ -753,7 +764,7 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    @media de arriba lo pisaba este mismo `display:none`, que viene después
    y tiene la misma especificidad. Es la trampa de siempre. */
 .puntos{display:none;justify-content:center;gap:9px;margin-top:22px}
-.puntos span{width:7px;height:7px;border-radius:50%;background:#C9BFB2;opacity:.45;
+.puntos span{width:7px;height:7px;border-radius:50%;background:#BACBE1;opacity:.45;
   transition:opacity .3s,transform .3s var(--e),background .3s;cursor:pointer;
   /* el área que ataja el dedo, sin agrandar el punto */
   box-sizing:content-box;padding:14px 7px;background-clip:content-box}
@@ -770,7 +781,7 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .todas[hidden]{display:none}
 .todas-barra{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
   gap:12px;padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;
-  border-bottom:1px solid var(--gris);background:#0A0806}
+  border-bottom:1px solid var(--gris);background:#07101E}
 .todas-barra b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;
   letter-spacing:-.01em}
 .todas-barra .cerrar{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);
@@ -797,13 +808,13 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
     0 0 0 .5px rgba(0,0,0,.9),
     0 44px 94px -40px #000,
     0 0 100px -58px var(--oro)}
-.visor .caja{height:min(722px,72vh);height:min(722px,72dvh);border-radius:36px;overflow:hidden;background:#0B0A08;position:relative}
+.visor .caja{height:min(722px,72vh);height:min(722px,72dvh);border-radius:36px;overflow:hidden;background:#091322;position:relative}
 /* La pantalla del salón no entra en un celular: el mismo visor, apaisado.
    Se le sacan los botones laterales, que son de teléfono. */
 .visor.ancho .chasis{--r-fuera:14px;--bisel:10px;width:min(1180px,94vw)}
 .visor.ancho .caja{height:auto;aspect-ratio:16/9;border-radius:5px}
 .visor.ancho .lateral{display:none}
-.visor iframe{width:100%;height:100%;border:0;background:#0B0A08}
+.visor iframe{width:100%;height:100%;border:0;background:#091322}
 .visor .cargando{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
   font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);pointer-events:none}
 .visor .barra-v{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -824,7 +835,7 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
     flex-direction:column-reverse}
   .visor .barra-v{flex:0 0 auto;justify-content:space-between;gap:8px;
     padding:calc(env(safe-area-inset-top) + 9px) 10px 9px;
-    background:#0A0806;border-bottom:1px solid var(--gris)}
+    background:#07101E;border-bottom:1px solid var(--gris)}
   .visor .chasis,.visor.ancho .chasis{width:100%;--r-fuera:0;--bisel:0;
     box-shadow:none;border-radius:0;flex:1;min-height:0;display:flex}
   .visor .caja,.visor.ancho .caja{flex:1;min-height:0;height:auto;
@@ -1319,7 +1330,7 @@ footer .datos{line-height:1.6}
         <span class="mas">Entrar al rollo →</span>
       </a>
     </div>
-    <p class="ap" style="color:#A79E92;font-size:15px;line-height:1.75;max-width:52ch;margin:24px auto 0;text-align:center">
+    <p class="ap" style="color:#9FB3CC;font-size:15px;line-height:1.75;max-width:52ch;margin:24px auto 0;text-align:center">
       ¿Te pasamos el evento ya armado? Entrá con
       <a href="muro#codigo" style="color:var(--oro)">tu código del muro</a> o
       <a href="rollo#codigo" style="color:var(--oro)">tu código del rollo</a>.
@@ -1365,7 +1376,7 @@ footer .datos{line-height:1.6}
     <p class="eyebrow centrada ap" style="justify-content:center">Escribinos</p>
     <h2 class="serif ital ap" style="margin-top:20px">Contanos de tu fiesta</h2>
     <div class="filete" style="max-width:320px;margin:32px auto"><i class="estrella"></i></div>
-    <p class="ap" style="color:#A79E92;font-size:16.5px;line-height:1.85;max-width:46ch;margin:0 auto 40px">
+    <p class="ap" style="color:#9FB3CC;font-size:16.5px;line-height:1.85;max-width:46ch;margin:0 auto 40px">
       Decinos la fecha, el tipo de evento y qué te interesa. Te respondemos el mismo día con la propuesta y el precio.</p>
     <a class="btn btn-oro ap" id="ctaWsp"
        href="https://wa.me/5493412506451"
@@ -1644,13 +1655,13 @@ addEventListener('load',()=>setTimeout(()=>{
   const invi=document.querySelector('.invi'); if(!invi) return;
   const ESTILOS=[
     {fondo:'radial-gradient(120% 80% at 50% 0,#243329,#0F1512 60%,#080B09)',
-     tinta:'#F3EDE0',suave:'#9FBFA8',borde:'rgba(216,178,106,.35)',
+     tinta:'#EFF4FA',suave:'#9FBFA8',borde:'rgba(216,178,106,.35)',
      adorno:'🍃 ✦ 🍃',que:'Mis quince años',quien:'Delfina',hadas:['🍄','🧚','🍃']},
     {fondo:'radial-gradient(120% 80% at 50% 0,#F7E3EA,#FBF3F6 55%,#F3DCE6)',
      tinta:'#5A2E3E',suave:'#B9738D',borde:'rgba(90,46,62,.28)',
      adorno:'✦ 💌 ✦',que:'Mis quince años',quien:'Xiomara',hadas:['🌸','✨','🎀']},
     {fondo:'radial-gradient(120% 80% at 50% 0,#2A2017,#100E0B 60%,#080706)',
-     tinta:'#EFDCBC',suave:'#C9A063',borde:'rgba(216,178,106,.42)',
+     tinta:'#D7E6F7',suave:'#8FB6DE',borde:'rgba(216,178,106,.42)',
      adorno:'✦ ✦ ✦',que:'Nuestro casamiento',quien:'Flor & Juan',hadas:['✦','✨','✦']}
   ];
   const adorno=invi.querySelector('.adorno'), que=invi.querySelector('.que'),
