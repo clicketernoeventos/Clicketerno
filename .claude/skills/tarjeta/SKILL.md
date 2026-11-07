@@ -314,7 +314,37 @@ cierre mejor.
 
 ---
 
-## 11. Al terminar
+## 11. Que el chat no se llene
+
+Una tarjeta son muchas vueltas —referencias, capturas, ajustes— y un chat
+tiene un límite. Cuando se llena, lo que estaba más atrás se resume: queda
+la idea y se pierde el detalle. **Lo que no esté escrito en el repositorio
+en ese momento, se pierde.**
+
+Por eso, en este trabajo:
+
+- **La crónica se escribe en CADA vuelta publicada, no al final.** Es la
+  diferencia entre que el detalle quede guardado o que quede en un resumen.
+  Vale igual para lo que falta del lado del cliente: va a "Pendiente" en
+  `CLAUDE.md` el día que aparece, no cuando se acuerde alguien.
+- **Al chat no se le vuelcan archivos enteros ni salidas largas.** Se busca
+  el pedazo que hace falta y se trabaja sobre eso. Un volcado de mil
+  líneas llena el chat y no aporta nada que no se pueda volver a leer.
+- **Las pruebas se corren una vez y al final**, y se informa el resultado
+  en un renglón, no la salida completa.
+- **Después de cada cosa publicada se cierra el tema en una línea** y no se
+  vuelve sobre lo ya decidido: re-explicar lo que está escrito en el
+  repositorio es pagar dos veces por lo mismo.
+
+Claude Code resume solo cuando hace falta, así que no hay nada que el dueño
+tenga que hacer. Si igual lo quiere forzar —porque lo nota lento— el
+comando es **`/compact`**, y no se pierde nada: lo que vale está en los
+archivos. Y si prefiere arrancar un chat limpio, también: la crónica de
+cada tarjeta se lee y el trabajo sigue donde estaba.
+
+---
+
+## 12. Al terminar
 
 - **Escribir la crónica** en `invitaciones/HISTORIA.md`: qué pidió el
   cliente con sus palabras, qué se descartó y por qué, y las fallas que se
