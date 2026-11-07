@@ -6631,6 +6631,95 @@ visor. Verificada rompiendo las dos cosas a propósito: sacar el
 `z-index` da **1 falla** (*".ant lo tapa IMG"*) y dejar la foto
 arrastrable da **1** (*"deslizando no pasa nada"*).
 
+#### Once cambios de una vez, y tres que no eran lo que parecían
+
+Pedido del dueño el 07/11/2026, en una lista. Nueve son de texto y de
+sacar cosas; tres obligaron a decidir algo.
+
+**Lo que se sacó, y por qué cada cosa deja un agujero que hay que
+tapar:**
+
+- **El nombre de la canción.** Estaba debajo del reproductor (*"Es
+  Bellísimo así, de Laura Pausini"*). Se fue el renglón, y con él la
+  tarjeta entera de *"Nuestra canción"*, que era lo mismo dicho otra
+  vez. **El reproductor sigue sonando**: lo que se cambió es que ya
+  no depende del NOMBRE para dibujarse —lo decide que haya archivo—,
+  porque atar el reproductor a un dato que ya no se ve es dejarlo
+  colgado del próximo que borre esa línea. El nombre y el autor
+  quedan en el `CONFIG` con un comentario: son el dato de qué archivo
+  suena.
+- **Los colores de la boda.** La fila de círculos de la paleta. La
+  paleta de ellos sigue entera en la pieza —los rótulos, los filetes,
+  las bandas—; lo que se fue es decirla como un dato. Con eso se fue
+  también su CSS, que si no queda dando vueltas sin que nadie lo use.
+- **"Un tema que no puede faltar"**, el campo del formulario. Una
+  columna menos en la planilla, y el aviso de datos **tuvo que
+  cambiar con él**: decía *"podés confirmar sin decir nada de la
+  comida ni de la música"* y ya no hay música que decir. Es la regla
+  que ya está escrita para `mia15`: si se agrega o se saca una
+  pregunta, ese párrafo se mira.
+- **"Con ustedes mirando"** y **"Después de un montón de años
+  juntos"**, las dos frases que no los convencían. La segunda se
+  reescribió entera: *"Elegimos una fecha, un lugar y la gente que
+  queremos cerca. Esa noche nos damos el sí, y después se baila."*
+
+**Y LA CÁPSULA NO ERA SACAR UNA FICHA Y YA.** Con la canción afuera
+queda un solo bloque adentro, y el relleno y la cúpula estaban
+medidos para dos: lo que se veía era un huevo de papel con tres
+renglones en el medio. Van los dos a dos tercios y el ancho se topa
+más angosto. **Y el título de la sección, que decía "Dos cosas",
+pasó a mentir**: ahora dice "Dress code", que es lo que quedó —y el
+rótulo de adentro, que decía lo mismo, se fue.
+
+**Las iniciales van al revés** y ahora salen de **una sola función**
+(`inicialesAlReves`): las usan el monograma de la portada y la foto
+del cierre, y escritas dos veces el día que se cambie una la pieza
+muestra dos monogramas distintos.
+
+**"Facu y Maxi"** reemplaza a "Facundo y Maximiliano" en todos lados
+—el título, la vista previa, la portada, el cierre, el aviso de datos
+y los textos alternativos de las fotos—. Las iniciales no cambian,
+porque salen de `CONFIG.quien`.
+
+**Las preguntas se fueron al final**, después del contacto y antes
+del cierre. No hubo que tocar ningún borde rasgado: los pone
+`rasgar()` y sólo donde cambia el color de la sección.
+
+**La fecha límite va debajo de "así armamos las mesas"**, y **se
+sigue sin inventar**: no mandaron el día exacto, así que se escribe
+lo que SÍ dijeron —*"durante marzo de 2027, confirmamos el día
+exacto"*—. El renglón vive en `CONFIG.confirmarPlazo`; el día que
+llegue la fecha se llena `confirmarHasta` y pasa a decir *"La fecha
+límite para confirmar es el …"*. Una fecha puesta a ojo le cierra las
+mesas al invitado el día que no es.
+
+##### La foto de las manos: lo que costó no fue sacarla, fue con qué
+
+*"Cambiar la foto de las manos"*, y el inventario tenía una sola foto
+sin usar — la del mar, que resultó ser **casi la misma** que la del
+cierre: mismo día, mismo lugar, misma pose. Puesta grande en la
+escena de la fecha, la invitación cerraba con la misma imagen dos
+veces.
+
+Lo que entró en su lugar es **la de ellos dos MOSTRANDO los anillos**,
+que dice lo mismo que las manos y además son ellos; **y sale de la
+tira**, porque la misma foto grande en la escena y chica tres
+secciones más arriba se lee como un error de maqueta. La del mar
+estrena el hueco que dejó en la tira, donde va chica y no le compite
+al cierre.
+
+**Cuál foto va arriba y cuál abajo NO es indistinto**, y es la regla
+que esta misma invitación ya tenía escrita: el arco se monta sobre el
+PIE de la de arriba y apoya su base sobre la CABEZA de la de abajo.
+Arriba va una con aire abajo —acá la mesa— y abajo una con aire
+arriba. La del mar no servía arriba por eso: el arco le cortaba el
+mentón a uno de los dos.
+
+**Y se fue con ella el `mix-blend-mode:multiply`**, que no era un
+efecto general: era de ESA foto, para que su fondo blanco de estudio
+se fundiera con el papel. Dejado puesto sobre una foto normal, la
+oscurece contra el fondo sin que nada avise.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
