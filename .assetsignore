@@ -4,6 +4,9 @@
 sql/
 pruebas/
 apps-script/
+# La skill de cómo se hace una tarjeta y lo que el dueño pide siempre.
+# Es documentación de trabajo, no una página.
+.claude/
 # Solo tiene el LEEME de cómo entra una invitación nueva. Va acá además
 # de por el *.md: "invitaciones" es un nombre reservado de la app, y la
 # prueba saca de este archivo qué carpetas NO son una invitación.

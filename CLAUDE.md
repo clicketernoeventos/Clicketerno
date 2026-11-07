@@ -2520,6 +2520,20 @@ contenido tiene que verse.
 
 ## Hacer una invitación nueva: el chat aparte
 
+**El procedimiento es una skill: `/tarjeta`**
+(`.claude/skills/tarjeta/SKILL.md`). Ahí está en qué orden se hace una
+tarjeta, **lo que el dueño pide siempre sin decirlo** —la planilla va con
+la tarjeta, termina publicada, movimiento que no moleste, informe corto—,
+el checklist de lo que toda tarjeta nueva lleva sí o sí, los dos comandos
+de prueba y lo que nunca se hace. Se invoca sola cuando el pedido es armar
+o retocar una invitación, y vale igual en este chat o en uno dedicado.
+
+Es la receta; los motivos de cada regla siguen en los tres archivos que
+ella misma manda leer primero: `invitaciones/COMO-SE-HACE.md` (el manual),
+`invitaciones/HISTORIA.md` (la crónica de cada invitación) y las "Reglas
+que ya nos costaron caro" de acá.
+
+
 `invitaciones/COMO-SE-HACE.md` es el manual para un chat dedicado a hacer
 UNA invitación, sin tener que contarle el proyecto entero. Decisión del
 dueño (12/10/2026): *"me gustaría tenerlo en otro chat por la cuestión de

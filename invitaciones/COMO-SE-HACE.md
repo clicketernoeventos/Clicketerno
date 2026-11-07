@@ -7,6 +7,10 @@ para no tener que contarlo de nuevo.
 Si venís de cero: leé esto entero antes de escribir una línea. Casi todo lo
 que dice es una cosa que ya salió mal una vez.
 
+**El PROCEDIMIENTO —en qué orden se hace y qué pide el dueño siempre— es
+la skill `/tarjeta`** (`.claude/skills/tarjeta/SKILL.md`). Este archivo es
+el manual: el por qué de cada regla. Los dos se usan juntos.
+
 ---
 
 ## 0. Lo primero: qué archivos son tuyos
