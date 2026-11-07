@@ -19,6 +19,9 @@
        consulta de verdad
      · que el HTML tenga Cache-Control (sin service worker: a los
        60 s revalida, así que nunca queda una versión vieja pegada)
+     · y que el modo oscuro de Android no dé vuelta ninguna
+       pantalla, que es lo que le pasaba a la página de inicio —le
+       cambiaba el 28,8%— y a las invitaciones
 
    Contra el código anterior falla: las dos librerías bajaban
    siempre, no había preconnect y el HTML no tenía Cache-Control.
@@ -138,6 +141,84 @@ const pidio = (pedidos, que) => pedidos.some((u) => u.includes(que));
     else if (/immutable/.test(cc)) mal(`el HTML quedó inmutable ("${cc}"): una versión vieja se pega para siempre`);
     else if (swr > 300) mal(`el HTML se sirve viejo hasta ${swr}s después ("${cc.trim()}"): se publica algo y no se ve`);
     else bien(`el HTML se puede guardar un rato sin quedar pegado: ${cc.trim()}`);
+  }
+
+  /* ── EL MODO OSCURO DE ANDROID NO DA VUELTA NINGUNA PANTALLA ──
+     Si una página no declara de qué color es, Chrome en Android y
+     Samsung Internet le INVIERTEN la luminosidad a todo, y el tema
+     oscuro del sistema viene prendido en casi todos los teléfonos.
+     No tira ningún error: la pantalla se dibuja perfecta y con los
+     colores cambiados. Lo encontró la clienta de una invitación —su
+     papel rosa a rayas salía marrón y el encaje negro salía blanco—
+     y era lo mismo en la página de inicio, que es donde cae el
+     tráfico pagado: le cambiaba el 28,8%.
+
+     No se mide que exista el `color-scheme`: se mide el EFECTO. Se
+     dibuja la misma pantalla dos veces —normal y con el modo oscuro
+     automático pedido por CDP, que es el que aplica el teléfono— y
+     se comparan los píxeles. Así da igual cómo esté apagado. */
+  titulo('el modo oscuro de Android no da vuelta ninguna pantalla');
+  {
+    const { leerPNG } = require('./png');
+    const PAGINAS = ['/', '/invitaciones', '/404.html', '/privacidad', '/terminos',
+                     '/empezar', '/muro?demo=1', '/rollo?demo=1'];
+
+    const dibujar = async (ruta, auto) => {
+      const ctx = await browser.newContext({ viewport: { width: 412, height: 915 },
+                                             isMobile: true, hasTouch: true, colorScheme: 'dark' });
+      const pag = await ctx.newPage();
+      const cdp = await ctx.newCDPSession(pag);
+      await cdp.send('Emulation.setAutoDarkModeOverride', { enabled: auto });
+      /* Key y Xiomara viven en Netlify y NO son nuestras: desde acá su
+         marco no carga y el navegador dibuja su propia pantalla de
+         error, que sí se da vuelta. Eso mediría a Chrome, no a la
+         página, así que se las reemplaza por un marco quieto. (En un
+         teléfono de verdad esas dos SÍ se dan vuelta, y lo único que
+         lo arregla es traerlas al repo.) */
+      await pag.route('**netlify.app**', r => r.fulfill({ status: 200, contentType: 'text/html',
+        body: '<!doctype html><meta name="color-scheme" content="only light"><body style="margin:0">' }));
+      await pag.route('**fonts.g**', r => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+      await pag.goto(MURO + ruta, { waitUntil: 'domcontentloaded' });
+      await pag.waitForTimeout(1400);
+      const alto = await pag.evaluate(() => document.body.scrollHeight);
+      for (let y = 0; y < alto; y += 700) {
+        await pag.evaluate(v => scrollTo({ top: v, behavior: 'instant' }), y);
+        await pag.waitForTimeout(100);
+      }
+      await pag.waitForTimeout(400);
+      /* De a pantallas y NO con una captura `fullPage`: para ésa el
+         navegador le cambia la medida a la ventana, y eso BORRA el
+         modo oscuro que acabamos de pedir. Medido: con `fullPage`
+         daba 0% de diferencia con la página rota. */
+      const tomas = [];
+      for (let y = 0, k = 0; y < alto && k < 10; y += 915, k++) {
+        await pag.evaluate(v => scrollTo({ top: v, behavior: 'instant' }), y);
+        await pag.waitForTimeout(220);
+        tomas.push(leerPNG(await pag.screenshot()));
+      }
+      await ctx.close();
+      return tomas;
+    };
+
+    for (const ruta of PAGINAS) {
+      const A = await dibujar(ruta, false), B = await dibujar(ruta, true);
+      let distintos = 0, total = 0;
+      for (let k = 0; k < Math.min(A.length, B.length); k++) {
+        const a = A[k], b = B[k];
+        for (let y = 0; y < Math.min(a.alto, b.alto); y += 4) {
+          for (let x = 0; x < Math.min(a.ancho, b.ancho); x += 4) {
+            const ia = (y * a.ancho + x) * a.canales, ib = (y * b.ancho + x) * b.canales;
+            const d = Math.abs(a.pix[ia] - b.pix[ib]) + Math.abs(a.pix[ia + 1] - b.pix[ib + 1])
+                    + Math.abs(a.pix[ia + 2] - b.pix[ib + 2]);
+            total++;
+            if (d > 24) distintos++;
+          }
+        }
+      }
+      const pc = total ? Math.round(distintos * 1000 / total) / 10 : 0;
+      if (pc > 4) mal(`${ruta}: el modo oscuro de Android le cambia el ${pc}% de la pantalla`);
+      else bien(`${ruta} se dibuja igual con el tema oscuro puesto (${pc}%)`);
+    }
   }
 
   await browser.close();

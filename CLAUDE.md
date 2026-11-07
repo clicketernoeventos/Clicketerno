@@ -5466,11 +5466,21 @@ Medido una por una, lo que el teléfono les cambiaba: `juliayfranco`
 **100%**, `mia15` 50%, `ambar15` 44%, `almi15` 40%, `magali15` y
 `facuymaxi` entre 3 y 10%.
 
-**Y falta la página pública y el muro**, medidos igual y sin arreglar
-todavía: `/` cambia **28,8%** —que es donde cae el tráfico pagado— y
-`/muro?demo=1` un 8,9%. `/rollo`, la de 404 y los listados ya daban 0.
-Tocar eso es fuera de `<evento>/`, así que pide la tanda entera y va en
-una pasada aparte.
+**Y está puesto también en la página pública y en las dos apps**
+—`index.html`, `invitaciones.html`, `muro.html`, `rollo.html`,
+`404.html`, `privacidad.html`, `terminos.html` y `empezar.html`—, que
+tenían lo mismo: `/` cambiaba **28,8%**, que es donde cae el tráfico
+pagado, y `/muro?demo=1` un 8,9%. El único que NO lleva la línea es
+`app.html`, que es una redirección y no dibuja nada.
+
+**Lo que no se puede arreglar desde acá son Key y Xiomara**, que viven
+en Netlify: son documentos de otro, el modo oscuro los da vuelta y
+nosotros no podemos declararles nada. Se ven dados vuelta adentro de
+la galería de `/invitaciones` y del inicio, en un teléfono con el tema
+oscuro puesto. Lo arregla traer sus carpetas al repo, que ya estaba
+pendiente por otro motivo. Por eso la prueba las **reemplaza por un
+marco quieto**: midiéndolas estaría midiendo a Chrome y no a nuestra
+página.
 
 **Lo mide `pruebas/invitacion_mirar.js`, y mide el EFECTO y no la
 etiqueta**: dibuja la invitación dos veces —normal y con el modo oscuro
@@ -5489,6 +5499,12 @@ costaron una vuelta cada una:
 
 Verificado sacando la línea a propósito: con el `meta` puesto da
 **0,0%** y sin él **43,5%**, contra un tope del 4%.
+
+**Y la misma medición, para las ocho pantallas de afuera de las
+invitaciones, vive en `pruebas/arranque.js`** —que es la suite de
+*cómo le llega la página al teléfono*—. Verificada igual, sacando la
+línea: da **3 fallas** (`/` 37%, `/invitaciones` 15,6% y
+`/muro?demo=1` 8,8%).
 
 #### Lo que sigue faltando
 
