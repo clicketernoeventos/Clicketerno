@@ -3011,14 +3011,22 @@ publicar esas fotos a un público que no es el de la fiesta. Si alguna vez
 se agrega, se pregunta primero a la familia.
 
 **Y la decisión del dueño (07/11/2026) es que TODAS las que hagamos se
-muestren acá**: *"sirve para que los clientes vean todas las que hicimos
-y para que le genere confianza que hagamos muchas"*. Tiene razón en el
-negocio y no cambia nada de lo de arriba: lo que entra es la **versión de
-muestra** de cada una —misma pieza, sin las fotos de personas, con nombre
-y fecha inventados y sin alias ni confirmación de verdad—, marcada con su
-píldora. El link del cliente entra sólo con su permiso preguntado.
-**Falta construir ese modo**: está en "Pendiente", y hasta entonces la
-galería sigue con las tres muestras nuestras.
+muestren acá, ENTERAS**: *"sirve para que los clientes vean todas las que
+hicimos y para que le genere confianza que hagamos muchas"*, y cuando se
+propuso mostrarlas sin las fotos lo bajó con el argumento que manda:
+*"pierde la magia. No se muestra lo que hacemos."* Tiene razón — en varias
+la portada ES la foto o el afiche.
+Lo que se cambia igual son dos cosas que **no se ven**: el formulario no
+escribe en la planilla del cliente —la galería se le manda a cualquiera, y
+un desconocido metiendo confirmaciones falsas le ensucia la lista con la
+que arma las mesas— y el `noindex` se queda, que la saca de los buscadores
+sin sacarla de la galería.
+**Y se le pregunta al cliente**, porque son fotos de su hija en una
+dirección pública: el artículo 53 está en nuestros propios Términos. Es un
+mensaje y la respuesta se anota con fecha. Mientras no esté, o si dice que
+no, entra su versión de muestra —portada tipográfica, nombre y fecha
+inventados, sin alias—.
+**Falta construir las dos piezas**: está en "Pendiente".
 
 Lo mide `pruebas/vitrina.js`: que la dirección abra, que las dos páginas
 muestren el MISMO número de invitaciones, que cada ficha diga de quién es
@@ -3355,17 +3363,21 @@ dejaría peor parados.
   Quedó para borrar a mano en su planilla lo que dejó la prueba: las
   dos filas que dicen "PRUEBA" y dos columnas vacías, `Cancin` y
   `Cuntos`, que creó un `curl` mal encodeado (ver más abajo).
-- **Que toda tarjeta se muestre en `/invitaciones`**, decidido por el
-  dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Falta el modo
-  **`?muestra=1`** que lo hace posible sin exponer a la clienta: la misma
-  pieza con la portada tipográfica (sin las fotos de personas), un nombre
-  y una fecha inventados, y sin alias ni confirmación de verdad. Los tres
-  caminos ya existen y están medidos en cada invitación —vacío el
-  `CONFIG` de cada cosa, no se dibuja—, así que es una bandera que los
-  enciende juntos, más el renglón de cada una en `lib/trabajos.js` con su
-  `muestra:true`. Es una pasada de este chat, no del de la tarjeta.
-  **El link de verdad de un cliente va sólo con su permiso preguntado**, y
-  eso es un dato que no se inventa.
+- **Que toda tarjeta se muestre en `/invitaciones`, entera**, decidido por
+  el dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Son dos piezas:
+  **(1)** que la invitación sepa que se está mostrando en la galería y ahí
+  **no mande la confirmación a la planilla del cliente** —el formulario se
+  ve y se completa igual; lo único que cambia es a dónde va—, y **(2)** el
+  modo **`?muestra=1`** para las que no tengan permiso todavía: portada
+  tipográfica, nombre y fecha inventados, sin alias. Los tres caminos ya
+  existen y están medidos en cada invitación (vacío el `CONFIG` de cada
+  cosa, no se dibuja), así que es una bandera que los enciende juntos, más
+  el renglón de cada una en `lib/trabajos.js`. Es una pasada de este chat,
+  no del de la tarjeta.
+  **Y falta pedirle permiso a las cinco clientas** (`mia15`, `almi15`,
+  `ambar15`, `facuymaxi`, `magali15`): son fotos de sus hijas en una
+  dirección pública. El mensaje está escrito en la skill; la respuesta se
+  anota en la crónica con fecha. Eso es un dato que no se inventa.
 - **`mia15/` informa 1 falla de `invitacion_mirar.js`** y es de antes:
   "la portada APARECE de golpe, no hay cruce con la carta". El cruce
   se escribió para `almi15` y nunca se le aplicó a Mia. Comprobado

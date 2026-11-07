@@ -349,44 +349,50 @@ cada tarjeta se lee y el trabajo sigue donde estaba.
 Decisión del dueño: *"todas las invitaciones que hagamos se muestren en
 invitaciones de muestra en la página. Sirve para que los clientes vean
 todas las que hicimos y para que le genere confianza que hagamos
-muchas."*
+muchas."* **Entonces una tarjeta no está terminada hasta que entra en la
+galería.**
 
-**Entonces no es opcional: una tarjeta no está terminada hasta que entra
-en la galería.** Y lo que entra es su **versión de muestra**, no el link
-del cliente.
+**Y entra ENTERA.** La primera versión de esta regla decía que entraba una
+muestra sin las fotos de personas, y el dueño la bajó con el argumento que
+manda: *"pierde la magia. No se muestra lo que hacemos."* Tiene razón — en
+varias tarjetas la portada ES la foto o el afiche, así que sin eso lo que
+se muestra no es la pieza que hicimos. Lo que vende es la pieza.
 
-**Por qué no el link del cliente.** La tarjeta de un cliente lleva fotos
-de una menor, el nombre y el salón de su fiesta, el alias para transferir
-y un formulario que escribe en SU planilla. Publicado en la página que se
-le manda a cualquiera que pregunta, eso es: sus fotos a la vista de
-desconocidos (artículo 53, el que está en nuestros propios Términos), y
-cualquiera metiéndole confirmaciones falsas a la lista con la que arma las
-mesas. Por eso las de clientes llevan `noindex`.
+**Dos cosas se cambian igual, y ninguna se ve:**
 
-**Qué es la versión de muestra.** La misma pieza —el mismo diseño, la
-misma paleta, las mismas animaciones, las mismas secciones— con los tres
-datos que son de la clienta cambiados:
+- **El formulario no escribe en la planilla del cliente.** Es lo único que
+  de verdad no puede quedar abierto: la galería se le manda a cualquiera
+  que pregunta, y un desconocido metiendo confirmaciones falsas le ensucia
+  la lista con la que el cliente arma las mesas y encarga la comida. Se ve
+  y se completa igual; lo que cambia es a dónde va.
+- **El `noindex` se queda.** Saca la tarjeta de los buscadores sin sacarla
+  de la galería: el que entra por la página la abre igual, y el que no fue
+  invitado no la encuentra buscando el nombre de la clienta.
 
-- **sin las fotos de personas**: cae a la portada tipográfica y las
-  franjas se esconden, que es el camino que toda tarjeta ya tiene hecho y
-  medido;
-- **un nombre y una fecha inventados**, no los suyos;
-- **sin alias y sin confirmación de verdad**: el formulario se ve y se
-  completa, y dice con todas las letras que no se manda a ningún lado.
+**Y se le pregunta al cliente.** No es cautela nuestra: son fotos de su
+hija en una dirección pública, y el artículo 53 está escrito en nuestros
+propios Términos. Es un mensaje corto, en la voz de quien pregunta, y a la
+mayoría le gusta:
 
-**En la galería va marcada como muestra** (`muestra:true` pinta la píldora
-"Muestra nuestra"), porque la sección promete *"las mismas que recibieron
-los invitados"* y de una muestra eso no es cierto. Mostrar una pantalla
-como si fuera otra cosa es mentirle al cliente.
+> *"Quedó hermosa la invitación. ¿Te molesta si la mostramos en nuestra
+> página, en la galería de trabajos? Sirve para que los que nos consultan
+> vean lo que hacemos. Si preferís que no, no hay problema."*
 
-**El link del cliente SÍ puede ir, pero sólo con su permiso**, preguntado
-y con la respuesta anotada en su crónica. Es un dato que no se inventa,
-como cualquier otro: hasta que no está, va la muestra.
+**La respuesta se anota en la crónica**, con fecha. Mientras no esté —o si
+dice que no— entra su **versión de muestra**: la misma pieza con la portada
+tipográfica, nombre y fecha inventados y sin alias. Los tres caminos ya
+existen y están medidos en cada tarjeta (vacío el `CONFIG` de cada cosa, no
+se dibuja), así que es una bandera que los enciende juntos.
 
-**Y la ficha la suma el chat de la página**, no el de la tarjeta: la
-galería vive en `lib/trabajos.js` y en `index.html`. Cuando la tarjeta
-está lista se avisa, con el nombre de la carpeta, el tipo de fiesta y los
-tres colores de la portada dibujada.
+**En la galería va marcada según lo que sea**: la de un cliente con permiso
+es una invitación real y no lleva píldora; una muestra nuestra sí
+(`muestra:true`), porque la sección promete *"las mismas que recibieron los
+invitados"* y de una muestra eso no es cierto.
+
+**La ficha la suma el chat de la página**, no el de la tarjeta: la galería
+vive en `lib/trabajos.js` y en `index.html`. Cuando la tarjeta está lista
+se avisa, con el nombre de la carpeta, el tipo de fiesta y los tres colores
+de la portada dibujada.
 
 ---
 
