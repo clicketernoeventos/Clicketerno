@@ -35,10 +35,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,800&display=swap">
 <style>
 :root{
-  --negro:#000; --carbon:#0A0908;
-  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#9B9287;
-  --gris:rgba(255,255,255,.08); --hilo:rgba(217,174,114,.26);
+  --negro:#07101E; --carbon:#0C1A33;
+  --oro:#A8C8EA; --oro-hondo:#2C5C96; --champan:#D7E6F7;
+  --texto:#F2F6FB; --mute:#9FB3CC;
+  --gris:rgba(255,255,255,.08); --hilo:rgba(168,200,234,.26);
   --e:cubic-bezier(.22,.7,.24,1); --toque:44px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -64,7 +64,7 @@ button,a,input{-webkit-tap-highlight-color:transparent}
 @media(hover:hover){.barra .volver:hover{border-color:var(--oro);color:var(--oro)}}
 
 header.tapa{padding:clamp(48px,8vw,86px) 0 clamp(26px,4vw,40px);border-bottom:1px solid var(--gris)}
-header.tapa .rotulo{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--oro-hondo)}
+header.tapa .rotulo{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--oro)}
 header.tapa h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(32px,6.4vw,54px);margin-top:16px}
 header.tapa .fecha{margin-top:20px;font-size:12.5px;letter-spacing:.12em;color:var(--mute)}
 
@@ -101,7 +101,7 @@ a.enl{color:var(--oro);border-bottom:1px solid var(--hilo);
 .tabla{margin-top:18px;border:1px solid var(--gris);overflow:hidden}
 .tabla .fila{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);
   border-top:1px solid var(--gris)}
-.tabla .fila:first-child{border-top:0;background:rgba(217,174,114,.06)}
+.tabla .fila:first-child{border-top:0;background:rgba(168,200,234,.06)}
 .tabla .fila>div{padding:13px 16px;font-size:14px;line-height:1.7;color:#CFC7BB;min-width:0;
   overflow-wrap:anywhere}
 .tabla .fila:first-child>div{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
@@ -114,7 +114,7 @@ a.enl{color:var(--oro);border-bottom:1px solid var(--hilo);
   .tabla .fila:first-child{display:none}
 }
 
-.aviso{margin-top:22px;border-left:2px solid var(--oro);background:rgba(217,174,114,.05);
+.aviso{margin-top:22px;border-left:2px solid var(--oro);background:rgba(168,200,234,.05);
   padding:16px 20px}
 .aviso p{margin-top:0}
 .aviso p+p{margin-top:12px}
@@ -126,7 +126,7 @@ footer a{color:var(--mute);display:inline-block;padding:14px 2px}
 footer .enlaces{margin-top:12px}
 footer .enlaces a{display:inline-block;padding:11px 8px;min-height:var(--toque)}
 /* el botón de arrepentimiento: tiene que verse, es su razón de ser */
-.arrep{margin-top:20px;border:1px solid var(--hilo);background:rgba(217,174,114,.06);
+.arrep{margin-top:20px;border:1px solid var(--hilo);background:rgba(168,200,234,.06);
   padding:22px}
 .arrep a{display:inline-flex;align-items:center;justify-content:center;min-height:var(--toque);
   margin-top:16px;padding:0 26px;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 60%,var(--champan));
