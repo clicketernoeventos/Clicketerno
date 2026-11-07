@@ -1043,6 +1043,82 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctxM.close();
   }
 
+  /* ── 8a-sexies · EL MODO OSCURO DE ANDROID NO LA DA VUELTA ──
+     Si la página no declara de qué color es, Chrome en Android y
+     Samsung Internet le INVIERTEN la luminosidad a todo: el papel
+     claro sale marrón oscuro, el encaje negro sale blanco y una
+     foto queda flotando sobre un fondo que no es el de la pieza.
+     No tira ningún error: la invitación se dibuja perfecta y
+     equivocada, y le pasa a casi todo el que la abre desde un
+     teléfono, porque el tema oscuro del sistema viene prendido.
+
+     No se mide que exista el `color-scheme`: se mide el EFECTO.
+     Se dibuja la misma pantalla con el modo oscuro automático
+     pedido por CDP —que es el mismo que aplica el teléfono— y se
+     compara contra la normal. Así da igual cómo esté apagado. */
+  titulo('el modo oscuro de Android no la da vuelta');
+  {
+    const foto = async (auto) => {
+      const ctxO = await navegador.newContext({viewport:{width:412,height:915},
+                                               hasTouch:true, isMobile:true, colorScheme:'dark'});
+      const pagO = await ctxO.newPage();
+      if (auto){
+        const cdp = await ctxO.newCDPSession(pagO);
+        await cdp.send('Emulation.setAutoDarkModeOverride', {enabled:true});
+      }
+      await pagO.goto(URL, {waitUntil:'domcontentloaded'});
+      await pagO.waitForTimeout(1100);
+      const ab = pagO.locator('#abrir');
+      if (await ab.count() && await ab.isVisible()){
+        await ab.click({force:true});
+        await pagO.waitForTimeout(2600);
+      }
+      /* SE MIRA LA PÁGINA ENTERA, pantalla por pantalla, y DOS cosas
+         de eso no son un detalle:
+         · Una portada que es una FOTO no la invierte nadie —el modo
+           oscuro no toca las imágenes—, así que midiendo sólo la
+           primera pantalla esto daba 0% con la invitación dada vuelta
+           de la mitad para abajo.
+         · Y no se puede sacar una captura `fullPage`: para eso el
+           navegador le cambia la medida a la ventana, y ESO BORRA el
+           modo oscuro que acabamos de pedir por CDP. Medido: con
+           `fullPage` daba 0% de diferencia con la página rota; de a
+           pantallas, 43%. */
+      const alto = await pagO.evaluate(() => document.body.scrollHeight);
+      for (let y = 0; y < alto; y += 700){
+        await pagO.evaluate(v => scrollTo({top:v, behavior:'instant'}), y);
+        await pagO.waitForTimeout(110);
+      }
+      await pagO.waitForTimeout(400);
+      const tomas = [];
+      for (let y = 0; y < alto; y += 915){
+        await pagO.evaluate(v => scrollTo({top:v, behavior:'instant'}), y);
+        await pagO.waitForTimeout(260);
+        tomas.push(leerPNG(await pagO.screenshot()));
+      }
+      await ctxO.close();
+      return tomas;
+    };
+    const A = await foto(false), B = await foto(true);
+    let distintos = 0, total = 0;
+    for (let k = 0; k < Math.min(A.length, B.length); k++){
+      const a = A[k], b = B[k];
+      for (let y = 0; y < Math.min(a.alto, b.alto); y += 3){
+        for (let x = 0; x < Math.min(a.ancho, b.ancho); x += 3){
+          const ia = (y * a.ancho + x) * a.canales, ib = (y * b.ancho + x) * b.canales;
+          const d = Math.abs(a.pix[ia] - b.pix[ib]) + Math.abs(a.pix[ia+1] - b.pix[ib+1])
+                  + Math.abs(a.pix[ia+2] - b.pix[ib+2]);
+          total++;
+          if (d > 24) distintos++;
+        }
+      }
+    }
+    const pc = total ? Math.round(distintos * 1000 / total) / 10 : 0;
+    es(pc <= 4, pc > 4
+      ? `el modo oscuro de Android le cambia el ${pc}% de la pieza`
+      : `el teléfono la dibuja igual con el tema oscuro puesto (${pc}% distinto)`);
+  }
+
   /* ── 8a-quinquies · LOS MANDOS DEL VISOR SE PUEDEN TOCAR ──
      El visor de fotos está CERRADO cuando corre el barrido de los
      44px y el de los controles tapados, así que sus flechas no las
