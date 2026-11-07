@@ -5433,6 +5433,63 @@ tres.
 estaba tapada en un 80% por las otras dos, así que su print no se veía
 por fino que se dibujara. Separadas, se lee.
 
+#### El teléfono de la madre la daba vuelta entera
+
+La clienta avisó que la invitación *"sale así"* en el teléfono de la
+madre, y que **a todos los que se la manda les sale igual**. Esa
+segunda mitad es la que dice qué pasa: si le pasara a un solo aparato
+sería una configuración suya; si le pasa a todos, es la pieza.
+
+Es el **modo oscuro de Android**. Cuando una página no declara de qué
+color es, Chrome en Android y Samsung Internet le **invierten la
+luminosidad a todo**, y el tema oscuro del sistema viene prendido en
+casi todos los teléfonos. Reproducido acá y medido: el papel rosa a
+rayas sale **marrón oscuro**, el **encaje negro sale blanco**, el sobre
+sale bordó y el texto queda lavado. **No tira ningún error**: la
+invitación se dibuja perfecta y equivocada.
+
+**Las fotos no se invierten** —el modo oscuro no las toca— y eso es lo
+que lo hace difícil de ver: la portada de Ámbar es el afiche, o sea una
+imagen, así que la primera pantalla se ve bien y lo dado vuelta empieza
+al segundo scroll. Es la misma familia de siempre: *se dibuja perfecto
+y está mal*.
+
+Se apaga con una línea, `<meta name="color-scheme" content="only
+light">`, que quiere decir *"esta pieza es clara y así va"*. **No
+cambia nada de lo que vemos nosotros**: lo único que hace es sacarle al
+navegador el permiso de adaptarla.
+
+**Está puesto en las ocho invitaciones y en los seis listados** (y en
+la plantilla), no sólo en la de Ámbar: es la regla de siempre —*una
+trampa que se arregla en un lugar hay que ir a buscarla a los otros*—.
+Medido una por una, lo que el teléfono les cambiaba: `juliayfranco`
+**100%**, `mia15` 50%, `ambar15` 44%, `almi15` 40%, `magali15` y
+`facuymaxi` entre 3 y 10%.
+
+**Y falta la página pública y el muro**, medidos igual y sin arreglar
+todavía: `/` cambia **28,8%** —que es donde cae el tráfico pagado— y
+`/muro?demo=1` un 8,9%. `/rollo`, la de 404 y los listados ya daban 0.
+Tocar eso es fuera de `<evento>/`, así que pide la tanda entera y va en
+una pasada aparte.
+
+**Lo mide `pruebas/invitacion_mirar.js`, y mide el EFECTO y no la
+etiqueta**: dibuja la invitación dos veces —normal y con el modo oscuro
+automático pedido por CDP, que es el mismo que aplica el teléfono— y
+compara los píxeles. Así da igual cómo esté apagado. Dos cosas que
+costaron una vuelta cada una:
+
+- **Mirando sólo la primera pantalla daba 0%** con la invitación dada
+  vuelta de la mitad para abajo, porque arriba hay una foto y las fotos
+  no se invierten. Se mide la pieza entera, pantalla por pantalla.
+- **Y no se puede sacar una captura `fullPage`**: para eso el navegador
+  le cambia la medida a la ventana, y **eso borra el modo oscuro que
+  acabamos de pedir**. Medido: con `fullPage`, 0% de diferencia con la
+  página rota; de a pantallas, 43,5%. Es la caja de 0x0 otra vez — la
+  medición apagaba sola lo que venía a medir.
+
+Verificado sacando la línea a propósito: con el `meta` puesto da
+**0,0%** y sin él **43,5%**, contra un tope del 4%.
+
 #### Lo que sigue faltando
 
 **El titular de la cuenta** del alias —el nombre que le muestra el
