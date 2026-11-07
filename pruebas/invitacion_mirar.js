@@ -1052,15 +1052,25 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
      equivocada, y le pasa a casi todo el que la abre desde un
      teléfono, porque el tema oscuro del sistema viene prendido.
 
+     Y NO ALCANZA CON DECIR "soy clara". Eso apaga el de Chrome,
+     pero NO el de Samsung Internet, que es el navegador que viene
+     en los Android de Samsung: el suyo repinta justamente las
+     páginas que no declaran tener versión oscura. Lo encontró la
+     madre de una clienta, que la seguía viendo mal con el primer
+     arreglo ya publicado. Así que la pieza declara que SABE de
+     oscuro y que su versión oscura es la misma — y eso hay que
+     medirlo por los DOS lados.
+
      No se mide que exista el `color-scheme`: se mide el EFECTO.
-     Se dibuja la misma pantalla con el modo oscuro automático
-     pedido por CDP —que es el mismo que aplica el teléfono— y se
-     compara contra la normal. Así da igual cómo esté apagado. */
+     Se dibuja la pantalla tres veces —normal, con el tema oscuro
+     del sistema, y con el modo oscuro automático pedido por CDP,
+     que es el que aplica el teléfono— y se comparan los píxeles
+     contra la normal. Así da igual cómo esté apagado. */
   titulo('el modo oscuro de Android no la da vuelta');
   {
-    const foto = async (auto) => {
+    const foto = async (esquema, auto) => {
       const ctxO = await navegador.newContext({viewport:{width:412,height:915},
-                                               hasTouch:true, isMobile:true, colorScheme:'dark'});
+                                               hasTouch:true, isMobile:true, colorScheme:esquema});
       const pagO = await ctxO.newPage();
       if (auto){
         const cdp = await ctxO.newCDPSession(pagO);
@@ -1099,24 +1109,34 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       await ctxO.close();
       return tomas;
     };
-    const A = await foto(false), B = await foto(true);
-    let distintos = 0, total = 0;
-    for (let k = 0; k < Math.min(A.length, B.length); k++){
-      const a = A[k], b = B[k];
-      for (let y = 0; y < Math.min(a.alto, b.alto); y += 3){
-        for (let x = 0; x < Math.min(a.ancho, b.ancho); x += 3){
-          const ia = (y * a.ancho + x) * a.canales, ib = (y * b.ancho + x) * b.canales;
-          const d = Math.abs(a.pix[ia] - b.pix[ib]) + Math.abs(a.pix[ia+1] - b.pix[ib+1])
-                  + Math.abs(a.pix[ia+2] - b.pix[ib+2]);
-          total++;
-          if (d > 24) distintos++;
+    const cuanto = (A, B) => {
+      let distintos = 0, total = 0;
+      for (let k = 0; k < Math.min(A.length, B.length); k++){
+        const a = A[k], b = B[k];
+        for (let y = 0; y < Math.min(a.alto, b.alto); y += 3){
+          for (let x = 0; x < Math.min(a.ancho, b.ancho); x += 3){
+            const ia = (y * a.ancho + x) * a.canales, ib = (y * b.ancho + x) * b.canales;
+            const d = Math.abs(a.pix[ia] - b.pix[ib]) + Math.abs(a.pix[ia+1] - b.pix[ib+1])
+                    + Math.abs(a.pix[ia+2] - b.pix[ib+2]);
+            total++;
+            if (d > 24) distintos++;
+          }
         }
       }
-    }
-    const pc = total ? Math.round(distintos * 1000 / total) / 10 : 0;
-    es(pc <= 4, pc > 4
-      ? `el modo oscuro de Android le cambia el ${pc}% de la pieza`
-      : `el teléfono la dibuja igual con el tema oscuro puesto (${pc}% distinto)`);
+      return total ? Math.round(distintos * 1000 / total) / 10 : 0;
+    };
+    const normal = await foto('light', false);
+    /* 1 · con el tema oscuro del sistema: acá se mide lo que dibuja la
+       PIEZA, ahora que declara tener versión oscura. */
+    const pcT = cuanto(normal, await foto('dark', false));
+    es(pcT <= 4, pcT > 4
+      ? `con el tema oscuro del sistema cambia el ${pcT}% de la pieza`
+      : `con el tema oscuro del sistema se dibuja igual (${pcT}%)`);
+    /* 2 · y con el repintado automático encima. */
+    const pcF = cuanto(normal, await foto('dark', true));
+    es(pcF <= 4, pcF > 4
+      ? `el modo oscuro de Android le cambia el ${pcF}% de la pieza`
+      : `y el teléfono tampoco la repinta (${pcF}%)`);
   }
 
   /* ── 8a-quinquies · LOS MANDOS DEL VISOR SE PUEDEN TOCAR ──

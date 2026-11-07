@@ -5500,6 +5500,52 @@ costaron una vuelta cada una:
 Verificado sacando la línea a propósito: con el `meta` puesto da
 **0,0%** y sin él **43,5%**, contra un tope del 4%.
 
+##### Y seguía pasando: Samsung Internet no mira lo mismo que Chrome
+
+Con el arreglo ya publicado, la clienta volvió a avisar que la madre
+la seguía viendo mal. Se comprobó primero lo obvio: se bajó
+`clicketerno.com.ar/ambar15/` desde acá y el archivo que sirve
+Cloudflare es **idéntico** al del repo, con la línea puesta. O sea que
+no era el caché.
+
+**El modo oscuro de Chrome y el de Samsung Internet no son el mismo**,
+y no se apagan igual. Samsung —que es el navegador que viene en los
+Android de Samsung— repinta, según su propia documentación, las
+páginas **que no declaran tener versión oscura**. Con `only light` le
+estábamos diciendo exactamente eso: *no tengo versión oscura*. Lo que
+apagaba a Chrome era lo que lo encendía a él.
+
+Así que se declara al revés: `content="light dark"` más un bloque
+`@media (prefers-color-scheme: dark)` — **esta pieza sabe de oscuro, y
+su versión oscura es la misma**. Declararlo y no cambiar nada es
+exactamente lo que queremos: el papel es papel.
+
+**Y eso NO es gratis en cualquier pantalla, así que se midió una por
+una.** Con `light dark` el navegador usa el esquema oscuro para los
+controles que dibuja ÉL —campos, listas, barras—, y eso sí se ve:
+medido, el **tablero del listado cambia un 3,4%** y
+**`/invitaciones` un 14,7%**. Por eso el cambio es sólo para las
+invitaciones, donde da **0,0%** en las nueve (el peor, `claraybruno`,
+0,6%); los listados, la página pública y las dos apps se quedan en
+`only light`, que ahí está medido y alcanza.
+
+**Lo que no se puede medir desde acá es Samsung**: no hay un Samsung
+Internet en esta máquina. Lo que sí se mide es que declararlo no rompa
+nada, y eso es lo que mide la suite: la invitación tiene que verse
+igual **con el tema oscuro del sistema puesto** —que es lo nuevo,
+porque ahora decimos que lo soportamos— y también con el repintado
+automático encima.
+
+Verificada rompiéndola a propósito —metiéndole una versión oscura que
+SÍ cambia los colores— da **25,4%** contra un tope del 4%; como está
+hoy da **0,0%**. Y la mitad de siempre, el repintado automático, sigue
+dando 0,0% contra el 43,5% de antes del primer arreglo.
+
+**La lección**: dos navegadores pueden tener la misma función y la
+señal para apagarla puede ser la OPUESTA. Una medición contra uno solo
+no dice nada del otro, por más que el síntoma se vea igual.
+
+
 **Y la misma medición, para las ocho pantallas de afuera de las
 invitaciones, vive en `pruebas/arranque.js`** —que es la suite de
 *cómo le llega la página al teléfono*—. Verificada igual, sacando la
