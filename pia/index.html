@@ -3,11 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<!-- EL MODO OSCURO DE ANDROID DA VUELTA LA PÁGINA ENTERA. Si la
-     página no dice de qué color es, Chrome y Samsung Internet le
-     invierten la luminosidad a todo: el papel claro sale marrón y lo
-     negro sale blanco. Medido en ambar15. `only light` lo apaga. -->
-<meta name="color-scheme" content="only light">
+<!-- EL MODO OSCURO DE ANDROID DA VUELTA LA INVITACIÓN ENTERA: el
+     papel claro sale marrón, lo negro sale blanco y una portada con
+     foto queda flotando sobre un fondo que no es el de la pieza. No
+     tira ningún error, y le pasa a casi todo el que la abre desde un
+     teléfono, porque el tema oscuro del sistema viene prendido.
+
+     Y NO ALCANZA CON DECIR "soy clara". Eso apaga el de Chrome —
+     medido— pero no el de Samsung Internet, que es el navegador que
+     viene en los Android de Samsung: el suyo repinta justamente las
+     páginas que NO declaran tener versión oscura. Lo encontró la
+     madre de una clienta, que la seguía viendo mal con el arreglo ya
+     publicado.
+
+     Así que se declara al revés: esta pieza SABE de oscuro, y su
+     versión oscura es la misma. Medido en las nueve invitaciones: con
+     el tema oscuro puesto no cambia un píxel. -->
+<meta name="color-scheme" content="light dark">
+<style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
 <title>Invitación 15 años</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
