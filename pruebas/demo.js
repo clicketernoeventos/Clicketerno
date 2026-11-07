@@ -286,7 +286,7 @@ async function abrir(ctx) {
     await pg.evaluate(() => document.querySelector('.servicios').scrollIntoView({ block: 'center' }));
     await pg.waitForTimeout(600);
     for (const cual of ['muro', 'rollo', 'invitaciones']) {
-      await pg.evaluate((c) => document.querySelector(`.serv[data-prueba="${c}"]`).click(), cual);
+      await pg.evaluate((c) => document.querySelector(`.pastilla[data-prueba="${c}"]`).click(), cual);
       await pg.waitForTimeout(300);
     }
     await pg.evaluate(() => document.querySelectorAll('.prueba').forEach((x) => { x.hidden = false; }));

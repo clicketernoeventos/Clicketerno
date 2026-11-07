@@ -165,9 +165,9 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     if(orden[0]!=='app')
       mal('la presentación no es lo primero: '+orden.slice(0,3).join(' · '));
     else bien('los tres andando son la primera sección');
-    const tarjetas=await p.$$eval('.servicios .serv[data-prueba]',
+    const tarjetas=await p.$$eval('.servicios .pastilla[data-prueba]',
       ns=>ns.map(n=>n.dataset.prueba));
-    if(tarjetas.length!==3) mal(`la presentación tiene ${tarjetas.length} tarjetas, no 3`);
+    if(tarjetas.length!==3) mal(`la presentación tiene ${tarjetas.length} pastillas, no 3`);
     else bien('están las tres: '+tarjetas.join(' · '));
     /* Que cada tarjeta tenga su panel con el servicio ANDANDO. Una tarjeta
        que abre un panel de texto no es la prueba del servicio. */
@@ -190,7 +190,7 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
       mal(`la página se va de ancho: ${anchoDoc}px en ${TELEFONO.width}`);
     else bien('nada se sale de ancho');
     for(const cual of tarjetas){
-      const c=await caja(p,'.servicios .serv[data-prueba="'+cual+'"]');
+      const c=await caja(p,'.servicios .pastilla[data-prueba="'+cual+'"]');
       if(!dentro({...c,y:0,y2:1},TELEFONO)) mal(`la tarjeta de ${cual} se sale de la pantalla`);
       else bien(`la tarjeta de ${cual} entra a lo ancho`);
     }
@@ -199,7 +199,7 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
        367x206 en un iPhone: la app de adentro creía que ESE era el tamaño
        de la pantalla y se le apilaba todo encima, ilegible. En un teléfono
        el visor tiene que ser la pantalla entera. */
-    await p.evaluate(()=>document.querySelector('.serv[data-prueba="muro"]').click());
+    await p.evaluate(()=>document.querySelector('.pastilla[data-prueba="muro"]').click());
     await p.waitForTimeout(500);
     await p.locator('#pr-muro [data-abrir-demo]').click();
     await p.waitForTimeout(2500);

@@ -539,7 +539,7 @@ function juzgar(nombre, e, { salidaObligatoria = true, sinClave = false,
       await p.waitForTimeout(1800);
       const como = cod ? 'con una fiesta de verdad' : 'con la demostración';
       await p.evaluate(() =>
-        document.querySelector('.serv[data-prueba="muro"]').click()).catch(() => {});
+        document.querySelector('.pastilla[data-prueba="muro"]').click()).catch(() => {});
       await p.waitForTimeout(600);
       await p.click('#pr-muro [data-abrir-demo]').catch(() => {});
       await p.waitForTimeout(2600);

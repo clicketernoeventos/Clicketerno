@@ -141,19 +141,43 @@ const aServicios = async (p) => {
     const { ctx, p, errs } = await abrir(browser);
     await aServicios(p);
 
-    /* Antes de tocar nada no puede haber ni un marco escondido. */
-    const antes = await p.evaluate(() =>
-      document.querySelectorAll('.prueba iframe').length);
-    if (antes) mal(`${antes} marcos de la prueba ya estaban cargando sin que nadie abriera nada`);
-    else bien('ningún marco de la prueba se carga hasta que se abre');
+    /* Ahora hay UNA pantalla siempre abierta —la de la pastilla activa— y
+       las otras dos ni existen. Lo que no puede pasar es que haya más de
+       una, ni un marco prendido abajo de una pastilla que nadie eligió:
+       eso es la visita entera pagando algo que no ve. */
+    const arranque = await p.evaluate(() => ({
+      abiertos: [...document.querySelectorAll('.prueba')].filter((x) => !x.hidden).map((x) => x.dataset.de),
+      escondidosConMarco: [...document.querySelectorAll('.prueba')]
+        .filter((x) => x.hidden).reduce((n, x) => n + x.querySelectorAll('iframe').length, 0),
+      pastillas: [...document.querySelectorAll('.pastilla[data-prueba]')].map((b) => b.dataset.prueba),
+      activas: document.querySelectorAll('.pastilla.activa').length,
+    }));
+    if (arranque.pastillas.length !== 3)
+      mal(`la fila de pastillas tiene ${arranque.pastillas.length} y tienen que ser 3`);
+    else bien('las tres pastillas: ' + arranque.pastillas.join(' · '));
+    if (arranque.abiertos.length !== 1)
+      mal(`al cargar hay ${arranque.abiertos.length} pantallas abiertas y tiene que haber 1`);
+    else bien('al cargar hay una sola pantalla, la de ' + arranque.abiertos[0]);
+    if (arranque.activas !== 1) mal(`${arranque.activas} pastillas marcadas como activas`);
+    if (arranque.escondidosConMarco)
+      mal(`${arranque.escondidosConMarco} marcos prendidos abajo de una pastilla que nadie eligió`);
+
+    /* Un control que no se puede tocar con el pulgar no existe. */
+    const chicas = await p.evaluate(() =>
+      [...document.querySelectorAll('.pastilla')].map((b) => {
+        const c = b.getBoundingClientRect();
+        return { t: b.textContent.trim(), w: Math.round(c.width), h: Math.round(c.height) };
+      }).filter((c) => c.h < 44 || c.w < 44));
+    if (chicas.length) mal('pastillas que no llegan a 44px: ' + JSON.stringify(chicas));
+    else bien('las pastillas llegan a 44px');
 
     for (const [cual, dentro] of [['muro', 'muro'], ['rollo', 'rollo'], ['invitaciones', 'pia/nueva']]) {
       await p.evaluate(() => document.getElementById('servicios').scrollIntoView());
       await p.waitForTimeout(300);
-      const hayTarjeta = await p.evaluate((c) =>
-        !!document.querySelector(`.serv[data-prueba="${c}"]`), cual);
-      if (!hayTarjeta) { mal(`la tarjeta de ${cual} no abre ninguna prueba: "Ver más" sigue siendo un ancla a un bloque de texto`); continue; }
-      await p.click(`.serv[data-prueba="${cual}"]`);
+      const hayPastilla = await p.evaluate((c) =>
+        !!document.querySelector(`.pastilla[data-prueba="${c}"]`), cual);
+      if (!hayPastilla) { mal(`no hay pastilla de ${cual}: la fila dejó de ser la navegación de la sección`); continue; }
+      await p.click(`.pastilla[data-prueba="${cual}"]`);
       await p.waitForTimeout(500);
 
       const abierto = await p.evaluate((c) => {
@@ -194,35 +218,49 @@ const aServicios = async (p) => {
       else bien(`${cual}: el servicio carga adentro del panel`);
     }
 
-    /* Cerrar apaga el marco: un muro demostración latiendo cada siete
-       segundos abajo de un panel cerrado es la visita entera pagando algo
-       que nadie está mirando. */
-    const hayCerrar = await p.evaluate(() => !!document.querySelector('#pr-invitaciones .pr-cerrar'));
-    if (!hayCerrar) mal('la prueba no tiene cómo cerrarse');
-    else await p.click('#pr-invitaciones .pr-cerrar');
-    await p.waitForTimeout(400);
+    /* Cambiar de pastilla apaga el marco de la que se va: un muro
+       demostración latiendo cada siete segundos abajo de una pantalla que
+       ya nadie mira es la visita entera pagando algo que no ve. Y queda
+       UN marco, el de la que se eligió. */
+    await p.click('.pastilla[data-prueba="invitaciones"]');
+    await p.waitForTimeout(600);
     const tras = await p.evaluate(() => ({
-      cerrado: !!(document.getElementById('pr-invitaciones') || {}).hidden,
+      abiertos: [...document.querySelectorAll('.prueba')].filter((x) => !x.hidden).map((x) => x.dataset.de),
       marcos: document.querySelectorAll('.prueba iframe').length,
+      activa: (document.querySelector('.pastilla.activa') || {}).dataset
+        ? document.querySelector('.pastilla.activa').dataset.prueba : null,
+      activas: document.querySelectorAll('.pastilla.activa').length,
     }));
-    if (!tras.cerrado) mal('el ✕ no cierra la prueba');
-    else bien('el ✕ cierra la prueba');
-    if (tras.marcos) mal(`cerrada la prueba quedaron ${tras.marcos} marcos prendidos`);
-    else bien('al cerrar, el marco se apaga');
+    if (tras.abiertos.join() !== 'invitaciones')
+      mal('la pastilla no cambió la pantalla: quedó ' + JSON.stringify(tras.abiertos));
+    else bien('la pastilla cambia la pantalla de abajo');
+    if (tras.activas !== 1 || tras.activa !== 'invitaciones')
+      mal(`la pastilla marcada no es la que se tocó (${tras.activas} activas, ${tras.activa})`);
+    else bien('se marca la pastilla que se tocó, y sólo esa');
+    if (tras.marcos > 1) mal(`quedaron ${tras.marcos} marcos prendidos a la vez`);
+    else bien('al cambiar, el marco del anterior se apaga');
 
     if (errs.length) mal('error de JavaScript: ' + errs[0]);
     await ctx.close();
   }
 
   /* ─────────── 3. sin JavaScript ─────────── */
-  titulo('sin JavaScript la tarjeta sigue llevando a algún lado');
+  titulo('sin JavaScript queda una pantalla abierta y sus enlaces vivos');
   {
     const { ctx, p } = await abrir(browser, { javaScriptEnabled: false });
+    /* Sin JavaScript las pastillas no conmutan nada, así que el estado por
+       defecto TIENE que ser el bueno: una pantalla abierta, no tres
+       escondidas y la sección vacía. */
+    const sinJS = await p.evaluate(() =>
+      [...document.querySelectorAll('.prueba')].filter((x) => !x.hidden).map((x) => x.dataset.de));
+    if (sinJS.length !== 1)
+      mal(`sin JavaScript quedan ${sinJS.length} pantallas abiertas y tiene que quedar 1`);
+    else bien('sin JavaScript queda abierta la de ' + sinJS[0]);
     const destinos = await p.evaluate(() =>
-      [...document.querySelectorAll('.serv[data-prueba]')].map((a) => a.getAttribute('href')));
+      [...document.querySelectorAll('.prueba .pr-detalle')].map((a) => a.getAttribute('href')));
     if (destinos.length !== 3 || destinos.some((h) => !h || h[0] !== '#'))
-      mal('alguna tarjeta de servicio se quedó sin destino: ' + JSON.stringify(destinos));
-    else bien('las tres tarjetas llevan a su sección sin JavaScript: ' + destinos.join(' · '));
+      mal('alguna pantalla se quedó sin enlace a su sección: ' + JSON.stringify(destinos));
+    else bien('las tres llevan a su sección sin JavaScript: ' + destinos.join(' · '));
     /* Y ese destino tiene que EXISTIR: un ancla a una sección que no está
        es un botón que no hace nada y no da ningún error. */
     const vivos = await p.evaluate((hs) => hs.filter((h) => document.querySelector(h)).length, destinos);

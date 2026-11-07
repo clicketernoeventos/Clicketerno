@@ -167,15 +167,15 @@ nav .links a:hover:after{width:100%}
    hundido es la única respuesta que se siente en el dedo. Va en todo lo
    tocable y con !important porque varios :hover también mueven el
    transform y, soltando el dedo, ganaba el otro. */
-.btn:active,.serv:active,.puerta-c:active,.inc:active,
+.btn:active,.pastilla:active,.puerta-c:active,.inc:active,
 .preg summary:active,.wsp-flota:active,nav .links a:active,
 .menu-movil a:active,footer .legales a:active{
   transform:scale(.975)!important;transition-duration:.08s!important}
-.btn,.serv,.puerta-c,.preg summary{-webkit-tap-highlight-color:transparent}
+.btn,.pastilla,.puerta-c,.preg summary{-webkit-tap-highlight-color:transparent}
 /* En una pantalla táctil el :hover se queda PEGADO después de tocar, así
    que el botón parece seleccionado hasta que toques otra cosa. */
 @media(hover:none){
-  .btn-oro:hover,.btn-hilo:hover,.serv:hover,.puerta-c:hover,
+  .btn-oro:hover,.btn-hilo:hover,.puerta-c:hover,
   .trabajo:hover .cuerpo-t{transform:none;box-shadow:none}
 }
 .burger{display:none;width:34px;height:22px;position:relative;margin-left:auto;z-index:95}
@@ -430,93 +430,22 @@ nav .links a:hover:after{width:100%}
    palabra huérfana en los párrafos. No los soporta todo el mundo y no
    pasa nada: sin soporte corta como cortaba antes. */
 h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
-.cabeza p,.inc p,.serv p{text-wrap:pretty}
+.cabeza p,.inc p{text-wrap:pretty}
 .ap.ver{opacity:1;transform:none}
 /* "Deslizá para ver las tres" solo tiene sentido donde se desliza */
 .solo-angosto{display:none}
 @media(max-width:640px){.solo-angosto{display:inline}}
 
 /* ═══ servicios ═══ */
-/* ── la tarjeta ──
-   Decisión del dueño mirando el mockup: "en tarjeta, que mejor que como
-   está hoy". De la referencia se toman el radio grande, el ícono en un
-   círculo y la flecha circular. Lo que NO se toma es el ícono SOLO: la
-   referencia es una agencia de marketing y no tiene nada que mostrar, por
-   eso dibuja un ícono. Nosotros tenemos la captura del producto andando,
-   que es lo que vende; el círculo queda de insignia encima de la foto. */
-.servicios{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.serv{--alto-escena:170px;
-  border:1px solid var(--gris);border-radius:26px;padding:0 24px 26px;display:block;
-  position:relative;overflow:hidden;
-  transition:border-color .5s,transform .5s var(--e);background:linear-gradient(158deg,rgba(255,255,255,.05),transparent 72%)}
-.serv:hover{border-color:var(--hilo2);transform:translateY(-6px)}
-/* La tarjeta abierta se queda quieta y marcada: si se sigue levantando con
-   el hover, el panel de abajo baila con el mouse. */
-.serv.abierta{border-color:var(--oro);transform:none}
-/* ── la tarjeta en la sección CLARA ──
-   Nació para la parte negra: fondo blanco al 5% y texto crema. Puesta
-   sobre el crema de `.clara` desaparece —es la cuarta vez que aparece la
-   misma trampa en este archivo: si un bloque trae su propio fondo, trae su
-   propia tinta—. Acá el fondo se da vuelta y la tinta también. El panel de
-   la prueba NO: adentro va el producto, que es negro. */
-.clara .serv{background:linear-gradient(158deg,rgba(0,0,0,.035),transparent 72%);
-  border-color:rgba(26,23,19,.14)}
-.clara .serv p{color:#5B534A}
-.clara .serv .chip{background:#1A1713;border-color:rgba(26,23,19,.2)}
-.clara .serv .etiq{background:rgba(255,255,255,.72);color:var(--oro-hondo);
-  border-color:rgba(122,90,38,.3)}
-/* El acento dorado del título —"digitales", "en vivo", "eterno"— es
-   `--oro` (#D9AE72): sobre el crema da 1,84:1, o sea que la palabra que
-   remata cada título NO ESTABA. Va en `--oro-hondo`, 3,37:1, que para un
-   título de 26px es lo que pide la WCAG. */
-.clara .serv h3 em{color:var(--oro-hondo)}
-.clara .serv .mas{color:var(--oro-hondo)}
-.clara .serv .flecha{border-color:rgba(122,90,38,.35);color:var(--oro-hondo)}
-@media(hover:hover){ .clara .serv:hover{border-color:rgba(122,90,38,.45)} }
+/* Era una grilla de tres tarjetas; ahora es la fila de pastillas y UNA
+   pantalla abajo, así que las pastillas se centran solas. */
+.servicios{display:block}
 /* ── la ventana con el producto de verdad ──
    Acá había tres dibujos hechos con CSS (un sobre, una pila, una tira de
    película) que se animaban SOLO con :hover. En un teléfono el hover no
    existe, así que quedaban tres rectángulos marrones quietos y el dueño
    los leyó como lo que parecían: una maqueta sin terminar. Ahora son
    capturas de la app andando. */
-.serv .escena{height:var(--alto-escena);position:relative;margin:0 -24px 0;overflow:hidden;
-  background:#0E0C0A;border-bottom:1px solid var(--gris)}
-.serv .escena img{width:100%;height:100%;object-fit:cover;object-position:center;
-  transition:transform .8s var(--e)}
-.serv .escena:after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,transparent 45%,rgba(10,8,6,.85))}
-@media(hover:hover){ .serv:hover .escena img{transform:scale(1.06)} }
-/* el ícono en su círculo, montado sobre el borde de la foto */
-.serv .chip{position:absolute;left:24px;top:calc(var(--alto-escena) - 26px);z-index:3;
-  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
-  background:#15110D;border:1px solid var(--hilo);
-  box-shadow:0 10px 24px rgba(0,0,0,.55)}
-.serv .chip svg{width:23px;height:23px;stroke:var(--champan);fill:none;
-  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-@media(max-width:520px){
-  .serv{--alto-escena:132px;padding:0 20px 22px}
-  .serv .escena{margin:0 -20px 0}
-  .serv .chip{left:20px;width:46px;height:46px;top:calc(var(--alto-escena) - 23px)}
-  .serv .chip svg{width:20px;height:20px}
-  .serv h3{font-size:24px}
-}
-/* El aire entre el ícono y el título es la mitad del patrón de la
-   referencia: sin él la tarjeta vuelve a ser una lista apretada. */
-.serv h3{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:26px;margin:52px 0 10px}
-.serv h3 em{color:var(--oro)}
-.serv p{color:#B3A99C;font-size:15.5px;line-height:1.7;margin-bottom:0}
-.serv .pie-serv{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px}
-.serv .mas{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--oro);
-  display:inline-flex;align-items:center;gap:10px;transition:gap .4s var(--e)}
-.serv .flecha{width:40px;height:40px;border-radius:50%;border:1px solid var(--hilo);flex:none;
-  display:grid;place-items:center;color:var(--oro);font-size:15px;
-  transition:background .35s ease,color .35s ease,transform .35s var(--e)}
-@media(hover:hover){ .serv:hover .mas{gap:18px} .serv:hover .flecha{background:var(--oro);color:#241804;transform:translateX(3px)} }
-.serv.abierta .flecha{background:var(--oro);color:#241804;transform:rotate(90deg)}
-.serv .etiq{position:absolute;top:18px;right:18px;z-index:3;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
-  border:1px solid var(--hilo);padding:5px 11px;color:var(--oro);border-radius:999px;background:rgba(10,8,6,.5)}
-@media(max-width:900px){.servicios{grid-template-columns:1fr}}
-
 /* ── la prueba del servicio, abierta en la misma tarjeta ──
    "Donde dice ver más, que se abra y ahí esté la prueba del servicio. Es
    lo más importante." (dueño, 12/10/2026). Hasta acá "Ver más" bajaba a
@@ -540,7 +469,27 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    el piso— así que con un degradé acá el panel vuelve a quedar sin medir.
    Un bloque de texto que la suite no puede medir es un bloque donde esto
    va a volver a pasar. */
-.prueba{grid-column:1 / -1;border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
+/* ── LAS PASTILLAS ──
+   La fila que elige qué producto se ve abajo. Van en un riel con su
+   propio fondo, y la activa es una pastilla maciza adentro — es lo que
+   la hace leer como un conmutador y no como tres botones sueltos.
+   El riel trae su propio fondo, así que trae su propia tinta: sobre el
+   crema de `.clara` el texto apagado va en un gris sólido (#5B534A,
+   6,6:1) y NO en una opacidad, que el medidor de contraste tiene que
+   poder calcular. La activa es tinta maciza con texto crema (14:1).
+   Los 44px de alto son el mínimo de dedo, y en un teléfono el riel
+   scrollea de costado en vez de envolver: envuelto deja de leerse como
+   una fila y se come media pantalla. */
+.pastillas{display:flex;gap:4px;margin:0 auto 26px;padding:4px;width:max-content;max-width:100%;
+  border-radius:999px;background:rgba(26,23,19,.07);overflow-x:auto;scrollbar-width:none}
+.pastillas::-webkit-scrollbar{display:none}
+.pastilla{flex:0 0 auto;min-height:44px;padding:0 22px;border:0;border-radius:999px;background:transparent;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;color:#5B534A;
+  white-space:nowrap;cursor:pointer;transition:background .35s var(--e),color .35s var(--e)}
+.pastilla.activa{background:#1A1713;color:#F3EBDD}
+@media(hover:hover){.pastilla:not(.activa):hover{color:#1A1713}}
+@media(max-width:520px){.pastillas{width:100%;justify-content:flex-start}.pastilla{padding:0 16px;font-size:14px}}
+.prueba{border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
   position:relative;background:#1B1916;color:var(--texto);
   animation:abrirPrueba .5s var(--e) both}
 @keyframes abrirPrueba{from{opacity:0;transform:translateY(-14px)}}
@@ -560,17 +509,16 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .pr-lista li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.6;color:#CFC5B7}
 .pr-lista li:before{content:'';position:absolute;left:0;top:.62em;width:7px;height:1px;background:var(--oro)}
 .pr-botones{display:flex;gap:12px;flex-wrap:wrap}
-.pr-detalle{display:inline-block;margin-top:18px;font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--mute);padding:11px 2px}
+/* Vivía adentro de un panel que nacía cerrado, así que medía 217x39 y no
+   lo agarraba nadie. Con la pantalla siempre abierta está a la vista
+   desde que se carga la página: tiene que llegar a los 44px de dedo. */
+.pr-detalle{display:inline-flex;align-items:center;min-height:44px;margin-top:10px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);padding:0 2px}
 .pr-detalle:hover{color:var(--oro)}
-.pr-cerrar{position:absolute;top:10px;right:10px;z-index:4;width:44px;height:44px;border-radius:50%;
-  display:grid;place-items:center;color:var(--mute);font-size:15px;background:transparent;border:0}
-.pr-cerrar:hover{color:var(--oro)}
 @media(max-width:860px){
   .prueba{padding:20px 18px 22px}
   .pr-caja,.prueba.tel .pr-caja{grid-template-columns:1fr;gap:24px}
   .prueba .pieza.tel{max-width:230px}
-  .pr-cerrar{top:6px;right:6px}
 }
 
 /* ── ya contrataste: por dónde entra el cliente ──
@@ -983,17 +931,17 @@ footer .datos{line-height:1.6}
 .visor .cerrar{min-height:var(--toque);display:inline-flex;align-items:center}
 /* Los enlaces sueltos dentro de un párrafo: crecen a lo alto sin romper
    el renglón. */
-#entrar p a,.serv .mas,#muro .ap a,#rollo .ap a{display:inline-block;padding:13px 2px}
+#entrar p a,#muro .ap a,#rollo .ap a{display:inline-block;padding:13px 2px}
 /* Hundirse al tocar, y que el hover no se quede pegado en una pantalla
    táctil: al tocar, el navegador deja el hover puesto y el botón parece
    seleccionado hasta que tocás otra cosa. */
 @media(prefers-reduced-motion:no-preference){
-  .btn,.serv,.puerta-c,.pieza,.burger{transition:transform var(--rapido) var(--e),
+  .btn,.pastilla,.puerta-c,.pieza,.burger{transition:transform var(--rapido) var(--e),
     border-color .35s var(--e),background .35s var(--e)}
-  .btn:active,.serv:active,.puerta-c:active,.pieza:active{transform:scale(.982)}
+  .btn:active,.pastilla:active,.puerta-c:active,.pieza:active{transform:scale(.982)}
 }
 @media(hover:none){
-  .serv:hover,.puerta-c:hover,.btn:hover{transform:none}
+  .puerta-c:hover,.btn:hover{transform:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
@@ -1110,8 +1058,8 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Esto es lo que hacemos</p>
       <h2 class="serif">No te lo contamos.<em>Miralo funcionando.</em></h2>
-      <p>De la invitación al recuerdo. Tocá cualquiera y se abre el producto
-         andando de verdad, no una captura. Cada uno va solo o los tres juntos.</p>
+      <p>De la invitación al recuerdo. Elegí cuál y miralo acá abajo andando
+         de verdad, no una captura. Cada uno va solo o los tres juntos.</p>
     </div>
 
     <!-- Cada tarjeta abre su panel de abajo con el servicio ANDANDO. El
@@ -1119,16 +1067,25 @@ footer .datos{line-height:1.6}
          JavaScript no corre, "Ver la prueba" lleva igual a algún lado en
          vez de no hacer nada. -->
     <div class="servicios" id="servicios">
-      <a class="serv ap" href="#invitaciones" data-prueba="invitaciones">
-        <div class="escena"><img src="muestra/invitacion.jpg" alt="La cuenta regresiva de una invitación digital" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></span>
-        <h3 class="serif">Invitaciones <em>digitales</em></h3>
-        <p>Una web propia para tu evento. Se abre como un sobre y confirma quién viene.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
+      <!-- La NAVEGACIÓN de esta sección son pastillas y abajo hay UNA sola
+           pantalla que cambia: el patrón de la referencia que eligió el dueño
+           (tryclucky.com), que es lo que él pidió copiar. Antes eran tres
+           tarjetas y tres paneles, o sea tres marcos distintos cargando tres
+           direcciones — y el visitante tenía que adivinar que se abrían.
+           Son <button> y no enlaces porque no llevan a ningún lado: cambian
+           lo que se ve acá mismo. Sin JavaScript queda abierto el primero,
+           que es el estado bueno, y los enlaces de adentro siguen llevando
+           a cada sección. -->
+      <div class="pastillas" role="tablist" aria-label="Qué querés ver">
+        <button class="pastilla activa" type="button" role="tab" aria-selected="true"
+                aria-controls="pr-invitaciones" data-prueba="invitaciones">Invitaciones</button>
+        <button class="pastilla" type="button" role="tab" aria-selected="false"
+                aria-controls="pr-muro" data-prueba="muro">Muro en vivo</button>
+        <button class="pastilla" type="button" role="tab" aria-selected="false"
+                aria-controls="pr-rollo" data-prueba="rollo">Rollo eterno</button>
+      </div>
 
-      <div class="prueba tel" id="pr-invitaciones" data-de="invitaciones" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
+      <div class="prueba tel" id="pr-invitaciones" data-de="invitaciones">
         <div class="pr-caja">
           <div class="pieza tel">
             <div class="marco-p"><div class="chasis"><div class="visor-p">
@@ -1155,17 +1112,7 @@ footer .datos{line-height:1.6}
         </div>
       </div>
 
-      <a class="serv ap" href="#muro" data-prueba="muro">
-        <span class="etiq">Nuevo</span>
-        <div class="escena"><img src="muestra/muro.jpg" alt="La pantalla del salón proyectando las fotos de los invitados" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10.5" r="2.6"/></svg></span>
-        <h3 class="serif">Muro de fotos <em>en vivo</em></h3>
-        <p>Sacan la foto y aparece proyectada al instante en el salón.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
-
       <div class="prueba" id="pr-muro" data-de="muro" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
         <div class="pr-caja">
           <div class="pieza sala">
             <div class="marco-p">
@@ -1197,17 +1144,7 @@ footer .datos{line-height:1.6}
         </div>
       </div>
 
-      <a class="serv ap" href="#rollo" data-prueba="rollo">
-        <span class="etiq">Nuevo</span>
-        <div class="escena"><img src="muestra/rollo.jpg" alt="El álbum del rollo eterno, ya revelado" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5h3l1.6-2.5h8.8L18 8.5h3v10H3z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
-        <h3 class="serif">Rollo <em>eterno</em></h3>
-        <p>La cámara descartable, digital. Nadie ve nada hasta el revelado.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
-
       <div class="prueba tel" id="pr-rollo" data-de="rollo" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
         <div class="pr-caja">
           <div class="pieza tel">
             <div class="marco-p"><div class="chasis"><div class="visor-p">
@@ -2014,9 +1951,12 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
        con la rayita que late, igual que en la vitrina: nunca un hueco. */
 (function(){
   const paneles=[...document.querySelectorAll('.prueba')];
-  if(!paneles.length) return;
-  let abierto=null;
+  const pastillas=[...document.querySelectorAll('.pastilla[data-prueba]')];
+  if(!paneles.length || !pastillas.length) return;
 
+  /* Apagar el marco del que se va NO es un detalle: tres muros
+     demostración latiendo cada siete segundos abajo de una pantalla que
+     nadie mira es la visita entera pagando algo que no ve. */
   const apagar=panel=>{
     const capa=panel.querySelector('.vivo');
     if(!capa) return;
@@ -2026,35 +1966,33 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     delete capa.dataset.encendida;
   };
 
-  const cerrar=()=>{
-    if(!abierto) return;
-    const panel=abierto; abierto=null;
-    panel.hidden=true; apagar(panel);
-    const t=document.querySelector('.serv[data-prueba="'+panel.dataset.de+'"]');
-    if(t) t.classList.remove('abierta');
+  const mostrar=(cual,mover)=>{
+    paneles.forEach(panel=>{
+      const suyo = panel.dataset.de===cual;
+      if(suyo===!panel.hidden) return;        /* ya está como tiene que estar */
+      panel.hidden=!suyo;
+      if(suyo){
+        const capa=panel.querySelector('.vivo');
+        if(capa && window.prenderVivo) window.prenderVivo(capa);
+      } else apagar(panel);
+    });
+    pastillas.forEach(b=>{
+      const suya=b.dataset.prueba===cual;
+      b.classList.toggle('activa',suya);
+      b.setAttribute('aria-selected',suya?'true':'false');
+    });
+    /* En un teléfono la pantalla queda abajo del borde: sin esto se toca
+       una pastilla y no pasa nada a la vista. Al cargar no se mueve. */
+    if(mover){
+      const panel=paneles.find(p=>p.dataset.de===cual);
+      if(panel) requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}));
+    }
   };
 
-  const abrir=tarjeta=>{
-    const panel=document.getElementById('pr-'+tarjeta.dataset.prueba);
-    if(!panel) return;
-    if(abierto===panel) return cerrar();
-    cerrar();
-    panel.hidden=false; abierto=panel; tarjeta.classList.add('abierta');
-    const capa=panel.querySelector('.vivo');
-    if(capa && window.prenderVivo) window.prenderVivo(capa);
-    /* Abierto el panel, el que tocó tiene que VERLO. En un teléfono la
-       tarjeta ocupa la pantalla entera: sin esto el panel se abre abajo
-       del borde y no pasa nada a la vista. */
-    requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}));
-  };
-
-  document.querySelectorAll('.serv[data-prueba]').forEach(t=>{
-    t.addEventListener('click',e=>{ e.preventDefault(); abrir(t); });
-  });
-  paneles.forEach(panel=>{
-    panel.querySelector('.pr-cerrar').addEventListener('click',cerrar);
-  });
-  addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
+  pastillas.forEach(b=>b.addEventListener('click',()=>mostrar(b.dataset.prueba,true)));
+  /* El primero nace abierto en el HTML —sin JavaScript ése es el estado
+     bueno— y acá sólo se le prende el marco. */
+  mostrar(pastillas.find(b=>b.classList.contains('activa')).dataset.prueba,false);
 
   /* "Probarlo entero" abre el mismo visor de siempre: ahí adentro se toca,
      que es lo que el marco del panel no deja hacer. */
