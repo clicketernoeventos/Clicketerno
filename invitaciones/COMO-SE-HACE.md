@@ -32,7 +32,14 @@ sobre la marcha:
     _headers            la CSP
     .assetsignore  wrangler.json
     CLAUDE.md           el manual del proyecto
+    invitaciones/HISTORIA.md   la crónica de cada invitación
     sql/*               la base
+
+**Antes de empezar, leé la crónica de la invitación de la que vas a
+copiar** en `invitaciones/HISTORIA.md`: ahí está qué pidió cada cliente
+con sus palabras, qué se descartó y por qué, y las fallas que se
+dibujaban perfectas y estaban mal. Es de lectura, no se toca desde acá:
+cuando la invitación esté lista, su crónica la escribe el otro chat.
 
 **La invitación NO se agrega sola a la galería de Trabajos.** Esa galería
 vive en `index.html`, que es del otro chat. Cuando la invitación esté
