@@ -444,7 +444,9 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    referencia es una agencia de marketing y no tiene nada que mostrar, por
    eso dibuja un ícono. Nosotros tenemos la captura del producto andando,
    que es lo que vende; el círculo queda de insignia encima de la foto. */
-.servicios{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+/* Era una grilla de tres tarjetas; ahora es la fila de pastillas y UNA
+   pantalla abajo, así que las pastillas se centran solas. */
+.servicios{display:block}
 .serv{--alto-escena:170px;
   border:1px solid var(--gris);border-radius:26px;padding:0 24px 26px;display:block;
   position:relative;overflow:hidden;
@@ -515,7 +517,6 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .serv.abierta .flecha{background:var(--oro);color:#241804;transform:rotate(90deg)}
 .serv .etiq{position:absolute;top:18px;right:18px;z-index:3;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
   border:1px solid var(--hilo);padding:5px 11px;color:var(--oro);border-radius:999px;background:rgba(10,8,6,.5)}
-@media(max-width:900px){.servicios{grid-template-columns:1fr}}
 
 /* ── la prueba del servicio, abierta en la misma tarjeta ──
    "Donde dice ver más, que se abra y ahí esté la prueba del servicio. Es
@@ -540,7 +541,27 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    el piso— así que con un degradé acá el panel vuelve a quedar sin medir.
    Un bloque de texto que la suite no puede medir es un bloque donde esto
    va a volver a pasar. */
-.prueba{grid-column:1 / -1;border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
+/* ── LAS PASTILLAS ──
+   La fila que elige qué producto se ve abajo. Van en un riel con su
+   propio fondo, y la activa es una pastilla maciza adentro — es lo que
+   la hace leer como un conmutador y no como tres botones sueltos.
+   El riel trae su propio fondo, así que trae su propia tinta: sobre el
+   crema de `.clara` el texto apagado va en un gris sólido (#5B534A,
+   6,6:1) y NO en una opacidad, que el medidor de contraste tiene que
+   poder calcular. La activa es tinta maciza con texto crema (14:1).
+   Los 44px de alto son el mínimo de dedo, y en un teléfono el riel
+   scrollea de costado en vez de envolver: envuelto deja de leerse como
+   una fila y se come media pantalla. */
+.pastillas{display:flex;gap:4px;margin:0 auto 26px;padding:4px;width:max-content;max-width:100%;
+  border-radius:999px;background:rgba(26,23,19,.07);overflow-x:auto;scrollbar-width:none}
+.pastillas::-webkit-scrollbar{display:none}
+.pastilla{flex:0 0 auto;min-height:44px;padding:0 22px;border:0;border-radius:999px;background:transparent;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;font-weight:600;color:#5B534A;
+  white-space:nowrap;cursor:pointer;transition:background .35s var(--e),color .35s var(--e)}
+.pastilla.activa{background:#1A1713;color:#F3EBDD}
+@media(hover:hover){.pastilla:not(.activa):hover{color:#1A1713}}
+@media(max-width:520px){.pastillas{width:100%;justify-content:flex-start}.pastilla{padding:0 16px;font-size:14px}}
+.prueba{border:1px solid rgba(217,174,114,.2);border-radius:26px;padding:26px;
   position:relative;background:#1B1916;color:var(--texto);
   animation:abrirPrueba .5s var(--e) both}
 @keyframes abrirPrueba{from{opacity:0;transform:translateY(-14px)}}
@@ -1110,8 +1131,8 @@ footer .datos{line-height:1.6}
     <div class="cabeza centrada ap">
       <p class="eyebrow">Esto es lo que hacemos</p>
       <h2 class="serif">No te lo contamos.<em>Miralo funcionando.</em></h2>
-      <p>De la invitación al recuerdo. Tocá cualquiera y se abre el producto
-         andando de verdad, no una captura. Cada uno va solo o los tres juntos.</p>
+      <p>De la invitación al recuerdo. Elegí cuál y miralo acá abajo andando
+         de verdad, no una captura. Cada uno va solo o los tres juntos.</p>
     </div>
 
     <!-- Cada tarjeta abre su panel de abajo con el servicio ANDANDO. El
@@ -1119,16 +1140,25 @@ footer .datos{line-height:1.6}
          JavaScript no corre, "Ver la prueba" lleva igual a algún lado en
          vez de no hacer nada. -->
     <div class="servicios" id="servicios">
-      <a class="serv ap" href="#invitaciones" data-prueba="invitaciones">
-        <div class="escena"><img src="muestra/invitacion.jpg" alt="La cuenta regresiva de una invitación digital" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></span>
-        <h3 class="serif">Invitaciones <em>digitales</em></h3>
-        <p>Una web propia para tu evento. Se abre como un sobre y confirma quién viene.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
+      <!-- La NAVEGACIÓN de esta sección son pastillas y abajo hay UNA sola
+           pantalla que cambia: el patrón de la referencia que eligió el dueño
+           (tryclucky.com), que es lo que él pidió copiar. Antes eran tres
+           tarjetas y tres paneles, o sea tres marcos distintos cargando tres
+           direcciones — y el visitante tenía que adivinar que se abrían.
+           Son <button> y no enlaces porque no llevan a ningún lado: cambian
+           lo que se ve acá mismo. Sin JavaScript queda abierto el primero,
+           que es el estado bueno, y los enlaces de adentro siguen llevando
+           a cada sección. -->
+      <div class="pastillas" role="tablist" aria-label="Qué querés ver">
+        <button class="pastilla activa" type="button" role="tab" aria-selected="true"
+                aria-controls="pr-invitaciones" data-prueba="invitaciones">Invitaciones</button>
+        <button class="pastilla" type="button" role="tab" aria-selected="false"
+                aria-controls="pr-muro" data-prueba="muro">Muro en vivo</button>
+        <button class="pastilla" type="button" role="tab" aria-selected="false"
+                aria-controls="pr-rollo" data-prueba="rollo">Rollo eterno</button>
+      </div>
 
-      <div class="prueba tel" id="pr-invitaciones" data-de="invitaciones" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
+      <div class="prueba tel" id="pr-invitaciones" data-de="invitaciones">
         <div class="pr-caja">
           <div class="pieza tel">
             <div class="marco-p"><div class="chasis"><div class="visor-p">
@@ -1155,17 +1185,7 @@ footer .datos{line-height:1.6}
         </div>
       </div>
 
-      <a class="serv ap" href="#muro" data-prueba="muro">
-        <span class="etiq">Nuevo</span>
-        <div class="escena"><img src="muestra/muro.jpg" alt="La pantalla del salón proyectando las fotos de los invitados" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10.5" r="2.6"/></svg></span>
-        <h3 class="serif">Muro de fotos <em>en vivo</em></h3>
-        <p>Sacan la foto y aparece proyectada al instante en el salón.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
-
       <div class="prueba" id="pr-muro" data-de="muro" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
         <div class="pr-caja">
           <div class="pieza sala">
             <div class="marco-p">
@@ -1197,17 +1217,7 @@ footer .datos{line-height:1.6}
         </div>
       </div>
 
-      <a class="serv ap" href="#rollo" data-prueba="rollo">
-        <span class="etiq">Nuevo</span>
-        <div class="escena"><img src="muestra/rollo.jpg" alt="El álbum del rollo eterno, ya revelado" loading="lazy" width="1040" height="585"></div>
-        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5h3l1.6-2.5h8.8L18 8.5h3v10H3z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
-        <h3 class="serif">Rollo <em>eterno</em></h3>
-        <p>La cámara descartable, digital. Nadie ve nada hasta el revelado.</p>
-        <span class="pie-serv"><span class="mas">Ver la prueba</span><span class="flecha" aria-hidden="true">→</span></span>
-      </a>
-
       <div class="prueba tel" id="pr-rollo" data-de="rollo" hidden>
-        <button class="pr-cerrar" type="button" aria-label="Cerrar la prueba">✕</button>
         <div class="pr-caja">
           <div class="pieza tel">
             <div class="marco-p"><div class="chasis"><div class="visor-p">
@@ -2014,9 +2024,12 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
        con la rayita que late, igual que en la vitrina: nunca un hueco. */
 (function(){
   const paneles=[...document.querySelectorAll('.prueba')];
-  if(!paneles.length) return;
-  let abierto=null;
+  const pastillas=[...document.querySelectorAll('.pastilla[data-prueba]')];
+  if(!paneles.length || !pastillas.length) return;
 
+  /* Apagar el marco del que se va NO es un detalle: tres muros
+     demostración latiendo cada siete segundos abajo de una pantalla que
+     nadie mira es la visita entera pagando algo que no ve. */
   const apagar=panel=>{
     const capa=panel.querySelector('.vivo');
     if(!capa) return;
@@ -2026,35 +2039,33 @@ document.querySelectorAll('#galeriaTrabajos .trabajo').forEach(el=>{
     delete capa.dataset.encendida;
   };
 
-  const cerrar=()=>{
-    if(!abierto) return;
-    const panel=abierto; abierto=null;
-    panel.hidden=true; apagar(panel);
-    const t=document.querySelector('.serv[data-prueba="'+panel.dataset.de+'"]');
-    if(t) t.classList.remove('abierta');
+  const mostrar=(cual,mover)=>{
+    paneles.forEach(panel=>{
+      const suyo = panel.dataset.de===cual;
+      if(suyo===!panel.hidden) return;        /* ya está como tiene que estar */
+      panel.hidden=!suyo;
+      if(suyo){
+        const capa=panel.querySelector('.vivo');
+        if(capa && window.prenderVivo) window.prenderVivo(capa);
+      } else apagar(panel);
+    });
+    pastillas.forEach(b=>{
+      const suya=b.dataset.prueba===cual;
+      b.classList.toggle('activa',suya);
+      b.setAttribute('aria-selected',suya?'true':'false');
+    });
+    /* En un teléfono la pantalla queda abajo del borde: sin esto se toca
+       una pastilla y no pasa nada a la vista. Al cargar no se mueve. */
+    if(mover){
+      const panel=paneles.find(p=>p.dataset.de===cual);
+      if(panel) requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}));
+    }
   };
 
-  const abrir=tarjeta=>{
-    const panel=document.getElementById('pr-'+tarjeta.dataset.prueba);
-    if(!panel) return;
-    if(abierto===panel) return cerrar();
-    cerrar();
-    panel.hidden=false; abierto=panel; tarjeta.classList.add('abierta');
-    const capa=panel.querySelector('.vivo');
-    if(capa && window.prenderVivo) window.prenderVivo(capa);
-    /* Abierto el panel, el que tocó tiene que VERLO. En un teléfono la
-       tarjeta ocupa la pantalla entera: sin esto el panel se abre abajo
-       del borde y no pasa nada a la vista. */
-    requestAnimationFrame(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}));
-  };
-
-  document.querySelectorAll('.serv[data-prueba]').forEach(t=>{
-    t.addEventListener('click',e=>{ e.preventDefault(); abrir(t); });
-  });
-  paneles.forEach(panel=>{
-    panel.querySelector('.pr-cerrar').addEventListener('click',cerrar);
-  });
-  addEventListener('keydown',e=>{ if(e.key==='Escape') cerrar(); });
+  pastillas.forEach(b=>b.addEventListener('click',()=>mostrar(b.dataset.prueba,true)));
+  /* El primero nace abierto en el HTML —sin JavaScript ése es el estado
+     bueno— y acá sólo se le prende el marco. */
+  mostrar(pastillas.find(b=>b.classList.contains('activa')).dataset.prueba,false);
 
   /* "Probarlo entero" abre el mismo visor de siempre: ahí adentro se toca,
      que es lo que el marco del panel no deja hacer. */
