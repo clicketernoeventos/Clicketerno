@@ -197,7 +197,7 @@ const LISTAR = `(${function () {
     const b = n.getBoundingClientRect();
     return b.width > 1 && b.height > 1;
   };
-  const SEL = 'a[href],button,summary,[role="button"],.serv,.pieza,.trabajo';
+  const SEL = 'a[href],button,summary,[role="button"],.pastilla,.pieza,.trabajo';
   return [...document.querySelectorAll(SEL)].filter(vis).filter((n) => {
     if (n.target === '_blank') return false;
     const h = n.getAttribute('href') || '';
@@ -233,7 +233,7 @@ const DESPUES = `(${function () {
     const b = n.getBoundingClientRect();
     return b.width > 1 && b.height > 1;
   };
-  const SEL = 'a[href],button,summary,[role="button"],input,select,textarea,.serv,.pieza,.trabajo';
+  const SEL = 'a[href],button,summary,[role="button"],input,select,textarea,.pastilla,.pieza,.trabajo';
   return {
     texto: (document.body.innerText || '').trim().length,
     salidas: [...document.querySelectorAll(SEL)].filter(vis).length,
@@ -345,7 +345,7 @@ async function abrir(browser, ap) {
             await p.goto(BASE + ruta, { waitUntil: 'domcontentloaded' });
             await p.waitForTimeout(Math.min(esp, 1600));
           }
-          const nodo = (await p.$$('a[href],button,summary,[role="button"],.serv,.pieza,.trabajo'))[0];
+          const nodo = (await p.$$('a[href],button,summary,[role="button"],.pastilla,.pieza,.trabajo'))[0];
           if (!nodo) break;
           const ok = await p.evaluate(([sel, idx]) => {
             const vis = (x) => {
@@ -370,7 +370,7 @@ async function abrir(browser, ap) {
             el.scrollIntoView({ block: 'center' });
             el.click();
             return true;
-          }, ['a[href],button,summary,[role="button"],.serv,.pieza,.trabajo', i]);
+          }, ['a[href],button,summary,[role="button"],.pastilla,.pieza,.trabajo', i]);
           if (!ok) continue;
           tocados++;
           await p.waitForTimeout(650);
