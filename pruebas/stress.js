@@ -429,7 +429,10 @@ async function landing(browser) {
       hayWrap: !!(s && s.closest('.wrap')),
       enInvitaciones: !!(s && s.closest('#invitaciones')),
       hayPista: !!(s && s.querySelector('.pista-toque')),
-      tarjetas: s ? s.querySelectorAll('.trabajo').length : 0,
+      /* La galería es UN teléfono y un cuadradito por invitación: lo que
+         dice si no se perdió ninguna son los cuadraditos. */
+      tarjetas: s ? s.querySelectorAll('.cuadrito').length : 0,
+      telefonos: s ? s.querySelectorAll('#fonoTrabajo .trabajo').length : 0,
       /* Cuántas DECLARA el código, para comparar contra cuántas dibujó.
          Antes acá había un 3 escrito a mano y falló el día que entró la
          cuarta invitación: no midió la galería, midió que siguieran
@@ -449,6 +452,8 @@ async function landing(browser) {
     anota('landing', 'trabajos', `se declaran ${secc.declaradas} invitaciones y se dibujaron ${secc.tarjetas}`);
   else if (secc.tarjetas < 3)
     anota('landing', 'trabajos', `la galería quedó con ${secc.tarjetas} tarjetas`);
+  if (secc.telefonos !== 1)
+    anota('landing', 'trabajos', `el escaparate tiene ${secc.telefonos} teléfonos y tiene que tener uno`);
   if (secc.idsDuplicados.length) anota('landing', 'ids', 'ids duplicados: ' + secc.idsDuplicados.join(','));
 
   const meta = await page.evaluate(() => ({
@@ -469,10 +474,10 @@ async function landing(browser) {
   await page.click('#menuMovil a');
   await page.waitForTimeout(400);
 
-  await page.evaluate(() => document.querySelector('.trabajo').click());
+  await page.evaluate(() => document.querySelector('#fonoTrabajo .trabajo')?.click());
   await page.waitForTimeout(600);
   const visor = await page.evaluate(() => document.querySelector('#visor').classList.contains('abierto'));
-  if (!visor) anota('landing', 'visor', 'el visor no abre al tocar un trabajo');
+  if (!visor) anota('landing', 'visor', 'el visor no abre al tocar el teléfono del escaparate');
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
   const cerrado = await page.evaluate(() => !document.querySelector('#visor').classList.contains('abierto'));

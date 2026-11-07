@@ -686,6 +686,19 @@ las del cupo?, ¿puede ver las de otro?
   quiere decir que no se proyecta nada: había que salir y volver a entrar, y
   nadie lo sabe. Ahora el panel se entera solo.
 
+- **Una unidad de contenedor escrita en el PROPIO contenedor no lo mide a
+  él.** Los cuadraditos de la galería llevan `container-type:inline-size`
+  para que su adorno escale con el cuadradito, y el `gap` del cuadradito
+  se escribió en `cqw` como todo lo de adentro. Pero `cqw` en el elemento
+  que ES el contenedor se resuelve contra el contenedor de más arriba —y
+  si no hay ninguno, contra la pantalla—: `gap:9cqw` daba **129px en un
+  monitor de 1440**, empujaba el adorno fuera de su caja y, con
+  `overflow:hidden`, quedaban seis cuadrados de color **vacíos**. No tira
+  ningún error y en un teléfono casi no se nota, porque ahí el 9% de 390
+  todavía deja algo adentro. Las unidades `cq*` van en los HIJOS; en el
+  contenedor, un número. Lo mide `pruebas/servicios.js`, que pregunta si
+  la caja del adorno está adentro de la caja del cuadradito.
+
 - **Un alto escrito a mano en el CSS miente en cuanto el contenido
   envuelve.** Las capas fijas se corrían `38px` —lo que mide la cinta de
   la demostración— con el número puesto a mano en seis reglas. En un
@@ -2273,52 +2286,81 @@ Tres cosas que no son adorno:
 
 Lo mide `pruebas/servicios.js`. Contra el código anterior da **9 fallas**.
 
-### El carrusel que se veía cortado y no se movía
+### El escaparate: UN teléfono y un cuadradito por invitación
 
-El mismo reporte, la primera mitad: *"esto se ve cortado y no se mueven
-para las otras invitaciones"*. Eran **dos** fallas que se tapaban entre sí
-y las dos se ven perfectas en un escritorio:
+Pedido del dueño el 07/11/2026, señalando la grilla de cuadraditos de otra
+página: *"Lo que más me gusta es esta parte que tocas cada cuadradito y te
+aparece en el teléfono. Eso me gustaría que pase con las tarjetas."*
 
-- **El carrusel medía 342px en una pantalla de 390.** La regla base le
-  pone `width:100%`, que es el 100% del `.wrap` **ya descontado su
-  padding**; con los márgenes negativos encima, la galería arrancaba en 0
-  pero terminaba a 48px del borde derecho, y la tarjeta siguiente se
-  cortaba contra un borde invisible. Se arregla con `width:auto` en el
-  bloque del carrusel. Un número que depende del padding de otro no se
-  escribe dos veces.
-- **Y deslizar ABRÍA la invitación a pantalla completa.** El dedo arranca
-  arriba de una tarjeta, que tiene su `click`: el que intentaba pasar a la
-  siguiente se comía el visor. Desde afuera eso es exactamente *"no se
-  mueve"*. Ahora un movimiento de más de 8px —o un `pointercancel`, que es
-  lo que manda el navegador cuando se queda con el gesto para scrollear—
-  cancela el toque.
+Hasta acá la galería eran **seis celulares en un carrusel**. Dos cosas le
+pasaban, y las dos se ven perfectas en un escritorio:
 
-**Y seguía cortada, pero por el otro lado: por abajo.** Arreglado el ancho,
-la tarjeta pasó a medir **633px** y el dueño volvió a decir lo mismo: *"está
-queda cortada"*. En un iPhone la barra del navegador se come unos 145, así
-que la pantalla útil no es 844 sino ~700: el nombre de la fiesta quedaba
-debajo del borde y se veía medio teléfono.
+- **Mostraba una invitación y media por vez.** El que quería comparar
+  deslizaba seis veces y se acordaba de memoria. (Por eso existía
+  "Verlas todas juntas", que se queda: ahí se comparan de verdad.)
+- **Bajaba los marcos de TODAS igual**, uno atrás del otro, aunque el
+  visitante mirara sólo el primero. En 4G eso es exactamente lo que ya
+  costó caro en la vitrina: seis marcos se estorban entre ellos.
 
-**El ancho de una tarjeta de celular no se elige por el ancho.** La pantalla
-es 9/19.5, así que cada píxel de ancho son **2,17 de alto**: poner un
-porcentaje del ancho es decidir el alto sin mirarlo. Ahora el ancho sale del
-alto disponible —`min(78%, calc((78svh - 56px) / 2.17))`— y el 78% del ancho
-queda de techo, así que en una pantalla alta no cambia nada.
+Ahora es **un teléfono y abajo una fila de cuadraditos**, uno por
+invitación, cada uno con la portada de la suya. Se ven las seis de un
+saque —que es lo que hay que mostrar, *"que le genere confianza que
+hagamos muchas"*— y **baja UN marco: el de la que se está mirando**. Al
+tocar otro cuadradito el teléfono se redibuja, y eso SACA el iframe
+anterior; es la misma regla que los paneles de los servicios y la pantalla
+de todas juntas. Medido: el carrusel tenía dos marcos vivos a la vez en la
+galería, el escaparate tiene uno.
+
+Cinco cosas que no son adorno:
+
+- **El cuadradito no se dibuja a mano**: su fondo, su tinta y su adorno
+  salen de `lib/trabajos.js`, la misma lista que la ficha grande. Escritos
+  a mano serían seis colores que el día que entre la séptima invitación
+  nadie actualiza.
+- **El teléfono es la MISMA función** (`fichaTrabajo`) que usa la pantalla
+  de todas juntas. Dos plantillas para el mismo teléfono es una que se
+  queda atrás.
+- **El primero se dibuja SIN `data-tarde`** y los que vienen con él. Así
+  el primer marco lo prende el observador de siempre, cuando la galería
+  entra en pantalla: la galería vive en la pantalla 6, y prenderlo al
+  cargar es hacerle bajar una invitación al que todavía no llegó.
+- **El teléfono redibujado va sin `.ap`.** Con la clase puesta nacería
+  invisible esperando a un observador que para él no vuelve a disparar: se
+  dibuja perfecto y no se ve. Es la caja de 0x0 al revés, y hay una
+  comprobación que mira su opacidad.
+- **El ancho mínimo del cuadradito no es un número al lado de una cuenta**:
+  `repeat(auto-fit,minmax(46px,1fr))`. Eso garantiza los 44px del dedo sin
+  tener que saber cuántas invitaciones hay — con seis entran en una fila en
+  un teléfono, y el día que sean doce pasan solas a dos sin que nadie
+  cambie un `repeat(6)`.
+
+**Y el teléfono tiene que entrar en la pantalla CON los cuadraditos.** Es
+la misma lección de antes, con una cosa más abajo. El dueño ya había
+reportado dos veces *"queda cortada"*: en un iPhone la barra del navegador
+se come unos 145px, así que la pantalla útil no es 844 sino ~700, y con el
+ancho puesto en un porcentaje la tarjeta medía 633 y el nombre de la fiesta
+quedaba debajo del borde. **El ancho de un celular dibujado no se elige por
+el ancho**: la pantalla es 9/19.5, así que cada píxel de ancho son **2,17
+de alto**. Sale del alto disponible, y lo que se descuenta ahora son tres
+cosas y no una —el pie, la fila de cuadraditos y la pista—. Lo que la
+prueba mide es el **escaparate entero**, no el teléfono solo: si entra el
+teléfono pero los cuadraditos quedan abajo del borde, nadie se entera de
+que hay seis invitaciones, que es justo lo que vinieron a mostrar.
 
 **`svh` y no `vh`**: `vh` en un iPhone es la pantalla **con las barras
 escondidas**, que es justo el caso que no hay que medir. El `vh` va de
 respaldo para quien no tenga `svh`.
 
 Lo mide `pruebas/largo.js` **a 700 y a 667** (un iPhone SE), no a 844: a 844
-la falla no existe y la prueba habría pasado con el código roto.
+la falla no existe y la prueba habría pasado con el código roto. Contra el
+código anterior `pruebas/servicios.js` da **5 fallas**, `largo` **3**,
+`stress` **2** y `vitrina` **1**.
 
-Se le sumaron **los puntitos**: un carrusel sin nada que diga cuántos hay
-parece una tarjeta recortada. Son tocables (44px de área con `padding` y
-`background-clip:content-box`, sin agrandar el punto) y solo existen abajo
-de 640px. Ojo con dónde se escribe su `display:flex`: metido adentro del
-`@media` de arriba lo pisaba el `display:none` de la regla base, que viene
-después y tiene la misma especificidad. Dos reglas para lo mismo, gana la
-última — por tercera vez en este archivo.
+**Lo que se fue con el carrusel**: los puntitos (ya no hay nada que
+deslizar) y el guardia que distinguía un arrastre de un toque —el dedo
+arrancaba arriba de una tarjeta y deslizar abría la invitación a pantalla
+completa, que desde afuera se lee como *"no se mueve"*—. Las dos piezas
+existían por el carrusel y con él se van.
 
 ### Lo que se mueve, y por qué eso
 
@@ -2468,7 +2510,7 @@ Medido en un teléfono: tenía **21,3 pantallas de scroll**. El contenido
 estaba bien; lo que sobraba era aire. Las **veinte** tarjetas de "qué
 incluye" solas se llevaban **5,8 pantallas** —más de un cuarto del sitio—
 porque abajo de 520px caían a UNA columna. Ahora van a dos y compactas, la
-galería de trabajos es un carrusel que se desliza (2,3 → 0,7) y los textos
+galería de trabajos dejó de ser seis celulares apilados (2,3 → 0,7) y los textos
 dicen lo mismo con menos palabras: **21,3 → 16,6**. Lo cuida
 `pruebas/largo.js`, con el tope en 18 para que no crezca sola otra vez.
 
@@ -2476,11 +2518,8 @@ dicen lo mismo con menos palabras: **21,3 → 16,6**. Lo cuida
 no funcionaba escrito antes del `@media(max-width:860px)` que pone
 `flex-direction:column`: la galería seguía apilada y la medición decía
 2,3 pantallas igual que sin tocar nada. Parecía que el CSS no había
-entrado.
-
-**Un carrusel que no asoma nada parece una tarjeta sola** y nadie lo
-desliza. El recorte del costado —el siguiente celular asomando— es lo que
-le dice al que mira que hay más, y hay una prueba que mide esos píxeles.
+entrado. (Ese carrusel ya no existe —ver *El escaparate*—, pero la trampa
+vale para cualquier regla que se escriba dos veces.)
 
 ### La animación atada al scroll
 

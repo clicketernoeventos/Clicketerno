@@ -10,7 +10,8 @@
    Lo que se mide acá:
    1. que no vuelva a crecer sola,
    2. que las tarjetas sigan a dos columnas en un teléfono,
-   3. que la galería de trabajos sea un carrusel que SE PUEDA deslizar
+   3. que la galería sea UN teléfono con un cuadradito por invitación,
+      que entren todos en la pantalla y que baje UN marco a la vez
       y que ASOME el siguiente (un carrusel que no asoma nada parece
       una tarjeta sola y nadie lo desliza),
    4. y lo más importante de todo: que la animación atada al scroll
@@ -121,43 +122,72 @@ async function recorrer(p) {
     await ctx.close();
   }
 
-  titulo('la galería de trabajos se desliza y asoma la siguiente');
+  titulo('el escaparate: UN teléfono y un cuadradito por invitación');
   {
+    /* La galería era un carrusel de seis celulares. Mostraba una
+       invitación y media por vez —el que quería comparar deslizó seis
+       veces— y, peor, bajaba los marcos de todas aunque el visitante
+       mirara sólo el primero. Ahora es un teléfono y abajo las portadas
+       en chiquito: se ven las seis de un saque y baja UN marco. */
     const { ctx, p } = await abrir(browser);
+    await p.evaluate(() => document.getElementById('trabajos')
+      .scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await p.waitForTimeout(3000);
     const g = await p.evaluate(() => {
-      const n = document.querySelector('.trabajos');
-      if (!n) return null;
-      const cs = getComputedStyle(n);
+      const esc = document.querySelector('.escaparate');
+      if (!esc) return null;
+      const cs = [...document.querySelectorAll('.cuadrito')];
+      const r = esc.getBoundingClientRect();
       return {
-        hijos: n.children.length,
-        alto: Math.round(n.getBoundingClientRect().height),
-        asoma: Math.round(n.scrollWidth - n.clientWidth),
-        snap: cs.scrollSnapType,
-        direccion: cs.flexDirection,
+        telefonos: document.querySelectorAll('#fonoTrabajo .trabajo').length,
+        cuadros: cs.length,
+        declaradas: (window.TRABAJOS || []).length,
+        chico: cs.length ? Math.min(...cs.map((c) => {
+          const b = c.getBoundingClientRect();
+          return Math.min(Math.round(b.width), Math.round(b.height));
+        })) : 0,
+        salido: cs.filter((c) => {
+          const b = c.getBoundingClientRect();
+          return b.x < -1 || b.right > innerWidth + 1;
+        }).length,
+        alto: Math.round(r.height),
+        /* Lo que de verdad se ganó: un marco a la vez. Contra el
+           carrusel acá hay cuatro (las que viven en el repo). */
+        marcos: document.querySelectorAll('#trabajos iframe').length,
       };
     });
-    if (!g || !g.hijos) mal('no se dibujó la galería: no se puede medir');
+    if (!g) mal('no se dibujó el escaparate: no se puede medir');
     else {
-      if (g.direccion !== 'row') mal(`la galería volvió a apilarse (flex-direction: ${g.direccion})`);
-      else bien('la galería va en fila');
-      if (g.asoma < 60)
-        mal(`no asoma la siguiente (${g.asoma}px): parece una tarjeta sola y nadie la desliza`);
-      else bien(`asoma ${g.asoma}px de las que siguen`);
-      if (!/x/.test(g.snap)) mal('sin scroll-snap queda a mitad de camino entre dos');
-      else bien('y engancha al deslizar');
-      if (g.alto > 844 * 1.2) mal(`la galería mide ${(g.alto / 844).toFixed(1)} pantallas`);
+      if (g.telefonos !== 1) mal(`hay ${g.telefonos} teléfonos dibujados y tiene que haber uno`);
+      else bien('un solo teléfono');
+      if (!g.declaradas || g.cuadros !== g.declaradas)
+        mal(`se declaran ${g.declaradas} invitaciones y hay ${g.cuadros} cuadraditos`);
+      else bien(`un cuadradito por invitación: ${g.cuadros}`);
+      if (g.chico < 44) mal(`el cuadradito más chico mide ${g.chico}px: no se acierta con el pulgar`);
+      else bien(`el más chico mide ${g.chico}px`);
+      if (g.salido) mal(`${g.salido} cuadraditos se salen por el costado`);
+      else bien('y ninguno se sale por el costado');
+      if (g.marcos > 1)
+        mal(`la galería tiene ${g.marcos} invitaciones bajando a la vez: en 4G se estorban entre ellas`);
+      else bien(`baja un marco a la vez (${g.marcos})`);
+      if (g.alto > 844 * 1.2) mal(`el escaparate mide ${(g.alto / 844).toFixed(1)} pantallas`);
       else bien(`mide ${(g.alto / 844).toFixed(1)} pantallas`);
     }
     await ctx.close();
   }
 
-  titulo('y el celular ENTERO entra en la pantalla');
+  titulo('y el teléfono CON los cuadraditos entra en la pantalla');
   {
     /* En un iPhone la barra del navegador se come unos 145px, así que la
        pantalla útil no es 844 sino ~700. Con el ancho fijo en 78% la
        tarjeta medía 633 y el nombre de la fiesta quedaba abajo del borde:
-       se veía medio teléfono cortado, que es lo mismo que no tener la
-       foto entera. El dueño lo reportó dos veces con la misma palabra.
+       se veía medio teléfono cortado. El dueño lo reportó dos veces con
+       la misma palabra.
+       Ahora abajo del teléfono hay DOS cosas más —el pie y la fila de
+       cuadraditos—, así que lo que tiene que entrar es el escaparate
+       entero: si entra el teléfono pero los cuadraditos quedan abajo del
+       borde, nadie se entera de que hay seis invitaciones, que es
+       justamente lo que vinieron a mostrar.
        Se mide a 700 y a 667 (un iPhone SE), que es donde pasa; a 844
        nunca se habría visto. */
     for (const alto of [700, 667]) {
@@ -167,27 +197,32 @@ async function recorrer(p) {
       const p = await ctx.newPage();
       await p.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
       await p.waitForTimeout(3000);
-      await p.evaluate(() => document.querySelector('.trabajos').scrollIntoView({ block: 'center' }));
+      /* Con `?.`: si el escaparate no está, lo que hay que ver es la
+         falla, no una excepción que corta la suite entera. */
+      await p.evaluate(() => document.querySelector('.escaparate')
+        ?.scrollIntoView({ block: 'center', behavior: 'instant' }));
       await p.waitForTimeout(700);
       const m = await p.evaluate(() => {
-        const t = document.querySelector('.trabajo');
-        if (!t) return null;
-        const r = t.getBoundingClientRect();
-        const otra = document.querySelectorAll('.trabajo')[1];
+        const esc = document.querySelector('.escaparate');
+        const t = document.querySelector('#fonoTrabajo .trabajo');
+        const cs = [...document.querySelectorAll('.cuadrito')];
+        if (!esc || !t || !cs.length) return null;
+        const re = esc.getBoundingClientRect();
         return {
-          alto: Math.round(r.height),
-          asoma: otra ? Math.round(innerWidth - otra.getBoundingClientRect().x) : 0,
+          escaparate: Math.round(re.height),
+          telefono: Math.round(t.getBoundingClientRect().height),
+          cuadro: Math.round(cs[0].getBoundingClientRect().width),
         };
       });
-      if (!m) { mal('no se dibujó la galería'); await ctx.close(); continue; }
-      /* 88% y no 100%: entrar justo justo no sirve, porque arriba va el
-         título de la sección y abajo el nombre de la invitación. */
-      if (m.alto > alto * 0.88)
-        mal(`en ${alto}px de alto la tarjeta mide ${m.alto}: el celular queda cortado`);
-      else bien(`en ${alto}px entra entera: ${m.alto}px (${Math.round(m.alto / alto * 100)}%)`);
-      /* Achicarla no puede costarle el carrusel. */
-      if (m.asoma < 40) mal(`a ${alto}px dejó de asomar la siguiente (${m.asoma}px)`);
-      else bien(`y sigue asomando ${m.asoma}px de la siguiente`);
+      if (!m) { mal('no se dibujó el escaparate'); await ctx.close(); continue; }
+      /* 92% y no 100%: entrar justo justo no sirve, porque arriba va el
+         título de la sección y abajo la pista de qué hay que tocar. */
+      if (m.escaparate > alto * 0.92)
+        mal(`en ${alto}px de alto el escaparate mide ${m.escaparate}: el teléfono o los cuadraditos quedan cortados`);
+      else bien(`en ${alto}px entra entero: ${m.escaparate}px (${Math.round(m.escaparate / alto * 100)}%)`);
+      /* Achicar el teléfono no puede costarle el dedo a los cuadraditos. */
+      if (m.cuadro < 44) mal(`a ${alto}px el cuadradito quedó en ${m.cuadro}px`);
+      else bien(`y el cuadradito sigue en ${m.cuadro}px`);
       await ctx.close();
     }
   }
