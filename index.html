@@ -51,6 +51,17 @@
   --crema:#F2F6FB; --crema2:#E3ECF6;
   --oro:#A8C8EA; --oro-hondo:#2C5C96; --champan:#D7E6F7;
   --texto:#F2F6FB; --mute:#9FB3CC; --mute-claro:#7D93AE;
+  /* ── el TERCERO ──
+     Elegido por el dueño mirándolo (07/11/2026), y es para cosas
+     PUNTUALES: una píldora, un puntito. El título y el botón se quedan
+     en celeste — con el tercero ahí se lleva toda la pantalla, que es
+     justo lo contrario de lo que tiene que hacer.
+     Y viene en dos, como todo acento de esta paleta: el ámbar vive
+     sobre el azul (16,4:1 sobre el fondo, 12,7:1 sobre el panel) y
+     sobre el papel claro DESAPARECE —1,07:1,
+     la píldora se deshace contra la página—, así que ahí va su versión
+     honda. Si un bloque trae su propio fondo, trae su propia tinta. */
+  --ambar:#F7EFC6; --ambar-hondo:#7A6A24;
   --gris:rgba(255,255,255,.08); --hilo:rgba(168,200,234,.26); --hilo2:rgba(168,200,234,.55);
   --e:cubic-bezier(.22,.7,.24,1);
   --e-suave:cubic-bezier(.4,0,.2,1);
@@ -545,6 +556,7 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    2,32:1, o sea que "Andando ahora mismo" no estaba. Si un bloque trae
    su propio fondo, trae su propia tinta. */
 .clara .prueba .eyebrow{color:var(--oro)}
+.prueba .eyebrow:before{background:var(--ambar);width:18px}   /* el puntito de color de la referencia: el único detalle del panel */
 .clara .prueba .btn-hilo{border-color:var(--hilo2);color:var(--champan)}   /* el panel es oscuro: 13,8:1 */
 .clara .eyebrow:before{background:var(--oro-hondo)}
 .clara h2 em{color:var(--oro-hondo)}
@@ -697,13 +709,13 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    sección promete "las mismas que recibieron los invitados": decirlo en
    la ficha cuesta un renglón, y no decirlo es la mentira de siempre. */
 .trabajo .es-muestra{display:inline-block;margin-top:8px;font-style:normal;
-  font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro-hondo);
-  border:1px solid rgba(44,92,150,.35);border-radius:999px;padding:4px 10px}
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ambar-hondo);
+  border:1px solid rgba(122,106,36,.45);border-radius:999px;padding:4px 10px}
 /* La MISMA píldora cae sobre dos fondos: en el carrusel, sobre el papel
    claro; adentro de la capa de "todas juntas", sobre el oscuro. Con una
    sola tinta uno de los dos no se lee —2,79:1 en la capa—, así que cada
    fondo le da la suya. */
-.todas .es-muestra{color:var(--oro);border-color:var(--hilo2)}
+.todas .es-muestra{background:var(--ambar);color:#13284A;border-color:transparent}
 .pista-toque{text-align:center;margin-top:46px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#566F8E}
 @media(max-width:860px){
   .trabajos{flex-direction:column;flex-wrap:nowrap;gap:48px;align-items:center}
