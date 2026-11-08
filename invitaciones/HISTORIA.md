@@ -4526,3 +4526,22 @@ leía como un símbolo. Lo encontró la captura, no una prueba.
 
 La frase de la confirmación —*"Cumplo 50 y los quiero festejar con
 vos"*— es **nuestra**: no mandó ninguna.
+
+#### Segunda vuelta (08/11/2026)
+
+Tres pedidos del dueño: *"centrá un poco más la imagen de portada"*,
+*"el video que se reproduzca en loop"* y *"la ubicación que sea la
+dirección porque cuando abro la que pusiste no me aparece una ubicación
+puntual"*.
+
+- **La portada**: Maricel está un poco a la derecha del centro de la
+  foto; el encuadre pasó a 57% y la foto sube menos, así entran las
+  cabezas de atrás. Mirado en 390x844 y en 375x667.
+- **El video va en bucle.** Es la excepción al "suena una vez" de
+  siempre, y la pidió él: son 20 s y cortado ahí la sección se queda
+  quieta.
+- **El mapa busca la DIRECCIÓN**, no el nombre del salón: "Mi Cande" no
+  da un punto. Va *Rondeau 75, Villa Astolfi, Pilar, Buenos Aires*: Villa
+  Astolfi es de Pilar, y sin la localidad el buscador puede caer en otra
+  Rondeau 75 del país. En la pantalla se lee tal cual la mandaron.
+
