@@ -4545,3 +4545,13 @@ puntual"*.
   Astolfi es de Pilar, y sin la localidad el buscador puede caer en otra
   Rondeau 75 del país. En la pantalla se lee tal cual la mandaron.
 
+#### La planilla (08/11/2026)
+
+Implementada por el dueño con su propia planilla, como todas desde el
+01/11: su `/exec` está en `CONFIG.endpoint` y en `maricel50/listado/`,
+que es la plantilla con sus dos líneas de `CONFIG`. La clave del
+tablero la eligió él —`CLAVE_ELEGIDA`, en su copia del editor, nunca
+acá— y se le dijo el riesgo: es el nombre de la carpeta, o sea que se
+lee en el link de la invitación. **No se probó de punta a punta**: esta
+sesión no tenía salida a `script.google.com`.
+
