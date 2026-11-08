@@ -4480,3 +4480,49 @@ es justamente el armado de su Canva— y las dos franjas se esconden
 enteras. El día que lleguen es un renglón en `CONFIG`; ahí hay que
 sacarle la curva a la sección que sigue a la franja, y eso lo hace el
 JS solo.
+
+### `maricel50/`: los 50 de Maricel
+
+Pedido del dueño el 08/11/2026: *"Maricel - Mis 50"*, canción *"Girls
+just want to have fun"*, **Salón de eventos Mi Cande, Rondeau 75, Villa
+Astolfi**, cuenta regresiva al **20 de diciembre de 2026**, tres fotos
+(llegaron seis, pero eran tres repetidas) y un video de 20 s de ella con
+la torta: *"que esté ese video en el reproductor y que suene esa
+música"*.
+
+**La base es `magali15/`** (sobre, curvas, cápsula, franjas,
+confirmación entera) y **la cara es otra**: el tema lo pusieron la
+canción y las fotos —anteojos de sol, el 50 dorado, remeras blancas,
+mantel negro—. Negro, marfil, dorado y un fucsia de los ochenta;
+**destellos** donde Magali tenía plantas, y en la cápsula **un par de
+anteojos de sol**. Letras: DM Serif Display, Yellowtail (la manuscrita
+retro, década de la canción) y Bebas Neue.
+
+**El reproductor ES el video.** El `<audio>` de las otras pasó a ser un
+`<video>` vertical en su pantallita, con los mismos tres mandos, que
+arranca con el toque del sobre, suena una vez y se rebobina. Dos
+detalles: `playsinline`, porque sin eso el iPhone lo abre a pantalla
+completa apenas arranca —o sea, tapando la invitación al abrirla—; y
+**el servidor de pruebas no sirve pedazos de archivo** (sin `Range`),
+así que adelantar el video en una prueba lo manda al principio: el
+"suena una vez" se midió acelerándolo, no saltando al final. Cloudflare
+sí los sirve. `invitacion_mirar.js` mide la canción sólo si es un
+`<audio>`, así que de este video dice "no trae canción": lo medí aparte.
+
+**Sin hora.** Mandó el día y no la hora, así que `CONFIG.fiesta` va con
+la fecha sola y ningún renglón dice una hora. Eso obligó a dos cosas: la
+fecha sin hora se lee en UTC (`new Date("2026-12-20")` es el 19 a las
+21 en Rosario), así que la cuenta va al principio de ese día con la
+zona de acá; y el "Ya casi llega la noche" pasó a "llega el día".
+**El 20/12/2026 cae domingo**: vale confirmarlo junto con la hora.
+
+**Sin dress code, sin valor y sin alias**: la cápsula entera no se
+dibuja. Las dos secciones claras que quedan pegadas (dónde y la
+canción) se separan con el destello, y se ve como un corte.
+
+**El marco de esquinas de la portada tipográfica no va con foto**: con
+la foto puesta una esquina caía exactamente entre "MIS" y "50" y se
+leía como un símbolo. Lo encontró la captura, no una prueba.
+
+La frase de la confirmación —*"Cumplo 50 y los quiero festejar con
+vos"*— es **nuestra**: no mandó ninguna.

@@ -3402,6 +3402,14 @@ dejaría peor parados.
   Quedó para borrar a mano en su planilla lo que dejó la prueba: las
   dos filas que dicen "PRUEBA" y dos columnas vacías, `Cancin` y
   `Cuntos`, que creó un `curl` mal encodeado (ver más abajo).
+- **Lo que falta de `maricel50/`** (08/11/2026), y lo tiene que mandar
+  la clienta: **la hora** —la invitación hoy no dice ninguna y la cuenta
+  llega al principio del día— y confirmar que es el **domingo** 20 de
+  diciembre; el **dress code**; el **alias** con su **titular** si
+  quiere regalos; y **hasta cuándo se confirma**. Vacíos, no se dibujan.
+  Y del lado del dueño, **la planilla**: los cinco pasos de siempre con
+  `apps-script/evento-nuevo.gs.txt`, y pasar la `/exec`. Hasta entonces
+  la confirmación avisa que no se mandó, y el tablero no existe.
 - **Que toda tarjeta se muestre en `/invitaciones`, entera**, decidido por
   el dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Son dos piezas:
   **(1)** que la invitación sepa que se está mostrando en la galería y ahí
@@ -3413,7 +3421,7 @@ dejaría peor parados.
   cosa, no se dibuja), así que es una bandera que los enciende juntos, más
   el renglón de cada una en `lib/trabajos.js`. Es una pasada de este chat,
   no del de la tarjeta.
-  **Y falta pedirle permiso a las cinco clientas** (`mia15`, `almi15`,
+  **Y falta pedirle permiso a las clientas** (`maricel50`, `mia15`, `almi15`,
   `ambar15`, `facuymaxi`, `magali15`): son fotos de sus hijas en una
   dirección pública. El mensaje está escrito en la skill; la respuesta se
   anota en la crónica con fecha. Eso es un dato que no se inventa.
