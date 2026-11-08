@@ -3407,9 +3407,10 @@ dejaría peor parados.
   llega al principio del día— y confirmar que es el **domingo** 20 de
   diciembre; el **dress code**; el **alias** con su **titular** si
   quiere regalos; y **hasta cuándo se confirma**. Vacíos, no se dibujan.
-  Y del lado del dueño, **la planilla**: los cinco pasos de siempre con
-  `apps-script/evento-nuevo.gs.txt`, y pasar la `/exec`. Hasta entonces
-  la confirmación avisa que no se mandó, y el tablero no existe.
+  **La planilla ya está** (08/11/2026) y el tablero vive en
+  `clicketerno.com.ar/maricel50/listado`. Falta **verla entrar una
+  vez**: confirmar como invitado y mirar la fila (desde esa sesión no
+  había salida a Google).
 - **Que toda tarjeta se muestre en `/invitaciones`, entera**, decidido por
   el dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Son dos piezas:
   **(1)** que la invitación sepa que se está mostrando en la galería y ahí
