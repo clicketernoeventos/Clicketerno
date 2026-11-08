@@ -488,6 +488,10 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    acomoda a un bloque que ya no es el mismo y una esquina caía justo
    entre "MIS" y "50", leyéndose como un símbolo. Con foto, no va. */
 #portada.con-foto .marco{display:none}
+/* Más centrada (pedido del dueño): Maricel está un poco a la derecha
+   del centro de la foto, y con la foto menos subida entran las cabezas
+   de las de atrás. */
+#portada.con-foto .port-foto img{object-position:57% 0;top:-3%}
 #portada.con-foto #nombre{font-size:clamp(46px,17.5vw,112px)}
 /* En una pantalla BAJA el bloque de texto se lleva una proporción
    mucho más grande, así que la misma foto vuelve a quedarle encima a
@@ -497,7 +501,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 @media (max-height:720px){
   #portada.con-foto{padding-top:clamp(40px,8vh,70px);
     padding-bottom:calc(34px + env(safe-area-inset-bottom))}
-  #portada.con-foto .port-foto img{top:-11%;height:116%}
+  #portada.con-foto .port-foto img{top:-7%;height:112%}
   #portada.con-foto .flor{margin-top:6px;width:min(150px,44vw)}
   #portada.con-foto #nombre{font-size:clamp(46px,15vw,76px)}
   #portada.con-foto .port-xv{font-size:clamp(24px,7.4vw,38px)}
@@ -1170,8 +1174,13 @@ const CONFIG = {
   confirmarHasta: "",            // vacío NO dibuja el renglón
   lugar: "Salón de eventos Mi Cande",
   calle: "Rondeau 75, Villa Astolfi",
+  /* La DIRECCIÓN y no el nombre del salón: buscando "Mi Cande" el mapa
+     no encontraba un punto (lo probó el dueño). Villa Astolfi es de
+     Pilar, Buenos Aires, y eso va en la búsqueda para que no la confunda
+     con otra calle Rondeau 75 del país; en la pantalla se lee tal cual
+     la mandaron. */
   mapa: "https://www.google.com/maps/search/?api=1&query=" +
-        encodeURIComponent("Salón de eventos Mi Cande, Rondeau 75, Villa Astolfi"),
+        encodeURIComponent("Rondeau 75, Villa Astolfi, Pilar, Buenos Aires, Argentina"),
   dibujoSalon: "",
   /* LA CANCIÓN ES EL VIDEO QUE MANDÓ EL DUEÑO: Maricel con la torta y la
      canción sonando. Se ve y se escucha en el mismo reproductor. Es una
@@ -1764,7 +1773,10 @@ function horaTexto(){
      si el archivo no llega la sección se va entera en vez de dejar un
      rectángulo negro. */
   const a = document.createElement('video');
-  a.loop = false;
+  /* EN BUCLE: lo pidió el dueño el 08/11/2026. Es un video de 20 s;
+     cortado ahí, la sección se queda quieta justo cuando la música
+     levantaba. */
+  a.loop = true;
   a.preload = 'metadata';
   a.playsInline = true;
   a.setAttribute('playsinline', '');
