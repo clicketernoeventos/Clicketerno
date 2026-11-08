@@ -6,6 +6,10 @@ pruebas/.cache/
 # quedaran guardadas, el día que pia/nueva cambie el video seguiría
 # mostrando la versión vieja).
 *.mp4
+# EXCEPTO el video de una invitación: ése no es una pieza de venta,
+# es lo que se ve en el reproductor de la tarjeta, y sin él la sección
+# de la canción se va entera. Uno por renglón, con nombre y apellido.
+!maricel50/video.mp4
 *.wav
 video/img/
 video/img-muro/
