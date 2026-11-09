@@ -23,7 +23,7 @@
 <style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
 <title>Valentina · Mi egreso</title>
 <meta name="description" content="El egreso de Valentina. 5 de diciembre de 2026, Club Atlético Unión Pampayasta Sud.">
-<meta name="theme-color" content="#121014">
+<meta name="theme-color" content="#2F1B4F">
 <!-- `noindex`: es la fiesta de una persona de verdad y acá se
      piden nombres de invitados. El que tiene el link entra igual; esto la
      saca de los buscadores, que es por donde llega el que no fue invitado. -->
@@ -49,9 +49,12 @@
      dejaron a propósito: lo que manda es el VALOR. El lila hondo es la
      tinta sobre el blanco y el lila claro la del negro; al revés no se
      leen. */
-  --marron:#1B181E; --marron-noche:#121014; --marron-honda:#0C0B0E;
+  /* SIN NEGRO (pedido del 09/11/2026: "más tonos lilas, reemplazá los
+     negros, y más blancos"): las bandas oscuras son un violeta hondo y
+     la tinta sobre el blanco también. */
+  --marron:#3B2462; --marron-noche:#2F1B4F; --marron-honda:#26153F;
   --malva:#5E3591; --rubor:#EDE5F5;
-  --papel:#F6F3F8; --crema:#FDFCFE; --tinta:#1B181E;
+  --papel:#F6F3F8; --crema:#FDFCFE; --tinta:#3B2462;
   --gris:#5D5766;
   --acento:#C6AEE8; --acento-c:#E6DAF5; --acento-t:#5E3591;
   /* Cormorant Garamond (con su bastardilla de verdad) para los títulos,
@@ -189,7 +192,7 @@ svg.linea{fill:none;stroke:currentColor;stroke-width:1;
 html:not(.js) #sobre{display:none}
 #sobre:before{content:'';position:absolute;inset:0;z-index:0;
   background-color:var(--marron);
-  background-image:radial-gradient(120% 90% at 50% 12%,#2B2630,var(--marron) 58%,var(--marron-noche));
+  background-image:radial-gradient(120% 90% at 50% 12%,#4A2F75,var(--marron) 58%,var(--marron-noche));
   transition:opacity .55s var(--e) .95s}
 #sobre.abierto:before{opacity:0}
 #sobre.abierto{visibility:hidden;pointer-events:none}
@@ -207,7 +210,7 @@ html:not(.js) #sobre{display:none}
   transition:transform .75s var(--e) .55s}
 #sobre.abierto .tapa{transform:scale(1.07)}
 .tapa-cuerpo{position:absolute;inset:0;border-radius:5px;
-  background:linear-gradient(160deg,#2B2630,#1C191F 60%,#0C0B0E);
+  background:linear-gradient(160deg,#4A2F75,#38225C 60%,#26153F);
   box-shadow:0 42px 84px -32px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.14),
     0 0 0 1px rgba(198,174,232,.2)}
 /* La carta: vive adentro y sale al abrir. */
@@ -278,7 +281,7 @@ html:not(.js) #sobre{display:none}
 /* El frente del sobre, que es lo que tapa la carta. */
 .tapa-frente{position:absolute;left:0;right:0;bottom:0;height:56%;z-index:3;
   border-radius:0 0 5px 5px;
-  background:linear-gradient(170deg,#2B2630,#1F1B23 70%,#141217);
+  background:linear-gradient(170deg,#4A2F75,#3C2562 70%,#2C1A4A);
   box-shadow:0 -2px 10px -4px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1)}
 /* LOS DOS PLIEGUES LATERALES, y no son un adorno: son lo que termina
    de TAPAR la carta. Con la solapa sola, el triángulo se angosta hacia
@@ -288,14 +291,14 @@ html:not(.js) #sobre{display:none}
    el grande de arriba, estos dos y el de abajo. Puestos los cuatro, no
    queda un solo punto por donde se vea lo de adentro. */
 .flanco{position:absolute;top:0;height:46%;width:54%;z-index:3;
-  background:linear-gradient(200deg,#28232D,#1B181F 78%);
+  background:linear-gradient(200deg,#452C6E,#37215B 78%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
 .flanco.izq{left:0;clip-path:polygon(0 0,0 100%,100% 100%)}
 .flanco.der{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
 /* La solapa: un triángulo de verdad —`clip-path`, no un cuadrado
    rotado adentro de un overflow— que gira sobre su bisagra de arriba. */
 .solapa{position:absolute;left:0;right:0;top:0;height:56%;z-index:4;
-  background:linear-gradient(135deg,#3A3440,#211D25);
+  background:linear-gradient(135deg,#56388A,#3F2766);
   clip-path:polygon(0 0,100% 0,50% 100%);
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.45));
   transform-origin:50% 0;
@@ -313,12 +316,12 @@ html:not(.js) #sobre{display:none}
 #abrir{position:relative;display:grid;place-items:center;width:84px;height:84px;border-radius:50%;
   background:radial-gradient(circle at 34% 30%,var(--acento-c),var(--acento) 52%,#7E55B8);
   box-shadow:0 12px 26px -8px rgba(0,0,0,.7),inset 0 1px 2px rgba(255,255,255,.55);
-  color:#1B181E;transition:transform .45s var(--e)}
+  color:#3B2462;transition:transform .45s var(--e)}
 #abrir svg{width:40px;height:40px}
 /* El canto del lacre: un aro hundido adentro del borde. Sin él es una
    moneda; con él, un sello. */
 #abrir:before{content:'';position:absolute;inset:7px;border-radius:50%;
-  border:1.5px solid rgba(18,16,20,.28);box-shadow:inset 0 1px 1px rgba(255,255,255,.4)}
+  border:1.5px solid rgba(47,27,79,.28);box-shadow:inset 0 1px 1px rgba(255,255,255,.4)}
 #abrir:active{transform:scale(.95)}
 @media (hover:hover){ #abrir:hover{transform:scale(1.06)} }
 /* El latido va en un HALO alrededor y no en el botón: moviendo la caja
@@ -345,7 +348,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .claro h2{color:var(--malva)}
 .claro .cuerpo{color:var(--gris)}
 .oscura{background-color:var(--marron);
-  background-image:radial-gradient(120% 80% at 50% 0,#29242E,var(--marron) 62%,var(--marron-noche));
+  background-image:radial-gradient(120% 80% at 50% 0,#472D70,var(--marron) 62%,var(--marron-noche));
   color:#F7F4FA}
 .oscura h2{color:#F9F6FB}
 .oscura .cuerpo{color:#E3DCEA}
@@ -359,7 +362,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   background-color:var(--marron-noche);
   background-image:
     radial-gradient(90% 60% at 50% 12%,rgba(198,174,232,.13),transparent 70%),
-    radial-gradient(130% 95% at 50% 20%,#2C2731,#1D1A21 54%,var(--marron-noche));
+    radial-gradient(130% 95% at 50% 20%,#4B3076,#3A235F 54%,var(--marron-noche));
   padding:clamp(74px,13vh,124px) calc(var(--gutter) + 12px)
           calc(clamp(64px,11vh,96px) + env(safe-area-inset-bottom));
   text-align:center;overflow:hidden}
@@ -409,7 +412,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #nombre{font-family:var(--mano);font-weight:400;position:relative;
   font-size:clamp(66px,23vw,146px);line-height:1.02;color:var(--acento-c);
   letter-spacing:.01em;margin:-.2em 0 -.02em;
-  text-shadow:0 2px 16px rgba(12,11,14,.6)}
+  text-shadow:0 2px 16px rgba(38,21,63,.6)}
 /* El swash de abajo REEMPLAZA al hilo de la de Pia: un hilo y un
    swash puestos juntos son dos separadores pegados, y eso se lee como
    un error de maqueta. Se dibuja solo, con el largo real de cada
@@ -459,7 +462,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    paleta de esta tarjeta son tres colores y una foto a color mete los
    suyos. El filtro va en el CSS y no quemado en el archivo, así el
    original queda entero por si algún día se quiere a color. */
-.port-foto{position:absolute;inset:0;z-index:0;background:#0C0B0E;overflow:hidden}
+.port-foto{position:absolute;inset:0;z-index:0;background:#26153F;overflow:hidden}
 /* La foto es MÁS ALTA que la pantalla y está corrida hacia arriba, y
    eso no es un recorte caprichoso: con la foto justa, la cara cae
    exactamente donde va el nombre y el texto se le monta encima. Lo que
@@ -474,9 +477,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    de abajo de la foto cae en un punto distinto en cada pantalla y un
    velo que todavía deja pasar un 10% ahí dibuja una raya. */
 .port-foto:after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(12,11,14,.62) 0%,rgba(12,11,14,.14) 20%,
-    rgba(12,11,14,.5) 30%,rgba(12,11,14,.87) 50%,rgba(12,11,14,.97) 74%,#0C0B0E 88%)}
-#portada.con-foto{align-content:end;background-image:none;background-color:#0C0B0E}
+  background:linear-gradient(180deg,rgba(38,21,63,.62) 0%,rgba(38,21,63,.14) 20%,
+    rgba(38,21,63,.5) 30%,rgba(38,21,63,.87) 50%,rgba(38,21,63,.97) 74%,#26153F 88%)}
+#portada.con-foto{align-content:end;background-image:none;background-color:#26153F}
 /* LA PORTADA SE ASIENTA. Mientras el sobre está encima espera un
    punto más grande y apagada, y se acomoda justo cuando la carta se
    disuelve: así las dos mitades de la transición se cruzan en el
@@ -491,11 +494,34 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    acomoda a un bloque que ya no es el mismo y una esquina caía justo
    entre "MIS" y "50", leyéndose como un símbolo. Con foto, no va. */
 #portada.con-foto .marco{display:none}
+#portada.con-foto .port-foto img.fondo{top:0;height:100%;object-fit:cover;
+  filter:blur(26px) saturate(.7) brightness(.5);transform:scale(1.2)}
+/* En una pantalla ancha la foto a todo lo ancho medía más que la
+   pantalla y quedaba DEBAJO del texto (lo agarró la prueba en 1280): va
+   con techo de ancho y de alto, centrada. */
+#portada.con-foto .port-foto img.frente{top:clamp(46px,8vh,90px);height:auto;
+  left:0;right:0;margin:0 auto;width:min(100%,640px,calc(38svh * 1080 / 651));
+  aspect-ratio:1080/651;object-fit:cover;filter:saturate(1.05);z-index:1;
+  -webkit-mask-image:linear-gradient(180deg,#000 80%,transparent);
+  mask-image:linear-gradient(180deg,#000 80%,transparent)}
+/* El velo va DEBAJO de la foto de adelante (ella tiene z-index) y tiñe
+   de lila la desenfocada de atrás, que si no se ve verde y barrosa. */
+#portada.con-foto .port-foto:after{background:linear-gradient(180deg,rgba(59,36,98,.6) 0%,
+  rgba(59,36,98,.55) 40%,rgba(38,21,63,.92) 62%,#26153F 78%)}
+#valorTarjeta{white-space:pre-line;line-height:1.5}
+/* Las franjas con la forma de SU foto, así no queda nadie afuera. Dos a
+   color —el humo lila y la portada son la paleta de la fiesta— y dos en
+   blanco y negro, para no abusar de ninguna de las dos. */
+#fRecuerdo figure{height:auto;aspect-ratio:1080/615}
+#fBrindis figure{height:auto;aspect-ratio:1080/690}
+#fHoy figure{height:auto;aspect-ratio:1197/798}
+#fRecuerdo img{filter:saturate(1.05) contrast(1.03)}
+#fBrindis figure:after{background:linear-gradient(180deg,transparent 86%,var(--papel) 100%)}
+#fHoy figure:after{background:linear-gradient(180deg,transparent 84%,var(--marron-noche) 100%)}
 /* LA FOTO DE LA PROMO VA ENTERA (pedido del dueño: "quedan personas
    afuera"). Es apaisada y la franja era alta, así que se comía los
    costados. Ahora el marco tiene la forma de la foto, y el fundido de
    abajo es corto para no apagarles los pies. */
-#fRecuerdo figure{height:auto;aspect-ratio:1197/798}
 #fRecuerdo img{object-position:50% 50%}
 #fRecuerdo figure:after{background:linear-gradient(180deg,transparent 86%,var(--papel) 100%)}
 .port-dice{font-family:var(--titulos);font-style:italic;font-weight:400;
@@ -579,7 +605,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .franja.tras-clara .sierra{fill:var(--papel)}
 .franja.tras-clara img{object-position:50% 0}
 .franja.tras-clara figure:after{
-  background:linear-gradient(180deg,transparent 64%,rgba(18,16,20,.38) 84%,var(--marron-noche) 100%)}
+  background:linear-gradient(180deg,transparent 64%,rgba(47,27,79,.38) 84%,var(--marron-noche) 100%)}
 /* El pie: el único renglón nuestro, sobre el oscuro del final. */
 /* El pie lleva `arco` por lo mismo que #donde: la franja del final
    nace vacía y sin curva el papel del cierre chocaría con el pie
@@ -673,7 +699,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 /* ══════════ botones ══════════ */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
   min-height:48px;margin-top:22px;padding:14px 28px;border-radius:999px;
-  background-color:var(--acento-c);color:#1B181E;
+  background-color:var(--acento-c);color:#3B2462;
   /* En Bebas como el resto de las versalitas, y en 400: Bebas viene en
      UN solo peso, asi que un 500 es una negrita que inventa el
      navegador - y eso no avisa. */
@@ -698,14 +724,14 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .campo select{appearance:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23C9A3A4' stroke-width='1.6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 15px center}
-.campo select option{background-color:#1B181E;color:#FDFCFE}
+.campo select option{background-color:#3B2462;color:#FDFCFE}
 .radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .radios label{display:flex;align-items:center;justify-content:center;gap:9px;
   min-height:52px;padding:13px 8px;border-radius:3px;cursor:pointer;
   border:1px solid rgba(230,218,245,.26);font-size:13.5px;color:#DCCDF0;
   transition:.3s var(--e);text-align:center;letter-spacing:.02em;margin:0}
 .radios label.elegida{background-color:var(--acento-c);border-color:transparent;
-  color:#1B181E;font-weight:500}
+  color:#3B2462;font-weight:500}
 /* El radio de verdad se achica a 1x1 y se esconde: el blanco del dedo
    es el label entero, que mide 52 de alto. NO lleva
    `pointer-events:none`: con eso el navegador no se lo puede dar a
@@ -727,7 +753,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .aviso-datos a{color:var(--acento-c);display:inline-block;padding:14px 2px;
   text-decoration:underline;text-underline-offset:3px}
 #enviar{width:100%;min-height:56px;margin-top:4px;border-radius:999px;
-  background-color:var(--acento-c);color:#1B181E;
+  background-color:var(--acento-c);color:#3B2462;
   font-family:var(--rotulos);font-size:13.5px;font-weight:400;
   letter-spacing:.26em;text-transform:uppercase}
 #enviar[disabled]{opacity:.5;cursor:default}
@@ -783,14 +809,14 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    lila con el birrete. */
 .player .disco{width:min(210px,58vw);aspect-ratio:1;margin:0 auto 26px;border-radius:50%;
   padding:6px;background:linear-gradient(145deg,var(--acento-c),var(--acento-t));
-  box-shadow:0 22px 40px -20px rgba(12,11,14,.6)}
+  box-shadow:0 22px 40px -20px rgba(38,21,63,.6)}
 .player .vinilo{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
   background:conic-gradient(from 30deg,rgba(198,174,232,.0) 0deg,rgba(198,174,232,.28) 40deg,
     rgba(198,174,232,0) 90deg,rgba(198,174,232,0) 210deg,rgba(198,174,232,.22) 250deg,rgba(198,174,232,0) 300deg),
     repeating-radial-gradient(circle,#141117 0 2px,#1D1922 2px 4px)}
 .player .etiqueta{width:38%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
   background:radial-gradient(circle at 35% 30%,var(--acento-c),var(--acento) 60%,var(--acento-t));
-  color:var(--marron-noche);box-shadow:0 0 0 3px #0C0B0E}
+  color:var(--marron-noche);box-shadow:0 0 0 3px #26153F}
 .player .etiqueta svg{width:52%;height:52%}
 .player.suena .vinilo{animation:girar 7s linear infinite}
 @keyframes girar{to{transform:rotate(360deg)}}
@@ -803,7 +829,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   aspect-ratio:368/624;margin:0 auto 22px;border-radius:20px;overflow:hidden;
   background:var(--marron-honda);cursor:pointer;
   box-shadow:0 0 0 1px var(--acento-t),0 0 0 6px var(--papel),0 0 0 7px rgba(94,53,145,.3),
-    0 18px 40px -18px rgba(12,11,14,.55)}
+    0 18px 40px -18px rgba(38,21,63,.55)}
 .player .pantalla video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 /* La flor del avance necesita aire arriba o el telón de `.ap` —que
    recorta a la caja del bloque— le come la mitad de arriba. El que
@@ -1003,7 +1029,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   <section class="seccion claro arco" data-ico="reloj">
     <div class="caja">
       <p class="arriba ap">Falta poco</p>
-      <h2 class="ap d1">Ya casi<br><em class="cursiva">llega el día</em></h2>
+      <h2 class="ap d1">Ya casi<br><em class="cursiva">llega la noche</em></h2>
       <div class="reloj ap d2">
         <div><b id="cD">–</b><span>días</span></div>
         <div><b id="cH">–</b><span>horas</span></div>
@@ -1094,6 +1120,10 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
        sola canción, los de los costados vuelven al principio, que es
        lo que hace cualquier reproductor. La línea con la flor no es
        un control, es el avance. -->
+  <!-- Una franja más (09/11/2026): entre los detalles (oscuro) y la
+       canción (claro), igual que la del calendario. -->
+  <section class="seccion franja tras-oscura" id="fBrindis" hidden></section>
+
   <section class="seccion claro arco" id="cancion">
     <div class="caja">
       <!-- Sólo el nombre de la canción, pedido del dueño (09/11/2026). -->
@@ -1222,7 +1252,7 @@ const CONFIG = {
   /* SIN HORA: no la mandaron. La cuenta llega al principio de ese día en
      Rosario y ningún renglón dice una hora. Cuando llegue:
      "2026-12-05T21:00:00-03:00". */
-  fiesta: "2026-12-05",
+  fiesta: "2026-12-05T21:00:00-03:00",   // la hora la mandó el dueño el 09/11/2026
   hastaHora: "",
   confirmarHasta: "2 de diciembre",   // lo mandó el dueño el 09/11/2026
   lugar: "Club Atlético Unión Pampayasta Sud",
@@ -1239,13 +1269,17 @@ const CONFIG = {
   /* Lo mandó el dueño el 09/11/2026: "elegante y en tonos oscuros". */
   dressTitulo: "Elegante",
   dressTexto: "En tonos oscuros.",
-  valorTarjeta: "",
-  portada: "",
+  /* Lo mandó el dueño el 09/11/2026, tal cual. El salto de renglón lo
+     respeta el CSS (white-space:pre-line). */
+  valorTarjeta: "Mayores: $52.000\nMenores (de 4 a 11 años): $25.000",
+  portada: "fotos/portada.webp",
   franjas: {
-    fRecuerdo: { foto: "fotos/promo.webp", alt: "La promo tirando las camperas al aire" }
+    fRecuerdo: { foto: "fotos/humo.webp", alt: "La promo abrazada, con humo lila" },
+    fBrindis:  { foto: "fotos/sentados.webp", alt: "La promo sentada en el pasto" },
+    fHoy:      { foto: "fotos/promo.webp", alt: "La promo tirando las camperas al aire" }
   },
   /* Quiere el apartado de regalos, pero el alias todavía no llegó. */
-  alias: "",
+  alias: "Valen.0777",           // tal cual lo mandaron, con el punto
   titular: "",
   /* SU PROPIA PLANILLA, implementada por el dueño el 09/11/2026. */
   endpoint: "https://script.google.com/macros/s/AKfycbwU32r_CpdAlEb3XfmG7jQH3gxACTSDFM9PRw-LlVyO8IYLgYpxV_eBm-jKf8vzYyeZ5g/exec"
@@ -1518,7 +1552,17 @@ function sierraPath(semilla, picos){
 (function(){
   const port = $('#portada'), caja = $('.port-foto', port || document);
   if (port && caja && CONFIG.portada)
-    cargarFoto(CONFIG.portada, '', im => { caja.appendChild(im); port.classList.add('con-foto'); },
+    cargarFoto(CONFIG.portada, '', im => {
+      /* LA FOTO VA ENTERA: es la promo de punta a punta y apaisada, y
+         recortada a lo alto de un teléfono quedaba la mitad del grupo
+         afuera. Atrás va la misma foto, ampliada y desenfocada, que llena
+         la pantalla sin que se note el corte. */
+      const atras = im.cloneNode();
+      atras.className = 'fondo';
+      im.className = 'frente';
+      caja.appendChild(atras); caja.appendChild(im);
+      port.classList.add('con-foto');
+    },
                () => { try{ caja.remove(); }catch(e){} });
   /* SIN FOTO, ESA CAPA SE SACA, y no es un detalle de prolijidad.
      `.port-foto` es un `position:absolute` con fondo OPACO: vacía

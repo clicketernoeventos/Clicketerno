@@ -3422,9 +3422,8 @@ dejaría peor parados.
   `clicketerno.com.ar/maricel50/listado`. Falta **verla entrar una
   vez**: confirmar como invitado y mirar la fila (desde esa sesión no
   había salida a Google).
-- **Lo que falta de `valentinaegreso/`** (09/11/2026): la **hora**, el
-  **alias** con su **titular**, las **fotos** (y la de
-  chica que ofreció), **cuál es la canción** que llegó (eligió dos) y confirmar
+- **Lo que falta de `valentinaegreso/`** (09/11/2026): el **titular** de
+  la cuenta del alias `Valen.0777`, la foto de chica que ofreció, y confirmar
   si de verdad quiere la confirmación (marcó que no). **La planilla ya
   está** (09/11/2026) y el tablero vive en
   `clicketerno.com.ar/valentinaegreso/listado`; falta verla entrar una vez.

@@ -4625,3 +4625,25 @@ es ésta.
 tonos oscuros"* y *"tienen tiempo de avisar hasta el 2 de diciembre"*.
 El renglón de la confirmación dice **hasta el 2** y no *"antes del 2"*,
 que es como venía escrito de las otras: eso habría dejado el día 2 afuera.
+
+**Cuarta vuelta** (09/11/2026), con tres fotos nuevas de la promo:
+*"más tonos lilas, reemplazá los negros, y más blancos"*, el valor de la
+tarjeta (mayores $52.000, menores de 4 a 11 años $25.000), el alias
+**Valen.0777** tal cual, la hora (**21 h**), *"la primera foto queda de
+portada, que quede armónica"*, las otras repartidas, una para el final, y
+*"que algunas sean a color así no abusamos del blanco y negro"*.
+
+- **Sin negro**: las bandas oscuras, el sobre y la tinta pasaron a un
+  violeta hondo (#2F1B4F / #3B2462). El disco del reproductor quedó negro:
+  es un vinilo.
+- **La portada es la foto ENTERA**, arriba, sobre la misma foto
+  desenfocada y teñida de lila. Recortada a lo alto del teléfono se perdía
+  la mitad del grupo. **Trampa**: a 1280 la foto a todo lo ancho medía más
+  que la pantalla y caía debajo del texto (1,03:1); lo agarró la medición
+  de texto sobre foto. Va con techo de ancho y de alto (38svh).
+- **Cuatro fotos**: portada y humo lila **a color**; sentados y el final
+  (las camperas al aire) en blanco y negro. Una franja nueva, `fBrindis`,
+  entre los detalles y la canción. Cada franja con la forma de su foto.
+- La franja baja dejaba al paralaje calculando sólo cuando estaba en
+  pantalla; ya estaba arreglado en la vuelta anterior y aguanta esta.
+- Falta el **titular** de la cuenta del alias.
