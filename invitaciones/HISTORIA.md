@@ -4620,3 +4620,8 @@ es ésta.
   la franja baja, y el paralaje se clavaba apenas salía de la pantalla
   (lo agarró `invitacion_mirar.js`): se sigue calculando una pantalla
   más allá, con un tope que no pasa del sobrante de la foto.
+
+**Dress code y fecha límite** (09/11/2026), del dueño: *"elegante y en
+tonos oscuros"* y *"tienen tiempo de avisar hasta el 2 de diciembre"*.
+El renglón de la confirmación dice **hasta el 2** y no *"antes del 2"*,
+que es como venía escrito de las otras: eso habría dejado el día 2 afuera.
