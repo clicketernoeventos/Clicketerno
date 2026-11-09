@@ -1224,7 +1224,7 @@ const CONFIG = {
      "2026-12-05T21:00:00-03:00". */
   fiesta: "2026-12-05",
   hastaHora: "",
-  confirmarHasta: "",            // vacío NO dibuja el renglón
+  confirmarHasta: "2 de diciembre",   // lo mandó el dueño el 09/11/2026
   lugar: "Club Atlético Unión Pampayasta Sud",
   calle: "",                     // no la mandaron; el enlace es el que mandó ella
   mapa: "https://maps.app.goo.gl/5mULJ9EAqyNPvw448",
@@ -1236,9 +1236,9 @@ const CONFIG = {
      09/11/2026 en un video. El nombre va como TÍTULO de la sección (lo
      pidió así), por eso acá queda vacío: si no, se repetiría abajo. */
   cancion: { nombre: "", autor: "", dura: 292.7, archivos: ["musica.m4a", "musica.ogg"] },
-  /* "AHÍ LE PASO BIEN": el dress code llega después. Vacío no se dibuja. */
-  dressTitulo: "",
-  dressTexto: "",
+  /* Lo mandó el dueño el 09/11/2026: "elegante y en tonos oscuros". */
+  dressTitulo: "Elegante",
+  dressTexto: "En tonos oscuros.",
   valorTarjeta: "",
   portada: "",
   franjas: {
@@ -1781,7 +1781,9 @@ function horaTexto(){
   else $('#titular').hidden = true;
   /* Sin fecha de cierre NO se inventa una. */
   if (CONFIG.confirmarHasta)
-    $('#hasta').textContent = 'Avisame antes del ' + CONFIG.confirmarHasta +
+    /* "Tienen tiempo de avisar HASTA el 2": "antes del 2" dejaría el
+       día 2 afuera, que no es lo que dijo. */
+    $('#hasta').textContent = 'Tenés tiempo de avisarme hasta el ' + CONFIG.confirmarHasta +
                               '. Con eso cerramos las mesas.';
   else $('#hasta').textContent = 'Avisame si venís, así armamos las mesas.';
   /* Al FINAL, cuando ya se escribió todo lo de la cápsula: sacarla
