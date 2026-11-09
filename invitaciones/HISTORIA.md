@@ -4599,3 +4599,24 @@ la etiqueta lila y el birrete**, que gira sólo mientras suena, y la
 puntita del avance es **un birrete** —pedido del dueño—. El renglón
 "Es ..., de ..." no se dibuja: eligió dos canciones y no sabemos cuál
 es ésta.
+
+**Tercera vuelta** (09/11/2026), tres pedidos del dueño:
+
+- *"No pongas mis canciones. Solo el nombre"*: el título de la sección
+  es la canción —**Sign of the Times**, con **Harry Styles** arriba— y
+  el renglón de abajo no va, para no repetirlo.
+- *"Falta el countdown… algún diseño lindo y sofisticado"*: la cuenta
+  ya estaba, pero eran cuatro números con esquinitas y no se leía como
+  algo. Ahora son **cuatro anillos lilas** que se cierran con su unidad
+  (horas sobre 24, minutos y segundos sobre 60; el de los días va
+  entero, con un punto en la cima). Los dibuja un bloque aparte que LEE
+  lo que escribió el reloj: dos cuentas son una que se separa.
+  **Trampa**: `vector-effect:non-scaling-stroke` rompe `pathLength` en
+  Chrome — los anillos marcaban cualquier cosa (00 minutos dibujaba tres
+  cuartos). Sin esa propiedad, y con el trazo en unidades del dibujo.
+- *"La imagen… quedan personas afuera"*: la foto de la promo es apaisada
+  y la franja era alta, así que se comía los costados. El marco ahora
+  tiene **la forma de la foto** y el fundido de abajo es corto. Eso dejó
+  la franja baja, y el paralaje se clavaba apenas salía de la pantalla
+  (lo agarró `invitacion_mirar.js`): se sigue calculando una pantalla
+  más allá, con un tope que no pasa del sobrante de la foto.
