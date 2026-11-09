@@ -752,6 +752,22 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 
 /* ══════════ 6b · el reproductor ══════════ */
 .player{width:100%;max-width:310px;margin:clamp(26px,5vh,38px) auto 0}
+/* El disco: negro con surcos, un brillo lila que lo cruza y la etiqueta
+   lila con el birrete. */
+.player .disco{width:min(210px,58vw);aspect-ratio:1;margin:0 auto 26px;border-radius:50%;
+  padding:6px;background:linear-gradient(145deg,var(--acento-c),var(--acento-t));
+  box-shadow:0 22px 40px -20px rgba(12,11,14,.6)}
+.player .vinilo{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(from 30deg,rgba(198,174,232,.0) 0deg,rgba(198,174,232,.28) 40deg,
+    rgba(198,174,232,0) 90deg,rgba(198,174,232,0) 210deg,rgba(198,174,232,.22) 250deg,rgba(198,174,232,0) 300deg),
+    repeating-radial-gradient(circle,#141117 0 2px,#1D1922 2px 4px)}
+.player .etiqueta{width:38%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,var(--acento-c),var(--acento) 60%,var(--acento-t));
+  color:var(--marron-noche);box-shadow:0 0 0 3px #0C0B0E}
+.player .etiqueta svg{width:52%;height:52%}
+.player.suena .vinilo{animation:girar 7s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.player.suena .vinilo{animation:none}}
 /* La pantallita del video. Vertical como lo grabaron (368x624): con un
    marco apaisado se recortaría la torta o la cara. El alto sale del
    ancho, con techo en el alto de la pantalla, para que en un teléfono
@@ -765,13 +781,14 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 /* La flor del avance necesita aire arriba o el telón de `.ap` —que
    recorta a la caja del bloque— le come la mitad de arriba. El que
    recorta no puede ser más chico que lo que tiene que mostrar. */
-.player .barra{position:relative;height:1px;margin-top:11px;
+.player .barra{position:relative;height:1px;margin:22px 16px 0;
   background-color:rgba(94,53,145,.3)}
 .player .barra i{position:absolute;left:0;top:-1px;height:3px;width:0;
   background-color:var(--acento-t);transition:width .25s linear}
-.player .barra b{position:absolute;left:0;top:50%;width:18px;height:18px;
-  margin:-9px 0 0 -9px;color:var(--acento-t);transition:left .25s linear}
-.player .barra b svg{width:18px;height:18px;display:block}
+.player .barra b{position:absolute;left:0;top:50%;width:28px;height:28px;
+  margin:-15px 0 0 -14px;color:var(--acento-t);transition:left .25s linear;
+  filter:drop-shadow(0 2px 3px rgba(94,53,145,.35))}
+.player .barra b svg{width:28px;height:28px;display:block}
 .player .mandos{display:flex;align-items:center;justify-content:center;
   gap:clamp(18px,6vw,30px);margin-top:14px;color:var(--acento-t)}
 .player .salto{display:inline-flex;align-items:center;justify-content:center;
@@ -1053,7 +1070,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   <section class="seccion claro arco" id="cancion">
     <div class="caja">
       <p class="arriba ap">Subí el volumen</p>
-      <h2 class="ap d1">Mis<br><em class="cursiva">canciones</em></h2>
+      <h2 class="ap d1">Mi<br><em class="cursiva">canción</em></h2>
       <div class="player ap d2" id="player"></div>
     </div>
   </section>
@@ -1187,7 +1204,10 @@ const CONFIG = {
   /* Las dos canciones que eligió ("Forever Young" y "Sign of the
      Times") todavía no llegaron como archivo: sin archivo la sección no
      se dibuja. */
-  cancion: { nombre: "", autor: "", dura: 0, video: "", tapa: "" },
+  /* La que mandó el dueño el 09/11/2026 (de un video). Sin el nombre
+     escrito: eligió dos canciones y no sabemos cuál es, así que el
+     renglón "Es ..., de ..." no se dibuja hasta saberlo. */
+  cancion: { nombre: "", autor: "", dura: 292.7, archivos: ["musica.m4a", "musica.ogg"] },
   /* "AHÍ LE PASO BIEN": el dress code llega después. Vacío no se dibuja. */
   dressTitulo: "",
   dressTexto: "",
@@ -1755,37 +1775,26 @@ function horaTexto(){
 (function(){
   const caja = $('#player'), sec = $('#cancion'), c = CONFIG.cancion || {};
   if (!caja || !sec) return;
-  if (!c.nombre || !c.video){ sec.remove(); return; }
+  if (!(c.archivos || []).length){ sec.remove(); return; }
 
-  /* EL VIDEO ES EL REPRODUCTOR. Se ve en su pantallita y suena: es la
-     misma canción. `playsinline` porque el iPhone, sin eso, lo abre a
-     pantalla completa apenas arranca — y arranca con el toque que abre
-     el sobre, o sea que el invitado abriría la invitación y se
-     encontraría un video tapándola. Sin `controls`: los mandos son los
-     nuestros, los de siempre. La tapa es un cuadro del propio video, y
-     si el archivo no llega la sección se va entera en vez de dejar un
-     rectángulo negro. */
-  const a = document.createElement('video');
-  /* EN BUCLE: lo pidió el dueño el 08/11/2026. Es un video de 20 s;
-     cortado ahí, la sección se queda quieta justo cuando la música
-     levantaba. */
-  a.loop = true;
+  const a = document.createElement('audio');
+  a.loop = false;
   a.preload = 'metadata';
-  a.playsInline = true;
-  a.setAttribute('playsinline', '');
-  a.setAttribute('webkit-playsinline', '');
-  if (c.tapa) a.poster = c.tapa;
-  a.setAttribute('aria-label', 'Video de ' + (CONFIG.quien || '') + ' con la canción');
+  /* Con `<source>` adentro, el error llega al ELEMENTO recién cuando
+     fallaron TODAS las fuentes: con un `src` suelto, un navegador que
+     no decodifica el primero se queda sin reproductor teniendo el otro
+     al lado. */
   a.addEventListener('error', () => { try{ sec.remove(); }catch(e){} });
-  const f = document.createElement('source');
-  f.src = c.video;
-  f.type = 'video/mp4';
-  f.addEventListener('error', () => { try{ sec.remove(); }catch(e){} });
-  a.appendChild(f);
-  const pantalla = document.createElement('div');
-  pantalla.className = 'pantalla';
-  pantalla.appendChild(a);
-  caja.appendChild(pantalla);
+  c.archivos.forEach(u => {
+    const f = document.createElement('source');
+    f.src = u;
+    if (/\.ogg$/i.test(u)) f.type = 'audio/ogg; codecs=opus';
+    else if (/\.m4a$/i.test(u)) f.type = 'audio/mp4; codecs="mp4a.40.2"';
+    a.appendChild(f);
+  });
+  /* Se AGREGA, no reemplaza: con innerHTML se borraría el <audio> que
+     acaba de colgarse acá adentro. */
+  caja.appendChild(a);
 
   const ico = d => '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + d + '</svg>';
   const PLAY  = ico('<path d="M7 4.6l12 7.4-12 7.4z"/>');
@@ -1794,28 +1803,38 @@ function horaTexto(){
   const mando = giro =>
     '<svg viewBox="0 0 24 24" aria-hidden="true"' + (giro ? ' transform="scale(-1,1)"' : '') +
     '><path d="M17 4h2v16h-2zM5 4l10 8-10 8z" fill="currentColor"/></svg>';
-  /* La puntita del avance es un destello, el mismo de los cortes. */
-  const FLORCITA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-    'stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">' +
-    flor(12, 12, 10, 5, -1.57) + '</svg>';
+  /* LA PUNTITA DEL AVANCE ES UN BIRRETE (pedido del dueño): el mismo
+     del sello del sobre, que va corriendo por la línea mientras suena. */
+  const BIRRETE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+    '<path d="M12 4.2 1.6 9.2 12 14.2l10.4-5z"/>' +
+    '<path d="M5.8 11.6v4.1c0 1.7 2.8 3.1 6.2 3.1s6.2-1.4 6.2-3.1v-4.1L12 14.6z"/>' +
+    '<path d="M20.4 9.9v5.4" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+    '<path d="M20.4 15.1l-1.1 3.3h2.2z"/></svg>';
 
+  /* EL DISCO: un vinilo negro con la etiqueta lila y el birrete en el
+     centro. Gira SÓLO mientras suena —lo prende el invitado—, y con
+     "menos movimiento" no gira. Es decoración: no ataja el dedo. */
   caja.insertAdjacentHTML('beforeend',
+    '<div class="disco" aria-hidden="true" style="pointer-events:none">' +
+      '<div class="vinilo"><span class="etiqueta">' + BIRRETE + '</span></div></div>' +
     '<div class="barra" aria-hidden="true" style="pointer-events:none">' +
-      '<i></i><b>' + FLORCITA + '</b></div>' +
+      '<i></i><b>' + BIRRETE + '</b></div>' +
     '<div class="mandos">' +
       '<button type="button" class="salto" id="rAtras" aria-label="Volver al principio">' +
         mando(true) + '</button>' +
-      '<button type="button" class="play" id="rPlay" aria-label="Ver y escuchar la canción">' +
+      '<button type="button" class="play" id="rPlay" aria-label="Escuchar la canción">' +
         PLAY + '</button>' +
       '<button type="button" class="salto" id="rAde" aria-label="Volver al principio">' +
         mando(false) + '</button>' +
     '</div>' +
-    '<p class="pie-player">Es <em>' + esc(c.nombre) + '</em>, de ' + esc(c.autor || '') + '.</p>');
+    (c.nombre ? '<p class="pie-player">Es <em>' + esc(c.nombre) + '</em>' +
+      (c.autor ? ', de ' + esc(c.autor) : '') + '.</p>' : ''));
 
   const bPlay = $('#rPlay'), llena = $('.barra i', caja), punta = $('.barra b', caja);
   const pintar = () => {
     bPlay.innerHTML = a.paused ? PLAY : PAUSA;
-    bPlay.setAttribute('aria-label', a.paused ? 'Ver y escuchar la canción' : 'Pausar el video');
+    caja.classList.toggle('suena', !a.paused);
+    bPlay.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción');
   };
   const avance = pc => { llena.style.width = pc + '%'; punta.style.left = pc + '%'; };
   a.addEventListener('play', pintar);
@@ -1830,11 +1849,9 @@ function horaTexto(){
     if (!d) return;
     avance(Math.max(0, Math.min(100, (a.currentTime / d) * 100)));
   });
-  const alternar = () => { if (a.paused) a.play().catch(() => {}); else a.pause(); };
-  bPlay.addEventListener('click', alternar);
-  /* Tocar el video también lo pausa o lo arranca: es lo que hace
-     cualquiera con un video en el teléfono. */
-  pantalla.addEventListener('click', alternar);
+  bPlay.addEventListener('click', () => {
+    if (a.paused) a.play().catch(() => {}); else a.pause();
+  });
   const alPrincipio = () => { a.currentTime = 0; a.play().catch(() => {}); };
   $('#rAtras').addEventListener('click', alPrincipio);
   $('#rAde').addEventListener('click', alPrincipio);

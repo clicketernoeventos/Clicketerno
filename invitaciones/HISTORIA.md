@@ -4592,3 +4592,10 @@ el birrete ya está en el sello.
 `CONFIG.endpoint` y en `valentinaegreso/listado/`. La clave del tablero
 es el correo que mandó ella, en `CLAVE_ELEGIDA` de la copia del editor
 (nunca acá). No se probó de punta a punta: sin salida a Google.
+
+**La canción** (09/11/2026): llegó en un video y se sacó el audio
+(AAC 96k + Opus 64k, 4:53). El reproductor es un **vinilo negro con
+la etiqueta lila y el birrete**, que gira sólo mientras suena, y la
+puntita del avance es **un birrete** —pedido del dueño—. El renglón
+"Es ..., de ..." no se dibuja: eligió dos canciones y no sabemos cuál
+es ésta.
