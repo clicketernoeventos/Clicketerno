@@ -1632,6 +1632,17 @@ web va en `.assetsignore` (`sql/`, `pruebas/`, los `.md`). Sin ese archivo,
 archivo llevaba la clave maestra de producción escrita en texto plano.
 Antes de agregar un archivo al repo, preguntate si querés que sea público.
 
+**Y `.git/` también va en `.assetsignore`.** Cloudflare clona el repo y
+sube la carpeta entera, historial incluido. Hasta el 09/11/2026 no
+estaba excluido: el historial completo —con todo lo que alguna vez se
+escribió y después se sacó— se bajaba desde
+`clicketerno.com.ar/.git/`. Se notó recién cuando el archivo más grande
+del historial pasó los 25 MB que admite Cloudflare y **ninguna
+publicación entró más**: la invitación de Valentina daba "no existe",
+que en el iPhone se ve como un archivo para descargar. Lo que avisa de
+una publicación caída es el check de Cloudflare en el commit de `main`
+—"Workers Builds"—: si dice *failure*, lo publicado es lo de antes.
+
 ## Las piezas de video
 
 No se publican (`video/` y `*.mp4` están en `.assetsignore` y en
