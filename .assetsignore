@@ -1,6 +1,14 @@
 # Lo que NO se publica en clicketerno.com.ar.
 # Cloudflare sube TODO lo que está en la carpeta del repo: sin este archivo,
 # cualquiera podía bajarse sql/claves.sql desde la web.
+# EL HISTORIAL DEL REPOSITORIO. Cloudflare clona el repo y sube la
+# carpeta ENTERA, .git incluida: el 09/11/2026 su archivo más grande pasó
+# los 25 MB que admite y desde ahí NINGUNA publicación entró —la invitación
+# de Valentina daba "no existe"—. Y peor que eso: mientras entraba, el
+# historial completo quedaba bajable desde clicketerno.com.ar/.git/.
+.git/
+.github/
+.gitignore
 sql/
 pruebas/
 apps-script/
