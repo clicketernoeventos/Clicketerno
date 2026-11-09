@@ -308,6 +308,16 @@ tablero que se le manda al cliente. **El dato no se toca**: una hora, un
 lugar o una fecha que no mandó el cliente no se inventan para que la frase
 cierre mejor.
 
+**"Pasame el listado" es el texto para el cliente, ya armado.** Dicho el
+09/11/2026: *"siempre que te pida listado me armás el texto con el link y
+la contraseña que le corresponde"*. Siempre se refiere a **la tarjeta que
+se está haciendo en ese chat**: no se pregunta de cuál. Va en nuestra voz
+(Click Eterno al cliente), con el link completo
+`https://clicketerno.com.ar/<carpeta>/listado` y **la contraseña de esa
+fiesta escrita** —la que eligió el cliente, o la que se le pasó al
+dueño—, listo para copiar, más el instructivo (`bash flyer/armar.sh`) si
+no se lo mandó todavía. La contraseña va en el chat, **nunca** en el repo.
+
 ---
 
 ## 10. Lo que nunca
