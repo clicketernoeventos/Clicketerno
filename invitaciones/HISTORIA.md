@@ -4555,3 +4555,30 @@ acá— y se le dijo el riesgo: es el nombre de la carpeta, o sea que se
 lee en el link de la invitación. **No se probó de punta a punta**: esta
 sesión no tenía salida a `script.google.com`.
 
+### `valentinaegreso/`: el egreso de Valentina
+
+Pedido del 09/11/2026, con el formulario completado por la clienta:
+**Valentina Ferreyra**, egreso, **5 de diciembre de 2026** (sábado),
+**Club Atlético Unión Pampayasta Sud** con su enlace de Google Maps,
+*"tonos lilas, blancos o negros"*, canciones *"Forever Young"* y
+*"Sign of the Times"*. Una referencia del dueño: un sobre con un **sello
+de lacre con un birrete**. Y la foto de la promo tirando las camperas.
+
+**Base `maricel50/`, cara nueva.** Negro, blanco lila y dos lilas: el
+hondo (#5E3591) es la tinta sobre el blanco y el claro (#C6AEE8) la del
+negro. Cormorant Garamond, Pinyon Script —la manuscrita de la
+referencia— y Cinzel para los rótulos. El sello pasó de 62 a 84 px,
+lleva el birrete dibujado y un aro hundido de lacre; el nombre va
+debajo, en la manuscrita, como en la referencia. En la cápsula, el
+birrete reemplaza a los anteojos de Maricel.
+
+**Lo que no llegó y no se dibuja**: la hora, el dress code (*"ahí le
+paso bien"*), el alias y su titular (quiere regalos), las fotos (*"ya
+se las paso después"*, más una de chica que ofreció) y los ARCHIVOS de
+las dos canciones. La portada es tipográfica y la única franja es la de
+la promo.
+
+**Marcó que NO quería confirmación**, pero el dueño pidió la planilla y
+ella mandó un correo de acceso, que es la clave del tablero. Quedó con
+el formulario; sacarlo es vaciar una sección.
+

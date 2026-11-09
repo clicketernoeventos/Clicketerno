@@ -3411,6 +3411,12 @@ dejaría peor parados.
   `clicketerno.com.ar/maricel50/listado`. Falta **verla entrar una
   vez**: confirmar como invitado y mirar la fila (desde esa sesión no
   había salida a Google).
+- **Lo que falta de `valentinaegreso/`** (09/11/2026): la **hora**, el
+  **dress code**, el **alias** con su **titular**, las **fotos** (y la de
+  chica que ofreció), los **archivos de las dos canciones** y confirmar
+  si de verdad quiere la confirmación (marcó que no). Y del lado del
+  dueño, **la planilla**: pegar el código, `preparar()`, implementar y
+  pasar la `/exec`.
 - **Que toda tarjeta se muestre en `/invitaciones`, entera**, decidido por
   el dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Son dos piezas:
   **(1)** que la invitación sepa que se está mostrando en la galería y ahí
@@ -3422,7 +3428,7 @@ dejaría peor parados.
   cosa, no se dibuja), así que es una bandera que los enciende juntos, más
   el renglón de cada una en `lib/trabajos.js`. Es una pasada de este chat,
   no del de la tarjeta.
-  **Y falta pedirle permiso a las clientas** (`maricel50`, `mia15`, `almi15`,
+  **Y falta pedirle permiso a las clientas** (`valentinaegreso`, `maricel50`, `mia15`, `almi15`,
   `ambar15`, `facuymaxi`, `magali15`): son fotos de sus hijas en una
   dirección pública. El mensaje está escrito en la skill; la respuesta se
   anota en la crónica con fecha. Eso es un dato que no se inventa.

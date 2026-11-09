@@ -57,6 +57,8 @@ Esto no hay que preguntarlo. Es el pedido de base de cualquier tarjeta.
   Nombres de archivo, selectores y números de pruebas no le dicen nada.
 - **No gastarle la sesión.** Dos comandos de prueba, una vez y al final
   (punto 7).
+  *"Optimizá tokens"*: capturas sólo para mirar lo nuevo, nada de
+  volcar archivos, y el informe en pocas líneas.
 
 ---
 
@@ -233,6 +235,15 @@ Van con la tarjeta, sin que lo pida.
   valor **nunca** va al repositorio: vive en `CLAVE_ELEGIDA` de la copia
   del editor del dueño. Hay una prueba que falla si lo versionado deja de
   estar vacío.
+
+**Al terminar la tarjeta, el sheet se entrega LISTO PARA PEGAR**, sin
+que lo pida (dicho el 09/11/2026: *"al terminar crea el sheet, esto
+memorizalo"*). Es una copia de `evento-nuevo.gs.txt` con las dos claves
+ya escritas —`CLAVE_ELEGIDA` con la que eligió el cliente (o vacía si no
+eligió) y `CLAVE_MAESTRA_ELEGIDA` con la maestra—, hecha en la carpeta
+de borradores, **nunca en el repo**, y mandada como archivo con los
+cinco pasos abajo. Cuando vuelve la `/exec`: `CONFIG.endpoint`, la
+carpeta `listado/` y publicar, de corrido.
 
 **Los cinco pasos del lado de Google los hace el dueño** (crear la
 planilla, pegar el código, correr `preparar()`, implementar, pasar la
