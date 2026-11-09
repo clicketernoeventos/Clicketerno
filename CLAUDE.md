@@ -3413,7 +3413,7 @@ dejaría peor parados.
   había salida a Google).
 - **Lo que falta de `valentinaegreso/`** (09/11/2026): la **hora**, el
   **dress code**, el **alias** con su **titular**, las **fotos** (y la de
-  chica que ofreció), los **archivos de las dos canciones** y confirmar
+  chica que ofreció), **cuál es la canción** que llegó (eligió dos) y confirmar
   si de verdad quiere la confirmación (marcó que no). **La planilla ya
   está** (09/11/2026) y el tablero vive en
   `clicketerno.com.ar/valentinaegreso/listado`; falta verla entrar una vez.
