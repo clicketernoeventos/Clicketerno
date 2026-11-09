@@ -491,6 +491,13 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    acomoda a un bloque que ya no es el mismo y una esquina caía justo
    entre "MIS" y "50", leyéndose como un símbolo. Con foto, no va. */
 #portada.con-foto .marco{display:none}
+/* LA FOTO DE LA PROMO VA ENTERA (pedido del dueño: "quedan personas
+   afuera"). Es apaisada y la franja era alta, así que se comía los
+   costados. Ahora el marco tiene la forma de la foto, y el fundido de
+   abajo es corto para no apagarles los pies. */
+#fRecuerdo figure{height:auto;aspect-ratio:1197/798}
+#fRecuerdo img{object-position:50% 50%}
+#fRecuerdo figure:after{background:linear-gradient(180deg,transparent 86%,var(--papel) 100%)}
 .port-dice{font-family:var(--titulos);font-style:italic;font-weight:400;
   font-size:clamp(17px,4.6vw,22px);line-height:1.4;color:var(--crema);
   max-width:28ch;margin:18px auto 0;text-align:center;position:relative;z-index:1;text-wrap:balance}
@@ -606,6 +613,26 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   font-size:clamp(9.5px,2.6vw,11.5px);letter-spacing:.2em;
   text-transform:uppercase;color:var(--acento);margin-top:10px}
 .claro .reloj span{color:var(--acento-t)}
+/* LA CUENTA EN ANILLOS (pedido del dueño: "algún diseño lindo y
+   sofisticado"). Cada número vive adentro de un anillo lila que se va
+   cerrando con su unidad —las horas sobre 24, los minutos y los
+   segundos sobre 60—; el de los días va entero, con un punto que marca
+   la cima. El anillo lo dibuja el JS y es decoración: si no corre,
+   quedan los números, que es el estado bueno. */
+.reloj{gap:clamp(8px,3vw,18px);max-width:440px;margin-left:auto;margin-right:auto}
+.reloj div{padding:0}
+.reloj div:before,.reloj div:after{display:none}
+.reloj b{aspect-ratio:1;display:grid;place-items:center;position:relative;z-index:1;
+  font-size:clamp(24px,7.4vw,40px);font-weight:500}
+.reloj .aro{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;overflow:visible;
+  transform:rotate(-90deg);pointer-events:none}
+.reloj .aro circle{fill:none;stroke-width:1.1}
+.reloj .aro .pista{stroke:rgba(94,53,145,.16)}
+.reloj .aro .lleno{stroke:var(--acento-t);stroke-linecap:round;
+  stroke-dasharray:100;transition:stroke-dashoffset .6s var(--e)}
+.reloj .aro .cima{fill:var(--acento-t);stroke:none}
+.reloj span{margin-top:12px;font-size:clamp(8.5px,2.4vw,11px);letter-spacing:.16em}
+@media (prefers-reduced-motion:reduce){.reloj .aro .lleno{transition:none}}
 
 /* ══════════ 4 · el calendario ══════════ */
 .calen{margin-top:clamp(26px,5vh,40px)}
@@ -1069,8 +1096,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
        un control, es el avance. -->
   <section class="seccion claro arco" id="cancion">
     <div class="caja">
-      <p class="arriba ap">Subí el volumen</p>
-      <h2 class="ap d1">Mi<br><em class="cursiva">canción</em></h2>
+      <!-- Sólo el nombre de la canción, pedido del dueño (09/11/2026). -->
+      <p class="arriba ap">Harry Styles</p>
+      <h2 class="ap d1">Sign of<br><em class="cursiva">the Times</em></h2>
       <div class="player ap d2" id="player"></div>
     </div>
   </section>
@@ -1204,9 +1232,9 @@ const CONFIG = {
   /* Las dos canciones que eligió ("Forever Young" y "Sign of the
      Times") todavía no llegaron como archivo: sin archivo la sección no
      se dibuja. */
-  /* La que mandó el dueño el 09/11/2026 (de un video). Sin el nombre
-     escrito: eligió dos canciones y no sabemos cuál es, así que el
-     renglón "Es ..., de ..." no se dibuja hasta saberlo. */
+  /* "Sign of the Times", de Harry Styles: la mandó el dueño el
+     09/11/2026 en un video. El nombre va como TÍTULO de la sección (lo
+     pidió así), por eso acá queda vacío: si no, se repetiría abajo. */
   cancion: { nombre: "", autor: "", dura: 292.7, archivos: ["musica.m4a", "musica.ogg"] },
   /* "AHÍ LE PASO BIEN": el dress code llega después. Vacío no se dibuja. */
   dressTitulo: "",
@@ -1581,9 +1609,15 @@ function sierraPath(semilla, picos){
     const alto = innerHeight || 1;
     for (const p of piezas){
       const c = p.caja.getBoundingClientRect();
-      if (c.bottom < -40 || c.top > alto + 40) continue;
+      /* La franja de la promo es BAJA (tiene la forma de la foto, para
+         que no quede nadie afuera): con el margen de antes, apenas salía
+         de la pantalla se dejaba de mover y quedaba clavada donde la
+         dejó el último cuadro. Se sigue calculando una pantalla más allá,
+         con tope, y el tope no pasa del sobrante de la foto (8%). */
+      if (c.bottom < -alto || c.top > alto * 2) continue;
       /* -1 cuando el bloque entra por abajo, +1 cuando sale por arriba. */
-      const centro = (c.top + c.height / 2 - alto / 2) / (alto / 2 + c.height / 2);
+      const centro = Math.max(-1.1, Math.min(1.1,
+        (c.top + c.height / 2 - alto / 2) / (alto / 2 + c.height / 2)));
       p.n.style.transform = 'translate3d(0,' + (-centro * p.f).toFixed(2) + '%,0)';
     }
   }
@@ -1888,6 +1922,31 @@ function horaTexto(){
     return false;
   }
   if (!vuelta()) setInterval(vuelta, 1000);
+})();
+
+/* ══════════ los anillos de la cuenta ══════════
+   Aparte del reloj a propósito: leen lo que el reloj ya escribió, así
+   no hay dos cuentas que se puedan separar. */
+(function(){
+  const tope = {cD:0, cH:24, cM:60, cS:60};
+  const aros = [];
+  Object.keys(tope).forEach(id => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.parentNode.insertAdjacentHTML('afterbegin',
+      '<svg class="aro" viewBox="0 0 40 40" aria-hidden="true">' +
+      '<circle class="pista" cx="20" cy="20" r="18.5"/>' +
+      '<circle class="lleno" cx="20" cy="20" r="18.5" pathLength="100" stroke-dashoffset="100"/>' +
+      (id === 'cD' ? '<circle class="cima" cx="38.5" cy="20" r="1.6"/>' : '') + '</svg>');
+    aros.push([b, b.parentNode.querySelector('.lleno'), tope[id]]);
+  });
+  const pintar = () => aros.forEach(([b, c, t]) => {
+    const n = parseInt(b.textContent, 10);
+    const f = !t ? 1 : (isFinite(n) ? n / t : 0);
+    c.style.strokeDashoffset = (100 - Math.max(0, Math.min(1, f)) * 100).toFixed(1);
+  });
+  pintar();
+  setInterval(pintar, 1000);
 })();
 
 /* ══════════ el calendario de "guardá la fecha" ══════════
