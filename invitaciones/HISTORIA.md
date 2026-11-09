@@ -4587,3 +4587,8 @@ el formulario; sacarlo es vaciar una sección.
 palabras: *"¡Me egreso! Se termina una etapa hermosa y no me imagino
 festejarla sin vos"*, debajo de la fecha. Va sin el emoji del birrete:
 el birrete ya está en el sello.
+
+**La planilla** (09/11/2026): implementada por el dueño, su `/exec` en
+`CONFIG.endpoint` y en `valentinaegreso/listado/`. La clave del tablero
+es el correo que mandó ella, en `CLAVE_ELEGIDA` de la copia del editor
+(nunca acá). No se probó de punta a punta: sin salida a Google.
