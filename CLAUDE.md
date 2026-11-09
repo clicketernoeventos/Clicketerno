@@ -3414,9 +3414,9 @@ dejaría peor parados.
 - **Lo que falta de `valentinaegreso/`** (09/11/2026): la **hora**, el
   **dress code**, el **alias** con su **titular**, las **fotos** (y la de
   chica que ofreció), los **archivos de las dos canciones** y confirmar
-  si de verdad quiere la confirmación (marcó que no). Y del lado del
-  dueño, **la planilla**: pegar el código, `preparar()`, implementar y
-  pasar la `/exec`.
+  si de verdad quiere la confirmación (marcó que no). **La planilla ya
+  está** (09/11/2026) y el tablero vive en
+  `clicketerno.com.ar/valentinaegreso/listado`; falta verla entrar una vez.
 - **Que toda tarjeta se muestre en `/invitaciones`, entera**, decidido por
   el dueño el 07/11/2026 y escrito en la skill `/tarjeta`. Son dos piezas:
   **(1)** que la invitación sepa que se está mostrando en la galería y ahí
