@@ -491,6 +491,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    acomoda a un bloque que ya no es el mismo y una esquina caía justo
    entre "MIS" y "50", leyéndose como un símbolo. Con foto, no va. */
 #portada.con-foto .marco{display:none}
+.port-dice{font-family:var(--titulos);font-style:italic;font-weight:400;
+  font-size:clamp(17px,4.6vw,22px);line-height:1.4;color:var(--crema);
+  max-width:28ch;margin:18px auto 0;text-align:center;position:relative;z-index:1;text-wrap:balance}
 /* Más centrada (pedido del dueño): la homenajeada estaba un poco a la derecha
    del centro de la foto, y con la foto menos subida entran las cabezas
    de las de atrás. */
@@ -943,6 +946,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
       <path d="M134 21.5Q134 24 136.5 24Q134 24 134 26.5Q134 24 131.5 24Q134 24 134 21.5Z"/>
     </svg>
     <p class="port-frase ap d2" id="portFecha"></p>
+    <!-- La frase va al principio: pedido del dueño (09/11/2026), con sus
+         palabras. Sin el emoji: el birrete ya está en el sello. -->
+    <p class="port-dice ap d3">¡Me egreso!<br>Se termina una etapa hermosa y no me imagino festejarla sin vos.</p>
     <div class="port-baja" aria-hidden="true">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
         <path d="M6 9l6 6 6-6"/></svg>

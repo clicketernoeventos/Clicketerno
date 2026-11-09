@@ -4582,3 +4582,8 @@ la promo.
 ella mandó un correo de acceso, que es la clave del tablero. Quedó con
 el formulario; sacarlo es vaciar una sección.
 
+
+**La frase de la portada** (09/11/2026), pedida por el dueño con sus
+palabras: *"¡Me egreso! Se termina una etapa hermosa y no me imagino
+festejarla sin vos"*, debajo de la fecha. Va sin el emoji del birrete:
+el birrete ya está en el sello.
