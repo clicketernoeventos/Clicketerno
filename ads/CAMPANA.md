@@ -163,7 +163,7 @@ campaña:
 
 Antes de esto el muro y el rollo no se vendían y el motivo no era el
 texto: el menú no los nombraba, no tenían botón de comprar y el WhatsApp
-mandaba siempre el mismo mensaje. Está contado en `CLAUDE.md`, en "Por
+mandaba siempre el mismo mensaje. Está contado en `PROYECTO.md`, en "Por
 qué sólo compraban invitaciones".
 
 ---

@@ -229,7 +229,7 @@ Cualquiera de estas cosas:
    organizador, que es quien tiene el contacto. Enterarse y callarse no es una opción,
    y además está escrito en la Política de Privacidad.
 7. **Cerrar.** Qué lo causó, qué se cambió, qué prueba lo cuida de ahora en más. La
-   lección va a `CLAUDE.md`, en "Reglas que ya nos costaron caro".
+   lección va a `PROYECTO.md`, en "Reglas que ya nos costaron caro".
 
 ### A quién se avisa
 
