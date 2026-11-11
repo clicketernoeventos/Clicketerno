@@ -303,12 +303,14 @@ Repaso hecho a propósito, no de casualidad:
 
 ## Lo que hay que hacer, en orden de urgencia
 
-0. **Correr `sql/blindaje2.sql`** en el SQL Editor. Hasta que no se corra, el muro
+> **Nota del 11/11/2026:** los puntos 0 (`blindaje2.sql`) y 1 (verificación en dos pasos) ya están hechos. Quedan pendientes del 2 en adelante.
+
+0. ~~**Correr `sql/blindaje2.sql`** en el SQL Editor. Hasta que no se corra, el muro
    sigue sin tope, acepta con el candado puesto y deja elegir el orden de la
-   proyección.
-1. **Verificación en dos pasos** en Supabase, en Cloudflare y en el correo del negocio.
+   proyección.~~ **HECHO** (corrido el 21/09/2026).
+1. ~~**Verificación en dos pasos** en Supabase, en Cloudflare y en el correo del negocio.
    Es gratis, son diez minutos, y es lo que más reduce el riesgo de todo este
-   documento.
+   documento.~~ **HECHO** (24/09/2026, con aplicación autenticadora).
 2. **Respaldo del contenido.** Hoy las fotos están en un solo lugar. Contratar el plan
    pago de Supabase (ya decidido por capacidad) trae respaldos diarios.
 3. **Probar una restauración.** Una vez. Un respaldo sin probar no es un respaldo.
