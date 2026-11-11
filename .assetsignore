@@ -36,3 +36,5 @@ ads/
 # Copias de las tarjetas terminadas y respaldo de las instrucciones: no se publican
 tarjetas/
 respaldo/
+# Las tres fichas (WEB, MURO, ROLLO): documentacion, no una pagina.
+fichas/
