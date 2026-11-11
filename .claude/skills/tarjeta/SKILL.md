@@ -23,7 +23,7 @@ punto 0. Esto es la receta, no el manual.
    que se queda viejo nunca es el código, es el dato escrito a mano en el
    renglón que nadie vuelve a mirar (ya se publicó el nombre de una
    clienta en la fiesta de otra).
-3. **`CLAUDE.md`**, "Reglas que ya nos costaron caro".
+3. **`PROYECTO.md`**, "Reglas que ya nos costaron caro".
 
 Y traer lo último: `git fetch origin main && git merge origin/main`.
 
@@ -347,7 +347,7 @@ Por eso, en este trabajo:
 - **La crónica se escribe en CADA vuelta publicada, no al final.** Es la
   diferencia entre que el detalle quede guardado o que quede en un resumen.
   Vale igual para lo que falta del lado del cliente: va a "Pendiente" en
-  `CLAUDE.md` el día que aparece, no cuando se acuerde alguien.
+  `PROYECTO.md` el día que aparece, no cuando se acuerde alguien.
 - **Al chat no se le vuelcan archivos enteros ni salidas largas.** Se busca
   el pedazo que hace falta y se trabaja sobre eso. Un volcado de mil
   líneas llena el chat y no aporta nada que no se pueda volver a leer.
@@ -424,7 +424,7 @@ de la portada dibujada.
   dibujaban perfectas y estaban mal. Es lo que hace que la próxima tarjeta
   no repita la vuelta.
 - Si una lección pasa a valer para **todo** el proyecto, su lugar es
-  `CLAUDE.md`, en "Reglas que ya nos costaron caro".
+  `PROYECTO.md`, en "Reglas que ya nos costaron caro".
 - **Anotar en "Pendiente" lo que quedó del lado del cliente o del dueño**
   —el titular de la cuenta, la fecha límite, un paso en el editor de Apps
   Script—. Un pendiente que vive sólo en el chat se pierde; y uno que ya se

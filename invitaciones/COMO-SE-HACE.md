@@ -35,7 +35,7 @@ sobre la marcha:
     pruebas/*           las suites
     _headers            la CSP
     .assetsignore  wrangler.json
-    CLAUDE.md           el manual del proyecto
+    CLAUDE.md           las reglas fijas; el proyecto entero en PROYECTO.md
     invitaciones/HISTORIA.md   la crónica de cada invitación
     sql/*               la base
 
