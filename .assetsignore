@@ -32,3 +32,7 @@ video/
 # de la canción se va entera. Uno por renglón, con nombre y apellido.
 !maricel50/video.mp4
 ads/
+
+# Copias de las tarjetas terminadas y respaldo de las instrucciones: no se publican
+tarjetas/
+respaldo/
