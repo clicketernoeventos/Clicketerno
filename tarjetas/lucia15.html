@@ -829,6 +829,44 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .player.suena .vinilo{animation:girar 7s linear infinite}
 @keyframes girar{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.player.suena .vinilo{animation:none}}
+
+/* ── las bolas que cuelgan en la portada ── */
+.bolas{position:absolute;inset:0 0 auto 0;height:48%;z-index:0;pointer-events:none;overflow:hidden}
+.bola{position:absolute;top:var(--h);width:var(--d);height:var(--d);
+  transform:translateY(calc(-1 * (var(--h) + var(--d) + 20px)));opacity:0;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));animation:baja 1.7s cubic-bezier(.2,.8,.25,1) forwards}
+.bola svg{display:block;width:100%;height:100%}
+.bola .hilo{position:absolute;left:50%;bottom:100%;width:1px;height:var(--h);background:linear-gradient(#0000,#d6d9e0aa)}
+@keyframes baja{to{transform:none;opacity:1}}
+html:not(.js) .bola{opacity:1;transform:none;animation:none}
+@media (prefers-reduced-motion:reduce){.bola{animation:none;opacity:1;transform:none}}
+/* ── la placa del logo del final: trae su propio fondo y su propia tinta ── */
+.placa-fest{width:min(100%,360px);margin:22px auto 0;padding:20px 16px 18px;border-radius:26px;
+  background:radial-gradient(120% 90% at 50% 0,#3a3d46,#1a1c21 70%);
+  box-shadow:0 0 0 1px rgba(214,217,224,.35),0 24px 44px -22px rgba(26,28,33,.7)}
+.placa-fest[hidden]{display:none}
+.placa-fest img{display:block;width:100%;height:auto}
+/* ── el reproductor plateado ── */
+.player .play{background:linear-gradient(145deg,#f6f8fb,#8d93a1 55%,#dfe2e8);color:#24272D;box-shadow:0 6px 14px -6px rgba(26,28,33,.6),0 0 0 1px rgba(255,255,255,.55) inset}
+.player .disco{background:conic-gradient(from 20deg,#f4f6fa,#9aa0ad 18%,#e9ecf1 34%,#7d8391 52%,#f6f8fb 68%,#9aa0ad 84%,#f4f6fa);
+  box-shadow:0 22px 40px -20px rgba(26,28,33,.65),0 0 0 1px rgba(255,255,255,.5) inset}
+.player .etiqueta{background:none;box-shadow:0 0 0 3px #d6d9e0,0 0 0 4px #5b6070;overflow:hidden;padding:0}
+.player .etiqueta svg{width:100%;height:100%}
+.player .vinilo{position:relative;overflow:hidden}
+.player .vinilo::after{content:"";position:absolute;inset:-20%;pointer-events:none;opacity:0;
+  background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.55) 50%,transparent 62%);
+  transform:translateX(-60%)}
+.player.suena .vinilo::after{opacity:1;animation:brillo 2.6s ease-in-out infinite}
+@keyframes brillo{to{transform:translateX(60%)}}
+.player .barra{background-color:rgba(91,96,112,.35)}
+.player .barra i{background:linear-gradient(90deg,#8d93a1,#fff,#8d93a1);background-size:200% 100%}
+.player.suena .barra i{animation:destella 1.8s linear infinite}
+@keyframes destella{to{background-position:-200% 0}}
+.player .barra b{width:34px;height:34px;margin:-18px 0 0 -17px;color:inherit;
+  filter:drop-shadow(0 2px 4px rgba(26,28,33,.5))}
+.player .barra b svg{width:34px;height:34px}
+.player.suena .barra b svg{animation:girar 9s linear infinite}
+@media (prefers-reduced-motion:reduce){.player.suena .vinilo::after,.player.suena .barra i,.player.suena .barra b svg{animation:none}}
 /* La pantallita del video. Vertical como lo grabaron (368x624): con un
    marco apaisado se recortaría la torta o la cara. El alto sale del
    ancho, con techo en el alto de la pantalla, para que en un teléfono
@@ -1132,10 +1170,8 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 
   <section class="seccion claro arco" id="cancion">
     <div class="caja">
-      <!-- Sólo el nombre de la canción, pedido del dueño (09/11/2026). -->
-      <p class="arriba ap">Coldplay</p>
-      <h2 class="ap d1"><em class="cursiva">Clocks</em></h2>
-      <div class="player ap d2" id="player"></div>
+      <!-- Sin el nombre de la canción: lo pidió el dueño (12/11/2026). -->
+      <div class="player ap d1" id="player"></div>
     </div>
   </section>
 
@@ -1226,6 +1262,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
       <div class="filete ap"><i></i><b></b><i></i></div>
       <p class="cuerpo ap d1" id="teEspero"></p>
       <p class="cierre-n ap d2 elNom"></p>
+      <div class="placa-fest ap d2" id="placaFest" hidden></div>
     </div>
     <div class="flor-rincon izq" aria-hidden="true"></div>
     <div class="flor-rincon der" aria-hidden="true"></div>
@@ -1268,12 +1305,15 @@ const CONFIG = {
   /* "Clocks", de Coldplay (el comienzo). El audio todavía no llegó: sin
      archivo la sección no se dibuja. Cuando llegue: archivos
      (el AAC y el Opus de la canción) y la duración en `dura`. */
-  cancion: { nombre: "", autor: "", dura: 0, archivos: [] },
+  cancion: { nombre: "", autor: "", dura: 29.6, archivos: ["musica.m4a", "musica.ogg"] },
   dressTitulo: "Elegante sport",
   dressTexto: "Colores prohibidos: verde claro, rosa y celeste.",
   valorTarjeta: "",              // HUECO · no lo mandaron
   portada: "",                   // HUECO · fotos
   franjas: {},
+  /* El logo "Lucía Fest" que mandó el dueño (12/11/2026): va al final, en
+     su placa oscura. Vacío deja el nombre escrito. */
+  logo: "fotos/logo.webp",
   alias: "",                     // HUECO
   titular: "",
   endpoint: ""                   // HUECO · la /exec de su planilla
@@ -1299,6 +1339,42 @@ const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
    el mismo dibujo se lee en las dos. Van con `aria-hidden` y `pointer-events:none`, que
    es la definición estricta con la que el medidor de contraste saltea
    un adorno sin quedarse ciego con el resto. */
+
+/* ══════════ la bola de espejos ══════════
+   Se dibuja con espejitos de verdad: filas de baldosas que siguen la
+   curva de la esfera (latitud y longitud proyectadas), cada una con su
+   brillo, de una semilla fija —no cambia entre cargas— y una luz que
+   viene de arriba a la izquierda. Es SVG y sirve a cualquier tamaño:
+   la grande de la portada, la etiqueta del disco y la rueda del avance. */
+let _bolaN = 0;
+function bolaSVG(px, filas, semilla, cuerda){
+  let x = semilla >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const R = 50, C = 50, id = 'bl' + (++_bolaN);
+  let t = '';
+  const lat0 = -84, paso = 168 / filas;
+  for (let i = 0; i < filas; i++){
+    const a1 = (lat0 + i * paso) * Math.PI / 180, a2 = a1 + paso * Math.PI / 180;
+    const cm = Math.cos((a1 + a2) / 2);
+    const cols = Math.max(4, Math.round(filas * 2 * cm));
+    for (let j = 0; j < cols; j++){
+      const t1 = (-90 + 180 * j / cols) * Math.PI / 180, t2 = (-90 + 180 * (j + 1) / cols) * Math.PI / 180;
+      const P = (a, b) => (C + R * Math.cos(a) * Math.sin(b)).toFixed(1) + ',' + (C - R * Math.sin(a)).toFixed(1);
+      const med = (t1 + t2) / 2, am = (a1 + a2) / 2;
+      /* la luz: arriba a la izquierda, o sea más clara hacia (-x,+y) */
+      const luz = .5 - .34 * Math.sin(med) + .30 * Math.sin(am) + (r() - .5) * .62;
+      const L = Math.max(14, Math.min(96, Math.round(luz * 92 + 14)));
+      t += '<path d="M' + P(a1,t1) + 'L' + P(a1,t2) + 'L' + P(a2,t2) + 'L' + P(a2,t1) + 'Z" fill="hsl(' +
+           (214 + Math.round(r()*14)) + ',' + (r() < .12 ? 22 : 8) + '%,' + L + '%)"/>';
+    }
+  }
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
+    '<defs><clipPath id="' + id + '"><circle cx="50" cy="50" r="50"/></clipPath>' +
+    '<radialGradient id="' + id + 'g" cx="34%" cy="28%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/>' +
+    '<stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#0c0d10" stop-opacity=".55"/></radialGradient></defs>' +
+    '<g clip-path="url(#' + id + ')">' + t + '<circle cx="50" cy="50" r="50" fill="url(#' + id + 'g)"/></g></svg>';
+}
+
 const ICONOS = {
   /* reloj de arena, con su arena cayendo */
   reloj: '<path d="M7 2.6h10M7 21.4h10"/>' +
@@ -1877,7 +1953,7 @@ function horaTexto(){
     '><path d="M17 4h2v16h-2zM5 4l10 8-10 8z" fill="currentColor"/></svg>';
   /* LA PUNTITA DEL AVANCE ES UN BIRRETE (pedido del dueño): el mismo
      del sello del sobre, que va corriendo por la línea mientras suena. */
-  const BIRRETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M11 1.6v2.8"/><circle cx="11" cy="13" r="7.4"/><path d="M3.6 13h14.8M11 5.6v14.8M4.8 9c3.6 1.5 8.8 1.5 12.4 0M4.8 17c3.6-1.5 8.8-1.5 12.4 0M7.6 6.6c-1.7 4-1.7 9.8 0 13.8M14.4 6.6c1.7 4 1.7 9.8 0 13.8"/><path d="M20 4l.8 2 2 .8-2 .8L20 9.6l-.8-2-2-.8 2-.8zM3.4 2l.5 1.2 1.2.5-1.2.5L3.4 5.4l-.5-1.2-1.2-.5 1.2-.5z"/></svg>';
+  const BIRRETE = bolaSVG(40, 9, 11, false);
 
   /* EL DISCO: un vinilo negro con la etiqueta lila y el birrete en el
      centro. Gira SÓLO mientras suena —lo prende el invitado—, y con
@@ -2376,6 +2452,31 @@ function horaTexto(){
     d.style.setProperty('--o', (.25 + r()*.6).toFixed(2));
     port.insertBefore(d, port.firstChild);
   }
+})();
+
+/* ══════════ el logo del final y las bolas de la portada ══════════ */
+(function(){
+  /* EL LOGO: la imagen se pide primero y la placa aparece recién cuando
+     cargó de verdad; si falla queda el nombre escrito, que se sostiene solo. */
+  const placa = document.getElementById('placaFest');
+  if (placa && CONFIG.logo) cargarFoto(CONFIG.logo, 'Lucía Fest', im => {
+    placa.appendChild(im); placa.hidden = false;
+    const n = document.querySelector('#cierre .cierre-n'); if (n) n.style.display = 'none';
+  }, () => {});
+
+  /* LAS BOLAS DE LA PORTADA: cuelgan de su hilo y bajan UNA vez, de a una,
+     como en la referencia; después quedan quietas. Van a los costados y
+     arriba, nunca sobre el nombre. */
+  const port = document.getElementById('portada'); if (!port) return;
+  const caja = document.createElement('div'); caja.className = 'bolas'; caja.setAttribute('aria-hidden','true');
+  /* [izquierda %, diámetro px, largo del hilo px, retraso s] */
+  [[-3, 104, 24, .1], [24, 54, 120, .5], [47, 38, 8, .9], [68, 62, 70, .3], [84, 96, 16, .7]].forEach((b, i) => {
+    const e = document.createElement('div'); e.className = 'bola';
+    e.style.cssText = 'left:' + b[0] + '%;--d:' + b[1] + 'px;--h:' + b[2] + 'px;animation-delay:' + b[3] + 's';
+    e.innerHTML = '<i class="hilo"></i>' + bolaSVG(b[1], b[1] > 70 ? 13 : 9, 31 + i * 7, true);
+    caja.appendChild(e);
+  });
+  port.insertBefore(caja, port.firstChild);
 })();
 </script>
 </body>
