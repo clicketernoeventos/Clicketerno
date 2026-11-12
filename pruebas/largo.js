@@ -146,10 +146,21 @@ async function recorrer(p) {
           const b = c.getBoundingClientRect();
           return Math.min(Math.round(b.width), Math.round(b.height));
         })) : 0,
-        salido: cs.filter((c) => {
-          const b = c.getBoundingClientRect();
-          return b.x < -1 || b.right > innerWidth + 1;
-        }).length,
+        /* Desde el 12/11/2026 los cuadraditos van en una tira que se
+           desliza: uno que queda a la derecha NO está perdido si la tira
+           llega hasta él. Perdido es el que queda afuera de la pantalla y
+           además afuera de lo que la tira puede traer. */
+        salido: (() => {
+          const tira = document.getElementById('cuadritos');
+          const t = tira.getBoundingClientRect();
+          const desliza = /auto|scroll/.test(getComputedStyle(tira).overflowX);
+          if (t.x < -1 || t.right > innerWidth + 1) return cs.length;
+          return cs.filter((c) => {
+            const b = c.getBoundingClientRect();
+            const fuera = b.x < -1 || b.right > innerWidth + 1;
+            return fuera && !(desliza && b.right - t.x + tira.scrollLeft <= tira.scrollWidth + 1);
+          }).length;
+        })(),
         alto: Math.round(r.height),
         /* Lo que de verdad se ganó: un marco a la vez. Contra el
            carrusel acá hay cuatro (las que viven en el repo). */
