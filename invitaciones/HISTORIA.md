@@ -4647,3 +4647,16 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 - La franja baja dejaba al paralaje calculando sólo cuando estaba en
   pantalla; ya estaba arreglado en la vuelta anterior y aguanta esta.
 - Falta el **titular** de la cuenta del alias.
+
+
+## lucia15 — Mis quince de Lucía (12/11/2026)
+
+**Pidió** (con sus palabras): *"Nombre Lucia · 12 de diciembre · salón ilusión Venezuela 4555 · Música: clocks (el inicio) · Playlist: sí · Colores: plateado brilloso como con bolas de disco · Dress code: elegante sport, colores prohibidos verde claro, rosa y celeste · Mail de acceso: (el de la clienta) · Confirmación: sí."* El dueño confirmó que son sus **15 años**.
+
+**Base**: copia de `valentinaegreso/` (sobre con sello, cuenta en anillos, reproductor de vinilo), con la paleta pasada de violeta a **grafito y plata** (mismo tinte en todo, mantiene la luminosidad: el contraste ya medido sigue valiendo). El **birrete** se cambió por una **bola de espejos** con dos destellos: en el sello del sobre, en la etiqueta del vinilo, en la punta del avance y en la cápsula. Las bandas oscuras llevan una **grilla de espejitos** y la portada **destellos fijos** (semilla = fecha, sin mover, y sin caer sobre el texto).
+
+**La playlist** es el campo "Un tema que no puede faltar" de la confirmación, que ya existía; no hay enlace a una lista aparte porque nadie mandó uno.
+
+**La frase de la portada es NUESTRA** ("Mis quince, una noche de luces. Quiero brillar con vos a mi lado."): no mandó ninguna. Si manda la suya, va la suya.
+
+**Faltan (no se inventan, su renglón no se dibuja)**: la **hora**, el **audio de Clocks** (sin archivo no se dibuja la sección), las **fotos**, hasta cuándo se **confirma**, el **valor de la tarjeta**, el **alias** y su titular, y la **/exec** de su planilla. De la canción pidió "el inicio": se recorta el comienzo del tema cuando llegue el audio.
