@@ -369,8 +369,10 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #portada{min-height:100svh;display:grid;align-content:center;justify-items:center;
   background-color:var(--marron-noche);
   background-image:
-    radial-gradient(90% 60% at 50% 12%,rgba(198,201,208,.13),transparent 70%),
-    radial-gradient(130% 95% at 50% 20%,#4B505B,#3A3E48 54%,var(--marron-noche));
+    radial-gradient(ellipse 330px 310px at 50% 47%,rgba(22,24,28,.82) 35%,rgba(22,24,28,.5) 70%,transparent 100%),
+    linear-gradient(rgba(26,28,33,.42),rgba(26,28,33,.58)),
+    url(fotos/fondo.webp);
+  background-size:cover;background-position:center;
   padding:clamp(74px,13vh,124px) calc(var(--gutter) + 12px)
           calc(clamp(64px,11vh,96px) + env(safe-area-inset-bottom));
   text-align:center;overflow:hidden}
@@ -684,7 +686,8 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .claro .calen td{color:var(--gris)}
 .oscura .calen td.elDia{color:#FDFDFD;font-weight:500}
 .claro .calen td.elDia{color:var(--malva);font-weight:500}
-.anillo-dia{position:absolute;inset:50% auto auto 50%;width:34px;height:34px;
+.oscura .calen td.elDia{isolation:isolate}
+.anillo-dia{z-index:-1;position:absolute;inset:50% auto auto 50%;width:40px;height:40px;
   transform:translate(-50%,-50%);pointer-events:none;color:var(--acento)}
 .claro .anillo-dia{color:var(--acento-t)}
 .calen .corte{border:0;border-top:1px solid currentColor;opacity:.3;margin:18px auto 0;max-width:200px}
@@ -830,6 +833,13 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 @keyframes girar{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.player.suena .vinilo{animation:none}}
 
+/* ── los fondos de brillo que mandó el dueño (12/11/2026): cada uno lleva
+   su velo oscuro, porque la plata clara no sostiene el texto blanco ── */
+.oscura#sFecha{background-image:linear-gradient(rgba(26,28,33,.66),rgba(26,28,33,.76)),url(fotos/brillo.webp);
+  background-size:cover;background-position:center}
+.oscura#sFecha .arriba{color:#F1F3F6}
+.oscura#confirmar{background-image:linear-gradient(rgba(26,28,33,.68),rgba(26,28,33,.8)),url(fotos/tiles.webp);
+  background-size:cover;background-position:center}
 /* ── las bolas que cuelgan en la portada ── */
 .bolas{position:absolute;inset:0 0 auto 0;height:48%;z-index:0;pointer-events:none;overflow:hidden}
 .bola{position:absolute;top:var(--h);width:var(--d);height:var(--d);
@@ -1085,7 +1095,7 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
   </section>
 
   <!-- ══════════ 4 · guardá la fecha ══════════ -->
-  <section class="seccion oscura arco" data-ico="calendario">
+  <section class="seccion oscura arco" id="sFecha" data-ico="calendario">
     <div class="caja">
       <p class="arriba ap">Anotalo</p>
       <h2 class="ap d1">Guardá<br><em class="cursiva">la fecha</em></h2>
@@ -1548,7 +1558,7 @@ const ORNAMENTO =
      navegador que no tenga getTotalLength se queda con el icono
      dibujado, que es el estado bueno. */
   $$('.medallon .anillo circle, .medallon .ico path, .medallon .ico circle, ' +
-     '.anillo-dia circle, .flor path, .marco .esq path')
+     '.flor path, .marco .esq path')
     .forEach(p => {
       try{
         const l = p.getTotalLength();
@@ -2075,9 +2085,23 @@ function horaTexto(){
   for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
   while (celdas.length % 7) celdas.push('');
 
-  const r = 15.3;
-  const anillo = '<svg class="anillo-dia linea" viewBox="0 0 34 34" aria-hidden="true">' +
-                 '<circle cx="17" cy="17" r="' + r + '"/></svg>';
+  /* EL ANILLO DE LA FECHA ES EL BORDE DE UNA BOLA DE ESPEJOS: una vuelta
+     de baldosas, cada una con su brillo (semilla fija), un centro oscuro
+     para que el número se lea sobre la textura y un destello. */
+  let sem = (String(CONFIG.fiesta).replace(/\D/g,'').slice(0,8) | 0) || 3;
+  const rnd = () => (sem = (sem * 1664525 + 1013904223) >>> 0) / 4294967296;
+  let baldosas = '';
+  const N = 20, Ro = 19.4, Ri = 14.2;
+  for (let i = 0; i < N; i++){
+    const a1 = (i / N) * 2 * Math.PI + .03, a2 = ((i + 1) / N) * 2 * Math.PI - .03;
+    const P = (r, a) => (20 + r * Math.cos(a)).toFixed(2) + ',' + (20 + r * Math.sin(a)).toFixed(2);
+    const L = Math.round(34 + rnd() * 58 + (Math.sin(a1 + 2.4) > .6 ? 10 : 0));
+    baldosas += '<path d="M' + P(Ro,a1) + 'L' + P(Ro,a2) + 'L' + P(Ri,a2) + 'L' + P(Ri,a1) + 'Z" fill="hsl(' +
+                (214 + Math.round(rnd()*12)) + ',9%,' + Math.min(L,96) + '%)"/>';
+  }
+  const anillo = '<svg class="anillo-dia" viewBox="0 0 40 40" aria-hidden="true">' +
+                 '<circle cx="20" cy="20" r="13.8" fill="#24272D"/>' + baldosas +
+                 '<path d="M33.5 3l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="#fff"/></svg>';
 
   let filas = '';
   for (let i = 0; i < celdas.length; i += 7){
@@ -2100,9 +2124,6 @@ function horaTexto(){
     '<p class="hora-txt">' + esc(F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio) +
     (horaTexto() ? '<br>' + esc(horaTexto()) : '') + '</p>';
 
-  const c = $('.anillo-dia circle', caja);
-  if (c){ try{ const l = c.getTotalLength();
-    c.style.setProperty('--l', l.toFixed(1)); c.classList.add('trazo'); }catch(e){} }
 })();
 
 /* ══════════ aparecer al bajar ══════════
@@ -2446,7 +2467,8 @@ function horaTexto(){
   for (let i = 0; i < 34; i++){
     const d = document.createElement('i'); d.className = 'destello'; d.setAttribute('aria-hidden','true');
     let L = r()*96+2, T = r()*96+2;
-    if (L > 14 && L < 86 && T > 24 && T < 72) { if (L < 50) L = r()*12+2; else L = 88 + r()*10; }   // el texto queda libre
+    /* la franja del texto queda libre de lado a lado: la caja de un renglón es del ancho de la pantalla */
+    if (T > 20 && T < 78) T = T < 49 ? r()*18+2 : 79 + r()*18;
     d.style.left = L + '%'; d.style.top = T + '%';
     d.style.setProperty('--t', (5 + r()*11).toFixed(1) + 'px');
     d.style.setProperty('--o', (.25 + r()*.6).toFixed(2));
