@@ -677,8 +677,17 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
    los 44px del dedo sin tener que saber cuántas invitaciones hay. Con
    seis entran en una fila en un teléfono; el día que sean doce, pasan
    solas a dos y nadie tiene que acordarse de cambiar un repeat(6). */
-.cuadritos{display:grid;grid-template-columns:repeat(auto-fit,minmax(46px,1fr));
-  gap:clamp(7px,1.4vw,12px);width:100%;max-width:min(100%,480px)}
+/* (12/11/2026) Con catorce ya no pasan a dos filas: eran tres en un
+   teléfono y el escaparate dejaba de entrar en la pantalla. Van en UNA
+   tira que se desliza con el dedo; con pocas, se reparten el ancho como
+   antes. El relleno es para que la sombra y el saltito del elegido no
+   queden recortados por el `overflow`. */
+.cuadritos{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(46px,1fr);
+  gap:clamp(7px,1.4vw,12px);width:100%;max-width:min(100%,480px);
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;
+  padding:8px 4px 10px;scrollbar-width:none}
+.cuadritos::-webkit-scrollbar{display:none}
+.cuadrito{scroll-snap-align:start}
 .cuadrito{position:relative;aspect-ratio:1;border:0;padding:0;cursor:pointer;
   border-radius:clamp(10px,2.6vw,16px);overflow:hidden;container-type:inline-size;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
@@ -822,6 +831,7 @@ h1,h2,h3,.cabeza h2,.inc b,.pie-p b{text-wrap:balance}
 .visor .cargando{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;
   font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute);pointer-events:none}
 .visor .barra-v{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.visor .cerrar[hidden]{display:none}
 .visor .cerrar{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);
   border:1px solid var(--gris);padding:12px 22px;transition:.3s}
 .visor .cerrar:hover{border-color:var(--oro);color:var(--oro)}
@@ -1820,7 +1830,7 @@ const fichaTrabajo=(t,i,tarde)=>`
    caro—. Lo mismo el título de la pantalla con todas. */
 (function(){
   const n=TRABAJOS.length, m=TRABAJOS.filter(t=>t.muestra).length, c=n-m;
-  const pal=['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+  const pal=['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte'];
   const w=x=>pal[x]||String(x);
   const a=document.getElementById('aclaraTrabajos');
   if(a) a.textContent = (c===1?'Una es de un cliente':w(c).replace(/^./,ch=>ch.toUpperCase())+' son de clientes')
@@ -1954,6 +1964,7 @@ const fichaTrabajo=(t,i,tarde)=>`
     marco.setAttribute('tabindex','-1');
     marco.setAttribute('aria-hidden','true');
     marco.referrerPolicy='no-referrer-when-downgrade';
+    if((window.TRABAJO_DE(capa.dataset.vivo)||{}).cuidar) window.CUIDAR_MARCO(marco);
     capa.appendChild(marco);
     encajar(capa,marco);
     /* Antes esto se rendía a los NUEVE segundos y borraba el marco. Con
@@ -2109,7 +2120,13 @@ function abrirVisor(url,nombre,ancho){
   visor.classList.toggle('ancho',!!ancho);
   cargandoV.textContent='Abriendo '+nombre+'…';
   cargandoV.style.opacity='1';
-  marcoV.src=url; nuevaV.href=url;
+  /* Una fiesta de un cliente no se ofrece en pestaña suelta, y adentro del
+     visor va con el alias y la confirmación apagados (lib/trabajos.js). */
+  const cuidar=!!(window.TRABAJO_DE(url)||{}).cuidar;
+  nuevaV.hidden=cuidar;
+  if(cuidar) window.CUIDAR_MARCO(marcoV);
+  else marcoV.__ceActivo=false;
+  marcoV.src=url; nuevaV.href=cuidar?'#':url;
   visor.classList.add('abierto'); document.body.style.overflow='hidden';
   clearTimeout(avisoT);
   avisoT=setTimeout(()=>{

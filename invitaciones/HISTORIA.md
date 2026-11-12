@@ -4678,3 +4678,38 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 **Una falla que no se veía**: con el centro oscuro DIBUJADO adentro del SVG, el medidor de contraste veía el número blanco sobre el fondo claro de la sección (1,07:1). El centro oscuro pasó a ser el fondo del propio número, que es lo que el medidor entiende.
 
 **Planilla (12/11/2026).** El dueño la creó, pegó el código, corrió `preparar()` e implementó; la `/exec` está en `CONFIG.endpoint` y el tablero en `lucia15/listado`. Los datos que faltan (ciudad, fotos, valor, alias) el dueño dijo que **no van**: quedan sin dibujar. Falta verla entrar una vez.
+
+## Las fiestas de clientes entran en la galería (12/11/2026)
+
+**Qué pidió el dueño.** *"Necesito que en la web estén todas las
+invitaciones que hicimos, para que la gente vea los trabajos y generar
+confianza. No modifiques nada del funcionamiento de las tarjetas."*
+
+**El permiso.** Se le preguntó antes de tocar nada y contestó que tiene
+el permiso de **todas** las familias (12/11/2026): `almi15`, `ambar15`,
+`facuymaxi`, `lucia15`, `magali15`, `maricel50`, `mia15` y
+`valentinaegreso`. Esto reemplaza lo que dicen sus crónicas ("no está en
+la galería de Trabajos ni en `/invitaciones`").
+
+**Lo que preguntó él:** *"¿se podrá hacer que quienes entren desde ese
+link no puedan registrarse?"*. Sí, y sin tocar las tarjetas: las ocho
+llevan `cuidar:true` en `lib/trabajos.js`, y como el marco de la galería
+es del mismo sitio, la galería entra y apaga lo delicado
+(`CUIDAR_MARCO`): no se dibujan el alias, el titular ni "Copiar alias";
+la confirmación queda a la vista pero inerte, con el cartel *"Muestra:
+acá la confirmación está apagada"*; y el marco no puede mandar nada a la
+planilla. Además no se ofrecen en pestaña suelta: se abren en un visor
+adentro de la página (en `/invitaciones` es nuevo; en el inicio es el de
+siempre, sin "Abrir en pestaña nueva").
+
+**Descartado.** Un `?muestra=1` en cada tarjeta (era tocar las ocho, y
+pidió que no) y copias "de vitrina" con el formulario vacío (duplicar
+ocho carpetas que después se quedan atrás).
+
+**El límite, dicho al dueño.** Esto frena al curioso, no al que busca:
+la dirección real de la tarjeta se puede leer en el código de la página,
+y entrando por ahí la tarjeta anda completa, igual que para un invitado.
+Las ocho siguen con `noindex`.
+
+**Una ficha nueva de un cliente** lleva `cuidar:true` mientras la fiesta
+esté en uso.
