@@ -369,8 +369,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #portada{min-height:100svh;display:grid;align-content:center;justify-items:center;
   background-color:var(--marron-noche);
   background-image:
-    radial-gradient(ellipse 330px 310px at 50% 47%,rgba(22,24,28,.82) 35%,rgba(22,24,28,.5) 70%,transparent 100%),
-    linear-gradient(rgba(26,28,33,.42),rgba(26,28,33,.58)),
+    linear-gradient(rgba(26,28,33,.58),rgba(26,28,33,.7)),
     url(fotos/fondo.webp);
   background-size:cover;background-position:center;
   padding:clamp(74px,13vh,124px) calc(var(--gutter) + 12px)
@@ -660,15 +659,13 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .reloj div:before,.reloj div:after{display:none}
 .reloj b{aspect-ratio:1;display:grid;place-items:center;position:relative;z-index:1;
   font-size:clamp(24px,7.4vw,40px);font-weight:500}
-.reloj .aro{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;overflow:visible;
-  transform:rotate(-90deg);pointer-events:none}
-.reloj .aro circle{fill:none;stroke-width:1.1}
-.reloj .aro .pista{stroke:rgba(89,95,109,.16)}
-.reloj .aro .lleno{stroke:var(--acento-t);stroke-linecap:round;
-  stroke-dasharray:100;transition:stroke-dashoffset .6s var(--e)}
-.reloj .aro .cima{fill:var(--acento-t);stroke:none}
-.reloj span{margin-top:12px;font-size:clamp(8.5px,2.4vw,11px);letter-spacing:.16em}
-@media (prefers-reduced-motion:reduce){.reloj .aro .lleno{transition:none}}
+.reloj .aro{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;overflow:visible;pointer-events:none}
+.reloj .aro .bd{transition:opacity .6s var(--e)}
+.reloj .aro circle{display:none}
+/* el centro oscuro es del NÚMERO (no del dibujo): así el medidor de contraste ve el fondo que de verdad tiene */
+.reloj b,.claro .reloj b{color:#FDFDFD;background:#24272D;border-radius:50%;
+  width:69%;margin:15.5% auto}
+@media (prefers-reduced-motion:reduce){.reloj .aro .bd{transition:none}}
 
 /* ══════════ 4 · el calendario ══════════ */
 .calen{margin-top:clamp(26px,5vh,40px)}
@@ -840,6 +837,12 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .oscura#sFecha .arriba{color:#F1F3F6}
 .oscura#confirmar{background-image:linear-gradient(rgba(26,28,33,.68),rgba(26,28,33,.8)),url(fotos/tiles.webp);
   background-size:cover;background-position:center}
+/* ── la tarjeta del dress code lleva las bolas de espejos a la derecha ── */
+.capsula{background-image:url(fotos/bolas.webp);background-repeat:repeat-y;
+  background-size:min(68%,320px) auto;background-position:right top;
+  padding-right:clamp(86px,31%,150px)}
+.capsula .orla{left:calc(50% - 34px);width:min(210px,60%)}
+.capsula .btn{max-width:100%}
 /* ── las bolas que cuelgan en la portada ── */
 .bolas{position:absolute;inset:0 0 auto 0;height:48%;z-index:0;pointer-events:none;overflow:hidden}
 .bola{position:absolute;top:var(--h);width:var(--d);height:var(--d);
@@ -1361,6 +1364,28 @@ const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
    brillo, de una semilla fija —no cambia entre cargas— y una luz que
    viene de arriba a la izquierda. Es SVG y sirve a cualquier tamaño:
    la grande de la portada, la etiqueta del disco y la rueda del avance. */
+
+/* ══════════ el anillo de baldosas ══════════
+   El borde de una bola de espejos: una vuelta de baldosas con su brillo
+   (semilla fija) y un centro oscuro donde se lee el número. Lo usan la
+   fecha del calendario y los cuatro números de la cuenta regresiva. */
+function anilloBaldosas(clase, semilla){
+  let x = semilla >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const N = 20, Ro = 19.4, Ri = 14.2;
+  let t = '';
+  for (let i = 0; i < N; i++){
+    const a1 = (i / N) * 2 * Math.PI + .03, a2 = ((i + 1) / N) * 2 * Math.PI - .03;
+    const P = (q, a) => (20 + q * Math.cos(a)).toFixed(2) + ',' + (20 + q * Math.sin(a)).toFixed(2);
+    const L = Math.min(96, Math.round(34 + r() * 58 + (Math.sin(a1 + 2.4) > .6 ? 10 : 0)));
+    t += '<path class="bd" d="M' + P(Ro,a1) + 'L' + P(Ro,a2) + 'L' + P(Ri,a2) + 'L' + P(Ri,a1) + 'Z" fill="hsl(' +
+         (214 + Math.round(r()*12)) + ',9%,' + L + '%)"/>';
+  }
+  return '<svg class="' + clase + '" viewBox="0 0 40 40" aria-hidden="true">' +
+         '<circle cx="20" cy="20" r="13.8" fill="#24272D"/>' + t +
+         '<path d="M33.5 3l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="#fff"/></svg>';
+}
+
 let _bolaN = 0;
 function bolaSVG(px, filas, semilla, cuerda){
   let x = semilla >>> 0;
@@ -2058,17 +2083,15 @@ function horaTexto(){
   Object.keys(tope).forEach(id => {
     const b = document.getElementById(id);
     if (!b) return;
-    b.parentNode.insertAdjacentHTML('afterbegin',
-      '<svg class="aro" viewBox="0 0 40 40" aria-hidden="true">' +
-      '<circle class="pista" cx="20" cy="20" r="18.5"/>' +
-      '<circle class="lleno" cx="20" cy="20" r="18.5" pathLength="100" stroke-dashoffset="100"/>' +
-      (id === 'cD' ? '<circle class="cima" cx="38.5" cy="20" r="1.6"/>' : '') + '</svg>');
-    aros.push([b, b.parentNode.querySelector('.lleno'), tope[id]]);
+    b.parentNode.insertAdjacentHTML('afterbegin', anilloBaldosas('aro', 7 + id.charCodeAt(1)));
+    aros.push([b, b.parentNode.querySelectorAll('.aro .bd'), tope[id]]);
   });
-  const pintar = () => aros.forEach(([b, c, t]) => {
+  /* Las baldosas que "faltan" se apagan: el anillo se vacía con su unidad. */
+  const pintar = () => aros.forEach(([b, bd, t]) => {
     const n = parseInt(b.textContent, 10);
     const f = !t ? 1 : (isFinite(n) ? n / t : 0);
-    c.style.strokeDashoffset = (100 - Math.max(0, Math.min(1, f)) * 100).toFixed(1);
+    const prendidas = Math.round(Math.max(0, Math.min(1, f)) * bd.length);
+    bd.forEach((p, i) => { p.style.opacity = i < prendidas ? '1' : '.28'; });
   });
   pintar();
   setInterval(pintar, 1000);
@@ -2090,23 +2113,7 @@ function horaTexto(){
   for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
   while (celdas.length % 7) celdas.push('');
 
-  /* EL ANILLO DE LA FECHA ES EL BORDE DE UNA BOLA DE ESPEJOS: una vuelta
-     de baldosas, cada una con su brillo (semilla fija), un centro oscuro
-     para que el número se lea sobre la textura y un destello. */
-  let sem = (String(CONFIG.fiesta).replace(/\D/g,'').slice(0,8) | 0) || 3;
-  const rnd = () => (sem = (sem * 1664525 + 1013904223) >>> 0) / 4294967296;
-  let baldosas = '';
-  const N = 20, Ro = 19.4, Ri = 14.2;
-  for (let i = 0; i < N; i++){
-    const a1 = (i / N) * 2 * Math.PI + .03, a2 = ((i + 1) / N) * 2 * Math.PI - .03;
-    const P = (r, a) => (20 + r * Math.cos(a)).toFixed(2) + ',' + (20 + r * Math.sin(a)).toFixed(2);
-    const L = Math.round(34 + rnd() * 58 + (Math.sin(a1 + 2.4) > .6 ? 10 : 0));
-    baldosas += '<path d="M' + P(Ro,a1) + 'L' + P(Ro,a2) + 'L' + P(Ri,a2) + 'L' + P(Ri,a1) + 'Z" fill="hsl(' +
-                (214 + Math.round(rnd()*12)) + ',9%,' + Math.min(L,96) + '%)"/>';
-  }
-  const anillo = '<svg class="anillo-dia" viewBox="0 0 40 40" aria-hidden="true">' +
-                 '<circle cx="20" cy="20" r="13.8" fill="#24272D"/>' + baldosas +
-                 '<path d="M33.5 3l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="#fff"/></svg>';
+  const anillo = anilloBaldosas('anillo-dia', (String(CONFIG.fiesta).replace(/\D/g,'').slice(0,8) | 0) || 3);
 
   let filas = '';
   for (let i = 0; i < celdas.length; i += 7){
