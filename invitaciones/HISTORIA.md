@@ -4668,3 +4668,8 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 **Cada fondo lleva su velo oscuro** (la plata clara no sostiene el texto blanco: sin velo daba 1,9:1). En la portada el velo es una elipse de tamaño fijo detrás del texto, no del ancho de la pantalla, que en escritorio se veía como una mancha.
 **Una falla que no se veía**: un destello caído a la altura del texto bajaba "Mis quince" a 1,35:1, porque la caja de un renglón mide **el ancho de la pantalla**, no el del texto. Los destellos se mantienen fuera de esa franja de lado a lado.
 **Las texturas se bajaron a 720 px y ~260 KB** (tope 300): son imágenes de internet que mandó él, de uso suyo; no se tocó nada más de ellas.
+
+**Cuarta vuelta (12/11/2026).** El dueño pidió: el **logo "Lucía Fest" sin el fondo negro** y sobre la textura de granito gris (la misma foto que el calendario); **un poquito de borde en las letras** que caen sobre las tres texturas, y en el logo, para que se entiendan mejor (un contorno oscuro finito: la plata sobre plata se perdía); la **ubicación** con el enlace de Maps que mandó, y **el salón NO es en Rosario**; el horario **de 22 a 5 h**; y que la **canción se repita**.
+**La ciudad del salón no se sabe**: el enlace de Maps no se pudo abrir desde acá (403), así que la dirección queda solo como "Venezuela 4555" y el botón de cómo llegar usa SU enlace, que es el exacto. Se anota para pedírsela.
+**El bucle**: `invitacion_mirar.js` fallaba por *"queda en BUCLE"*, regla pensada para una canción que no se puede parar. Con su botón de pausa, que se repita es una decisión del cliente: la comprobación ahora falla solo si hay bucle **y no hay pausa**.
+

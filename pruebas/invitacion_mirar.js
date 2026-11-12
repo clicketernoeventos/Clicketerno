@@ -1022,8 +1022,12 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     if (!hay) bien('esta invitación no trae canción');
     else {
       const enBucle = await pagM.evaluate(() => document.querySelector('audio').loop);
-      es(!enBucle, enBucle ? 'la canción queda en BUCLE: no se la puede dejar de escuchar'
-                           : 'la canción no queda en bucle');
+      /* El bucle solo molesta si no hay cómo parar: con su botón de pausa,
+         que se repita es una decisión del cliente (lucia15 lo pidió). */
+      const hayPausa = await pagM.evaluate(() => !!document.querySelector('.repro .play, .player .play'));
+      es(!enBucle || hayPausa, enBucle && !hayPausa
+        ? 'la canción queda en BUCLE y no hay cómo pausarla: no se la puede dejar de escuchar'
+        : enBucle ? 'la canción se repite, y tiene su botón de pausa' : 'la canción no queda en bucle');
       /* Se fuerza el final: en el camino normal hay que esperar la
          canción entera, así que esto no se recorre nunca. */
       const fin = await pagM.evaluate(async () => {
