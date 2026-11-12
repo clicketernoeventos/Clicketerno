@@ -2531,3 +2531,4 @@ dejaría peor parados.
   adentro.** Se borra al cerrar la pestaña y la CSP le cierra la puerta de
   salida a un script inyectado, pero sigue siendo la joya: conviene entrar
   como administrador solo cuando hace falta y cerrar la pestaña después.
+- **Lo que falta de `lucia15/`** (12/11/2026), y lo tiene que mandar la clienta o el dueño: la **hora**; el **audio de "Clocks"** (el comienzo; sin archivo no se dibuja la canción: archivos AAC + Opus y `dura`); las **fotos** (portada y franjas); **hasta cuándo se confirma**; el **valor de la tarjeta**; el **alias** con su **titular**; y la **/exec** de su planilla (con ella: `CONFIG.endpoint`, `lucia15/listado/` y publicar). Vacíos, no se dibujan. El mail de acceso va como `CLAVE_ELEGIDA` en la copia del editor, nunca en el repo.
