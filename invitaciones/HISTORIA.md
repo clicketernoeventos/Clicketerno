@@ -4659,4 +4659,4 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 
 **La frase de la portada es NUESTRA** ("Mis quince, una noche de luces. Quiero brillar con vos a mi lado."): no mandó ninguna. Si manda la suya, va la suya.
 
-**Faltan (no se inventan, su renglón no se dibuja)**: la **hora**, el **audio de Clocks** (sin archivo no se dibuja la sección), las **fotos**, hasta cuándo se **confirma**, el **valor de la tarjeta**, el **alias** y su titular, y la **/exec** de su planilla. **Lo único que se sabe del idioma "inicio" de la canción**: el comienzo del tema, recortado cuando llegue el audio.
+**Faltan (no se inventan, su renglón no se dibuja)**: la **hora**, el **audio de Clocks** (sin archivo no se dibuja la sección), las **fotos**, hasta cuándo se **confirma**, el **valor de la tarjeta**, el **alias** y su titular, y la **/exec** de su planilla. De la canción pidió "el inicio": se recorta el comienzo del tema cuando llegue el audio.
