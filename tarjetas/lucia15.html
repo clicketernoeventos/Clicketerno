@@ -851,11 +851,16 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 html:not(.js) .bola{opacity:1;transform:none;animation:none}
 @media (prefers-reduced-motion:reduce){.bola{animation:none;opacity:1;transform:none}}
 /* ── la placa del logo del final: trae su propio fondo y su propia tinta ── */
-.placa-fest{width:min(100%,360px);margin:22px auto 0;padding:20px 16px 18px;border-radius:26px;
-  background:radial-gradient(120% 90% at 50% 0,#3a3d46,#1a1c21 70%);
-  box-shadow:0 0 0 1px rgba(214,217,224,.35),0 24px 44px -22px rgba(26,28,33,.7)}
+.placa-fest{width:min(100%,380px);margin:22px auto 0;padding:34px 18px 30px;border-radius:26px;
+  background:url(fotos/brillo.webp) center/cover;
+  box-shadow:0 0 0 1px rgba(214,217,224,.5),0 24px 44px -22px rgba(26,28,33,.6)}
 .placa-fest[hidden]{display:none}
-.placa-fest img{display:block;width:100%;height:auto}
+.placa-fest img{display:block;width:100%;height:auto;
+  /* el borde de las letras: sin él la plata se pierde sobre la plata */
+  filter:drop-shadow(0 0 1px #101216) drop-shadow(0 0 1.5px #101216) drop-shadow(0 2px 5px rgba(16,18,22,.55))}
+/* un poquito de borde en las letras que caen sobre las texturas, para que se entiendan mejor */
+#portada,#sFecha,#confirmar{text-shadow:0 0 1px rgba(10,11,13,.95),0 0 3px rgba(10,11,13,.75),0 1px 7px rgba(10,11,13,.5)}
+#confirmar button,#confirmar input,#confirmar select,#confirmar textarea{text-shadow:none}
 /* ── el reproductor plateado ── */
 .player .play{background:linear-gradient(145deg,#f6f8fb,#8d93a1 55%,#dfe2e8);color:#24272D;box-shadow:0 6px 14px -6px rgba(26,28,33,.6),0 0 0 1px rgba(255,255,255,.55) inset}
 .player .disco{background:conic-gradient(from 20deg,#f4f6fa,#9aa0ad 18%,#e9ecf1 34%,#7d8391 52%,#f6f8fb 68%,#9aa0ad 84%,#f4f6fa);
@@ -1305,12 +1310,12 @@ const CONFIG = {
   /* SIN HORA: no la mandaron. La cuenta llega al principio de ese día en
      Rosario y ningún renglón dice una hora. Cuando llegue:
      "2026-12-12T21:00:00-03:00". */
-  fiesta: "2026-12-12",
-  hastaHora: "",
+  fiesta: "2026-12-12T22:00:00-03:00",   // de 22 a 5 h: lo mandó el dueño el 12/11/2026
+  hastaHora: "05:00",            // las 5 son del día siguiente
   confirmarHasta: "",            // HUECO · no la mandaron
   lugar: "Salón Ilusión",
-  calle: "Venezuela 4555 · Rosario",
-  mapa: "https://www.google.com/maps/search/?api=1&query=Sal%C3%B3n%20Ilusi%C3%B3n%2C%20Venezuela%204555%2C%20Rosario",
+  calle: "Venezuela 4555",         // la ciudad no la mandaron: el enlace del mapa es el exacto
+  mapa: "https://maps.app.goo.gl/ZD7RRVSdDpW62DaFA",
   dibujoSalon: "",
   /* "Clocks", de Coldplay (el comienzo). El audio todavía no llegó: sin
      archivo la sección no se dibuja. Cuando llegue: archivos
@@ -1936,7 +1941,7 @@ function horaTexto(){
   if (!(c.archivos || []).length){ sec.remove(); return; }
 
   const a = document.createElement('audio');
-  a.loop = false;
+  a.loop = true;   // pedido del dueño (12/11/2026): la canción se repite
   a.preload = 'metadata';
   /* Con `<source>` adentro, el error llega al ELEMENTO recién cuando
      fallaron TODAS las fuentes: con un `src` suelto, un navegador que
