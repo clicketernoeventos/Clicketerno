@@ -230,12 +230,19 @@ footer a span{border-bottom:1px solid var(--gris)}
 const TEL = '5493412506451';
 const TRABAJOS = window.TRABAJOS || [];
 
+/* Si entró por un anuncio de Google, la página de inicio lo anotó en la
+   pestaña: el mensaje arranca con "Hola 👋" y se sabe de dónde vino. */
+const DESDE_ADS = (() => {
+  if (/[?&](gclid|gbraid|wbraid)=/.test(location.search)) return true;
+  try { return sessionStorage.getItem('ce:ads') === '1'; } catch (e) { return false; }
+})();
+
 /* El mensaje de WhatsApp dice de qué viene. El que escribe ya eligió, y
    del otro lado se sabe qué pide sin tener que preguntarlo. El href del
    HTML ya apunta a wa.me: si el JS no corre, el botón lleva igual. */
 document.getElementById('pedir').href =
   'https://wa.me/' + TEL + '?text=' +
-  encodeURIComponent('Hola Click Eterno! Vi sus invitaciones y quiero una para mi fiesta. Es el:');
+  encodeURIComponent((DESDE_ADS ? 'Hola 👋' : 'Hola') + ' Click Eterno! Vi sus invitaciones y quiero una para mi fiesta. Es el:');
 
 /* Cuántas son de un cliente y cuántas son muestras nuestras NO se escribe
    a mano: se cuenta de la lista. Escrito, el día que entra una invitación

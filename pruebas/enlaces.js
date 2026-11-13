@@ -171,6 +171,12 @@ const PRODUCTOS=[['#invitaciones','invitaci'],['#muro','muro'],['#rollo','rollo'
   else if(!String(combo).startsWith('https://wa.me/')) mal('el combo no tiene botón que lleve a WhatsApp');
   else bien('el combo se puede pedir con un botón');
 
+  /* Sin anuncio, el mensaje no lleva la marca de Google. */
+  const sinMarca = await pag.evaluate(()=>[...document.querySelectorAll('a[href*="wa.me"]')]
+    .every(a=>!decodeURIComponent(a.href).includes('👋')));
+  sinMarca ? bien('sin anuncio, el WhatsApp no lleva la marca de Google')
+           : mal('sin venir de un anuncio, el mensaje igual lleva la marca de Google');
+
   /* Que los tres productos estén en el menú: dos de los tres faltaban. */
   const menu = await pag.evaluate(()=>[...document.querySelectorAll('nav .links a, #menuMovil a')]
     .map(a=>a.getAttribute('href')));
@@ -178,6 +184,28 @@ const PRODUCTOS=[['#invitaciones','invitaci'],['#muro','muro'],['#rollo','rollo'
     menu.includes(sec) ? bien(`el menú nombra ${sec}`) : mal(`el menú no nombra ${sec}`);
 
   await ctx.close();
+
+  /* ── el que llega de un anuncio se reconoce en el chat ──
+     Sin esto no se sabe qué ventas trajo la campaña: Google cuenta el
+     clic a WhatsApp, no si el que escribió compró. */
+  console.log('\n─── el que viene de un anuncio ───');
+  {
+    const ctxA = await nav.newContext();
+    const pa = await ctxA.newPage();
+    await pa.route(/googletagmanager|google\.com|doubleclick/, r=>r.abort());
+    await pa.goto(S+'/?gclid=PRUEBA',{waitUntil:'load'});
+    await pa.waitForTimeout(500);
+    const todos = await pa.evaluate(()=>[...document.querySelectorAll('a[href*="wa.me"][href*="text="]')]
+      .map(a=>decodeURIComponent(a.href)));
+    (todos.length && todos.every(h=>h.includes('Hola 👋')))
+      ? bien(`desde un anuncio, los ${todos.length} botones de WhatsApp arrancan con "Hola 👋"`)
+      : mal('desde un anuncio, algún botón de WhatsApp no lleva la marca');
+    await pa.goto(S+'/invitaciones',{waitUntil:'load'});
+    const inv = await pa.evaluate(()=>decodeURIComponent(document.getElementById('pedir').href));
+    inv.includes('Hola 👋') ? bien('la marca sigue al pasar a /invitaciones')
+                            : mal('al pasar a /invitaciones se pierde la marca de Google');
+    await ctxA.close();
+  }
 
   /* ── la pantalla de 404 devuelve al visitante ── */
   console.log('\n─── la dirección que no existe ───');
