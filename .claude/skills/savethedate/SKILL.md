@@ -102,6 +102,12 @@ impactos y una música acorde, así armo una publicidad"*.
   Golpe en cada palabra de la entrada, chasquido en el destello, subida
   antes del nombre, "gota" en cada derretido, golpe chico en cada título
   que entra, acierto y error en la trivia.
+- **Los siete woosh** (`WOOSH`) se rehicieron midiendo un muestrario que
+  mandó el dueño; no se usó el audio ajeno. Cada uno tiene su lugar: los
+  tres "limpios" en las palabras de la entrada, "oscuro" cuando aparece
+  el nombre, "hueco" en el derretido, "hondo" en "Entrar a la fiesta" y
+  "aireado" en cada título que entra. `woosh(nombre, t)`: `t` es el
+  **pico**, que es lo que cae con la imagen.
 - **La música** es una base de pista a 124 que suena **apagada** en la
   entrada y **se abre** con "Entrar a la fiesta".
 - **Sin un toque no suena nada**: por eso la entrada arranca con "Tocá
