@@ -235,8 +235,18 @@ html:not(.js) .pa{opacity:1;transform:none}
 /* ── 7 · dress code ── */
 #dress{background:var(--negro);color:#E9F1D8}
 #dress .tag{background:var(--pistacho);color:var(--negro)}
-#dress h2{color:var(--pistacho);font-size:clamp(56px,17vw,84px)}
-#dress p{margin-top:10px}
+
+#dress .rotulo-d{font:500 11px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
+/* LA PAREJA: dibujo de línea negra sobre blanco que mandó el dueño. Se invierte (líneas blancas sobre negro) y una
+   capa pistacho en multiplicar las tiñe. El fondo es NEGRO de verdad para que el medidor de contraste lo vea. El texto va en el hueco del medio. */
+.sil{position:relative;margin-top:18px;isolation:isolate;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(207,221,177,.4)}
+.sil img{display:block;width:100%;height:auto;filter:invert(1);mix-blend-mode:screen}
+.sil.con-img::after{content:"";position:absolute;inset:0;background:var(--pistacho);mix-blend-mode:multiply;z-index:1;pointer-events:none}
+.sil-txt{background:var(--negro);padding:26px 0 10px}
+.sil.con-img .sil-txt{position:absolute;left:27%;right:27%;top:17%;bottom:19%;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:0;background:transparent;mix-blend-mode:normal;z-index:2}
+#dress .sil-txt h2{font:800 clamp(38px,12.5vw,64px)/.92 var(--titulos);letter-spacing:-.045em;color:var(--pistacho);margin:12px 0 10px}
+#dress .sil-txt p{font-size:clamp(12.5px,3.4vw,15px);margin:0;color:#E9F1D8;line-height:1.4}
 
 /* ── 8 · regalo ── */
 #regalo{background:var(--pistacho-2)}
@@ -389,11 +399,15 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 7 · dress code ══════════ -->
   <section id="dress">
-    <svg class="flor f-dre" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
-    <svg class="chispa" style="right:28px;top:46px;width:16px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:62px;top:92px;width:9px;opacity:.55" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="left:48%;bottom:42px;width:11px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
+    <svg class="chispa" style="right:28px;top:46px;width:16px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="left:34px;bottom:44px;width:10px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
     <span class="tag ap">03 · Dress code</span>
-    <h2 class="ap d1">Total<br>black</h2>
-    <p class="ap d2">Elegante, todo de negro para esa noche.</p>
+    <div class="sil ap d1" id="sil">
+      <div class="sil-txt">
+        <p class="rotulo-d">Elegante</p>
+        <h2>Total<br>black</h2>
+        <p>Todo de negro para esa noche.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ══════════ 8 · regalo ══════════ -->
@@ -542,6 +556,14 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
     setTimeout(() => { sobre.classList.add('saliendo'); root.classList.remove('cerrado'); root.classList.add('listo'); }, quieto ? 50 : 1500);
     setTimeout(() => sobre.remove(), quieto ? 200 : 2800);
   });
+})();
+
+/* ══ la pareja del dress code ══ la imagen se pide primero y recién cuando cargó se acomoda el texto en su hueco; si falla, queda el texto solo. */
+(function(){
+  const caja = $('#sil'); if (!caja) return;
+  const im = new Image(); im.alt = ''; im.decoding = 'async'; im.setAttribute('aria-hidden', 'true');
+  im.addEventListener('load', () => { if (!im.naturalWidth) return; caja.insertBefore(im, caja.firstChild); caja.classList.add('con-img'); });
+  im.src = 'fotos/vestuario.webp';
 })();
 
 /* ══ copiar el alias ══ */
