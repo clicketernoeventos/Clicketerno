@@ -4745,4 +4745,3 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 **Las ondas salen de una semilla fija** (la fecha de la fiesta): no cambian entre cargas. Si la foto falla, queda el bloque pistacho con la fecha, también con los bordes arrancados.
 
 **Séptima vuelta de julieta (17/11/2026): el borde arrancado entre secciones.** Pidió *"ese estilo rajado entre segmento, con distintos verdes y un detalle cada tanto de rosas tenues"*. Entre cada par de secciones hay ahora una franja con **el borde de la siguiente como papel arrancado**: onda suave, con una **rebarba finita de otro verde** asomando por debajo y **cada tercer corte una rebarba rosa muy tenue**. Se arman con JS al final, tomando el color real de cada sección (el de antes y el de después), así que si cambia un color no hay que tocarlos; y **se rehacen si una sección se saca** (si la canción no carga, no queda un corte colgado). Onda de semilla fija, igual que la de la foto.
-
