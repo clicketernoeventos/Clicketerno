@@ -527,7 +527,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 </main>
 
 <footer class="firma">
-  Invitación de <a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Click Eterno</a>
+  Invitación de <a id="firmaWsp" href="https://wa.me/5493412506451" target="_blank" rel="noopener">Click Eterno</a>
 </footer>
 
 <script>
@@ -589,6 +589,8 @@ texto('lugarDir', CONFIG.calle || '');
 if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remove();
 if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
 if (CONFIG.playlist){ $('#playlist').href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
+/* "Click Eterno" del pie lleva al WhatsApp del negocio con el mensaje armado: quien vio la invitación y quiere una igual no tiene que explicar de dónde viene. */
+$('#firmaWsp').href = 'https://wa.me/5493412506451?text=' + encodeURIComponent('¡Hola! Vi la invitación de ' + (CONFIG.quien || 'una fiesta') + ' y quiero consultar por una.');
 $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
 
 /* ══ el borde arrancado de la foto ══
