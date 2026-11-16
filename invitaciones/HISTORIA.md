@@ -4722,3 +4722,8 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 **No se pudo escuchar desde acá**: se volcó a un archivo y se midió (sin recortes, la parte apagada a la mitad de volumen que la abierta). El oído lo pone el dueño.
 **No es una canción**: no vale "suena una vez y se rebobina"; es una base que sigue mientras la página está abierta, con su botón para callarla. Si un cliente manda su canción, va el reproductor de siempre en lugar de la base.
 
+**Tercera vuelta de lola15 (16/11/2026): los woosh.** El dueño mandó un video con un muestrario de siete soplos de transición (*"Sacá los efectos de este video para las transiciones. Fijate cuál queda para cada una."*).
+**No se recortó el audio del video**: es el muestrario de un paquete de otra persona y no tenemos su permiso, igual que con las fotos de la primera referencia. Se **midió** cada soplo (cuánto tarda en llegar al pico, cuánto en irse, qué tan grave es) y se rehízo con ruido filtrado (`WOOSH` en el `index.html`).
+**Cuál va en cada transición**: los tres "Classic, clean" en las tres palabras de la entrada; "Classic, Dark, Fast" cuando aparece el nombre; "Hollow, Low, Long" mientras el nombre se derrite; "Deep, Low, cinematic" en "Entrar a la fiesta" (crece mientras la entrada se apaga y pega cuando cae el título); "Fast, Close, Airy" en cada título que entra al bajar.
+**Si el dueño consigue el paquete original con permiso**, se pueden poner sus archivos en lugar de los rehechos.
+
