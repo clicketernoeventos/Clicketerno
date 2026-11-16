@@ -4739,4 +4739,3 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 
 **Quinta vuelta de julieta (16/11/2026): la foto.** Mandó una foto suya de chica, sonriendo, y pidió que vaya en la portada. Va en la **polaroid**, recortada cuadrada y centrada en la cara (720 px, 21 KB). La imagen se pide primero y **recién cuando cargó de verdad** reemplaza a la fecha apilada; si falla, queda la fecha. Es una foto de una menor de edad (ella misma de chica) en una dirección pública: la mandó ella, la página lleva `noindex`, y queda anotado por el artículo 53.
 **Una falla que no se veía**: la polaroid nunca estuvo inclinada. La animación de entrada termina en `transform:none` y pisaba el `rotate(-4deg)`; la inclinación pasó a la propiedad `rotate`, que no se pisa.
-
