@@ -112,17 +112,21 @@ html:not(.js) #sobre{display:none}
 @media (prefers-reduced-motion:reduce){#sobre,.env .carta,.env .solapa,#abrir{transition:none!important}}
 
 /* la portada de papel */
-#portada{min-height:100svh;padding:clamp(34px,6vh,54px) var(--gutter) 40px;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,3.4vh,30px);text-align:center}
+#portada{min-height:100svh;padding:0 0 clamp(34px,6vh,52px);display:flex;flex-direction:column;text-align:center}
+/* LA FOTO: arranca arriba, ocupa todo el ancho y tiene el borde de arriba y el de abajo como arrancados.
+   Son dos capas: la de afuera (blanca) y la de adentro (la foto) con la onda corrida, así queda una
+   rebarba finita de papel en el borde. Las ondas las dibuja el JS con una semilla fija. */
+.rasgo{position:relative;height:clamp(300px,52svh,500px);background:#fff;clip-path:url(#rasgoA);
+  filter:drop-shadow(0 10px 12px rgba(34,54,25,.18))}
+.rasgo-in{position:absolute;inset:0;clip-path:url(#rasgoB);background:var(--pistacho);display:grid;place-items:center;
+  font:400 clamp(70px,22vw,110px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em}
+.rasgo-in span{text-align:center}.rasgo-in b{display:block;font-weight:400}
+.rasgo-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
+.rasgo-wrap{filter:drop-shadow(0 10px 12px rgba(34,54,25,.16))}
+.rasgo-wrap .rasgo{filter:none}
+.portada-txt{padding:clamp(22px,4vh,34px) var(--gutter) 0;display:flex;flex-direction:column;gap:clamp(14px,2.6vh,22px)}
 #nombre{font:400 clamp(70px,22vw,120px)/.9 var(--bodoni);letter-spacing:-.02em;color:var(--noche)}
 #portada .script.sub{font-size:clamp(28px,8vw,38px);margin-top:-4px}
-.pola{position:relative;width:min(58vw,230px);margin:6px auto 0;background:#fff;padding:12px 12px 40px;box-shadow:0 10px 24px -10px rgba(34,54,25,.45);rotate:-4deg}
-.pola .foto{aspect-ratio:1;background:var(--pistacho);display:grid;place-items:center;font:400 clamp(44px,14vw,64px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em;position:relative;overflow:hidden}
-.pola .foto b{display:block;font-weight:400}
-.pola .foto::after{content:"";position:absolute;width:120%;aspect-ratio:1;border-radius:50%;background:var(--pistacho-2);right:-70%;bottom:-70%;z-index:0}
-.pola .foto span{position:relative;z-index:1;text-align:center}
-.pola .foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block}
-.pola .pie{position:absolute;left:0;right:0;bottom:7px;font:400 22px/1 var(--mano);color:var(--verde)}
-.pola::before{content:"";position:absolute;left:50%;top:-12px;width:78px;height:24px;margin-left:-39px;background:rgba(244,210,219,.85);transform:rotate(3deg)}
 .chips-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 .chips-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:99px;border:1px solid var(--verde);font:500 10px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--noche)}
 @media (hover:hover){.chips-nav a:hover{background:rgba(86,115,63,.1)}}
@@ -241,6 +245,11 @@ html:not(.js) .pa{opacity:1;transform:none}
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <clipPath id="rasgoA" clipPathUnits="objectBoundingBox"><path id="pA" d="M0 0H1V1H0z"/></clipPath>
+  <clipPath id="rasgoB" clipPathUnits="objectBoundingBox"><path id="pB" d="M0 0H1V1H0z"/></clipPath>
+</defs></svg>
+
 <!-- ══════════ el sobre ══════════ -->
 <div id="sobre">
   <div class="sobre-centro">
@@ -259,12 +268,14 @@ html:not(.js) .pa{opacity:1;transform:none}
 <main>
   <!-- ══════════ 1 · portada ══════════ -->
   <section class="papel" id="portada">
-    <div class="hilo pa"><span id="fechaCorta"></span><i></i><span id="ciudadTop"></span></div>
-    <div class="pa p2"><h1 id="nombre"></h1><p class="script sub">te invita a celebrar</p></div>
-    <div class="pola pa p3" aria-hidden="true"><div class="foto"><span><b>06</b><b>12</b><b>26</b></span></div><div class="pie">guardá la fecha</div></div>
-    <nav class="chips-nav pa p4" aria-label="Ir a una sección">
-      <a href="#fecha">Fecha</a><a href="#lugar">Lugar</a><a href="#musica">Música</a><a href="#confirmar">Confirmar</a>
-    </nav>
+    <div class="rasgo-wrap pa"><div class="rasgo" aria-hidden="false"><div class="rasgo-in"><span aria-hidden="true"><b>06</b><b>12</b><b>26</b></span></div></div></div>
+    <div class="portada-txt">
+      <div class="hilo pa p2"><span id="fechaCorta"></span><i></i><span id="ciudadTop"></span></div>
+      <div class="pa p3"><h1 id="nombre"></h1><p class="script sub">te invita a celebrar</p></div>
+      <nav class="chips-nav pa p4" aria-label="Ir a una sección">
+        <a href="#fecha">Fecha</a><a href="#lugar">Lugar</a><a href="#musica">Música</a><a href="#confirmar">Confirmar</a>
+      </nav>
+    </div>
   </section>
 
   <!-- ══════════ 2 · estás invitado ══════════ -->
@@ -415,7 +426,7 @@ const dos = n => String(n).padStart(2, '0');
   /* La foto se pide primero y recién cuando cargó de verdad reemplaza a la fecha: si falla, queda la fecha. */
   if (CONFIG.foto){
     const im = new Image(); im.alt = 'Julieta'; im.decoding = 'async';
-    im.addEventListener('load', () => { if (im.naturalWidth){ const f = $('.pola .foto'); if (f) f.appendChild(im); } });
+    im.addEventListener('load', () => { if (im.naturalWidth){ const f = $('.rasgo-in'); if (f) f.appendChild(im); } });
     im.src = CONFIG.foto;
   }
   if (!F){ ['#fecha','#cuenta'].forEach(q => { const x = $(q); if (x) x.remove(); }); return; }
@@ -437,6 +448,32 @@ if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remo
 if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
 if (CONFIG.playlist){ $('#playlist').href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
 $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
+
+/* ══ el borde arrancado de la foto ══
+   Una onda suave (dos senos) más un temblor chico, de una semilla fija: no
+   cambia entre cargas. Arriba y abajo no son iguales. La capa de adentro
+   corre la onda hacia adentro, y esa franja es la rebarba de papel. */
+(function(){
+  const a = $('#pA'), b = $('#pB'); if (!a || !b) return;
+  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const N = 48, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
+  const onda = (i, k) => {
+    const t = i / N;
+    return .5 + .32 * Math.sin(t * 9.4 + ph[k]) + .24 * Math.sin(t * 21 + ph[k+1]) + (r() - .5) * .1;   // 0..1 aprox; el temblor es chico: tiene que ser onda y no serrucho
+  };
+  const borde = (alto, off) => {
+    const arriba = [], abajo = [];
+    for (let i = 0; i <= N; i++){
+      arriba.push([i / N, off + alto * Math.max(0, onda(i, 0))]);
+      abajo.push([i / N, 1 - off - alto * Math.max(0, onda(i, 2))]);
+    }
+    const f = p => p[0].toFixed(4) + ' ' + p[1].toFixed(4);
+    return 'M' + arriba.map(f).join('L') + 'L' + abajo.reverse().map(f).join('L') + 'Z';
+  };
+  a.setAttribute('d', borde(.030, 0));
+  b.setAttribute('d', borde(.026, .012));
+})();
 
 /* ══ cuenta regresiva ══ */
 (function(){
