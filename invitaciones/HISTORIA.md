@@ -4698,3 +4698,27 @@ Se hizo: **seis verdes** (del pistacho clarito al verde hondo) y el **rosa solo 
 **Cómo quedó**: colores planos en bloques (pistacho al frente, verde hondo, un panel negro para el dress code), el nombre enorme en **Bricolage Grotesque**, círculos que se pisan, cintas inclinadas, etiquetas numeradas (01 · Falta poco…); **cuenta en tablitas** tipo reloj de aeropuerto; **calendario de cuadraditos** con el día 6 como cuadrado oscuro inclinado con sombra rosa; **reproductor tipo Spotify** (tapa, barra que se arrastra, tiempos) con **tres mandos que hacen algo**: volver al principio, play/pausa y adelantar 15 s —sin los de mezclar y repetir del mockup, que no iban a hacer nada—. Playlist con los tres pasos, alias "Para regalo", confirmar por WhatsApp.
 **El nombre de la canción** ("Cree y atrévete · Ha*Ash") va en el reproductor porque el estilo Spotify lo pide y eligió esa opción viéndolo; en las dos tarjetas anteriores había pedido lo contrario. Si lo quiere afuera, se vacían `nombre` y `autor` y el rótulo desaparece.
 **Fallas que se dibujaban perfectas**: se había perdido `a{color:inherit}` en la reescritura y el "Click Eterno" del pie salía azul sobre verde (1,17:1); las cintas inclinadas que llegaban al borde se salían de la pantalla —ahora quedan adentro—; y el reproductor nuevo no tenía las clases (`.player`, `.play`) con las que la suite lo reconoce.
+
+
+## lola15 — Los XV de Lola, MUESTRA modelo "afiche" (16/11/2026)
+
+**Pidió** (el dueño, para un amigo, con un video de TikTok de referencia): *"Un amigo me pidió este modelo de save the date. ¿Podemos hacer algo parecido?"* y después *"tiene mucho punch. No es algo así nomás. Tiene que tener el mismo impacto, si no parece un PowerPoint. Hacelo genérico. Hacelo para un XV de Lola."*
+
+**Es una muestra**: Lola no existe; fecha (sábado 20/03/2027, 21:30), salón, plan de la noche y trivia son de ejemplo. Sin alias, sin planilla ni tablero (`endpoint` vacío: el formulario avisa que es una muestra), sin canción. El pie dice "Invitación de muestra".
+
+**Qué se copió de la referencia (el recurso)**: la entrada con palabras que golpean de a una ("¿Estás / para / esto?", con un destello que invierte la pantalla), el nombre que se **derrite** en "QUINCE" y vuelve (desenfoque + contraste, una sola vez), títulos de afiche que llenan el ancho (los mide el JS con la tipografía que haya cargado), cuenta regresiva de cifras finas, mapa oscuro con la ruta que se dibuja al bajar, trivia "¿Quién conoce más a Lola?", "El plan" con el riel que se llena al bajar, dress code, playlist, confirmación y "Nos vemos *ahí*" con la palabra manuscrita.
+**Qué NO se copió**: las fotos (eran de internet). En su lugar van **tramas de puntos dibujadas en el momento** (lluvia de grano, bola de espejos, haces de luz), con la fecha de semilla. Tampoco la lista de regalos con "reservar" ni la subida de fotos (eso es el Muro): quedan como opción.
+**Paleta**: negro, hueso y un solo acento fucsia, que va **solo sobre negro** (sobre hueso da 2,7:1 y no sirve de texto).
+
+**Fallas que no se veían**: el contraste alto del derretido **tiñe de naranja** un texto hueso (va blanco puro mientras dura) y deja el negro de su caja distinto al de alrededor (la entrada va en #000). Un elemento con `clip-path` que lo tapa entero **no despierta al observador**: la palabra "ahí" se destapa por el título de al lado. La prueba del cruce pide que la entrada se **funda** con la portada y que `#sobre` se **saque** del DOM al terminar: un barrido no pasa.
+
+**Para usarla con un cliente de verdad**: copiar `lola15/`, cambiar `CONFIG` (plan y trivia vacíos no se dibujan), sumar planilla y tablero, y la canción si la manda (este modelo todavía no tiene reproductor).
+
+**Decisión del dueño (16/11/2026)**: *"Excelente. Me encantó. Va a quedar como modelo save the date."* `lola15/` es desde hoy **el modelo de save the date**: cuando pidan uno, se copia esta carpeta y se le cambia el `CONFIG`.
+
+**Segunda vuelta de lola15 (16/11/2026): el sonido.** *"¿Podés ponerle sonidos llamativos de acuerdo a los impactos y una música acorde, así armo una publicidad?"*
+Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegador (Web Audio, `SONIDO` en el `index.html`). Un golpe grave con su soplo en cada palabra de la entrada, un chasquido en el destello, una subida antes del nombre, una "gota" en cada derretido, un golpe chico en cada título que entra al bajar, y aciertos y errores en la trivia. La música es una base de pista a 124 (La menor, Fa, Do, Sol) que se escucha **apagada** en la entrada, como del lado de afuera, y **se abre** con "Entrar a la fiesta".
+**Lo que cambió por el sonido**: el navegador no deja sonar nada sin un toque, así que la entrada ahora arranca con **"Tocá para empezar"**; y hay un **botón de silencio** fijo abajo a la derecha. En iPhone se prende un `<audio>` mudo para que suene aunque esté la tecla de silencio.
+**No se pudo escuchar desde acá**: se volcó a un archivo y se midió (sin recortes, la parte apagada a la mitad de volumen que la abierta). El oído lo pone el dueño.
+**No es una canción**: no vale "suena una vez y se rebobina"; es una base que sigue mientras la página está abierta, con su botón para callarla. Si un cliente manda su canción, va el reproductor de siempre en lugar de la base.
+
