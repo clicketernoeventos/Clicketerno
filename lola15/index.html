@@ -373,11 +373,11 @@ html.cerrado #portada{opacity:0}
   </div>
 </div>
 
-<button id="sonido" type="button" hidden aria-label="Sonido" aria-pressed="false">
+<div class="repro"><button id="sonido" class="play" type="button" hidden aria-label="Pausar la música" aria-pressed="false">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="raya" d="M17 9l5 6M22 9l-5 6"/>
   </svg>
-</button>
+</button></div>
 
 <main id="papel">
 
@@ -647,6 +647,11 @@ const CONFIG = {
     { p: "¿Qué va a pasar a las 3 de la mañana?",
       o: ["Se va a dormir", "Sigue en la pista", "Pide otro tema", "Las dos últimas"], ok: 3 }
   ],
+  /* La canción: dos archivos (AAC + Opus). `entra` es el segundo donde
+     la canción LEVANTA: al tocar "Entrar a la fiesta" salta ahí, para
+     que el golpe caiga siempre en el mismo lugar. Sin archivos suena la
+     base de pista que fabrica la página. */
+  cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: 9.07 },
   alias: "",
   titular: "",
   evento: "",
@@ -830,11 +835,46 @@ const SONIDO = (function(){
                    [65.41,[261.63,329.63,392.00]],[49.00,[196.00,246.94,293.66]]];
   let A = null, master, musica, filtro, efectos, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
 
+  /* ── la canción ──
+     Un <audio> de verdad, pasado por el mismo filtro que la base: así
+     se escucha apagada en la entrada y se abre al entrar. Suena UNA vez
+     y se rebobina; el botón queda diciendo "escuchar". */
+  const C = CONFIG.cancion, boton = $('#sonido');
+  let tema = null, sonando = false;
+  const rotulo = () => { if (!boton) return; const on = activo && (!tema || sonando);
+    boton.setAttribute('aria-pressed', String(!on));
+    boton.setAttribute('aria-label', on ? 'Pausar la música' : 'Escuchar la música'); };
+  if (C && C.archivos && C.archivos.length){
+    tema = document.createElement('audio'); tema.preload = 'metadata';
+    C.archivos.forEach(a => { const s = document.createElement('source'); s.src = a;
+      s.type = /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4'; tema.appendChild(s); });
+    tema.addEventListener('ended', () => { tema.currentTime = 0; sonando = false; rotulo(); });
+    tema.addEventListener('error', () => {}, true);
+    document.body.appendChild(tema);
+    /* PARA PODER SALTAR. El servidor no entrega el audio por pedazos, y
+       así el navegador no deja adelantarlo: un salto lo manda al
+       principio. Con la página ya cargada se baja la canción entera
+       (medio mega) y se le da al <audio> desde la memoria, que sí se
+       puede saltar. Si todavía no llegó cuando tocan, suena igual por el
+       camino normal y sin salto. */
+    const tipo = a => /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4';
+    const bajar = () => {
+      const a = C.archivos.find(x => tema.canPlayType(tipo(x))) || C.archivos[0];
+      fetch(a).then(r => r.ok ? r.blob() : Promise.reject()).then(b => {
+        if (sonando || !tema.paused) return;
+        tema.src = URL.createObjectURL(b);
+      }).catch(() => {});
+    };
+    if (document.readyState === 'complete') bajar(); else addEventListener('load', bajar);
+  }
+  const saltable = s => { try{ const k = tema.seekable; return k.length && k.end(k.length - 1) > s + 1; }catch(e){ return false; } };
+  const tocar = () => { if (!tema) return; sonando = true; const p = tema.play(); if (p && p.catch) p.catch(() => { sonando = false; rotulo(); }); rotulo(); };
+
   function armar(ctx){
     A = ctx;
     const comp = A.createDynamicsCompressor();
     comp.threshold.value = -16; comp.ratio.value = 5; comp.attack.value = .004; comp.release.value = .16;
-    master = A.createGain(); master.gain.value = .72; master.connect(comp); comp.connect(A.destination);
+    master = A.createGain(); master.gain.value = .66; master.connect(comp); comp.connect(A.destination);
     filtro = A.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.value = 240; filtro.Q.value = .8;
     musica = A.createGain(); musica.gain.value = .0001; musica.connect(filtro); filtro.connect(master);
     efectos = A.createGain(); efectos.gain.value = 1; efectos.connect(master);
@@ -872,22 +912,52 @@ const SONIDO = (function(){
     o.connect(lp); lp.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + .03);
   }
 
+  /* ── los siete "woosh" ──
+     Salen de una referencia que mandó el dueño (un muestrario de siete
+     soplos de transición). No se usó su audio: se MIDIÓ cada uno
+     —cuánto tarda en llegar al pico, cuánto en irse, qué tan grave es en
+     cada tramo— y se rehízo con ruido filtrado. `t` es el instante del
+     PICO, que es lo que tiene que caer con la imagen.
+     sube/baja: segundos antes y después del pico · f0→f1→f2: por dónde
+     pasa el filtro · sub: el grave de abajo · aire: la capa aguda, que
+     es la que se escucha en el parlante de un teléfono. */
+  const WOOSH = {
+    hondo:   { sube:.74, baja:1.5,  tipo:'lowpass',  q:.7,  f0:90,  f1:460, f2:70,  vol:.85, sub:46, subVol:.35, aire:.16 },  /* Deep, Low, cinematic */
+    limpio1: { sube:.28, baja:.5,   tipo:'bandpass', q:.9,  f0:240, f1:520, f2:220, vol:.55, aire:.22 },                      /* Classic, clean */
+    limpio2: { sube:.24, baja:.32,  tipo:'bandpass', q:.9,  f0:300, f1:620, f2:300, vol:.5,  aire:.24 },                      /* Classic, clean 2 */
+    limpio3: { sube:.29, baja:.4,   tipo:'bandpass', q:.9,  f0:220, f1:480, f2:200, vol:.55, aire:.2  },                      /* Classic, clean 3 */
+    oscuro:  { sube:.63, baja:1.1,  tipo:'lowpass',  q:.8,  f0:520, f1:170, f2:60,  vol:.8,  sub:40, subVol:.8,  aire:.08 },  /* Classic, Dark, Fast */
+    aireado: { sube:.85, baja:1.0,  tipo:'bandpass', q:.8,  f0:280, f1:720, f2:380, vol:.34, sub:50, subVol:.4,  aire:.3  },  /* Fast, Close, Airy */
+    hueco:   { sube:1.24, baja:2.6, tipo:'bandpass', q:3.2, f0:120, f1:270, f2:90,  vol:.75, sub:38, subVol:.45, aire:.06 }   /* Hollow, Low, Long */
+  };
+  function capa(tipo, q, f0, f1, f2, vol, ini, t, fin){
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true; f.type = tipo; f.Q.value = q;
+    f.frequency.setValueAtTime(f0, ini); f.frequency.exponentialRampToValueAtTime(f1, t); f.frequency.exponentialRampToValueAtTime(f2, fin);
+    g.gain.setValueAtTime(.0001, ini); g.gain.exponentialRampToValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, fin);
+    s.connect(f); f.connect(g); g.connect(efectos); s.start(ini, (ini * 5.1) % 1.6); s.stop(fin + .03);
+  }
+  function woosh(nombre, t, mas){
+    const o = WOOSH[nombre], k = mas || 1, ini = ya(t - o.sube);
+    t = Math.max(t, ini + .03); const fin = t + o.baja;
+    capa(o.tipo, o.q, o.f0, o.f1, o.f2, o.vol * k, ini, t, fin);
+    if (o.aire) capa('bandpass', .7, o.f0 * 5, o.f1 * 6, o.f2 * 5, o.vol * o.aire * k, ini, t, t + o.baja * .7);
+    if (o.sub) tono(efectos, 'sine', o.sub * 1.7, o.sub, t - .02, Math.min(1.2, o.baja * .8), o.subVol * k);
+  }
+
   /* ── los golpes ── */
-  function impacto(t, f){            /* el aire que llega, el golpe grave y el polvo */
-    soplo(efectos, t - .2, .21, .2 * f, 'bandpass', 350, 3800, 1.1, .19);
+  function impacto(t, f){            /* el golpe grave y el polvo; el soplo lo pone su woosh */
     tono(efectos, 'sine', 160, 36, t, .5 + .2 * f, .95);
     tono(efectos, 'triangle', 900, 180, t, .05, .3);
     soplo(efectos, t, .28 * f, .42 * f, 'lowpass', 2200, 180, .7);
   }
   const chasquido = t => soplo(efectos, t, .13, .32, 'highpass', 5200, 5200, .7);
-  const subida    = (t, dur) => soplo(efectos, t, dur, .26, 'bandpass', 300, 7000, 1.4, dur * .94);
   function gota(t, sube){            /* el nombre que se derrite */
     tono(efectos, 'sine', sube ? 170 : 430, sube ? 430 : 170, t, .55, .2);
     soplo(efectos, t, .5, .1, 'lowpass', sube ? 300 : 1800, sube ? 1800 : 300, 3);
   }
-  function golpe(t){                 /* un título que entra al bajar */
-    soplo(efectos, t - .13, .14, .1, 'bandpass', 300, 2600, 1.1, .12);
-    tono(efectos, 'sine', 115, 44, t, .3, .5);
+  function golpe(t){                 /* un título que entra al bajar: "Fast, Close, Airy" */
+    woosh('aireado', t, .9);
   }
   const tic = t => tono(efectos, 'triangle', 1500, 900, t, .035, .14);
   function acierto(t){ tono(efectos, 'triangle', 880, 0, t, .14, .2); tono(efectos, 'triangle', 1318.5, 0, t + .09, .3, .2); }
@@ -921,36 +991,52 @@ const SONIDO = (function(){
        mudo sonando cambia la sesión a "reproducción" y se escucha igual. */
     try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
     try{ const m = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='); m.loop = true; m.play().catch(() => {}); }catch(e){}
-    const b = $('#sonido');
-    if (b){ b.hidden = false; b.addEventListener('click', () => {
-      activo = !activo; b.setAttribute('aria-pressed', String(!activo));
-      master.gain.setTargetAtTime(activo ? .72 : .0001, A.currentTime, .03); }); }
-    document.addEventListener('visibilitychange', () => { if (!A) return; if (document.hidden) A.suspend(); else A.resume(); });
+    if (tema) try{ A.createMediaElementSource(tema).connect(musica); }catch(e){}
+    if (boton){ boton.hidden = false; boton.addEventListener('click', () => {
+      /* con la canción terminada, el botón la vuelve a poner */
+      if (tema && activo && !sonando){ tocar(); return; }
+      activo = !activo;
+      master.gain.setTargetAtTime(activo ? .66 : .0001, A.currentTime, .03);
+      if (tema){ if (activo) tocar(); else { tema.pause(); sonando = false; } }
+      rotulo(); }); }
+    document.addEventListener('visibilitychange', () => { if (!A) return;
+      if (document.hidden){ A.suspend(); if (tema) tema.pause(); }
+      else { A.resume(); if (tema && sonando && activo) tema.play().catch(() => {}); } });
     return true;
   }
   /* la entrada: los tiempos son los mismos de la animación del CSS */
   function intro(t0){
-    impacto(t0 + .36, 1);
-    impacto(t0 + 1.06, 1); chasquido(t0 + 1.12);
-    impacto(t0 + 1.79, 1.3);
-    subida(t0 + 1.95, .6);
-    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(.42, t0 + 3.4);
-    gota(t0 + 4.3, false); gota(t0 + 6.4, true);
+    woosh('limpio1', t0 + .36);  impacto(t0 + .36, 1);                         /* ¿ESTÁS */
+    woosh('limpio2', t0 + 1.06); impacto(t0 + 1.06, 1); chasquido(t0 + 1.12);  /* PARA, con el destello */
+    woosh('limpio3', t0 + 1.79, 1.15); impacto(t0 + 1.79, 1.3);                /* ESTO? */
+    woosh('oscuro', t0 + 2.75);                                                /* aparece el nombre */
+    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(tema ? .75 : .42, t0 + 3.4);
+    woosh('hueco', t0 + 4.84);                                                 /* el nombre se derrite… */
+    gota(t0 + 6.4, true);                                                      /* …y vuelve */
   }
   function entrar(t){
-    impacto(t + .02, 1.5); chasquido(t + .02);
+    /* "Deep, Low, cinematic": crece mientras la entrada se apaga y pega
+       cuando el título de la portada cae. */
+    const p = t + .5;
+    tic(t); woosh('hondo', p, .8); impacto(p, 1.2); chasquido(p);
     musica.gain.cancelScheduledValues(t); musica.gain.setValueAtTime(Math.max(.0001, musica.gain.value), t);
-    musica.gain.exponentialRampToValueAtTime(.9, t + .25);
+    musica.gain.exponentialRampToValueAtTime(.9, p);
     filtro.frequency.cancelScheduledValues(t); filtro.frequency.setValueAtTime(filtro.frequency.value, t);
-    filtro.frequency.exponentialRampToValueAtTime(17000, t + .45);
-    ultGolpe = t + 1.2;
+    filtro.frequency.setValueAtTime(filtro.frequency.value, t + .3);
+    filtro.frequency.exponentialRampToValueAtTime(17000, p + .05);
+    ultGolpe = t + 1.6;
   }
   const ahora = () => A.currentTime + .04;
   return {
     prender,
-    intro(){ if (!A) return; const t = ahora(); intro(t); musicaDesde(t + 2.55); },
-    entrar(){ if (!A) return; const t = ahora(); if (!reloj) musicaDesde(t + .02); entrar(t); },
-    golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .35) return; ultGolpe = t; golpe(t + .12); },
+    intro(){ if (!A) return; const t = ahora(); intro(t); if (tema){ tema.currentTime = 0; tocar(); } else musicaDesde(t + 2.55); },
+    entrar(){ if (!A) return; const t = ahora();
+      /* la canción salta a medio segundo antes de donde levanta: el
+         woosh crece ese medio segundo y el golpe cae con ella */
+      if (tema){ const s = Math.max(0, (C.entra || .5) - .5); if (saltable(s)) try{ tema.currentTime = s; }catch(e){} tocar(); }
+      else if (!reloj) musicaDesde(t + .02);
+      entrar(t); },
+    golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .5) return; ultGolpe = t; golpe(t + .3); },
     tic(){ if (A) tic(ahora()); },
     acierto(){ if (A) acierto(ahora()); },
     error(){ if (A) error(ahora()); },
