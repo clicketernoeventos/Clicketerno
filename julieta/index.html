@@ -6,13 +6,13 @@
 <meta name="color-scheme" content="light dark">
 <style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
 <title>Julieta · Guardá la fecha</title>
-<meta name="description" content="6 de diciembre de 2026, Santiago del Estero.">
+<meta name="description" content="6 de diciembre de 2026, 22:30 hs, Santiago del Estero.">
 <meta name="theme-color" content="#CFDDB1">
 <!-- `noindex`: es la fiesta de una persona de verdad. El que tiene el link
      entra igual; esto la saca de los buscadores. -->
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Julieta · Guardá la fecha">
-<meta property="og:description" content="6 de diciembre de 2026 · Santiago del Estero">
+<meta property="og:description" content="6 de diciembre de 2026 · 22:30 hs · Santiago del Estero">
 <meta property="og:type" content="website">
 <meta property="og:image" content="og2.jpg">
 <meta property="og:image:width" content="1200">
@@ -523,7 +523,7 @@ html:not(.js) .pa{opacity:1;transform:none}
    qué festeja, así que ningún renglón lo dice. */
 const CONFIG = {
   quien: "Julieta",
-  fiesta: "2026-12-06",                   // sin hora: no la mandó
+  fiesta: "2026-12-06T22:30:00-03:00",    // 22:30 hs: lo mandó el dueño el 17/11/2026; no mandó a qué hora termina
   lugar: "Sirah",
   calle: "La Rioja 1270 · Santiago del Estero",
   ciudad: "Santiago del Estero",
@@ -542,8 +542,8 @@ const CONFIG = {
 const $ = (s, d) => (d || document).querySelector(s);
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})/);
-const F = m ? { anio:+m[1], mes:+m[2], dia:+m[3] } : null;
+const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/);
+const F = m ? { anio:+m[1], mes:+m[2], dia:+m[3], hora: m[4] == null ? null : +m[4], min: m[4] == null ? 0 : +m[5] } : null;
 const texto = (id, t) => { const n = document.getElementById(id); if (n) n.textContent = t; };
 const dos = n => String(n).padStart(2, '0');
 
@@ -563,7 +563,7 @@ const dos = n => String(n).padStart(2, '0');
   texto('fechaCorta', dos(F.dia) + '.' + dos(F.mes) + '.' + F.anio);
   texto('mesTit', MESES[F.mes-1] + ' · ' + F.anio);
   const fd = new Date(F.anio, F.mes - 1, F.dia);
-  texto('fechaTxt', DIAS[fd.getDay()].replace(/^./, c => c.toUpperCase()) + ' ' + largo);
+  texto('fechaTxt', DIAS[fd.getDay()].replace(/^./, c => c.toUpperCase()) + ' ' + largo + (F.hora == null ? '' : ' · ' + F.hora + ':' + dos(F.min) + ' hs'));
   /* el calendario: la víspera, el día y el siguiente; el día va entre garabatos */
   const GARABATO = '<svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none" aria-hidden="true"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>';
   $('#sem').innerHTML = [-1, 0, 1].map(k => {
@@ -607,7 +607,9 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
 /* ══ cuenta regresiva ══ */
 (function(){
   if (!F || !$('#cD')) return;
-  const meta = new Date(F.anio, F.mes - 1, F.dia, 0, 0, 0).getTime();
+  /* La cuenta llega a la HORA de la fiesta, con la zona escrita (−03:00: Santiago del Estero y Rosario son la misma); sin hora, al principio del día. */
+  const meta = F.hora == null ? new Date(F.anio, F.mes - 1, F.dia, 0, 0, 0).getTime()
+    : new Date(F.anio + '-' + dos(F.mes) + '-' + dos(F.dia) + 'T' + dos(F.hora) + ':' + dos(F.min) + ':00-03:00').getTime();
   const pinta = () => {
     let s = Math.max(0, Math.floor((meta - Date.now()) / 1000));
     const d = Math.floor(s / 86400); s -= d * 86400;
