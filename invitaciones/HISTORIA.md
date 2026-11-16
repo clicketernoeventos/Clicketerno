@@ -4767,3 +4767,5 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 
 **Decimotercera vuelta de julieta (17/11/2026): sin las líneas de separación.** *"Sacá las líneas que separan, ya que va a estar el modelo dorado."* Se sacó la **rebarba** (la línea fina verde o rosa) de los cortes: lo que separa las secciones es ahora **el adorno dorado**. Donde las dos secciones tienen el mismo color (todas las de papel de arriba) el corte no se ve y queda solo el adorno; donde cambia el color, el cambio sigue siendo una onda arrancada, que es una transición y no una línea. Si quería sacar también la onda, es dejar el corte recto.
 
+**Decimocuarta vuelta de julieta (17/11/2026): sin rótulo en la música.** *"Cambiá el 'Nuestra música'. No pongas nada ahí."* Se sacó la etiqueta de la sección del reproductor: queda solo el reproductor, sin título ni numeración. Las etiquetas de las demás secciones se renumeraron (01 Playlist, 02 Dress code, 03 Para regalo, 04 Confirmá) y se sacó el círculo suelto de ese panel, que quedaba gris por detrás de las ondas.
+
