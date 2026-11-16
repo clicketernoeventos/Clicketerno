@@ -4679,37 +4679,13 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 
 **Planilla (12/11/2026).** El dueño la creó, pegó el código, corrió `preparar()` e implementó; la `/exec` está en `CONFIG.endpoint` y el tablero en `lucia15/listado`. Los datos que faltan (ciudad, fotos, valor, alias) el dueño dijo que **no van**: quedan sin dibujar. Falta verla entrar una vez.
 
-## Las fiestas de clientes entran en la galería (12/11/2026)
 
-**Qué pidió el dueño.** *"Necesito que en la web estén todas las
-invitaciones que hicimos, para que la gente vea los trabajos y generar
-confianza. No modifiques nada del funcionamiento de las tarjetas."*
+## julieta — Julieta, 6 de diciembre de 2026 (16/11/2026)
 
-**El permiso.** Se le preguntó antes de tocar nada y contestó que tiene
-el permiso de **todas** las familias (12/11/2026): `almi15`, `ambar15`,
-`facuymaxi`, `lucia15`, `magali15`, `maricel50`, `mia15` y
-`valentinaegreso`. Esto reemplaza lo que dicen sus crónicas ("no está en
-la galería de Trabajos ni en `/invitaciones`").
+**Pidió** (con sus palabras): *"Julieta · 6 de diciembre de 2026 · Sirah, La Rioja 1270, Santiago del Estero · alias julieta.zap · música Ha*Ash, Cree y atrévete · no quiero fotos · playlist de Spotify · varias tonalidades de verdes, más pistacho, y rositas clarito, no tan oscuros · dress code: elegante total black · NO quiere planilla: un botón que lleve a mi número 385 617-2466 con un texto para confirmar."* Y una captura de referencia para la fecha: **tres renglones de cifras enormes, tono sobre tono, con un texto chico espaciado al costado**. Pidió además *"otros toques más destacados, no tan parecida a las otras"*.
 
-**Lo que preguntó él:** *"¿se podrá hacer que quienes entren desde ese
-link no puedan registrarse?"*. Sí, y sin tocar las tarjetas: las ocho
-llevan `cuidar:true` en `lib/trabajos.js`, y como el marco de la galería
-es del mismo sitio, la galería entra y apaga lo delicado
-(`CUIDAR_MARCO`): no se dibujan el alias, el titular ni "Copiar alias";
-la confirmación queda a la vista pero inerte, con el cartel *"Muestra:
-acá la confirmación está apagada"*; y el marco no puede mandar nada a la
-planilla. Además no se ofrecen en pestaña suelta: se abren en un visor
-adentro de la página (en `/invitaciones` es nuevo; en el inicio es el de
-siempre, sin "Abrir en pestaña nueva").
+**Cómo se hizo distinta**: no es copia de ninguna. Sin sobre, sin curvas ni arcos: cada sección es un **panel de color con bordes redondos** (pistacho, rosa, blanco, negro) apoyado sobre un fondo claro. Tipografía **Bodoni Moda** para las cifras y los títulos y Hanken Grotesk para el texto. La cuenta regresiva son cuatro **arcos** y no anillos; el reproductor tiene **ondas** que se llenan al sonar; el dress code es un panel **negro** (es el dato). Las cifras de la portada entran de a una, una sola vez.
 
-**Descartado.** Un `?muestra=1` en cada tarjeta (era tocar las ocho, y
-pidió que no) y copias "de vitrina" con el formulario vacío (duplicar
-ocho carpetas que después se quedan atrás).
+**Sin planilla ni tablero** (lo dijo ella): no hay formulario, así que tampoco aviso de datos ni `listado/`. **Confirmar es un enlace a `wa.me/5493856172466`** con el mensaje armado ("¡Hola Julieta! Confirmo mi asistencia a tu fiesta del 6 de diciembre. Mi nombre es: ") para que el invitado agregue su nombre. El número de ella queda en la página porque es lo que pidió.
 
-**El límite, dicho al dueño.** Esto frena al curioso, no al que busca:
-la dirección real de la tarjeta se puede leer en el código de la página,
-y entrando por ahí la tarjeta anda completa, igual que para un invitado.
-Las ocho siguen con `noindex`.
-
-**Una ficha nueva de un cliente** lleva `cuidar:true` mientras la fiesta
-esté en uso.
+**Faltan (no se inventan, su renglón no se dibuja)**: **qué festeja** —nunca lo dijo, así que la invitación dice "te invito a celebrar" sin nombrarlo—, la **hora**, y el **titular** de la cuenta del alias. **La canción va sin nombre**, como las dos últimas tarjetas; si lo quiere, es una línea.
