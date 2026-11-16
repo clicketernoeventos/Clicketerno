@@ -115,11 +115,12 @@ html:not(.js) #sobre{display:none}
 #portada{min-height:100svh;padding:clamp(34px,6vh,54px) var(--gutter) 40px;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,3.4vh,30px);text-align:center}
 #nombre{font:400 clamp(70px,22vw,120px)/.9 var(--bodoni);letter-spacing:-.02em;color:var(--noche)}
 #portada .script.sub{font-size:clamp(28px,8vw,38px);margin-top:-4px}
-.pola{position:relative;width:min(58vw,230px);margin:6px auto 0;background:#fff;padding:12px 12px 40px;box-shadow:0 10px 24px -10px rgba(34,54,25,.45);transform:rotate(-4deg)}
+.pola{position:relative;width:min(58vw,230px);margin:6px auto 0;background:#fff;padding:12px 12px 40px;box-shadow:0 10px 24px -10px rgba(34,54,25,.45);rotate:-4deg}
 .pola .foto{aspect-ratio:1;background:var(--pistacho);display:grid;place-items:center;font:400 clamp(44px,14vw,64px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em;position:relative;overflow:hidden}
 .pola .foto b{display:block;font-weight:400}
 .pola .foto::after{content:"";position:absolute;width:120%;aspect-ratio:1;border-radius:50%;background:var(--pistacho-2);right:-70%;bottom:-70%;z-index:0}
 .pola .foto span{position:relative;z-index:1;text-align:center}
+.pola .foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block}
 .pola .pie{position:absolute;left:0;right:0;bottom:7px;font:400 22px/1 var(--mano);color:var(--verde)}
 .pola::before{content:"";position:absolute;left:50%;top:-12px;width:78px;height:24px;margin-left:-39px;background:rgba(244,210,219,.85);transform:rotate(3deg)}
 .chips-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
@@ -390,6 +391,8 @@ const CONFIG = {
   alias: "julieta.zap",                   // tal cual lo mandó, sin "arreglarle" nada
   playlist: "https://open.spotify.com/playlist/5zx6esYbipbtNURlRV9r6v?si=Y6vlKDm8SCKdcYYUFN49YQ&utm_source=copy-link&pi=H1SBSsM8QFatG",
   /* La canción: nombre y autora salen de lo que mandó. Vacíos, el reproductor queda sin rótulo. */
+  /* La foto de la polaroid: una de chica que mandó ella (16/11/2026). Vacía, la polaroid lleva la fecha. */
+  foto: "fotos/portada.webp",
   cancion: { nombre: "Cree y atrévete", autor: "Ha*Ash", dura: 183.9 },
   /* La confirmación NO va a una planilla: abre WhatsApp con el número de ella. */
   whatsapp: "5493856172466",
@@ -409,6 +412,12 @@ const dos = n => String(n).padStart(2, '0');
   const n = String(CONFIG.quien || '');
   texto('nombre', n); texto('cartaNom', n); texto('selloIni', n.charAt(0).toUpperCase());
   texto('ciudadTop', CONFIG.ciudad || '');
+  /* La foto se pide primero y recién cuando cargó de verdad reemplaza a la fecha: si falla, queda la fecha. */
+  if (CONFIG.foto){
+    const im = new Image(); im.alt = 'Julieta'; im.decoding = 'async';
+    im.addEventListener('load', () => { if (im.naturalWidth){ const f = $('.pola .foto'); if (f) f.appendChild(im); } });
+    im.src = CONFIG.foto;
+  }
   if (!F){ ['#fecha','#cuenta'].forEach(q => { const x = $(q); if (x) x.remove(); }); return; }
   const largo = F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
   texto('fechaCorta', dos(F.dia) + '.' + dos(F.mes) + '.' + F.anio);
