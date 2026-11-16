@@ -126,7 +126,8 @@ html:not(.js) #sobre{display:none}
 .f-lis{right:-34px;bottom:-40px;width:150px;rotate:-170deg;opacity:.7}
 .f-reg{right:-30px;top:-26px;width:116px;rotate:160deg;opacity:.9}
 .f-dre{right:-30px;bottom:-34px;width:150px;rotate:-12deg;opacity:.9}
-.corte{display:block;height:28px;margin:-1px 0;line-height:0;pointer-events:none}
+.corte{display:block;position:relative;z-index:3;height:28px;margin:-1px 0;line-height:0;pointer-events:none}
+.corte .orna{position:absolute;left:50%;top:50%;width:min(300px,76%);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
 .corte svg{width:100%;height:100%;display:block}
 
 /* la portada de papel */
@@ -148,7 +149,7 @@ html:not(.js) #sobre{display:none}
 #nombre{font:400 clamp(70px,22vw,120px)/.9 var(--bodoni);letter-spacing:-.02em;color:var(--noche)}
 #portada .script.sub{font-size:clamp(28px,8vw,38px);margin-top:-4px}
 .chips-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.chips-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:99px;border:1px solid var(--verde);font:500 10px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--noche)}
+.chips-nav a{display:inline-flex;align-items:center;min-height:46px;padding:0 18px;border-radius:99px;border:1px solid var(--verde);font:500 10px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--noche)}
 @media (hover:hover){.chips-nav a:hover{background:rgba(86,115,63,.1)}}
 .pa{opacity:0;transform:translateY(16px)}
 html.listo .pa{animation:sube .9s var(--e) forwards}
@@ -269,6 +270,27 @@ html:not(.js) .pa{opacity:1;transform:none}
 
 #musica .c,#lista .c,#regalo .c{opacity:.2}
 #dress .sil-txt .rotulo-d{font:500 9.5px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;color:var(--oro-2)}
+
+/* LA PORTADA: pistacho más profundo (oliva) con manchas difuminadas de verde musgo y lucecitas de pistacho claro; el nombre
+   en cursiva dorada a lo ancho. El color de base es el que lee el medidor de contraste, así que es lo bastante hondo para
+   sostener el dorado; las manchas claras van arriba y a los lados y NO tocan el borde de abajo (ahí se une con el corte). */
+#portada{background-color:#5E7D45;color:var(--oro-claro)}
+/* las manchas van en una capa de atrás: así el medidor de contraste lee el color de base, que es el que sostiene el dorado */
+#portada::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(70% 30% at 50% 60%,rgba(31,50,25,.7),rgba(31,50,25,.35) 60%,transparent 100%),
+    radial-gradient(46% 22% at 6% 80%,rgba(36,57,30,.6),transparent 72%),
+    radial-gradient(44% 20% at 96% 70%,rgba(36,57,30,.55),transparent 72%),
+    radial-gradient(55% 20% at 90% 38%,rgba(185,206,147,.5),transparent 75%),
+    radial-gradient(50% 18% at 10% 46%,rgba(170,196,128,.45),transparent 75%)}
+:root{--oro-claro:#F2D890}
+#portada .hilo{color:var(--oro-claro)}
+#portada .hilo i{background:rgba(242,216,144,.6)}
+#portada .hilo i::after{content:none}
+#nombre{font:400 min(33vw,190px)/.95 var(--cursiva);letter-spacing:0;color:var(--oro-claro);white-space:nowrap;text-shadow:0 2px 14px rgba(20,32,15,.55)}
+#portada .script.sub{font-family:var(--cursiva);font-size:clamp(28px,8vw,40px);color:var(--oro-claro);margin-top:2px}
+#portada .chips-nav a{border-color:var(--oro-claro);color:var(--oro-claro)}
+@media (hover:hover){#portada .chips-nav a:hover{background:rgba(221,191,115,.12)}}
 
 /* el reproductor de la referencia: botón + ondas, la línea, y cinco mandos */
 .rep{max-width:420px;margin:26px auto 0}
@@ -707,6 +729,9 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
    asomando por debajo y, cada tanto, una rebarba rosa muy tenue. La onda sale
    de una semilla fija (la fecha), así que no cambia entre cargas. Se arman al
    final y se rehacen si una sección se saca (por ejemplo, si la canción no carga). */
+/* El adorno dorado del medio de cada corte: las dos imágenes se piden primero y recién cuando cargaron se dibujan. */
+const ORNA = { src: ['fotos/orna1.webp', 'fotos/orna2.webp'], ok: [false, false] };
+ORNA.src.forEach((u, i) => { const im = new Image(); im.addEventListener('load', () => { if (im.naturalWidth){ ORNA.ok[i] = true; if (window.__cortes) window.__cortes(); } }); im.src = u; });
 function armarCortes(){
   const main = $('main'); if (!main) return;
   main.querySelectorAll('.corte').forEach(n => n.remove());
@@ -732,6 +757,7 @@ function armarCortes(){
     sep.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
       '<path d="' + trazo(-4.5) + '" fill="' + rim + '"/>' +
       '<path d="' + trazo(0) + '" fill="' + color(secs[k]) + '"/></svg>';
+    if (ORNA.ok[k % 2]) sep.insertAdjacentHTML('beforeend', '<img class="orna" src="' + ORNA.src[k % 2] + '" alt="" aria-hidden="true">');
     main.insertBefore(sep, secs[k]);
   }
 }
