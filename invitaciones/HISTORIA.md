@@ -4678,3 +4678,14 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 **Una falla que no se veía**: con el centro oscuro DIBUJADO adentro del SVG, el medidor de contraste veía el número blanco sobre el fondo claro de la sección (1,07:1). El centro oscuro pasó a ser el fondo del propio número, que es lo que el medidor entiende.
 
 **Planilla (12/11/2026).** El dueño la creó, pegó el código, corrió `preparar()` e implementó; la `/exec` está en `CONFIG.endpoint` y el tablero en `lucia15/listado`. Los datos que faltan (ciudad, fotos, valor, alias) el dueño dijo que **no van**: quedan sin dibujar. Falta verla entrar una vez.
+
+
+## julieta — Julieta, 6 de diciembre de 2026 (16/11/2026)
+
+**Pidió** (con sus palabras): *"Julieta · 6 de diciembre de 2026 · Sirah, La Rioja 1270, Santiago del Estero · alias julieta.zap · música Ha*Ash, Cree y atrévete · no quiero fotos · playlist de Spotify · varias tonalidades de verdes, más pistacho, y rositas clarito, no tan oscuros · dress code: elegante total black · NO quiere planilla: un botón que lleve a mi número 385 617-2466 con un texto para confirmar."* Y una captura de referencia para la fecha: **tres renglones de cifras enormes, tono sobre tono, con un texto chico espaciado al costado**. Pidió además *"otros toques más destacados, no tan parecida a las otras"*.
+
+**Cómo se hizo distinta**: no es copia de ninguna. Sin sobre, sin curvas ni arcos: cada sección es un **panel de color con bordes redondos** (pistacho, rosa, blanco, negro) apoyado sobre un fondo claro. Tipografía **Bodoni Moda** para las cifras y los títulos y Hanken Grotesk para el texto. La cuenta regresiva son cuatro **arcos** y no anillos; el reproductor tiene **ondas** que se llenan al sonar; el dress code es un panel **negro** (es el dato). Las cifras de la portada entran de a una, una sola vez.
+
+**Sin planilla ni tablero** (lo dijo ella): no hay formulario, así que tampoco aviso de datos ni `listado/`. **Confirmar es un enlace a `wa.me/5493856172466`** con el mensaje armado ("¡Hola Julieta! Confirmo mi asistencia a tu fiesta del 6 de diciembre. Mi nombre es: ") para que el invitado agregue su nombre. El número de ella queda en la página porque es lo que pidió.
+
+**Faltan (no se inventan, su renglón no se dibuja)**: **qué festeja** —nunca lo dijo, así que la invitación dice "te invito a celebrar" sin nombrarlo—, la **hora**, y el **titular** de la cuenta del alias. **La canción va sin nombre**, como las dos últimas tarjetas; si lo quiere, es una línea.
