@@ -45,7 +45,8 @@ el dueño.** Lo demás vive aparte y se lee cuando hace falta:
 ## Reglas fijas de las tarjetas
 
 **Cómo nace una.** Se copia la más parecida (`ambar15/` con sobre,
-`facuymaxi/` sin sobre; las últimas son `maricel50/` y `valentinaegreso/`)
+`facuymaxi/` sin sobre; las últimas son `maricel50/` y `valentinaegreso/`;
+el **save the date** es `lola15/`, la muestra modelo "afiche")
 y se le cambia la cara, no la maquinaria. Carpeta en la raíz, en
 minúscula, sin espacios ni acentos: `<nombre>/index.html` se sirve en
 `clicketerno.com.ar/<nombre>`. **Repartido el link, la carpeta no se mueve

@@ -4709,3 +4709,4 @@ Se hizo: **seis verdes** (del pistacho clarito al verde hondo) y el **rosa solo 
 
 **Para usarla con un cliente de verdad**: copiar `lola15/`, cambiar `CONFIG` (plan y trivia vacíos no se dibujan), sumar planilla y tablero, y la canción si la manda (este modelo todavía no tiene reproductor).
 
+**Decisión del dueño (16/11/2026)**: *"Excelente. Me encantó. Va a quedar como modelo save the date."* `lola15/` es desde hoy **el modelo de save the date**: cuando pidan uno, se copia esta carpeta y se le cambia el `CONFIG`.
