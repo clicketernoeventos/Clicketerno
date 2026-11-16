@@ -18,8 +18,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- El peso que se pide acá es el que usa el CSS. -->
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Great+Vibes&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Great+Vibes&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════════
    Julieta · pistacho, versión "moderna"
@@ -205,25 +205,6 @@ html:not(.js) .pa{opacity:1;transform:none}
 /* ── 5 · música: el reproductor ── */
 #musica{background:var(--salvia)}
 #musica[hidden]{display:none}
-.spo{background:var(--noche-2);border-radius:22px;padding:16px;margin-top:22px;color:#EAF2D6;max-width:420px}
-.art{width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,var(--pistacho),var(--salvia) 55%,var(--hoja));position:relative;overflow:hidden}
-.art::before{content:"";position:absolute;width:62%;aspect-ratio:1;border-radius:50%;background:var(--rosa);right:-12%;top:-10%}
-.art::after{content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:var(--noche);left:-18%;bottom:-24%}
-.art b{position:absolute;left:16px;top:14px;font:800 clamp(30px,9vw,40px)/.9 var(--titulos);letter-spacing:-.05em;color:var(--noche);z-index:2}
-.cancion{margin-top:16px}
-.cancion b{display:block;font:800 20px/1.1 var(--titulos);letter-spacing:-.02em}
-.cancion span{font-size:13px;opacity:.78}
-.lin{height:44px;display:flex;align-items:center;cursor:pointer;touch-action:none;margin-top:6px}
-.lin div{position:relative;flex:1;height:4px;border-radius:2px;background:rgba(207,221,177,.25)}
-.lin i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--pistacho);border-radius:2px}
-.lin u{position:absolute;left:0;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff}
-.tm{display:flex;justify-content:space-between;font-size:12px;opacity:.8;font-variant-numeric:tabular-nums}
-.ctl{display:flex;justify-content:center;align-items:center;gap:clamp(18px,7vw,34px);margin-top:6px}
-.ctl button{width:48px;height:48px;border-radius:50%;border:0;background:transparent;color:var(--pistacho);display:grid;place-items:center;cursor:pointer}
-.ctl button svg{width:26px;height:26px}
-.ctl .pp{width:64px;height:64px;background:var(--pistacho);color:var(--noche-2)}
-.ctl .pp svg{width:26px;height:26px;fill:currentColor}
-.ctl button:active{transform:scale(.94)}
 
 /* ── 6 · playlist ── */
 #lista{background:var(--pistacho)}
@@ -260,6 +241,56 @@ html:not(.js) .pa{opacity:1;transform:none}
 .firma{padding:20px var(--gutter) calc(40px + env(safe-area-inset-bottom));text-align:center;background:var(--noche);
   font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
 .firma a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;text-underline-offset:6px}
+
+
+/* ══ LA LETRA CURSIVA DORADA Y EL TEXTO AL MEDIO (la referencia: fondo verde hondo, caligrafía dorada centrada) ══
+   El dorado solo se lee sobre los verdes hondos, así que estas cinco secciones son verde hondo y el pistacho
+   queda para el papel, las rebarbas y los detalles. Si un bloque trae su fondo, trae su tinta. */
+:root{--oro:#DDBF73;--oro-2:#C8A75B;--cursiva:'Great Vibes','Pinyon Script','Snell Roundhand',cursive}
+#musica,#lista,#dress,#regalo,#confirmar{text-align:center;color:var(--oro)}
+#musica{background:var(--hondo)}
+#lista{background:var(--noche)}
+#regalo{background:var(--hondo)}
+#confirmar{background:var(--noche)}
+#musica .tag,#lista .tag,#dress .tag,#regalo .tag,#confirmar .tag{background:var(--oro);color:var(--noche)}
+#lista h2,#confirmar h2,#dress .sil-txt h2{font:400 clamp(50px,15vw,72px)/1.02 var(--cursiva);letter-spacing:0;color:var(--oro)}
+#lista p,#confirmar p,#regalo p,#dress .sil-txt p{font:400 clamp(23px,6.6vw,28px)/1.32 var(--cursiva);color:var(--oro)}
+#lista p,#confirmar p,#regalo p{max-width:340px;margin-left:auto;margin-right:auto}
+#regalo .rot{font:500 11px/1 var(--texto-f);letter-spacing:.26em;text-transform:uppercase;color:var(--oro-2)}
+#alias{font:400 clamp(46px,14vw,66px)/1.05 var(--cursiva);letter-spacing:0;color:var(--oro)}
+#dress .rotulo-d{color:var(--oro-2)}
+#dress .sil-txt p{font-size:clamp(19px,5.4vw,23px)}
+#dress .sil-txt h2{font-size:clamp(40px,12.5vw,60px);margin:8px 0 6px}
+.pasos{margin-left:auto;margin-right:auto;justify-items:center}
+.pasos li{font:400 clamp(22px,6.2vw,26px)/1.25 var(--cursiva);color:var(--oro);text-align:left}
+.pasos b{background:transparent;color:var(--oro);box-shadow:0 0 0 1.5px var(--oro-2);font:500 16px/1 var(--texto-f)}
+#regalo .btn{background:transparent;color:var(--oro);border-color:var(--oro-2)}
+#lista .btn,#confirmar .btn{background:var(--oro);color:var(--noche);border-color:var(--oro)}
+
+#musica .c,#lista .c,#regalo .c{opacity:.2}
+#dress .sil-txt .rotulo-d{font:500 9.5px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;color:var(--oro-2)}
+
+/* el reproductor de la referencia: botón + ondas, la línea, y cinco mandos */
+.rep{max-width:420px;margin:26px auto 0}
+.rep-top{display:flex;align-items:center;gap:12px}
+.rep .play{flex:none;width:58px;height:58px;border-radius:50%;border:0;background:var(--oro);color:var(--noche);display:grid;place-items:center;cursor:pointer}
+.rep .play svg{width:22px;height:22px;fill:currentColor}
+.rep .ondas{flex:1;min-width:0;height:56px;display:flex;align-items:center;gap:2px;cursor:pointer;touch-action:none}
+.rep .ondas i{flex:1;min-width:0;border-radius:2px;background:rgba(221,191,115,.28);transition:background-color .2s}
+.rep .ondas i.hecha{background:var(--oro)}
+.lin{height:44px;display:flex;align-items:center;cursor:pointer;touch-action:none;margin-top:8px}
+.lin div{position:relative;flex:1;height:3px;border-radius:2px;background:rgba(221,191,115,.3)}
+.lin i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--oro);border-radius:2px}
+.lin u{position:absolute;left:0;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:var(--rosa)}
+.tm{display:flex;justify-content:space-between;font-size:12px;color:var(--oro-2);font-variant-numeric:tabular-nums}
+.ctl{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.ctl button{width:48px;height:48px;border-radius:50%;border:0;background:transparent;color:var(--oro);display:grid;place-items:center;cursor:pointer}
+.ctl button svg{width:25px;height:25px}
+.ctl .pp{width:66px;height:66px;background:var(--oro);color:var(--noche)}
+.ctl .pp svg{width:26px;height:26px;fill:currentColor}
+.ctl button:active{transform:scale(.94)}
+.ctl button.on{color:var(--rosa);background:rgba(244,210,219,.12)}
+
 
 /* ── aparecer al bajar: una sola vez; sin JS o con "menos movimiento" se ve todo ── */
 .js .ap{opacity:0;transform:translateY(18px);transition:opacity .8s var(--e),transform .8s var(--e)}
@@ -365,15 +396,19 @@ html:not(.js) .pa{opacity:1;transform:none}
   <section id="musica" hidden>
     <div class="c" style="right:22px;top:46px;width:60px;height:60px;background:var(--rosa)"></div>
     <span class="tag ap">01 · Nuestra música</span>
-    <div class="spo player ap d1">
-      <div class="art" aria-hidden="true"><b id="artNom"></b></div>
-      <div class="cancion"><b id="cancNom"></b><span id="cancAut"></span></div>
+    <div class="rep player ap d1">
+      <div class="rep-top">
+        <button type="button" class="play" id="play2" aria-label="Escuchar la canción"></button>
+        <div class="ondas" id="ondas" aria-hidden="true"></div>
+      </div>
       <div class="lin" id="lin" aria-hidden="true"><div><i id="linI"></i><u id="linU"></u></div></div>
       <div class="tm"><span id="tAct">0:00</span><span id="tTot">0:00</span></div>
       <div class="ctl">
-        <button type="button" id="rAtras" aria-label="Volver al principio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2.500v14H6zM20 5v14L9.500 12z"/></svg></button>
+        <button type="button" id="rMute" aria-label="Silenciar" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.500v5h4l5 4v-13l-5 4z" fill="currentColor"/><path id="ondaVol" d="M16.500 9a4 4 0 0 1 0 6M19 6.500a8 8 0 0 1 0 11"/><path id="tacha" d="M16 9.500l5 5M21 9.500l-5 5" style="display:none"/></svg></button>
+        <button type="button" id="rAtras" aria-label="Retroceder diez segundos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6v12L2.500 12zM21.500 6v12L13 12z"/></svg></button>
         <button type="button" class="pp play" id="play" aria-label="Escuchar la canción"></button>
-        <button type="button" id="rAdel" aria-label="Adelantar quince segundos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.500-5.800M20 4v5h-5"/><text x="12" y="15.500" text-anchor="middle" font-size="7.500" font-weight="700" fill="currentColor" stroke="none" font-family="Hanken Grotesk,sans-serif">15</text></svg></button>
+        <button type="button" id="rAdel" aria-label="Adelantar quince segundos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 6v12l8.500-6zM2.500 6v12L11 12z"/></svg></button>
+        <button type="button" id="rRep" aria-label="Repetir la canción" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3.500 3.500L17 10M3.500 11V9.500A3 3 0 0 1 6.500 6.500h14M7 21l-3.500-3.500L7 14M20.500 13v1.500a3 3 0 0 1-3 3h-14"/></svg></button>
       </div>
     </div>
     <audio id="aud" preload="metadata">
@@ -592,30 +627,36 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
   setTimeout(todos, 6000);   // red de seguridad: nada queda escondido
 })();
 
-/* ══ el reproductor (tipo Spotify) ══
-   Tres mandos y los tres hacen algo: volver al principio, play/pausa y
-   adelantar 15 s. Suena UNA vez y al terminar se rebobina. Intenta arrancar
-   al cargar; si el navegador no deja, arranca con el primer toque. */
+/* ══ el reproductor ══
+   Todos los mandos hacen algo: silenciar, retroceder 10 s, play/pausa
+   (hay dos: el chico de la fila de ondas y el grande), adelantar 15 s y
+   repetir. La canción suena UNA vez y al terminar se rebobina, salvo que
+   se active "repetir". Intenta arrancar al cargar; si el navegador no deja,
+   arranca con el sello del sobre o con el primer toque. */
 (function(){
-  const sec = $('#musica'), a = $('#aud'), play = $('#play'), lin = $('#lin');
+  const sec = $('#musica'), a = $('#aud'), lin = $('#lin'), ondas = $('#ondas');
   if (!sec || !a) return;
   const c = CONFIG.cancion || {};
-  texto('cancNom', c.nombre || ''); texto('cancAut', c.autor || '');
-  if (!c.nombre) $('.cancion').remove();
-  const n = String(CONFIG.quien || '');
-  const corte = n.length > 5 ? Math.ceil(n.length * .6) : 0;
-  $('#artNom').textContent = ''; $('#artNom').appendChild(document.createTextNode(corte ? n.slice(0, 2) : n));
-  if (corte){ for (const t of [n.slice(2, 5), n.slice(5)]){ $('#artNom').appendChild(document.createElement('br')); $('#artNom').appendChild(document.createTextNode(t)); } }
+  const plays = [$('#play'), $('#play2')];
   const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.500v15l13-7.500z"/></svg>';
   const PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.500h4v15H6zM14 4.500h4v15h-4z"/></svg>';
+  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const N = 46;
+  for (let i = 0; i < N; i++){
+    const b = document.createElement('i');
+    b.style.height = Math.round(14 + (Math.sin(i / 3.1) * .5 + .5) * 26 + r() * 40) + '%';
+    ondas.appendChild(b);
+  }
+  const barras = [...ondas.children];
   const total = () => (isFinite(a.duration) && a.duration) || +c.dura || 0;
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
   const pinta = () => {
     const t = total(), f = t ? Math.min(1, a.currentTime / t) : 0;
     $('#linI').style.width = (f * 100) + '%'; $('#linU').style.left = (f * 100) + '%';
+    barras.forEach((b, i) => b.classList.toggle('hecha', i / N < f));
     texto('tAct', fmt(a.currentTime)); texto('tTot', fmt(t));
-    play.innerHTML = a.paused ? PLAY : PAUSA;
-    play.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción');
+    plays.forEach(p => { p.innerHTML = a.paused ? PLAY : PAUSA; p.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción'); });
   };
   pinta();
   ['timeupdate','play','pause','loadedmetadata'].forEach(ev => a.addEventListener(ev, pinta));
@@ -625,22 +666,33 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
     if (a.networkState === 3){ sec.remove(); if (window.__cortes) window.__cortes(); }   // fallaron TODAS las fuentes
   }));
   sec.hidden = false;
-  play.addEventListener('click', () => { a.paused ? a.play().catch(()=>{}) : a.pause(); });
-  $('#rAtras').addEventListener('click', () => { a.currentTime = 0; pinta(); });
+  plays.forEach(p => p.addEventListener('click', () => { a.paused ? a.play().catch(()=>{}) : a.pause(); }));
+  $('#rAtras').addEventListener('click', () => { a.currentTime = Math.max(0, a.currentTime - 10); pinta(); });
   $('#rAdel').addEventListener('click', () => { const t = total(); a.currentTime = Math.min(Math.max(0, t - 1), a.currentTime + 15); pinta(); });
-  const ir = ev => {
-    const rc = lin.getBoundingClientRect(), t = total();
-    if (t) a.currentTime = Math.max(0, Math.min(1, (ev.clientX - rc.left) / rc.width)) * t;
+  $('#rMute').addEventListener('click', ev => {
+    a.muted = !a.muted;
+    ev.currentTarget.setAttribute('aria-pressed', String(a.muted));
+    ev.currentTarget.setAttribute('aria-label', a.muted ? 'Activar el sonido' : 'Silenciar');
+    $('#tacha').style.display = a.muted ? '' : 'none'; $('#ondaVol').style.display = a.muted ? 'none' : '';
+  });
+  $('#rRep').addEventListener('click', ev => {
+    a.loop = !a.loop;
+    ev.currentTarget.setAttribute('aria-pressed', String(a.loop));
+    ev.currentTarget.classList.toggle('on', a.loop);
+  });
+  const ir = (el, cx) => {
+    const rc = el.getBoundingClientRect(), t = total();
+    if (t) a.currentTime = Math.max(0, Math.min(1, (cx - rc.left) / rc.width)) * t;
     pinta();
   };
-  let arrastra = false;
-  lin.addEventListener('pointerdown', ev => { arrastra = true; ir(ev); });
-  addEventListener('pointermove', ev => { if (arrastra) ir(ev); });
-  addEventListener('pointerup', () => { arrastra = false; });
-  /* arrancar sola: al cargar o con el primer gesto (que no sea sobre un mando o un enlace) */
+  let arrastra = null;
+  lin.addEventListener('pointerdown', ev => { arrastra = lin; ir(lin, ev.clientX); });
+  ondas.addEventListener('pointerdown', ev => { arrastra = ondas; ir(ondas, ev.clientX); });
+  addEventListener('pointermove', ev => { if (arrastra) ir(arrastra, ev.clientX); });
+  addEventListener('pointerup', () => { arrastra = null; });
   const gestos = ['pointerdown','touchend','keydown'];
   const primero = ev => {
-    if (ev && ev.target && ev.target.closest && ev.target.closest('.spo, a, button')) return;
+    if (ev && ev.target && ev.target.closest && ev.target.closest('.rep, a, button')) return;
     gestos.forEach(g => removeEventListener(g, primero, true));
     if (a.paused && a.currentTime === 0) a.play().catch(()=>{});
   };
