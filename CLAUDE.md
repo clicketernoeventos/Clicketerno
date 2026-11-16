@@ -12,6 +12,7 @@ el dueño.** Lo demás vive aparte y se lee cuando hace falta:
 |---|---|
 | Muro, rollo, base, SQL, seguridad, página pública, lo legal, pendientes del proyecto | `PROYECTO.md` (leerlo antes de tocar algo de afuera de una tarjeta) |
 | Cómo se hace una tarjeta, paso a paso | skill `/tarjeta` (`.claude/skills/tarjeta/SKILL.md`) |
+| Cómo se hace un save the date (modelo `lola15/`) | skill `/savethedate` (`.claude/skills/savethedate/SKILL.md`) |
 | El manual de las invitaciones (CSP, pesos, nombres reservados, RSVP) | `invitaciones/COMO-SE-HACE.md` |
 | La crónica de cada tarjeta | `invitaciones/HISTORIA.md` (leer la de la que se copia) |
 | Copia del HTML de cada tarjeta terminada | `tarjetas/<nombre>.html` (archivo, no se publica) |
