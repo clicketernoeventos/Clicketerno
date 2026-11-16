@@ -18,258 +18,211 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- El peso que se pide acá es el que usa el CSS. -->
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   Julieta · pistacho y rosa claro
-   La fecha va como la pidió ella: tres renglones de cifras enormes,
-   tono sobre tono, y al costado un texto chico muy espaciado. Cada
-   sección es un panel de color con sus bordes redondos, apoyado sobre
-   el fondo: no hay sobre ni curvas, a propósito, para que no se parezca
-   a las otras invitaciones.
+   Julieta · pistacho, versión "moderna"
+   Colores planos en bloques, el nombre enorme en tipografía gruesa,
+   círculos que se pisan, cintas inclinadas y etiquetas numeradas. El
+   rosa es solo de detalle. Cada pieza (cuenta, calendario, reproductor)
+   la eligió ella mirando un mockup. No hay sobre ni curvas.
    ══════════════════════════════════════════════════════════════════ */
 :root{
   --fondo:#E9F0D6;
-  /* LOS VERDES: del pistacho clarito al verde hondo. El pistacho manda. */
   --pistacho-0:#E4EDCD; --pistacho:#CFDDB1; --pistacho-2:#B9CE93; --salvia:#A3BC7E;
-  --hoja:#6F8F53; --verde:#56733F; --hondo:#3F5B33; --noche:#2C4224;
+  --hoja:#6F8F53; --verde:#56733F; --hondo:#3F5B33; --noche:#2C4224; --noche-2:#1F3219;
   --tinta:#223619;
-  /* EL ROSA, SOLO DE DETALLE: bordes, florcitas, aros. */
-  --rosa:#F4D2DB; --rosa-2:#E8B3C1;
+  --rosa:#F4D2DB; --rosa-2:#E8B3C1; --rosa-t:#7E3F52;
   --negro:#14181A;
-  --titulos:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;
+  --titulos:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
   --texto-f:'Hanken Grotesk',system-ui,sans-serif;
   --e:cubic-bezier(.22,.7,.24,1);
-  --gutter:clamp(22px,6vw,44px);
+  --gutter:clamp(22px,6vw,40px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--fondo);color:var(--tinta);font-family:var(--texto-f);font-weight:300;
-  line-height:1.6;overflow-x:hidden}
+body{background:var(--pistacho);color:var(--tinta);font-family:var(--texto-f);font-weight:400;line-height:1.55;overflow-x:hidden}
 a{color:inherit}
-.panel{position:relative;margin:10px;border-radius:34px;padding:clamp(56px,11vw,84px) var(--gutter);
-  text-align:center;overflow:hidden;background:var(--pistacho)}
-/* el filete rosa por adentro: el borde de una tarjeta impresa */
-.panel::before{content:"";position:absolute;inset:9px;border:1px solid var(--rosa-2);border-radius:26px;
-  opacity:.8;pointer-events:none}
-@media (min-width:760px){.panel{max-width:640px;margin:14px auto}}
-.rotulo{font-size:11px;letter-spacing:.34em;text-transform:uppercase;font-weight:500}
-.cuerpo{font-size:15.5px}
-h2{font-family:var(--titulos);font-weight:400;font-size:clamp(34px,10vw,48px);line-height:1.08;margin-top:10px}
-h2 em{font-style:italic}
-.panel > *{position:relative;z-index:1}
-/* paneles oscuros: traen su propia tinta */
-.honda{background:var(--hondo);color:#EAF2D6}
-.honda::before{border-color:rgba(232,179,193,.55)}
-.honda .rotulo{color:var(--pistacho)}
+main{max-width:560px;margin:0 auto;background:var(--pistacho)}
+section{position:relative;overflow:hidden;padding:clamp(48px,10vw,64px) var(--gutter)}
+section > *{position:relative;z-index:1}
+.c{position:absolute!important;border-radius:50%;z-index:0!important;pointer-events:none}
+.tag{display:inline-block;padding:7px 13px;border-radius:99px;background:var(--noche);color:var(--pistacho);
+  font:500 10px/1.2 var(--texto-f);letter-spacing:.2em;text-transform:uppercase}
+h2{font:800 clamp(44px,13vw,64px)/.92 var(--titulos);letter-spacing:-.045em;color:var(--noche);margin-top:14px}
+p{font-size:15px}
+.dk{background:var(--noche);color:var(--pistacho)}
+.dk h2{color:var(--pistacho)}
+.dk .tag{background:var(--pistacho);color:var(--noche)}
 
-/* ── las ramitas y las flores: dibujos nuestros, de línea ── */
-.rama{display:block;width:min(190px,56%);height:auto;margin:22px auto 0;color:var(--hoja)}
-.honda .rama{color:var(--pistacho-2)}
-.deco{position:absolute;pointer-events:none;color:var(--verde);opacity:.22;z-index:0}
-.deco svg{display:block;width:100%;height:auto}
-.deco.a{top:-18px;right:-34px;width:min(210px,54%);transform:rotate(18deg)}
-.deco.b{bottom:-22px;left:-40px;width:min(230px,58%);transform:rotate(198deg)}
-/* la medalla de cada sección: el icono adentro de su aro con un hilo rosa */
-.medalla{width:76px;height:76px;margin:0 auto 22px;border-radius:50%;display:grid;place-items:center;
-  background:var(--pistacho-0);color:var(--hondo);
-  box-shadow:0 0 0 5px rgba(255,255,255,.4),0 0 0 6px var(--rosa-2)}
-.medalla svg{width:34px;height:34px;fill:none}
-.honda .medalla{background:var(--pistacho);color:var(--noche);box-shadow:0 0 0 5px rgba(223,236,196,.18),0 0 0 6px var(--rosa-2)}
-
-/* ── la portada ── */
-#portada{background:var(--pistacho);min-height:calc(100svh - 20px);display:grid;align-content:center;
-  text-align:left;padding-top:clamp(48px,9vh,84px);padding-bottom:clamp(60px,10vh,92px)}
-#portada .rotulo{color:var(--tinta);margin-bottom:clamp(14px,3vh,28px)}
-.portada-grid{display:grid;grid-template-columns:auto 1fr;gap:clamp(12px,3vw,26px);align-items:center}
-.fecha{display:flex;flex-direction:column;font-family:var(--titulos);font-weight:400;color:var(--verde);
-  font-size:clamp(104px,37vw,230px);line-height:.8;letter-spacing:-.04em;
-  font-variant-numeric:lining-nums}
-.fecha span{display:block}
-.lateral{text-align:center;font-size:clamp(9.5px,2.6vw,12px);letter-spacing:.3em;text-transform:uppercase;
-  line-height:2.5;font-weight:400;color:var(--tinta)}
-.lateral .nombre{display:block;font-family:var(--titulos);font-style:italic;text-transform:none;
-  letter-spacing:0;font-size:clamp(40px,12vw,64px);line-height:1;color:var(--hondo);margin:6px 0 8px}
-.lateral .rama{width:100%;margin-top:14px}
-.bajar{width:44px;height:44px;margin:clamp(22px,5vh,40px) auto 0;color:var(--tinta);
-  border-radius:50%;border:1px solid var(--hoja);display:grid;place-items:center;text-decoration:none}
-.bajar svg{width:18px;height:18px}
-
-/* ── la cuenta: UN número grande y lo demás en una línea ── */
-.dias{display:flex;align-items:baseline;justify-content:center;gap:14px;margin-top:6px}
-.dias b{font-family:var(--titulos);font-weight:400;font-size:clamp(96px,30vw,150px);line-height:.95;
-  color:var(--pistacho);font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.03em}
-.dias span{font-family:var(--titulos);font-style:italic;font-size:clamp(28px,8vw,40px);color:var(--pistacho-2)}
-.resto{margin-top:14px;font-size:clamp(13px,3.6vw,15px);letter-spacing:.16em;text-transform:uppercase;
-  font-weight:400;color:#EAF2D6;font-variant-numeric:tabular-nums}
-.resto b{font-weight:500;color:#fff;font-size:1.25em}
-#diaTxt{margin-top:22px;color:#D5E3B6}
-
-/* ── el lugar ── */
-#lugar{background:var(--pistacho-0)}
-#lugar .rotulo{color:var(--verde)}
-#lugar .cuerpo{margin-top:12px}
-
-/* ── los botones ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;min-width:44px;
-  padding:0 28px;margin-top:26px;border-radius:999px;border:1px solid currentColor;background:transparent;
-  font:500 12px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:pointer;
-  color:var(--tinta);transition:transform .3s var(--e),background-color .3s}
+/* botones: rectángulos redondeados, 48 de alto */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;min-width:44px;padding:0 22px;margin-top:20px;
+  border-radius:14px;background:var(--noche);color:var(--pistacho);border:1.5px solid var(--noche);
+  font:500 11px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+  transition:transform .3s var(--e)}
 .btn svg{width:17px;height:17px;flex:none}
 .btn:active{transform:scale(.975)}
-@media (hover:hover){.btn:hover{background:rgba(36,58,30,.08)}}
-.btn.lleno{background:var(--hondo);color:#F2F8E4;border-color:var(--hondo)}
-@media (hover:hover){.btn.lleno:hover{background:var(--noche)}}
-.honda .btn{color:var(--pistacho)}
-.honda .btn.lleno{background:var(--pistacho);color:var(--noche);border-color:var(--pistacho)}
-@media (hover:hover){.honda .btn.lleno:hover{background:var(--pistacho-0)}}
+.btn.o{background:transparent;color:var(--noche)}
+.dk .btn{background:var(--pistacho);color:var(--noche);border-color:var(--pistacho)}
 
-/* ── la canción ── */
+/* ── 1 · portada ── */
+#portada{background:var(--pistacho);min-height:100svh;display:grid;align-content:center;padding-top:clamp(70px,12vh,110px);padding-bottom:150px}
+.pill{display:inline-block;padding:9px 16px;border-radius:99px;font:500 10.5px/1.2 var(--texto-f);letter-spacing:.22em;text-transform:uppercase}
+.pill.n{background:var(--noche);color:var(--pistacho)}
+.pill.r{background:var(--rosa);color:var(--rosa-t)}
+#nombre{font:800 clamp(92px,30vw,170px)/.84 var(--titulos);letter-spacing:-.065em;color:var(--noche);margin:clamp(14px,3vh,26px) 0 clamp(18px,3vh,28px)}
+.cinta{position:absolute;left:10px;right:10px;border-radius:8px;transform:rotate(-5deg);background:var(--noche);color:var(--pistacho);
+  padding:12px 0;font:500 clamp(9px,2.7vw,11px)/1.2 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;text-align:center;white-space:nowrap;z-index:2}
+.cinta.a{bottom:84px}
+.cinta.b{bottom:40px;transform:rotate(3deg);background:var(--rosa);color:var(--rosa-t)}
+
+/* ── 2 · cuenta regresiva: tablitas ── */
+.flip{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,10px);margin-top:26px}
+.fl{background:var(--negro);border-radius:12px;position:relative;padding:clamp(16px,5vw,22px) 0 clamp(12px,4vw,16px);text-align:center;box-shadow:0 8px 0 -3px #0b0e0f}
+.fl::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--noche)}
+.fl::before{content:"";position:absolute;left:5px;right:5px;top:calc(50% - 5px);height:10px;border-left:6px solid var(--noche);border-right:6px solid var(--noche);border-radius:3px;z-index:2}
+.fl b{display:block;font:800 clamp(30px,10vw,44px)/1 var(--titulos);color:var(--pistacho);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.fln{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,10px);margin-top:12px;text-align:center;font:500 10px/1 var(--texto-f);letter-spacing:.18em;text-transform:uppercase}
+#diaTxt{margin-top:18px;color:#D5E3B6;font-size:14px}
+
+/* ── 3 · calendario: cuadraditos ── */
+#fecha{background:var(--pistacho-2)}
+.chips{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(4px,1.6vw,7px);margin-top:20px}
+.chips div{aspect-ratio:1;border-radius:11px;background:rgba(255,255,255,.55);display:grid;place-items:center;
+  font:800 clamp(13px,4vw,16px)/1 var(--titulos);color:var(--noche)}
+.chips .h{aspect-ratio:auto;background:transparent;font:700 10px/1 var(--texto-f);letter-spacing:.1em;padding-bottom:4px}
+.chips .v{background:transparent}
+.chips .e{background:var(--noche);color:var(--pistacho);transform:rotate(-7deg) scale(1.22);box-shadow:0 5px 0 var(--rosa-2);position:relative;z-index:2;border-radius:13px}
+#fechaTxt{margin-top:24px;font-weight:500}
+
+/* ── 4 · lugar ── */
+#lugar{background:var(--pistacho-0)}
+#lugar p{margin-top:8px}
+
+/* ── 5 · música: el reproductor ── */
 #musica{background:var(--salvia)}
 #musica[hidden]{display:none}
-#musica .rotulo{color:var(--noche)}
-#musica .medalla{background:var(--pistacho-0)}
-.player{display:flex;align-items:center;gap:14px;max-width:400px;margin:28px auto 0}
-.play{flex:none;width:64px;height:64px;border-radius:50%;border:0;background:var(--noche);color:var(--pistacho);
-  display:grid;place-items:center;cursor:pointer;transition:transform .3s var(--e);
-  box-shadow:0 0 0 4px rgba(255,255,255,.3),0 0 0 5px var(--rosa-2)}
-.play:active{transform:scale(.94)}
-.play svg{width:22px;height:22px;fill:currentColor}
-.ondas{flex:1;min-width:0;height:48px;display:flex;align-items:center;gap:2px;cursor:pointer;touch-action:none}
-.ondas i{flex:1;min-width:0;border-radius:2px;background:rgba(34,54,25,.3);transition:background-color .2s}
-.ondas i.hecha{background:var(--noche)}
-.tiempo{font-size:12px;letter-spacing:.1em;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+.spo{background:var(--noche-2);border-radius:22px;padding:16px;margin-top:22px;color:#EAF2D6;max-width:420px}
+.art{width:100%;aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,var(--pistacho),var(--salvia) 55%,var(--hoja));position:relative;overflow:hidden}
+.art::before{content:"";position:absolute;width:62%;aspect-ratio:1;border-radius:50%;background:var(--rosa);right:-12%;top:-10%}
+.art::after{content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;background:var(--noche);left:-18%;bottom:-24%}
+.art b{position:absolute;left:16px;top:14px;font:800 clamp(30px,9vw,40px)/.9 var(--titulos);letter-spacing:-.05em;color:var(--noche);z-index:2}
+.cancion{margin-top:16px}
+.cancion b{display:block;font:800 20px/1.1 var(--titulos);letter-spacing:-.02em}
+.cancion span{font-size:13px;opacity:.78}
+.lin{height:44px;display:flex;align-items:center;cursor:pointer;touch-action:none;margin-top:6px}
+.lin div{position:relative;flex:1;height:4px;border-radius:2px;background:rgba(207,221,177,.25)}
+.lin i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--pistacho);border-radius:2px}
+.lin u{position:absolute;left:0;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff}
+.tm{display:flex;justify-content:space-between;font-size:12px;opacity:.8;font-variant-numeric:tabular-nums}
+.ctl{display:flex;justify-content:center;align-items:center;gap:clamp(18px,7vw,34px);margin-top:6px}
+.ctl button{width:48px;height:48px;border-radius:50%;border:0;background:transparent;color:var(--pistacho);display:grid;place-items:center;cursor:pointer}
+.ctl button svg{width:26px;height:26px}
+.ctl .pp{width:64px;height:64px;background:var(--pistacho);color:var(--noche-2)}
+.ctl .pp svg{width:26px;height:26px;fill:currentColor}
+.ctl button:active{transform:scale(.94)}
 
-/* ── la playlist: se explica qué hacer ── */
+/* ── 6 · playlist ── */
 #lista{background:var(--pistacho)}
-#lista .rotulo{color:var(--verde)}
-.pasos{list-style:none;display:grid;gap:12px;max-width:340px;margin:24px auto 0;text-align:left}
-.pasos li{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;font-size:15px}
-.pasos b{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--pistacho-0);
-  color:var(--hondo);font-family:var(--titulos);font-size:19px;font-weight:500;box-shadow:0 0 0 1px var(--rosa-2)}
+#lista[hidden]{display:none}
+.pasos{list-style:none;display:grid;gap:12px;margin-top:20px;max-width:360px}
+.pasos li{display:flex;gap:14px;align-items:center;font-size:15px}
+.pasos b{width:38px;height:38px;border-radius:50%;background:var(--noche);color:var(--pistacho);display:grid;place-items:center;font:800 16px/1 var(--titulos);flex:none}
 
-/* ── el dress code ── */
-#dress{background:var(--negro);color:#EEF3E2}
-#dress::before{border-color:rgba(207,221,177,.45)}
-#dress .rotulo{color:var(--pistacho)}
-#dress h2{color:#F4F9E8}
-#dress .medalla{background:var(--negro);color:var(--pistacho);box-shadow:0 0 0 5px rgba(207,221,177,.12),0 0 0 6px var(--pistacho-2)}
-#dress .grande{font-family:var(--titulos);font-style:italic;font-size:clamp(46px,14vw,74px);line-height:1;
-  color:var(--pistacho);margin-top:16px}
-#dress .rama{color:var(--pistacho-2)}
-#dress .cuerpo{margin-top:20px;color:#D9E4C2}
+/* ── 7 · dress code ── */
+#dress{background:var(--negro);color:#E9F1D8}
+#dress .tag{background:var(--pistacho);color:var(--negro)}
+#dress h2{color:var(--pistacho);font-size:clamp(56px,17vw,84px)}
+#dress p{margin-top:10px}
 
-/* ── el regalo ── */
+/* ── 8 · regalo ── */
 #regalo{background:var(--pistacho-2)}
-#regalo .rotulo{color:var(--noche)}
-#regalo .cuerpo{max-width:330px;margin:14px auto 0}
-#alias{display:block;margin-top:20px;font-family:var(--titulos);font-size:clamp(26px,8vw,36px);
-  font-weight:500;color:var(--noche);word-break:break-all}
-#regalo .medalla{background:var(--pistacho-0)}
+#regalo p{margin-top:10px;max-width:340px}
+.rot{font:700 11px/1 var(--texto-f);letter-spacing:.24em;text-transform:uppercase;margin-top:24px!important;color:var(--noche)}
+#alias{display:block;margin-top:8px;font:800 clamp(34px,10.5vw,50px)/.95 var(--titulos);letter-spacing:-.04em;color:var(--noche);word-break:break-all}
 
-/* ── confirmar ── */
-#confirmar{background:var(--hondo)}
-#confirmar .cuerpo{margin-top:14px;max-width:380px;margin-left:auto;margin-right:auto;color:#E3EDCB}
-#confirmar h2{color:#F4F9E8}
+/* ── 9 · confirmar ── */
+#confirmar p{margin-top:10px;max-width:360px;color:#E3EDCB}
 
-.firma{padding:26px var(--gutter) calc(40px + env(safe-area-inset-bottom));text-align:center;
-  font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#4A5A41}
+.firma{padding:20px var(--gutter) calc(40px + env(safe-area-inset-bottom));text-align:center;background:var(--noche);
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
 .firma a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;text-underline-offset:6px}
 
 /* ── aparecer al bajar: una sola vez; sin JS o con "menos movimiento" se ve todo ── */
-.js .ap{opacity:0;transform:translateY(18px);transition:opacity .9s var(--e),transform .9s var(--e)}
+.js .ap{opacity:0;transform:translateY(18px);transition:opacity .8s var(--e),transform .8s var(--e)}
 .js .ap.ya{opacity:1;transform:none}
-.js .d1{transition-delay:.12s}.js .d2{transition-delay:.24s}.js .d3{transition-delay:.36s}
+.js .d1{transition-delay:.1s}.js .d2{transition-delay:.2s}.js .d3{transition-delay:.3s}
 @media (prefers-reduced-motion:reduce){.js .ap{opacity:1;transform:none;transition:none}}
-/* las cifras de la portada entran de a una, una vez */
-.js .fecha span{opacity:0;transform:translateY(26px);animation:sube 1s var(--e) forwards}
-.js .fecha span:nth-child(2){animation-delay:.18s}.js .fecha span:nth-child(3){animation-delay:.36s}
+/* el nombre y las píldoras entran una sola vez */
+.js #nombre,.js #portada .pill{opacity:0;transform:translateY(22px);animation:sube .9s var(--e) forwards}
+.js #portada .pill.r{animation-delay:.25s}.js #nombre{animation-delay:.12s}
 @keyframes sube{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.js .fecha span{opacity:1;transform:none;animation:none}}
+@media (prefers-reduced-motion:reduce){.js #nombre,.js #portada .pill{opacity:1;transform:none;animation:none}}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
-
-<!-- dibujos nuestros, de línea: una ramita, una flor y los iconos de cada sección -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <symbol id="rama" viewBox="0 0 140 40">
-      <path d="M4 22C38 22 84 20 122 21" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      <g fill="currentColor">
-        <ellipse cx="18" cy="15.5" rx="9" ry="3.4" transform="rotate(-32 18 15.5)"/><ellipse cx="18" cy="26.5" rx="9" ry="3.4" transform="rotate(32 18 26.5)"/>
-        <ellipse cx="38" cy="14.5" rx="9" ry="3.4" transform="rotate(-32 38 14.5)"/><ellipse cx="38" cy="27.5" rx="9" ry="3.4" transform="rotate(32 38 27.5)"/>
-        <ellipse cx="58" cy="14" rx="9" ry="3.4" transform="rotate(-32 58 14)"/><ellipse cx="58" cy="28" rx="9" ry="3.4" transform="rotate(32 58 28)"/>
-        <ellipse cx="78" cy="14" rx="8.5" ry="3.2" transform="rotate(-32 78 14)"/><ellipse cx="78" cy="28" rx="8.5" ry="3.2" transform="rotate(32 78 28)"/>
-        <ellipse cx="98" cy="15" rx="8" ry="3" transform="rotate(-32 98 15)"/><ellipse cx="98" cy="27" rx="8" ry="3" transform="rotate(32 98 27)"/>
-      </g>
-      <g fill="#F4D2DB" stroke="#E8B3C1" stroke-width=".6">
-        <circle cx="128" cy="15.5" r="3.4"/><circle cx="134" cy="21" r="3.4"/><circle cx="128" cy="27" r="3.4"/><circle cx="121.5" cy="21" r="3.4"/>
-      </g>
-      <circle cx="128" cy="21" r="2.4" fill="#E8B3C1"/>
-    </symbol>
-    <symbol id="i-reloj" viewBox="0 0 24 24"><path d="M7 2.6h10M7 21.4h10M8 2.6c0 5 4 5.4 4 9.4s-4 4.400-4 9.400M16 2.6c0 5-4 5.400-4 9.400s4 4.400 4 9.400" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10 18.600h4l-2-2.600z" fill="currentColor"/></symbol>
-    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.500s-6.500-6-6.500-11.200a6.500 6.500 0 0 1 13 0c0 5.200-6.500 11.200-6.500 11.200z" fill="none" stroke="currentColor" stroke-width="1.300"/><circle cx="12" cy="10.300" r="2.400" fill="none" stroke="currentColor" stroke-width="1.300"/></symbol>
-    <symbol id="i-nota" viewBox="0 0 24 24"><path d="M9 18V5.500l11-2V16" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/><circle cx="6.500" cy="18" r="2.600" fill="none" stroke="currentColor" stroke-width="1.300"/><circle cx="17.500" cy="16" r="2.600" fill="none" stroke="currentColor" stroke-width="1.300"/></symbol>
-    <symbol id="i-lista" viewBox="0 0 24 24"><path d="M3 6h12M3 11h12M3 16h7" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linecap="round"/><path d="M18 14.500V8l3-.800v5.800" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/><circle cx="16.500" cy="15" r="1.700" fill="none" stroke="currentColor" stroke-width="1.300"/><circle cx="19.600" cy="13.500" r="1.700" fill="none" stroke="currentColor" stroke-width="1.300"/></symbol>
-    <symbol id="i-percha" viewBox="0 0 24 24"><path d="M12 7.500V6a2 2 0 1 1 2 2" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linecap="round"/><path d="M12 7.500 2.500 15a1.100 1.100 0 0 0 .700 2h17.600a1.100 1.100 0 0 0 .700-2z" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/></symbol>
-    <symbol id="i-regalo" viewBox="0 0 24 24"><path d="M3.500 10.500h17v10h-17zM2.500 7.500h19v3h-19zM12 7.500v13" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/><path d="M12 7.500c-1.500-4-6-4-5.200-1.400.5 1.600 3.200 1.400 5.200 1.400zM12 7.500c1.500-4 6-4 5.200-1.400-.5 1.600-3.200 1.400-5.200 1.400z" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/></symbol>
-    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9.500L5 20v-4H4z" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linejoin="round"/><path d="M8 9.500h8M8 12.500h5" fill="none" stroke="currentColor" stroke-width="1.300" stroke-linecap="round"/></symbol>
-  </defs>
-</svg>
-
 <main>
-  <!-- ══════════ 1 · la portada ══════════ -->
-  <section class="panel" id="portada">
-    <div class="deco a" aria-hidden="true"><svg viewBox="0 0 140 40"><use href="#rama"/></svg></div>
-    <div class="deco b" aria-hidden="true"><svg viewBox="0 0 140 40"><use href="#rama"/></svg></div>
-    <p class="rotulo">Guardá la fecha</p>
-    <div class="portada-grid">
-      <div class="fecha" id="cifras" role="text" aria-label="6 de diciembre de 2026">
-        <span aria-hidden="true">06</span><span aria-hidden="true">12</span><span aria-hidden="true">26</span>
-      </div>
-      <div class="lateral">
-        Te invito<br>a celebrar con
-        <span class="nombre" id="nombre"></span>
-        <span id="fechaLarga"></span><br>
-        <span id="ciudad"></span>
-        <svg class="rama" viewBox="0 0 140 40" aria-hidden="true"><use href="#rama"/></svg>
-      </div>
+
+  <!-- ══════════ 1 · portada ══════════ -->
+  <section id="portada">
+    <div class="c" style="width:min(340px,80vw);aspect-ratio:1;right:-110px;top:-90px;background:var(--pistacho-2)"></div>
+    <div class="c" style="width:min(210px,50vw);aspect-ratio:1;left:-70px;bottom:210px;background:var(--salvia)"></div>
+    <div class="c" style="width:96px;height:96px;right:26px;bottom:250px;background:var(--rosa)"></div>
+    <div><span class="pill n">Save the date</span></div>
+    <h1 id="nombre" aria-label="Julieta"></h1>
+    <div><span class="pill r" id="fechaPill"></span></div>
+    <div class="cinta a" aria-hidden="true" id="cintaA"></div>
+    <div class="cinta b" aria-hidden="true">Elegante total black ✦ Elegante total black</div>
+  </section>
+
+  <!-- ══════════ 2 · cuenta ══════════ -->
+  <section class="dk" id="cuenta">
+    <div class="c" style="right:-60px;top:-60px;width:200px;height:200px;background:var(--hondo)"></div>
+    <span class="tag ap">01 · Falta poco</span>
+    <h2 class="ap d1" id="faltan"></h2>
+    <div class="flip ap d2">
+      <div class="fl"><b id="cD">0</b></div><div class="fl"><b id="cH">00</b></div>
+      <div class="fl"><b id="cM">00</b></div><div class="fl"><b id="cS">00</b></div>
     </div>
-    <a class="bajar" href="#cuenta" aria-label="Seguir bajando">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </a>
+    <div class="fln ap d2"><span>días</span><span>horas</span><span>min</span><span>seg</span></div>
+    <p id="diaTxt" class="ap d3"></p>
   </section>
 
-  <!-- ══════════ 2 · la cuenta ══════════ -->
-  <section class="panel honda" id="cuenta">
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-reloj"/></svg></div>
-    <p class="rotulo ap">Falta poco</p>
-    <div class="dias ap d1"><b id="cD">0</b><span>días</span></div>
-    <p class="resto ap d2"><b id="cH">00</b> h &nbsp;·&nbsp; <b id="cM">00</b> min &nbsp;·&nbsp; <b id="cS">00</b> s</p>
-    <svg class="rama ap d2" viewBox="0 0 140 40" aria-hidden="true"><use href="#rama"/></svg>
-    <p class="cuerpo ap d3" id="diaTxt"></p>
+  <!-- ══════════ 3 · calendario ══════════ -->
+  <section id="fecha">
+    <div class="c" style="right:-50px;top:-50px;width:170px;height:170px;background:var(--pistacho)"></div>
+    <span class="tag ap">02 · Guardá la fecha</span>
+    <h2 class="ap d1" id="mesTit"></h2>
+    <div class="chips ap d2" id="chips"></div>
+    <p id="fechaTxt" class="ap d3"></p>
   </section>
 
-  <!-- ══════════ 3 · el lugar ══════════ -->
-  <section class="panel" id="lugar">
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-pin"/></svg></div>
-    <p class="rotulo ap">Dónde nos vemos</p>
+  <!-- ══════════ 4 · lugar ══════════ -->
+  <section id="lugar">
+    <div class="c" style="right:-50px;bottom:-70px;width:190px;height:190px;background:var(--pistacho)"></div>
+    <span class="tag ap">03 · Dónde</span>
     <h2 class="ap d1" id="lugarNom"></h2>
-    <p class="cuerpo ap d2" id="lugarDir"></p>
+    <p class="ap d2" id="lugarDir"></p>
     <a class="btn ap d3" id="comoLlegar" target="_blank" rel="noopener">
-      <svg aria-hidden="true"><use href="#i-pin"/></svg>Cómo llegar</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21.500s-6.500-6-6.500-11.200a6.500 6.500 0 0 1 13 0c0 5.200-6.500 11.200-6.500 11.200z"/><circle cx="12" cy="10.300" r="2.400"/></svg>Cómo llegar</a>
   </section>
 
-  <!-- ══════════ 4 · la música ══════════ -->
-  <section class="panel" id="musica" hidden>
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-nota"/></svg></div>
-    <p class="rotulo ap">Nuestra música</p>
-    <div class="player ap d1">
-      <button class="play" id="play" type="button" aria-label="Escuchar la canción"></button>
-      <div class="ondas" id="ondas" aria-hidden="true"></div>
-      <span class="tiempo" id="tiempo">0:00</span>
+  <!-- ══════════ 5 · música ══════════ -->
+  <section id="musica" hidden>
+    <div class="c" style="right:22px;top:46px;width:60px;height:60px;background:var(--rosa)"></div>
+    <span class="tag ap">04 · Nuestra música</span>
+    <div class="spo player ap d1">
+      <div class="art" aria-hidden="true"><b id="artNom"></b></div>
+      <div class="cancion"><b id="cancNom"></b><span id="cancAut"></span></div>
+      <div class="lin" id="lin" aria-hidden="true"><div><i id="linI"></i><u id="linU"></u></div></div>
+      <div class="tm"><span id="tAct">0:00</span><span id="tTot">0:00</span></div>
+      <div class="ctl">
+        <button type="button" id="rAtras" aria-label="Volver al principio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2.500v14H6zM20 5v14L9.500 12z"/></svg></button>
+        <button type="button" class="pp play" id="play" aria-label="Escuchar la canción"></button>
+        <button type="button" id="rAdel" aria-label="Adelantar quince segundos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.500-5.800M20 4v5h-5"/><text x="12" y="15.500" text-anchor="middle" font-size="7.500" font-weight="700" fill="currentColor" stroke="none" font-family="Hanken Grotesk,sans-serif">15</text></svg></button>
+      </div>
     </div>
     <audio id="aud" preload="metadata">
       <source src="musica.m4a" type='audio/mp4; codecs="mp4a.40.2"'>
@@ -277,49 +230,44 @@ h2 em{font-style:italic}
     </audio>
   </section>
 
-  <!-- ══════════ 5 · la playlist ══════════ -->
-  <section class="panel" id="lista" hidden>
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-lista"/></svg></div>
-    <p class="rotulo ap">La playlist de la fiesta</p>
-    <h2 class="ap d1">Sumá tu <em>canción</em></h2>
-    <p class="cuerpo ap d2" style="margin-top:12px">Entre todos armamos la música de esa noche: agregá el tema que no puede faltar.</p>
+  <!-- ══════════ 6 · playlist ══════════ -->
+  <section id="lista" hidden>
+    <div class="c" style="left:-50px;top:-30px;width:150px;height:150px;background:var(--rosa);opacity:.8"></div>
+    <span class="tag ap">05 · Playlist</span>
+    <h2 class="ap d1">Sumá tu<br>canción</h2>
+    <p class="ap d2" style="margin-top:12px">Entre todos armamos la música de esa noche: agregá el tema que no puede faltar.</p>
     <ol class="pasos ap d2">
       <li><b>1</b><span>Abrí la playlist en Spotify</span></li>
       <li><b>2</b><span>Buscá la canción que querés bailar</span></li>
       <li><b>3</b><span>Agregala a la lista</span></li>
     </ol>
-    <a class="btn lleno ap d3" id="playlist" target="_blank" rel="noopener">
-      <svg aria-hidden="true"><use href="#i-nota"/></svg>Abrir la playlist</a>
+    <a class="btn ap d3" id="playlist" target="_blank" rel="noopener">Abrir la playlist</a>
   </section>
 
-  <!-- ══════════ 6 · el dress code ══════════ -->
-  <section class="panel" id="dress">
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-percha"/></svg></div>
-    <p class="rotulo ap">Dress code</p>
-    <h2 class="ap d1">Elegante</h2>
-    <p class="grande ap d2">total black</p>
-    <svg class="rama ap d3" viewBox="0 0 140 40" aria-hidden="true"><use href="#rama"/></svg>
-    <p class="cuerpo ap d3">Todo de negro para esa noche.</p>
+  <!-- ══════════ 7 · dress code ══════════ -->
+  <section id="dress">
+    <span class="tag ap">06 · Dress code</span>
+    <h2 class="ap d1">Total<br>black</h2>
+    <p class="ap d2">Elegante, todo de negro para esa noche.</p>
   </section>
 
-  <!-- ══════════ 7 · el regalo ══════════ -->
-  <section class="panel" id="regalo">
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-regalo"/></svg></div>
-    <p class="rotulo ap">Para regalo</p>
-    <p class="cuerpo ap d1">Si querés hacerme un regalo, podés transferir a este alias.</p>
-    <p class="rotulo ap d1" style="margin-top:22px;font-size:10.5px">Alias para transferir</p>
+  <!-- ══════════ 8 · regalo ══════════ -->
+  <section id="regalo">
+    <div class="c" style="left:-50px;bottom:-60px;width:170px;height:170px;background:var(--rosa)"></div>
+    <span class="tag ap">07 · Para regalo</span>
+    <p class="ap d1" style="margin-top:16px">Si querés hacerme un regalo, podés transferir a este alias.</p>
+    <p class="rot ap d1">Alias para transferir</p>
     <b id="alias" class="ap d2"></b>
-    <button class="btn ap d3" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+    <button class="btn o ap d3" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
   </section>
 
-  <!-- ══════════ 8 · confirmar ══════════ -->
-  <section class="panel honda" id="confirmar">
-    <div class="medalla ap" aria-hidden="true"><svg><use href="#i-chat"/></svg></div>
-    <p class="rotulo ap">Cuento con vos</p>
+  <!-- ══════════ 9 · confirmar ══════════ -->
+  <section class="dk" id="confirmar">
+    <span class="tag ap">08 · Confirmá</span>
     <h2 class="ap d1">¿Venís?</h2>
-    <p class="cuerpo ap d2">Confirmame por WhatsApp: se abre el chat conmigo con el mensaje listo, solo agregá tu nombre.</p>
-    <a class="btn lleno ap d3" id="confirmarWsp" target="_blank" rel="noopener">
-      <svg aria-hidden="true"><use href="#i-chat"/></svg>Confirmar por WhatsApp</a>
+    <p class="ap d2">Confirmame por WhatsApp: se abre el chat conmigo con el mensaje listo, solo agregá tu nombre.</p>
+    <a class="btn ap d3" id="confirmarWsp" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>Confirmar por WhatsApp</a>
   </section>
 </main>
 
@@ -340,7 +288,8 @@ const CONFIG = {
   mapa: "https://www.google.com/maps/search/?api=1&query=Sirah%2C%20La%20Rioja%201270%2C%20Santiago%20del%20Estero",
   alias: "julieta.zap",                   // tal cual lo mandó, sin "arreglarle" nada
   playlist: "https://open.spotify.com/playlist/5zx6esYbipbtNURlRV9r6v?si=Y6vlKDm8SCKdcYYUFN49YQ&utm_source=copy-link&pi=H1SBSsM8QFatG",
-  cancion: { dura: 183.9 },
+  /* La canción: nombre y autora salen de lo que mandó. Vacíos, el reproductor queda sin rótulo. */
+  cancion: { nombre: "Cree y atrévete", autor: "Ha*Ash", dura: 183.9 },
   /* La confirmación NO va a una planilla: abre WhatsApp con el número de ella. */
   whatsapp: "5493856172466",
   mensaje: "¡Hola Julieta! Confirmo mi asistencia a tu fiesta del 6 de diciembre. Mi nombre es: "
@@ -348,36 +297,63 @@ const CONFIG = {
 
 const $ = (s, d) => (d || document).querySelector(s);
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})/);
 const F = m ? { anio:+m[1], mes:+m[2], dia:+m[3] } : null;
 const texto = (id, t) => { const n = document.getElementById(id); if (n) n.textContent = t; };
+const dos = n => String(n).padStart(2, '0');
 
-texto('nombre', CONFIG.quien);
-texto('ciudad', CONFIG.ciudad || '');
-if (F) texto('fechaLarga', F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio);
-if (F) texto('diaTxt', F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio);
-else { const c = $('#cuenta'); if (c) c.remove(); }
+/* portada: el nombre en dos renglones si es largo */
+(function(){
+  const n = String(CONFIG.quien || ''), h = $('#nombre');
+  const corte = n.length > 5 ? Math.ceil(n.length * .6) : 0;
+  h.innerHTML = '';
+  h.appendChild(document.createTextNode(corte ? n.slice(0, corte) : n));
+  if (corte){ h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode(n.slice(corte))); }
+  h.setAttribute('aria-label', n);
+  const ciudad = CONFIG.ciudad || '';
+  $('#cintaA').textContent = 'Te invito a celebrar' + (ciudad ? ' ✦ ' + ciudad : '');
+})();
+if (F){
+  const largo = F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
+  texto('fechaPill', dos(F.dia) + ' · ' + dos(F.mes) + ' · ' + F.anio);
+  texto('diaTxt', largo);
+  const fd = new Date(F.anio, F.mes - 1, F.dia);
+  texto('fechaTxt', DIAS[fd.getDay()].replace(/^./, c => c.toUpperCase()) + ' ' + largo);
+  texto('mesTit', MESES[F.mes-1].replace(/^./, c => c.toUpperCase()));
+} else { ['#cuenta','#fecha'].forEach(q => { const n = $(q); if (n) n.remove(); }); $('#fechaPill').remove(); }
 texto('lugarNom', CONFIG.lugar);
 texto('lugarDir', CONFIG.calle || '');
 if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remove();
 if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
-if (CONFIG.playlist){ const p = $('#playlist'); p.href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
+if (CONFIG.playlist){ $('#playlist').href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
 $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
 
-/* ══ la cuenta regresiva: días de calendario de acá (Santiago del Estero es −03:00, igual que Rosario) ══ */
+/* ══ cuenta regresiva: tablitas ══ */
 (function(){
   if (!F || !$('#cD')) return;
   const meta = new Date(F.anio, F.mes - 1, F.dia, 0, 0, 0).getTime();
-  const dos = n => String(n).padStart(2, '0');
   const pinta = () => {
     let s = Math.max(0, Math.floor((meta - Date.now()) / 1000));
     const d = Math.floor(s / 86400); s -= d * 86400;
     const h = Math.floor(s / 3600);  s -= h * 3600;
     const mi = Math.floor(s / 60);   s -= mi * 60;
-    $('#cD').textContent = d; $('#cH').textContent = dos(h);
+    $('#cD').textContent = dos(d); $('#cH').textContent = dos(h);
     $('#cM').textContent = dos(mi); $('#cS').textContent = dos(s);
+    texto('faltan', d === 0 ? '¡Es hoy!' : 'Faltan ' + d + (d === 1 ? ' día' : ' días'));
   };
   pinta(); setInterval(pinta, 1000);
+})();
+
+/* ══ calendario: el mes entero, la semana arranca el lunes ══ */
+(function(){
+  const caja = $('#chips'); if (!caja || !F) return;
+  const primero = (new Date(F.anio, F.mes - 1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(F.anio, F.mes, 0).getDate();
+  let h = ['L','M','M','J','V','S','D'].map(x => '<div class="h" aria-hidden="true">' + x + '</div>').join('');
+  for (let i = 0; i < primero; i++) h += '<div class="v" aria-hidden="true"></div>';
+  for (let d = 1; d <= cuantos; d++) h += '<div' + (d === F.dia ? ' class="e"' : '') + '>' + d + '</div>';
+  caja.innerHTML = h;
 })();
 
 /* ══ copiar el alias ══ */
@@ -406,35 +382,33 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
   setTimeout(todos, 6000);   // red de seguridad: nada queda escondido
 })();
 
-/* ══ el reproductor ══
-   Suena UNA vez y al terminar se rebobina. Intenta arrancar al cargar; si
-   el navegador no deja, arranca con el primer toque en cualquier parte. */
+/* ══ el reproductor (tipo Spotify) ══
+   Tres mandos y los tres hacen algo: volver al principio, play/pausa y
+   adelantar 15 s. Suena UNA vez y al terminar se rebobina. Intenta arrancar
+   al cargar; si el navegador no deja, arranca con el primer toque. */
 (function(){
-  const sec = $('#musica'), a = $('#aud'), play = $('#play'), ondas = $('#ondas');
+  const sec = $('#musica'), a = $('#aud'), play = $('#play'), lin = $('#lin');
   if (!sec || !a) return;
-  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
-  const PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h4v15H6zM14 4.5h4v15h-4z"/></svg>';
-  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
-  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
-  const N = 44;
-  for (let i = 0; i < N; i++){
-    const b = document.createElement('i');
-    b.style.height = Math.round(14 + (Math.sin(i / 3.2) * .5 + .5) * 14 + r() * 18) + '%';
-    ondas.appendChild(b);
-  }
-  const barras = [...ondas.children];
-  const total = () => (isFinite(a.duration) && a.duration) || +(CONFIG.cancion || {}).dura || 0;
+  const c = CONFIG.cancion || {};
+  texto('cancNom', c.nombre || ''); texto('cancAut', c.autor || '');
+  if (!c.nombre) $('.cancion').remove();
+  const n = String(CONFIG.quien || '');
+  const corte = n.length > 5 ? Math.ceil(n.length * .6) : 0;
+  $('#artNom').textContent = ''; $('#artNom').appendChild(document.createTextNode(corte ? n.slice(0, 2) : n));
+  if (corte){ for (const t of [n.slice(2, 5), n.slice(5)]){ $('#artNom').appendChild(document.createElement('br')); $('#artNom').appendChild(document.createTextNode(t)); } }
+  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.500v15l13-7.500z"/></svg>';
+  const PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.500h4v15H6zM14 4.500h4v15h-4z"/></svg>';
+  const total = () => (isFinite(a.duration) && a.duration) || +c.dura || 0;
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
   const pinta = () => {
-    const t = total(), f = t ? a.currentTime / t : 0;
-    barras.forEach((b, i) => b.classList.toggle('hecha', i / N < f));
-    texto('tiempo', fmt(a.currentTime));
+    const t = total(), f = t ? Math.min(1, a.currentTime / t) : 0;
+    $('#linI').style.width = (f * 100) + '%'; $('#linU').style.left = (f * 100) + '%';
+    texto('tAct', fmt(a.currentTime)); texto('tTot', fmt(t));
     play.innerHTML = a.paused ? PLAY : PAUSA;
     play.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción');
   };
   pinta();
-  a.addEventListener('timeupdate', pinta);
-  a.addEventListener('play', pinta); a.addEventListener('pause', pinta);
+  ['timeupdate','play','pause','loadedmetadata'].forEach(ev => a.addEventListener(ev, pinta));
   a.addEventListener('ended', () => { a.currentTime = 0; a.pause(); pinta(); });
   a.addEventListener('error', () => { sec.remove(); });
   a.querySelectorAll('source').forEach(s => s.addEventListener('error', () => {
@@ -442,20 +416,26 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
   }));
   sec.hidden = false;
   play.addEventListener('click', () => { a.paused ? a.play().catch(()=>{}) : a.pause(); });
-  ondas.addEventListener('pointerdown', ev => {
-    const rc = ondas.getBoundingClientRect(), t = total();
+  $('#rAtras').addEventListener('click', () => { a.currentTime = 0; pinta(); });
+  $('#rAdel').addEventListener('click', () => { const t = total(); a.currentTime = Math.min(Math.max(0, t - 1), a.currentTime + 15); pinta(); });
+  const ir = ev => {
+    const rc = lin.getBoundingClientRect(), t = total();
     if (t) a.currentTime = Math.max(0, Math.min(1, (ev.clientX - rc.left) / rc.width)) * t;
     pinta();
-  });
-  /* arrancar sola: al cargar o con el primer gesto (que no sea el del propio botón) */
+  };
+  let arrastra = false;
+  lin.addEventListener('pointerdown', ev => { arrastra = true; ir(ev); });
+  addEventListener('pointermove', ev => { if (arrastra) ir(ev); });
+  addEventListener('pointerup', () => { arrastra = false; });
+  /* arrancar sola: al cargar o con el primer gesto (que no sea sobre un mando o un enlace) */
+  const gestos = ['pointerdown','touchend','keydown'];
   const primero = ev => {
-    if (ev && ev.target && ev.target.closest && ev.target.closest('#play, #ondas, a')) return;
-    ['pointerdown','touchend','keydown'].forEach(n => removeEventListener(n, primero, true));
+    if (ev && ev.target && ev.target.closest && ev.target.closest('.spo, a, button')) return;
+    gestos.forEach(g => removeEventListener(g, primero, true));
     if (a.paused && a.currentTime === 0) a.play().catch(()=>{});
   };
-  a.play().then(() => ['pointerdown','touchend','keydown'].forEach(n => removeEventListener(n, primero, true)))
-    .catch(() => {});
-  ['pointerdown','touchend','keydown'].forEach(n => addEventListener(n, primero, true));
+  a.play().then(() => gestos.forEach(g => removeEventListener(g, primero, true))).catch(() => {});
+  gestos.forEach(g => addEventListener(g, primero, true));
 })();
 </script>
 </body>
