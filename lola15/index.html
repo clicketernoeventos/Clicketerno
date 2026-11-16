@@ -851,7 +851,23 @@ const SONIDO = (function(){
     tema.addEventListener('ended', () => { tema.currentTime = 0; sonando = false; rotulo(); });
     tema.addEventListener('error', () => {}, true);
     document.body.appendChild(tema);
+    /* PARA PODER SALTAR. El servidor no entrega el audio por pedazos, y
+       así el navegador no deja adelantarlo: un salto lo manda al
+       principio. Con la página ya cargada se baja la canción entera
+       (medio mega) y se le da al <audio> desde la memoria, que sí se
+       puede saltar. Si todavía no llegó cuando tocan, suena igual por el
+       camino normal y sin salto. */
+    const tipo = a => /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4';
+    const bajar = () => {
+      const a = C.archivos.find(x => tema.canPlayType(tipo(x))) || C.archivos[0];
+      fetch(a).then(r => r.ok ? r.blob() : Promise.reject()).then(b => {
+        if (sonando || !tema.paused) return;
+        tema.src = URL.createObjectURL(b);
+      }).catch(() => {});
+    };
+    if (document.readyState === 'complete') bajar(); else addEventListener('load', bajar);
   }
+  const saltable = s => { try{ const k = tema.seekable; return k.length && k.end(k.length - 1) > s + 1; }catch(e){ return false; } };
   const tocar = () => { if (!tema) return; sonando = true; const p = tema.play(); if (p && p.catch) p.catch(() => { sonando = false; rotulo(); }); rotulo(); };
 
   function armar(ctx){
@@ -1017,7 +1033,7 @@ const SONIDO = (function(){
     entrar(){ if (!A) return; const t = ahora();
       /* la canción salta a medio segundo antes de donde levanta: el
          woosh crece ese medio segundo y el golpe cae con ella */
-      if (tema){ try{ tema.currentTime = Math.max(0, (C.entra || .5) - .5); }catch(e){} tocar(); }
+      if (tema){ const s = Math.max(0, (C.entra || .5) - .5); if (saltable(s)) try{ tema.currentTime = s; }catch(e){} tocar(); }
       else if (!reloj) musicaDesde(t + .02);
       entrar(t); },
     golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .5) return; ultGolpe = t; golpe(t + .3); },

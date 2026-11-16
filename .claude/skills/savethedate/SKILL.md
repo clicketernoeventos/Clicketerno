@@ -111,8 +111,10 @@ impactos y una música acorde, así armo una publicidad"*.
 - **La canción** (`CONFIG.cancion`): dos archivos y `entra`, el segundo
   donde la canción levanta (se busca midiendo el volumen cada 0,05 s). Pasa
   por el filtro: apagada en la entrada, abierta al entrar, y al entrar
-  **salta a `entra` menos medio segundo**. Suena una vez y se rebobina. El
-  salto no anda en el servidor de pruebas: se mira en la página publicada.
+  **salta a `entra` menos medio segundo**. Suena una vez y se rebobina. Para
+  poder saltar, la canción se baja entera a memoria al cargar la página
+  (el servidor no la entrega por pedazos y sin eso el salto la manda al
+  principio, sin error).
   Sin archivos suena la base de pista de abajo.
 - **La música** es una base de pista a 124 que suena **apagada** en la
   entrada y **se abre** con "Entrar a la fiesta".
