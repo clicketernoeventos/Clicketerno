@@ -111,6 +111,21 @@ html:not(.js) #sobre{display:none}
 #sobre.abierto #abrir{opacity:0;transform:scale(1.4);pointer-events:none}
 @media (prefers-reduced-motion:reduce){#sobre,.env .carta,.env .solapa,#abrir{transition:none!important}}
 
+.flor{position:absolute;pointer-events:none;z-index:1;height:auto;overflow:visible}
+.chispa{position:absolute;pointer-events:none;z-index:1;color:var(--pistacho)}
+.f-port-i{left:-36px;top:calc(clamp(300px,52svh,500px) - 118px);width:176px;z-index:3}
+.f-port-d{right:-34px;top:calc(clamp(300px,52svh,500px) - 84px);width:132px;scale:-1 1;rotate:-6deg;z-index:3}
+.f-inv-a{right:-30px;top:-14px;width:120px;rotate:155deg;opacity:.95}
+.f-inv-b{left:-34px;bottom:-34px;width:122px;rotate:-18deg;opacity:.95}
+.f-fec{right:-34px;bottom:-30px;width:128px;rotate:-160deg;opacity:.95}
+.f-cue{left:-52px;top:-52px;width:104px;rotate:20deg;opacity:.95}
+.mapa-wrap{position:relative;max-width:340px;margin:24px auto 0}
+.mapa-wrap .mapa{margin:0}
+.f-lug{right:-30px;bottom:-22px;width:124px;rotate:-12deg;z-index:3}
+.cinta-wash{position:absolute;left:50%;top:-11px;width:92px;height:24px;margin-left:-46px;background:rgba(244,210,219,.9);rotate:-3deg;z-index:3;pointer-events:none}
+.f-lis{right:-34px;bottom:-40px;width:150px;rotate:-170deg;opacity:.7}
+.f-reg{right:-30px;top:-26px;width:116px;rotate:160deg;opacity:.9}
+.f-dre{right:-30px;bottom:-34px;width:150px;rotate:-12deg;opacity:.9}
 .corte{display:block;height:28px;margin:-1px 0;line-height:0;pointer-events:none}
 .corte svg{width:100%;height:100%;display:block}
 
@@ -124,7 +139,9 @@ html:not(.js) #sobre{display:none}
 .rasgo-in{position:absolute;inset:0;clip-path:url(#rasgoB);background:var(--pistacho);display:grid;place-items:center;
   font:400 clamp(70px,22vw,110px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em}
 .rasgo-in span{text-align:center}.rasgo-in b{display:block;font-weight:400}
-.rasgo-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
+.rasgo-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block;
+  /* en blanco y negro: el filtro va en el CSS y no en el archivo */
+  filter:grayscale(1) contrast(1.06) brightness(1.04)}
 .rasgo-wrap{filter:drop-shadow(0 10px 12px rgba(34,54,25,.16))}
 .rasgo-wrap .rasgo{filter:none}
 .portada-txt{padding:clamp(22px,4vh,34px) var(--gutter) 0;display:flex;flex-direction:column;gap:clamp(14px,2.6vh,22px)}
@@ -173,7 +190,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 #lugar{padding:clamp(48px,9vw,72px) var(--gutter);text-align:center}
 #lugar h2{font:400 clamp(54px,17vw,84px)/.95 var(--bodoni);color:var(--noche);letter-spacing:-.01em;margin-top:12px}
 #lugar .script{font-size:clamp(30px,9vw,42px);margin-top:2px}
-.mapa{position:relative;max-width:340px;margin:24px auto 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 24px -14px rgba(34,54,25,.5);transform:rotate(1.5deg);background:#E7EFD2}
+.mapa{position:relative;max-width:340px;margin:24px auto 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 24px -14px rgba(34,54,25,.5);rotate:1.5deg;background:#E7EFD2}
 .mapa svg.base{display:block;width:100%;height:auto}
 .mapa .garabato{width:46%;height:46%;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg)}
 .mapa .flecha{position:absolute;left:6%;top:10%;width:34%;color:var(--noche)}
@@ -253,6 +270,8 @@ html:not(.js) .pa{opacity:1;transform:none}
   <clipPath id="rasgoB" clipPathUnits="objectBoundingBox"><path id="pB" d="M0 0H1V1H0z"/></clipPath>
 </defs></svg>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="peonia" viewBox="-44 -44 88 88"><path transform="rotate(0.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(40.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(80.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(120.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(160.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(200.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(240.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(280.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(320.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(20.0) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(71.4) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(122.9) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(174.3) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(225.7) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(277.1) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(328.6) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(8.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(68.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(128.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(188.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(248.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(308.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(30.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(102.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(174.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(246.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(318.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><circle r="3.2" fill="#C9708B"/><g fill="#F7E3B0"><circle cx="0" cy="-5.5" r="1"/><circle cx="4.8" cy="2.8" r="1"/><circle cx="-4.8" cy="2.8" r="1"/></g></symbol><symbol id="ramo" viewBox="0 0 260 90"><path d="M6 68C80 74 160 56 250 14" fill="none" stroke="#56733F" stroke-width="1.6" stroke-linecap="round"/><path transform="translate(32.9 69.1) rotate(-37.8) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(32.9 69.1) rotate(38.2) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(55.8 68.5) rotate(-41.4) scale(0.99)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(55.8 68.5) rotate(34.6) scale(0.99)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(81.4 66.1) rotate(-45.2) scale(1.04)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(81.4 66.1) rotate(30.8) scale(1.04)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(107.5 62.0) rotate(-48.7) scale(1.10)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(107.5 62.0) rotate(27.3) scale(1.10)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(134.2 56.1) rotate(-52.0) scale(1.05)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(134.2 56.1) rotate(24.0) scale(1.05)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(161.5 48.5) rotate(-55.1) scale(1.00)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(161.5 48.5) rotate(20.9) scale(1.00)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(189.4 39.2) rotate(-57.9) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(189.4 39.2) rotate(18.1) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(218.0 28.1) rotate(-60.5) scale(0.89)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(218.0 28.1) rotate(15.5) scale(0.89)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><g fill="#F4D2DB" stroke="#E3A9B9" stroke-width=".6"><circle cx="248.0" cy="16.0" r="4.2"/><circle cx="232.0" cy="24.0" r="3.2"/><circle cx="218.0" cy="32.0" r="2.6"/></g></symbol><symbol id="ramillete" viewBox="0 0 260 220"><use href="#ramo" x="0" y="96" width="250" height="86" transform="rotate(-24 60 140)"/><use href="#ramo" x="4" y="120" width="230" height="80" transform="rotate(-62 40 160)"/><use href="#peonia" x="40" y="40" width="130" height="130"/><use href="#peonia" x="150" y="118" width="70" height="70"/><use href="#peonia" x="2" y="132" width="52" height="52"/></symbol><symbol id="chispa" viewBox="0 0 24 24"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z" fill="currentColor"/></symbol></defs></svg>
+
 <!-- ══════════ el sobre ══════════ -->
 <div id="sobre">
   <div class="sobre-centro">
@@ -271,6 +290,8 @@ html:not(.js) .pa{opacity:1;transform:none}
 <main>
   <!-- ══════════ 1 · portada ══════════ -->
   <section class="papel" id="portada">
+    <svg class="flor f-port-i pa p3" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <svg class="flor f-port-d pa p3" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
     <div class="rasgo-wrap pa"><div class="rasgo" aria-hidden="false"><div class="rasgo-in"><span aria-hidden="true"><b>06</b><b>12</b><b>26</b></span></div></div></div>
     <div class="portada-txt">
       <div class="hilo pa p2"><span id="fechaCorta"></span><i></i><span id="ciudadTop"></span></div>
@@ -283,6 +304,8 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 2 · estás invitado ══════════ -->
   <section class="papel" id="invitado">
+    <svg class="flor f-inv-a" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <svg class="flor f-inv-b" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
     <p class="rotulo ap">Estás invitado</p>
     <h2 class="ap d1">Vení a celebrar<em>conmigo</em></h2>
     <svg class="corazon ap d1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 20s-7.500-4.800-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.200-7.500 10-7.500 10z"/></svg>
@@ -291,6 +314,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 3 · el calendario ══════════ -->
   <section class="papel" id="fecha">
+    <svg class="flor f-fec" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
     <p class="rotulo ap" id="mesTit"></p>
     <div class="sem ap d1" id="sem"></div>
     <p id="fechaTxt" class="ap d2"></p>
@@ -298,6 +322,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 4 · la cuenta ══════════ -->
   <section class="papel" id="cuenta">
+    <svg class="flor f-cue" viewBox="-44 -44 88 88" aria-hidden="true"><use href="#peonia"/></svg>
     <p class="script ap" id="faltan">Falta poco para vernos</p>
     <div class="cd ap d1">
       <div><b id="cD">0</b><span>días</span></div><div><b id="cH">00</b><span>horas</span></div>
@@ -310,7 +335,8 @@ html:not(.js) .pa{opacity:1;transform:none}
     <p class="rotulo ap">Dónde</p>
     <h2 class="ap d1">Where?</h2>
     <p class="script ap d1">¿Dónde nos vemos?</p>
-    <div class="mapa ap d2" aria-hidden="true">
+    <div class="mapa-wrap ap d2" aria-hidden="true"><div class="cinta-wash"></div><svg class="flor f-lug" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <div class="mapa">
       <svg class="base" viewBox="0 0 320 210"><rect width="320" height="210" fill="#E7EFD2"/>
         <path d="M-10 150C60 120 120 170 200 130S300 90 340 110V230H-10z" fill="#CFDDB1"/>
         <rect x="26" y="22" width="70" height="46" rx="8" fill="#B9CE93"/><rect x="224" y="150" width="70" height="40" rx="8" fill="#B9CE93"/>
@@ -320,7 +346,7 @@ html:not(.js) .pa{opacity:1;transform:none}
       <svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>
       <svg class="flecha" viewBox="0 0 90 60"><path class="dib" pathLength="1" d="M6 8C30 4 56 14 66 40"/><path class="dib" pathLength="1" d="M56 36L67 42L70 30"/></svg>
       <span class="aca">acá</span>
-    </div>
+    </div></div>
     <div class="lug-dato ap d3"><b id="lugarNom"></b><span id="lugarDir"></span></div>
     <a class="btn-ruta ap d3" id="comoLlegar" target="_blank" rel="noopener">Mostrar ruta →</a>
   </section>
@@ -348,6 +374,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 6 · playlist ══════════ -->
   <section id="lista" hidden>
+    <svg class="flor f-lis" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
     <div class="c" style="left:-50px;top:-30px;width:150px;height:150px;background:var(--rosa);opacity:.8"></div>
     <span class="tag ap">02 · Playlist</span>
     <h2 class="ap d1">Sumá tu<br>canción</h2>
@@ -362,6 +389,8 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 7 · dress code ══════════ -->
   <section id="dress">
+    <svg class="flor f-dre" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <svg class="chispa" style="right:28px;top:46px;width:16px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:62px;top:92px;width:9px;opacity:.55" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="left:48%;bottom:42px;width:11px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
     <span class="tag ap">03 · Dress code</span>
     <h2 class="ap d1">Total<br>black</h2>
     <p class="ap d2">Elegante, todo de negro para esa noche.</p>
@@ -369,6 +398,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 8 · regalo ══════════ -->
   <section id="regalo">
+    <svg class="flor f-reg" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
     <div class="c" style="left:-50px;bottom:-60px;width:170px;height:170px;background:var(--rosa)"></div>
     <span class="tag ap">04 · Para regalo</span>
     <p class="ap d1" style="margin-top:16px">Si querés hacerme un regalo, podés transferir a este alias.</p>
@@ -379,6 +409,7 @@ html:not(.js) .pa{opacity:1;transform:none}
 
   <!-- ══════════ 9 · confirmar ══════════ -->
   <section class="dk" id="confirmar">
+    <svg class="chispa" style="right:30px;top:44px;width:15px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:70px;top:84px;width:9px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:34px;bottom:46px;width:11px;opacity:.55" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
     <span class="tag ap">05 · Confirmá</span>
     <h2 class="ap d1">¿Venís?</h2>
     <p class="ap d2">Confirmame por WhatsApp: se abre el chat conmigo con el mensaje listo, solo agregá tu nombre.</p>
