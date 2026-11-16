@@ -2346,6 +2346,13 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
+- **lola15, la muestra modelo "afiche" (16/11/2026).** Es de ejemplo
+  (Lola no existe). Falta que el dueño diga: si el amigo la quiere, sus
+  datos reales (va en carpeta propia, con planilla y tablero); si entra a
+  la galería de Trabajos como muestra (la ficha la suma el chat de la
+  página: carpeta `lola15`, "XV años · Afiche", colores negro #0A0A0A,
+  hueso #ECE7DC y fucsia #FF3D8B); y si se le suma canción, lista de
+  regalos o el botón al Muro. Detalle en `invitaciones/HISTORIA.md`.
 - **Galería con las fiestas de clientes (12/11/2026).** Las ocho tarjetas
   de clientes están en Trabajos y en `/invitaciones` con el permiso de las
   familias (lo confirmó el dueño ese día) y con `cuidar:true`: adentro de
