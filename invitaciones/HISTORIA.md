@@ -4710,3 +4710,10 @@ Se hizo: **seis verdes** (del pistacho clarito al verde hondo) y el **rosa solo 
 **Para usarla con un cliente de verdad**: copiar `lola15/`, cambiar `CONFIG` (plan y trivia vacíos no se dibujan), sumar planilla y tablero, y la canción si la manda (este modelo todavía no tiene reproductor).
 
 **Decisión del dueño (16/11/2026)**: *"Excelente. Me encantó. Va a quedar como modelo save the date."* `lola15/` es desde hoy **el modelo de save the date**: cuando pidan uno, se copia esta carpeta y se le cambia el `CONFIG`.
+
+**Segunda vuelta de lola15 (16/11/2026): el sonido.** *"¿Podés ponerle sonidos llamativos de acuerdo a los impactos y una música acorde, así armo una publicidad?"*
+Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegador (Web Audio, `SONIDO` en el `index.html`). Un golpe grave con su soplo en cada palabra de la entrada, un chasquido en el destello, una subida antes del nombre, una "gota" en cada derretido, un golpe chico en cada título que entra al bajar, y aciertos y errores en la trivia. La música es una base de pista a 124 (La menor, Fa, Do, Sol) que se escucha **apagada** en la entrada, como del lado de afuera, y **se abre** con "Entrar a la fiesta".
+**Lo que cambió por el sonido**: el navegador no deja sonar nada sin un toque, así que la entrada ahora arranca con **"Tocá para empezar"**; y hay un **botón de silencio** fijo abajo a la derecha. En iPhone se prende un `<audio>` mudo para que suene aunque esté la tecla de silencio.
+**No se pudo escuchar desde acá**: se volcó a un archivo y se midió (sin recortes, la parte apagada a la mitad de volumen que la abierta). El oído lo pone el dueño.
+**No es una canción**: no vale "suena una vez y se rebobina"; es una base que sigue mientras la página está abierta, con su botón para callarla. Si un cliente manda su canción, va el reproductor de siempre en lugar de la base.
+

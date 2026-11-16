@@ -156,6 +156,24 @@ html.cerrado #portada{opacity:0}
 @keyframes empuja{0%{transform:translateX(-10px);opacity:0}100%{transform:none;opacity:1}}
 .tapa-pie{margin-top:calc(var(--u)*9);position:relative;z-index:1}
 
+/* la espera: sin un toque el navegador no deja sonar nada, así que la
+   entrada arranca con el dedo. El latido pasa tres veces y se queda. */
+.toca{position:absolute;inset:0;z-index:5;display:none;place-items:center;pointer-events:none}
+#sobre.espera .toca{display:grid}
+#sobre.espera .tapa{opacity:0}
+#empezar{pointer-events:auto;display:grid;justify-items:center;gap:16px;padding:28px;color:var(--hueso)}
+#empezar .aro{width:86px;height:86px;border:1.5px solid var(--hueso);border-radius:50%;display:grid;place-items:center;animation:latido 1.5s ease-in-out 3}
+#empezar .aro svg{width:26px;height:26px;margin-left:5px}
+#empezar b{font-size:11px;letter-spacing:.26em;text-transform:uppercase;font-weight:700}
+#empezar small{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris-n);margin-top:-8px}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+#sonido{position:fixed;z-index:70;right:max(12px,calc((100vw - var(--col)) / 2 + 12px));bottom:calc(env(safe-area-inset-bottom) + 14px);
+  width:46px;height:46px;border-radius:50%;background:#000;color:var(--hueso);border:1.5px solid var(--hueso);display:grid;place-items:center}
+#sonido svg{width:20px;height:20px}
+#sonido .raya{display:none}
+#sonido[aria-pressed="true"] .raya{display:block}
+#sonido[aria-pressed="true"] .onda{display:none}
+
 /* ══════════ 2 · la portada ══════════ */
 #portada{padding-top:calc(env(safe-area-inset-top) + 22px);padding-bottom:0}
 #portada .tit{margin-top:calc(var(--u)*9)}
@@ -330,6 +348,13 @@ html.cerrado #portada{opacity:0}
     <span style="--s:22">esto?</span>
   </div>
   <div class="destello" aria-hidden="true"></div>
+  <div class="toca">
+    <button id="empezar" type="button">
+      <span class="aro"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2l17 10L4 22z"/></svg></span>
+      <b>Tocá para empezar</b>
+      <small>Con sonido</small>
+    </button>
+  </div>
   <div class="tapa">
     <canvas id="ruido" aria-hidden="true"></canvas>
     <div class="fila">
@@ -344,10 +369,15 @@ html.cerrado #portada{opacity:0}
     </div>
     <div class="fila tapa-pie">
       <p class="mini" id="tapaCiudad"></p>
-      <p class="mini der">Una noche<br>para recordar</p>
     </div>
   </div>
 </div>
+
+<button id="sonido" type="button" hidden aria-label="Sonido" aria-pressed="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="raya" d="M17 9l5 6M22 9l-5 6"/>
+  </svg>
+</button>
 
 <main id="papel">
 
@@ -784,6 +814,150 @@ if ('IntersectionObserver' in window){
   TRAMAS.forEach(t => { const cv = $(t[0]); if (cv) ojo.observe(cv); });
 } else TRAMAS.forEach(t => { const cv = $(t[0]); if (cv){ pintadas.add(t[0]); tramar(cv, t[1], t[2]); } });
 
+/* ══════════ EL SONIDO ══════════
+   No hay ningún archivo: los golpes y la música los fabrica el navegador
+   (Web Audio). Así cada golpe cae justo con su letra y no hay canción de
+   nadie adentro. La música es una base de pista a 124 que se escucha
+   APAGADA mientras se está en la entrada —como del lado de afuera— y se
+   abre con el toque de "Entrar a la fiesta".
+   Todo recibe su tiempo `t`: el mismo código sirve para sonar en vivo y
+   para volcarlo a un archivo y medirlo. */
+const SONIDO = (function(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const BPM = 124, S16 = 60 / BPM / 4;
+  /* La menor · Fa · Do · Sol: el bajo y las tres notas de cada acorde */
+  const ACORDES = [[55.00,[220.00,261.63,329.63]],[43.65,[174.61,220.00,261.63]],
+                   [65.41,[261.63,329.63,392.00]],[49.00,[196.00,246.94,293.66]]];
+  let A = null, master, musica, filtro, efectos, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
+
+  function armar(ctx){
+    A = ctx;
+    const comp = A.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.ratio.value = 5; comp.attack.value = .004; comp.release.value = .16;
+    master = A.createGain(); master.gain.value = .72; master.connect(comp); comp.connect(A.destination);
+    filtro = A.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.value = 240; filtro.Q.value = .8;
+    musica = A.createGain(); musica.gain.value = .0001; musica.connect(filtro); filtro.connect(master);
+    efectos = A.createGain(); efectos.gain.value = 1; efectos.connect(master);
+    ruido = A.createBuffer(1, A.sampleRate * 2, A.sampleRate);
+    const d = ruido.getChannelData(0), r = azar(7);
+    for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1;
+  }
+  const ya = t => Math.max(t, A.currentTime + .001);
+  function tono(dest, tipo, f0, f1, t, dur, vol){
+    t = ya(t);
+    const o = A.createOscillator(), g = A.createGain();
+    o.type = tipo; o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .006);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + .03);
+  }
+  function soplo(dest, t, dur, vol, tipo, f0, f1, q, ataque){
+    t = ya(t);
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true;
+    f.type = tipo; f.Q.value = q || .8; f.frequency.setValueAtTime(f0, t);
+    if (f1) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (ataque || .004));
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(dest); s.start(t, (t * 7.3) % 1.7); s.stop(t + dur + .03);
+  }
+  function filtrado(dest, tipo, f, desafino, t, dur, vol, c0, c1, ataque){
+    t = ya(t);
+    const o = A.createOscillator(), lp = A.createBiquadFilter(), g = A.createGain();
+    o.type = tipo; o.frequency.value = f; o.detune.value = desafino || 0;
+    lp.type = 'lowpass'; lp.Q.value = 1.2; lp.frequency.setValueAtTime(c0, t); lp.frequency.exponentialRampToValueAtTime(c1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (ataque || .006));
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(lp); lp.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + .03);
+  }
+
+  /* ── los golpes ── */
+  function impacto(t, f){            /* el aire que llega, el golpe grave y el polvo */
+    soplo(efectos, t - .2, .21, .2 * f, 'bandpass', 350, 3800, 1.1, .19);
+    tono(efectos, 'sine', 160, 36, t, .5 + .2 * f, .95);
+    tono(efectos, 'triangle', 900, 180, t, .05, .3);
+    soplo(efectos, t, .28 * f, .42 * f, 'lowpass', 2200, 180, .7);
+  }
+  const chasquido = t => soplo(efectos, t, .13, .32, 'highpass', 5200, 5200, .7);
+  const subida    = (t, dur) => soplo(efectos, t, dur, .26, 'bandpass', 300, 7000, 1.4, dur * .94);
+  function gota(t, sube){            /* el nombre que se derrite */
+    tono(efectos, 'sine', sube ? 170 : 430, sube ? 430 : 170, t, .55, .2);
+    soplo(efectos, t, .5, .1, 'lowpass', sube ? 300 : 1800, sube ? 1800 : 300, 3);
+  }
+  function golpe(t){                 /* un título que entra al bajar */
+    soplo(efectos, t - .13, .14, .1, 'bandpass', 300, 2600, 1.1, .12);
+    tono(efectos, 'sine', 115, 44, t, .3, .5);
+  }
+  const tic = t => tono(efectos, 'triangle', 1500, 900, t, .035, .14);
+  function acierto(t){ tono(efectos, 'triangle', 880, 0, t, .14, .2); tono(efectos, 'triangle', 1318.5, 0, t + .09, .3, .2); }
+  const error = t => filtrado(efectos, 'square', 130, 0, t, .24, .16, 600, 200);
+
+  /* ── la música, de a un dieciseisavo ── */
+  function compas(n, t){
+    const s = n % 16, c = Math.floor(n / 16), ac = ACORDES[c % 4], vuelta = c % 8;
+    if (s % 4 === 0) tono(musica, 'sine', 145, 42, t, .3, .8);                                  /* bombo */
+    if (s === 4 || s === 12){ soplo(musica, t, .15, .26, 'bandpass', 1500, 1500, .9);            /* palmas */
+                              soplo(musica, t + .013, .12, .18, 'bandpass', 1900, 1900, .9); }
+    if (s % 4 === 2) soplo(musica, t, .055, .15, 'highpass', 7500, 7500);                        /* platillo */
+    else if (vuelta >= 4 && s % 2 === 1) soplo(musica, t, .03, .05, 'highpass', 8500, 8500);
+    if (s % 4 === 2 || s === 15) filtrado(musica, 'sawtooth', ac[0] * (s === 15 ? 4 : 2), 0, t, .2, .22, 520, 160);  /* bajo */
+    if (s === 0) ac[1].forEach((f, i) => filtrado(musica, 'sawtooth', f, i * 7 - 7, t, S16 * 16, .03, 500, 900, .35)); /* colchón */
+    if (vuelta >= 2){ const k = [0,3,6,8,11,14].indexOf(s);                                       /* punteo */
+      if (k >= 0){ const f = ac[1][(k + c) % 3] * 2;
+        filtrado(musica, 'sawtooth', f, 0, t, .22, .075, 3200, 500);
+        filtrado(musica, 'sawtooth', f, 0, t + S16 * 3, .2, .03, 2000, 400); } }
+    if (vuelta === 7 && s >= 12) soplo(musica, t, .08, .07 + .04 * (s - 12), 'bandpass', 2600, 2600, .8);  /* redoble */
+  }
+  function girar(){ while (prox < A.currentTime + .16){ compas(paso, prox); paso++; prox += S16; } }
+  function musicaDesde(t){ paso = 0; prox = t; if (!reloj) reloj = setInterval(girar, 40); girar(); }
+
+  /* ── lo que se llama desde la página ── */
+  function prender(){
+    if (A || !AC) return !!A;
+    try{ armar(new AC()); }catch(e){ A = null; return false; }
+    if (A.state === 'suspended') A.resume();
+    /* En iPhone el Web Audio obedece la tecla de silencio; un <audio>
+       mudo sonando cambia la sesión a "reproducción" y se escucha igual. */
+    try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
+    try{ const m = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='); m.loop = true; m.play().catch(() => {}); }catch(e){}
+    const b = $('#sonido');
+    if (b){ b.hidden = false; b.addEventListener('click', () => {
+      activo = !activo; b.setAttribute('aria-pressed', String(!activo));
+      master.gain.setTargetAtTime(activo ? .72 : .0001, A.currentTime, .03); }); }
+    document.addEventListener('visibilitychange', () => { if (!A) return; if (document.hidden) A.suspend(); else A.resume(); });
+    return true;
+  }
+  /* la entrada: los tiempos son los mismos de la animación del CSS */
+  function intro(t0){
+    impacto(t0 + .36, 1);
+    impacto(t0 + 1.06, 1); chasquido(t0 + 1.12);
+    impacto(t0 + 1.79, 1.3);
+    subida(t0 + 1.95, .6);
+    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(.42, t0 + 3.4);
+    gota(t0 + 4.3, false); gota(t0 + 6.4, true);
+  }
+  function entrar(t){
+    impacto(t + .02, 1.5); chasquido(t + .02);
+    musica.gain.cancelScheduledValues(t); musica.gain.setValueAtTime(Math.max(.0001, musica.gain.value), t);
+    musica.gain.exponentialRampToValueAtTime(.9, t + .25);
+    filtro.frequency.cancelScheduledValues(t); filtro.frequency.setValueAtTime(filtro.frequency.value, t);
+    filtro.frequency.exponentialRampToValueAtTime(17000, t + .45);
+    ultGolpe = t + 1.2;
+  }
+  const ahora = () => A.currentTime + .04;
+  return {
+    prender,
+    intro(){ if (!A) return; const t = ahora(); intro(t); musicaDesde(t + 2.55); },
+    entrar(){ if (!A) return; const t = ahora(); if (!reloj) musicaDesde(t + .02); entrar(t); },
+    golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .35) return; ultGolpe = t; golpe(t + .12); },
+    tic(){ if (A) tic(ahora()); },
+    acierto(){ if (A) acierto(ahora()); },
+    error(){ if (A) error(ahora()); },
+    _: { armar, intro, entrar, compas, S16 }      /* para volcarlo a un archivo y medirlo */
+  };
+})();
+
 /* ══════════ aparecer al bajar ══════════
    Arranca recién cuando se entra: lo de la portada tiene que golpear
    cuando se ve, no atrás de la entrada. */
@@ -791,7 +965,8 @@ function despertar(){
   const todo = $$('.ap, .tit');
   if (!('IntersectionObserver' in window) || menosMovimiento){ todo.forEach(n => n.classList.add('entro')); return; }
   const ojo = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting){ e.target.classList.add('entro'); ojo.unobserve(e.target); }
+    if (e.isIntersecting){ e.target.classList.add('entro'); ojo.unobserve(e.target);
+      if (e.target.classList.contains('tit')) SONIDO.golpe(); }
   }), {threshold:.18, rootMargin:'0px 0px -6% 0px'});
   todo.forEach(n => ojo.observe(n));
 }
@@ -803,16 +978,23 @@ function despertar(){
   raiz.classList.add('cerrado');
   scrollTo(0, 0);
   tramar($('#ruido'), luzRuido, 2.2);
+  const b0 = $('.goo .b');
+  if (b0) b0.addEventListener('animationend', () => $('.goo').classList.remove('liquido'));
+  let abierto = false, arranco = false;
+  /* El primer toque en cualquier parte arranca la entrada, con sonido. */
+  function arrancar(){
+    if (arranco || abierto) return; arranco = true;
+    SONIDO.prender();
+    sobre.classList.remove('espera'); sobre.classList.add('va');
+    SONIDO.intro();
+  }
   if (!menosMovimiento){
-    sobre.classList.add('va');
-    /* terminado el derretido se saca el contraste: en reposo deja el
-       borde de la letra serruchado. */
-    const b = $('.goo .b');
-    if (b) b.addEventListener('animationend', () => $('.goo').classList.remove('liquido'));
+    sobre.classList.add('espera');
+    sobre.addEventListener('click', e => { if (!e.target.closest('#abrir')) arrancar(); });
   } else $('.goo').classList.remove('liquido');
-  let abierto = false;
   $('#abrir').addEventListener('click', () => {
     if (abierto) return; abierto = true;
+    SONIDO.prender(); SONIDO.entrar();
     sobre.classList.add('abierto');
     raiz.classList.remove('cerrado');
     setTimeout(despertar, menosMovimiento ? 0 : 260);
@@ -905,7 +1087,7 @@ function despertar(){
     $$('.t-opc button', caja).forEach(b => b.addEventListener('click', () => {
       const i = +b.dataset.i;
       $$('.t-opc button', caja).forEach(x => { x.disabled = true; if (+x.dataset.i === q.ok) x.classList.add('era'); });
-      if (i === q.ok) bien++; else b.classList.add('no');
+      if (i === q.ok){ bien++; SONIDO.acierto(); } else { b.classList.add('no'); SONIDO.error(); }
       caja.insertAdjacentHTML('beforeend', '<button type="button" class="pildora llena-n t-sig">' +
         (n + 1 < T.length ? 'Siguiente' : 'Ver cómo me fue') + '</button>');
       $('.t-sig', caja).addEventListener('click', () => { n++; if (n < T.length) pregunta(); else fin(); });
@@ -946,7 +1128,7 @@ function despertar(){
 /* ══════════ marcar la opción elegida ══════════ */
 (function(){
   const pinta = () => $$('.radios label').forEach(l => l.classList.toggle('elegida', $('input', l).checked));
-  $$('.radios input').forEach(r => r.addEventListener('change', pinta));
+  $$('.radios input').forEach(r => r.addEventListener('change', () => { pinta(); SONIDO.tic(); }));
   pinta();
 })();
 

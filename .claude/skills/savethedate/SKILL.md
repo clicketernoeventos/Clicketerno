@@ -93,11 +93,33 @@ dato cierto es el botón con el enlace de Maps que mande.
   rearman (ver `/tarjeta`, punto 4).
 - Con "menos movimiento" todo queda quieto y a la vista, sin entrada.
 
+## 3b. El sonido
+
+Pedido del dueño (16/11/2026): *"sonidos llamativos de acuerdo a los
+impactos y una música acorde, así armo una publicidad"*.
+
+- **No hay archivos**: todo lo fabrica el navegador (objeto `SONIDO`).
+  Golpe en cada palabra de la entrada, chasquido en el destello, subida
+  antes del nombre, "gota" en cada derretido, golpe chico en cada título
+  que entra, acierto y error en la trivia.
+- **La música** es una base de pista a 124 que suena **apagada** en la
+  entrada y **se abre** con "Entrar a la fiesta".
+- **Sin un toque no suena nada**: por eso la entrada arranca con "Tocá
+  para empezar" (`#empezar`). `#abrir` sigue abriendo de un toque.
+- **Los tiempos de `intro()` son los de las animaciones del CSS**: si se
+  mueve un `animation-delay` de la entrada, se mueve su golpe.
+- Hay un botón de silencio fijo (`#sonido`). Al esconder la pestaña se
+  calla sola.
+- **No se puede escuchar desde el chat.** Se vuelca a un archivo con
+  `OfflineAudioContext` usando `SONIDO._` y se miden picos y volumen por
+  segundo (que no pase de 1, que la parte apagada quede más baja). El
+  oído lo pone el dueño: preguntarle cómo suena.
+
 ## 4. Lo que este modelo NO tiene todavía
 
-- **Canción**: no hay reproductor. Si el cliente manda una, se trae el de
-  una tarjeta (`lucia15/`) con sus reglas: tres mandos, dos archivos, y
-  arranca con el toque de "Entrar a la fiesta".
+- **Canción del cliente**: no hay reproductor. Si manda una, se trae el
+  de una tarjeta (`lucia15/`) con sus reglas (tres mandos, dos archivos,
+  arranca con "Entrar a la fiesta") y se apaga la base de pista.
 - **Fotos**: no lleva. Si el cliente manda las suyas van en blanco y negro
   con el filtro en el CSS; nunca fotos de internet, que es lo que tenía la
   referencia.
