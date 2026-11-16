@@ -18,8 +18,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- El peso que se pide acá es el que usa el CSS. -->
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ══════════════════════════════════════════════════════════════════
    Julieta · pistacho, versión "moderna"
@@ -66,39 +66,116 @@ p{font-size:15px}
 .btn.o{background:transparent;color:var(--noche)}
 .dk .btn{background:var(--pistacho);color:var(--noche);border-color:var(--pistacho)}
 
-/* ── 1 · portada ── */
-#portada{background:var(--pistacho);min-height:100svh;display:grid;align-content:center;padding-top:clamp(70px,12vh,110px);padding-bottom:150px}
-.pill{display:inline-block;padding:9px 16px;border-radius:99px;font:500 10.5px/1.2 var(--texto-f);letter-spacing:.22em;text-transform:uppercase}
-.pill.n{background:var(--noche);color:var(--pistacho)}
-.pill.r{background:var(--rosa);color:var(--rosa-t)}
-#nombre{font:800 clamp(92px,30vw,170px)/.84 var(--titulos);letter-spacing:-.065em;color:var(--noche);margin:clamp(14px,3vh,26px) 0 clamp(18px,3vh,28px)}
-.cinta{position:absolute;left:10px;right:10px;border-radius:8px;transform:rotate(-5deg);background:var(--noche);color:var(--pistacho);
-  padding:12px 0;font:500 clamp(9px,2.7vw,11px)/1.2 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;text-align:center;white-space:nowrap;z-index:2}
-.cinta.a{bottom:84px}
-.cinta.b{bottom:40px;transform:rotate(3deg);background:var(--rosa);color:var(--rosa-t)}
+/* ══ LA PARTE DE PAPEL (la referencia que mandó: sobre con sello y hoja clara) ══ */
+:root{--papel:#F4F8E8;--bodoni:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;--mano:'Pinyon Script','Snell Roundhand',cursive}
+html.cerrado,html.cerrado body{overflow:hidden;height:100%}
+/* la portada nace apagada y se enciende mientras el sobre se va: un cruce, no un corte */
+html.js #portada{opacity:0}
+html.listo #portada{opacity:1;transition:opacity 1.6s ease .15s}
+@media (prefers-reduced-motion:reduce){html.listo #portada{transition:none}}
+.papel{background:var(--papel);color:var(--tinta)}
+.papel + .papel{border-top:0}
+.script{font-family:var(--mano);font-weight:400;color:var(--verde);line-height:1.05}
+.rotulo{font:500 10px/1 var(--texto-f);letter-spacing:.34em;text-transform:uppercase;color:var(--verde)}
+.hilo{display:flex;align-items:center;gap:12px;font:400 11px/1 var(--texto-f);letter-spacing:.2em;color:var(--tinta)}
+.hilo i{flex:1;height:1px;background:rgba(34,54,25,.35);position:relative}
+.hilo i::after{content:"+";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);background:var(--papel);padding:0 6px;font-size:13px;font-style:normal}
 
-/* ── 2 · cuenta regresiva: tablitas ── */
-.flip{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,10px);margin-top:26px}
-.fl{background:var(--negro);border-radius:12px;position:relative;padding:clamp(16px,5vw,22px) 0 clamp(12px,4vw,16px);text-align:center;box-shadow:0 8px 0 -3px #0b0e0f}
-.fl::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--noche)}
-.fl::before{content:"";position:absolute;left:5px;right:5px;top:calc(50% - 5px);height:10px;border-left:6px solid var(--noche);border-right:6px solid var(--noche);border-radius:3px;z-index:2}
-.fl b{display:block;font:800 clamp(30px,10vw,44px)/1 var(--titulos);color:var(--pistacho);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.fln{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,2vw,10px);margin-top:12px;text-align:center;font:500 10px/1 var(--texto-f);letter-spacing:.18em;text-transform:uppercase}
-#diaTxt{margin-top:18px;color:#D5E3B6;font-size:14px}
+/* el sobre */
+#sobre{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 90% at 50% 20%,#7FA062,#56733F 62%,#3F5B33);display:grid;place-items:center;
+  transition:opacity 1.2s ease;overflow:hidden}
+#sobre.saliendo{opacity:0;pointer-events:none}
+html:not(.js) #sobre{display:none}
+.sobre-centro{text-align:center;color:#EAF2D6}
+.sobre-centro .arriba{font:500 10px/1 var(--texto-f);letter-spacing:.34em;text-transform:uppercase;margin-bottom:26px;color:var(--pistacho)}
+.env{position:relative;width:min(84vw,340px);aspect-ratio:1.46;margin:0 auto;perspective:900px}
+.env > div{position:absolute;inset:0}
+.env .carta{inset:6% 7% 14%;background:var(--papel);border-radius:6px;z-index:1;display:grid;place-items:center;text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);transition:transform 1s cubic-bezier(.3,.8,.3,1) .5s;color:var(--tinta);font:italic 400 clamp(30px,9vw,42px)/1 var(--bodoni)}
+.env .carta small{display:block;font:500 8.5px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;font-style:normal;margin-top:12px;color:var(--verde)}
+.env .lado,.env .fondo{z-index:2}
+.env .lado.i{background:#6E8F52;clip-path:polygon(0 0,52% 56%,0 100%)}
+.env .lado.d{background:#648549;clip-path:polygon(100% 0,48% 56%,100% 100%)}
+.env .fondo{background:#76975A;clip-path:polygon(0 100%,50% 46%,100% 100%)}
+.env .solapa{z-index:3;background:#7FA062;clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:50% 0;
+  transition:transform .8s cubic-bezier(.4,.1,.3,1),z-index 0s .35s;box-shadow:inset 0 -10px 20px rgba(0,0,0,.12)}
+.env .detras{background:#4F6C3A;border-radius:4px;z-index:0}
+#abrir{position:absolute;left:50%;top:56%;width:68px;height:68px;margin:-34px 0 0 -34px;z-index:4;border:0;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#F9DDE5,#E8B3C1 62%,#CF8EA2);color:#7E3F52;display:grid;place-items:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 0 0 3px rgba(255,255,255,.25),inset 0 0 0 5px rgba(126,63,82,.25);
+  font:italic 400 30px/1 var(--bodoni);transition:opacity .35s,transform .35s}
+#abrir:active{transform:scale(.94)}
+.sobre-pie{margin-top:34px;font:500 10px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
+#sobre.abierto .solapa{transform:rotateX(180deg);z-index:0}
+#sobre.abierto .carta{transform:translateY(-62%)}
+#sobre.abierto #abrir{opacity:0;transform:scale(1.4);pointer-events:none}
+@media (prefers-reduced-motion:reduce){#sobre,.env .carta,.env .solapa,#abrir{transition:none!important}}
 
-/* ── 3 · calendario: cuadraditos ── */
-#fecha{background:var(--pistacho-2)}
-.chips{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(4px,1.6vw,7px);margin-top:20px}
-.chips div{aspect-ratio:1;border-radius:11px;background:rgba(255,255,255,.55);display:grid;place-items:center;
-  font:800 clamp(13px,4vw,16px)/1 var(--titulos);color:var(--noche)}
-.chips .h{aspect-ratio:auto;background:transparent;font:700 10px/1 var(--texto-f);letter-spacing:.1em;padding-bottom:4px}
-.chips .v{background:transparent}
-.chips .e{background:var(--noche);color:var(--pistacho);transform:rotate(-7deg) scale(1.22);box-shadow:0 5px 0 var(--rosa-2);position:relative;z-index:2;border-radius:13px}
-#fechaTxt{margin-top:24px;font-weight:500}
+/* la portada de papel */
+#portada{min-height:100svh;padding:clamp(34px,6vh,54px) var(--gutter) 40px;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,3.4vh,30px);text-align:center}
+#nombre{font:400 clamp(70px,22vw,120px)/.9 var(--bodoni);letter-spacing:-.02em;color:var(--noche)}
+#portada .script.sub{font-size:clamp(28px,8vw,38px);margin-top:-4px}
+.pola{position:relative;width:min(58vw,230px);margin:6px auto 0;background:#fff;padding:12px 12px 40px;box-shadow:0 10px 24px -10px rgba(34,54,25,.45);transform:rotate(-4deg)}
+.pola .foto{aspect-ratio:1;background:var(--pistacho);display:grid;place-items:center;font:400 clamp(44px,14vw,64px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em;position:relative;overflow:hidden}
+.pola .foto b{display:block;font-weight:400}
+.pola .foto::after{content:"";position:absolute;width:120%;aspect-ratio:1;border-radius:50%;background:var(--pistacho-2);right:-70%;bottom:-70%;z-index:0}
+.pola .foto span{position:relative;z-index:1;text-align:center}
+.pola .pie{position:absolute;left:0;right:0;bottom:7px;font:400 22px/1 var(--mano);color:var(--verde)}
+.pola::before{content:"";position:absolute;left:50%;top:-12px;width:78px;height:24px;margin-left:-39px;background:rgba(244,210,219,.85);transform:rotate(3deg)}
+.chips-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.chips-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:99px;border:1px solid var(--verde);font:500 10px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--noche)}
+@media (hover:hover){.chips-nav a:hover{background:rgba(86,115,63,.1)}}
+.pa{opacity:0;transform:translateY(16px)}
+html.listo .pa{animation:sube .9s var(--e) forwards}
+html.listo .pa.p2{animation-delay:.18s}html.listo .pa.p3{animation-delay:.36s}html.listo .pa.p4{animation-delay:.54s}
+html:not(.js) .pa{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.pa{opacity:1;transform:none}html.listo .pa{animation:none}}
+@keyframes sube{to{opacity:1;transform:none}}
 
-/* ── 4 · lugar ── */
-#lugar{background:var(--pistacho-0)}
-#lugar p{margin-top:8px}
+/* estás invitado */
+#invitado{padding:clamp(56px,10vw,80px) var(--gutter);text-align:center}
+#invitado h2{font:400 clamp(44px,13vw,64px)/1 var(--bodoni);color:var(--noche);letter-spacing:-.01em;margin-top:16px}
+#invitado h2 em{display:block;font:400 clamp(30px,9vw,42px)/1 var(--mano);color:var(--verde);margin-top:6px;font-style:normal}
+#invitado p{margin:18px auto 0;max-width:340px;font-size:15.5px}
+.corazon{display:block;width:26px;height:26px;margin:16px auto 0;color:var(--rosa-2)}
+
+/* el calendario: la semana y el día entre garabatos */
+#fecha{padding:clamp(40px,8vw,64px) var(--gutter) clamp(54px,9vw,76px);text-align:center}
+.sem{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:26px auto 0;max-width:340px}
+.sem div{padding:10px 0;position:relative}
+.sem small{display:block;font:500 9.5px/1 var(--texto-f);letter-spacing:.28em;text-transform:uppercase;color:var(--verde)}
+.sem b{display:block;font:400 clamp(46px,14vw,62px)/1.1 var(--bodoni);color:var(--noche);margin-top:8px;position:relative}
+.sem .e b{color:var(--noche)}
+.garabato{position:absolute;left:50%;top:58%;width:92%;height:78%;transform:translate(-50%,-50%) rotate(-6deg);color:var(--rosa-2);overflow:visible;pointer-events:none}
+.dib{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.js .dib{stroke-dasharray:1;stroke-dashoffset:1}
+.js .ya .dib,.js .ya.dib{stroke-dashoffset:0;transition:stroke-dashoffset 1.6s ease .3s}
+@media (prefers-reduced-motion:reduce){.js .dib{stroke-dashoffset:0;transition:none}}
+#fechaTxt{margin-top:20px;font-size:14px;color:var(--noche)}
+
+/* la cuenta */
+#cuenta{padding:clamp(34px,7vw,56px) var(--gutter) clamp(54px,9vw,76px);text-align:center}
+#cuenta .script{font-size:clamp(30px,9vw,42px)}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:22px auto 0;max-width:380px;border-top:1px solid rgba(34,54,25,.3);border-bottom:1px solid rgba(34,54,25,.3);padding:18px 0 14px}
+.cd div{border-left:1px solid rgba(34,54,25,.18)}.cd div:first-child{border-left:0}
+.cd b{display:block;font:400 clamp(34px,10.5vw,50px)/1 var(--bodoni);color:var(--noche);font-variant-numeric:lining-nums tabular-nums}
+.cd span{display:block;margin-top:8px;font:500 9px/1 var(--texto-f);letter-spacing:.24em;text-transform:uppercase;color:var(--verde)}
+
+/* dónde: el mapa dibujado */
+#lugar{padding:clamp(48px,9vw,72px) var(--gutter);text-align:center}
+#lugar h2{font:400 clamp(54px,17vw,84px)/.95 var(--bodoni);color:var(--noche);letter-spacing:-.01em;margin-top:12px}
+#lugar .script{font-size:clamp(30px,9vw,42px);margin-top:2px}
+.mapa{position:relative;max-width:340px;margin:24px auto 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 24px -14px rgba(34,54,25,.5);transform:rotate(1.5deg);background:#E7EFD2}
+.mapa svg.base{display:block;width:100%;height:auto}
+.mapa .garabato{width:46%;height:46%;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg)}
+.mapa .flecha{position:absolute;left:6%;top:10%;width:34%;color:var(--noche)}
+.mapa .flecha .dib{stroke-width:2.2}
+.mapa .aca{position:absolute;left:5%;top:5%;font:400 24px/1 var(--mano);color:var(--noche)}
+.lug-dato{margin-top:22px;font-size:15px}
+.lug-dato b{display:block;font:500 11px/1 var(--texto-f);letter-spacing:.28em;text-transform:uppercase;color:var(--verde);margin-bottom:8px}
+.btn-ruta{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 24px;margin-top:20px;border-radius:99px;background:var(--hondo);color:#F2F8E4;
+  font:500 11px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;transition:transform .3s var(--e)}
+.btn-ruta:active{transform:scale(.975)}
 
 /* ── 5 · música: el reproductor ── */
 #musica{background:var(--salvia)}
@@ -163,56 +240,80 @@ p{font-size:15px}
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
-<main>
-
-  <!-- ══════════ 1 · portada ══════════ -->
-  <section id="portada">
-    <div class="c" style="width:min(340px,80vw);aspect-ratio:1;right:-110px;top:-90px;background:var(--pistacho-2)"></div>
-    <div class="c" style="width:min(210px,50vw);aspect-ratio:1;left:-70px;bottom:210px;background:var(--salvia)"></div>
-    <div class="c" style="width:96px;height:96px;right:26px;bottom:250px;background:var(--rosa)"></div>
-    <div><span class="pill n">Save the date</span></div>
-    <h1 id="nombre" aria-label="Julieta"></h1>
-    <div><span class="pill r" id="fechaPill"></span></div>
-    <div class="cinta a" aria-hidden="true" id="cintaA"></div>
-    <div class="cinta b" aria-hidden="true">Elegante total black ✦ Elegante total black</div>
-  </section>
-
-  <!-- ══════════ 2 · cuenta ══════════ -->
-  <section class="dk" id="cuenta">
-    <div class="c" style="right:-60px;top:-60px;width:200px;height:200px;background:var(--hondo)"></div>
-    <span class="tag ap">01 · Falta poco</span>
-    <h2 class="ap d1" id="faltan"></h2>
-    <div class="flip ap d2">
-      <div class="fl"><b id="cD">0</b></div><div class="fl"><b id="cH">00</b></div>
-      <div class="fl"><b id="cM">00</b></div><div class="fl"><b id="cS">00</b></div>
+<!-- ══════════ el sobre ══════════ -->
+<div id="sobre">
+  <div class="sobre-centro">
+    <p class="arriba">Para vos</p>
+    <div class="env">
+      <div class="detras" aria-hidden="true"></div>
+      <div class="carta" aria-hidden="true"><div id="cartaNom"></div></div>
+      <div class="lado i" aria-hidden="true"></div><div class="lado d" aria-hidden="true"></div><div class="fondo" aria-hidden="true"></div>
+      <div class="solapa" aria-hidden="true"></div>
+      <button id="abrir" type="button" aria-label="Abrir la invitación"><span id="selloIni">J</span></button>
     </div>
-    <div class="fln ap d2"><span>días</span><span>horas</span><span>min</span><span>seg</span></div>
-    <p id="diaTxt" class="ap d3"></p>
+    <p class="sobre-pie">Tocá el sello para abrir</p>
+  </div>
+</div>
+
+<main>
+  <!-- ══════════ 1 · portada ══════════ -->
+  <section class="papel" id="portada">
+    <div class="hilo pa"><span id="fechaCorta"></span><i></i><span id="ciudadTop"></span></div>
+    <div class="pa p2"><h1 id="nombre"></h1><p class="script sub">te invita a celebrar</p></div>
+    <div class="pola pa p3" aria-hidden="true"><div class="foto"><span><b>06</b><b>12</b><b>26</b></span></div><div class="pie">guardá la fecha</div></div>
+    <nav class="chips-nav pa p4" aria-label="Ir a una sección">
+      <a href="#fecha">Fecha</a><a href="#lugar">Lugar</a><a href="#musica">Música</a><a href="#confirmar">Confirmar</a>
+    </nav>
   </section>
 
-  <!-- ══════════ 3 · calendario ══════════ -->
-  <section id="fecha">
-    <div class="c" style="right:-50px;top:-50px;width:170px;height:170px;background:var(--pistacho)"></div>
-    <span class="tag ap">02 · Guardá la fecha</span>
-    <h2 class="ap d1" id="mesTit"></h2>
-    <div class="chips ap d2" id="chips"></div>
-    <p id="fechaTxt" class="ap d3"></p>
+  <!-- ══════════ 2 · estás invitado ══════════ -->
+  <section class="papel" id="invitado">
+    <p class="rotulo ap">Estás invitado</p>
+    <h2 class="ap d1">Vení a celebrar<em>conmigo</em></h2>
+    <svg class="corazon ap d1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 20s-7.500-4.800-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.200-7.500 10-7.500 10z"/></svg>
+    <p class="ap d2">Va a ser una noche muy especial y quiero compartirla con vos.</p>
   </section>
 
-  <!-- ══════════ 4 · lugar ══════════ -->
-  <section id="lugar">
-    <div class="c" style="right:-50px;bottom:-70px;width:190px;height:190px;background:var(--pistacho)"></div>
-    <span class="tag ap">03 · Dónde</span>
-    <h2 class="ap d1" id="lugarNom"></h2>
-    <p class="ap d2" id="lugarDir"></p>
-    <a class="btn ap d3" id="comoLlegar" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21.500s-6.500-6-6.500-11.200a6.500 6.500 0 0 1 13 0c0 5.200-6.500 11.200-6.500 11.200z"/><circle cx="12" cy="10.300" r="2.400"/></svg>Cómo llegar</a>
+  <!-- ══════════ 3 · el calendario ══════════ -->
+  <section class="papel" id="fecha">
+    <p class="rotulo ap" id="mesTit"></p>
+    <div class="sem ap d1" id="sem"></div>
+    <p id="fechaTxt" class="ap d2"></p>
+  </section>
+
+  <!-- ══════════ 4 · la cuenta ══════════ -->
+  <section class="papel" id="cuenta">
+    <p class="script ap" id="faltan">Falta poco para vernos</p>
+    <div class="cd ap d1">
+      <div><b id="cD">0</b><span>días</span></div><div><b id="cH">00</b><span>horas</span></div>
+      <div><b id="cM">00</b><span>min</span></div><div><b id="cS">00</b><span>seg</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · dónde ══════════ -->
+  <section class="papel" id="lugar">
+    <p class="rotulo ap">Dónde</p>
+    <h2 class="ap d1">Where?</h2>
+    <p class="script ap d1">¿Dónde nos vemos?</p>
+    <div class="mapa ap d2" aria-hidden="true">
+      <svg class="base" viewBox="0 0 320 210"><rect width="320" height="210" fill="#E7EFD2"/>
+        <path d="M-10 150C60 120 120 170 200 130S300 90 340 110V230H-10z" fill="#CFDDB1"/>
+        <rect x="26" y="22" width="70" height="46" rx="8" fill="#B9CE93"/><rect x="224" y="150" width="70" height="40" rx="8" fill="#B9CE93"/>
+        <g stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"><path d="M-10 72L330 40"/><path d="M110 -10L150 220"/><path d="M-10 188L330 120"/><path d="M230 -10L206 220"/></g>
+        <g stroke="#fff" stroke-width="3" fill="none"><path d="M0 110L320 96"/><path d="M60 -10L40 220"/><path d="M280 -10L296 220"/></g>
+        <circle cx="168" cy="105" r="7" fill="#3F5B33"/><circle cx="168" cy="105" r="3" fill="#F4D2DB"/></svg>
+      <svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>
+      <svg class="flecha" viewBox="0 0 90 60"><path class="dib" pathLength="1" d="M6 8C30 4 56 14 66 40"/><path class="dib" pathLength="1" d="M56 36L67 42L70 30"/></svg>
+      <span class="aca">acá</span>
+    </div>
+    <div class="lug-dato ap d3"><b id="lugarNom"></b><span id="lugarDir"></span></div>
+    <a class="btn-ruta ap d3" id="comoLlegar" target="_blank" rel="noopener">Mostrar ruta →</a>
   </section>
 
   <!-- ══════════ 5 · música ══════════ -->
   <section id="musica" hidden>
     <div class="c" style="right:22px;top:46px;width:60px;height:60px;background:var(--rosa)"></div>
-    <span class="tag ap">04 · Nuestra música</span>
+    <span class="tag ap">01 · Nuestra música</span>
     <div class="spo player ap d1">
       <div class="art" aria-hidden="true"><b id="artNom"></b></div>
       <div class="cancion"><b id="cancNom"></b><span id="cancAut"></span></div>
@@ -233,7 +334,7 @@ p{font-size:15px}
   <!-- ══════════ 6 · playlist ══════════ -->
   <section id="lista" hidden>
     <div class="c" style="left:-50px;top:-30px;width:150px;height:150px;background:var(--rosa);opacity:.8"></div>
-    <span class="tag ap">05 · Playlist</span>
+    <span class="tag ap">02 · Playlist</span>
     <h2 class="ap d1">Sumá tu<br>canción</h2>
     <p class="ap d2" style="margin-top:12px">Entre todos armamos la música de esa noche: agregá el tema que no puede faltar.</p>
     <ol class="pasos ap d2">
@@ -246,7 +347,7 @@ p{font-size:15px}
 
   <!-- ══════════ 7 · dress code ══════════ -->
   <section id="dress">
-    <span class="tag ap">06 · Dress code</span>
+    <span class="tag ap">03 · Dress code</span>
     <h2 class="ap d1">Total<br>black</h2>
     <p class="ap d2">Elegante, todo de negro para esa noche.</p>
   </section>
@@ -254,7 +355,7 @@ p{font-size:15px}
   <!-- ══════════ 8 · regalo ══════════ -->
   <section id="regalo">
     <div class="c" style="left:-50px;bottom:-60px;width:170px;height:170px;background:var(--rosa)"></div>
-    <span class="tag ap">07 · Para regalo</span>
+    <span class="tag ap">04 · Para regalo</span>
     <p class="ap d1" style="margin-top:16px">Si querés hacerme un regalo, podés transferir a este alias.</p>
     <p class="rot ap d1">Alias para transferir</p>
     <b id="alias" class="ap d2"></b>
@@ -263,7 +364,7 @@ p{font-size:15px}
 
   <!-- ══════════ 9 · confirmar ══════════ -->
   <section class="dk" id="confirmar">
-    <span class="tag ap">08 · Confirmá</span>
+    <span class="tag ap">05 · Confirmá</span>
     <h2 class="ap d1">¿Venís?</h2>
     <p class="ap d2">Confirmame por WhatsApp: se abre el chat conmigo con el mensaje listo, solo agregá tu nombre.</p>
     <a class="btn ap d3" id="confirmarWsp" target="_blank" rel="noopener">
@@ -303,25 +404,24 @@ const F = m ? { anio:+m[1], mes:+m[2], dia:+m[3] } : null;
 const texto = (id, t) => { const n = document.getElementById(id); if (n) n.textContent = t; };
 const dos = n => String(n).padStart(2, '0');
 
-/* portada: el nombre en dos renglones si es largo */
+/* ══ los textos ══ */
 (function(){
-  const n = String(CONFIG.quien || ''), h = $('#nombre');
-  const corte = n.length > 5 ? Math.ceil(n.length * .6) : 0;
-  h.innerHTML = '';
-  h.appendChild(document.createTextNode(corte ? n.slice(0, corte) : n));
-  if (corte){ h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode(n.slice(corte))); }
-  h.setAttribute('aria-label', n);
-  const ciudad = CONFIG.ciudad || '';
-  $('#cintaA').textContent = 'Te invito a celebrar' + (ciudad ? ' ✦ ' + ciudad : '');
-})();
-if (F){
+  const n = String(CONFIG.quien || '');
+  texto('nombre', n); texto('cartaNom', n); texto('selloIni', n.charAt(0).toUpperCase());
+  texto('ciudadTop', CONFIG.ciudad || '');
+  if (!F){ ['#fecha','#cuenta'].forEach(q => { const x = $(q); if (x) x.remove(); }); return; }
   const largo = F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
-  texto('fechaPill', dos(F.dia) + ' · ' + dos(F.mes) + ' · ' + F.anio);
-  texto('diaTxt', largo);
+  texto('fechaCorta', dos(F.dia) + '.' + dos(F.mes) + '.' + F.anio);
+  texto('mesTit', MESES[F.mes-1] + ' · ' + F.anio);
   const fd = new Date(F.anio, F.mes - 1, F.dia);
   texto('fechaTxt', DIAS[fd.getDay()].replace(/^./, c => c.toUpperCase()) + ' ' + largo);
-  texto('mesTit', MESES[F.mes-1].replace(/^./, c => c.toUpperCase()));
-} else { ['#cuenta','#fecha'].forEach(q => { const n = $(q); if (n) n.remove(); }); $('#fechaPill').remove(); }
+  /* el calendario: la víspera, el día y el siguiente; el día va entre garabatos */
+  const GARABATO = '<svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none" aria-hidden="true"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>';
+  $('#sem').innerHTML = [-1, 0, 1].map(k => {
+    const d = new Date(F.anio, F.mes - 1, F.dia + k);
+    return '<div' + (k === 0 ? ' class="e"' : '') + '><small>' + DIAS[d.getDay()] + '</small><b>' + d.getDate() + '</b>' + (k === 0 ? GARABATO : '') + '</div>';
+  }).join('');
+})();
 texto('lugarNom', CONFIG.lugar);
 texto('lugarDir', CONFIG.calle || '');
 if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remove();
@@ -329,7 +429,7 @@ if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
 if (CONFIG.playlist){ $('#playlist').href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
 $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
 
-/* ══ cuenta regresiva: tablitas ══ */
+/* ══ cuenta regresiva ══ */
 (function(){
   if (!F || !$('#cD')) return;
   const meta = new Date(F.anio, F.mes - 1, F.dia, 0, 0, 0).getTime();
@@ -338,22 +438,30 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
     const d = Math.floor(s / 86400); s -= d * 86400;
     const h = Math.floor(s / 3600);  s -= h * 3600;
     const mi = Math.floor(s / 60);   s -= mi * 60;
-    $('#cD').textContent = dos(d); $('#cH').textContent = dos(h);
+    $('#cD').textContent = d; $('#cH').textContent = dos(h);
     $('#cM').textContent = dos(mi); $('#cS').textContent = dos(s);
-    texto('faltan', d === 0 ? '¡Es hoy!' : 'Faltan ' + d + (d === 1 ? ' día' : ' días'));
   };
   pinta(); setInterval(pinta, 1000);
 })();
 
-/* ══ calendario: el mes entero, la semana arranca el lunes ══ */
+/* ══ el sobre ══
+   Se abre con el toque del sello: la solapa se levanta, la carta sube y el
+   sobre se desvanece sobre la portada (cruce, no corte). Ese mismo toque es
+   el gesto que hace sonar la canción. Sin JS el sobre no se dibuja. */
 (function(){
-  const caja = $('#chips'); if (!caja || !F) return;
-  const primero = (new Date(F.anio, F.mes - 1, 1).getDay() + 6) % 7;
-  const cuantos = new Date(F.anio, F.mes, 0).getDate();
-  let h = ['L','M','M','J','V','S','D'].map(x => '<div class="h" aria-hidden="true">' + x + '</div>').join('');
-  for (let i = 0; i < primero; i++) h += '<div class="v" aria-hidden="true"></div>';
-  for (let d = 1; d <= cuantos; d++) h += '<div' + (d === F.dia ? ' class="e"' : '') + '>' + d + '</div>';
-  caja.innerHTML = h;
+  const sobre = $('#sobre'), root = document.documentElement;
+  if (!sobre) return;
+  root.classList.add('cerrado');
+  const fin = () => { root.classList.remove('cerrado'); root.classList.add('listo'); setTimeout(() => sobre.remove(), 1300); };
+  let hecho = false;
+  $('#abrir').addEventListener('click', () => {
+    if (hecho) return; hecho = true;
+    sobre.classList.add('abierto');
+    if (window.__sonar) window.__sonar();
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => { sobre.classList.add('saliendo'); root.classList.remove('cerrado'); root.classList.add('listo'); }, quieto ? 50 : 1500);
+    setTimeout(() => sobre.remove(), quieto ? 200 : 2800);
+  });
 })();
 
 /* ══ copiar el alias ══ */
@@ -434,6 +542,7 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
     gestos.forEach(g => removeEventListener(g, primero, true));
     if (a.paused && a.currentTime === 0) a.play().catch(()=>{});
   };
+  window.__sonar = () => { if (a.paused && a.currentTime === 0) a.play().catch(()=>{}); };
   a.play().then(() => gestos.forEach(g => removeEventListener(g, primero, true))).catch(() => {});
   gestos.forEach(g => addEventListener(g, primero, true));
 })();
