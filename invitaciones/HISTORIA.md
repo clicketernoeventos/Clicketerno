@@ -4783,3 +4783,5 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 También: la portada dice **"te invita a sus XV años"**, el título de la pestaña y la descripción al compartir dicen **"Mis XV años"**, y el mensaje de WhatsApp para confirmar dice "tus XV".
 **Queda pendiente solo el titular del alias.** La imagen de vista previa (`og2.jpg`) sigue diciendo "Guardá la fecha" y no menciona los XV: si se quiere, se rehace con otro nombre de archivo, por lo del caché.
 
+**Decimonovena vuelta de julieta (17/11/2026): "Click Eterno" lleva al WhatsApp.** *"Al tocar Click Eterno te dirija al WhatsApp y que diga 'vi la invitación de' Julieta."* El enlace del pie abre ahora el chat del negocio (341 250-6451) con el mensaje *"¡Hola! Vi la invitación de Julieta y quiero consultar por una."*, y el nombre sale de `CONFIG.quien`: para otra tarjeta alcanza con que ese campo diga quién es. Sin JavaScript queda el enlace al chat sin texto. **Es el mismo pie en todas las tarjetas**; esta es la primera que lo tiene así, y las demás siguen llevando a la página.
+
