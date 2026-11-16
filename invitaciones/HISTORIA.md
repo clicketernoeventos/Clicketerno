@@ -4693,3 +4693,19 @@ portada, que quede armónica"*, las otras repartidas, una para el final, y
 **Segunda vuelta de julieta (16/11/2026).** *"La veo muy chata. Más tonalidades de verdes. El pistacho tiene que predominar. Rositas claros para bordes o detalles, que no abunde. Mejorar las tarjetas y poner los iconos. Falta el apartado donde invites a incluir una canción a la playlist. El alias que diga que es para regalo. El countdown no me gustó para nada."*
 Se hizo: **seis verdes** (del pistacho clarito al verde hondo) y el **rosa solo de detalle** —filete interior de cada panel, aro de las medallas, florcitas en la punta de las ramitas—; **medalla con icono propio** en cada sección (reloj de arena, pin, nota, lista, percha, regalo, chat) y **ramitas dibujadas** como divisor y de marca de agua en la portada; apartado **"Sumá tu canción"** con tres pasos y el botón de la playlist, separado del reproductor; el alias lleva **"Para regalo"** y *"si querés hacerme un regalo, podés transferir a este alias"* arriba del rótulo "Alias para transferir"; y la **cuenta regresiva rehecha**: un solo número grande de días y las horas, minutos y segundos en una línea, en vez de los cuatro arcos.
 **No se afirmó que la playlist sea colaborativa por su cuenta**: ella pidió invitar a sumar canciones, así que el texto lo da por hecho. Si Spotify la tiene cerrada, hay que abrirla (Colaborativa) o los invitados no van a poder agregar nada.
+
+
+## lola15 — Los XV de Lola, MUESTRA modelo "afiche" (16/11/2026)
+
+**Pidió** (el dueño, para un amigo, con un video de TikTok de referencia): *"Un amigo me pidió este modelo de save the date. ¿Podemos hacer algo parecido?"* y después *"tiene mucho punch. No es algo así nomás. Tiene que tener el mismo impacto, si no parece un PowerPoint. Hacelo genérico. Hacelo para un XV de Lola."*
+
+**Es una muestra**: Lola no existe; fecha (sábado 20/03/2027, 21:30), salón, plan de la noche y trivia son de ejemplo. Sin alias, sin planilla ni tablero (`endpoint` vacío: el formulario avisa que es una muestra), sin canción. El pie dice "Invitación de muestra".
+
+**Qué se copió de la referencia (el recurso)**: la entrada con palabras que golpean de a una ("¿Estás / para / esto?", con un destello que invierte la pantalla), el nombre que se **derrite** en "QUINCE" y vuelve (desenfoque + contraste, una sola vez), títulos de afiche que llenan el ancho (los mide el JS con la tipografía que haya cargado), cuenta regresiva de cifras finas, mapa oscuro con la ruta que se dibuja al bajar, trivia "¿Quién conoce más a Lola?", "El plan" con el riel que se llena al bajar, dress code, playlist, confirmación y "Nos vemos *ahí*" con la palabra manuscrita.
+**Qué NO se copió**: las fotos (eran de internet). En su lugar van **tramas de puntos dibujadas en el momento** (lluvia de grano, bola de espejos, haces de luz), con la fecha de semilla. Tampoco la lista de regalos con "reservar" ni la subida de fotos (eso es el Muro): quedan como opción.
+**Paleta**: negro, hueso y un solo acento fucsia, que va **solo sobre negro** (sobre hueso da 2,7:1 y no sirve de texto).
+
+**Fallas que no se veían**: el contraste alto del derretido **tiñe de naranja** un texto hueso (va blanco puro mientras dura) y deja el negro de su caja distinto al de alrededor (la entrada va en #000). Un elemento con `clip-path` que lo tapa entero **no despierta al observador**: la palabra "ahí" se destapa por el título de al lado. La prueba del cruce pide que la entrada se **funda** con la portada y que `#sobre` se **saque** del DOM al terminar: un barrido no pasa.
+
+**Para usarla con un cliente de verdad**: copiar `lola15/`, cambiar `CONFIG` (plan y trivia vacíos no se dibujan), sumar planilla y tablero, y la canción si la manda (este modelo todavía no tiene reproductor).
+
