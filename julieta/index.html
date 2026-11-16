@@ -73,7 +73,7 @@ p{font-size:15px}
 html.cerrado,html.cerrado body{overflow:hidden;height:100%}
 /* la portada nace apagada y se enciende mientras el sobre se va: un cruce, no un corte */
 html.js #portada{opacity:0}
-html.listo #portada{opacity:1;transition:opacity 1.6s ease .15s}
+html.listo #portada{opacity:1;transition:opacity 1.3s ease}
 @media (prefers-reduced-motion:reduce){html.listo #portada{transition:none}}
 .papel{background:var(--papel);color:var(--tinta)}
 .papel + .papel{border-top:0}
@@ -315,6 +315,30 @@ html:not(.js) .pa{opacity:1;transform:none}
 .ctl button:active{transform:scale(.94)}
 .ctl button.on{color:var(--rosa);background:rgba(244,210,219,.12)}
 
+
+
+/* ══ EL MARCO DORADO DE LOS BOTONES (el que mandó el dueño: píldora de doble línea con ramitas en las puntas) ══
+   Tres piezas para que sirva a cualquier ancho: la punta izquierda con sus ramitas, la derecha (la misma, espejada) y un
+   pedacito de las dos líneas que se repite en el medio. Las pone el JS recién cuando las imágenes cargaron; sin ellas el
+   botón conserva su borde de siempre. */
+.btn-oro{position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important;
+  min-height:46px;padding:0 54px!important;margin-top:28px;margin-bottom:6px;white-space:nowrap;border-radius:0!important}
+.btn-oro.sin-marco{border:1px solid currentColor!important;border-radius:14px!important;padding:0 22px!important}
+.btn-oro .fr{position:absolute;top:50%;height:61px;margin-top:-30.5px;z-index:-1;pointer-events:none}
+.btn-oro .fr.l,.btn-oro .fr.r{width:54px;background:url(fotos/marco-izq.webp) no-repeat 0 0/100% 100%}
+.btn-oro .fr.l{left:0}
+.btn-oro .fr.r{right:0;transform:scaleX(-1)}
+.btn-oro .fr.m{left:44px;right:44px;background:url(fotos/marco-medio.webp) repeat-x 0 0/2px 61px}
+.papel .btn-oro .fr{filter:saturate(1.35) brightness(.74)}
+#portada .btn-oro .fr{filter:saturate(1.1) brightness(1.12)}
+@media (max-width:360px){#confirmarWsp.btn-oro{font-size:9.5px;letter-spacing:.1em;padding:0 44px!important;gap:6px}}
+#confirmarWsp.btn-oro{letter-spacing:.14em;padding:0 50px!important}
+.chips-nav a.btn-oro{margin:6px 0}
+#portada .chips-nav{display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;max-width:340px;margin:0 auto;justify-content:stretch}
+#portada .chips-nav a.btn-oro{justify-content:center;padding:0 40px!important;letter-spacing:.16em}
+#comoLlegar.btn-oro,.btn-ruta.btn-oro{color:var(--noche);background:none}
+#lista .btn.btn-oro,#confirmar .btn.btn-oro{background:none!important;color:var(--oro)}
+#regalo .btn.btn-oro{color:var(--oro)}
 
 /* ── aparecer al bajar: una sola vez; sin JS o con "menos movimiento" se ve todo ── */
 .js .ap{opacity:0;transform:translateY(18px);transition:opacity .8s var(--e),transform .8s var(--e)}
@@ -721,6 +745,28 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
   window.__sonar = () => { if (a.paused && a.currentTime === 0) a.play().catch(()=>{}); };
   a.play().then(() => gestos.forEach(g => removeEventListener(g, primero, true))).catch(() => {});
   gestos.forEach(g => addEventListener(g, primero, true));
+})();
+
+
+/* ══ el marco dorado de los botones ══ las tres piezas se piden primero; recién cuando cargaron se arman los marcos. */
+(function(){
+  const botones = [...document.querySelectorAll('.chips-nav a, #comoLlegar, #playlist, #copiar, #confirmarWsp')];
+  if (!botones.length) return;
+  botones.forEach(b => b.classList.add('btn-oro', 'sin-marco'));
+  let faltan = 2, mal = false;
+  const listo = () => {
+    if (--faltan || mal) return;
+    botones.forEach(b => {
+      b.classList.remove('sin-marco');
+      ['m','l','r'].forEach(c => { const i = document.createElement('i'); i.className = 'fr ' + c; i.setAttribute('aria-hidden', 'true'); b.insertBefore(i, b.firstChild); });
+    });
+  };
+  ['fotos/marco-izq.webp', 'fotos/marco-medio.webp'].forEach(u => {
+    const im = new Image();
+    im.addEventListener('load', () => { if (im.naturalWidth) listo(); else mal = true; });
+    im.addEventListener('error', () => { mal = true; });
+    im.src = u;
+  });
 })();
 
 /* ══ los cortes arrancados entre secciones ══
