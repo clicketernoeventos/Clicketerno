@@ -2346,6 +2346,14 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
+- **Galería con las fiestas de clientes (12/11/2026).** Las ocho tarjetas
+  de clientes están en Trabajos y en `/invitaciones` con el permiso de las
+  familias (lo confirmó el dueño ese día) y con `cuidar:true`: adentro de
+  la galería van sin alias y con la confirmación apagada
+  (`lib/trabajos.js`, `CUIDAR_MARCO`). Si una familia pide salir, es
+  borrar su renglón de `lib/trabajos.js`. Detalle en
+  `invitaciones/HISTORIA.md`.
+
 - ~~**Implementar la planilla central**~~. **Hecho el 23/10/2026.** La
   dirección está en `lib/planilla.js` y `almi15/listado/` existe. Lo
   único que falta de eso es **verlo entrar una vez**: confirmar en

@@ -121,6 +121,19 @@ h1 i{font-style:italic;color:var(--oro)}
 .abrir:active{transform:scale(.975)}
 @media(hover:hover){.abrir:hover{border-color:var(--oro);color:var(--oro)}}
 
+.visor{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;
+  gap:12px;padding:14px 12px calc(14px + env(safe-area-inset-bottom));
+  background:rgba(4,8,15,.94);color:#F4EEE2}
+.visor[hidden]{display:none}
+.visor-caja{flex:1;min-height:0;width:min(430px,100%);border-radius:22px;overflow:hidden;
+  background:#0B1320;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.visor-caja iframe{display:block;width:100%;height:100%;border:0}
+.visor-barra{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:min(430px,100%);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;line-height:1.5}
+.visor-barra span{color:#C9D3E0}
+.visor-barra button{flex:none;min-height:44px;padding:11px 22px;border:1px solid #F4EEE2;
+  border-radius:999px;background:transparent;color:#F4EEE2;font:inherit;cursor:pointer}
+
 /* ── el cierre ── */
 /* `margin:72px auto 0` y no `72px 0 0`: esta caja también es `.wrap`, y
    un margen de cuatro valores pisa el `auto` que la centra — la sección
@@ -192,6 +205,18 @@ footer a span{border-bottom:1px solid var(--gris)}
   </div>
 </section>
 
+<!-- Acá se abren las fiestas de clientes: adentro de la página, con la
+     confirmación y el alias apagados (lib/trabajos.js, CUIDAR_MARCO). -->
+<div class="visor" id="visor" hidden>
+  <div class="visor-caja">
+    <iframe id="marcoV" title="Invitación" src="about:blank" allow="autoplay"></iframe>
+  </div>
+  <div class="visor-barra">
+    <span>Muestra · la confirmación y el alias están apagados</span>
+    <button type="button" id="cerrarV">Cerrar</button>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
     Click Eterno · Rosario ·
@@ -218,7 +243,7 @@ document.getElementById('pedir').href =
    invitados, así que mentir es caro. */
 (function(){
   const n = TRABAJOS.length, m = TRABAJOS.filter(t => t.muestra).length, c = n - m;
-  const pal = ['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+  const pal = ['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte'];
   const w = x => pal[x] || String(x);
   const el = document.getElementById('aclara');
   if (!el) return;
@@ -226,6 +251,14 @@ document.getElementById('pedir').href =
     (c === 1 ? 'Una es de un cliente' : w(c).replace(/^./, ch => ch.toUpperCase()) + ' son de clientes') +
     '; ' + (m === 1 ? 'la otra es una muestra nuestra.' : 'las otras ' + w(m) + ' son muestras nuestras.');
 })();
+
+/* Las fiestas de clientes (`cuidar`) no se abren en una pestaña suelta:
+   ahí la tarjeta corre sola, con el alias a la vista y el formulario
+   mandando a la planilla. Se abren acá adentro, en el visor, que es donde
+   la galería puede apagar eso. */
+const puerta = t => t.cuidar
+  ? `href="#ver-${t.url.replace(/\W/g, '')}" data-ver="${t.url}" data-nombre="${t.nombre}"`
+  : `href="${t.url}" target="_blank" rel="noopener"`;
 
 const ficha = t => `
   <div class="ficha">
@@ -239,13 +272,13 @@ const ficha = t => `
       </div>
       <div class="late"></div>
       <div class="vivo" data-vivo="${t.url}" data-nombre="${t.nombre}"></div>
-      <a class="tapa" href="${t.url}" target="_blank" rel="noopener"
+      <a class="tapa" ${puerta(t)}
          aria-label="Abrir la invitación de ${t.nombre}"></a>
     </div>
     <div class="pie">
       <b>${t.nombre}</b><span>${t.tipo}</span>
       ${t.muestra ? '<i class="muestra">Muestra nuestra</i>' : ''}
-      <a class="abrir" href="${t.url}" target="_blank" rel="noopener">Abrirla entera</a>
+      <a class="abrir" ${puerta(t)}>Abrirla entera</a>
     </div>
   </div>`;
 
@@ -271,6 +304,7 @@ document.getElementById('grilla').innerHTML = TRABAJOS.map(ficha).join('');
     marco.setAttribute('tabindex', '-1');
     marco.setAttribute('aria-hidden', 'true');
     marco.setAttribute('scrolling', 'no');
+    if ((window.TRABAJO_DE(capa.dataset.vivo) || {}).cuidar) window.CUIDAR_MARCO(marco);
     let salio = false;
     const seguir = () => { if (!salio) { salio = true; listo(); } };
     marco.addEventListener('load', () => { capa.classList.add('listo'); seguir(); });
@@ -313,6 +347,39 @@ document.getElementById('grilla').innerHTML = TRABAJOS.map(ficha).join('');
   addEventListener('resize', () => {
     capas.forEach(c => { const m = c.querySelector('iframe'); if (m) medir(c, m); });
   }, {passive:true});
+})();
+
+/* ── el visor de las fiestas de clientes ── */
+(function(){
+  const visor = document.getElementById('visor'), marco = document.getElementById('marcoV'),
+        cerrarB = document.getElementById('cerrarV');
+  let antes = null;
+  const abrir = (url, nombre) => {
+    antes = document.activeElement;
+    marco.title = 'Invitación de ' + nombre;
+    window.CUIDAR_MARCO(marco);
+    marco.src = url;
+    visor.hidden = false; document.body.style.overflow = 'hidden';
+    try { cerrarB.focus({preventScroll:true}); } catch(e){}
+  };
+  const cerrar = () => {
+    if (visor.hidden) return;
+    visor.hidden = true; document.body.style.overflow = '';
+    marco.src = 'about:blank';
+    try { antes && antes.focus({preventScroll:true}); } catch(e){}
+  };
+  document.getElementById('grilla').addEventListener('click', e => {
+    const a = e.target.closest('[data-ver]');
+    if (!a) return;
+    e.preventDefault();
+    abrir(a.dataset.ver, a.dataset.nombre);
+  });
+  cerrarB.addEventListener('click', cerrar);
+  visor.addEventListener('click', e => { if (e.target === visor) cerrar(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+  marco.addEventListener('load', () => {
+    try { marco.contentWindow.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); }, true); } catch(e){}
+  });
 })();
 </script>
 </body>
