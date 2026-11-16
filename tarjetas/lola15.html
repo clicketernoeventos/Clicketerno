@@ -373,11 +373,11 @@ html.cerrado #portada{opacity:0}
   </div>
 </div>
 
-<button id="sonido" type="button" hidden aria-label="Sonido" aria-pressed="false">
+<div class="repro"><button id="sonido" class="play" type="button" hidden aria-label="Pausar la música" aria-pressed="false">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="raya" d="M17 9l5 6M22 9l-5 6"/>
   </svg>
-</button>
+</button></div>
 
 <main id="papel">
 
@@ -647,6 +647,11 @@ const CONFIG = {
     { p: "¿Qué va a pasar a las 3 de la mañana?",
       o: ["Se va a dormir", "Sigue en la pista", "Pide otro tema", "Las dos últimas"], ok: 3 }
   ],
+  /* La canción: dos archivos (AAC + Opus). `entra` es el segundo donde
+     la canción LEVANTA: al tocar "Entrar a la fiesta" salta ahí, para
+     que el golpe caiga siempre en el mismo lugar. Sin archivos suena la
+     base de pista que fabrica la página. */
+  cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: 9.07 },
   alias: "",
   titular: "",
   evento: "",
@@ -830,6 +835,25 @@ const SONIDO = (function(){
                    [65.41,[261.63,329.63,392.00]],[49.00,[196.00,246.94,293.66]]];
   let A = null, master, musica, filtro, efectos, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
 
+  /* ── la canción ──
+     Un <audio> de verdad, pasado por el mismo filtro que la base: así
+     se escucha apagada en la entrada y se abre al entrar. Suena UNA vez
+     y se rebobina; el botón queda diciendo "escuchar". */
+  const C = CONFIG.cancion, boton = $('#sonido');
+  let tema = null, sonando = false;
+  const rotulo = () => { if (!boton) return; const on = activo && (!tema || sonando);
+    boton.setAttribute('aria-pressed', String(!on));
+    boton.setAttribute('aria-label', on ? 'Pausar la música' : 'Escuchar la música'); };
+  if (C && C.archivos && C.archivos.length){
+    tema = document.createElement('audio'); tema.preload = 'metadata';
+    C.archivos.forEach(a => { const s = document.createElement('source'); s.src = a;
+      s.type = /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4'; tema.appendChild(s); });
+    tema.addEventListener('ended', () => { tema.currentTime = 0; sonando = false; rotulo(); });
+    tema.addEventListener('error', () => {}, true);
+    document.body.appendChild(tema);
+  }
+  const tocar = () => { if (!tema) return; sonando = true; const p = tema.play(); if (p && p.catch) p.catch(() => { sonando = false; rotulo(); }); rotulo(); };
+
   function armar(ctx){
     A = ctx;
     const comp = A.createDynamicsCompressor();
@@ -951,11 +975,17 @@ const SONIDO = (function(){
        mudo sonando cambia la sesión a "reproducción" y se escucha igual. */
     try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
     try{ const m = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='); m.loop = true; m.play().catch(() => {}); }catch(e){}
-    const b = $('#sonido');
-    if (b){ b.hidden = false; b.addEventListener('click', () => {
-      activo = !activo; b.setAttribute('aria-pressed', String(!activo));
-      master.gain.setTargetAtTime(activo ? .66 : .0001, A.currentTime, .03); }); }
-    document.addEventListener('visibilitychange', () => { if (!A) return; if (document.hidden) A.suspend(); else A.resume(); });
+    if (tema) try{ A.createMediaElementSource(tema).connect(musica); }catch(e){}
+    if (boton){ boton.hidden = false; boton.addEventListener('click', () => {
+      /* con la canción terminada, el botón la vuelve a poner */
+      if (tema && activo && !sonando){ tocar(); return; }
+      activo = !activo;
+      master.gain.setTargetAtTime(activo ? .66 : .0001, A.currentTime, .03);
+      if (tema){ if (activo) tocar(); else { tema.pause(); sonando = false; } }
+      rotulo(); }); }
+    document.addEventListener('visibilitychange', () => { if (!A) return;
+      if (document.hidden){ A.suspend(); if (tema) tema.pause(); }
+      else { A.resume(); if (tema && sonando && activo) tema.play().catch(() => {}); } });
     return true;
   }
   /* la entrada: los tiempos son los mismos de la animación del CSS */
@@ -964,7 +994,7 @@ const SONIDO = (function(){
     woosh('limpio2', t0 + 1.06); impacto(t0 + 1.06, 1); chasquido(t0 + 1.12);  /* PARA, con el destello */
     woosh('limpio3', t0 + 1.79, 1.15); impacto(t0 + 1.79, 1.3);                /* ESTO? */
     woosh('oscuro', t0 + 2.75);                                                /* aparece el nombre */
-    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(.42, t0 + 3.4);
+    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(tema ? .75 : .42, t0 + 3.4);
     woosh('hueco', t0 + 4.84);                                                 /* el nombre se derrite… */
     gota(t0 + 6.4, true);                                                      /* …y vuelve */
   }
@@ -983,8 +1013,13 @@ const SONIDO = (function(){
   const ahora = () => A.currentTime + .04;
   return {
     prender,
-    intro(){ if (!A) return; const t = ahora(); intro(t); musicaDesde(t + 2.55); },
-    entrar(){ if (!A) return; const t = ahora(); if (!reloj) musicaDesde(t + .02); entrar(t); },
+    intro(){ if (!A) return; const t = ahora(); intro(t); if (tema){ tema.currentTime = 0; tocar(); } else musicaDesde(t + 2.55); },
+    entrar(){ if (!A) return; const t = ahora();
+      /* la canción salta a medio segundo antes de donde levanta: el
+         woosh crece ese medio segundo y el golpe cae con ella */
+      if (tema){ try{ tema.currentTime = Math.max(0, (C.entra || .5) - .5); }catch(e){} tocar(); }
+      else if (!reloj) musicaDesde(t + .02);
+      entrar(t); },
     golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .5) return; ultGolpe = t; golpe(t + .3); },
     tic(){ if (A) tic(ahora()); },
     acierto(){ if (A) acierto(ahora()); },

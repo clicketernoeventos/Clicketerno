@@ -108,6 +108,12 @@ impactos y una música acorde, así armo una publicidad"*.
   el nombre, "hueco" en el derretido, "hondo" en "Entrar a la fiesta" y
   "aireado" en cada título que entra. `woosh(nombre, t)`: `t` es el
   **pico**, que es lo que cae con la imagen.
+- **La canción** (`CONFIG.cancion`): dos archivos y `entra`, el segundo
+  donde la canción levanta (se busca midiendo el volumen cada 0,05 s). Pasa
+  por el filtro: apagada en la entrada, abierta al entrar, y al entrar
+  **salta a `entra` menos medio segundo**. Suena una vez y se rebobina. El
+  salto no anda en el servidor de pruebas: se mira en la página publicada.
+  Sin archivos suena la base de pista de abajo.
 - **La música** es una base de pista a 124 que suena **apagada** en la
   entrada y **se abre** con "Entrar a la fiesta".
 - **Sin un toque no suena nada**: por eso la entrada arranca con "Tocá
@@ -123,9 +129,6 @@ impactos y una música acorde, así armo una publicidad"*.
 
 ## 4. Lo que este modelo NO tiene todavía
 
-- **Canción del cliente**: no hay reproductor. Si manda una, se trae el
-  de una tarjeta (`lucia15/`) con sus reglas (tres mandos, dos archivos,
-  arranca con "Entrar a la fiesta") y se apaga la base de pista.
 - **Fotos**: no lleva. Si el cliente manda las suyas van en blanco y negro
   con el filtro en el CSS; nunca fotos de internet, que es lo que tenía la
   referencia.

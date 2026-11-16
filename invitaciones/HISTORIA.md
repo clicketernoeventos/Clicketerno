@@ -4727,3 +4727,8 @@ Se hizo **sin ningún archivo**: los golpes y la música los fabrica el navegado
 **Cuál va en cada transición**: los tres "Classic, clean" en las tres palabras de la entrada; "Classic, Dark, Fast" cuando aparece el nombre; "Hollow, Low, Long" mientras el nombre se derrite; "Deep, Low, cinematic" en "Entrar a la fiesta" (crece mientras la entrada se apaga y pega cuando cae el título); "Fast, Close, Airy" en cada título que entra al bajar.
 **Si el dueño consigue el paquete original con permiso**, se pueden poner sus archivos en lugar de los rehechos.
 
+**Cuarta vuelta de lola15 (16/11/2026): la canción.** El dueño mandó un video de un recital (*"Está la música que tiene que sonar"*), 30 segundos. Va como en toda tarjeta, en dos archivos (`musica.m4a` y `musica.ogg`), y reemplaza a la base de pista, que queda de reserva para cuando no haya canción.
+**Cómo suena**: arranca con "Tocá para empezar", **apagada** detrás de los golpes de la entrada (pasa por el mismo filtro que tenía la base); al tocar "Entrar a la fiesta" **salta al segundo 9,07**, que es donde la canción levanta, medio segundo antes, para que el woosh crezca y el golpe caiga con ella. Suena **una vez** y se rebobina; el botón de abajo pasa a decir "Escuchar la música".
+**Se le avisó al dueño**: es una grabación de un artista; en la invitación va como las canciones que piden los clientes, pero en una **publicidad paga** las plataformas la silencian o rechazan el aviso. Para el aviso conviene sumar el tema desde la biblioteca de la red.
+**El servidor de pruebas no deja adelantar un audio** (no contesta por rangos): el salto se comprueba contra la página publicada.
+
