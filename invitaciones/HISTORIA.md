@@ -4785,3 +4785,5 @@ También: la portada dice **"te invita a sus XV años"**, el título de la pesta
 
 **Decimonovena vuelta de julieta (17/11/2026): "Click Eterno" lleva al WhatsApp.** *"Al tocar Click Eterno te dirija al WhatsApp y que diga 'vi la invitación de' Julieta."* El enlace del pie abre ahora el chat del negocio (341 250-6451) con el mensaje *"¡Hola! Vi la invitación de Julieta y quiero consultar por una."*, y el nombre sale de `CONFIG.quien`: para otra tarjeta alcanza con que ese campo diga quién es. Sin JavaScript queda el enlace al chat sin texto. **Es el mismo pie en todas las tarjetas**; esta es la primera que lo tiene así, y las demás siguen llevando a la página.
 
+**Vigésima vuelta de julieta (17/11/2026): otra playlist.** Mandó un enlace de Spotify distinto y pidió cambiarlo; el botón "Abrir la playlist" lleva ahora a `…/playlist/3IVvwkwLfwGvTnxlXmOLel`. Igual que con la anterior, el texto de la sección da por hecho que los invitados pueden sumar canciones: si la lista no está en modo **colaborativa** en Spotify, el botón abre la lista pero nadie podrá agregar nada.
+
