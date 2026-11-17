@@ -149,17 +149,14 @@ function cargar(opts = {}) {
     ruta.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: salida });
   });
   /* la página con la dirección puesta: se le cambia el HUECO del HTML servido */
-  const conUrl = (huecoClave, nombre) => ctx.route('**/julieta/' + (nombre || ''), async ruta => {
+  /* Se cambia la dirección que tenga el HTML publicado (vacía o la de verdad) por la falsa: la prueba no le habla a Google. */
+  const poner = async (ctxX, patron, campo, url) => ctxX.route(patron, async ruta => {
     const r = await ruta.fetch(); let t = await r.text();
-    t = t.replace(huecoClave, huecoClave.replace('""', '"' + URL_FALSA + '"'));
+    t = t.replace(new RegExp('(' + campo + ': ")[^"]*(")'), '$1' + url + '$2');
     ruta.fulfill({ response: r, body: t });
   });
-  await conUrl('cancionesEndpoint: ""', '');
-  await ctx.route('**/julieta/canciones/', async ruta => {
-    const r = await ruta.fetch(); let t = await r.text();
-    t = t.replace('endpoint: ""', 'endpoint: "' + URL_FALSA + '"');
-    ruta.fulfill({ response: r, body: t });
-  });
+  await poner(ctx, '**/julieta/', 'cancionesEndpoint', URL_FALSA);
+  await poner(ctx, '**/julieta/canciones/', '(?<![A-Za-z])endpoint', URL_FALSA);
 
   const inv = await ctx.newPage(); const errs = [];
   inv.on('pageerror', e => errs.push(e.message));
@@ -186,6 +183,7 @@ function cargar(opts = {}) {
   /* sin planilla conectada: sale por WhatsApp */
   const ctx2 = await navegador.newContext({ viewport: { width: 390, height: 844 } });
   const inv2 = await ctx2.newPage();
+  await poner(ctx2, '**/julieta/', 'cancionesEndpoint', '');
   await inv2.goto('http://localhost:8099/julieta/'); await inv2.click('#abrir'); await inv2.waitForTimeout(3200);
   await inv2.fill('#fCancion', 'Perfecta'); await inv2.fill('#fArtista', 'Miranda!');
   let dest = '';
