@@ -220,9 +220,6 @@ html:not(.js) .pa{opacity:1;transform:none}
 /* ── 6 · playlist ── */
 #lista{background:var(--pistacho)}
 #lista[hidden]{display:none}
-.pasos{list-style:none;display:grid;gap:12px;margin-top:20px;max-width:360px}
-.pasos li{display:flex;gap:14px;align-items:center;font-size:15px}
-.pasos b{width:38px;height:38px;border-radius:50%;background:var(--noche);color:var(--pistacho);display:grid;place-items:center;font:800 16px/1 var(--titulos);flex:none}
 
 /* ── 7 · dress code ── */
 #dress{background:var(--negro);color:#E9F1D8}
@@ -272,9 +269,6 @@ html:not(.js) .pa{opacity:1;transform:none}
 #dress .rotulo-d{color:var(--oro-2)}
 #dress .sil-txt p{font-size:clamp(19px,5.4vw,23px)}
 #dress .sil-txt h2{font-size:clamp(40px,12.5vw,60px);margin:8px 0 6px}
-.pasos{margin-left:auto;margin-right:auto;justify-items:center}
-.pasos li{font:400 clamp(22px,6.2vw,26px)/1.25 var(--cursiva);color:var(--oro);text-align:left}
-.pasos b{background:transparent;color:var(--oro);box-shadow:0 0 0 1.5px var(--oro-2);font:500 16px/1 var(--texto-f)}
 #regalo .btn{background:transparent;color:var(--oro);border-color:var(--oro-2)}
 #lista .btn,#confirmar .btn{background:var(--oro);color:var(--noche);border-color:var(--oro)}
 
@@ -301,6 +295,23 @@ html:not(.js) .pa{opacity:1;transform:none}
 #portada .script.sub{font-family:var(--cursiva);font-size:clamp(28px,8vw,40px);color:var(--oro-claro);margin-top:2px}
 #portada .chips-nav a{border-color:var(--oro-claro);color:var(--oro-claro)}
 @media (hover:hover){#portada .chips-nav a:hover{background:rgba(221,191,115,.12)}}
+
+/* el formulario "¡Vos elegís la música!" */
+.disco-ic{width:56px;height:56px;margin:0 auto 14px;color:var(--oro)}
+.disco-ic svg{width:100%;height:100%;display:block}
+#lista h2{font-size:clamp(44px,13vw,62px)}
+.form-c{max-width:380px;margin:22px auto 0;text-align:left}
+.form-c label{display:block;margin:16px 0 6px;font:500 11px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.form-c input[type=text]{display:block;width:100%;min-height:52px;padding:0 16px;background:rgba(0,0,0,.28);border:1px solid var(--oro-2);border-radius:12px;
+  color:#F6EBC8;font:400 16px/1.2 var(--texto-f)}
+.form-c input::placeholder{color:rgba(246,235,200,.5)}
+.form-c input:focus{outline:2px solid var(--oro);outline-offset:2px}
+.form-c input.trampa{position:absolute!important;left:-9999px!important;width:0!important;height:0!important;min-height:0!important;padding:0!important;border:0!important;margin:0!important;opacity:0!important;pointer-events:none!important}
+.form-c .btn{display:flex;margin:26px auto 0;font-family:var(--texto-f);cursor:pointer;color:var(--oro)}
+.form-c .btn[disabled]{opacity:.6;cursor:default}
+#lista .c-msg{font:500 14px/1.4 var(--texto-f);letter-spacing:0;text-align:center;max-width:none;margin:14px auto 0;min-height:20px;color:var(--oro)}
+#lista .c-msg.mal{color:#FFB4A8}
+#lista .gracias{font:400 clamp(21px,6vw,25px)/1.3 var(--cursiva);margin-top:26px}
 
 /* el reproductor de la referencia: botón + ondas, la línea, y cinco mandos */
 .rep{max-width:420px;margin:26px auto 0}
@@ -477,18 +488,23 @@ html:not(.js) .pa{opacity:1;transform:none}
   </section>
 
   <!-- ══════════ 6 · playlist ══════════ -->
-  <section id="lista" hidden>
+  <section id="lista">
     <svg class="flor f-lis" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
-    <div class="c" style="left:-50px;top:-30px;width:150px;height:150px;background:var(--rosa);opacity:.8"></div>
-    <span class="tag ap">01 · Playlist</span>
-    <h2 class="ap d1">Sumá tu<br>canción</h2>
-    <p class="ap d2" style="margin-top:12px">Entre todos armamos la música de esa noche: agregá el tema que no puede faltar.</p>
-    <ol class="pasos ap d2">
-      <li><b>1</b><span>Abrí la playlist en Spotify</span></li>
-      <li><b>2</b><span>Buscá la canción que querés bailar</span></li>
-      <li><b>3</b><span>Agregala a la lista</span></li>
-    </ol>
-    <a class="btn ap d3" id="playlist" target="_blank" rel="noopener">Abrir la playlist</a>
+    <div class="disco-ic ap" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="24" cy="24" r="20"/><circle cx="24" cy="24" r="4.500"/><path d="M12 24a12 12 0 0 1 12-12M36 24a12 12 0 0 1-12 12"/></svg></div>
+    <h2 class="ap d1">¡Vos elegís la música!</h2>
+    <p class="ap d1">Queremos saber qué canciones te gustaría escuchar en esta fiesta.</p>
+    <form id="formCancion" class="form-c ap d2" novalidate autocomplete="off">
+      <label for="fCancion">Nombre de la canción</label>
+      <input id="fCancion" name="cancion" type="text" maxlength="80" required placeholder="Ej. De música ligera" autocomplete="off">
+      <label for="fArtista">Artista</label>
+      <input id="fArtista" name="artista" type="text" maxlength="60" required placeholder="Ej. Soda Stereo" autocomplete="off">
+      <label for="fQuien">Tu nombre (opcional)</label>
+      <input id="fQuien" name="quien" type="text" maxlength="40" placeholder="¿Quién la recomienda?" autocomplete="given-name">
+      <input id="fWeb" name="web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="trampa">
+      <button class="btn" id="enviarCancion" type="submit">Enviar mi canción</button>
+      <p class="c-msg" id="cMsg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="gracias ap d3">¡Gracias por ayudarnos a crear la banda sonora de esta fiesta!</p>
   </section>
 
   <!-- ══════════ 7 · dress code ══════════ -->
@@ -542,7 +558,9 @@ const CONFIG = {
   ciudad: "Santiago del Estero",
   mapa: "https://www.google.com/maps/search/?api=1&query=Sirah%2C%20La%20Rioja%201270%2C%20Santiago%20del%20Estero",
   alias: "julieta.zap",                   // tal cual lo mandó, sin "arreglarle" nada
-  playlist: "https://open.spotify.com/playlist/3IVvwkwLfwGvTnxlXmOLel?si=M0IVIzbUSt-AXqWww3AxUw&utm_source=copy-link&pt=72afe17d54b1f15438dda7ec559ca2c7",
+  /* Las canciones que mandan los invitados van a una planilla propia (apps-script/canciones.gs.txt) y las aprueba ella en
+     julieta/canciones. El enlace de Spotify que había no funcionaba y se sacó. Vacío: la sugerencia se manda por WhatsApp. */
+  cancionesEndpoint: "",   // HUECO · la /exec de la planilla de canciones
   /* La canción: nombre y autora salen de lo que mandó. Vacíos, el reproductor queda sin rótulo. */
   /* La foto de la polaroid: una de chica que mandó ella (16/11/2026). Vacía, la polaroid lleva la fecha. */
   foto: "fotos/portada.webp",
@@ -588,7 +606,35 @@ texto('lugarNom', CONFIG.lugar);
 texto('lugarDir', CONFIG.calle || '');
 if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remove();
 if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
-if (CONFIG.playlist){ $('#playlist').href = CONFIG.playlist; $('#lista').hidden = false; } else { const l = $('#lista'); if (l) l.remove(); }
+/* ══ "¡Vos elegís la música!": el formulario de canciones ══
+   Con planilla conectada la canción se anota y la página recién dice "anotada" cuando la planilla lo CONTESTÓ (se pide con
+   GET y la respuesta se lee: con un POST a ciegas "listo" sería una suposición). Sin planilla, abre WhatsApp con la sugerencia. */
+(function(){
+  const f = $('#formCancion'); if (!f) return;
+  const msg = (t, ok) => { const m = $('#cMsg'); m.textContent = t; m.className = 'c-msg' + (ok === true ? ' ok' : ok === false ? ' mal' : ''); };
+  f.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const cancion = $('#fCancion').value.trim(), artista = $('#fArtista').value.trim(), quien = $('#fQuien').value.trim();
+    if (!cancion || !artista){ msg('Falta el nombre de la canción o el artista.', false); (cancion ? $('#fArtista') : $('#fCancion')).focus(); return; }
+    const b = $('#enviarCancion'); b.disabled = true;
+    try {
+      if (!CONFIG.cancionesEndpoint){
+        const t = '¡Hola ' + CONFIG.quien + '! Te sugiero esta canción para tu fiesta: ' + cancion + ' — ' + artista + (quien ? ' (de ' + quien + ')' : '');
+        window.open('https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
+        msg('Se abrió WhatsApp con tu canción: tocá enviar para mandársela.', true);
+        f.reset(); return;
+      }
+      const u = new URL(CONFIG.cancionesEndpoint);
+      u.searchParams.set('accion', 'sugerir'); u.searchParams.set('cancion', cancion); u.searchParams.set('artista', artista);
+      if (quien) u.searchParams.set('quien', quien); u.searchParams.set('web', $('#fWeb').value);
+      const r = await fetch(u.toString(), { cache: 'no-store' });
+      const d = await r.json();
+      if (d && d.ok){ msg(d.duplicada ? 'Esa canción ya estaba en la lista: ¡gracias igual!' : '¡Listo! Tu canción quedó anotada.', true); f.reset(); }
+      else msg((d && d.mensaje) || 'No se pudo anotar. Probá de nuevo.', false);
+    } catch(e){ msg('No se pudo enviar: revisá la conexión y probá de nuevo.', false); }
+    b.disabled = false;
+  });
+})();
 /* "Click Eterno" del pie lleva al WhatsApp del negocio con el mensaje armado: quien vio la invitación y quiere una igual no tiene que explicar de dónde viene. */
 $('#firmaWsp').href = 'https://wa.me/5493412506451?text=' + encodeURIComponent('¡Hola! Vi la invitación de ' + (CONFIG.quien || 'una fiesta') + ' y quiero consultar por una.');
 $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
@@ -767,7 +813,7 @@ $('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encode
 
 /* ══ el marco dorado de los botones ══ las tres piezas se piden primero; recién cuando cargaron se arman los marcos. */
 (function(){
-  const botones = [...document.querySelectorAll('.chips-nav a, #comoLlegar, #playlist, #copiar, #confirmarWsp')];
+  const botones = [...document.querySelectorAll('.chips-nav a, #comoLlegar, #enviarCancion, #copiar, #confirmarWsp')];
   if (!botones.length) return;
   botones.forEach(b => b.classList.add('btn-oro', 'sin-marco'));
   let faltan = 2, mal = false;
