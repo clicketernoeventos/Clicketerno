@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tu panel de canciones · Click Eterno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* LA GUÍA DEL PANEL DE CANCIONES · la fuente, no una página del sitio (flyer/ no se publica).
+   Sirve para CUALQUIER fiesta: no nombra ninguna. La dirección del panel y la clave las pone flyer/armar-canciones.js
+   al armar el PDF de cada clienta; la captura sale de la demostración del propio panel, con canciones de ejemplo. */
+:root{--papel:#F6F2EA;--papel2:#EDE6DA;--tinta:#14110F;--oro:#A87B43;--oro-claro:#D9AE72;--gris:#6B6258;--linea:rgba(20,17,15,.14);--verde:#2E7D3F}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:0}
+html,body{margin:0;padding:0;background:var(--papel);color:var(--tinta);font-family:'Hanken Grotesk',system-ui,sans-serif;font-weight:400;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.hoja{width:210mm;padding:11mm 15mm 8mm;margin:0 auto}
+.marca{display:flex;justify-content:space-between;align-items:center;font:700 10px/1 'Hanken Grotesk';letter-spacing:.28em;text-transform:uppercase;color:var(--oro)}
+h1{font:800 34px/1.05 'Hanken Grotesk';letter-spacing:-.02em;margin-top:14px}
+h1 span{color:var(--oro)}
+.baja{font-size:14.5px;color:var(--gris);margin-top:8px;max-width:150mm}
+.entrada{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.caja{background:#fff;border:1px solid var(--linea);border-radius:12px;padding:12px 14px}
+.caja small{display:block;font:700 9.5px/1 'Hanken Grotesk';letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.caja b{display:block;font:600 16px/1.3 'Hanken Grotesk';margin-top:8px;overflow-wrap:anywhere}
+.caja .blanco{display:block;height:22px;border-bottom:1.5px solid var(--tinta);margin-top:12px}
+.cuerpo{display:grid;grid-template-columns:62mm 1fr;gap:12mm;margin-top:12px;align-items:start}
+.cap{border-radius:14px;overflow:hidden;border:1px solid var(--linea);background:#0b0b0b}
+.cap img{display:block;width:100%;height:auto}
+.cap p{font-size:9.5px;color:#bbb;padding:6px 10px 8px;background:#0b0b0b}
+ol{list-style:none;counter-reset:p;display:grid;gap:11px}
+ol li{counter-increment:p;display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:13.5px}
+ol li::before{content:counter(p);width:28px;height:28px;border-radius:50%;background:var(--tinta);color:var(--oro-claro);font:700 13px/28px 'Hanken Grotesk';text-align:center}
+ol b{font-weight:700}
+h2{font:700 16px/1.2 "Hanken Grotesk";margin:12px 0 6px}
+.tabla{display:grid;gap:7px}
+.fila{display:grid;grid-template-columns:34mm 1fr;gap:10px;font-size:12.5px;padding:6px 0;border-top:1px solid var(--linea)}
+.fila b{font-weight:700}
+.aviso{margin-top:10px;background:var(--papel2);border-radius:12px;padding:12px 14px;font-size:13px}
+.aviso b{font-weight:700}
+.pie{margin-top:14px;font-size:11.5px;color:var(--gris);display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--linea);padding-top:10px}
+@media print{.hoja{margin:0}}
+</style>
+</head>
+<body>
+<div class="hoja">
+  <div class="marca"><span>Click Eterno</span><span>Panel de canciones</span></div>
+  <h1>Las canciones de tu fiesta, <span>las elegís vos</span></h1>
+  <p class="baja">Tus invitados te mandan canciones desde tu invitación. Acá aparecen solas y vos decidís cuáles entran en la lista de la noche.</p>
+
+  <div class="entrada">
+    <div class="caja"><small>La dirección de tu panel</small><b>{{LINK}}</b></div>
+    <div class="caja"><small>Tu clave</small>{{CLAVE}}</div>
+  </div>
+
+  <div class="cuerpo">
+    <div class="cap"><img src="{{CAPTURA}}" alt=""><p>Así se ve tu panel (con canciones de ejemplo).</p></div>
+    <div>
+      <ol>
+        <li><span><b>Entrá.</b> Abrí la dirección y escribí tu clave. La ponés una sola vez: tu teléfono se la acuerda.</span></li>
+        <li><span><b>Mirá los números.</b> Arriba ves cuántas canciones llegaron en total, cuántas aprobaste y cuántas esperan tu respuesta.</span></li>
+        <li><span><b>Decidí.</b> Cada canción trae su nombre, el artista y quién la mandó. Tocá <b>Aprobar</b> o <b>Rechazar</b>.</span></li>
+        <li><span><b>Escuchala.</b> “Abrir canción en Spotify” la busca por vos, para escucharla antes de decidir.</span></li>
+        <li><span><b>Copiá la lista.</b> Abajo queda la <b>Lista aprobada</b>. Con “Copiar lista” te llevás todas juntas para armar tu playlist.</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>Qué hace cada botón</h2>
+  <div class="tabla">
+    <div class="fila"><b>Aprobar</b><span>La canción pasa a la lista aprobada.</span></div>
+    <div class="fila"><b>Rechazar</b><span>La canción sale de la lista. No se borra: podés encontrarla en “Rechazadas”.</span></div>
+    <div class="fila"><b>Volver a pendientes</b><span>Si te arrepentís, la dejás como al principio para decidirlo después.</span></div>
+    <div class="fila"><b>Filtros</b><span>“Todas”, “Pendientes”, “Aprobadas” y “Rechazadas” para ver solo las que quieras.</span></div>
+    <div class="fila"><b>Actualizar</b><span>Las canciones nuevas aparecen solas en unos segundos. Si querés verlas ya, tocá este botón.</span></div>
+  </div>
+
+  <div class="aviso"><b>Tené en cuenta:</b> aprobar una canción <b>no la agrega sola a Spotify</b>. La abrís desde el panel y la sumás a tu playlist con un toque. Si dos invitados mandan la misma canción, aparece una sola vez. Tus invitados <b>no necesitan clave</b>: la clave es solo tuya, no la compartas.</div>
+
+  <div class="pie"><span>¿Dudas? Escribinos por WhatsApp al 341 250-6451.</span><span>Click Eterno</span></div>
+</div>
+</body>
+</html>
