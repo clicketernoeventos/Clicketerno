@@ -1,0 +1,286 @@
+/* ═══════════════════════════════════════════════════════════════
+   CLICK ETERNO · el Apps Script de las CANCIONES de una fiesta
+   ═══════════════════════════════════════════════════════════════
+
+   Es lo que hay detrás de "¡Vos elegís la música!": los invitados
+   mandan canciones desde la invitación y la organizadora las aprueba
+   o las rechaza desde su panel (`<fiesta>/canciones`).
+
+   Es OTRA planilla distinta a la de las confirmaciones, y es la única
+   que tiene una fiesta que no pidió planilla de asistencia (como la de
+   Julieta): ahí no hay formulario de confirmación, pero sí canciones.
+
+   ── QUÉ HAY QUE HACER, UNA VEZ ──
+
+   1. Planilla nueva en Google Sheets. Ponele "Canciones <fiesta>".
+   2. Extensiones → Apps Script. BORRÁ lo que haya y pegá TODO esto.
+   3. Elegí la función `preparar` y tocá ▷ Ejecutar. Acepta el permiso
+      sobre tu propia planilla. Escribe los títulos de las columnas,
+      INVENTA LA CLAVE del panel y la muestra: copiala.
+   4. Implementar → Nueva implementación → engranaje → Aplicación web.
+         Ejecutar como:   Yo
+         Quién tiene acceso:   CUALQUIER PERSONA
+      Implementar y copiá la dirección que termina en `/exec`.
+   5. Esa dirección va en dos lugares de la web: el
+      `CONFIG.cancionesEndpoint` de la invitación y el `CONFIG.endpoint`
+      del panel de canciones.
+
+   Si algún día tocás este código: Implementar → Administrar
+   implementaciones → editar la que existe → Versión: nueva. Una
+   implementación NUEVA cambia la dirección.
+
+   ── POR QUÉ "CUALQUIER PERSONA" NO ES UN AGUJERO ──
+
+   El invitado no tiene cuenta de Google, así que la puerta de
+   "sugerir" tiene que estar abierta. Lo que se puede hacer sin clave
+   es agregar UNA canción (con tope de largo, de cantidad por minuto y
+   de cantidad total, y sin repetir las que ya están). Leer la lista,
+   aprobar o rechazar pide la clave, que vive en las propiedades de
+   ESTE proyecto y no en ninguna página.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+var HOJA_TITULOS = ['ID', 'Cuándo', 'Canción', 'Artista', 'Quién', 'Estado'];
+var ESTADOS = ['pendiente', 'aprobada', 'rechazada'];
+
+/* Rosario / Córdoba / Santiago del Estero: la misma hora. Si esto
+   dijera UTC, una sugerencia de las diez de la noche quedaría
+   fechada al día siguiente. */
+var ZONA = 'America/Argentina/Cordoba';
+
+/* Topes. Largo de cada campo, canciones en total y por minuto. Una
+   fiesta de 200 invitados no pasa de unas cientos; esto frena a quien
+   quiera llenar la planilla de basura sin cortarle la fiesta a nadie. */
+var MAX_CANCION = 80, MAX_ARTISTA = 60, MAX_QUIEN = 40;
+var MAX_TOTAL = 500;
+var MAX_POR_MINUTO = 40;
+
+/* La clave del panel, si querés elegirla vos. VACÍO = la inventa la
+   planilla (lo recomendado). Va en TU copia del editor, nunca en el
+   repositorio: ahí quedaría versionada. */
+var CLAVE_ELEGIDA = '';
+
+/* La clave MAESTRA, la misma para todas las fiestas, para que Click
+   Eterno pueda entrar a cualquier panel. Mismo criterio: acá, en tu
+   copia; en el repositorio vacía. */
+var CLAVE_MAESTRA_ELEGIDA = '';
+
+
+/* ── Paso 3: preparar ────────────────────────────────────────── */
+function preparar() {
+  var hoja = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow(HOJA_TITULOS);
+    hoja.setFrozenRows(1);
+    hoja.getRange(1, 1, 1, HOJA_TITULOS.length).setFontWeight('bold');
+  }
+  var props = PropertiesService.getScriptProperties();
+  var clave = props.getProperty('CLAVE_PANEL');
+  if (CLAVE_ELEGIDA) {
+    clave = String(CLAVE_ELEGIDA);
+    props.setProperty('CLAVE_PANEL', clave);
+  } else if (!clave) {
+    /* Hexadecimal de dos uuid: se dicta por teléfono sin pifiar. */
+    clave = (Utilities.getUuid() + Utilities.getUuid())
+              .replace(/[^0-9a-f]/gi, '').toLowerCase().slice(0, 16);
+    props.setProperty('CLAVE_PANEL', clave);
+  }
+  if (CLAVE_MAESTRA_ELEGIDA) props.setProperty('CLAVE_MAESTRA', String(CLAVE_MAESTRA_ELEGIDA));
+
+  Logger.log('═══════════════════════════════════════');
+  Logger.log('  LA CLAVE DEL PANEL ES:   ' + clave);
+  Logger.log('  (copiala: es la que se le pasa a la organizadora)');
+  Logger.log('═══════════════════════════════════════');
+  Logger.log('Ahora: Implementar → Nueva implementación → Aplicación web → acceso: CUALQUIER PERSONA.');
+  return clave;
+}
+
+
+/* ── Todo entra por doGet ─────────────────────────────────────
+   Se usa GET y no POST a propósito: el navegador puede LEER la
+   respuesta, y así la invitación solo dice "tu canción quedó anotada"
+   cuando de verdad lo está (con POST sin leer respuesta, "listo" sería
+   una suposición).
+
+     ?accion=sugerir&cancion=…&artista=…&quien=…     (sin clave)
+     ?accion=listar&clave=…                          (con clave)
+     ?accion=cuantas&clave=…                         (con clave: solo el total)
+     ?accion=estado&clave=…&id=…&valor=aprobada      (con clave)
+*/
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  var accion = String(p.accion || (p.clave ? 'listar' : ''));
+
+  if (accion === 'sugerir') return sugerir_(p);
+
+  /* Todo lo demás pide clave. */
+  var props = PropertiesService.getScriptProperties();
+  var esperada = props.getProperty('CLAVE_PANEL');
+  if (!esperada) {
+    return json({ error: 'sin_clave_configurada', mensaje: 'Falta correr la función preparar() una vez.' });
+  }
+  var maestra = props.getProperty('CLAVE_MAESTRA');
+  var acierta = !!p.clave && (
+        igualesSinApuro_(String(p.clave), String(esperada)) ||
+        (!!maestra && igualesSinApuro_(String(p.clave), String(maestra))));
+  if (frenado_()) return json({ error: 'frenado', mensaje: 'Demasiados intentos. Probá de nuevo en un rato.' });
+  if (!acierta) { fallo_(); return json({ error: 'clave', mensaje: 'Clave incorrecta.' }); }
+  acerto_();
+
+  if (accion === 'cuantas') return json({ total: Math.max(0, hoja_().getLastRow() - 1) });
+  if (accion === 'estado') return cambiarEstado_(p);
+  return json(listar_());
+}
+
+
+/* ── sugerir: la puerta abierta ──────────────────────────────── */
+function sugerir_(p) {
+  /* El campo trampa: una persona no lo ve ni lo llena; un programa que
+     rellena todo, sí. Se contesta "ok" igual para que no sepa que lo
+     descubrieron. */
+  if (p.web) return json({ ok: true });
+
+  var cancion = limpiar_(p.cancion, MAX_CANCION);
+  var artista = limpiar_(p.artista, MAX_ARTISTA);
+  var quien   = limpiar_(p.quien, MAX_QUIEN);
+  if (!cancion || !artista) return json({ ok: false, error: 'faltan', mensaje: 'Falta el nombre de la canción o el artista.' });
+
+  /* Freno de ritmo, global: el mismo criterio que el de las cámaras del
+     rollo — holgado, para que una fiesta entera mandando canciones en el
+     mismo minuto no se quede afuera. */
+  var cache = CacheService.getScriptCache();
+  var n = Number(cache.get('SUG_MIN') || 0) + 1;
+  if (n > MAX_POR_MINUTO) return json({ ok: false, error: 'ritmo', mensaje: 'Muchas canciones juntas. Probá de nuevo en un minuto.' });
+  cache.put('SUG_MIN', String(n), 60);
+
+  /* Candado: dos canciones en el mismo segundo leerían la misma última
+     fila y una pisaría a la otra. */
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(15000)) return json({ ok: false, error: 'ocupado', mensaje: 'Está ocupado. Probá de nuevo.' });
+  try {
+    var hoja = hoja_();
+    var ult = hoja.getLastRow();
+    if (ult - 1 >= MAX_TOTAL) return json({ ok: false, error: 'lleno', mensaje: 'La lista ya está completa.' });
+    var clave = normal_(cancion) + '|' + normal_(artista);
+    if (ult > 1) {
+      var datos = hoja.getRange(2, 3, ult - 1, 2).getValues();
+      for (var i = 0; i < datos.length; i++) {
+        if (normal_(datos[i][0]) + '|' + normal_(datos[i][1]) === clave) {
+          return json({ ok: true, duplicada: true });
+        }
+      }
+    }
+    var id = Utilities.getUuid().replace(/-/g, '').slice(0, 10);
+    var cuando = Utilities.formatDate(new Date(), ZONA, 'yyyy-MM-dd HH:mm:ss');
+    hoja.appendRow([id, cuando, cancion, artista, quien, 'pendiente']);
+    return json({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+
+/* ── listar y cambiar de estado ──────────────────────────────── */
+function listar_() {
+  var hoja = hoja_();
+  var ult = hoja.getLastRow();
+  var canciones = [];
+  var cuenta = { pendiente: 0, aprobada: 0, rechazada: 0 };
+  if (ult > 1) {
+    var datos = hoja.getRange(2, 1, ult - 1, HOJA_TITULOS.length).getValues();
+    for (var i = 0; i < datos.length; i++) {
+      var estado = ESTADOS.indexOf(String(datos[i][5])) >= 0 ? String(datos[i][5]) : 'pendiente';
+      cuenta[estado]++;
+      canciones.push({ id: String(datos[i][0]), cuando: String(datos[i][1]), cancion: String(datos[i][2]),
+                       artista: String(datos[i][3]), quien: String(datos[i][4]), estado: estado });
+    }
+  }
+  return { canciones: canciones,
+           resumen: { total: canciones.length, aprobadas: cuenta.aprobada, pendientes: cuenta.pendiente, rechazadas: cuenta.rechazada } };
+}
+
+function cambiarEstado_(p) {
+  var valor = String(p.valor || '');
+  if (ESTADOS.indexOf(valor) < 0) return json({ ok: false, error: 'valor', mensaje: 'Estado inválido.' });
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(15000)) return json({ ok: false, error: 'ocupado', mensaje: 'Está ocupado. Probá de nuevo.' });
+  try {
+    var hoja = hoja_();
+    var ult = hoja.getLastRow();
+    if (ult > 1) {
+      var ids = hoja.getRange(2, 1, ult - 1, 1).getValues();
+      for (var i = 0; i < ids.length; i++) {
+        if (String(ids[i][0]) === String(p.id)) {
+          hoja.getRange(i + 2, 6).setValue(valor);
+          return json({ ok: true });
+        }
+      }
+    }
+    return json({ ok: false, error: 'no_existe', mensaje: 'Esa canción no está.' });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+
+/* ── lo de abajo no hace falta tocarlo ───────────────────────── */
+
+function hoja_() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+}
+
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* Texto de una celda: sin saltos, sin espacios de más, con tope de largo.
+   Y si empieza con = + - @ se le pone un apóstrofo: una celda que arranca
+   así es una FÓRMULA, y un invitado podría escribir una. */
+function limpiar_(v, max) {
+  var t = String(v == null ? '' : v).replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+  if (/^[=+\-@]/.test(t)) t = "'" + t;
+  return t;
+}
+
+/* Para comparar: minúsculas, sin acentos ni signos. "De música ligera"
+   y "de musica ligera!" son la misma canción. */
+function normal_(t) {
+  return String(t).toLowerCase()
+    .replace(/[áàä]/g, 'a').replace(/[éèë]/g, 'e').replace(/[íìï]/g, 'i')
+    .replace(/[óòö]/g, 'o').replace(/[úùü]/g, 'u')
+    .replace(/[^a-z0-9ñ ]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+/* El freno de claves: doce intentos fallados seguidos dejan la puerta
+   cerrada diez minutos. El que acierta borra la cuenta. */
+var TOPE_FALLOS = 12;
+var CUARENTENA_MS = 10 * 60 * 1000;
+
+function frenado_() {
+  var props = PropertiesService.getScriptProperties();
+  var hasta = Number(props.getProperty('FRENO_HASTA') || 0);
+  if (!hasta) return false;
+  if (Date.now() < hasta) return true;
+  props.deleteProperty('FRENO_HASTA');
+  props.deleteProperty('FALLOS');
+  return false;
+}
+function fallo_() {
+  var props = PropertiesService.getScriptProperties();
+  var n = Number(props.getProperty('FALLOS') || 0) + 1;
+  props.setProperty('FALLOS', String(n));
+  if (n >= TOPE_FALLOS) props.setProperty('FRENO_HASTA', String(Date.now() + CUARENTENA_MS));
+}
+function acerto_() {
+  var props = PropertiesService.getScriptProperties();
+  props.deleteProperty('FALLOS');
+  props.deleteProperty('FRENO_HASTA');
+}
+
+/* Compara sin apurarse: siempre recorre todo, gane o pierda. */
+function igualesSinApuro_(a, b) {
+  if (a.length !== b.length) return false;
+  var dif = 0;
+  for (var i = 0; i < a.length; i++) dif |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return dif === 0;
+}
