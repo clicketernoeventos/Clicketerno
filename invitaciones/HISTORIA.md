@@ -4824,6 +4824,23 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 
 **La canción (19/11/2026).** Llegó *Photograph* en un video; se sacó el audio entero (AAC 96k + Opus 64k, 4:10). Reproductor de vinilo con la etiqueta del moño, sin el nombre del tema a la vista.
 
+**Las fotos (19/11/2026).** Dos fotos del dueño: *"la primera para la portada, la segunda para el cierre"*, y después *"en la portada se debe ver la imagen completa"*.
+- **Portada**: la de la corona y las rosas blancas, **recortada sin la bolsa con el logo de Victoria's Secret** (nunca un logo de otra marca) y sin la marca de agua de abajo. Va **entera, a color** (el rosa de la bata es la paleta), en un marco blanco con el moño arriba y el nombre debajo, sobre el rosa. Se probó primero en arco: le comía las esquinas y el dueño la quiso completa. La portada puede pasar del alto de la pantalla; la foto no se corta.
+- **Cierre**: la selfie de blanco, **recortada sin el inodoro de atrás** y con la **tarjeta de la funda del celular borroneada** (parecía un documento). En blanco y negro, con el filtro del CSS.
+- **Trampa**: la regla general `#portada.con-foto > :not(.port-foto){position:relative}` ponía las perlas sueltas EN FILA y empujaban la foto media pantalla abajo. Ahora flotan.
+- **Trampa de la prueba**: el paralaje medía la PRIMERA `.franja`, que acá está vacía y escondida; mide la que tiene la foto.
+
 **Segunda vuelta de guada15 (19/11/2026): el logo.** El dueño mandó el logo **"Guada Fest"** (letras de plata líquida con estrellitas, sobre fondo gris) y una captura del cierre: *"Agregá la primera foto al espacio que se ve en la segunda foto."* Va en el cierre, **encima de los haces de luz**, con el borde fundido para que su fondo gris no se vea como un recuadro; entra una vez, de lejos y con un destello, y con un golpe de sonido. Se ve bien en negro y en plata. Archivo: `fotos/logo.webp` (1200 px, 263 KB). Si falta, quedan los haces como antes.
+
+**Rosas y más rosa (19/11/2026).** *"Me gustaría que agregues detalles como las flores de la foto, que sean idénticas. Y que haya más rosa pastel."*
+- **Las rosas son las de su foto**: se recortaron del ramo de la portada (fondo sacado, bordes cortados fundidos) en `fotos/rosas.webp` y una sola en `fotos/rosa.webp`. Van en las esquinas de abajo de la portada, arriba del cierre (en lugar de las ramitas dibujadas) y una rosa sola al final de "Para vos". Entran una vez al verse. Dibujarlas no las hacía idénticas.
+- **Más rosa pastel**: "Para vos", "Guardá la fecha" y la cápsula del dress code pasaron de bordó a rosa pastel con tinta honda. Sólo la confirmación queda bordó (el formulario está hecho para fondo oscuro).
+- **Se veía bien y estaba mal**: las perlas de la cuenta regresiva no se dibujaban: una regla vieja (`.reloj .aro circle{display:none}`) escondía el centro y también las perlas. Ahora esconde solo el centro.
+- Otra vez la trampa del medidor: el brillo de las bandas rosas va en un `:before`, no como fondo.
+
+**Tercera vuelta de fotos (19/11/2026).** *"Arreglá el blureo del celular que queda muy burdo. O sacalo o acomodalo. La foto 1 (una textura rosa) quiero que sea el fondo del formulario. Y hay que corregir eso de las flores que se ve mal."*
+- **Celular**: en vez del borroneo, la tarjeta de adentro de la funda se **pintó como funda lisa** (degradé tomado de arriba y abajo, con grano), respetando los dedos. No se lee nada y no se nota el retoque.
+- **Formulario**: la textura rosa (`fotos/textura.webp`, 720 px) es el fondo de "¿Venís?". Como es clara, el formulario pasó a tinta honda: campos blancos, "Confirmar" bordó con letra blanca. Ya no queda ninguna banda bordó salvo el pie.
+- **Rosas**: el ramo tenía un corte recto arriba (el borde de la foto) que se veía sobre la curva bordó. Ahora se apaga en redondo, sin bordes rectos, y en el cierre queda adentro de su banda.
 
 **Tercera vuelta de guada15 (19/11/2026).** *"Está mal. Es solo el Guada Fest sin el degradado ese."* El logo va **recortado de su fondo gris** (solo las letras y las gotas, fondo transparente) y **sin los haces de luz** detrás: él solo sobre el color de la sección. El recorte se hizo siguiendo el contorno oscuro de las letras; los huecos de la "a", la "d" y la "e" también quedan transparentes. `fotos/logo.webp` (1200 px, 200 KB, con transparencia).
