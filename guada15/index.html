@@ -337,6 +337,15 @@ html.cerrado #portada{opacity:0}
 .js .tit.entro ~ .ahi{clip-path:inset(-20% -10% -20% -10%);transition:clip-path 1s .75s cubic-bezier(.6,0,.2,1)}
 .final{position:relative;margin:calc(var(--u)*8) calc(var(--m) * -1) 0;height:calc(var(--u)*92);overflow:hidden}
 .final canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+/* el logo "Guada Fest" que mandó el dueño: sobre los haces, con el borde
+   fundido para que su fondo gris no se vea como un recuadro. Entra una
+   sola vez, de lejos y con un destello. */
+.final .logo{position:absolute;left:50%;top:50%;width:102%;max-width:none;transform:translate(-50%,-50%);pointer-events:none;
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 58%,transparent 100%);
+          mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 58%,transparent 100%)}
+.js .final .logo{opacity:0;transform:translate(-50%,-46%) scale(.9);filter:brightness(2.2) blur(6px)}
+.js .final .logo.entro{opacity:1;transform:translate(-50%,-50%);filter:none;
+  transition:opacity .9s ease,transform 1.2s cubic-bezier(.16,1,.3,1),filter 1.2s ease}
 .firma-cierre{position:relative;z-index:1;margin-top:calc(var(--u)*24)}
 #pie{background:var(--negro);color:var(--gris-n);padding:26px var(--m) calc(env(safe-area-inset-bottom) + 30px);text-align:center;font-size:12px}
 .firma a{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--hueso);text-decoration:none;font-weight:700;letter-spacing:.04em}
@@ -659,6 +668,8 @@ const CONFIG = {
       o: ["Jugar al fútbol", "Juntadas con amigos", "Ir a la escuela", "Comer sándwiches de milanesa"], ok: 0 }
   ],
   cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: 9.07 },
+  /* El logo "Guada Fest" que mandó el dueño (19/11/2026): va en el cierre. */
+  logo: "fotos/logo.webp",
   alias: "china.correa291",
   titular: "",                     // HUECO · no lo mandaron
   /* Los colores: "negro" (como la de Lola) o "plata" (blanco y plateado,
@@ -1218,6 +1229,24 @@ function despertar(){
     if (!m.width) return;
     aca.style.left = (p.right - m.left + 10) + 'px'; aca.style.top = (p.top - m.top - 34) + 'px'; };
   poner(); addEventListener('resize', poner); addEventListener('load', poner);
+})();
+
+/* ══════════ el logo del cierre ══════════
+   La <img> la crea el JS y aparece recién cuando cargó: si el archivo
+   falta, quedan los haces como antes y no un cuadrado roto. */
+(function(){
+  const caja = $('.final'); if (!caja || !CONFIG.logo) return;
+  const im = new Image();
+  im.className = 'logo'; im.alt = (CONFIG.quien || '') + ' Fest'; im.decoding = 'async';
+  im.onload = () => {
+    caja.appendChild(im);
+    if (menosMovimiento || !('IntersectionObserver' in window)){ im.classList.add('entro'); return; }
+    const ojo = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ im.classList.add('entro'); ojo.disconnect(); SONIDO.golpe(); }
+    }), {threshold:.35});
+    ojo.observe(caja);
+  };
+  im.src = CONFIG.logo;
 })();
 
 /* ══════════ la playlist lleva al renglón de la canción ══════════ */
