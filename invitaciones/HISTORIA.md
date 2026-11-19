@@ -4837,3 +4837,8 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 - **Más rosa pastel**: "Para vos", "Guardá la fecha" y la cápsula del dress code pasaron de bordó a rosa pastel con tinta honda. Sólo la confirmación queda bordó (el formulario está hecho para fondo oscuro).
 - **Se veía bien y estaba mal**: las perlas de la cuenta regresiva no se dibujaban: una regla vieja (`.reloj .aro circle{display:none}`) escondía el centro y también las perlas. Ahora esconde solo el centro.
 - Otra vez la trampa del medidor: el brillo de las bandas rosas va en un `:before`, no como fondo.
+
+**Tercera vuelta de fotos (19/11/2026).** *"Arreglá el blureo del celular que queda muy burdo. O sacalo o acomodalo. La foto 1 (una textura rosa) quiero que sea el fondo del formulario. Y hay que corregir eso de las flores que se ve mal."*
+- **Celular**: en vez del borroneo, la tarjeta de adentro de la funda se **pintó como funda lisa** (degradé tomado de arriba y abajo, con grano), respetando los dedos. No se lee nada y no se nota el retoque.
+- **Formulario**: la textura rosa (`fotos/textura.webp`, 720 px) es el fondo de "¿Venís?". Como es clara, el formulario pasó a tinta honda: campos blancos, "Confirmar" bordó con letra blanca. Ya no queda ninguna banda bordó salvo el pie.
+- **Rosas**: el ramo tenía un corte recto arriba (el borde de la foto) que se veía sobre la curva bordó. Ahora se apaga en redondo, sin bordes rectos, y en el cierre queda adentro de su banda.
