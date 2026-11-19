@@ -1147,6 +1147,30 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 
 /* el pedido de puntualidad, debajo de la fecha y la hora */
 .puntual{margin-top:10px;font-family:var(--titulos);font-style:italic;color:var(--tinta)}
+
+/* ── "¿DÓNDE?" a la manera de la referencia del dueño ── */
+#donde .caja{max-width:440px}
+.donde-t{font-family:var(--titulos);font-weight:400;text-transform:uppercase;letter-spacing:.02em;
+  font-size:clamp(50px,15vw,80px);line-height:.95;color:var(--tinta)}
+.donde-t .cursiva{display:block;text-transform:none;letter-spacing:0;color:var(--malva);
+  font-size:.66em;margin-top:.02em}
+.donde-dato{text-align:left;margin:clamp(22px,4vh,34px) 0 14px;padding-left:4px}
+.donde-rot{font-family:var(--rotulos);font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--tinta)}
+.donde-nom,.donde-calle{font-family:var(--titulos);font-size:clamp(19px,5.2vw,23px);line-height:1.35;color:var(--tinta)}
+.donde-nom{margin-top:8px}
+.donde-calle{white-space:pre-line}
+.mapa-dib{border-radius:18px;overflow:hidden;line-height:0;
+  box-shadow:0 0 0 1px rgba(159,60,96,.18),0 20px 36px -24px rgba(120,40,70,.45)}
+.mapa-dib svg{width:100%;height:auto;aspect-ratio:340/220;display:block}
+/* la flecha y el círculo se dibujan UNA vez, cuando el mapa entra */
+.js .mapa-dib .trazo path{stroke-dasharray:1;stroke-dashoffset:1}
+.js .mapa-dib.visto .trazo path{transition:stroke-dashoffset .9s var(--e) .2s;stroke-dashoffset:0}
+.js .mapa-dib.visto .trazo path + path{transition-delay:1s}
+.js .mapa-dib.visto .trazo .t2{transition:stroke-dashoffset 1.3s var(--e) 1.3s}
+@media (prefers-reduced-motion:reduce){.js .mapa-dib .trazo path{stroke-dashoffset:0;transition:none!important}}
+.donde-btn{margin-top:clamp(24px,4vh,32px);background-color:var(--tinta);color:#FFFFFF;border:0;
+  font-family:var(--rotulos);letter-spacing:.2em;text-transform:uppercase;font-size:13px;padding:0 30px;min-height:52px}
+.donde-btn span{letter-spacing:0;font-size:1.2em}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1270,16 +1294,36 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
        línea recta. Si algún día entra una foto en la franja, el JS le
        SACA la curva a esta sección — la franja ya hace el corte y dos
        separadores pegados se leen como un error de maqueta. -->
-  <section class="seccion claro arco" id="donde" data-ico="pin">
+  <!-- El armado lo pidió el dueño con una referencia (19/11/2026), sin la
+       foto: título enorme, la manuscrita debajo, el lugar en tres renglones
+       a la izquierda, un MAPA DIBUJADO (no es el real: sin nombres de calles)
+       con la flecha y el círculo a mano, y el botón que sí lleva al lugar. -->
+  <section class="seccion claro arco" id="donde">
     <div class="caja">
       <figure class="dib-salon" id="dibSalon" hidden></figure>
-      <p class="arriba ap">Dónde nos vemos</p>
-      <h2 class="ap d1" id="lugar"></h2>
-      <p class="cuerpo ap d2" id="calle"></p>
-      <a class="btn hueco ap d3" id="mapa" target="_blank" rel="noopener">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
-        </svg>Cómo llegar</a>
+      <h2 class="donde-t ap">¿Dónde?<em class="cursiva">nos vemos</em></h2>
+      <div class="donde-dato ap d1">
+        <p class="donde-rot">Lugar</p>
+        <p class="donde-nom" id="lugar"></p>
+        <p class="donde-calle" id="calle"></p>
+      </div>
+      <div class="mapa-dib ap d2" aria-hidden="true">
+        <svg viewBox="0 0 340 220" preserveAspectRatio="xMidYMid slice">
+          <rect width="340" height="220" fill="#F6E1E8"/>
+          <path d="M228 162q26-10 44 4t-6 34q-30 8-44-8t6-30z" fill="#EBCBD7"/>
+          <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"><path d="M37 -5L39 225"/><path d="M99 -5L93 225"/><path d="M148 -5L152 225"/><path d="M210 -5L218 225"/><path d="M274 -5L278 225"/><path d="M-5 30L345 30"/><path d="M-5 82L345 82"/><path d="M-5 151L345 149"/><path d="M-5 197L345 199"/></g>
+          <path d="M-5 112L345 104" fill="none" stroke="#FFFFFF" stroke-width="14"/>
+          <path d="M-5 214L180 -5" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+          <g class="trazo" fill="none" stroke="#662E42" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path pathLength="1" d="M52 34C92 30 118 44 140 82"/>
+            <path pathLength="1" d="M126 74l15 10 3-18"/>
+            <path class="t2" pathLength="1" d="M183 124c-34-4-62 6-60 22s44 22 78 12 46-28 24-38-58-6-72 10"/>
+          </g>
+          <circle cx="176" cy="132" r="6.5" fill="#662E42"/>
+          <circle cx="176" cy="132" r="11" fill="none" stroke="#662E42" stroke-opacity=".25" stroke-width="5"/>
+        </svg>
+      </div>
+      <a class="btn donde-btn ap d3" id="mapa" target="_blank" rel="noopener">Ver cómo llegar <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
@@ -1461,7 +1505,7 @@ const CONFIG = {
   hastaHora: "05:00",            // las 5 son del día siguiente
   confirmarHasta: "",            // HUECO · no la mandaron
   lugar: "La Mansión del Rey",   // lo mandó el dueño el 19/11/2026
-  calle: "Vera Mujica 68, Rosario",  // la ciudad sale del mismo salón en mia15
+  calle: "Vera Mujica 68\nRosario",  // la ciudad sale del mismo salón en mia15 · un renglón cada uno
   mapa: "",
   dibujoSalon: "",
   /* "Photograph", de Ed Sheeran: llegó en un video (19/11/2026) y se
@@ -2053,7 +2097,7 @@ function horaTexto(){
     if (CONFIG.calle) $('#calle').textContent = CONFIG.calle;
     else $('#calle').hidden = true;
     $('#mapa').href = CONFIG.mapa ||
-      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.lugar + ' ' + CONFIG.calle);
+      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.lugar + ', ' + CONFIG.calle.replace(/\n/g, ', '));
   }
   $('#dressTitulo').textContent = CONFIG.dressTitulo;
   $('#dressTexto').textContent = CONFIG.dressTexto;
@@ -2646,7 +2690,7 @@ function horaTexto(){
 /* ══════════ las rosas entran una vez, al verse ══════════ */
 (function(){
   const ver = n => n.classList.add('visto');
-  const els = document.querySelectorAll('.ramo, .rosa-sola');
+  const els = document.querySelectorAll('.ramo, .rosa-sola, .mapa-dib');
   if (!('IntersectionObserver' in window)) { els.forEach(ver); return; }
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting){ ver(e.target); io.unobserve(e.target); } }), {threshold:.15});
