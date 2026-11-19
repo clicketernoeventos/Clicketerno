@@ -19,6 +19,7 @@ mal pensado.
 | `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + su panel |
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
+| `/mansion` | `mansion/` | **La Mansión del Rey**: la app interna del salón del dueño (agenda, fichas, pagos, aumentos, stock). Ver más abajo |
 
 **Las miniaturas van por convención, no por columna.** La foto se sube a
 `CODIGO/ID.jpg` y su miniatura a `CODIGO/ID-min.jpg`; el álbum la arma con
@@ -2337,6 +2338,30 @@ dejaría peor parados.
    mira ahí es un cliente con un problema, o Defensa del Consumidor.
 5. **Rotar la clave maestra**, que nunca se cambió.
 
+## La Mansión del Rey (`/mansion`)
+
+App interna del salón de fiestas del dueño y su mamá (19/11/2026). No es
+un producto de Click Eterno: `noindex`, sin enlaces desde la página
+pública. Cuatro archivos sueltos (`datos.js` las cuentas, `carga.js` la
+carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
+
+- **Hoy los datos viven en el teléfono** (`localStorage`, clave
+  `mansion.v1`), con datos de ejemplo. Es el esqueleto: cada aparato tiene
+  los suyos y no se comparten. El próximo paso es la base (otra cuenta de
+  Supabase si se quiere separar) con usuarios de verdad; solo cambian
+  `DB.cargar`/`DB.guardar` y `Sesion`.
+- **El PIN no es seguridad** mientras todo esté en el teléfono: separa
+  qué ve cada uno (dueño ve plata; encargado no; empleado agenda y stock).
+- **"La tarjeta" = el precio por cubierto.** Lo pagado se congela como
+  porcentaje de la fiesta al precio del día del pago; el saldo es lo que
+  falta, al precio de hoy. Al cargar un aumento se arma un aviso por
+  cliente con saldo, con el mensaje de WhatsApp listo (`wa.me`, un toque
+  cada uno). Mandarlo solo, sin tocar nada, necesita la API de WhatsApp
+  Business (paga): no está.
+- **Toda carga pasa por `cambiar()`** y queda en el registro con el antes
+  y el después: así se deshace o se corrige cualquier cosa.
+- **Una sola fiesta por fecha y turno** (noche / mediodía).
+
 ## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.
@@ -2346,6 +2371,11 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
+- **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
+  servicios y paquetes con precios** (los de la app son de ejemplo), cómo
+  se cobra (seña, cuotas, medios, recibo), los nombres y roles de quienes
+  van a entrar, y los datos en papel para cargar. Del lado nuestro: pasar
+  los datos a la base para que todos vean lo mismo.
 - **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   la **hora**, el **salón** con su dirección (sin él no se dibuja "Dónde
   nos vemos"), **hasta cuándo** se confirma, el **titular** de la cuenta
