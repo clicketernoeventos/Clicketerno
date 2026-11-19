@@ -30,3 +30,6 @@ video/fotos/*
 # Lo que escupe flyer/armar.sh: se rehace con un comando.
 flyer/*.pdf
 flyer/*.png
+
+# El respaldo de las tarjetas (decenas de MB): se rehace con respaldo/armar-backup.sh
+respaldo/*.zip
