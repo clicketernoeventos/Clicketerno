@@ -1146,7 +1146,11 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #cierre .ramo{top:calc(var(--arco) * .55)}
 
 /* el pedido de puntualidad, debajo de la fecha y la hora */
-.puntual{margin-top:10px;font-family:var(--titulos);font-style:italic;color:var(--tinta)}
+.hora-grande{font-family:var(--titulos);font-weight:400;color:var(--tinta);
+  font-size:clamp(34px,10vw,52px);line-height:1.1;margin-top:clamp(10px,2vh,16px)}
+.puntual{display:inline-block;margin-top:clamp(12px,2.2vh,18px);padding:10px 20px;border-radius:999px;
+  background:var(--tinta);color:#FFFFFF;font-family:var(--titulos);font-style:italic;
+  font-size:clamp(15px,4.3vw,18px);line-height:1.4}
 
 /* ── "¿DÓNDE?" a la manera de la referencia del dueño ── */
 #donde .caja{max-width:440px}
@@ -1267,8 +1271,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
         <div><b id="cS">–</b><span>segundos</span></div>
       </div>
       <p class="cuerpo ap d3" id="cuando"></p>
+      <p class="hora-grande ap d3" id="horaGrande"></p>
       <!-- Pedido de ella (19/11/2026): que sean puntuales con el ingreso. -->
-      <p class="cuerpo puntual ap d3">Te pido que seas puntual con el horario de ingreso.</p>
+      <p class="puntual ap d3">Por favor, sean puntuales<br>con el ingreso.</p>
     </div>
   </section>
 
@@ -2080,9 +2085,11 @@ function horaTexto(){
        siguiente, y escribirlas como fecha completa haría que la
        invitación dijera "14 de febrero" en algún lado. La fiesta es el
        13 y eso es lo que tiene que leer el invitado. */
-    $('#cuando').textContent =
-      F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio +
-      (horaTexto() ? ', ' + horaTexto().replace(/^De /,'de ') : '') + '.';
+    /* El horario va APARTE y grande (pedido del dueño, 19/11/2026): la
+       fecha queda sola en su renglón. */
+    $('#cuando').textContent = F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
+    const hg = $('#horaGrande');
+    if (hg && horaTexto()) hg.textContent = horaTexto(); else if (hg) hg.remove();
     $('#teEspero').textContent = 'Te espero el ' + F.dia + ' de ' + MESES[F.mes-1] + '.';
     /* La fecha de la portada, en números y de la cadena: así la escribe
        su propia tarjeta y así no se queda vieja al copiar la pieza. */
