@@ -4829,3 +4829,5 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 - **Cierre**: la selfie de blanco, **recortada sin el inodoro de atrás** y con la **tarjeta de la funda del celular borroneada** (parecía un documento). En blanco y negro, con el filtro del CSS.
 - **Trampa**: la regla general `#portada.con-foto > :not(.port-foto){position:relative}` ponía las perlas sueltas EN FILA y empujaban la foto media pantalla abajo. Ahora flotan.
 - **Trampa de la prueba**: el paralaje medía la PRIMERA `.franja`, que acá está vacía y escondida; mide la que tiene la foto.
+
+**Segunda vuelta de guada15 (19/11/2026): el logo.** El dueño mandó el logo **"Guada Fest"** (letras de plata líquida con estrellitas, sobre fondo gris) y una captura del cierre: *"Agregá la primera foto al espacio que se ve en la segunda foto."* Va en el cierre, **encima de los haces de luz**, con el borde fundido para que su fondo gris no se vea como un recuadro; entra una vez, de lejos y con un destello, y con un golpe de sonido. Se ve bien en negro y en plata. Archivo: `fotos/logo.webp` (1200 px, 263 KB). Si falta, quedan los haces como antes.
