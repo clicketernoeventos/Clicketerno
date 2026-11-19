@@ -1144,6 +1144,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #confirmar .ya-fue .ante,#confirmar .ya-fue .ya-nom,#confirmar .ya-fue p{color:var(--tinta)}
 /* las rosas del cierre quedan adentro de su banda, sin pisar la curva */
 #cierre .ramo{top:calc(var(--arco) * .55)}
+
+/* el pedido de puntualidad, debajo de la fecha y la hora */
+.puntual{margin-top:10px;font-family:var(--titulos);font-style:italic;color:var(--tinta)}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1240,6 +1243,8 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
         <div><b id="cS">–</b><span>segundos</span></div>
       </div>
       <p class="cuerpo ap d3" id="cuando"></p>
+      <!-- Pedido de ella (19/11/2026): que sean puntuales con el ingreso. -->
+      <p class="cuerpo puntual ap d3">Te pido que seas puntual con el horario de ingreso.</p>
     </div>
   </section>
 
@@ -1452,11 +1457,8 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    ══════════════════════════════════════════════════════════════════ */
 const CONFIG = {
   quien: "María Paz",
-  /* SIN HORA: no la mandaron. La cuenta llega al principio de ese día en
-     Rosario y ningún renglón dice una hora. Cuando llegue:
-     "2026-12-18T21:00:00-03:00". */
-  fiesta: "2026-12-18",
-  hastaHora: "",
+  fiesta: "2026-12-18T21:00:00-03:00",   // de 21 a 5 h: lo mandó el dueño el 19/11/2026
+  hastaHora: "05:00",            // las 5 son del día siguiente
   confirmarHasta: "",            // HUECO · no la mandaron
   lugar: "",                     // HUECO · el salón: sin él la sección no se dibuja
   calle: "",
