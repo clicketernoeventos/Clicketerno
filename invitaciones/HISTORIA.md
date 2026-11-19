@@ -4853,3 +4853,5 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 **Planilla de mariapaz15 (19/11/2026).** El dueño creó la planilla, pegó el código, corrió `preparar()` e implementó; la `/exec` está en `CONFIG.endpoint` y el tablero en `mariapaz15/listado`. La clave del tablero es el mail de la clienta (en la copia del editor, nunca acá). No se probó una fila de punta a punta: desde acá no hay salida a Google.
 
 **Horario y puntualidad (19/11/2026).** *"Horario es de 21 a 5 am. Quiere que ponga que sean puntuales con el horario de ingreso."* La hora va en `CONFIG.fiesta` (21:00) y `hastaHora` (05:00): "de 21 a 5 h" sale en la cuenta regresiva y en el calendario. Debajo de la fecha, en su voz: *"Te pido que seas puntual con el horario de ingreso."*
+
+**El salón (19/11/2026).** *"El salón es la Mansión del Rey - Vera Mujica 68."* Aparece "Dónde nos vemos" con el pin, el nombre y "Vera Mujica 68, Rosario" (la ciudad sale del mismo salón en `mia15`), y "Cómo llegar" busca el salón en Google Maps.

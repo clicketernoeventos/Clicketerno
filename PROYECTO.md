@@ -2377,11 +2377,9 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
   van a entrar, y los datos en papel para cargar. Del lado nuestro: pasar
   los datos a la base para que todos vean lo mismo.
 - **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
-  el **salón** con su dirección (sin él no se dibuja "Dónde
-  nos vemos"), **hasta cuándo** se confirma, el **titular** de la cuenta
-  del alias, más fotos si
-  quiere, y probar una confirmación de verdad (la planilla ya está
-  conectada desde el 19/11/2026; la fila de prueba se borra a mano). Detalle en `invitaciones/HISTORIA.md`.
+  **hasta cuándo** se confirma, el **titular** de la cuenta del alias, y
+  probar una confirmación de verdad (la planilla ya está conectada; la
+  fila de prueba se borra a mano). Detalle en `invitaciones/HISTORIA.md`.
 - **guada15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   qué **color** elige (negro o plata: `CONFIG.tema`); el **titular** del
   alias; **hasta cuándo** se confirma; si **Olavarría** es la ciudad o el
