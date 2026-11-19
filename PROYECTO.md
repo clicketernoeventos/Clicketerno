@@ -2350,9 +2350,8 @@ dejaría peor parados.
   la **hora**, el **salón** con su dirección (sin él no se dibuja "Dónde
   nos vemos"), **hasta cuándo** se confirma, el **titular** de la cuenta
   del alias, más fotos si
-  quiere, y la **/exec** de su planilla (después: `CONFIG.endpoint` y
-  `mariapaz15/listado/`). Hasta tener la `/exec` el formulario no guarda
-  nada: **no repartir el link antes**. Detalle en `invitaciones/HISTORIA.md`.
+  quiere, y probar una confirmación de verdad (la planilla ya está
+  conectada desde el 19/11/2026; la fila de prueba se borra a mano). Detalle en `invitaciones/HISTORIA.md`.
 - **guada15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   qué **color** elige (negro o plata: `CONFIG.tema`); el **titular** del
   alias; **hasta cuándo** se confirma; si **Olavarría** es la ciudad o el
