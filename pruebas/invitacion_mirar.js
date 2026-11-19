@@ -642,7 +642,10 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
      que exista una clase ni un oyente: así da igual cómo esté hecho. */
   if (await pag.locator('.franja img').count()){
     const donde = await pag.evaluate(() => {
-      const f = document.querySelector('.franja');
+      /* La franja QUE TIENE la foto: la primera puede estar vacía y
+         escondida (mariapaz15 sólo tiene la del final), y medida esa el
+         scroll caía arriba de todo y la foto nunca entraba en pantalla. */
+      const f = document.querySelector('.franja img').closest('.franja');
       return f.getBoundingClientRect().top + scrollY;
     });
     const correr = async y => {
