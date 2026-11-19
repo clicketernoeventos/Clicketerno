@@ -2377,7 +2377,7 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
   van a entrar, y los datos en papel para cargar. Del lado nuestro: pasar
   los datos a la base para que todos vean lo mismo.
 - **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
-  **hasta cuándo** se confirma, el **titular** de la cuenta del alias, y
+  **hasta cuándo** se confirma (el alias se sacó: ya no hace falta titular), y
   probar una confirmación de verdad (la planilla ya está conectada; la
   fila de prueba se borra a mano). Detalle en `invitaciones/HISTORIA.md`.
 - **guada15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
