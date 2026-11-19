@@ -4823,3 +4823,9 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 **Faltan (no se inventan, su renglón no se dibuja)**: hora, salón, hasta cuándo se confirma, titular del alias, el audio de la canción y la `/exec`.
 
 **La canción (19/11/2026).** Llegó *Photograph* en un video; se sacó el audio entero (AAC 96k + Opus 64k, 4:10). Reproductor de vinilo con la etiqueta del moño, sin el nombre del tema a la vista.
+
+**Las fotos (19/11/2026).** Dos fotos del dueño: *"la primera para la portada, la segunda para el cierre"*, y después *"en la portada se debe ver la imagen completa"*.
+- **Portada**: la de la corona y las rosas blancas, **recortada sin la bolsa con el logo de Victoria's Secret** (nunca un logo de otra marca) y sin la marca de agua de abajo. Va **entera, a color** (el rosa de la bata es la paleta), en un marco blanco con el moño arriba y el nombre debajo, sobre el rosa. Se probó primero en arco: le comía las esquinas y el dueño la quiso completa. La portada puede pasar del alto de la pantalla; la foto no se corta.
+- **Cierre**: la selfie de blanco, **recortada sin el inodoro de atrás** y con la **tarjeta de la funda del celular borroneada** (parecía un documento). En blanco y negro, con el filtro del CSS.
+- **Trampa**: la regla general `#portada.con-foto > :not(.port-foto){position:relative}` ponía las perlas sueltas EN FILA y empujaban la foto media pantalla abajo. Ahora flotan.
+- **Trampa de la prueba**: el paralaje medía la PRIMERA `.franja`, que acá está vacía y escondida; mide la que tiene la foto.

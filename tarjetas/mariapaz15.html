@@ -1053,6 +1053,37 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
    datos todavía) se separan con un tono más hondo: si no, la curva no se ve. */
 .oscura.pegada{background-color:var(--marron-honda);
   background-image:radial-gradient(120% 80% at 50% 0,var(--marron-noche),var(--marron-honda) 70%)}
+
+/* ── LA PORTADA CON FOTO: la portada sigue CLARA y la foto va ENTERA
+   (pedido del dueño, 19/11/2026: "se debe ver la imagen completa"), con
+   marco blanco y el moño atado arriba. Sin arco: el arco le comía las
+   esquinas. El texto va abajo, sobre el rosa, nunca sobre la foto. La
+   portada puede pasar del alto de la pantalla: lo que no se corta es la foto. */
+#portada.con-foto{align-content:start;background-color:#F8DDE7;
+  padding-top:clamp(40px,7vh,72px)}
+#portada.con-foto .marco{display:block;position:absolute}
+/* Las perlas y el marco flotan: la regla general de "con foto" los ponía
+   en fila y empujaban la foto media pantalla abajo. */
+#portada.con-foto > .perla{position:absolute;z-index:0}
+#portada.con-foto .port-foto{position:relative;inset:auto;order:1;z-index:1;background:none;overflow:visible;
+  width:min(100%,460px);aspect-ratio:651/900;margin:0 auto clamp(14px,2.6vh,22px)}
+#portada.con-foto .port-foto:after{display:none}
+#portada.con-foto .port-foto img.fondo{display:none}
+#portada.con-foto .port-foto img.frente{position:absolute;inset:0;top:0;width:100%;height:100%;
+  aspect-ratio:auto;object-fit:contain;margin:0;
+  border-radius:16px;border:6px solid #FFFFFF;
+  box-shadow:0 0 0 1px rgba(159,60,96,.35),0 26px 44px -24px rgba(120,40,70,.55);
+  -webkit-mask-image:none;mask-image:none}
+#portada.con-foto .mono-port{order:0;position:relative;z-index:2;
+  width:min(110px,30vw);margin:0 auto clamp(8px,1.6vh,14px)}
+#portada.con-foto > :not(.port-foto):not(.mono-port):not(.marco):not(.perla){order:2}
+#portada.con-foto #nombre{font-size:clamp(52px,16vw,104px);margin-top:-.16em}
+#portada.con-foto .port-xv{font-size:clamp(22px,7vw,44px)}
+#portada.con-foto .port-baja{margin-top:clamp(12px,2.4vh,24px)}
+/* La foto del final: vertical, entera, con techo de ancho en escritorio. */
+#fHoy figure{height:auto;aspect-ratio:380/850;width:min(100%,440px);margin:0 auto}
+#fHoy figure:after{background:linear-gradient(180deg,transparent 88%,var(--marron-noche) 100%)}
+#fHoy img{object-position:50% 0}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1375,8 +1406,13 @@ const CONFIG = {
   dressTitulo: "Elegante sport",
   dressTexto: "Sin ningún color rosa ni dorado.",
   valorTarjeta: "",              // HUECO · no lo mandaron
-  portada: "",                   // sin fotos
-  franjas: {},
+  /* Las dos fotos que mandó el dueño (19/11/2026). La de la portada va
+     recortada SIN la bolsa con el logo de otra marca; la del cierre, sin
+     el baño de atrás y con la tarjeta de la funda del celular borroneada. */
+  portada: "fotos/portada.webp",
+  franjas: {
+    fHoy: { foto: "fotos/cierre.webp", alt: "María Paz sonriendo, vestida de blanco" }
+  },
   logo: "",
   alias: "Mariapaz15.2",         // tal cual lo mandó
   titular: "",                   // HUECO · no lo mandaron
