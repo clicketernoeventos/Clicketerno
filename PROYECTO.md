@@ -2346,6 +2346,13 @@ dejaría peor parados.
 
 ## Pendiente, decidido y no hecho
 
+- **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
+  la **hora**, el **salón** con su dirección (sin él no se dibuja "Dónde
+  nos vemos"), **hasta cuándo** se confirma, el **titular** de la cuenta
+  del alias, el **audio** de *Photograph* (Ed Sheeran), las **fotos** si
+  quiere, y la **/exec** de su planilla (después: `CONFIG.endpoint` y
+  `mariapaz15/listado/`). Hasta tener la `/exec` el formulario no guarda
+  nada: **no repartir el link antes**. Detalle en `invitaciones/HISTORIA.md`.
 - **guada15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   qué **color** elige (negro o plata: `CONFIG.tema`); el **titular** del
   alias; **hasta cuándo** se confirma; si **Olavarría** es la ciudad o el
