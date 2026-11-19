@@ -337,14 +337,15 @@ html.cerrado #portada{opacity:0}
 .js .tit.entro ~ .ahi{clip-path:inset(-20% -10% -20% -10%);transition:clip-path 1s .75s cubic-bezier(.6,0,.2,1)}
 .final{position:relative;margin:calc(var(--u)*8) calc(var(--m) * -1) 0;height:calc(var(--u)*92);overflow:hidden}
 .final canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-/* el logo "Guada Fest" que mandó el dueño: sobre los haces, con el borde
-   fundido para que su fondo gris no se vea como un recuadro. Entra una
-   sola vez, de lejos y con un destello. */
-.final .logo{position:absolute;left:50%;top:50%;width:102%;max-width:none;transform:translate(-50%,-50%);pointer-events:none;
-  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 58%,transparent 100%);
-          mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 58%,transparent 100%)}
-.js .final .logo{opacity:0;transform:translate(-50%,-46%) scale(.9);filter:brightness(2.2) blur(6px)}
-.js .final .logo.entro{opacity:1;transform:translate(-50%,-50%);filter:none;
+/* el logo "Guada Fest" que mandó el dueño: SOLO las letras, recortadas
+   de su fondo gris ("es solo el Guada Fest, sin el degradado"). Con el
+   logo puesto no van los haces: queda él solo sobre el color de la
+   sección. Entra una vez, de lejos y con un destello. */
+.final.con-logo{height:auto;padding:calc(var(--u)*6) calc(var(--m) * .6) calc(var(--u)*14)}
+.final.con-logo canvas{display:none}
+.final .logo{display:block;width:100%;height:auto;pointer-events:none}
+.js .final .logo{opacity:0;transform:translateY(4%) scale(.9);filter:brightness(2.2) blur(6px)}
+.js .final .logo.entro{opacity:1;transform:none;filter:none;
   transition:opacity .9s ease,transform 1.2s cubic-bezier(.16,1,.3,1),filter 1.2s ease}
 .firma-cierre{position:relative;z-index:1;margin-top:calc(var(--u)*24)}
 #pie{background:var(--negro);color:var(--gris-n);padding:26px var(--m) calc(env(safe-area-inset-bottom) + 30px);text-align:center;font-size:12px}
@@ -1239,6 +1240,7 @@ function despertar(){
   const im = new Image();
   im.className = 'logo'; im.alt = (CONFIG.quien || '') + ' Fest'; im.decoding = 'async';
   im.onload = () => {
+    caja.classList.add('con-logo');
     caja.appendChild(im);
     if (menosMovimiento || !('IntersectionObserver' in window)){ im.classList.add('entro'); return; }
     const ojo = new IntersectionObserver(es => es.forEach(e => {
