@@ -729,7 +729,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .campo input::placeholder,.campo textarea::placeholder{color:rgba(253,245,247,.6)}
 .campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--acento)}
 .campo select{appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23C9A3A4' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23662E42' stroke-width='1.6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 15px center}
 .campo select option{background-color:#662E42;color:#FEFCFD}
 .radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1118,6 +1118,32 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .js .ramo,.js .rosa-sola{opacity:0;translate:0 18px;transition:opacity 1.2s var(--e),translate 1.4s var(--e)}
 .js .ramo.visto,.js .rosa-sola.visto{opacity:1;translate:none}
 @media (prefers-reduced-motion:reduce){.js .ramo,.js .rosa-sola{opacity:1;translate:none;transition:none}}
+
+/* ── EL FORMULARIO SOBRE LA TEXTURA ROSA (la mandó el dueño, 19/11/2026).
+   La textura es clara (promedio #E6B4BF), así que todo pasa a tinta
+   honda: 5,7:1 en promedio y más de 4,5 en lo más oscuro. Los campos
+   llevan su propio fondo blanco y su propia tinta. ── */
+#confirmar.tex{background:#E6B4BF url(fotos/textura.webp) center/cover}
+#confirmar.tex h2,#confirmar.tex .cuerpo{color:var(--tinta)}
+#confirmar.tex .arriba,#confirmar.tex .medallon{color:var(--tinta)}
+#confirmar.tex .orna{color:var(--tinta);opacity:.7}
+#confirmar .campo label,#confirmar .persona .quien{color:var(--tinta);font-weight:500}
+#confirmar .campo input,#confirmar .campo select,#confirmar .campo textarea{
+  background-color:#FFFAFC;border-color:rgba(102,46,66,.32);color:var(--tinta);font-weight:400}
+#confirmar .campo input::placeholder,#confirmar .campo textarea::placeholder{color:#8E5A6E}
+#confirmar .campo input:focus,#confirmar .campo select:focus,#confirmar .campo textarea:focus{border-color:var(--tinta)}
+#confirmar .campo select option{background-color:#FFFFFF;color:var(--tinta)}
+#confirmar .radios label{background-color:#FFFAFC;border-color:rgba(102,46,66,.32);color:var(--tinta)}
+#confirmar .radios label.elegida{background-color:var(--tinta);color:#FFFFFF}
+#confirmar .persona,#confirmar .aviso-datos{border-top-color:rgba(102,46,66,.3)}
+#confirmar .aviso-datos summary,#confirmar .aviso-datos p,#confirmar .aviso-datos b,
+#confirmar .aviso-datos a,#confirmar .aviso-datos summary:before{color:var(--tinta)}
+#enviar{background-color:var(--tinta);color:#FFFFFF}
+#confirmar .aviso,#confirmar .aviso.bien,#confirmar .aviso.mal{color:var(--tinta)}
+#confirmar .ya-fue{border-color:rgba(102,46,66,.35);background:rgba(255,250,252,.7)}
+#confirmar .ya-fue .ante,#confirmar .ya-fue .ya-nom,#confirmar .ya-fue p{color:var(--tinta)}
+/* las rosas del cierre quedan adentro de su banda, sin pisar la curva */
+#cierre .ramo{top:calc(var(--arco) * .55)}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1309,7 +1335,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   </section>
 
   <!-- ══════════ 7 · la confirmación ══════════ -->
-  <section class="seccion oscura arco" id="confirmar" data-ico="sobre">
+  <section class="seccion claro tex arco" id="confirmar" data-ico="sobre">
     <div class="caja">
       <p class="arriba ap">Cuento con vos</p>
       <h2 class="ap d1">¿Venís?</h2>
