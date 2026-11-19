@@ -2349,7 +2349,7 @@ dejaría peor parados.
 - **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   la **hora**, el **salón** con su dirección (sin él no se dibuja "Dónde
   nos vemos"), **hasta cuándo** se confirma, el **titular** de la cuenta
-  del alias, el **audio** de *Photograph* (Ed Sheeran), las **fotos** si
+  del alias, las **fotos** si
   quiere, y la **/exec** de su planilla (después: `CONFIG.endpoint` y
   `mariapaz15/listado/`). Hasta tener la `/exec` el formulario no guarda
   nada: **no repartir el link antes**. Detalle en `invitaciones/HISTORIA.md`.

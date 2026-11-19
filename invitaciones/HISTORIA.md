@@ -4821,3 +4821,5 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 **Trampa del medidor**: el brillo blanco de la portada como `background-image` terminado en transparente hace que el medidor mida contra lo de atrás (1,45:1 falso). Va en un `:before` debajo del texto y se mide contra el rosa liso.
 **La contraseña del tablero es su mail**: va en la copia del Apps Script, nunca acá. Hay que avisarle el riesgo (es adivinable).
 **Faltan (no se inventan, su renglón no se dibuja)**: hora, salón, hasta cuándo se confirma, titular del alias, el audio de la canción y la `/exec`.
+
+**La canción (19/11/2026).** Llegó *Photograph* en un video; se sacó el audio entero (AAC 96k + Opus 64k, 4:10). Reproductor de vinilo con la etiqueta del moño, sin el nombre del tema a la vista.
