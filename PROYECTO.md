@@ -2357,8 +2357,7 @@ dejaría peor parados.
   qué **color** elige (negro o plata: `CONFIG.tema`); el **titular** del
   alias; **hasta cuándo** se confirma; si **Olavarría** es la ciudad o el
   nombre de la quinta; qué era el **punto 7** ("sisi"); si la **canción**
-  queda; y la **/exec** de su planilla (con ella: `CONFIG.endpoint` y
-  `guada15/listado/`). Detalle en `invitaciones/HISTORIA.md`.
+  queda; *(la **/exec** ya está conectada y el tablero vive en `/guada15/listado`; falta ver entrar una confirmación de prueba)*. Detalle en `invitaciones/HISTORIA.md`.
 - **lola15, la muestra modelo "afiche" (16/11/2026).** Es de ejemplo
   (Lola no existe). Falta que el dueño diga: si el amigo la quiere, sus
   datos reales (va en carpeta propia, con planilla y tablero); si entra a
