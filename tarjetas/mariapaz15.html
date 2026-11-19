@@ -1175,6 +1175,10 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 .donde-btn{margin-top:clamp(24px,4vh,32px);background-color:var(--tinta);color:#FFFFFF;border:0;
   font-family:var(--rotulos);letter-spacing:.2em;text-transform:uppercase;font-size:13px;padding:0 30px;min-height:52px}
 .donde-btn span{letter-spacing:0;font-size:1.2em}
+
+/* la frase del regalo: suave, en bastardilla */
+#regaloTxt{font-family:var(--titulos);font-style:italic;font-size:clamp(16px,4.4vw,19px);line-height:1.55;
+  max-width:26ch;margin:10px auto 0;text-wrap:balance}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1360,6 +1364,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
       <div class="bloque" id="bValor">
         <h3>Valor de la tarjeta</h3>
         <p class="cap-dato" id="valorTarjeta"></p>
+        <p class="cap-txt" id="regaloTxt" hidden></p>
         <p class="rotulo-alias">Alias para transferir</p>
         <b id="alias"></b>
         <p id="titular"></p>
@@ -1528,7 +1533,11 @@ const CONFIG = {
     fHoy: { foto: "fotos/cierre.webp", alt: "María Paz sonriendo, vestida de blanco" }
   },
   logo: "",
-  alias: "Mariapaz15.2",         // tal cual lo mandó
+  alias: "",                     // SACADO por pedido (19/11/2026): era "Mariapaz15.2"
+  /* En lugar del alias, una frase sutil de regalo (pedido del dueño,
+     19/11/2026: "algo de traer regalo, que suene más sutil"). La frase
+     es NUESTRA; si ella manda la suya, va la suya. */
+  regaloTexto: "Tu presencia es mi mejor regalo. Y si además querés sorprenderme con algo, lo voy a recibir con todo el cariño.",
   titular: "",                   // HUECO · no lo mandaron
   endpoint: "https://script.google.com/macros/s/AKfycbw0git0j67P-O9_CoyzGCTYlAeplBjGD24INSXPSWUJBLKhgbfgL4ZnwSJWJWdJbbjz/exec"   // su propia planilla, implementada por el dueño el 19/11/2026
 };
@@ -2134,7 +2143,17 @@ function horaTexto(){
   else $('#hasta').textContent = 'Avisame si venís, así armamos las mesas.';
   /* Al FINAL, cuando ya se escribió todo lo de la cápsula: sacarla
      antes deja a los renglones de arriba escribiendo en la nada. */
-  const hayDress = !!CONFIG.dressTitulo, hayPlata = !!(CONFIG.valorTarjeta || CONFIG.alias);
+  const hayDress = !!CONFIG.dressTitulo, hayPlata = !!(CONFIG.valorTarjeta || CONFIG.alias || CONFIG.regaloTexto);
+  /* Sin alias no hay nada que transferir ni copiar: se van el rótulo,
+     el alias, el titular y el botón; queda la frase del regalo. */
+  if (!CONFIG.alias){
+    ['.rotulo-alias', '#alias', '#titular', '#copiar'].forEach(s => { const n = $('#bValor ' + s); if (n) n.remove(); });
+    if (CONFIG.regaloTexto){
+      $('#bValor').hidden = false;
+      $('#bValor h3').textContent = 'Un detalle';
+      const r = $('#regaloTxt'); r.textContent = CONFIG.regaloTexto; r.hidden = false;
+    }
+  }
   if (!hayDress){
     const b = $('#dressTitulo') && $('#dressTitulo').closest('.bloque');
     if (b) b.remove();
