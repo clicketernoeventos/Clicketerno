@@ -4823,3 +4823,5 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 **Faltan (no se inventan, su renglón no se dibuja)**: hora, salón, hasta cuándo se confirma, titular del alias, el audio de la canción y la `/exec`.
 
 **La canción (19/11/2026).** Llegó *Photograph* en un video; se sacó el audio entero (AAC 96k + Opus 64k, 4:10). Reproductor de vinilo con la etiqueta del moño, sin el nombre del tema a la vista.
+
+**Segunda vuelta de guada15 (19/11/2026): el logo.** El dueño mandó el logo **"Guada Fest"** (letras de plata líquida con estrellitas, sobre fondo gris) y una captura del cierre: *"Agregá la primera foto al espacio que se ve en la segunda foto."* Va en el cierre, **encima de los haces de luz**, con el borde fundido para que su fondo gris no se vea como un recuadro; entra una vez, de lejos y con un destello, y con un golpe de sonido. Se ve bien en negro y en plata. Archivo: `fotos/logo.webp` (1200 px, 263 KB). Si falta, quedan los haces como antes.
