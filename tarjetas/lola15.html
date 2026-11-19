@@ -833,7 +833,7 @@ const SONIDO = (function(){
   /* La menor · Fa · Do · Sol: el bajo y las tres notas de cada acorde */
   const ACORDES = [[55.00,[220.00,261.63,329.63]],[43.65,[174.61,220.00,261.63]],
                    [65.41,[261.63,329.63,392.00]],[49.00,[196.00,246.94,293.66]]];
-  let A = null, master, musica, filtro, efectos, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
+  let A = null, master, musica, filtro, efectos, sala, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
 
   /* ── la canción ──
      Un <audio> de verdad, pasado por el mismo filtro que la base: así
@@ -878,6 +878,13 @@ const SONIDO = (function(){
     filtro = A.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.value = 240; filtro.Q.value = .8;
     musica = A.createGain(); musica.gain.value = .0001; musica.connect(filtro); filtro.connect(master);
     efectos = A.createGain(); efectos.gain.value = 1; efectos.connect(master);
+    /* LA SALA: un eco largo hecho de ruido que se apaga. Solo lo usan los
+       sonidos de la intro, para que suenen a trailer y no a batería. */
+    sala = A.createGain(); sala.gain.value = .55;
+    const conv = A.createConvolver(), L = Math.floor(A.sampleRate * 2.6), ir = A.createBuffer(2, L, A.sampleRate);
+    for (let c = 0; c < 2; c++){ const d = ir.getChannelData(c), rr = azar(11 + c);
+      for (let i = 0; i < L; i++) d[i] = (rr() * 2 - 1) * Math.pow(1 - i / L, 3.2); }
+    conv.buffer = ir; sala.connect(conv); conv.connect(master);
     ruido = A.createBuffer(1, A.sampleRate * 2, A.sampleRate);
     const d = ruido.getChannelData(0), r = azar(7);
     for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1;
@@ -952,6 +959,64 @@ const SONIDO = (function(){
     soplo(efectos, t, .28 * f, .42 * f, 'lowpass', 2200, 180, .7);
   }
   const chasquido = t => soplo(efectos, t, .13, .32, 'highpass', 5200, 5200, .7);
+
+  /* ── la intro, segunda versión (pedido del dueño, 19/11/2026) ──
+     "Los golpes parecen de tambor y no un sonido llamativo; elegí uno de
+     estos para cerrar la intro, que genere impacto." Se midió un
+     muestrario de "risers" que mandó (sin usar su audio) y se eligió el
+     RISER + HIT: un ascenso metálico que atraviesa las tres palabras, un
+     silencio cortito y el estampido cuando aparece el nombre.
+     Las palabras ya no llevan bombo: llevan un DESTELLO de metal (un
+     latigazo agudo, una campana inarmónica y un tartamudeo de vidrio),
+     cada una más aguda que la anterior. */
+  function destello(t, alto){
+    t = ya(t);
+    soplo(efectos, t - .09, .12, .16, 'highpass', 2500, 9000, .8, .085);     /* el latigazo que llega */
+    soplo(efectos, t, .07, .34, 'bandpass', 6500, 3000, 1.4);               /* el chasquido */
+    const f = 620 * alto;
+    [[1, .2], [2.76, .12], [5.4, .07], [8.93, .04]].forEach(([k, v]) => {   /* la campana de metal */
+      tono(efectos, 'sine', f * k, f * k * .985, t, 1.1 / Math.sqrt(k), v);
+      tono(sala, 'sine', f * k, 0, t, .5, v * .8);
+    });
+    for (let i = 1; i <= 3; i++)                                           /* el tartamudeo */
+      soplo(efectos, t + i * .045, .03, .12 / i, 'bandpass', 7800, 7800, 3);
+  }
+  function riserMetal(t0, t1){                                            /* "Long Metallic Riser" */
+    t0 = ya(t0); const d = t1 - t0; if (d < .2) return;
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true; f.type = 'bandpass'; f.Q.value = 2.2;
+    f.frequency.setValueAtTime(380, t0); f.frequency.exponentialRampToValueAtTime(8500, t1);
+    g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.05, t0 + d * .5);
+    g.gain.exponentialRampToValueAtTime(.3, t1 - .015); g.gain.linearRampToValueAtTime(0, t1);
+    s.connect(f); f.connect(g); g.connect(efectos); g.connect(sala); s.start(t0); s.stop(t1 + .02);
+    [[2210, 1], [4420, .6], [3310, .4]].forEach(([fr, v]) => {               /* las dos rayas de metal que suben */
+      const o = A.createOscillator(), og = A.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(fr * .5, t0); o.frequency.exponentialRampToValueAtTime(fr * 1.5, t1);
+      og.gain.setValueAtTime(.0001, t0); og.gain.exponentialRampToValueAtTime(.045 * v, t1 - .02); og.gain.linearRampToValueAtTime(0, t1);
+      o.connect(og); og.connect(efectos); o.start(t0); o.stop(t1 + .02);
+    });
+    const o = A.createOscillator(), og = A.createGain();                   /* el piso que tiembla */
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(38, t0); o.frequency.exponentialRampToValueAtTime(96, t1);
+    const lp = A.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180;
+    og.gain.setValueAtTime(.0001, t0); og.gain.exponentialRampToValueAtTime(.32, t1 - .02); og.gain.linearRampToValueAtTime(0, t1);
+    o.connect(lp); lp.connect(og); og.connect(efectos); o.start(t0); o.stop(t1 + .02);
+  }
+  function estampido(t, f){                                               /* el "Hit": sub largo, estallido y cola de metal */
+    t = ya(t); f = f || 1;
+    const o = A.createOscillator(), g = A.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(88, t); o.frequency.exponentialRampToValueAtTime(31, t + 1.6);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(1 * f, t + .012);
+    g.gain.setValueAtTime(1 * f, t + .35); g.gain.exponentialRampToValueAtTime(.0001, t + 2.3);
+    o.connect(g); g.connect(efectos); o.start(t); o.stop(t + 2.4);
+    soplo(efectos, t, .9, .55 * f, 'lowpass', 9000, 160, .6);              /* el estallido */
+    soplo(sala, t, .5, .5 * f, 'bandpass', 2400, 600, .7);                  /* lo que rebota en la sala */
+    [[293.66, .09], [587.33, .07], [440, .05], [880, .03]].forEach(([fr, v]) => {   /* la cola de metal: una quinta abierta */
+      const os = A.createOscillator(), gs = A.createGain();
+      os.type = 'triangle'; os.frequency.setValueAtTime(fr * .94, t); os.frequency.exponentialRampToValueAtTime(fr, t + .25);
+      gs.gain.setValueAtTime(.0001, t); gs.gain.exponentialRampToValueAtTime(v * f, t + .02); gs.gain.exponentialRampToValueAtTime(.0001, t + 2.2);
+      os.connect(gs); gs.connect(efectos); gs.connect(sala); os.start(t); os.stop(t + 2.3);
+    });
+  }
   function gota(t, sube){            /* el nombre que se derrite */
     tono(efectos, 'sine', sube ? 170 : 430, sube ? 430 : 170, t, .55, .2);
     soplo(efectos, t, .5, .1, 'lowpass', sube ? 300 : 1800, sube ? 1800 : 300, 3);
@@ -1006,10 +1071,11 @@ const SONIDO = (function(){
   }
   /* la entrada: los tiempos son los mismos de la animación del CSS */
   function intro(t0){
-    woosh('limpio1', t0 + .36);  impacto(t0 + .36, 1);                         /* ¿ESTÁS */
-    woosh('limpio2', t0 + 1.06); impacto(t0 + 1.06, 1); chasquido(t0 + 1.12);  /* PARA, con el destello */
-    woosh('limpio3', t0 + 1.79, 1.15); impacto(t0 + 1.79, 1.3);                /* ESTO? */
-    woosh('oscuro', t0 + 2.75);                                                /* aparece el nombre */
+    woosh('limpio1', t0 + .36, .6);  destello(t0 + .36, 1);                    /* ¿ESTÁS */
+    woosh('limpio2', t0 + 1.06, .6); destello(t0 + 1.1, 1.26);                 /* PARA, con el destello */
+    woosh('limpio3', t0 + 1.79, .7); destello(t0 + 1.79, 1.5);                 /* ESTO? */
+    riserMetal(t0 + .2, t0 + 2.4);                                             /* sube por debajo de las tres… */
+    estampido(t0 + 2.6);                                                       /* …silencio, y el nombre: el cierre */
     musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(tema ? .75 : .42, t0 + 3.4);
     woosh('hueco', t0 + 4.84);                                                 /* el nombre se derrite… */
     gota(t0 + 6.4, true);                                                      /* …y vuelve */
@@ -1018,7 +1084,7 @@ const SONIDO = (function(){
     /* "Deep, Low, cinematic": crece mientras la entrada se apaga y pega
        cuando el título de la portada cae. */
     const p = t + .5;
-    tic(t); woosh('hondo', p, .8); impacto(p, 1.2); chasquido(p);
+    tic(t); woosh('hondo', p, .8); estampido(p, .75); chasquido(p);
     musica.gain.cancelScheduledValues(t); musica.gain.setValueAtTime(Math.max(.0001, musica.gain.value), t);
     musica.gain.exponentialRampToValueAtTime(.9, p);
     filtro.frequency.cancelScheduledValues(t); filtro.frequency.setValueAtTime(filtro.frequency.value, t);
