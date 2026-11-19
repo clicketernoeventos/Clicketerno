@@ -660,7 +660,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   font-size:clamp(24px,7.4vw,40px);font-weight:500}
 .reloj .aro{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;overflow:visible;pointer-events:none}
 .reloj .aro .bd{transition:opacity .6s var(--e)}
-.reloj .aro circle{display:none}
+.reloj .aro > circle{display:none}
 /* el centro oscuro es del NÚMERO (no del dibujo): así el medidor de contraste ve el fondo que de verdad tiene */
 .reloj b,.claro .reloj b{color:#FEFCFD;background:#3E1C29;border-radius:50%;
   width:69%;margin:15.5% auto}
@@ -1046,9 +1046,9 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 /* Su texto (pedido literal): va en una banda propia, en la manuscrita
    para el comienzo y la serif para el resto. */
 #palabras .caja{max-width:520px}
-#palabras .cuerpo{font-family:var(--titulos);font-size:clamp(17px,4.6vw,21px);line-height:1.6;color:#F6DBE5}
+#palabras .cuerpo{font-family:var(--titulos);font-size:clamp(17px,4.6vw,21px);line-height:1.6;color:var(--tinta)}
 #palabras .cuerpo + .cuerpo{margin-top:14px}
-#palabras .cierre-frase{font-style:italic;color:#FDF7F9}
+#palabras .cierre-frase{font-style:italic;color:var(--malva)}
 /* Dos bandas oscuras que quedan pegadas (porque una del medio no tiene
    datos todavía) se separan con un tono más hondo: si no, la curva no se ve. */
 .oscura.pegada{background-color:var(--marron-honda);
@@ -1064,7 +1064,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #portada.con-foto .marco{display:block;position:absolute}
 /* Las perlas y el marco flotan: la regla general de "con foto" los ponía
    en fila y empujaban la foto media pantalla abajo. */
-#portada.con-foto > .perla{position:absolute;z-index:0}
+#portada.con-foto > .perla,#portada.con-foto > .ramo{position:absolute;z-index:0}
 #portada.con-foto .port-foto{position:relative;inset:auto;order:1;z-index:1;background:none;overflow:visible;
   width:min(100%,460px);aspect-ratio:651/900;margin:0 auto clamp(14px,2.6vh,22px)}
 #portada.con-foto .port-foto:after{display:none}
@@ -1084,6 +1084,40 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 #fHoy figure{height:auto;aspect-ratio:380/850;width:min(100%,440px);margin:0 auto}
 #fHoy figure:after{background:linear-gradient(180deg,transparent 88%,var(--marron-noche) 100%)}
 #fHoy img{object-position:50% 0}
+
+/* ── MÁS ROSA PASTEL (pedido del dueño, 19/11/2026): las bandas que eran
+   bordó ahora son rosa pastel con la tinta honda. Sólo la confirmación
+   queda bordó: es la única con fondo propio para el formulario. ── */
+.seccion.rosa{background-color:#F7D6E2;background-image:none;isolation:isolate}
+/* el brillo, en capa propia debajo del texto (como el de la portada):
+   así el medidor mide contra el rosa liso, que es el peor caso */
+.seccion.rosa:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(120% 70% at 50% 0,rgba(255,255,255,.55),rgba(255,255,255,0) 70%)}
+.claro.rosa h2{color:var(--tinta)}
+/* el día de la fiesta sobre rosa: centro de la perla en blanco */
+.claro .anillo-dia > circle:first-child{fill:#FFFFFF}
+/* ── LAS ROSAS BLANCAS DE SU FOTO: recortadas del ramo de la portada, así
+   son idénticas. Son adorno: sin el archivo no queda nada roto. ── */
+.ramo{position:absolute;pointer-events:none;z-index:0;
+  background:url(fotos/rosas.webp) no-repeat center/contain;
+  filter:drop-shadow(0 10px 16px rgba(120,40,70,.18))}
+.ramo.izq{left:calc(-1 * min(70px,9vw));width:min(46vw,300px);aspect-ratio:1}
+.ramo.der{right:calc(-1 * min(70px,9vw));width:min(46vw,300px);aspect-ratio:1;transform:scaleX(-1)}
+#portada .ramo{bottom:calc(var(--arco) * .2)}
+#portada .ramo.izq{left:calc(-1 * min(90px,14vw));width:min(40vw,300px)}
+#portada .ramo.der{right:calc(-1 * min(90px,14vw));width:min(40vw,300px)}
+#cierre .ramo{top:calc(var(--arco) * -.1)}
+#cierre .ramo.izq,#cierre .ramo.der{width:min(38vw,240px)}
+#cierre .flor-rincon{display:none}
+#cierre .caja{position:relative;z-index:1}
+/* una sola rosa, de corte entre su texto y lo que sigue */
+.rosa-sola{width:clamp(66px,18vw,92px);aspect-ratio:1;margin:clamp(18px,3vh,26px) auto 0;
+  background:url(fotos/rosa.webp) no-repeat center/contain;pointer-events:none;
+  filter:drop-shadow(0 6px 10px rgba(120,40,70,.2))}
+/* Entran UNA vez: suben un poco y se encienden. */
+.js .ramo,.js .rosa-sola{opacity:0;translate:0 18px;transition:opacity 1.2s var(--e),translate 1.4s var(--e)}
+.js .ramo.visto,.js .rosa-sola.visto{opacity:1;translate:none}
+@media (prefers-reduced-motion:reduce){.js .ramo,.js .rosa-sola{opacity:1;translate:none;transition:none}}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
@@ -1139,6 +1173,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
       <path class="pl" pathLength="1" d="M58 29C46 22 31 19 22 22M62 29C74 22 89 19 98 22"/>
       <rect pathLength="1" x="53" y="23" width="14" height="15" rx="5"/>
     </svg>
+    <i class="ramo izq" aria-hidden="true"></i><i class="ramo der" aria-hidden="true"></i>
     <p class="port-xv ap">Mis quince</p>
     <h1 id="nombre">María Paz</h1>
     <svg class="flor linea" viewBox="0 0 220 34" aria-hidden="true">
@@ -1157,12 +1192,13 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
 
   <!-- ══════════ 2b · sus palabras ══════════
        El texto lo mandó ELLA (19/11/2026) y va literal: es su voz. -->
-  <section class="seccion oscura arco" id="palabras" data-ico="mono">
+  <section class="seccion claro rosa arco" id="palabras" data-ico="mono">
     <div class="caja">
       <p class="arriba ap">Para vos</p>
       <p class="cuerpo ap d1">En esta noche tan especial para mí, quiero invitarte a compartir la alegría de celebrar mis quince años, acompañada del amor de mis padres y de todas las personas que forman parte de mi vida.</p>
       <p class="cuerpo ap d2">Será una noche llena de emociones, alegría y momentos inolvidables.</p>
       <p class="cuerpo cierre-frase ap d3">¡Me encantaría contar con tu presencia!</p>
+      <div class="rosa-sola" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -1182,7 +1218,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
   </section>
 
   <!-- ══════════ 4 · guardá la fecha ══════════ -->
-  <section class="seccion oscura arco" id="sFecha" data-ico="calendario">
+  <section class="seccion claro rosa arco" id="sFecha" data-ico="calendario">
     <div class="caja">
       <p class="arriba ap">Anotalo</p>
       <h2 class="ap d1">Guardá<br><em class="cursiva">la fecha</em></h2>
@@ -1226,7 +1262,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
        renglón: un número puesto a ojo acá es el invitado
        transfiriendo de menos, y un nombre inventado al lado de un
        alias es peor que ninguno. -->
-  <section class="seccion oscura arco" id="detalles">
+  <section class="seccion claro rosa arco" id="detalles">
     <div class="capsula ap">
       <div class="orla arriba" aria-hidden="true"></div>
 
@@ -1361,6 +1397,7 @@ h2{font-family:var(--titulos);font-weight:400;line-height:1.14;
       <p class="cierre-n ap d2 elNom"></p>
       <div class="placa-fest ap d2" id="placaFest" hidden></div>
     </div>
+    <i class="ramo izq" aria-hidden="true"></i><i class="ramo der" aria-hidden="true"></i>
     <div class="flor-rincon izq" aria-hidden="true"></div>
     <div class="flor-rincon der" aria-hidden="true"></div>
   </section>
@@ -2576,6 +2613,16 @@ function horaTexto(){
     const n = document.querySelector('#cierre .cierre-n'); if (n) n.style.display = 'none';
   }, () => {});
 
+})();
+
+/* ══════════ las rosas entran una vez, al verse ══════════ */
+(function(){
+  const ver = n => n.classList.add('visto');
+  const els = document.querySelectorAll('.ramo, .rosa-sola');
+  if (!('IntersectionObserver' in window)) { els.forEach(ver); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ ver(e.target); io.unobserve(e.target); } }), {threshold:.15});
+  els.forEach(n => io.observe(n));
 })();
 
 /* ══════════ dos bandas oscuras pegadas ══════════
