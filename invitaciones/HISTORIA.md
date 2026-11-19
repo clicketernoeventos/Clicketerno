@@ -4809,3 +4809,15 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 **La contraseña del tablero es su mail**: se le avisó el riesgo (fácil de adivinar) y no contestó; va en la copia del Apps Script, nunca en el repo.
 **Faltan (no se inventan, su renglón no se dibuja)**: el **titular** de la cuenta; **hasta cuándo** se confirma; si **"Olavarría"** es la ciudad o el nombre de la quinta (el mapa busca "Quinta Olavarría, Mitre 5457"); qué era el **punto 7** ("sisi"); y la **/exec** de su planilla.
 
+
+## mariapaz15 — Los quince de María Paz (19/11/2026)
+
+**Pidió** (con sus palabras): *"Mi nombre María Paz · la fecha es el 18/12/26 · mi alias es Mariapaz15.2 · la canción Photograph, Ed Sheeran · colores rosa pastel, blanco · dress code: elegante sport y que no vayan con ningún color que sea rosa ni dorado · (su mail)"* y un texto: *"En esta noche tan especial para mí, quiero invitarte a compartir la alegría de celebrar mis quince años, acompañada del amor de mis padres y de todas las personas que forman parte de mi vida. Será una noche llena de emociones, alegría y momentos inolvidables. ¡Me encantaría contar con tu presencia!"*
+
+**Base**: copia de `lucia15/` (sobre con sello, curvas, cápsula, confirmación entera). Cara nueva: **rosa pastel y blanco** con un rosa hondo de tinta; los grises de Lucía se pasaron al rosa **con la misma luminancia**, así el contraste ya medido sigue valiendo. Playfair Display y Parisienne. El emblema es un **moño de cinta**: en el sello del sobre, en la portada (se **ata una vez**: el trazo se dibuja y después se llena) y en la guirnalda de la cápsula. La cuenta regresiva y el día del calendario llevan **anillos de perlas** que se apagan a medida que la unidad se vacía; la portada, perlas sueltas quietas (semilla = fecha). La **portada y el sobre son claros** (en Lucía eran oscuros).
+**Su texto va literal** en una sección propia, "Para vos", después de la portada. El "Si tipo" del comienzo era de la charla, no del texto.
+**Sin valor de la tarjeta**, el bloque del alias se titula **"Mi regalo"** (y abajo "Alias para transferir").
+**Dos cosas nuevas en la maquinaria**: sin `lugar` la sección "Dónde nos vemos" se saca (antes quedaba un título vacío y un "Cómo llegar" a ninguna parte); y si dos bandas oscuras quedan pegadas porque la clara del medio falta, la de abajo toma un tono más hondo para que la curva se vea.
+**Trampa del medidor**: el brillo blanco de la portada como `background-image` terminado en transparente hace que el medidor mida contra lo de atrás (1,45:1 falso). Va en un `:before` debajo del texto y se mide contra el rosa liso.
+**La contraseña del tablero es su mail**: va en la copia del Apps Script, nunca acá. Hay que avisarle el riesgo (es adivinable).
+**Faltan (no se inventan, su renglón no se dibuja)**: hora, salón, hasta cuándo se confirma, titular del alias, el audio de la canción y la `/exec`.
