@@ -4796,3 +4796,16 @@ Lo mide `pruebas/canciones.js` (el script en un vm y las dos pantallas hablándo
 
 
 **Planilla de canciones de julieta conectada (17/11/2026).** El dueño creó la planilla, pegó el código, corrió `preparar()` e implementó. La `/exec` está en `CONFIG.cancionesEndpoint` de la invitación y en `CONFIG.endpoint` del panel (`/julieta/canciones`). **No se pudo verlo entrar desde acá** (el servidor de pruebas no sale a `script.google.com`): lo medido es el script en un vm hablándole a las dos pantallas, no la planilla real. Falta verlo una vez: mandar una canción desde la invitación y mirar que aparezca en el panel; la fila de prueba se borra a mano. `pruebas/canciones.js` aprendió a cambiar por la falsa la dirección que tenga el HTML publicado, vacía o real.
+
+
+## guada15 — Los XV de Guada (19/11/2026)
+
+**Pidió** (el dueño, con las respuestas de la clienta, 18 y 19/11/2026): *"Vamos a hacerla con el mismo modelo"* (el save the date de `lola15/`). *"1- Guada · 2- 6/2/2027 · 3- quinta Olavarría (MITRE 5457) · 4- alias: china.correa291 · 5- la música que está en click me gusta, cualquier cosa me mostrás cuando esté lista y te digo · 6- sin foto, como está la invitación de Lola me gusta · 7- sisi · 8- cómo está me gusta, o me gustaría también verla en blanco y plateada, más que nada por la decoración del XV · 9- no, en ese lugar me gustaría poner una frase como que vayan a disfrutar la noche · 10- (su mail) · 11- sí, quiero incluir un formulario para que los invitados confirmen su asistencia · 12- cualquier cosa te aviso."* Después: *"empieza a las 21:00 y termina a las 5:00"* y la trivia con cuatro opciones (*jugar fútbol, juntadas con amigos, ir a la escuela, comer sándwiches de milanesas; la correcta es jugar fútbol*).
+
+**Base**: copia de `lola15/` con su canción. Cambió la cara: nombre, fecha, lugar, alias, una sola pregunta de trivia y **sin "El plan"** (no mandaron el minuto a minuto). Lo de muestra se sacó del pie.
+**Dos versiones de color**: `CONFIG.tema` "negro" (la de Lola) o "plata" (grafito con brillo de metal, blanco y títulos en plata pulida); para compararlas, `?tema=plata` en la dirección. Las dos pasan las pruebas.
+**En lugar del dress code**: "Vení a disfrutar / La noche es nuestra" con una frase **nuestra** y una estrella de cuatro puntas en vez de la percha. Si manda la suya, va la suya.
+**La pregunta de la trivia es nuestra** ("¿Qué es lo que más le gusta hacer?"): mandó solo las opciones.
+**La contraseña del tablero es su mail**: se le avisó el riesgo (fácil de adivinar) y no contestó; va en la copia del Apps Script, nunca en el repo.
+**Faltan (no se inventan, su renglón no se dibuja)**: el **titular** de la cuenta; **hasta cuándo** se confirma; si **"Olavarría"** es la ciudad o el nombre de la quinta (el mapa busca "Quinta Olavarría, Mitre 5457"); qué era el **punto 7** ("sisi"); y la **/exec** de su planilla.
+
