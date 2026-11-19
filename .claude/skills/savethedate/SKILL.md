@@ -116,6 +116,12 @@ impactos y una música acorde, así armo una publicidad"*.
   (el servidor no la entrega por pedazos y sin eso el salto la manda al
   principio, sin error).
   Sin archivos suena la base de pista de abajo.
+- **La intro (segunda versión, 19/11/2026)**: nada de bombos ("parecen
+  golpes de tambor"). Cada palabra lleva `destello()` (latigazo, campana de
+  metal y tartamudeo), por debajo sube `riserMetal()` y la cierra
+  `estampido()` en el instante en que aparece el nombre, después de un
+  silencio de dos décimas: es el "Riser + Hit" que eligió el dueño. Los
+  sonidos de la intro pasan además por `sala` (un eco largo).
 - **La música** es una base de pista a 124 que suena **apagada** en la
   entrada y **se abre** con "Entrar a la fiesta".
 - **Sin un toque no suena nada**: por eso la entrada arranca con "Tocá
