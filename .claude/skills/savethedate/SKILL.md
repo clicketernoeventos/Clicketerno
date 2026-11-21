@@ -135,6 +135,14 @@ impactos y una música acorde, así armo una publicidad"*.
   segundo (que no pase de 1, que la parte apagada quede más baja). El
   oído lo pone el dueño: preguntarle cómo suena.
 
+- **El "derretido" ya no es derretido (21/11/2026)**: el desenfoque con
+  contraste alto se veía en el iPhone como una mancha gris borrosa (Safari
+  no aplica el `contrast()` del padre mientras el hijo anima `blur()`).
+  Ahora el nombre se aplasta y la otra palabra salta: solo transform y
+  opacidad. **No volver a un efecto que dependa de `filter` en el padre.**
+- **Fotos del festejado como polaroid** (`gonzalo50/`): `polaroid(fig, src)`
+  crea la `<img>` y muestra el marco recién cuando cargó.
+
 ## 4. Lo que este modelo NO tiene todavía
 
 - **Fotos**: no lleva. Si el cliente manda las suyas van en blanco y negro

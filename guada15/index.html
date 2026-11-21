@@ -119,7 +119,8 @@ main{width:var(--col);margin:0 auto;position:relative;overflow:hidden}
 html:not(.js) #sobre{display:none}
 #sobre{position:fixed;inset:0;z-index:50;background:#000;color:var(--hueso);overflow:hidden}
 /* de la entrada a la portada va un CRUCE: una se apaga mientras la otra se enciende */
-#sobre.abierto{opacity:0;transform:scale(1.06);transition:opacity .62s ease,transform .62s ease;pointer-events:none}
+/* la entrada se apaga un poco ANTES de que la portada termine de encenderse: si van parejas, en un teléfono lento se ve un instante la entrada todavía firme encima */
+#sobre.abierto{opacity:0;transform:scale(1.06);transition:opacity .42s ease-out,transform .62s ease;pointer-events:none}
 #portada{transition:opacity .62s ease}
 html.cerrado #portada{opacity:0}
 .golpes{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:3}
@@ -152,18 +153,23 @@ html.cerrado #portada{opacity:0}
 .goo span{grid-area:1/1;align-self:end;white-space:nowrap}
 .goo .a{font-size:calc(var(--u) * var(--goo,31))}
 .goo .b{font-size:calc(var(--u) * 20.5);opacity:0}
-/* el nombre se derrite en "QUINCE" y vuelve: desenfoque + contraste alto
-   hacen de umbral, que es lo que da la tinta líquida. Pasa UNA vez. */
-#sobre.va .goo.liquido{filter:contrast(40);color:#fff}
+/* el nombre se APLASTA y salta la otra palabra, y vuelve. Pasa UNA vez.
+   Antes era un derretido (desenfoque + contraste alto) y en el iPhone se
+   veía como una mancha gris borrosa: Safari no aplica el contraste del
+   padre mientras el hijo anima su desenfoque. Ahora es solo transform y
+   opacidad, que andan igual en todos lados. */
+#sobre.va .goo.liquido{color:#fff}
+.goo .a{transform-origin:0 100%}
+.goo .b{transform-origin:20% 70%}
 #sobre.va .goo .a{animation:derriteA 4.4s 3.6s both}
 #sobre.va .goo .b{animation:derriteB 4.4s 3.6s both}
 @keyframes derriteA{
-  0%{filter:blur(0);opacity:1} 16%{filter:blur(.32em);opacity:.9} 24%,62%{filter:blur(.5em);opacity:0}
-  72%{filter:blur(.32em);opacity:.9} 88%,100%{filter:blur(0);opacity:1}
+  0%{transform:none;opacity:1} 12%{transform:scale(.94,1.12)} 21%{transform:scale(1.35,0);opacity:1} 22%,66%{transform:scale(1.35,0);opacity:0}
+  67%{transform:scale(1.35,0);opacity:1} 76%{transform:scale(.94,1.12)} 84%,100%{transform:none;opacity:1}
 }
 @keyframes derriteB{
-  0%,10%{filter:blur(.5em);opacity:0} 18%{filter:blur(.32em);opacity:.9} 30%,56%{filter:blur(0);opacity:1}
-  66%{filter:blur(.32em);opacity:.9} 76%,100%{filter:blur(.5em);opacity:0}
+  0%,21%{transform:scale(2.6) rotate(-8deg);opacity:0} 29%{transform:scale(.9) rotate(2deg);opacity:1}
+  35%,58%{transform:none;opacity:1} 63%{transform:scale(1.12);opacity:1} 67%,100%{transform:scale(0);opacity:0}
 }
 #abrir{margin-top:22px;min-height:52px;padding:0 26px;border:1.5px solid var(--hueso);border-radius:99px;
   font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;display:inline-flex;align-items:center;gap:12px;
