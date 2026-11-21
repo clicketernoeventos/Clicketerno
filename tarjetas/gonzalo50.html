@@ -153,6 +153,30 @@ html.cerrado #portada{opacity:0}
   100%{opacity:0;transform:rotate(-7deg) scale(.9)}
 }
 @keyframes destello{0%{opacity:0}8%,72%{opacity:1}100%{opacity:0}}
+/* LOS FLASHES (pedido del dueño: "más flashes el comienzo"). Un fogonazo
+   blanco con cada palabra y uno grande cuando aparece el nombre, como las
+   cámaras que saltan al grito de "¡sorpresa!"; y chispas de cuatro puntas
+   que saltan en lugares fijos (semilla = la fecha). Cuatro fogonazos en
+   tres segundos: por debajo de lo que molesta a la vista. */
+.flashazo{position:absolute;inset:0;z-index:6;background:#fff;opacity:0;pointer-events:none}
+#sobre.va .flashazo{animation:flashazo 3.1s .2s linear both}
+@keyframes flashazo{
+  0%,4.5%{opacity:0} 5.2%{opacity:.78} 9%{opacity:0}
+  27%{opacity:0} 27.7%{opacity:.7} 31.5%{opacity:0}
+  51%{opacity:0} 51.7%{opacity:.82} 56%{opacity:0}
+  76.5%{opacity:0} 77.2%{opacity:.95} 86%{opacity:0} 100%{opacity:0}
+}
+.chispas{position:absolute;inset:0;z-index:5;pointer-events:none}
+.chispas i{position:absolute;width:var(--t);height:var(--t);margin:calc(var(--t) / -2) 0 0 calc(var(--t) / -2);opacity:0}
+.chispas i::before,.chispas i::after{content:"";position:absolute;left:50%;top:0;width:12%;height:100%;margin-left:-6%;border-radius:50%;
+  background:linear-gradient(transparent,#fff 45%,#fff 55%,transparent);box-shadow:0 0 10px #fff}
+.chispas i::after{transform:rotate(90deg)}
+.chispas i.oro::before,.chispas i.oro::after{background:linear-gradient(transparent,#F2D892 45%,#F2D892 55%,transparent);box-shadow:0 0 10px #D9B45A}
+#sobre.va .chispas i{animation:chispa .5s var(--d) cubic-bezier(.2,.9,.3,1) both}
+@keyframes chispa{0%{opacity:0;transform:scale(0) rotate(0)}30%{opacity:1;transform:scale(1.25) rotate(20deg)}100%{opacity:0;transform:scale(.2) rotate(60deg)}}
+/* el fuego artificial de la entrada estalla cuando cae el nombre */
+#sobre.va #ruido{transform-origin:50% 44%;animation:estalla 1.3s 2.52s cubic-bezier(.15,1.35,.35,1) both}
+@keyframes estalla{0%{transform:scale(.12);opacity:0;filter:brightness(3)}25%{opacity:1}100%{transform:none;opacity:1;filter:none}}
 
 .tapa{position:relative;width:var(--col);height:100%;margin:0 auto;display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top) + 18px) var(--m) calc(env(safe-area-inset-bottom) + 22px)}
@@ -380,7 +404,7 @@ html.cerrado #portada{opacity:0}
 /* ══════════ menos movimiento: todo quieto y a la vista ══════════ */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .golpes,.destello{display:none}
+  .golpes,.destello,.flashazo,.chispas{display:none}
   .js .ap,.js .tit .ln>i{opacity:1;transform:none}
   .js .ahi{clip-path:none}
   .js #calendario td.elDia path,.js .percha path{stroke-dashoffset:0}
@@ -402,6 +426,8 @@ html.cerrado #portada{opacity:0}
     <span style="--s:16">secreto?</span>
   </div>
   <div class="destello" aria-hidden="true"></div>
+  <div class="flashazo" aria-hidden="true"></div>
+  <div class="chispas" id="chispas" aria-hidden="true"></div>
   <div class="toca">
     <button id="empezar" type="button">
       <span class="aro"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2l17 10L4 22z"/></svg></span>
@@ -818,7 +844,7 @@ function ajustar(){
   });
 }
 ajustar();
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { ajustar(); for (const k in MASCARA) delete MASCARA[k]; const c = $('#haces2'); if (c && c.width) tramar(c, luz50, 1.9); });
 let anchoAntes = innerWidth;
 addEventListener('resize', () => { if (innerWidth !== anchoAntes){ anchoAntes = innerWidth; ajustar(); pintarTramas(true); } });
 
@@ -875,7 +901,68 @@ function luzHaces(x, y, w, h){
   }
   return Math.min(.9, v + Math.pow(y / h, 5) * .5 + .012);
 }
-const TRAMAS = [['#ruido', luzRuido, 2.2], ['#bola', luzBola, 2.3], ['#haces', luzHaces, 2.4], ['#haces2', luzHaces, 2.4]];
+/* ── los dibujos de Gonzalo (21/11/2026: "otro diseño para las dos
+   fotos, algo copado que genere impacto") ── */
+
+/* LA ENTRADA: fuegos artificiales. Uno grande al medio y dos chicos
+   arriba; cada uno con sus rayos que caen un poco, como cae la pólvora. */
+const FUEGOS = [[.5, .44, .46, 34, 1], [.17, .17, .2, 18, 2], [.85, .24, .24, 20, 3]];
+function luzFuegos(x, y, w, h){
+  let v = .012;
+  const m = Math.min(w, h);
+  for (const [fx, fy, fr, K, s] of FUEGOS){
+    const cx = w * fx, cy = h * fy, R = m * fr;
+    let dx = x - cx, dy = y - cy;
+    const d0 = Math.hypot(dx, dy) / R;
+    if (d0 > 1.25) continue;
+    dy -= R * .22 * d0 * d0;                                  /* la caída */
+    const d = Math.hypot(dx, dy) / R;
+    if (d < .1){ v += .5 * (1 - d / .1); continue; }          /* el corazón */
+    const a = (Math.atan2(dy, dx) / (Math.PI * 2) + 1) % 1 * K, i = Math.round(a);
+    const desv = Math.abs(a - i) + (picado(i, s) - .5) * .18;
+    const largo = .62 + picado(i, s + 7) * .45;
+    if (d > largo) continue;
+    const ancho = .07 + .1 * d;
+    if (Math.abs(desv) < ancho){
+      const punta = d > largo - .1 ? 1 : .45 + .4 * d / largo;
+      v += punta * (1 - Math.abs(desv) / ancho);
+    }
+  }
+  return Math.min(.95, v);
+}
+
+/* LA PLAYLIST: un ecualizador de puntos, espejado sobre una línea. */
+function luzEq(x, y, w, h){
+  const N = 19, col = x / w * N, i = Math.floor(col), f = col - i;
+  if (f < .18 || f > .82) return .01;
+  const alto = .18 + .72 * Math.abs(Math.sin(i * 1.7 + 1.3) * .6 + Math.sin(i * .53) * .4) * (.55 + picado(i, 4) * .45);
+  const dy = Math.abs(y - h * .52) / (h * .46);
+  if (dy < alto) return .55 + .4 * (1 - dy / alto);
+  if (dy < alto + .05) return .9;                               /* la tapita */
+  return .012;
+}
+
+/* EL CIERRE: un "50" enorme hecho de puntos, con su halo. La máscara
+   se arma una vez por tamaño, con la tipografía de los títulos. */
+const MASCARA = {};
+function luz50(x, y, w, h){
+  const k = w + 'x' + h;
+  if (!MASCARA[k]){
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const c = cv.getContext('2d'), fs = Math.min(h * .95, w * .62);
+    c.font = '900 ' + fs + 'px Montserrat, "Arial Black", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillStyle = '#fff'; c.fillText('50', w / 2, h * .53);
+    const letra = c.getImageData(0, 0, w, h).data;
+    c.clearRect(0, 0, w, h); c.filter = 'blur(' + Math.round(fs * .09) + 'px)'; c.fillText('50', w / 2, h * .53);
+    const halo = c.getImageData(0, 0, w, h).data;
+    MASCARA[k] = { letra, halo };
+  }
+  const M = MASCARA[k], o = (Math.floor(y) * w + Math.floor(x)) * 4 + 3;
+  if (M.letra[o] > 128) return .93;
+  return .012 + Math.pow(M.halo[o] / 255, 1.6) * .3;
+}
+
+const TRAMAS = [['#ruido', luzFuegos, 2.1], ['#bola', luzBola, 2.3], ['#haces', luzEq, 2.4], ['#haces2', luz50, 1.9]];
 const pintadas = new Set();
 function pintarTramas(deNuevo){
   TRAMAS.forEach(([q, luz, paso]) => { const cv = $(q); if (cv && (pintadas.has(q) || q === '#ruido') && (deNuevo || !cv.width || q === '#ruido')) tramar(cv, luz, paso); });
@@ -1200,7 +1287,14 @@ function despertar(){
   if (!sobre){ despertar(); return; }
   raiz.classList.add('cerrado');
   scrollTo(0, 0);
-  tramar($('#ruido'), luzRuido, 2.2);
+  tramar($('#ruido'), luzFuegos, 2.1);
+  /* las chispas de los flashes, en lugares fijos */
+  const ch = $('#chispas');
+  if (ch){ const rr = azar(SEMILLA + 50); let h = '';
+    for (let k = 0; k < 18; k++)
+      h += '<i class="' + (k % 4 === 3 ? 'oro' : '') + '" style="left:' + (6 + rr() * 88).toFixed(1) + '%;top:' + (5 + rr() * 72).toFixed(1) +
+           '%;--t:' + Math.round(40 + rr() * 60) + 'px;--d:' + (.25 + k * .16 + rr() * .12).toFixed(2) + 's"></i>';
+    ch.innerHTML = h; }
   const b0 = $('.goo .b');
   if (b0) b0.addEventListener('animationend', () => $('.goo').classList.remove('liquido'));
   let abierto = false, arranco = false;
