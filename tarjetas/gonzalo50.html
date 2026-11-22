@@ -443,18 +443,20 @@ html.cerrado #portada{opacity:0}
 /* las dos fotos de hoy: dos polaroid que se pisan, una para cada lado */
 #dress{padding-bottom:calc(var(--u)*8)}
 #hoy{padding-top:calc(var(--u)*8)}
-.hoy-fotos{position:relative;height:calc(var(--u)*112);margin-top:calc(var(--u)*8)}
-.foto-hoy{width:52%}
-.foto-hoy img{width:100%;height:auto}
-.foto-hoy figcaption{font-size:calc(var(--u)*7.5);padding:calc(var(--u)*2) 0 calc(var(--u)*3)}
-.foto-hoy.uno{left:-1%;top:0;transform:rotate(-5deg)}
-.foto-hoy.dos{right:-1%;top:calc(var(--u)*30);transform:rotate(5deg)}
+.hoy-fotos{position:relative;height:calc(var(--u)*110);margin-top:calc(var(--u)*8)}
+/* Gon hoy: un STICKER recortado con su borde blanco, como el de bebé
+   ("hacela como el sticker; que quede prolijo"), y la de las velitas en
+   polaroid, sin epígrafe ("el ¡a soplar! sacalo, no pongas nada"). */
+.foto-hoy img{display:block;width:100%;height:auto}
+.sticker-hoy{position:absolute;margin:0;pointer-events:none;filter:drop-shadow(0 10px 18px rgba(13,24,54,.35))}
+.foto-hoy.uno{left:-2%;top:0;width:60%;transform:rotate(-4deg)}
+.foto-hoy.dos{right:-1%;top:calc(var(--u)*44);width:44%;padding-bottom:calc(var(--u)*9);transform:rotate(6deg)}
 .js .foto-hoy{opacity:0}
-.js .foto-hoy.uno{transform:translateX(-30%) rotate(-14deg)}
+.js .foto-hoy.uno{transform:translateX(-30%) rotate(-14deg) scale(.9)}
 .js .foto-hoy.dos{transform:translateX(30%) rotate(14deg)}
 .js .foto-hoy.entro{opacity:1;transition:opacity .6s ease,transform 1s cubic-bezier(.3,1.4,.5,1)}
-.js .foto-hoy.uno.entro{transform:rotate(-5deg)}
-.js .foto-hoy.dos.entro{transform:rotate(5deg);transition-delay:.18s}
+.js .foto-hoy.uno.entro{transform:rotate(-4deg)}
+.js .foto-hoy.dos.entro{transform:rotate(6deg);transition-delay:.18s}
 .final.con-foto{height:calc(var(--u)*156)}
 .final.con-foto canvas{height:calc(var(--u)*86)}
 .foto-final{left:50%;top:calc(var(--u)*62);width:54%;transform:translateX(-46%) rotate(3deg)}
@@ -662,8 +664,8 @@ html.cerrado #portada{opacity:0}
       <span class="ln" style="--f:25;--i:1"><i>sigue</i></span>
     </h2>
     <div class="hoy-fotos">
-      <figure class="polaroid foto-hoy uno" id="fotoHoy1" hidden><div class="marco-foto"></div><figcaption>el de siempre</figcaption></figure>
-      <figure class="polaroid foto-hoy dos" id="fotoHoy2" hidden><div class="marco-foto"></div><figcaption>¡a soplar!</figcaption></figure>
+      <figure class="sticker-hoy foto-hoy uno" id="fotoHoy1" hidden><div class="marco-foto"></div></figure>
+      <figure class="polaroid foto-hoy dos" id="fotoHoy2" hidden><div class="marco-foto"></div></figure>
     </div>
   </section>
 
@@ -672,10 +674,10 @@ html.cerrado #portada{opacity:0}
        (22/11/2026: "Esta es la música. Poné un reproductor copado, acorde
        a la invitación. Sacá el apartado de agregar música.") -->
   <section class="seccion negra" id="musica" hidden>
-    <p class="mini ap">La banda sonora</p>
+    <p class="mini ap">La banda sonora · Sebastián</p>
     <h2 class="tit" style="margin-top:14px">
-      <span class="ln" style="--f:21;--i:0"><i>Mujer</i></span>
-      <span class="ln" style="--f:17;--i:1"><i>cósmica</i></span>
+      <span class="ln" style="--f:19;--i:0"><i>Movidito,</i></span>
+      <span class="ln" style="--f:19;--i:1"><i>movidito</i></span>
     </h2>
     <div class="player ap" id="player">
       <div class="tocadiscos">
@@ -847,9 +849,10 @@ const CONFIG = {
   fotosHoy: ["fotos/hoy1.webp", "fotos/hoy2.webp"],   // él hoy, con la torta (22/11/2026)
   plan: [],
   trivia: [],
-  /* "Mujer Cósmica", la que mandó el dueño el 22/11/2026 (83 s). `entra`:
-     al tocar "Entrar a la fiesta" salta ahí, donde la canción levanta. */
-  cancion: { nombre: "Mujer Cósmica", archivos: ["musica.m4a", "musica.ogg"], entra: 2.1 },
+  /* "Movidito, movidito" de Sebastián, sacada del video que mandó el dueño
+     el 22/11/2026 (3 min). Reemplaza a "Mujer Cósmica". `entra`: al tocar
+     "Entrar a la fiesta" salta ahí, donde arranca la banda entera. */
+  cancion: { nombre: "Movidito, movidito", archivos: ["musica.m4a", "musica.ogg"], entra: 2 },
   logo: "",
   /* La frase del regalo es de la familia, casi literal. */
   regaloTexto: "El mejor regalo es tu presencia, pero si deseas hacerle un obsequio a Gon, agradecemos sea en efectivo.",
