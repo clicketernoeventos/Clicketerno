@@ -397,6 +397,9 @@ html.cerrado #portada{opacity:0}
 .sobre-regalo svg{width:100%;height:auto;fill:none;stroke:var(--oro,var(--acento));stroke-width:2.4;stroke-linejoin:round}
 .sobre-regalo .cuerpo{color:var(--hueso-2)}
 .alias-caja b{display:block;font-family:var(--titulos);font-weight:900;font-size:22px;margin:6px 0 4px;word-break:break-all}
+/* el aviso de la sorpresa: que se lea antes de copiar el alias */
+.nota-alias{margin:12px 0 2px;padding:10px 12px;border-left:3px solid var(--oro,var(--acento));background:rgba(255,255,255,.06);
+  font-size:14.5px;line-height:1.45;color:var(--hueso)}
 .alias-caja .pildora{margin-top:14px}
 
 /* ══════════ 11 · el cierre ══════════ */
@@ -700,6 +703,7 @@ html.cerrado #portada{opacity:0}
     <div class="alias-caja ap" id="aliasCaja">
       <p class="mini">Alias para transferir</p>
       <b id="alias"></b>
+      <p class="nota-alias" id="aliasNota"></p>
       <p class="mini" id="titular"></p>
       <button class="pildora" type="button" id="copiar"><span id="copiarTxt">Copiar alias</span></button>
     </div>
@@ -758,7 +762,9 @@ const CONFIG = {
   logo: "",
   /* La frase del regalo es de la familia, casi literal. */
   regaloTexto: "El mejor regalo es tu presencia, pero si deseas hacerle un obsequio a Gon, agradecemos sea en efectivo.",
-  alias: "",                       // HUECO · "PENDIENTE"
+  alias: "Pmachaca2050",           // lo mandó el dueño el 22/11/2026, tal cual
+  /* Para que la transferencia no le avise a Gon antes de tiempo. */
+  aliasNota: "Si preferís hacerle el regalo por transferencia, hacela el mismo día del evento, así no sospecha nada de la fiesta sorpresa.",
   titular: "",
   tema: "azul",
   evento: "",
@@ -854,6 +860,7 @@ const picado = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7 + SEMILLA % 
   if (CONFIG.alias){
     $('#alias').textContent = CONFIG.alias;
     pon('#titular', CONFIG.titular ? 'A nombre de ' + CONFIG.titular : '');
+    pon('#aliasNota', CONFIG.aliasNota);
     $('#copiar').addEventListener('click', async () => {
       try{ await navigator.clipboard.writeText(CONFIG.alias); $('#copiarTxt').textContent = 'Copiado'; }
       catch(e){ $('#copiarTxt').textContent = 'Mantené apretado el alias para copiarlo'; }
