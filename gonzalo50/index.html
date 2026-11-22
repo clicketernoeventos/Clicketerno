@@ -440,6 +440,21 @@ html.cerrado #portada{opacity:0}
 .js .tit.entro ~ .ahi{clip-path:inset(-20% -10% -20% -10%);transition:clip-path 1s .75s cubic-bezier(.6,0,.2,1)}
 .final{position:relative;margin:calc(var(--u)*8) calc(var(--m) * -1) 0;height:calc(var(--u)*92);overflow:hidden}
 .final canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+/* las dos fotos de hoy: dos polaroid que se pisan, una para cada lado */
+#dress{padding-bottom:calc(var(--u)*8)}
+#hoy{padding-top:calc(var(--u)*8)}
+.hoy-fotos{position:relative;height:calc(var(--u)*112);margin-top:calc(var(--u)*8)}
+.foto-hoy{width:52%}
+.foto-hoy img{width:100%;height:auto}
+.foto-hoy figcaption{font-size:calc(var(--u)*7.5);padding:calc(var(--u)*2) 0 calc(var(--u)*3)}
+.foto-hoy.uno{left:-1%;top:0;transform:rotate(-5deg)}
+.foto-hoy.dos{right:-1%;top:calc(var(--u)*30);transform:rotate(5deg)}
+.js .foto-hoy{opacity:0}
+.js .foto-hoy.uno{transform:translateX(-30%) rotate(-14deg)}
+.js .foto-hoy.dos{transform:translateX(30%) rotate(14deg)}
+.js .foto-hoy.entro{opacity:1;transition:opacity .6s ease,transform 1s cubic-bezier(.3,1.4,.5,1)}
+.js .foto-hoy.uno.entro{transform:rotate(-5deg)}
+.js .foto-hoy.dos.entro{transform:rotate(5deg);transition-delay:.18s}
 .final.con-foto{height:calc(var(--u)*156)}
 .final.con-foto canvas{height:calc(var(--u)*86)}
 .foto-final{left:50%;top:calc(var(--u)*62);width:54%;transform:translateX(-46%) rotate(3deg)}
@@ -635,6 +650,23 @@ html.cerrado #portada{opacity:0}
     <p class="cuerpo ap" id="dressTexto"></p>
   </section>
 
+  <!-- ══════════ 7b · y así sigue: Gon hoy, con la torta ══════════
+       (22/11/2026: "hay que agregar esas fotos, pero solo de él con la
+       torta, sin nadie al lado". En la de la mesa había dos personas
+       pegadas a él: no se pueden cortar, así que la foto lleva un FOCO
+       sobre él y lo de alrededor se apaga en azul noche.) -->
+  <section class="seccion hueso" id="hoy">
+    <p class="mini ap">Medio siglo después</p>
+    <h2 class="tit" style="margin-top:14px">
+      <span class="ln" style="--f:21;--i:0"><i>Y así</i></span>
+      <span class="ln" style="--f:25;--i:1"><i>sigue</i></span>
+    </h2>
+    <div class="hoy-fotos">
+      <figure class="polaroid foto-hoy uno" id="fotoHoy1" hidden><div class="marco-foto"></div><figcaption>el de siempre</figcaption></figure>
+      <figure class="polaroid foto-hoy dos" id="fotoHoy2" hidden><div class="marco-foto"></div><figcaption>¡a soplar!</figcaption></figure>
+    </div>
+  </section>
+
   <!-- ══════════ 8 · la playlist ══════════ -->
   <!-- ══════════ 8 · la canción: un tocadiscos de plata ══════════
        (22/11/2026: "Esta es la música. Poné un reproductor copado, acorde
@@ -721,13 +753,6 @@ html.cerrado #portada{opacity:0}
         </select>
       </div>
 
-      <div class="campo">
-        <label for="fComida">¿Algún requerimiento en tu comida?</label>
-        <select id="fComida" name="Comida"></select>
-        <input id="fComidaOtro" type="text" placeholder="Contanos cuál"
-               style="margin-top:10px;display:none" aria-label="Qué comida">
-      </div>
-
       <div id="acomp"></div>
 
 
@@ -741,12 +766,11 @@ html.cerrado #portada{opacity:0}
       <details class="aviso-datos">
         <summary>Qué pasa con lo que escribís acá</summary>
         <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
-        son, armar las mesas, pasarle al salón las comidas especiales y darle a
+        son, armar las mesas y darle a
         <span class="elNom"></span> los mensajes que le dejen.
         La lista la tiene <b>la familia de <span class="elNom"></span></b>, que es quien organiza;
         Click Eterno solo la guarda por su cuenta y orden.
-        Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
-        comida— y la lista <b>se borra cuando pasa la fiesta</b>.
+        Contestar es <b>voluntario</b> y la lista <b>se borra cuando pasa la fiesta</b>.
         Si querés que borremos lo tuyo antes, escribinos a
         <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
       </details>
@@ -820,6 +844,7 @@ const CONFIG = {
   bebe: "fotos/bebe.webp",         // Gon de bebé, recortado de su invitación
   fotoTapa: "fotos/tapa.webp",     // la del galerazo, en la entrada (21/11/2026)
   fotoFinal: "fotos/torta.webp",   // la de la torta, en el cierre (21/11/2026)
+  fotosHoy: ["fotos/hoy1.webp", "fotos/hoy2.webp"],   // él hoy, con la torta (22/11/2026)
   plan: [],
   trivia: [],
   /* "Mujer Cósmica", la que mandó el dueño el 22/11/2026 (83 s). `entra`:
@@ -1585,6 +1610,16 @@ function polaroid(fig, src, alt, listo){
   im.onerror = () => fig.remove();
   im.src = src;
 }
+function alVer(fig, sonido){
+  if (menosMovimiento || !('IntersectionObserver' in window)){ fig.classList.add('entro'); return; }
+  const ojo = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ fig.classList.add('entro'); ojo.disconnect(); if (sonido) SONIDO.golpe(); }
+  }), {threshold:.25});
+  ojo.observe(fig);
+}
+polaroid($('#fotoHoy1'), CONFIG.fotosHoy && CONFIG.fotosHoy[0], CONFIG.quien + ' hoy, con su torta', () => alVer($('#fotoHoy1'), true));
+polaroid($('#fotoHoy2'), CONFIG.fotosHoy && CONFIG.fotosHoy[1], CONFIG.quien + ' soplando las velitas', () => alVer($('#fotoHoy2')));
+(function(){ const s = $('#hoy'); if (s && !(CONFIG.fotosHoy && CONFIG.fotosHoy.length)) s.remove(); })();
 polaroid($('#fotoTapa'), CONFIG.fotoTapa, CONFIG.quien + ' de bebé, con un galerazo');
 polaroid($('#fotoFinal'), CONFIG.fotoFinal, CONFIG.quien + ' de bebé, frente a su torta', () => {
   const fig = $('#fotoFinal'); fig.parentElement.classList.add('con-foto');
@@ -1763,11 +1798,6 @@ polaroid($('#fotoFinal'), CONFIG.fotoFinal, CONFIG.quien + ' de bebé, frente a 
                '<div class="campo"><label for="fInv' + k + '">Nombre y apellido</label>' +
                  '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
                  ' value="' + esc(tenia[nom] || '') + '"></div>' +
-               '<div class="campo"><label for="fCom' + k + '">¿Algún requerimiento en su comida?</label>' +
-                 '<select id="fCom' + k + '" name="' + com + '">' + opciones() + '</select>' +
-                 '<input id="fCom' + k + 'Otro" type="text" placeholder="Contanos cuál"' +
-                 ' style="margin-top:10px;display:none" aria-label="Qué comida">' +
-               '</div>' +
              '</div>';
       }
       caja.innerHTML = h;
