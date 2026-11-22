@@ -207,6 +207,9 @@ html.cerrado #portada{opacity:0}
 .goo{display:grid;font-family:var(--titulos);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:.9;
   background:#000;margin:0 calc(var(--m) * -1);padding:.1em var(--m) .06em}
 .goo span{grid-area:1/1;align-self:end;white-space:nowrap}
+/* las letras de la entrada NO se tocan: agrandadas e invisibles mientras
+   saltan, tapaban el botón de "Entrar a la fiesta" y el toque no entraba */
+.goo,.goo span{pointer-events:none}
 .goo .a{font-size:calc(var(--u) * var(--goo,31))}
 .goo .b{font-size:calc(var(--u) * 20.5);opacity:0}
 /* el nombre se APLASTA y salta la otra palabra, y vuelve. Pasa UNA vez.
@@ -353,7 +356,33 @@ html.cerrado #portada{opacity:0}
 .marco{position:relative;margin-top:calc(var(--u)*9);border:1.5px solid var(--hueso);border-radius:calc(var(--u)*8);height:calc(var(--u)*84);overflow:hidden}
 .marco canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .marco .mas{right:calc(var(--u)*6);top:calc(var(--u)*6)}
-#playlist .pildora{width:100%;margin-top:14px}
+/* ══════════ el tocadiscos ══════════
+   El disco gira SOLO mientras suena (como en lucia15) y el brazo se apoya
+   cuando arranca; el anillo de afuera es el avance de la canción. */
+.player{margin-top:calc(var(--u)*9)}
+.tocadiscos{position:relative;width:calc(var(--u)*78);aspect-ratio:1;margin:0 auto}
+.tocadiscos svg{position:absolute;pointer-events:none}
+.anillo{inset:0;width:100%;height:100%}
+.anillo .pista{fill:none;stroke:#2A3557;stroke-width:2}
+.anillo .avance{fill:none;stroke:var(--acento);stroke-width:3;stroke-linecap:round;stroke-dasharray:1000;stroke-dashoffset:1000;
+  filter:drop-shadow(0 0 4px rgba(220,226,236,.6))}
+.disco,.brillo{inset:5%;width:90%;height:90%}
+.disco{filter:drop-shadow(0 14px 30px rgba(0,0,0,.55))}
+.disco .etiqueta{font:900 26px var(--titulos);fill:#0D1836;letter-spacing:-1px}
+.player.suena .disco{animation:gira 2.4s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.brazo{right:-6%;top:-4%;width:28%;height:auto;transform-origin:72% 11%;transform:rotate(-26deg);transition:transform .7s cubic-bezier(.3,1.3,.5,1)}
+.player.suena .brazo{transform:rotate(0)}
+.tiempos{display:flex;justify-content:space-between;width:calc(var(--u)*78);margin:14px auto 0;font-size:12px;letter-spacing:.14em;color:var(--gris-n);font-variant-numeric:tabular-nums}
+.mandos{display:flex;justify-content:center;align-items:center;gap:calc(var(--u)*7);margin-top:10px}
+.mandos button{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:var(--hueso);border:1.5px solid #3A466B}
+.mandos button svg{width:24px;height:24px}
+.mandos .play{width:76px;height:76px;border:0;color:#0D1836;
+  background:linear-gradient(145deg,#FFFFFF 0%,#D9DDE3 40%,#9EA3AB 55%,#E8EBEF 75%,#B9BEC6 100%);box-shadow:0 0 0 4px #0D1836,0 0 0 5.5px #D9B45A,0 10px 24px rgba(0,0,0,.45)}
+.mandos .play svg{width:30px;height:30px}
+.mandos .play .i-pausa,.player.suena .mandos .play .i-play{display:none}
+.player.suena .mandos .play .i-pausa{display:block}
+@media (prefers-reduced-motion: reduce){ .player.suena .disco{animation:none} }
 #playlist .cuerpo{margin-top:18px;color:var(--hueso-2)}
 
 /* ══════════ 9 · la confirmación ══════════ */
@@ -607,20 +636,59 @@ html.cerrado #portada{opacity:0}
   </section>
 
   <!-- ══════════ 8 · la playlist ══════════ -->
-  <section class="seccion negra" id="playlist">
+  <!-- ══════════ 8 · la canción: un tocadiscos de plata ══════════
+       (22/11/2026: "Esta es la música. Poné un reproductor copado, acorde
+       a la invitación. Sacá el apartado de agregar música.") -->
+  <section class="seccion negra" id="musica" hidden>
     <p class="mini ap">La banda sonora</p>
     <h2 class="tit" style="margin-top:14px">
-      <span class="ln" style="--f:15;--i:0"><i>La música</i></span>
-      <span class="ln" style="--f:13;--i:1"><i>la ponés vos</i></span>
+      <span class="ln" style="--f:21;--i:0"><i>Mujer</i></span>
+      <span class="ln" style="--f:17;--i:1"><i>cósmica</i></span>
     </h2>
-    <div class="marco ap">
-      <canvas id="haces" aria-hidden="true"></canvas>
-      <span class="mas" aria-hidden="true"></span>
+    <div class="player ap" id="player">
+      <div class="tocadiscos">
+        <svg class="anillo" viewBox="0 0 220 220" aria-hidden="true">
+          <circle cx="110" cy="110" r="106" class="pista"/>
+          <circle cx="110" cy="110" r="106" class="avance" id="rAvance" pathLength="1000" transform="rotate(-90 110 110)"/>
+        </svg>
+        <svg class="disco" viewBox="0 0 200 200" aria-hidden="true">
+          <defs>
+            <radialGradient id="dVinilo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1A2340"/><stop offset=".7" stop-color="#0A0F1F"/><stop offset="1" stop-color="#04060C"/></radialGradient>
+            <linearGradient id="dPlata" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#C9CFDA"/><stop offset=".55" stop-color="#8E96A6"/><stop offset="1" stop-color="#E8ECF3"/></linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="98" fill="url(#dVinilo)"/>
+          <g id="surcos" fill="none" stroke="#DCE2EC" stroke-opacity=".07"></g>
+          <circle cx="100" cy="100" r="36" fill="url(#dPlata)"/>
+          <circle cx="100" cy="100" r="36" fill="none" stroke="#0D1836" stroke-width="1.2"/>
+          <text x="100" y="111" text-anchor="middle" class="etiqueta">50</text>
+          <circle cx="100" cy="100" r="3.2" fill="#D9B45A"/>
+        </svg>
+        <!-- el brillo NO gira con el disco: es la luz del cuarto -->
+        <svg class="brillo" viewBox="0 0 200 200" aria-hidden="true">
+          <path d="M100 100L40 14A98 98 0 0 1 78 4Z" fill="#fff" opacity=".07"/>
+          <path d="M100 100L160 186A98 98 0 0 1 122 196Z" fill="#fff" opacity=".05"/>
+        </svg>
+        <svg class="brazo" viewBox="0 0 80 160" aria-hidden="true">
+          <circle cx="58" cy="18" r="13" fill="#0D1836" stroke="#C9CFDA" stroke-width="3"/>
+          <circle cx="58" cy="18" r="4" fill="#D9B45A"/>
+          <path d="M58 18L58 104L36 138" fill="none" stroke="#C9CFDA" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="24" y="132" width="22" height="16" rx="3" transform="rotate(34 35 140)" fill="#E8ECF3"/>
+        </svg>
+      </div>
+      <div class="tiempos"><span id="tAhora">0:00</span><span id="tTotal"></span></div>
+      <div class="mandos">
+        <button type="button" id="rAtras" aria-label="Diez segundos atrás">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><text x="12" y="15.5" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" stroke="none">10</text></svg>
+        </button>
+        <button type="button" class="play" id="rPlay" aria-label="Escuchar la música">
+          <svg class="i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5l11 6.5-11 6.5z"/></svg>
+          <svg class="i-pausa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg>
+        </button>
+        <button type="button" id="rAde" aria-label="Diez segundos adelante">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v4h-4"/><text x="12" y="15.5" text-anchor="middle" font-size="7" font-weight="700" fill="currentColor" stroke="none">10</text></svg>
+        </button>
+      </div>
     </div>
-    <p class="cuerpo ap">Decinos qué tema no puede faltar y lo sumamos a la lista del festejo.</p>
-    <button class="pildora llena-h ap" type="button" id="irTema">Sumá tu canción
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 1v13M3 9l5 5 5-5"/></svg>
-    </button>
   </section>
 
   <!-- ══════════ 9 · la confirmación ══════════ -->
@@ -662,10 +730,6 @@ html.cerrado #portada{opacity:0}
 
       <div id="acomp"></div>
 
-      <div class="campo">
-        <label for="fTema">Un tema que no puede faltar</label>
-        <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
-      </div>
 
       <!-- El mensaje sigue a la vista aunque contesten que no. -->
       <div class="campo">
@@ -682,7 +746,7 @@ html.cerrado #portada{opacity:0}
         La lista la tiene <b>la familia de <span class="elNom"></span></b>, que es quien organiza;
         Click Eterno solo la guarda por su cuenta y orden.
         Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
-        comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
+        comida— y la lista <b>se borra cuando pasa la fiesta</b>.
         Si querés que borremos lo tuyo antes, escribinos a
         <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
       </details>
@@ -758,7 +822,9 @@ const CONFIG = {
   fotoFinal: "fotos/torta.webp",   // la de la torta, en el cierre (21/11/2026)
   plan: [],
   trivia: [],
-  cancion: null,                   // no mandaron canción: suena la base de pista
+  /* "Mujer Cósmica", la que mandó el dueño el 22/11/2026 (83 s). `entra`:
+     al tocar "Entrar a la fiesta" salta ahí, donde la canción levanta. */
+  cancion: { nombre: "Mujer Cósmica", archivos: ["musica.m4a", "musica.ogg"], entra: 2.1 },
   logo: "",
   /* La frase del regalo es de la familia, casi literal. */
   regaloTexto: "El mejor regalo es tu presencia, pero si deseas hacerle un obsequio a Gon, agradecemos sea en efectivo.",
@@ -1294,6 +1360,16 @@ const SONIDO = (function(){
   const ahora = () => A.currentTime + .04;
   return {
     prender,
+    /* para el tocadiscos: tocar abre todo (aunque lo hayan silenciado con
+       el botón de abajo) y pausar frena solo la canción */
+    tocarCancion(){ if (!tema) return; prender(); if (!A) { tocar(); return; }
+      if (A.state === 'suspended') A.resume();
+      if (!activo){ activo = true; master.gain.setTargetAtTime(.66, A.currentTime, .03); }
+      filtro.frequency.cancelScheduledValues(A.currentTime); filtro.frequency.setTargetAtTime(17000, A.currentTime, .05);
+      musica.gain.cancelScheduledValues(A.currentTime); musica.gain.setTargetAtTime(.9, A.currentTime, .05);
+      tocar(); },
+    pausarCancion(){ if (!tema) return; tema.pause(); sonando = false; rotulo(); },
+    cancion: () => tema,
     intro(){ if (!A) return; const t = ahora(); intro(t); if (tema){ tema.currentTime = 0; tocar(); } else musicaDesde(t + 2.55); },
     entrar(){ if (!A) return; const t = ahora();
       /* la canción salta a medio segundo antes de donde levanta: el
@@ -1470,6 +1546,33 @@ function despertar(){
     if (!m.width) return;
     aca.style.left = (p.right - m.left + 10) + 'px'; aca.style.top = (p.top - m.top - 34) + 'px'; };
   poner(); addEventListener('resize', poner); addEventListener('load', poner);
+})();
+
+/* ══════════ el tocadiscos ══════════ */
+(function(){
+  const sec = $('#musica'), a = SONIDO.cancion();
+  if (!sec) return;
+  if (!a){ sec.remove(); return; }
+  sec.hidden = false;
+  const pl = $('#player'), boton = $('#rPlay'), av = $('#rAvance'), ahora = $('#tAhora'), total = $('#tTotal');
+  /* los surcos del vinilo, con la semilla de la fecha */
+  const g = $('#surcos'); if (g){ const rr = azar(SEMILLA + 7); let h = '';
+    for (let rad = 40; rad < 96; rad += 1.6 + rr() * 1.6) h += '<circle cx="100" cy="100" r="' + rad.toFixed(1) + '" stroke-width="' + (.4 + rr() * .6).toFixed(2) + '"/>';
+    g.innerHTML = h; }
+  const mmss = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const pintar = () => {
+    const d = a.duration || 0, c = a.currentTime || 0, va = !a.paused && !a.ended;
+    pl.classList.toggle('suena', va);
+    boton.setAttribute('aria-label', va ? 'Pausar la música' : 'Escuchar la música');
+    ahora.textContent = mmss(c); if (d && isFinite(d)) total.textContent = mmss(d);
+    av.style.strokeDashoffset = d ? String(1000 * (1 - c / d)) : '1000';
+  };
+  ['play', 'pause', 'timeupdate', 'ended', 'loadedmetadata', 'durationchange', 'seeked'].forEach(e => a.addEventListener(e, pintar));
+  boton.addEventListener('click', () => { if (a.paused || a.ended) SONIDO.tocarCancion(); else SONIDO.pausarCancion(); });
+  const mover = s => { try{ const d = a.duration || 0; a.currentTime = Math.max(0, Math.min(d ? d - .3 : 0, a.currentTime + s)); }catch(e){} pintar(); };
+  $('#rAtras').addEventListener('click', () => mover(-10));
+  $('#rAde').addEventListener('click', () => mover(10));
+  pintar();
 })();
 
 /* ══════════ las dos polaroid ══════════
