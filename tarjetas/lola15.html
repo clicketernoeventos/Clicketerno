@@ -134,6 +134,9 @@ html.cerrado #portada{opacity:0}
 .goo{display:grid;font-family:var(--titulos);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:.9;
   background:#000;margin:0 calc(var(--m) * -1);padding:.1em var(--m) .06em}
 .goo span{grid-area:1/1;align-self:end;white-space:nowrap}
+/* las letras de la entrada NO se tocan: agrandadas e invisibles mientras
+   saltan, tapaban el botón de "Entrar a la fiesta" y el toque no entraba */
+.goo,.goo span{pointer-events:none}
 .goo .a{font-size:calc(var(--u) * 31)}
 .goo .b{font-size:calc(var(--u) * 20.5);opacity:0}
 /* el nombre se APLASTA y salta la otra palabra, y vuelve. Pasa UNA vez.
