@@ -2371,8 +2371,7 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
 
 ## Pendiente, decidido y no hecho
 
-- **gonzalo50 (21/11/2026)**, fiesta sorpresa: falta el **titular** del
-  alias (el alias ya está), **hasta cuándo** se confirma, y
+- **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
   ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
   7/12/2026.
 - **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
