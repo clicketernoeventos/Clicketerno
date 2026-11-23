@@ -457,6 +457,23 @@ html.cerrado #portada{opacity:0}
 .js .foto-hoy.entro{opacity:1;transition:opacity .6s ease,transform 1s cubic-bezier(.3,1.4,.5,1)}
 .js .foto-hoy.uno.entro{transform:rotate(-4deg)}
 .js .foto-hoy.dos.entro{transform:rotate(6deg);transition-delay:.18s}
+/* ══════════ la galería: una vida en polaroid ══════════
+   Una por renglón, alternando de lado, torcidas, pisándose un poco, con
+   un hilo punteado detrás que las une y un pedazo de cinta plateada que
+   sostiene cada una. Entran una vez al bajar. */
+.galeria{position:relative;margin-top:calc(var(--u)*10);padding:calc(var(--u)*4) 0 calc(var(--u)*6)}
+.galeria::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px dashed #B9C1D1;pointer-events:none}
+.galeria .polaroid{position:relative;display:block;width:66%;padding:9px 9px calc(var(--u)*10);transform:rotate(var(--giro))}
+.galeria .polaroid img{width:100%;height:auto}
+.galeria .polaroid:nth-child(even){margin-left:auto}
+.galeria .polaroid + .polaroid{margin-top:calc(var(--u)*-8)}
+.galeria .polaroid:nth-child(3n){z-index:2}
+.cinta-papel{position:absolute;left:50%;top:-12px;width:38%;height:24px;transform:translateX(-50%) rotate(-3deg);pointer-events:none;
+  background:linear-gradient(90deg,rgba(201,207,218,.85),rgba(240,243,248,.9) 50%,rgba(201,207,218,.85));
+  box-shadow:0 1px 3px rgba(13,24,54,.25);clip-path:polygon(2% 0,98% 4%,100% 50%,97% 100%,3% 96%,0 55%)}
+.galeria .polaroid:nth-child(even) .cinta-papel{transform:translateX(-50%) rotate(4deg)}
+.js .foto-vida{opacity:0;transform:translateY(16%) rotate(calc(var(--giro) * 3)) scale(.92)}
+.js .foto-vida.entro{opacity:1;transform:rotate(var(--giro));transition:opacity .6s ease,transform .95s cubic-bezier(.3,1.35,.5,1)}
 .final.con-foto{height:calc(var(--u)*156)}
 .final.con-foto canvas{height:calc(var(--u)*86)}
 .foto-final{left:50%;top:calc(var(--u)*62);width:54%;transform:translateX(-46%) rotate(3deg)}
@@ -658,15 +675,12 @@ html.cerrado #portada{opacity:0}
        pegadas a él: no se pueden cortar, así que la foto lleva un FOCO
        sobre él y lo de alrededor se apaga en azul noche.) -->
   <section class="seccion hueso" id="hoy">
-    <p class="mini ap">Medio siglo después</p>
+    <p class="mini ap">Medio siglo en fotos</p>
     <h2 class="tit" style="margin-top:14px">
       <span class="ln" style="--f:21;--i:0"><i>Y así</i></span>
       <span class="ln" style="--f:25;--i:1"><i>sigue</i></span>
     </h2>
-    <div class="hoy-fotos">
-      <figure class="sticker-hoy foto-hoy uno" id="fotoHoy1" hidden><div class="marco-foto"></div></figure>
-      <figure class="polaroid foto-hoy dos" id="fotoHoy2" hidden><div class="marco-foto"></div></figure>
-    </div>
+    <div class="galeria" id="galeria"></div>
   </section>
 
   <!-- ══════════ 8 · la playlist ══════════ -->
@@ -843,10 +857,14 @@ const CONFIG = {
   /* En el lugar del dress code (no mandaron): la frase de SU invitación, tal cual. */
   dressTitulo: "Hace 50 años",
   dressTexto: "“Los cumpleaños son fechas que se recuerdan por siempre cuando la presencia de familia y amigos hace que ese día sea fantástico”",
-  bebe: "fotos/bebe.webp",         // Gon de bebé, recortado de su invitación
-  fotoTapa: "fotos/tapa.webp",     // la del galerazo, en la entrada (21/11/2026)
-  fotoFinal: "fotos/torta.webp",   // la de la torta, en el cierre (21/11/2026)
-  fotosHoy: ["fotos/hoy1.webp", "fotos/hoy2.webp"],   // él hoy, con la torta (22/11/2026)
+  bebe: "",                        // (sacada el 23/11/2026: van todas en la galería)
+  fotoTapa: "",
+  fotoFinal: "",
+  fotosHoy: [],
+  /* LA GALERÍA (23/11/2026: "sacá todas las fotos y poné estas en estilo
+     polaroid, con un diseño lindo y armónico"). En el orden en que las
+     mandó; sin epígrafes (no los pidió). */
+  galeria: ["fotos/vida1.webp", "fotos/vida2.webp", "fotos/vida3.webp", "fotos/vida4.webp", "fotos/vida5.webp"],
   plan: [],
   trivia: [],
   /* "Movidito, movidito" de Sebastián, sacada del video que mandó el dueño
@@ -1622,7 +1640,21 @@ function alVer(fig, sonido){
 }
 polaroid($('#fotoHoy1'), CONFIG.fotosHoy && CONFIG.fotosHoy[0], CONFIG.quien + ' hoy, con su torta', () => alVer($('#fotoHoy1'), true));
 polaroid($('#fotoHoy2'), CONFIG.fotosHoy && CONFIG.fotosHoy[1], CONFIG.quien + ' soplando las velitas', () => alVer($('#fotoHoy2')));
-(function(){ const s = $('#hoy'); if (s && !(CONFIG.fotosHoy && CONFIG.fotosHoy.length)) s.remove(); })();
+/* la galería: cada polaroid aparece recién cuando su foto cargó, en el
+   orden de la lista aunque carguen desordenadas */
+(function(){
+  const g = $('#galeria'), L = CONFIG.galeria || [];
+  if (!g || !L.length){ const s = $('#hoy'); if (s) s.remove(); return; }
+  const GIRO = [-4, 3.5, -2.5, 4.5, -3.5, 3];
+  L.forEach((src, k) => {
+    const fig = document.createElement('figure');
+    fig.className = 'polaroid foto-vida'; fig.hidden = true;
+    fig.style.setProperty('--giro', GIRO[k % GIRO.length] + 'deg');
+    fig.innerHTML = '<span class="cinta-papel" aria-hidden="true"></span><div class="marco-foto"></div>';
+    g.appendChild(fig);
+    polaroid(fig, src, CONFIG.quien + ', foto ' + (k + 1) + ' de ' + L.length, () => alVer(fig, k === 0));
+  });
+})();
 polaroid($('#fotoTapa'), CONFIG.fotoTapa, CONFIG.quien + ' de bebé, con un galerazo');
 polaroid($('#fotoFinal'), CONFIG.fotoFinal, CONFIG.quien + ' de bebé, frente a su torta', () => {
   const fig = $('#fotoFinal'); fig.parentElement.classList.add('con-foto');
