@@ -667,6 +667,7 @@ html.cerrado #portada{opacity:0}
     <p class="placa ap" id="dressTitulo"></p>
     <div class="bebe" id="bebe" aria-hidden="true"></div>
     <p class="cuerpo ap" id="dressTexto"></p>
+    <div class="galeria" id="galeriaInicio"></div>
   </section>
 
   <!-- ══════════ 7b · y así sigue: Gon hoy, con la torta ══════════
@@ -864,7 +865,9 @@ const CONFIG = {
   /* LA GALERÍA (23/11/2026: "sacá todas las fotos y poné estas en estilo
      polaroid, con un diseño lindo y armónico"). En el orden en que las
      mandó; sin epígrafes (no los pidió). */
-  galeria: ["fotos/vida1.webp", "fotos/vida2.webp", "fotos/vida3.webp", "fotos/vida4.webp", "fotos/vida5.webp"],
+  /* 23/11/2026: "en Así empezó pondría estas dos, y las otras tres que queden en Así sigue" */
+  galeriaInicio: ["fotos/vida1.webp", "fotos/vida2.webp"],
+  galeria: ["fotos/vida3.webp", "fotos/vida4.webp", "fotos/vida5.webp"],
   plan: [],
   trivia: [],
   /* "Movidito, movidito" de Sebastián, sacada del video que mandó el dueño
@@ -1642,9 +1645,9 @@ polaroid($('#fotoHoy1'), CONFIG.fotosHoy && CONFIG.fotosHoy[0], CONFIG.quien + '
 polaroid($('#fotoHoy2'), CONFIG.fotosHoy && CONFIG.fotosHoy[1], CONFIG.quien + ' soplando las velitas', () => alVer($('#fotoHoy2')));
 /* la galería: cada polaroid aparece recién cuando su foto cargó, en el
    orden de la lista aunque carguen desordenadas */
-(function(){
-  const g = $('#galeria'), L = CONFIG.galeria || [];
-  if (!g || !L.length){ const s = $('#hoy'); if (s) s.remove(); return; }
+function galeria(g, L, sinFotos){
+  if (!g) return;
+  if (!L || !L.length){ sinFotos(); return; }
   const GIRO = [-4, 3.5, -2.5, 4.5, -3.5, 3];
   L.forEach((src, k) => {
     const fig = document.createElement('figure');
@@ -1654,7 +1657,9 @@ polaroid($('#fotoHoy2'), CONFIG.fotosHoy && CONFIG.fotosHoy[1], CONFIG.quien + '
     g.appendChild(fig);
     polaroid(fig, src, CONFIG.quien + ', foto ' + (k + 1) + ' de ' + L.length, () => alVer(fig, k === 0));
   });
-})();
+}
+galeria($('#galeriaInicio'), CONFIG.galeriaInicio, () => { const g = $('#galeriaInicio'); if (g) g.remove(); });
+galeria($('#galeria'), CONFIG.galeria, () => { const s = $('#hoy'); if (s) s.remove(); });
 polaroid($('#fotoTapa'), CONFIG.fotoTapa, CONFIG.quien + ' de bebé, con un galerazo');
 polaroid($('#fotoFinal'), CONFIG.fotoFinal, CONFIG.quien + ' de bebé, frente a su torta', () => {
   const fig = $('#fotoFinal'); fig.parentElement.classList.add('con-foto');
