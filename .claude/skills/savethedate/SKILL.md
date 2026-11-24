@@ -149,8 +149,9 @@ impactos y una música acorde, así armo una publicidad"*.
   pantalla) con 7 golpes de 70–120 ms. **Tope: 3 por segundo** (riesgo de
   epilepsia fotosensible); la referencia hace 8–12 y no se copia eso. Cada
   fogonazo tiene su `chasquido()`.
-- **Titileo** de títulos (`.tit`) y bloques grandes (`.titila`): 3 apagones
-  en 1 s, una vez. Mismo tope.
+- **Titileo SOLO en los títulos** (`.tit`): 3 apagones en 1 s, una vez.
+  En los bloques grandes también era "exceso de flash" (dueño, 24/11/2026);
+  la clase `.titila` queda para usarla de a una, no en todo.
 - **Cortes en diagonal**: `.seccion + .seccion` con `clip-path` y margen
   negativo; alternan de lado.
 - **Papel**: `--papel-claro` / `--papel-oscuro`, un SVG con grano, polvo y

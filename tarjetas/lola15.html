@@ -89,7 +89,8 @@ main{width:var(--col);margin:0 auto;position:relative;overflow:hidden}
   font-size:calc(var(--u) * var(--f,18))}
 .ln>i{display:inline-block;font-style:normal;will-change:transform}
 /* LOS TÍTULOS Y LOS BLOQUES GRANDES TITILAN al aparecer, como un tubo
-   que arranca (lo de la referencia). Tres apagones en un segundo, nunca
+   que arranca (lo de la referencia). SOLO los títulos: con los bloques
+   también era demasiado (lo dijo el dueño el 24/11/2026). Tres apagones en un segundo, nunca
    más: es el mismo tope de los fogonazos. Pasa una vez. */
 .js .tit .ln>i,.js .titila{opacity:0}
 .js .tit.entro .ln>i{animation:titila 1s calc(var(--i,0) * 120ms) linear both}
@@ -439,7 +440,7 @@ html.cerrado #portada{opacity:0}
       <div><b id="cM">00</b><p class="mini">Min</p></div>
       <div><b id="cS">00</b><p class="mini">Seg</p></div>
     </div>
-    <div class="noche titila" id="noche">
+    <div class="noche" id="noche">
       <canvas id="bola" aria-hidden="true"></canvas>
       <p class="hora" id="laHora"></p>
       <span class="mas" style="right:22%;top:30%" aria-hidden="true"></span>
@@ -473,7 +474,7 @@ html.cerrado #portada{opacity:0}
       <strong id="lugar"></strong>
       <span id="calle"></span>
     </div>
-    <div class="mapa titila" id="mapa">
+    <div class="mapa ap" id="mapa">
       <svg viewBox="0 0 360 374" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <path class="rio" d="M300 -10 C285 60 330 120 318 190 C308 250 345 300 338 390 L380 390 L380 -10 Z"/>
         <g class="calles" transform="rotate(-14 180 187)">
@@ -534,7 +535,7 @@ html.cerrado #portada{opacity:0}
       <span class="ln" style="--f:15;--i:0"><i>La música</i></span>
       <span class="ln" style="--f:13;--i:1"><i>la ponés vos</i></span>
     </h2>
-    <div class="marco titila">
+    <div class="marco ap">
       <canvas id="haces" aria-hidden="true"></canvas>
       <span class="mas" aria-hidden="true"></span>
     </div>
@@ -637,7 +638,7 @@ html.cerrado #portada{opacity:0}
       <p class="mini">Te espero,<br><span class="elNom">Lola</span></p>
       <p class="mini der" id="cierreFecha"></p>
     </div>
-    <div class="final titila">
+    <div class="final">
       <canvas id="haces2" aria-hidden="true"></canvas>
     </div>
   </section>
