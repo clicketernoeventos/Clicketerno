@@ -109,7 +109,32 @@
   #empty{ text-align:center; padding:40px 20px; color:var(--gris); font-size:14px; }
   #loading{ text-align:center; padding:40px; color:var(--gris); font-size:14px; }
 
+
+  /* ---------- MOVIMIENTO (24/11/2026): todo pasa UNA vez, al entrar ----------
+     Las piezas suben y se encienden escalonadas; el número de cada tarjeta
+     llega con un salto chico. El TEXTO del número no se anima (no "cuenta"):
+     las pruebas y quien mira leen el valor final desde el primer instante.
+     Con "menos movimiento" y al imprimir, nada se mueve. */
+  @keyframes subir{ from{ opacity:0; transform:translateY(14px); } }
+  @keyframes saltar{ 0%{ opacity:0; transform:scale(.6); } 70%{ transform:scale(1.06); } 100%{ opacity:1; transform:none; } }
+  @keyframes latido{ 0%{ box-shadow:0 0 0 0 rgba(31,157,85,.45); } 100%{ box-shadow:0 0 0 9px rgba(31,157,85,0); } }
+  #gate .caja-gate{ animation:subir .6s cubic-bezier(.22,.7,.24,1) both; }
+  #panel.show .anim{ animation:subir .55s cubic-bezier(.22,.7,.24,1) both; animation-delay:var(--d,0s); }
+  #panel.show .stat .n{ display:inline-block; animation:saltar .6s cubic-bezier(.3,.9,.3,1) both; animation-delay:calc(var(--d,0s) + .18s); }
+  #panel.show header p:before{ animation:latido 1.6s ease-out .4s 3; }
+  .ult li.anim{ animation-duration:.45s; }
+  .acciones button,.acciones a.planilla,.tarjeta{ transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  @media (hover:hover){
+    .acciones button:hover,.acciones a.planilla:hover{ transform:translateY(-2px); border-color:#e8bfc9; box-shadow:0 10px 20px -14px rgba(107,31,54,.45); }
+    .stat.tarjeta:hover{ transform:translateY(-2px); box-shadow:0 16px 30px -20px rgba(60,20,30,.35); }
+    #gate button:hover{ filter:brightness(1.06); }
+  }
+  .acciones button:active,#gate button:active{ transform:scale(.98); }
+  @media (prefers-reduced-motion:reduce){
+    *,*:before{ animation:none !important; transition:none !important; }
+  }
   @media print{
+    *,*:before{ animation:none !important; transition:none !important; }
     #gate, .acciones, .columnas, #ultimas, header .marca{ display:none !important; }
     body{ background:#fff; }
     .tarjeta{ box-shadow:none; }
@@ -136,7 +161,7 @@
 
 <div id="panel">
   <div class="wrap">
-    <header>
+    <header class="anim">
       <div class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/></svg></div>
       <div>
         <h1 id="panel-title">Listado de invitados</h1>
@@ -148,14 +173,14 @@
          "Cuántos: 4" es una familia de cuatro: contada como 1, el que
          arma las mesas encarga comida para menos gente de la que va. -->
     <div class="stats">
-      <div class="stat confirmados tarjeta"><div class="lbl">Asisten</div><div class="n" id="stat-confirmados">–</div><div class="sub">personas</div></div>
-      <div class="stat no-asisten tarjeta"><div class="lbl">No asisten</div><div class="n" id="stat-no">–</div><div class="sub">respuestas</div></div>
-      <div class="stat tarjeta"><div class="lbl">Mensajes</div><div class="n" id="stat-mensajes">–</div><div class="sub">de tus invitados</div></div>
-      <div class="stat tarjeta"><div class="lbl">Canciones</div><div class="n" id="stat-canciones">–</div><div class="sub">sugeridas</div></div>
+      <div class="stat confirmados tarjeta anim" style="--d:.06s"><div class="lbl">Asisten</div><div class="n" id="stat-confirmados">–</div><div class="sub">personas</div></div>
+      <div class="stat no-asisten tarjeta anim" style="--d:.12s"><div class="lbl">No asisten</div><div class="n" id="stat-no">–</div><div class="sub">respuestas</div></div>
+      <div class="stat tarjeta anim" style="--d:.18s"><div class="lbl">Mensajes</div><div class="n" id="stat-mensajes">–</div><div class="sub">de tus invitados</div></div>
+      <div class="stat tarjeta anim" style="--d:.24s"><div class="lbl">Canciones</div><div class="n" id="stat-canciones">–</div><div class="sub">sugeridas</div></div>
     </div>
-    <p class="total"><b id="stat-total">–</b> respuestas en total</p>
+    <p class="total anim" style="--d:.3s"><b id="stat-total">–</b> respuestas en total</p>
 
-    <div class="acciones">
+    <div class="acciones anim" style="--d:.34s">
       <button id="btn-excel" class="filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>Exportar Excel</button>
       <button id="btn-print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3.5V8h4.5"/></svg>Descargar PDF</button>
       <a id="ir-planilla" class="planilla" target="_blank" rel="noopener" hidden>Abrir la planilla</a>
@@ -166,12 +191,12 @@
     <!-- Las últimas respuestas, como tarjetas: quién, cuántos, su mensaje,
          su tema y si viene. Es lo que se mira todos los días; la tabla
          de abajo es la que se imprime y se le pasa al salón. -->
-    <section class="bloque tarjeta" id="ultimas" hidden>
+    <section class="bloque tarjeta anim" id="ultimas" style="--d:.4s" hidden>
       <h2>Últimas confirmaciones</h2>
       <ul class="ult" id="ult-lista"></ul>
     </section>
 
-    <section class="bloque tarjeta">
+    <section class="bloque tarjeta anim" style="--d:.46s">
       <h2>Listado completo</h2>
       <div class="columnas">
         <p>Columnas visibles</p>
@@ -615,13 +640,13 @@ function pintarUltimas(colMsj, colTema){
   if (!caja || !respuestas.length) return;
   const colCuantos = buscarCol(columnasDe(respuestas), 'cuantos');
   const txt = (f, c) => c ? String(f[c] == null ? '' : f[c]).trim() : '';
-  lista.innerHTML = respuestas.slice(-5).reverse().map(f => {
+  lista.innerHTML = respuestas.slice(-5).reverse().map((f, i) => {
     const nom = txt(f, COL_NOMBRE) || SIN_NOMBRE;
     const ini = nom.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
     const si = esSi(f[COL_CONFIRMA]);
     const n = si && colCuantos ? parseInt(txt(f, colCuantos).replace(/[^0-9]/g, ''), 10) : 0;
     const msj = txt(f, colMsj), tema = txt(f, colTema);
-    return '<li><span class="ini" aria-hidden="true">' + esc(ini) + '</span><div>' +
+    return '<li class="anim" style="--d:' + (0.5 + i * 0.07).toFixed(2) + 's"><span class="ini" aria-hidden="true">' + esc(ini) + '</span><div>' +
       '<p class="quien">' + esc(nom) + (n > 1 ? ' <span>· ' + n + ' personas</span>' : '') + '</p>' +
       (msj ? '<p class="msj">«' + esc(msj) + '»</p>' : '') +
       (tema ? '<p class="tema">♫ ' + esc(tema) + '</p>' : '') +
