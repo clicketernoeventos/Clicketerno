@@ -143,6 +143,24 @@ impactos y una música acorde, así armo una publicidad"*.
 - **Fotos del festejado como polaroid** (`gonzalo50/`): `polaroid(fig, src)`
   crea la `<img>` y muestra el marco recién cuando cargó.
 
+## 3c. Lo que se sumó de la referencia original (24/11/2026)
+
+- **Fogonazos** en la entrada: `.destello` (diferencia = da vuelta la
+  pantalla) con 7 golpes de 70–120 ms. **Tope: 3 por segundo** (riesgo de
+  epilepsia fotosensible); la referencia hace 8–12 y no se copia eso. Cada
+  fogonazo tiene su `chasquido()`.
+- **Titileo** de títulos (`.tit`) y bloques grandes (`.titila`): 3 apagones
+  en 1 s, una vez. Mismo tope.
+- **Cortes en diagonal**: `.seccion + .seccion` con `clip-path` y margen
+  negativo; alternan de lado.
+- **Papel**: `--papel-claro` / `--papel-oscuro`, un SVG con grano, polvo y
+  rayones (semilla = fecha) en `::after`, con `multiply`/`screen`. Va en un
+  pseudo-elemento para que el medidor de contraste lea el fondo liso.
+- **Letra de máquina** (`--mono`, IBM Plex Mono) en `.mini`; **folio**
+  (`CONFIG.folio`) arriba a la derecha de cada sección que arranca con un
+  solo rótulo; **coordenadas** (`CONFIG.coordenadas`) en el mapa; **actos**
+  en el plan. Vacíos, no se dibujan.
+
 ## 4. Lo que este modelo NO tiene todavía
 
 - **Fotos**: no lleva. Si el cliente manda las suyas van en blanco y negro
