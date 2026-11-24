@@ -1563,6 +1563,47 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await ctxN.close();
   }
 
+  /* ── los acompañantes van con su nombre ──
+     Pedido del dueño (24/11/2026) con el tablero en la mano: tres
+     "(sin nombre)" seguidos, de alguien que dijo "somos 4" y no escribió
+     a nadie más. No tira ningún error: la fila entra igual y el que arma
+     las mesas no sabe a quién sentar. Se mide lo que pasa: con dos
+     acompañantes en blanco el formulario NO sale y lo dice; con los
+     nombres puestos, sí. */
+  titulo('los acompañantes van con su nombre');
+  {
+    const ctxA = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagA = await ctxA.newPage();
+    let salio = 0;
+    await pagA.route(/script\.google\.com/, r => { salio++; r.fulfill({status:200, contentType:'application/json', body:'{"ok":true}'}); });
+    await pagA.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagA.locator('#abrir').count()){ await pagA.click('#abrir'); await pagA.waitForTimeout(2700); }
+    const hayAcomp = await pagA.locator('#acomp').count() && await pagA.locator('#fLugares').count();
+    const conEndpoint = await pagA.evaluate(() => !!(window.CONFIG && CONFIG.endpoint) ||
+      /endpoint:\s*"https/.test(document.documentElement.innerHTML));
+    if (!hayAcomp) bien('esta invitación no pregunta por acompañantes');
+    else if (!conEndpoint) bien('esta invitación todavía no manda a ninguna planilla');
+    else {
+      await pagA.fill('#fNombre', 'Juan Pérez');
+      await pagA.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagA.selectOption('#fLugares', '3');
+      await pagA.waitForTimeout(250);
+      await pagA.click('#enviar');
+      await pagA.waitForTimeout(500);
+      const aviso = (await pagA.textContent('#aviso') || '').trim();
+      es(salio === 0 && /nombre/i.test(aviso), salio === 0 && /nombre/i.test(aviso)
+        ? 'con los acompañantes en blanco no se manda, y avisa: "' + aviso + '"'
+        : 'se mandó con dos acompañantes sin nombre (o no avisó nada)');
+      await pagA.fill('#fInv2', 'Ana Pérez');
+      await pagA.fill('#fInv3', 'Luis Pérez');
+      await pagA.click('#enviar');
+      await pagA.waitForTimeout(1500);
+      es(salio === 1, salio === 1 ? 'con los nombres puestos, se manda'
+                                  : 'con los nombres puestos igual no se manda');
+    }
+    await ctxA.close();
+  }
+
   /* ── 9 · la carta no SALTA a la portada ──
      "Que sea menos brusca la transición de la carta y la portada."
      Un corte entre dos pantallas no tira ningún error: las dos se

@@ -4919,3 +4919,11 @@ Se cambió `invitaciones/plantilla-listado/` y, como la prueba exige que todos l
 - Los `id` que miran las pruebas (`#stat-total`, `#stat-confirmados`, `#stat-no`, `#btn-excel`, `#btn-print`, la tabla) no cambiaron.
 - **Una falla vieja que apareció probando**: si alguien decía "somos 3" y la planilla no tenía la columna del tercer invitado, el tablero se rompía entero (`porNumero[k]` vacío). Ahora esa persona sale como "(sin nombre)" y el resto se dibuja.
 - **Movimiento (24/11/2026)**: *"Dale animación y que quede profesional sin romper nada."* Las piezas del panel suben y se encienden escalonadas (encabezado, las cuatro tarjetas, el total, los botones, las últimas confirmaciones una por una, el listado), el número de cada tarjeta llega con un salto chico y el punto verde de "en tiempo real" late tres veces. Todo pasa **una vez**; con "menos movimiento" y al imprimir no se mueve nada. **Los números no "cuentan" de 0 al total**: el texto es el final desde el primer instante, porque las pruebas (y quien mira rápido) leen ese número apenas carga.
+
+## Los acompañantes, con su nombre (24/11/2026)
+
+**Pidió** el dueño, con una foto del tablero: tres "(sin nombre)" seguidos. *"Tenemos que poner que no puedas enviar el formulario sin nombre."*
+No eran formularios vacíos: era **un invitado que dijo "somos 4" y no escribió a sus tres acompañantes**. El nombre del que contesta ya era obligatorio; el de cada acompañante, no.
+- **En las doce invitaciones con acompañantes** (el bloque era idéntico en todas): si dice que viene y hay un acompañante sin nombre, el formulario no sale, dice *"Escribí el nombre y apellido de cada persona que viene con vos"* y lleva el cursor al casillero vacío.
+- **En el tablero**: los que ya entraron así se ven como **"Acompañante de Facundo Herrera"** en vez de "(sin nombre)".
+- **Prueba nueva** en `invitacion_mirar.js` ("los acompañantes van con su nombre"): con dos acompañantes en blanco no se manda y avisa; con los nombres, se manda. Rota a propósito (sacando el control) falló como corresponde.

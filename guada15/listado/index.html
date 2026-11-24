@@ -447,7 +447,11 @@ function porPersona(filas){
         (porNumero[k] || []).forEach(x => { fila[destino(x.base)] = f[x.col]; });
       }
       const nom = String(fila[COL_NOMBRE] == null ? '' : fila[COL_NOMBRE]).trim();
-      fila[COL_NOMBRE] = nom || (k === 1 ? (quien || SIN_NOMBRE) : SIN_NOMBRE);
+      /* Un acompañante sin nombre (los que confirmaron antes de que el
+         formulario lo pidiera, 24/11/2026) se muestra con el nombre de
+         quien lo anotó: "(sin nombre)" solo no le dice a nadie a quién sentar. */
+      fila[COL_NOMBRE] = nom || (k === 1 ? (quien || SIN_NOMBRE)
+                                         : (quien ? 'Acompañante de ' + quien : SIN_NOMBRE));
       fuera.push(fila);
     }
   });
