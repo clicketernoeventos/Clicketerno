@@ -4927,3 +4927,14 @@ No eran formularios vacíos: era **un invitado que dijo "somos 4" y no escribió
 - **En las doce invitaciones con acompañantes** (el bloque era idéntico en todas): si dice que viene y hay un acompañante sin nombre, el formulario no sale, dice *"Escribí el nombre y apellido de cada persona que viene con vos"* y lleva el cursor al casillero vacío.
 - **En el tablero**: los que ya entraron así se ven como **"Acompañante de Facundo Herrera"** en vez de "(sin nombre)".
 - **Prueba nueva** en `invitacion_mirar.js` ("los acompañantes van con su nombre"): con dos acompañantes en blanco no se manda y avisa; con los nombres, se manda. Rota a propósito (sacando el control) falló como corresponde.
+
+## zaii — Zaii Fest (24/11/2026)
+
+**Pidió** el dueño: *"Esta es con menos cosas. Es una opción básica y solo tiene lo que te envío. Hay que copiar el estilo de la de Lucía: 1- zaii · 2- 12 de diciembre de 2026 · 3- centro residentes chilenos entre 13 diciembre · 4- la misma canción que tiene la tarjeta de Lucía · 5- no quiero poner fotos · 6- color azul con detalles en celeste · 7- 2974149787 es el número de WhatsApp para confirmar. Que haya un poco de transición que llame la atención y agregá esa foto al final"* (el logo "Zaii Fest": letras de cromo violeta sobre una bola de espejos).
+
+**Base**: copia de `lucia15/` con su canción (Clocks, el recorte de 29,6 s) y sus bolas de espejos. **Azul con celeste**: la plata se tiñó de azul con la misma luminancia (las cuatro texturas también) y los detalles son celeste (#8FD3F7). Las bolas y los anillos de baldosas llevan tinte azul.
+**Opción básica**: sin fotos, sin dress code, sin regalo ni alias, **sin planilla**: "¿Venís?" es un botón a **WhatsApp 297 414-9787** con el mensaje listo (*"¡Hola Zaii! Confirmo mi asistencia a tu fiesta del 12 de diciembre. Mi nombre es: "*). Al no haber formulario, tampoco hay aviso de datos ni tablero.
+**La entrada**: además de las bolas que bajan, al disolverse la carta sale un **fogonazo celeste** del centro de la portada y el nombre **se enciende** con un halo; una vez.
+**El logo** va al final, en su placa, con su propio fondo (no se le agrega otro).
+**No se sabe qué festeja**: dice "La fiesta de Zaii" y "Te invito a mi fiesta", sin nombrar quince ni nada. Las frases de la portada y de la confirmación son NUESTRAS.
+**Faltan (no se inventan)**: la **hora**; la **dirección** del salón — mandaron *"entre 13 diciembre"*, que parece una esquina a medias (¿entre qué calle y 13 de Diciembre?) —: por ahora va solo "Centro de Residentes Chilenos" y "Cómo llegar" busca ese nombre; y la **ciudad** (el 297 es característica de Comodoro Rivadavia, pero no lo dijo nadie).

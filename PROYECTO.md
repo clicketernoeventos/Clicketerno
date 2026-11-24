@@ -2430,6 +2430,9 @@ menores).
 
 ## Pendiente, decidido y no hecho
 
+- **zaii (24/11/2026)**, lo tiene que mandar el dueño: la **hora**, la
+  **dirección** del Centro de Residentes Chilenos (mandaron "entre 13
+  diciembre": falta la otra calle o el número) y la **ciudad**.
 - **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
   ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
   7/12/2026.
