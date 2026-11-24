@@ -2362,6 +2362,65 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
   y el después: así se deshace o se corrige cualquier cosa.
 - **Una sola fiesta por fecha y turno** (noche / mediodía).
 
+## El álbum de la fiesta (servicio futuro, NO hecho)
+
+Analizado el 23/11/2026. **Todavía no se contrató nada**: es el mapa para
+cuando se quiera armar. Es un servicio **nuevo e independiente del muro y
+del rollo**, que se vende dentro del paquete de la invitación.
+
+**Cómo se ve.** Una dirección por fiesta al lado de la tarjeta,
+`<carpeta>/album`, con los colores y letras de esa invitación (como el
+listado y el panel de canciones). En la tarjeta, una sección con QR y botón
+que cambia sola según la fecha: antes ("el día de la fiesta acá vas a poder
+subir"), durante (subir) y después (ver y bajar). Un QR para las mesas. Un
+panel con clave para el cliente: ocultar fotos y bajar todo en .zip.
+
+**Dónde guardar las fotos, dos caminos:**
+
+- **A. Cloudflare R2 (el recomendado).** Mismo servicio donde ya vive la
+  web: no se pausa como Supabase gratis, 10 GB gratis y después ~USD 0,015
+  por GB al mes, mirar el álbum no cuesta (sin cobro por salida) y queda
+  separado del muro y el rollo. Hace falta activar R2 en la cuenta de
+  Cloudflare (pide tarjeta aunque sea gratis) y sumarle a `wrangler.json`
+  un Worker con el depósito: la subida pasa por el Worker, que controla el
+  código de la fiesta y el tope; el teléfono nunca elige dónde se guarda.
+- **B. El Drive del cliente**, por el Apps Script de su planilla. El
+  espacio lo pone él y las fotos quedan en su cuenta, pero Google acepta
+  ~30 subidas a la vez, sube lento, corta videos pesados y la cara linda
+  hay que hacerla igual. Sirve para fiestas chicas, no para un casamiento.
+- Descartados: álbum compartido de Google Fotos (pide cuenta y app, y
+  desde 2025 no se crean desde un programa) y meterlo en Supabase (es
+  mezclarlo con el muro y el rollo, y depende del Pro sin contratar).
+
+**El espacio.** La foto se achica en el teléfono (~400 KB) con su
+miniatura, tope de fotos por invitado, videos cortos. 100 invitados × 20
+fotos ≈ menos de 1 GB por fiesta. Vida fija (ej. 90 días) con aviso antes
+de borrar y el botón de bajarlo al lado, como en el muro.
+
+**El respaldo.** Copia automática cada noche a un segundo depósito (tarea
+programada del Worker, gratis) + el .zip del panel para el cliente.
+
+**La referencia que le gustó al dueño** (24/11/2026, digitalstories.app,
+de Polonia; capturas en el chat). Una sola pantalla con la cara de la
+invitación: título enorme, una pila de polaroids, UN botón negro "subir
+fotos" y la galería abajo. El botón abre una hoja negra: "elegir fotos",
+y el menú de Biblioteca / Cámara / Archivos / Drive **lo pone el teléfono
+solo** (es un `<input type=file multiple>` común, no hay que dibujarlo).
+Después muestra las elegidas en miniatura, cada una con su ✕ para
+sacarla, el contador "0 / 1 subidas" y "agregar más". Si una falla, le
+pone un "!" a ESA foto, avisa y ofrece "reintentar". Y abajo vende: "creá
+una invitación con este estilo", el mismo negocio que el nuestro.
+**Se copia el recurso, no la cara.** Lo que hay que hacer mejor: en la
+captura la subida FALLÓ. En un salón con mala señal, la cola tiene que
+reintentar sola y no perder las fotos si se corta, y achicarlas antes de
+mandar (subir el original de 5 MB es lo que más falla).
+
+**Lo que hay que decidir antes de arrancar:** A o B; si los invitados ven
+las fotos de todos durante la fiesta o solo después; si van videos y
+cuánto vive el álbum. Ley 25.326: el aviso de datos en la pantalla de
+subir, `noindex`, y el álbum no queda abierto a cualquiera (son fotos de
+menores).
+
 ## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.
@@ -2371,6 +2430,9 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
 
 ## Pendiente, decidido y no hecho
 
+- **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
+  ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
+  7/12/2026.
 - **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
   servicios y paquetes con precios** (los de la app son de ejemplo), cómo
   se cobra (seña, cuotas, medios, recibo), los nombres y roles de quienes
@@ -2590,3 +2652,4 @@ carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
 - **Lo que falta de las canciones de `julieta/`** (17/11/2026): la planilla ya está conectada; falta VERLA entrar una vez (mandar una canción desde la invitación y mirar que aparezca en `/julieta/canciones`) y pasarle a Julieta la clave del panel, que muestra `preparar()`.
 - **La guía del panel de canciones** (17/11/2026) sale con `node flyer/armar-canciones.js <dirección> [clave] [salida.pdf]`: es un PDF A4 genérico (`flyer/canciones.html`, no nombra ninguna fiesta) con la dirección y la clave de cada clienta. Sin clave deja una línea en blanco. La captura sale de la demostración del propio panel. El PDF no va al repo.
 - **El respaldo de las tarjetas** (19/11/2026): `bash respaldo/armar-backup.sh` arma un .zip con las 15 tarjetas completas (lo que está en git) y un LEEME con cómo volver a subir una si algo falla. El .zip no va al repo. Lo que no cubre: las respuestas de las planillas de Google, las claves, las fotos del muro y del rollo y los originales de los clientes (ver el LEEME del zip).
+- **El álbum de la fiesta** (23/11/2026): servicio nuevo, sin contratar. Los caminos están en "El álbum de la fiesta" más arriba; falta que el dueño decida R2 o Drive y lo demás de esa lista.
