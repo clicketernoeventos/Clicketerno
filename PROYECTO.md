@@ -2430,6 +2430,10 @@ menores).
 
 ## Pendiente, decidido y no hecho
 
+- **mia15**: `invitacion_mirar.js` dice "la portada APARECE de golpe: no
+  hay cruce con la carta". Ya fallaba en `main` el 25/11/2026; no se tocó.
+- **index.html**: `servicios` falla ("7 cuadraditos se salen de la pantalla
+  de 390px"). Viene de antes; es de la página pública.
 - **zaii (24/11/2026)**, lo tiene que mandar el dueño: la **hora**, la
   **dirección** del Centro de Residentes Chilenos (mandaron "entre 13
   diciembre": falta la otra calle o el número) y la **ciudad**.

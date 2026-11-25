@@ -689,6 +689,11 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(/dec|eleg|venís|venis/.test(sinElegir), 'y sin elegir no deja mandar');
       await pag.locator('.radios label').first().click();
     }
+    /* Desde el 24/11/2026 cada acompañante va con su nombre: una
+       invitación que arranca en "2 personas" (mia15) no sale con el
+       segundo en blanco. Se completan como lo haría el invitado. */
+    await pag.evaluate(() => document.querySelectorAll('#acomp input[name^="Invitado "]')
+      .forEach((i, k) => { if (!i.value) { i.value = 'Acompañante ' + (k + 2); i.dispatchEvent(new Event('input', {bubbles:true})); } }));
 
     await pag.click('#enviar');
     await pag.waitForTimeout(600);
@@ -1579,8 +1584,10 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     await pagA.goto(URL, {waitUntil:'domcontentloaded'});
     if (await pagA.locator('#abrir').count()){ await pagA.click('#abrir'); await pagA.waitForTimeout(2700); }
     const hayAcomp = await pagA.locator('#acomp').count() && await pagA.locator('#fLugares').count();
-    const conEndpoint = await pagA.evaluate(() => !!(window.CONFIG && CONFIG.endpoint) ||
-      /endpoint:\s*"https/.test(document.documentElement.innerHTML));
+    /* Con planilla propia (endpoint) o con la central (evento + PLANILLA). */
+    const conEndpoint = await pagA.evaluate(() =>
+      (typeof CONFIG !== 'undefined' && (!!CONFIG.endpoint || !!CONFIG.evento)) &&
+      (!!CONFIG.endpoint || (typeof PLANILLA !== 'undefined' && !!PLANILLA.exec)));
     if (!hayAcomp) bien('esta invitación no pregunta por acompañantes');
     else if (!conEndpoint) bien('esta invitación todavía no manda a ninguna planilla');
     else {
@@ -1594,12 +1601,14 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(salio === 0 && /nombre/i.test(aviso), salio === 0 && /nombre/i.test(aviso)
         ? 'con los acompañantes en blanco no se manda, y avisa: "' + aviso + '"'
         : 'se mandó con dos acompañantes sin nombre (o no avisó nada)');
-      await pagA.fill('#fInv2', 'Ana Pérez');
-      await pagA.fill('#fInv3', 'Luis Pérez');
-      await pagA.click('#enviar');
-      await pagA.waitForTimeout(1500);
-      es(salio === 1, salio === 1 ? 'con los nombres puestos, se manda'
-                                  : 'con los nombres puestos igual no se manda');
+      if (salio === 0){
+        await pagA.fill('#fInv2', 'Ana Pérez');
+        await pagA.fill('#fInv3', 'Luis Pérez');
+        await pagA.click('#enviar');
+        await pagA.waitForTimeout(1500);
+        es(salio === 1, salio === 1 ? 'con los nombres puestos, se manda'
+                                    : 'con los nombres puestos igual no se manda');
+      }
     }
     await ctxA.close();
   }
