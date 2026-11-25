@@ -2400,6 +2400,21 @@ de borrar y el botón de bajarlo al lado, como en el muro.
 **El respaldo.** Copia automática cada noche a un segundo depósito (tarea
 programada del Worker, gratis) + el .zip del panel para el cliente.
 
+**La referencia que le gustó al dueño** (24/11/2026, digitalstories.app,
+de Polonia; capturas en el chat). Una sola pantalla con la cara de la
+invitación: título enorme, una pila de polaroids, UN botón negro "subir
+fotos" y la galería abajo. El botón abre una hoja negra: "elegir fotos",
+y el menú de Biblioteca / Cámara / Archivos / Drive **lo pone el teléfono
+solo** (es un `<input type=file multiple>` común, no hay que dibujarlo).
+Después muestra las elegidas en miniatura, cada una con su ✕ para
+sacarla, el contador "0 / 1 subidas" y "agregar más". Si una falla, le
+pone un "!" a ESA foto, avisa y ofrece "reintentar". Y abajo vende: "creá
+una invitación con este estilo", el mismo negocio que el nuestro.
+**Se copia el recurso, no la cara.** Lo que hay que hacer mejor: en la
+captura la subida FALLÓ. En un salón con mala señal, la cola tiene que
+reintentar sola y no perder las fotos si se corta, y achicarlas antes de
+mandar (subir el original de 5 MB es lo que más falla).
+
 **Lo que hay que decidir antes de arrancar:** A o B; si los invitados ven
 las fotos de todos durante la fiesta o solo después; si van videos y
 cuánto vive el álbum. Ley 25.326: el aviso de datos en la pantalla de

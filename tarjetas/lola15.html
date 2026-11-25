@@ -17,7 +17,7 @@
 <meta property="og:image" content="og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,900;1,900&family=Space+Grotesk:wght@300;400;500;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,900;1,900&family=Space+Grotesk:wght@300;400;500;700&family=Reenie+Beanie&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ════════════════════════════════════════════════
    LOLA · MIS XV — modelo "afiche"
@@ -36,6 +36,8 @@
   --titulos:'Montserrat','Arial Black','Helvetica Neue',Arial,sans-serif;
   --texto-f:'Space Grotesk','Helvetica Neue',Arial,sans-serif;
   --mano:'Reenie Beanie','Segoe Script','Bradley Hand',cursive;
+  /* los datos chicos, en letra de máquina: lo que hace que se vea afiche */
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
   --col:min(100vw,540px);
   --u:calc(var(--col) / 100);
   --m:calc(var(--u) * 6);
@@ -56,10 +58,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 main{width:var(--col);margin:0 auto;position:relative;overflow:hidden}
 .seccion{position:relative;padding:calc(var(--u)*16) var(--m) calc(var(--u)*18);overflow:hidden}
 .hueso{background:var(--hueso);color:var(--negro)}
+/* LOS CORTES EN DIAGONAL: cada sección que viene pegada a otra se monta
+   sobre la de arriba con el borde inclinado, una vez para cada lado. */
+.seccion + .seccion{--sesgo:calc(var(--u)*7);margin-top:calc(var(--sesgo) * -1);padding-top:calc(var(--u)*16 + var(--sesgo));
+  clip-path:polygon(0 var(--sesgo),100% 0,100% 100%,0 100%)}
+.seccion + .seccion:nth-of-type(even){clip-path:polygon(0 0,100% var(--sesgo),100% 100%,0 100%)}
+/* EL PAPEL: grano, polvo y rayones dibujados en el momento (semilla = la
+   fecha). Va encima con "multiplicar" en lo claro y "trama" en lo oscuro:
+   no tapa nada y el texto se sigue leyendo igual. */
+.hueso::after,.negra::after{content:"";position:absolute;inset:0;pointer-events:none;background-size:520px 520px}
+.hueso::after{background-image:var(--papel-claro,none);mix-blend-mode:multiply}
+.negra::after{background-image:var(--papel-oscuro,none);mix-blend-mode:screen}
 .negra{background:var(--negro);color:var(--hueso)}
 
 /* ══════════ piezas compartidas ══════════ */
-.mini{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;line-height:1.5}
+.mini{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;line-height:1.5}
 .hueso .mini{color:var(--gris-h)} .negra .mini{color:var(--gris-n)}
 .fila{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
 .fila .der{text-align:right}
@@ -75,9 +88,17 @@ main{width:var(--col);margin:0 auto;position:relative;overflow:hidden}
 .ln{display:block;overflow:hidden;white-space:nowrap;padding-top:.16em;margin-top:-.1em;
   font-size:calc(var(--u) * var(--f,18))}
 .ln>i{display:inline-block;font-style:normal;will-change:transform}
-.js .tit .ln>i{transform:translateY(112%) rotate(5deg);transform-origin:0 100%}
-.js .tit.entro .ln>i{transform:none;transition:transform .75s cubic-bezier(.16,1,.3,1);
-  transition-delay:calc(var(--i,0) * 95ms)}
+/* LOS TÍTULOS Y LOS BLOQUES GRANDES TITILAN al aparecer, como un tubo
+   que arranca (lo de la referencia). SOLO los títulos: con los bloques
+   también era demasiado (lo dijo el dueño el 24/11/2026). Tres apagones en un segundo, nunca
+   más: es el mismo tope de los fogonazos. Pasa una vez. */
+.js .tit .ln>i,.js .titila{opacity:0}
+.js .tit.entro .ln>i{animation:titila 1s calc(var(--i,0) * 120ms) linear both}
+.js .titila.entro{animation:titila 1s .15s linear both}
+@keyframes titila{
+  0%{opacity:0} 6%{opacity:1} 14%{opacity:1} 15%{opacity:.12} 30%{opacity:.12} 31%{opacity:1}
+  46%{opacity:1} 47%{opacity:.2} 56%{opacity:.2} 57%{opacity:1} 100%{opacity:1}
+}
 .js .ap{opacity:0;transform:translateY(26px)}
 .js .ap.entro{opacity:1;transform:none;transition:opacity .7s ease,transform .8s cubic-bezier(.16,1,.3,1);
   transition-delay:calc(var(--i,0) * 90ms)}
@@ -114,14 +135,20 @@ html.cerrado #portada{opacity:0}
 #sobre.va .golpes span:nth-child(1){animation-delay:.25s}
 #sobre.va .golpes span:nth-child(2){animation-delay:.95s}
 #sobre.va .golpes span:nth-child(3){animation-delay:1.65s;animation-duration:.95s}
-#sobre.va .destello{animation:destello .4s 1.1s linear both}
+/* LOS FOGONAZOS (24/11/2026, mirando la referencia cuadro por cuadro: la
+   pantalla entera se da vuelta, negro a blanco, mientras pasa cada
+   palabra). La referencia lo hace 8 a 12 veces por segundo; ACÁ VAN COMO
+   MUCHO 3 POR SEGUNDO, que es el tope que no dispara convulsiones en
+   gente con epilepsia fotosensible (la invitación la abren abuelos,
+   chicos, todos). Con "menos movimiento" no hay ninguno. */
+#sobre.va .destello{animation:destello 2.8s linear both}
 @keyframes golpe{
   0%{opacity:0;transform:rotate(-7deg) scale(2.7);filter:blur(14px)}
   16%{opacity:1;transform:rotate(-7deg) scale(1);filter:blur(0)}
   82%{opacity:1;transform:rotate(-7deg) scale(.95)}
   100%{opacity:0;transform:rotate(-7deg) scale(.9)}
 }
-@keyframes destello{0%{opacity:0}8%,72%{opacity:1}100%{opacity:0}}
+@keyframes destello{0%{opacity:0} 12.68%{opacity:0} 12.86%{opacity:1} 15.71%{opacity:1} 15.89%{opacity:0} 24.82%{opacity:0} 25.00%{opacity:1} 27.50%{opacity:1} 27.68%{opacity:0} 37.68%{opacity:0} 37.86%{opacity:1} 40.71%{opacity:1} 40.89%{opacity:0} 49.82%{opacity:0} 50.00%{opacity:1} 52.50%{opacity:1} 52.68%{opacity:0} 64.11%{opacity:0} 64.29%{opacity:1} 67.14%{opacity:1} 67.32%{opacity:0} 76.25%{opacity:0} 76.43%{opacity:1} 78.93%{opacity:1} 79.11%{opacity:0} 90.89%{opacity:0} 91.07%{opacity:1} 95.36%{opacity:1} 95.54%{opacity:0} 100%{opacity:0}}
 
 .tapa{position:relative;width:var(--col);height:100%;margin:0 auto;display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top) + 18px) var(--m) calc(env(safe-area-inset-bottom) + 22px)}
@@ -235,6 +262,8 @@ html.cerrado #portada{opacity:0}
 @keyframes aro{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.6)}}
 .mapa .aca{position:absolute;left:calc(var(--u)*47);top:calc(var(--u)*27);background:var(--negro);padding:4px 6px;color:var(--hueso)}
 .mapa .pildora{position:absolute;right:var(--m);bottom:calc(var(--u)*7)}
+.mapa .coords{position:absolute;left:calc(var(--m) + 30px);top:calc(var(--u)*6);background:var(--negro);padding:4px 6px;color:var(--gris-n)}
+.plan .acto{color:var(--gris-n);margin-bottom:4px;letter-spacing:.16em}
 .mapa .mas{left:var(--m);top:calc(var(--u)*6);color:var(--gris-n)}
 
 /* ══════════ 5 · la trivia ══════════ */
@@ -339,7 +368,7 @@ html.cerrado #portada{opacity:0}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .golpes,.destello{display:none}
-  .js .ap,.js .tit .ln>i{opacity:1;transform:none}
+  .js .ap,.js .tit .ln>i,.js .titila{opacity:1;transform:none}
   .js .ahi{clip-path:none}
   .js #calendario td.elDia path,.js .percha path{stroke-dashoffset:0}
 }
@@ -633,6 +662,10 @@ const CONFIG = {
   quien: "Lola",
   fiesta: "2027-03-20T21:30:00-03:00",
   ciudad: "Rosario",
+  /* los datos tipo afiche: el folio arriba de cada sección y las
+     coordenadas al pie del mapa (de ejemplo: el centro de Rosario) */
+  folio: "Lola / XV / 2027",
+  coordenadas: "32.9468° S · 60.6393° O",
   confirmarHasta: "",
   lugar: "Salón de ejemplo",
   calle: "Calle de ejemplo 1500, Rosario",
@@ -746,6 +779,48 @@ const picado = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7 + SEMILLA % 
       catch(e){ $('#copiarTxt').textContent = 'Mantené apretado el alias para copiarlo'; }
     });
   } else { const r = $('#regalo'); if (r) r.remove(); }
+})();
+
+/* ══════════ el papel y los datos tipo afiche ══════════ */
+(function(){
+  /* el papel: un SVG con grano, polvo y rayones; uno claro y uno oscuro */
+  function papel(tinta, base){
+    const rr = azar(SEMILLA + (base ? 3 : 9)); let s = '';
+    for (let k = 0; k < 16; k++){                                  /* rayones */
+      const x = rr() * 520, y = rr() * 520, L = 20 + rr() * 140, a = (rr() - .5) * .6 + (rr() < .5 ? 0 : 1.57);
+      const x2 = x + Math.cos(a) * L, y2 = y + Math.sin(a) * L, cx = (x + x2) / 2 + (rr() - .5) * 18, cy = (y + y2) / 2 + (rr() - .5) * 18;
+      s += '<path d="M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'Q' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' ' + x2.toFixed(1) + ' ' + y2.toFixed(1) +
+           '" stroke="' + tinta + '" stroke-opacity="' + (.05 + rr() * .12).toFixed(2) + '" stroke-width="' + (.4 + rr() * .8).toFixed(2) + '" fill="none"/>';
+    }
+    for (let k = 0; k < 70; k++)                                      /* polvo */
+      s += '<circle cx="' + (rr() * 520).toFixed(1) + '" cy="' + (rr() * 520).toFixed(1) + '" r="' + (.4 + rr() * 1.3).toFixed(2) +
+           '" fill="' + tinta + '" fill-opacity="' + (.06 + rr() * .2).toFixed(2) + '"/>';
+    const grano = '<filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="' + (SEMILLA % 97) + '"/>' +
+      '<feColorMatrix values="0 0 0 0 ' + base + ' 0 0 0 0 ' + base + ' 0 0 0 0 ' + base + ' 0.5 0 0 0 -0.32"/></filter>' +
+      '<rect width="520" height="520" filter="url(#g)" opacity=".5"/>';
+    return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="520" height="520">' + grano + s + '</svg>') + '")';
+  }
+  document.documentElement.style.setProperty('--papel-claro', papel('#2A251F', 0));
+  document.documentElement.style.setProperty('--papel-oscuro', papel('#ECE7DC', 1));
+
+  /* el folio: arriba de cada sección que arranca con un solo rótulo, a la
+     derecha, el nombre / la fiesta / el año y la fecha, como la referencia */
+  if (CONFIG.folio && F){
+    $$('main > .seccion').forEach(s => {
+      if (s.id === 'portada') return;
+      const pri = s.firstElementChild;
+      if (!pri || !pri.matches('p.mini')) return;
+      const fila = document.createElement('div'); fila.className = 'fila ap';
+      pri.classList.remove('ap'); pri.parentNode.insertBefore(fila, pri); fila.appendChild(pri);
+      fila.insertAdjacentHTML('beforeend', '<p class="mini der" aria-hidden="true">' + esc(CONFIG.folio) + '<br>' + esc(F.corta) + '</p>');
+    });
+  }
+  /* las coordenadas del lugar, al pie del mapa */
+  if (CONFIG.coordenadas && $('#mapa'))
+    $('#mapa').insertAdjacentHTML('beforeend', '<p class="mini coords">' + esc(CONFIG.coordenadas) + '</p>');
+  /* cada momento del plan es un "acto" */
+  $$('#elPlan li').forEach((li, k) => { const h = $('h3', li);
+    if (h) h.insertAdjacentHTML('beforebegin', '<p class="mini acto">Acto ' + String(k + 1).padStart(2, '0') + '</p>'); });
 })();
 
 /* ══════════ los renglones de afiche: cada uno llena el ancho ══════════
@@ -1083,6 +1158,7 @@ const SONIDO = (function(){
     woosh('limpio1', t0 + .36, .6);  destello(t0 + .36, 1);                    /* ¿ESTÁS */
     woosh('limpio2', t0 + 1.06, .6); destello(t0 + 1.1, 1.26);                 /* PARA, con el destello */
     woosh('limpio3', t0 + 1.79, .7); destello(t0 + 1.79, 1.5);                 /* ESTO? */
+    [.36, .70, 1.06, 1.40, 1.80, 2.14, 2.55].forEach(s => chasquido(t0 + s));  /* un clic con cada fogonazo */
     riserMetal(t0 + .2, t0 + 2.4);                                             /* sube por debajo de las tres… */
     estampido(t0 + 2.6);                                                       /* …silencio, y el nombre: el cierre */
     musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(tema ? .75 : .42, t0 + 3.4);
@@ -1123,7 +1199,7 @@ const SONIDO = (function(){
    Arranca recién cuando se entra: lo de la portada tiene que golpear
    cuando se ve, no atrás de la entrada. */
 function despertar(){
-  const todo = $$('.ap, .tit');
+  const todo = $$('.ap, .tit, .titila');
   if (!('IntersectionObserver' in window) || menosMovimiento){ todo.forEach(n => n.classList.add('entro')); return; }
   const ojo = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting){ e.target.classList.add('entro'); ojo.unobserve(e.target);
