@@ -9,70 +9,135 @@
 <title>Listado de invitados</title>
 <!-- PLANTILLA. Se copia a <evento>/listado/index.html y se llena CONFIG. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <!-- En el repo, no en un CDN: este panel muestra la lista de invitados. -->
 <script src="../../lib/xlsx.full.min.js"></script>
 <!-- La dirección de la planilla central, UNA para todas. -->
 <script src="../../lib/planilla.js"></script>
 <style>
-  :root{ --wine:#6b1f36; --rose:#b8677a; --blush:#f3dde3; --blush-light:#fbf1ee; --cream:#fffaf6; --gold:#b8935a; --ink:#3a2a2f; }
+  /* EL TABLERO, estilo "panel" (pedido del dueño, 24/11/2026, con dos
+     capturas de referencia): tarjetas blancas de números grandes, botones
+     con icono y la lista de las últimas confirmaciones. Se copió el
+     recurso, no la marca: los colores son los nuestros. */
+  :root{ --wine:#6b1f36; --rose:#c2566f; --blush:#fbe9ee; --fondo:#f7f3f0; --borde:#efe3e0;
+         --ink:#1f1a1c; --gris:#6f6468; --verde:#1f9d55; --rojo:#d93a3a; }
   *{ box-sizing:border-box; margin:0; padding:0; }
-  body{ font-family:'Jost', sans-serif; background:var(--blush-light); color:var(--ink); min-height:100vh; }
-  h1{ font-family:'Cormorant Garamond', serif; font-weight:600; }
-  .wrap{ max-width:720px; margin:0 auto; padding:32px 20px 60px; }
+  body{ font-family:'Poppins', system-ui, sans-serif; background:var(--fondo); color:var(--ink); min-height:100vh; }
+  .wrap{ max-width:760px; margin:0 auto; padding:22px 16px 60px; }
+  .tarjeta{ background:#fff; border:1px solid var(--borde); border-radius:20px; box-shadow:0 10px 26px -18px rgba(60,20,30,.25); }
 
   /* ---------- Portón de acceso ---------- */
-  #gate{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center; padding:20px; }
-  #gate h1{ font-size:28px; color:var(--wine); margin-bottom:8px; }
-  #gate p{ color:#8a7377; font-size:14px; margin-bottom:24px; max-width:280px; }
-  #gate input{ width:100%; max-width:300px; padding:13px 16px; border-radius:10px; border:1px solid #e0cdd2; font-family:'Jost',sans-serif; font-size:15px; margin-bottom:14px; }
-  #gate button{ background:var(--wine); color:#fff; border:none; padding:13px 32px; border-radius:30px; font-size:14px; cursor:pointer; }
-  #gate-error{ color:#c0392b; font-size:13px; margin-top:12px; min-height:18px; }
+  #gate{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:86vh; text-align:center; padding:20px; }
+  #gate .caja-gate{ width:100%; max-width:360px; padding:34px 24px; }
+  #gate .marca{ width:52px; height:52px; border-radius:14px; margin:0 auto 16px; display:grid; place-items:center;
+    background:linear-gradient(135deg,var(--rose),var(--wine)); color:#fff; }
+  #gate h1{ font-size:22px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  #gate p{ color:var(--gris); font-size:14px; margin-bottom:22px; }
+  #gate input{ width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--borde); background:#fff;
+    font-family:inherit; font-size:16px; margin-bottom:12px; }
+  #gate input:focus{ outline:none; border-color:var(--rose); }
+  #gate button{ width:100%; background:linear-gradient(135deg,var(--rose),var(--wine)); color:#fff; border:none;
+    padding:14px; border-radius:999px; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer; }
+  #gate-error{ color:var(--rojo); font-size:13px; margin-top:12px; min-height:18px; }
 
   /* ---------- Panel ---------- */
   #panel{ display:none; }
   #panel.show{ display:block; }
-  header{ text-align:center; margin-bottom:28px; }
-  header h1{ font-size:30px; color:var(--wine); }
-  header p{ color:#8a7377; font-size:14px; margin-top:4px; }
+  header{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  header .marca{ flex:none; width:46px; height:46px; border-radius:13px; display:grid; place-items:center;
+    background:linear-gradient(135deg,var(--rose),var(--wine)); color:#fff; }
+  header h1{ font-size:clamp(19px,5vw,24px); font-weight:700; line-height:1.2; }
+  header p{ color:var(--gris); font-size:13px; margin-top:2px; display:flex; align-items:center; gap:7px; }
+  header p:before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--verde); box-shadow:0 0 0 3px #d9f2e3; }
 
-  .stats{ display:flex; gap:12px; margin-bottom:24px; }
-  .stat{ flex:1; background:#fff; border-radius:14px; padding:18px 10px; text-align:center; box-shadow:0 8px 20px -8px rgba(107,31,54,0.15); }
-  .stat .n{ font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--wine); font-weight:600; }
-  .stat.confirmados .n{ color:#2e8b57; }
-  .stat.no-asisten .n{ color:#c0392b; }
-  .stat .lbl{ font-size:11px; letter-spacing:0.05em; color:#8a7377; margin-top:4px; text-transform:uppercase; }
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .stat{ padding:18px 18px 16px; }
+  .stat .lbl{ font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--gris); }
+  .stat .n{ font-size:clamp(30px,9vw,40px); font-weight:700; line-height:1.15; margin-top:6px; color:var(--ink); }
+  .stat .sub{ font-size:14px; color:var(--gris); }
+  .stat.confirmados .n{ color:var(--verde); }
+  .stat.no-asisten .n{ color:var(--rojo); }
+  .total{ font-size:13px; color:var(--gris); margin:-2px 2px 16px; }
+  .total b{ color:var(--ink); font-weight:600; }
 
-  .columnas{ background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:20px; box-shadow:0 8px 20px -8px rgba(107,31,54,0.1); }
-  .columnas p{ font-size:12px; color:#8a7377; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; }
-  .col-check{ display:inline-flex; align-items:center; gap:6px; margin:0 12px 8px 0; font-size:13px; }
-
-  .acciones{ display:flex; gap:10px; margin-bottom:24px; }
-  .acciones button{ flex:1; padding:13px; border-radius:10px; border:1px solid var(--wine); background:#fff; color:var(--wine); font-size:13px; cursor:pointer; }
-  .acciones button.filled{ background:var(--wine); color:#fff; }
+  .acciones{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
+  .acciones button,.acciones a.planilla{ display:flex; align-items:center; justify-content:center; gap:10px; min-height:58px;
+    padding:12px; border-radius:16px; border:1px solid #f0d6cf; background:#fffaf8; color:var(--ink);
+    font-family:inherit; font-size:15px; font-weight:500; cursor:pointer; text-decoration:none; }
+  .acciones svg{ flex:none; width:20px; height:20px; color:var(--rose); }
   /* Sólo aparece con la clave maestra: es el atajo al archivo de Drive
      y a la pestaña de esta fiesta. Sin display propio, para que el
      atributo "hidden" alcance para esconderlo. */
-  .acciones a.planilla{ flex:1; padding:13px; line-height:18px; border-radius:10px; border:1px dashed var(--wine); color:var(--wine); font-size:13px; text-align:center; text-decoration:none; }
+  .acciones a.planilla{ grid-column:1 / -1; border-style:dashed; }
+  .acciones a.planilla[hidden]{ display:none; }
   /* Dónde se guarda esto, en palabras. Sólo con la clave maestra: al
      cliente el nombre del archivo interno no le dice nada. */
-  .donde{ margin:-14px 0 22px; font-size:12px; line-height:1.5; color:#8a7377; }
+  .donde{ margin:-10px 0 20px; font-size:12px; line-height:1.5; color:var(--gris); }
   .donde b{ color:var(--wine); font-weight:600; }
 
-  .tabla-wrap{ background:#fff; border-radius:14px; overflow-x:auto; box-shadow:0 8px 20px -8px rgba(107,31,54,0.1); }
+  .bloque{ padding:20px 18px; margin-bottom:18px; }
+  .bloque h2{ font-size:18px; font-weight:700; margin-bottom:6px; }
+  /* las últimas confirmaciones */
+  .ult{ list-style:none; }
+  .ult li{ display:grid; grid-template-columns:44px 1fr auto; gap:12px; align-items:center; padding:14px 0; }
+  .ult li + li{ border-top:1px solid var(--borde); }
+  .ult .ini{ width:44px; height:44px; border-radius:50%; display:grid; place-items:center; background:var(--blush);
+    color:var(--rose); font-size:14px; font-weight:600; }
+  .ult .quien{ font-size:15px; font-weight:600; line-height:1.35; }
+  .ult .quien span{ font-weight:400; color:var(--gris); }
+  .ult .msj{ font-size:14px; font-style:italic; color:var(--gris); line-height:1.45; margin-top:2px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .ult .tema{ font-size:13.5px; color:var(--gris); margin-top:3px; }
+  .ult .estado{ font-size:14px; font-weight:600; }
+  .ult .estado.si{ color:var(--verde); }
+  .ult .estado.no{ color:var(--rojo); }
+
+  .columnas{ margin:6px 0 14px; }
+  .columnas p{ font-size:12px; font-weight:600; color:var(--gris); margin-bottom:8px; text-transform:uppercase; letter-spacing:.08em; }
+  .col-check{ display:inline-flex; align-items:center; gap:6px; margin:0 8px 8px 0; font-size:13px; padding:6px 12px;
+    border:1px solid var(--borde); border-radius:999px; background:#fffaf8; cursor:pointer; }
+  .col-check input{ accent-color:var(--rose); }
+
+  .tabla-wrap{ border:1px solid var(--borde); border-radius:14px; overflow-x:auto; }
   table{ width:100%; border-collapse:collapse; font-size:13px; }
   th, td{ padding:12px 14px; text-align:left; white-space:nowrap; }
-  th{ background:var(--blush); color:var(--wine); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; }
-  tr:not(:last-child) td{ border-bottom:1px solid #f2e5e8; }
-  td.confirma-si{ color:#2e8b57; font-weight:600; }
-  td.confirma-no{ color:#c0392b; font-weight:600; }
+  th{ background:#fcf4f2; color:var(--gris); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  tr:not(:last-child) td{ border-bottom:1px solid var(--borde); }
+  td.confirma-si{ color:var(--verde); font-weight:600; }
+  td.confirma-no{ color:var(--rojo); font-weight:600; }
 
-  #empty{ text-align:center; padding:40px 20px; color:#8a7377; font-size:14px; }
-  #loading{ text-align:center; padding:40px; color:#8a7377; font-size:14px; }
+  #empty{ text-align:center; padding:40px 20px; color:var(--gris); font-size:14px; }
+  #loading{ text-align:center; padding:40px; color:var(--gris); font-size:14px; }
 
+
+  /* ---------- MOVIMIENTO (24/11/2026): todo pasa UNA vez, al entrar ----------
+     Las piezas suben y se encienden escalonadas; el número de cada tarjeta
+     llega con un salto chico. El TEXTO del número no se anima (no "cuenta"):
+     las pruebas y quien mira leen el valor final desde el primer instante.
+     Con "menos movimiento" y al imprimir, nada se mueve. */
+  @keyframes subir{ from{ opacity:0; transform:translateY(14px); } }
+  @keyframes saltar{ 0%{ opacity:0; transform:scale(.6); } 70%{ transform:scale(1.06); } 100%{ opacity:1; transform:none; } }
+  @keyframes latido{ 0%{ box-shadow:0 0 0 0 rgba(31,157,85,.45); } 100%{ box-shadow:0 0 0 9px rgba(31,157,85,0); } }
+  #gate .caja-gate{ animation:subir .6s cubic-bezier(.22,.7,.24,1) both; }
+  #panel.show .anim{ animation:subir .55s cubic-bezier(.22,.7,.24,1) both; animation-delay:var(--d,0s); }
+  #panel.show .stat .n{ display:inline-block; animation:saltar .6s cubic-bezier(.3,.9,.3,1) both; animation-delay:calc(var(--d,0s) + .18s); }
+  #panel.show header p:before{ animation:latido 1.6s ease-out .4s 3; }
+  .ult li.anim{ animation-duration:.45s; }
+  .acciones button,.acciones a.planilla,.tarjeta{ transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  @media (hover:hover){
+    .acciones button:hover,.acciones a.planilla:hover{ transform:translateY(-2px); border-color:#e8bfc9; box-shadow:0 10px 20px -14px rgba(107,31,54,.45); }
+    .stat.tarjeta:hover{ transform:translateY(-2px); box-shadow:0 16px 30px -20px rgba(60,20,30,.35); }
+    #gate button:hover{ filter:brightness(1.06); }
+  }
+  .acciones button:active,#gate button:active{ transform:scale(.98); }
+  @media (prefers-reduced-motion:reduce){
+    *,*:before{ animation:none !important; transition:none !important; }
+  }
   @media print{
-    #gate, .acciones, .columnas{ display:none !important; }
+    *,*:before{ animation:none !important; transition:none !important; }
+    #gate, .acciones, .columnas, #ultimas, header .marca{ display:none !important; }
     body{ background:#fff; }
+    .tarjeta{ box-shadow:none; }
   }
 </style>
 </head>
@@ -84,50 +149,68 @@
      lista entera a quien la pidiera. Ahora la clave no está en ninguna
      página: la comprueba el Apps Script (ver apps-script/listado.gs.txt). -->
 <div id="gate">
-  <h1>Listado de invitados</h1>
-  <p>Ingresá la clave del listado para ver quiénes confirmaron.</p>
-  <input type="password" id="clave-input" placeholder="clave" autocomplete="current-password">
-  <button id="gate-btn">Ver listado</button>
-  <div id="gate-error"></div>
+  <div class="caja-gate tarjeta">
+    <div class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/></svg></div>
+    <h1>Listado de invitados</h1>
+    <p>Ingresá la clave del listado para ver quiénes confirmaron.</p>
+    <input type="password" id="clave-input" placeholder="Clave" autocomplete="current-password">
+    <button id="gate-btn">Ver listado</button>
+    <div id="gate-error"></div>
+  </div>
 </div>
 
 <div id="panel">
   <div class="wrap">
-    <header>
-      <h1 id="panel-title">Listado de invitados</h1>
-      <p id="panel-subtitle"></p>
+    <header class="anim">
+      <div class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4"/></svg></div>
+      <div>
+        <h1 id="panel-title">Listado de invitados</h1>
+        <p id="panel-subtitle"></p>
+      </div>
     </header>
 
     <!-- El número grande son PERSONAS, no respuestas. Una fila que dice
          "Cuántos: 4" es una familia de cuatro: contada como 1, el que
          arma las mesas encarga comida para menos gente de la que va. -->
     <div class="stats">
-      <div class="stat confirmados"><div class="n" id="stat-confirmados">–</div><div class="lbl">Vienen</div></div>
-      <div class="stat no-asisten"><div class="n" id="stat-no">–</div><div class="lbl">No vienen</div></div>
-      <div class="stat"><div class="n" id="stat-total">–</div><div class="lbl">Respuestas</div></div>
+      <div class="stat confirmados tarjeta anim" style="--d:.06s"><div class="lbl">Asisten</div><div class="n" id="stat-confirmados">–</div><div class="sub">personas</div></div>
+      <div class="stat no-asisten tarjeta anim" style="--d:.12s"><div class="lbl">No asisten</div><div class="n" id="stat-no">–</div><div class="sub">respuestas</div></div>
+      <div class="stat tarjeta anim" style="--d:.18s"><div class="lbl">Mensajes</div><div class="n" id="stat-mensajes">–</div><div class="sub">de tus invitados</div></div>
+      <div class="stat tarjeta anim" style="--d:.24s"><div class="lbl">Canciones</div><div class="n" id="stat-canciones">–</div><div class="sub">sugeridas</div></div>
     </div>
+    <p class="total anim" style="--d:.3s"><b id="stat-total">–</b> respuestas en total</p>
 
-    <div class="columnas">
-      <p>Columnas visibles</p>
-      <div id="col-checks"></div>
-    </div>
-
-    <div class="acciones">
-      <button id="btn-excel" class="filled">Descargar Excel</button>
-      <button id="btn-print">Imprimir listado</button>
+    <div class="acciones anim" style="--d:.34s">
+      <button id="btn-excel" class="filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>Exportar Excel</button>
+      <button id="btn-print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3.5V8h4.5"/></svg>Descargar PDF</button>
       <a id="ir-planilla" class="planilla" target="_blank" rel="noopener" hidden>Abrir la planilla</a>
     </div>
 
     <p id="donde" class="donde" hidden></p>
 
-    <div id="loading">Cargando confirmaciones...</div>
-    <div id="empty" style="display:none;">Todavía no hay confirmaciones cargadas.</div>
-    <div class="tabla-wrap" id="tabla-wrap" style="display:none;">
-      <table id="tabla">
-        <thead><tr id="tabla-head"></tr></thead>
-        <tbody id="tabla-body"></tbody>
-      </table>
-    </div>
+    <!-- Las últimas respuestas, como tarjetas: quién, cuántos, su mensaje,
+         su tema y si viene. Es lo que se mira todos los días; la tabla
+         de abajo es la que se imprime y se le pasa al salón. -->
+    <section class="bloque tarjeta anim" id="ultimas" style="--d:.4s" hidden>
+      <h2>Últimas confirmaciones</h2>
+      <ul class="ult" id="ult-lista"></ul>
+    </section>
+
+    <section class="bloque tarjeta anim" style="--d:.46s">
+      <h2>Listado completo</h2>
+      <div class="columnas">
+        <p>Columnas visibles</p>
+        <div id="col-checks"></div>
+      </div>
+      <div id="loading">Cargando confirmaciones...</div>
+      <div id="empty" style="display:none;">Todavía no hay confirmaciones cargadas.</div>
+      <div class="tabla-wrap" id="tabla-wrap" style="display:none;">
+        <table id="tabla">
+          <thead><tr id="tabla-head"></tr></thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -361,10 +444,14 @@ function porPersona(filas){
       if (k > 1){
         /* Los campos de esta persona pisan a los de la primera. */
         fila[COL_NOMBRE] = '';
-        porNumero[k].forEach(x => { fila[destino(x.base)] = f[x.col]; });
+        (porNumero[k] || []).forEach(x => { fila[destino(x.base)] = f[x.col]; });
       }
       const nom = String(fila[COL_NOMBRE] == null ? '' : fila[COL_NOMBRE]).trim();
-      fila[COL_NOMBRE] = nom || (k === 1 ? (quien || SIN_NOMBRE) : SIN_NOMBRE);
+      /* Un acompañante sin nombre (los que confirmaron antes de que el
+         formulario lo pidiera, 24/11/2026) se muestra con el nombre de
+         quien lo anotó: "(sin nombre)" solo no le dice a nadie a quién sentar. */
+      fila[COL_NOMBRE] = nom || (k === 1 ? (quien || SIN_NOMBRE)
+                                         : (quien ? 'Acompañante de ' + quien : SIN_NOMBRE));
       fuera.push(fila);
     }
   });
@@ -542,6 +629,37 @@ function actualizarStats(){
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-confirmados').textContent = vienen();
   document.getElementById('stat-no').textContent = noAsisten;
+  /* Mensajes y canciones: se cuentan sobre las RESPUESTAS (una por
+     familia), que es donde se escriben. Sin esa pregunta, va un guion. */
+  const claves = columnasDe(respuestas);
+  const colMsj = buscarCol(claves, 'mensaje'), colTema = buscarCol(claves, 'cancion') || buscarCol(claves, 'tema');
+  const lleno = (f, c) => c && String(f[c] == null ? '' : f[c]).trim() !== '';
+  document.getElementById('stat-mensajes').textContent = colMsj ? respuestas.filter(f => lleno(f, colMsj)).length : '–';
+  document.getElementById('stat-canciones').textContent = colTema ? respuestas.filter(f => lleno(f, colTema)).length : '–';
+  pintarUltimas(colMsj, colTema);
+}
+
+/* LAS ÚLTIMAS CONFIRMACIONES. La planilla agrega cada respuesta al final,
+   así que las últimas son las de abajo. Todo pasa por esc(): lo escribió
+   un invitado. */
+function pintarUltimas(colMsj, colTema){
+  const caja = document.getElementById('ultimas'), lista = document.getElementById('ult-lista');
+  if (!caja || !respuestas.length) return;
+  const colCuantos = buscarCol(columnasDe(respuestas), 'cuantos');
+  const txt = (f, c) => c ? String(f[c] == null ? '' : f[c]).trim() : '';
+  lista.innerHTML = respuestas.slice(-5).reverse().map((f, i) => {
+    const nom = txt(f, COL_NOMBRE) || SIN_NOMBRE;
+    const ini = nom.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+    const si = esSi(f[COL_CONFIRMA]);
+    const n = si && colCuantos ? parseInt(txt(f, colCuantos).replace(/[^0-9]/g, ''), 10) : 0;
+    const msj = txt(f, colMsj), tema = txt(f, colTema);
+    return '<li class="anim" style="--d:' + (0.5 + i * 0.07).toFixed(2) + 's"><span class="ini" aria-hidden="true">' + esc(ini) + '</span><div>' +
+      '<p class="quien">' + esc(nom) + (n > 1 ? ' <span>· ' + n + ' personas</span>' : '') + '</p>' +
+      (msj ? '<p class="msj">«' + esc(msj) + '»</p>' : '') +
+      (tema ? '<p class="tema">♫ ' + esc(tema) + '</p>' : '') +
+      '</div><span class="estado ' + (si ? 'si' : 'no') + '">' + (si ? 'Asiste' : 'No puede') + '</span></li>';
+  }).join('');
+  caja.hidden = false;
 }
 
 function renderTabla(){
