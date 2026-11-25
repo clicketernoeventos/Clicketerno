@@ -12,6 +12,7 @@ el dueño.** Lo demás vive aparte y se lee cuando hace falta:
 |---|---|
 | Muro, rollo, base, SQL, seguridad, página pública, lo legal, pendientes del proyecto | `PROYECTO.md` (leerlo antes de tocar algo de afuera de una tarjeta) |
 | Cómo se hace una tarjeta, paso a paso | skill `/tarjeta` (`.claude/skills/tarjeta/SKILL.md`) |
+| Cómo se hace un save the date (modelo `lola15/`) | skill `/savethedate` (`.claude/skills/savethedate/SKILL.md`) |
 | El manual de las invitaciones (CSP, pesos, nombres reservados, RSVP) | `invitaciones/COMO-SE-HACE.md` |
 | La crónica de cada tarjeta | `invitaciones/HISTORIA.md` (leer la de la que se copia) |
 | Copia del HTML de cada tarjeta terminada | `tarjetas/<nombre>.html` (archivo, no se publica) |
@@ -45,7 +46,8 @@ el dueño.** Lo demás vive aparte y se lee cuando hace falta:
 ## Reglas fijas de las tarjetas
 
 **Cómo nace una.** Se copia la más parecida (`ambar15/` con sobre,
-`facuymaxi/` sin sobre; las últimas son `maricel50/` y `valentinaegreso/`)
+`facuymaxi/` sin sobre; las más completas y recientes son `julieta/` (sobre con sello, foto con bordes arrancados, cortes con adorno dorado, marcos dorados en los botones, reproductor, panel de canciones en `julieta/canciones`) y `lucia15/` (plata y bola de espejos);
+el **save the date** es `lola15/`, la muestra modelo "afiche")
 y se le cambia la cara, no la maquinaria. Carpeta en la raíz, en
 minúscula, sin espacios ni acentos: `<nombre>/index.html` se sirve en
 `clicketerno.com.ar/<nombre>`. **Repartido el link, la carpeta no se mueve
@@ -144,6 +146,8 @@ de nuevo.
 4. Mirar el check **"Workers Builds"** del commit: si dice *failure*, lo
    publicado es lo de antes.
 5. Verificar lo publicado bajando `clicketerno.com.ar/<carpeta>`.
+
+**Dos trampas del flujo que ya costaron vueltas:** (1) si el merge a `main` da conflicto por los squash anteriores, la tarjeta se resuelve con la versión de la rama, pero `invitaciones/HISTORIA.md` se arma tomando la de `main` y **agregando solo el párrafo nuevo**: con `--ours` se pisa lo que escribieron otras sesiones; (2) los textos con acentos graves van en heredocs entrecomillados (`<<'EOF'`), si no el shell los ejecuta y se come el texto.
 
 `.assetsignore` decide qué NO sube a la web: `.git/`, `sql/`, `pruebas/`,
 `apps-script/`, `flyer/`, `tarjetas/`, `respaldo/` y los `.md`. Antes de

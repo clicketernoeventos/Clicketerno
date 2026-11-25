@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
+<title>Julieta · Mis XV años</title>
+<meta name="description" content="Mis XV años · 6 de diciembre de 2026, 22:30 hs, Santiago del Estero.">
+<meta name="theme-color" content="#CFDDB1">
+<!-- `noindex`: es la fiesta de una persona de verdad. El que tiene el link
+     entra igual; esto la saca de los buscadores. -->
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Julieta · Mis XV años">
+<meta property="og:description" content="Mis XV años · 6 de diciembre de 2026 · 22:30 hs · Santiago del Estero">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og2.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- El peso que se pide acá es el que usa el CSS. -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Great+Vibes&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Great+Vibes&family=Hanken+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   Julieta · pistacho, versión "moderna"
+   Colores planos en bloques, el nombre enorme en tipografía gruesa,
+   círculos que se pisan, cintas inclinadas y etiquetas numeradas. El
+   rosa es solo de detalle. Cada pieza (cuenta, calendario, reproductor)
+   la eligió ella mirando un mockup. No hay sobre ni curvas.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --fondo:#E9F0D6;
+  --pistacho-0:#E4EDCD; --pistacho:#CFDDB1; --pistacho-2:#B9CE93; --salvia:#A3BC7E;
+  --hoja:#6F8F53; --verde:#56733F; --hondo:#3F5B33; --noche:#2C4224; --noche-2:#1F3219;
+  --tinta:#223619;
+  --rosa:#F4D2DB; --rosa-2:#E8B3C1; --rosa-t:#7E3F52;
+  --negro:#14181A;
+  --titulos:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
+  --texto-f:'Hanken Grotesk',system-ui,sans-serif;
+  --e:cubic-bezier(.22,.7,.24,1);
+  --gutter:clamp(22px,6vw,40px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--pistacho);color:var(--tinta);font-family:var(--texto-f);font-weight:400;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+main{max-width:560px;margin:0 auto;background:var(--pistacho)}
+section{position:relative;overflow:hidden;padding:clamp(48px,10vw,64px) var(--gutter)}
+section > *{position:relative;z-index:1}
+.c{position:absolute!important;border-radius:50%;z-index:0!important;pointer-events:none}
+.tag{display:inline-block;padding:7px 13px;border-radius:99px;background:var(--noche);color:var(--pistacho);
+  font:500 10px/1.2 var(--texto-f);letter-spacing:.2em;text-transform:uppercase}
+h2{font:800 clamp(44px,13vw,64px)/.92 var(--titulos);letter-spacing:-.045em;color:var(--noche);margin-top:14px}
+p{font-size:15px}
+.dk{background:var(--noche);color:var(--pistacho)}
+.dk h2{color:var(--pistacho)}
+.dk .tag{background:var(--pistacho);color:var(--noche)}
+
+/* botones: rectángulos redondeados, 48 de alto */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;min-width:44px;padding:0 22px;margin-top:20px;
+  border-radius:14px;background:var(--noche);color:var(--pistacho);border:1.5px solid var(--noche);
+  font:500 11px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+  transition:transform .3s var(--e)}
+.btn svg{width:17px;height:17px;flex:none}
+.btn:active{transform:scale(.975)}
+.btn.o{background:transparent;color:var(--noche)}
+.dk .btn{background:var(--pistacho);color:var(--noche);border-color:var(--pistacho)}
+
+/* ══ LA PARTE DE PAPEL (la referencia que mandó: sobre con sello y hoja clara) ══ */
+:root{--papel:#F4F8E8;--bodoni:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;--mano:'Pinyon Script','Snell Roundhand',cursive}
+html.cerrado,html.cerrado body{overflow:hidden;height:100%}
+/* la portada nace apagada y se enciende mientras el sobre se va: un cruce, no un corte */
+html.js #portada{opacity:0}
+html.listo #portada{opacity:1;transition:opacity 1.3s ease}
+@media (prefers-reduced-motion:reduce){html.listo #portada{transition:none}}
+.papel{background:var(--papel);color:var(--tinta)}
+.papel + .papel{border-top:0}
+.script{font-family:var(--mano);font-weight:400;color:var(--verde);line-height:1.05}
+.rotulo{font:500 10px/1 var(--texto-f);letter-spacing:.34em;text-transform:uppercase;color:var(--verde)}
+.hilo{display:flex;align-items:center;gap:12px;font:400 11px/1 var(--texto-f);letter-spacing:.2em;color:var(--tinta)}
+.hilo i{flex:1;height:1px;background:rgba(34,54,25,.35);position:relative}
+.hilo i::after{content:"+";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);background:var(--papel);padding:0 6px;font-size:13px;font-style:normal}
+
+/* el sobre */
+#sobre{position:fixed;inset:0;z-index:50;background:radial-gradient(120% 90% at 50% 20%,#7FA062,#56733F 62%,#3F5B33);display:grid;place-items:center;
+  transition:opacity 1.2s ease;overflow:hidden}
+#sobre.saliendo{opacity:0;pointer-events:none}
+html:not(.js) #sobre{display:none}
+.sobre-centro{text-align:center;color:#EAF2D6}
+.sobre-centro .arriba{font:500 10px/1 var(--texto-f);letter-spacing:.34em;text-transform:uppercase;margin-bottom:26px;color:var(--pistacho)}
+.env{position:relative;width:min(84vw,340px);aspect-ratio:1.46;margin:0 auto;perspective:900px}
+.env > div{position:absolute;inset:0}
+.env .carta{inset:6% 7% 14%;background:var(--papel);border-radius:6px;z-index:1;display:grid;place-items:center;text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);transition:transform 1s cubic-bezier(.3,.8,.3,1) .5s;color:var(--tinta);font:italic 400 clamp(30px,9vw,42px)/1 var(--bodoni)}
+.env .carta small{display:block;font:500 8.5px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;font-style:normal;margin-top:12px;color:var(--verde)}
+.env .lado,.env .fondo{z-index:2}
+.env .lado.i{background:#6E8F52;clip-path:polygon(0 0,52% 56%,0 100%)}
+.env .lado.d{background:#648549;clip-path:polygon(100% 0,48% 56%,100% 100%)}
+.env .fondo{background:#76975A;clip-path:polygon(0 100%,50% 46%,100% 100%)}
+.env .solapa{z-index:3;background:#7FA062;clip-path:polygon(0 0,100% 0,50% 60%);transform-origin:50% 0;
+  transition:transform .8s cubic-bezier(.4,.1,.3,1),z-index 0s .35s;box-shadow:inset 0 -10px 20px rgba(0,0,0,.12)}
+.env .detras{background:#4F6C3A;border-radius:4px;z-index:0}
+#abrir{position:absolute;left:50%;top:56%;width:68px;height:68px;margin:-34px 0 0 -34px;z-index:4;border:0;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#F9DDE5,#E8B3C1 62%,#CF8EA2);color:#7E3F52;display:grid;place-items:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 0 0 3px rgba(255,255,255,.25),inset 0 0 0 5px rgba(126,63,82,.25);
+  font:italic 400 30px/1 var(--bodoni);transition:opacity .35s,transform .35s}
+#abrir:active{transform:scale(.94)}
+.sobre-pie{margin-top:34px;font:500 10px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
+#sobre.abierto .solapa{transform:rotateX(180deg);z-index:0}
+#sobre.abierto .carta{transform:translateY(-62%)}
+#sobre.abierto #abrir{opacity:0;transform:scale(1.4);pointer-events:none}
+@media (prefers-reduced-motion:reduce){#sobre,.env .carta,.env .solapa,#abrir{transition:none!important}}
+
+.flor{position:absolute;pointer-events:none;z-index:1;height:auto;overflow:visible}
+.chispa{position:absolute;pointer-events:none;z-index:1;color:var(--pistacho)}
+.f-port-i{left:-36px;top:calc(clamp(300px,52svh,500px) - 118px);width:176px;z-index:3}
+.f-port-d{right:-34px;top:calc(clamp(300px,52svh,500px) - 84px);width:132px;scale:-1 1;rotate:-6deg;z-index:3}
+.f-inv-a{right:-30px;top:-14px;width:120px;rotate:155deg;opacity:.95}
+.f-inv-b{left:-34px;bottom:-34px;width:122px;rotate:-18deg;opacity:.95}
+.f-fec{right:-34px;bottom:-30px;width:128px;rotate:-160deg;opacity:.95}
+.f-cue{left:-62px;top:-66px;width:104px;rotate:20deg;opacity:.95}
+.mapa-wrap{position:relative;max-width:340px;margin:24px auto 0}
+.mapa-wrap .mapa{margin:0}
+.f-lug{right:-30px;bottom:-22px;width:124px;rotate:-12deg;z-index:3}
+.cinta-wash{position:absolute;left:50%;top:-11px;width:92px;height:24px;margin-left:-46px;background:rgba(244,210,219,.9);rotate:-3deg;z-index:3;pointer-events:none}
+.f-lis{right:-34px;bottom:-40px;width:150px;rotate:-170deg;opacity:.7}
+.f-reg{right:-30px;top:-26px;width:116px;rotate:160deg;opacity:.9}
+.f-dre{right:-30px;bottom:-34px;width:150px;rotate:-12deg;opacity:.9}
+.corte{display:block;position:relative;z-index:3;height:28px;margin:-1px 0;line-height:0;pointer-events:none}
+.corte .orna{position:absolute;left:50%;top:50%;width:min(300px,76%);height:auto;transform:translate(-50%,-50%);filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.corte svg{width:100%;height:100%;display:block}
+
+/* la portada de papel */
+#portada{min-height:100svh;padding:0 0 clamp(34px,6vh,52px);display:flex;flex-direction:column;text-align:center}
+/* LA FOTO: arranca arriba, ocupa todo el ancho y tiene el borde de arriba y el de abajo como arrancados.
+   Son dos capas: la de afuera (blanca) y la de adentro (la foto) con la onda corrida, así queda una
+   rebarba finita de papel en el borde. Las ondas las dibuja el JS con una semilla fija. */
+.rasgo{position:relative;height:clamp(300px,52svh,500px);background:#fff;clip-path:url(#rasgoA);
+  filter:drop-shadow(0 10px 12px rgba(34,54,25,.18))}
+.rasgo-in{position:absolute;inset:0;clip-path:url(#rasgoB);background:var(--pistacho);display:grid;place-items:center;
+  font:400 clamp(70px,22vw,110px)/.92 var(--bodoni);color:var(--verde);letter-spacing:-.02em}
+.rasgo-in span{text-align:center}.rasgo-in b{display:block;font-weight:400}
+.rasgo-in img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block;
+  /* en blanco y negro: el filtro va en el CSS y no en el archivo */
+  filter:grayscale(1) contrast(1.06) brightness(1.04)}
+.rasgo-wrap{filter:drop-shadow(0 10px 12px rgba(34,54,25,.16))}
+.rasgo-wrap .rasgo{filter:none}
+.portada-txt{padding:clamp(22px,4vh,34px) var(--gutter) 0;display:flex;flex-direction:column;gap:clamp(14px,2.6vh,22px)}
+#nombre{font:400 clamp(70px,22vw,120px)/.9 var(--bodoni);letter-spacing:-.02em;color:var(--noche)}
+#portada .script.sub{font-size:clamp(28px,8vw,38px);margin-top:-4px}
+.chips-nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.chips-nav a{display:inline-flex;align-items:center;min-height:46px;padding:0 18px;border-radius:99px;border:1px solid var(--verde);font:500 10px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--noche)}
+@media (hover:hover){.chips-nav a:hover{background:rgba(86,115,63,.1)}}
+.pa{opacity:0;transform:translateY(16px)}
+html.listo .pa{animation:sube .9s var(--e) forwards}
+html.listo .pa.p2{animation-delay:.18s}html.listo .pa.p3{animation-delay:.36s}html.listo .pa.p4{animation-delay:.54s}
+html:not(.js) .pa{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.pa{opacity:1;transform:none}html.listo .pa{animation:none}}
+@keyframes sube{to{opacity:1;transform:none}}
+
+/* estás invitado */
+#invitado{padding:clamp(56px,10vw,80px) var(--gutter);text-align:center}
+#invitado h2{font:400 clamp(44px,13vw,64px)/1 var(--bodoni);color:var(--noche);letter-spacing:-.01em;margin-top:16px}
+#invitado h2 em{display:block;font:400 clamp(30px,9vw,42px)/1 var(--mano);color:var(--verde);margin-top:6px;font-style:normal}
+#invitado p{margin:18px auto 0;max-width:340px;font-size:15.5px}
+/* la carta larga: las dos frases de apertura y cierre en cursiva (se leen porque son cortas); el cuerpo en letra de palo, que a 15 px se lee */
+#invitado .carta-a{font:400 clamp(27px,7.8vw,34px)/1.22 var(--cursiva,'Great Vibes','Pinyon Script',cursive);color:var(--hondo);margin-top:22px}
+#invitado .carta-p{font:300 15.5px/1.75 var(--texto-f);color:var(--tinta);margin-top:0}
+#invitado .carta-p + .carta-p{margin-top:16px}
+#invitado .corazon{width:30px;height:30px;color:var(--rosa-2);margin-top:14px}
+.sep-p{display:flex;align-items:center;justify-content:center;gap:12px;margin:24px auto;color:var(--verde)}
+.sep-p i{width:54px;height:1px;background:currentColor;opacity:.45}
+.sep-p svg{width:13px;height:13px;color:var(--oro-2,#C8A75B)}
+.corazon{display:block;width:26px;height:26px;margin:16px auto 0;color:var(--rosa-2)}
+
+/* el calendario: la semana y el día entre garabatos */
+#fecha{padding:clamp(40px,8vw,64px) var(--gutter) clamp(54px,9vw,76px);text-align:center}
+.sem{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:26px auto 0;max-width:340px}
+.sem div{padding:10px 0;position:relative}
+.sem small{display:block;font:500 9.5px/1 var(--texto-f);letter-spacing:.28em;text-transform:uppercase;color:var(--verde)}
+.sem b{display:block;font:400 clamp(46px,14vw,62px)/1.1 var(--bodoni);color:var(--noche);margin-top:8px;position:relative}
+.sem .e b{color:var(--noche)}
+.garabato{position:absolute;left:50%;top:58%;width:92%;height:78%;transform:translate(-50%,-50%) rotate(-6deg);color:var(--rosa-2);overflow:visible;pointer-events:none}
+.dib{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.js .dib{stroke-dasharray:1;stroke-dashoffset:1}
+.js .ya .dib,.js .ya.dib{stroke-dashoffset:0;transition:stroke-dashoffset 1.6s ease .3s}
+@media (prefers-reduced-motion:reduce){.js .dib{stroke-dashoffset:0;transition:none}}
+#fechaTxt{margin-top:20px;font-size:14px;color:var(--noche)}
+
+/* la cuenta */
+#cuenta{padding:clamp(34px,7vw,56px) var(--gutter) clamp(54px,9vw,76px);text-align:center}
+#cuenta .script{font-size:clamp(30px,9vw,42px)}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:22px auto 0;max-width:380px;border-top:1px solid rgba(34,54,25,.3);border-bottom:1px solid rgba(34,54,25,.3);padding:18px 0 14px}
+.cd div{border-left:1px solid rgba(34,54,25,.18)}.cd div:first-child{border-left:0}
+.cd b{display:block;font:400 clamp(34px,10.5vw,50px)/1 var(--bodoni);color:var(--noche);font-variant-numeric:lining-nums tabular-nums}
+.cd span{display:block;margin-top:8px;font:500 9px/1 var(--texto-f);letter-spacing:.24em;text-transform:uppercase;color:var(--verde)}
+
+/* dónde: el mapa dibujado */
+#lugar{padding:clamp(48px,9vw,72px) var(--gutter);text-align:center}
+#lugar h2{font:400 clamp(54px,17vw,84px)/.95 var(--bodoni);color:var(--noche);letter-spacing:-.01em;margin-top:12px}
+#lugar .script{font-size:clamp(30px,9vw,42px);margin-top:2px}
+.mapa{position:relative;max-width:340px;margin:24px auto 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 24px -14px rgba(34,54,25,.5);rotate:1.5deg;background:#E7EFD2}
+.mapa svg.base{display:block;width:100%;height:auto}
+.mapa .garabato{width:46%;height:46%;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg)}
+.mapa .flecha{position:absolute;left:6%;top:10%;width:34%;color:var(--noche)}
+.mapa .flecha .dib{stroke-width:2.2}
+.mapa .aca{position:absolute;left:5%;top:5%;font:400 24px/1 var(--mano);color:var(--noche)}
+.lug-dato{margin-top:22px;font-size:15px}
+.lug-dato b{display:block;font:500 11px/1 var(--texto-f);letter-spacing:.28em;text-transform:uppercase;color:var(--verde);margin-bottom:8px}
+.btn-ruta{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 24px;margin-top:20px;border-radius:99px;background:var(--hondo);color:#F2F8E4;
+  font:500 11px/1 var(--texto-f);letter-spacing:.22em;text-transform:uppercase;text-decoration:none;transition:transform .3s var(--e)}
+.btn-ruta:active{transform:scale(.975)}
+
+/* ── 5 · música: el reproductor ── */
+#musica{background:var(--salvia)}
+#musica[hidden]{display:none}
+
+/* ── 6 · playlist ── */
+#lista{background:var(--pistacho)}
+#lista[hidden]{display:none}
+
+/* ── 7 · dress code ── */
+#dress{background:var(--negro);color:#E9F1D8}
+#dress .tag{background:var(--pistacho);color:var(--negro)}
+
+#dress .rotulo-d{font:500 11px/1 var(--texto-f);letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
+/* LA PAREJA: dibujo de línea negra sobre blanco que mandó el dueño. Se invierte (líneas blancas sobre negro) y una
+   capa pistacho en multiplicar las tiñe. El fondo es NEGRO de verdad para que el medidor de contraste lo vea. El texto va en el hueco del medio. */
+.sil{position:relative;margin-top:18px;isolation:isolate;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(207,221,177,.4)}
+.sil img{display:block;width:100%;height:auto;filter:invert(1);mix-blend-mode:screen}
+.sil.con-img::after{content:"";position:absolute;inset:0;background:var(--pistacho);mix-blend-mode:multiply;z-index:1;pointer-events:none}
+.sil-txt{background:var(--negro);padding:26px 0 10px}
+.sil.con-img .sil-txt{position:absolute;left:27%;right:27%;top:17%;bottom:19%;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:0;background:transparent;mix-blend-mode:normal;z-index:2}
+#dress .sil-txt h2{font:800 clamp(38px,12.5vw,64px)/.92 var(--titulos);letter-spacing:-.045em;color:var(--pistacho);margin:12px 0 10px}
+#dress .sil-txt p{font-size:clamp(12.5px,3.4vw,15px);margin:0;color:#E9F1D8;line-height:1.4}
+
+/* ── 8 · regalo ── */
+#regalo{background:var(--pistacho-2)}
+#regalo p{margin-top:10px;max-width:340px}
+.rot{font:700 11px/1 var(--texto-f);letter-spacing:.24em;text-transform:uppercase;margin-top:24px!important;color:var(--noche)}
+#alias{display:block;margin-top:8px;font:800 clamp(34px,10.5vw,50px)/.95 var(--titulos);letter-spacing:-.04em;color:var(--noche);word-break:break-all}
+
+/* ── 9 · confirmar ── */
+#confirmar p{margin-top:10px;max-width:360px;color:#E3EDCB}
+
+.firma{padding:20px var(--gutter) calc(40px + env(safe-area-inset-bottom));text-align:center;background:var(--noche);
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--pistacho)}
+.firma a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;text-underline-offset:6px}
+
+
+/* ══ LA LETRA CURSIVA DORADA Y EL TEXTO AL MEDIO (la referencia: fondo verde hondo, caligrafía dorada centrada) ══
+   El dorado solo se lee sobre los verdes hondos, así que estas cinco secciones son verde hondo y el pistacho
+   queda para el papel, las rebarbas y los detalles. Si un bloque trae su fondo, trae su tinta. */
+:root{--oro:#DDBF73;--oro-2:#C8A75B;--cursiva:'Great Vibes','Pinyon Script','Snell Roundhand',cursive}
+#musica,#lista,#dress,#regalo,#confirmar{text-align:center;color:var(--oro)}
+#musica{background:var(--hondo)}
+#lista{background:var(--noche)}
+#regalo{background:var(--hondo)}
+#confirmar{background:var(--noche)}
+#musica .tag,#lista .tag,#dress .tag,#regalo .tag,#confirmar .tag{background:var(--oro);color:var(--noche)}
+#lista h2,#confirmar h2,#dress .sil-txt h2{font:400 clamp(50px,15vw,72px)/1.02 var(--cursiva);letter-spacing:0;color:var(--oro)}
+#lista p,#confirmar p,#regalo p,#dress .sil-txt p{font:400 clamp(23px,6.6vw,28px)/1.32 var(--cursiva);color:var(--oro)}
+#lista p,#confirmar p,#regalo p{max-width:340px;margin-left:auto;margin-right:auto}
+#regalo .rot{font:500 11px/1 var(--texto-f);letter-spacing:.26em;text-transform:uppercase;color:var(--oro-2)}
+#alias{font:400 clamp(46px,14vw,66px)/1.05 var(--cursiva);letter-spacing:0;color:var(--oro)}
+#dress .rotulo-d{color:var(--oro-2)}
+#dress .sil-txt p{font-size:clamp(19px,5.4vw,23px)}
+#dress .sil-txt h2{font-size:clamp(40px,12.5vw,60px);margin:8px 0 6px}
+#regalo .btn{background:transparent;color:var(--oro);border-color:var(--oro-2)}
+#lista .btn,#confirmar .btn{background:var(--oro);color:var(--noche);border-color:var(--oro)}
+
+#musica .c,#lista .c,#regalo .c{opacity:.2}
+#dress .sil-txt .rotulo-d{font:500 9.5px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;color:var(--oro-2)}
+
+/* LA PORTADA: pistacho más profundo (oliva) con manchas difuminadas de verde musgo y lucecitas de pistacho claro; el nombre
+   en cursiva dorada a lo ancho. El color de base es el que lee el medidor de contraste, así que es lo bastante hondo para
+   sostener el dorado; las manchas claras van arriba y a los lados y NO tocan el borde de abajo (ahí se une con el corte). */
+#portada{background-color:#5E7D45;color:var(--oro-claro)}
+/* las manchas van en una capa de atrás: así el medidor de contraste lee el color de base, que es el que sostiene el dorado */
+#portada::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(70% 30% at 50% 60%,rgba(31,50,25,.7),rgba(31,50,25,.35) 60%,transparent 100%),
+    radial-gradient(46% 22% at 6% 80%,rgba(36,57,30,.6),transparent 72%),
+    radial-gradient(44% 20% at 96% 70%,rgba(36,57,30,.55),transparent 72%),
+    radial-gradient(55% 20% at 90% 38%,rgba(185,206,147,.5),transparent 75%),
+    radial-gradient(50% 18% at 10% 46%,rgba(170,196,128,.45),transparent 75%)}
+:root{--oro-claro:#F2D890}
+#portada .hilo{color:var(--oro-claro)}
+#portada .hilo i{background:rgba(242,216,144,.6)}
+#portada .hilo i::after{content:none}
+#nombre{font:400 min(33vw,190px)/.95 var(--cursiva);letter-spacing:0;color:var(--oro-claro);white-space:nowrap;text-shadow:0 2px 14px rgba(20,32,15,.55)}
+#portada .script.sub{font-family:var(--cursiva);font-size:clamp(28px,8vw,40px);color:var(--oro-claro);margin-top:2px}
+#portada .chips-nav a{border-color:var(--oro-claro);color:var(--oro-claro)}
+@media (hover:hover){#portada .chips-nav a:hover{background:rgba(221,191,115,.12)}}
+
+/* el formulario "¡Vos elegís la música!" */
+.disco-ic{width:56px;height:56px;margin:0 auto 14px;color:var(--oro)}
+.disco-ic svg{width:100%;height:100%;display:block}
+#lista h2{font-size:clamp(44px,13vw,62px)}
+.form-c{max-width:380px;margin:22px auto 0;text-align:left}
+.form-c label{display:block;margin:16px 0 6px;font:500 11px/1 var(--texto-f);letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.form-c input[type=text]{display:block;width:100%;min-height:52px;padding:0 16px;background:rgba(0,0,0,.28);border:1px solid var(--oro-2);border-radius:12px;
+  color:#F6EBC8;font:400 16px/1.2 var(--texto-f)}
+.form-c input::placeholder{color:rgba(246,235,200,.5)}
+.form-c input:focus{outline:2px solid var(--oro);outline-offset:2px}
+.form-c input.trampa{position:absolute!important;left:-9999px!important;width:0!important;height:0!important;min-height:0!important;padding:0!important;border:0!important;margin:0!important;opacity:0!important;pointer-events:none!important}
+.form-c .btn{display:flex;margin:26px auto 0;font-family:var(--texto-f);cursor:pointer;color:var(--oro)}
+.form-c .btn[disabled]{opacity:.6;cursor:default}
+#lista .c-msg{font:500 14px/1.4 var(--texto-f);letter-spacing:0;text-align:center;max-width:none;margin:14px auto 0;min-height:20px;color:var(--oro)}
+#lista .c-msg.mal{color:#FFB4A8}
+#lista .gracias{font:400 clamp(21px,6vw,25px)/1.3 var(--cursiva);margin-top:26px}
+
+/* el reproductor de la referencia: botón + ondas, la línea, y cinco mandos */
+.rep{max-width:420px;margin:26px auto 0}
+.rep-top{display:flex;align-items:center;gap:12px}
+.rep .play{flex:none;width:58px;height:58px;border-radius:50%;border:0;background:var(--oro);color:var(--noche);display:grid;place-items:center;cursor:pointer}
+.rep .play svg{width:22px;height:22px;fill:currentColor}
+.rep .ondas{flex:1;min-width:0;height:56px;display:flex;align-items:center;gap:2px;cursor:pointer;touch-action:none}
+.rep .ondas i{flex:1;min-width:0;border-radius:2px;background:rgba(221,191,115,.28);transition:background-color .2s}
+.rep .ondas i.hecha{background:var(--oro)}
+.lin{height:44px;display:flex;align-items:center;cursor:pointer;touch-action:none;margin-top:8px}
+.lin div{position:relative;flex:1;height:3px;border-radius:2px;background:rgba(221,191,115,.3)}
+.lin i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--oro);border-radius:2px}
+.lin u{position:absolute;left:0;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:var(--rosa)}
+.tm{display:flex;justify-content:space-between;font-size:12px;color:var(--oro-2);font-variant-numeric:tabular-nums}
+.ctl{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.ctl button{width:48px;height:48px;border-radius:50%;border:0;background:transparent;color:var(--oro);display:grid;place-items:center;cursor:pointer}
+.ctl button svg{width:25px;height:25px}
+.ctl .pp{width:66px;height:66px;background:var(--oro);color:var(--noche)}
+.ctl .pp svg{width:26px;height:26px;fill:currentColor}
+.ctl button:active{transform:scale(.94)}
+.ctl button.on{color:var(--rosa);background:rgba(244,210,219,.12)}
+
+
+
+/* ══ EL MARCO DORADO DE LOS BOTONES (el que mandó el dueño: píldora de doble línea con ramitas en las puntas) ══
+   Tres piezas para que sirva a cualquier ancho: la punta izquierda con sus ramitas, la derecha (la misma, espejada) y un
+   pedacito de las dos líneas que se repite en el medio. Las pone el JS recién cuando las imágenes cargaron; sin ellas el
+   botón conserva su borde de siempre. */
+.btn-oro{position:relative;isolation:isolate;background:none!important;border:0!important;box-shadow:none!important;
+  min-height:46px;padding:0 54px!important;margin-top:28px;margin-bottom:6px;white-space:nowrap;border-radius:0!important}
+.btn-oro.sin-marco{border:1px solid currentColor!important;border-radius:14px!important;padding:0 22px!important}
+.btn-oro .fr{position:absolute;top:50%;height:61px;margin-top:-30.5px;z-index:-1;pointer-events:none}
+.btn-oro .fr.l,.btn-oro .fr.r{width:54px;background:url(fotos/marco-izq.webp) no-repeat 0 0/100% 100%}
+.btn-oro .fr.l{left:0}
+.btn-oro .fr.r{right:0;transform:scaleX(-1)}
+.btn-oro .fr.m{left:44px;right:44px;background:url(fotos/marco-medio.webp) repeat-x 0 0/2px 61px}
+.papel .btn-oro .fr{filter:saturate(1.35) brightness(.74)}
+#portada .btn-oro .fr{filter:saturate(1.1) brightness(1.12)}
+@media (max-width:360px){#confirmarWsp.btn-oro{font-size:9.5px;letter-spacing:.1em;padding:0 44px!important;gap:6px}}
+#confirmarWsp.btn-oro{letter-spacing:.14em;padding:0 50px!important}
+.chips-nav a.btn-oro{margin:6px 0}
+#portada .chips-nav{display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;max-width:340px;margin:0 auto;justify-content:stretch}
+#portada .chips-nav a.btn-oro{justify-content:center;padding:0 40px!important;letter-spacing:.16em}
+#comoLlegar.btn-oro,.btn-ruta.btn-oro{color:var(--noche);background:none}
+#lista .btn.btn-oro,#confirmar .btn.btn-oro{background:none!important;color:var(--oro)}
+#regalo .btn.btn-oro{color:var(--oro)}
+
+/* ── aparecer al bajar: una sola vez; sin JS o con "menos movimiento" se ve todo ── */
+.js .ap{opacity:0;transform:translateY(18px);transition:opacity .8s var(--e),transform .8s var(--e)}
+.js .ap.ya{opacity:1;transform:none}
+.js .d1{transition-delay:.1s}.js .d2{transition-delay:.2s}.js .d3{transition-delay:.3s}
+@media (prefers-reduced-motion:reduce){.js .ap{opacity:1;transform:none;transition:none}}
+/* el nombre y las píldoras entran una sola vez */
+.js #nombre,.js #portada .pill{opacity:0;transform:translateY(22px);animation:sube .9s var(--e) forwards}
+.js #portada .pill.r{animation-delay:.25s}.js #nombre{animation-delay:.12s}
+@keyframes sube{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.js #nombre,.js #portada .pill{opacity:1;transform:none;animation:none}}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <clipPath id="rasgoA" clipPathUnits="objectBoundingBox"><path id="pA" d="M0 0H1V1H0z"/></clipPath>
+  <clipPath id="rasgoB" clipPathUnits="objectBoundingBox"><path id="pB" d="M0 0H1V1H0z"/></clipPath>
+</defs></svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="peonia" viewBox="-44 -44 88 88"><path transform="rotate(0.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(40.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(80.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(120.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(160.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(200.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(240.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(280.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(320.0) scale(1)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F9E4EA" stroke="#E3A9B9" stroke-width="0.70"/><path transform="rotate(20.0) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(71.4) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(122.9) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(174.3) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(225.7) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(277.1) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(328.6) scale(0.78)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#F5D5DE" stroke="#DDA0B2" stroke-width="0.90"/><path transform="rotate(8.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(68.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(128.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(188.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(248.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(308.0) scale(0.56)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#EFC1CE" stroke="#D790A6" stroke-width="1.25"/><path transform="rotate(30.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(102.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(174.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(246.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><path transform="rotate(318.0) scale(0.34)" d="M0 0C-13 -8 -15 -30 0 -38C15 -30 13 -8 0 0Z" fill="#E6A9BB" stroke="#CC7F98" stroke-width="2.06"/><circle r="3.2" fill="#C9708B"/><g fill="#F7E3B0"><circle cx="0" cy="-5.5" r="1"/><circle cx="4.8" cy="2.8" r="1"/><circle cx="-4.8" cy="2.8" r="1"/></g></symbol><symbol id="ramo" viewBox="0 0 260 90"><path d="M6 68C80 74 160 56 250 14" fill="none" stroke="#56733F" stroke-width="1.6" stroke-linecap="round"/><path transform="translate(32.9 69.1) rotate(-37.8) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(32.9 69.1) rotate(38.2) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(55.8 68.5) rotate(-41.4) scale(0.99)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(55.8 68.5) rotate(34.6) scale(0.99)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(81.4 66.1) rotate(-45.2) scale(1.04)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(81.4 66.1) rotate(30.8) scale(1.04)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(107.5 62.0) rotate(-48.7) scale(1.10)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(107.5 62.0) rotate(27.3) scale(1.10)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(134.2 56.1) rotate(-52.0) scale(1.05)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(134.2 56.1) rotate(24.0) scale(1.05)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(161.5 48.5) rotate(-55.1) scale(1.00)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><path transform="translate(161.5 48.5) rotate(20.9) scale(1.00)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(189.4 39.2) rotate(-57.9) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#6F8F53" stroke="#56733F" stroke-width=".5"/><path transform="translate(189.4 39.2) rotate(18.1) scale(0.94)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#8FA86B" stroke="#56733F" stroke-width=".5"/><path transform="translate(218.0 28.1) rotate(-60.5) scale(0.89)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#B9CE93" stroke="#56733F" stroke-width=".5"/><path transform="translate(218.0 28.1) rotate(15.5) scale(0.89)" d="M0 0C6 -7 19 -8 30 0C19 8 6 7 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width=".5"/><g fill="#F4D2DB" stroke="#E3A9B9" stroke-width=".6"><circle cx="248.0" cy="16.0" r="4.2"/><circle cx="232.0" cy="24.0" r="3.2"/><circle cx="218.0" cy="32.0" r="2.6"/></g></symbol><symbol id="ramillete" viewBox="0 0 260 220"><use href="#ramo" x="0" y="96" width="250" height="86" transform="rotate(-24 60 140)"/><use href="#ramo" x="4" y="120" width="230" height="80" transform="rotate(-62 40 160)"/><use href="#peonia" x="40" y="40" width="130" height="130"/><use href="#peonia" x="150" y="118" width="70" height="70"/><use href="#peonia" x="2" y="132" width="52" height="52"/></symbol><symbol id="flor-verde" viewBox="-44 -44 88 88"><path transform="rotate(0.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(22.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(45.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(67.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(90.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(112.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(135.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(157.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(180.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(202.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(225.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(247.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(270.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(292.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(315.0) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(337.5) scale(1)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#E1EBC8" stroke="#8FA86B" stroke-width="0.60"/><path transform="rotate(11.0) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(38.7) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(66.4) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(94.1) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(121.8) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(149.5) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(177.2) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(204.8) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(232.5) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(260.2) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(287.9) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(315.6) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(343.3) scale(0.82)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#CFDDB1" stroke="#7F9A5E" stroke-width="0.73"/><path transform="rotate(5.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(41.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(77.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(113.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(149.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(185.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(221.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(257.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(293.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(329.0) scale(0.62)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#B9CE93" stroke="#6F8F53" stroke-width="0.97"/><path transform="rotate(20.0) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(71.4) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(122.9) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(174.3) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(225.7) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(277.1) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><path transform="rotate(328.6) scale(0.42)" d="M0 0C-7 -10 -8 -30 0 -40C8 -30 7 -10 0 0Z" fill="#A3BC7E" stroke="#56733F" stroke-width="1.43"/><circle r="3.4" fill="#6F8F53"/><g fill="#E9F1C9"><circle cx="0" cy="-5" r="1"/><circle cx="4.4" cy="2.6" r="1"/><circle cx="-4.4" cy="2.6" r="1"/></g></symbol><symbol id="ramillete-v" viewBox="0 0 260 220"><use href="#ramo" x="0" y="96" width="250" height="86" transform="rotate(-24 60 140)"/><use href="#ramo" x="4" y="120" width="230" height="80" transform="rotate(-62 40 160)"/><use href="#flor-verde" x="36" y="36" width="136" height="136"/><use href="#peonia" x="152" y="122" width="62" height="62"/><use href="#flor-verde" x="0" y="130" width="56" height="56"/></symbol><symbol id="chispa" viewBox="0 0 24 24"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z" fill="currentColor"/></symbol></defs></svg>
+
+<!-- ══════════ el sobre ══════════ -->
+<div id="sobre">
+  <div class="sobre-centro">
+    <p class="arriba">Para vos</p>
+    <div class="env">
+      <div class="detras" aria-hidden="true"></div>
+      <div class="carta" aria-hidden="true"><div id="cartaNom"></div></div>
+      <div class="lado i" aria-hidden="true"></div><div class="lado d" aria-hidden="true"></div><div class="fondo" aria-hidden="true"></div>
+      <div class="solapa" aria-hidden="true"></div>
+      <button id="abrir" type="button" aria-label="Abrir la invitación"><span id="selloIni">J</span></button>
+    </div>
+    <p class="sobre-pie">Tocá el sello para abrir</p>
+  </div>
+</div>
+
+<main>
+  <!-- ══════════ 1 · portada ══════════ -->
+  <section class="papel" id="portada">
+    <svg class="flor f-port-i pa p3" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <svg class="flor f-port-d pa p3" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete-v"/></svg>
+    <div class="rasgo-wrap pa"><div class="rasgo" aria-hidden="false"><div class="rasgo-in"><span aria-hidden="true"><b>06</b><b>12</b><b>26</b></span></div></div></div>
+    <div class="portada-txt">
+      <div class="hilo pa p2"><span id="fechaCorta"></span><i></i><span id="ciudadTop"></span></div>
+      <div class="pa p3"><h1 id="nombre"></h1><p class="script sub">te invita a sus XV años</p></div>
+      <nav class="chips-nav pa p4" aria-label="Ir a una sección">
+        <a href="#fecha">Fecha</a><a href="#lugar">Lugar</a><a href="#musica">Música</a><a href="#confirmar">Confirmar</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ══════════ 2 · estás invitado ══════════ -->
+  <section class="papel" id="invitado">
+    <svg class="flor f-inv-a" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete-v"/></svg>
+    <svg class="flor f-inv-b" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <p class="rotulo ap">Estás invitado</p>
+    <h2 class="ap d1">Mis XV<em>años</em></h2>
+    <p class="carta-a ap d1">Hay momentos en la vida que merecen ser recordados para siempre, y este es uno de ellos.</p>
+    <div class="sep-p ap" aria-hidden="true"><i></i><svg viewBox="0 0 24 24"><use href="#chispa"/></svg><i></i></div>
+    <p class="carta-p ap">Después de tantos sueños, ilusiones y recuerdos, llegó el momento de celebrar mis XV años, una etapa llena de emociones, nuevos comienzos y sueños por cumplir.</p>
+    <p class="carta-p ap">Me encantaría compartir esta noche tan especial con las personas que forman parte de mi vida y de mi historia. Porque no hay regalo más lindo que poder disfrutar este momento rodeada de quienes quiero.</p>
+    <div class="sep-p ap" aria-hidden="true"><i></i><svg viewBox="0 0 24 24"><use href="#chispa"/></svg><i></i></div>
+    <p class="carta-a ap">Hoy comienza un nuevo capítulo, y quiero que seas parte de este recuerdo inolvidable.</p>
+    <svg class="corazon ap" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7.500-4.800-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.200-7.500 10-7.500 10z"/></svg>
+  </section>
+
+  <!-- ══════════ 3 · el calendario ══════════ -->
+  <section class="papel" id="fecha">
+    <svg class="flor f-fec" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete-v"/></svg>
+    <p class="rotulo ap" id="mesTit"></p>
+    <div class="sem ap d1" id="sem"></div>
+    <p id="fechaTxt" class="ap d2"></p>
+  </section>
+
+  <!-- ══════════ 4 · la cuenta ══════════ -->
+  <section class="papel" id="cuenta">
+    <svg class="flor f-cue" viewBox="-44 -44 88 88" aria-hidden="true"><use href="#flor-verde"/></svg>
+    <p class="script ap" id="faltan">Falta poco para vernos</p>
+    <div class="cd ap d1">
+      <div><b id="cD">0</b><span>días</span></div><div><b id="cH">00</b><span>horas</span></div>
+      <div><b id="cM">00</b><span>min</span></div><div><b id="cS">00</b><span>seg</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · dónde ══════════ -->
+  <section class="papel" id="lugar">
+    <p class="rotulo ap">Dónde</p>
+    <h2 class="ap d1">Where?</h2>
+    <p class="script ap d1">¿Dónde nos vemos?</p>
+    <div class="mapa-wrap ap d2" aria-hidden="true"><div class="cinta-wash"></div><svg class="flor f-lug" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete-v"/></svg>
+    <div class="mapa">
+      <svg class="base" viewBox="0 0 320 210"><rect width="320" height="210" fill="#E7EFD2"/>
+        <path d="M-10 150C60 120 120 170 200 130S300 90 340 110V230H-10z" fill="#CFDDB1"/>
+        <rect x="26" y="22" width="70" height="46" rx="8" fill="#B9CE93"/><rect x="224" y="150" width="70" height="40" rx="8" fill="#B9CE93"/>
+        <g stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"><path d="M-10 72L330 40"/><path d="M110 -10L150 220"/><path d="M-10 188L330 120"/><path d="M230 -10L206 220"/></g>
+        <g stroke="#fff" stroke-width="3" fill="none"><path d="M0 110L320 96"/><path d="M60 -10L40 220"/><path d="M280 -10L296 220"/></g>
+        <circle cx="168" cy="105" r="7" fill="#3F5B33"/><circle cx="168" cy="105" r="3" fill="#F4D2DB"/></svg>
+      <svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>
+      <svg class="flecha" viewBox="0 0 90 60"><path class="dib" pathLength="1" d="M6 8C30 4 56 14 66 40"/><path class="dib" pathLength="1" d="M56 36L67 42L70 30"/></svg>
+      <span class="aca">acá</span>
+    </div></div>
+    <div class="lug-dato ap d3"><b id="lugarNom"></b><span id="lugarDir"></span></div>
+    <a class="btn-ruta ap d3" id="comoLlegar" target="_blank" rel="noopener">Mostrar ruta →</a>
+  </section>
+
+  <!-- ══════════ 5 · música ══════════ -->
+  <section id="musica" hidden>
+    <div class="rep player ap d1">
+      <div class="rep-top">
+        <button type="button" class="play" id="play2" aria-label="Escuchar la canción"></button>
+        <div class="ondas" id="ondas" aria-hidden="true"></div>
+      </div>
+      <div class="lin" id="lin" aria-hidden="true"><div><i id="linI"></i><u id="linU"></u></div></div>
+      <div class="tm"><span id="tAct">0:00</span><span id="tTot">0:00</span></div>
+      <div class="ctl">
+        <button type="button" id="rMute" aria-label="Silenciar" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.500v5h4l5 4v-13l-5 4z" fill="currentColor"/><path id="ondaVol" d="M16.500 9a4 4 0 0 1 0 6M19 6.500a8 8 0 0 1 0 11"/><path id="tacha" d="M16 9.500l5 5M21 9.500l-5 5" style="display:none"/></svg></button>
+        <button type="button" id="rAtras" aria-label="Retroceder diez segundos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6v12L2.500 12zM21.500 6v12L13 12z"/></svg></button>
+        <button type="button" class="pp play" id="play" aria-label="Escuchar la canción"></button>
+        <button type="button" id="rAdel" aria-label="Adelantar quince segundos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 6v12l8.500-6zM2.500 6v12L11 12z"/></svg></button>
+        <button type="button" id="rRep" aria-label="Repetir la canción" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3.500 3.500L17 10M3.500 11V9.500A3 3 0 0 1 6.500 6.500h14M7 21l-3.500-3.500L7 14M20.500 13v1.500a3 3 0 0 1-3 3h-14"/></svg></button>
+      </div>
+    </div>
+    <audio id="aud" preload="metadata">
+      <source src="musica.m4a" type='audio/mp4; codecs="mp4a.40.2"'>
+      <source src="musica.ogg" type='audio/ogg; codecs=opus'>
+    </audio>
+  </section>
+
+  <!-- ══════════ 6 · playlist ══════════ -->
+  <section id="lista">
+    <svg class="flor f-lis" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete"/></svg>
+    <div class="disco-ic ap" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="24" cy="24" r="20"/><circle cx="24" cy="24" r="4.500"/><path d="M12 24a12 12 0 0 1 12-12M36 24a12 12 0 0 1-12 12"/></svg></div>
+    <h2 class="ap d1">¡Vos elegís la música!</h2>
+    <p class="ap d1">Queremos saber qué canciones te gustaría escuchar en esta fiesta.</p>
+    <form id="formCancion" class="form-c ap d2" novalidate autocomplete="off">
+      <label for="fCancion">Nombre de la canción</label>
+      <input id="fCancion" name="cancion" type="text" maxlength="80" required placeholder="Ej. De música ligera" autocomplete="off">
+      <label for="fArtista">Artista</label>
+      <input id="fArtista" name="artista" type="text" maxlength="60" required placeholder="Ej. Soda Stereo" autocomplete="off">
+      <label for="fQuien">Tu nombre (opcional)</label>
+      <input id="fQuien" name="quien" type="text" maxlength="40" placeholder="¿Quién la recomienda?" autocomplete="given-name">
+      <input id="fWeb" name="web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="trampa">
+      <button class="btn" id="enviarCancion" type="submit">Enviar mi canción</button>
+      <p class="c-msg" id="cMsg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="gracias ap d3">¡Gracias por ayudarnos a crear la banda sonora de esta fiesta!</p>
+  </section>
+
+  <!-- ══════════ 7 · dress code ══════════ -->
+  <section id="dress">
+    <svg class="chispa" style="right:28px;top:46px;width:16px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="left:34px;bottom:44px;width:10px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
+    <span class="tag ap">02 · Dress code</span>
+    <div class="sil ap d1" id="sil">
+      <div class="sil-txt">
+        <p class="rotulo-d">Elegante</p>
+        <h2>Total<br>black</h2>
+        <p>Todo de negro para esa noche.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 8 · regalo ══════════ -->
+  <section id="regalo">
+    <svg class="flor f-reg" viewBox="0 0 260 220" aria-hidden="true"><use href="#ramillete-v"/></svg>
+    <div class="c" style="left:-50px;bottom:-60px;width:170px;height:170px;background:var(--rosa)"></div>
+    <span class="tag ap">03 · Para regalo</span>
+    <p class="ap d1" style="margin-top:16px">Si querés hacerme un regalo, podés transferir a este alias.</p>
+    <p class="rot ap d1">Alias para transferir</p>
+    <b id="alias" class="ap d2"></b>
+    <button class="btn o ap d3" id="copiar" type="button"><span id="copiarTxt">Copiar alias</span></button>
+  </section>
+
+  <!-- ══════════ 9 · confirmar ══════════ -->
+  <section class="dk" id="confirmar">
+    <svg class="chispa" style="right:30px;top:44px;width:15px;opacity:.8" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:70px;top:84px;width:9px;opacity:.5" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg><svg class="chispa" style="right:34px;bottom:46px;width:11px;opacity:.55" viewBox="0 0 24 24" aria-hidden="true"><use href="#chispa"/></svg>
+    <span class="tag ap">04 · Confirmá</span>
+    <h2 class="ap d1">¿Venís?</h2>
+    <p class="ap d2">Confirmame por WhatsApp: se abre el chat conmigo con el mensaje listo, solo agregá tu nombre.</p>
+    <a class="btn ap d3" id="confirmarWsp" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>Confirmar por WhatsApp</a>
+  </section>
+</main>
+
+<footer class="firma">
+  Invitación de <a id="firmaWsp" href="https://wa.me/5493412506451" target="_blank" rel="noopener">Click Eterno</a>
+</footer>
+
+<script>
+/* ══ LO ÚNICO QUE SE TOCA ══
+   Lo que está vacío no se dibuja. Nada se inventa: no mandó la hora ni
+   qué festeja, así que ningún renglón lo dice. */
+const CONFIG = {
+  quien: "Julieta",
+  fiesta: "2026-12-06T22:30:00-03:00",    // 22:30 hs: lo mandó el dueño el 17/11/2026; no mandó a qué hora termina
+  lugar: "Sirah",
+  calle: "La Rioja 1270 · Santiago del Estero",
+  ciudad: "Santiago del Estero",
+  mapa: "https://www.google.com/maps/search/?api=1&query=Sirah%2C%20La%20Rioja%201270%2C%20Santiago%20del%20Estero",
+  alias: "julieta.zap",                   // tal cual lo mandó, sin "arreglarle" nada
+  /* Las canciones que mandan los invitados van a una planilla propia (apps-script/canciones.gs.txt) y las aprueba ella en
+     julieta/canciones. El enlace de Spotify que había no funcionaba y se sacó. Vacío: la sugerencia se manda por WhatsApp. */
+  cancionesEndpoint: "https://script.google.com/macros/s/AKfycbwEZGyxHOwAxuDQWopF9flaCK7sMMbW2AcPfE_3exehSzLAGaZAarrgTm7MJ2v9Dx1Kog/exec",   // la planilla de canciones, implementada por el dueño el 17/11/2026
+  /* La canción: nombre y autora salen de lo que mandó. Vacíos, el reproductor queda sin rótulo. */
+  /* La foto de la polaroid: una de chica que mandó ella (16/11/2026). Vacía, la polaroid lleva la fecha. */
+  foto: "fotos/portada.webp",
+  cancion: { nombre: "Cree y atrévete", autor: "Ha*Ash", dura: 183.9 },
+  /* La confirmación NO va a una planilla: abre WhatsApp con el número de ella. */
+  whatsapp: "5493856172466",
+  mensaje: "¡Hola Julieta! Confirmo mi asistencia a tus XV el 6 de diciembre. Mi nombre es: "
+};
+
+const $ = (s, d) => (d || document).querySelector(s);
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const m = String(CONFIG.fiesta).match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/);
+const F = m ? { anio:+m[1], mes:+m[2], dia:+m[3], hora: m[4] == null ? null : +m[4], min: m[4] == null ? 0 : +m[5] } : null;
+const texto = (id, t) => { const n = document.getElementById(id); if (n) n.textContent = t; };
+const dos = n => String(n).padStart(2, '0');
+
+/* ══ los textos ══ */
+(function(){
+  const n = String(CONFIG.quien || '');
+  texto('nombre', n); texto('cartaNom', n); texto('selloIni', n.charAt(0).toUpperCase());
+  texto('ciudadTop', CONFIG.ciudad || '');
+  /* La foto se pide primero y recién cuando cargó de verdad reemplaza a la fecha: si falla, queda la fecha. */
+  if (CONFIG.foto){
+    const im = new Image(); im.alt = 'Julieta'; im.decoding = 'async';
+    im.addEventListener('load', () => { if (im.naturalWidth){ const f = $('.rasgo-in'); if (f) f.appendChild(im); } });
+    im.src = CONFIG.foto;
+  }
+  if (!F){ ['#fecha','#cuenta'].forEach(q => { const x = $(q); if (x) x.remove(); }); return; }
+  const largo = F.dia + ' de ' + MESES[F.mes-1] + ' de ' + F.anio;
+  texto('fechaCorta', dos(F.dia) + '.' + dos(F.mes) + '.' + F.anio);
+  texto('mesTit', MESES[F.mes-1] + ' · ' + F.anio);
+  const fd = new Date(F.anio, F.mes - 1, F.dia);
+  texto('fechaTxt', DIAS[fd.getDay()].replace(/^./, c => c.toUpperCase()) + ' ' + largo + (F.hora == null ? '' : ' · ' + F.hora + ':' + dos(F.min) + ' hs'));
+  /* el calendario: la víspera, el día y el siguiente; el día va entre garabatos */
+  const GARABATO = '<svg class="garabato" viewBox="0 0 110 80" preserveAspectRatio="none" aria-hidden="true"><path class="dib" pathLength="1" d="M14 42C8 14 58 4 86 16C110 28 102 64 62 68C22 72 6 52 22 30C28 22 44 14 58 12"/></svg>';
+  $('#sem').innerHTML = [-1, 0, 1].map(k => {
+    const d = new Date(F.anio, F.mes - 1, F.dia + k);
+    return '<div' + (k === 0 ? ' class="e"' : '') + '><small>' + DIAS[d.getDay()] + '</small><b>' + d.getDate() + '</b>' + (k === 0 ? GARABATO : '') + '</div>';
+  }).join('');
+})();
+texto('lugarNom', CONFIG.lugar);
+texto('lugarDir', CONFIG.calle || '');
+if (CONFIG.mapa) $('#comoLlegar').href = CONFIG.mapa; else $('#comoLlegar').remove();
+if (CONFIG.alias) texto('alias', CONFIG.alias); else $('#regalo').remove();
+/* ══ "¡Vos elegís la música!": el formulario de canciones ══
+   Con planilla conectada la canción se anota y la página recién dice "anotada" cuando la planilla lo CONTESTÓ (se pide con
+   GET y la respuesta se lee: con un POST a ciegas "listo" sería una suposición). Sin planilla, abre WhatsApp con la sugerencia. */
+(function(){
+  const f = $('#formCancion'); if (!f) return;
+  const msg = (t, ok) => { const m = $('#cMsg'); m.textContent = t; m.className = 'c-msg' + (ok === true ? ' ok' : ok === false ? ' mal' : ''); };
+  f.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const cancion = $('#fCancion').value.trim(), artista = $('#fArtista').value.trim(), quien = $('#fQuien').value.trim();
+    if (!cancion || !artista){ msg('Falta el nombre de la canción o el artista.', false); (cancion ? $('#fArtista') : $('#fCancion')).focus(); return; }
+    const b = $('#enviarCancion'); b.disabled = true;
+    try {
+      if (!CONFIG.cancionesEndpoint){
+        const t = '¡Hola ' + CONFIG.quien + '! Te sugiero esta canción para tu fiesta: ' + cancion + ' — ' + artista + (quien ? ' (de ' + quien + ')' : '');
+        window.open('https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
+        msg('Se abrió WhatsApp con tu canción: tocá enviar para mandársela.', true);
+        f.reset(); return;
+      }
+      const u = new URL(CONFIG.cancionesEndpoint);
+      u.searchParams.set('accion', 'sugerir'); u.searchParams.set('cancion', cancion); u.searchParams.set('artista', artista);
+      if (quien) u.searchParams.set('quien', quien); u.searchParams.set('web', $('#fWeb').value);
+      const r = await fetch(u.toString(), { cache: 'no-store' });
+      const d = await r.json();
+      if (d && d.ok){ msg(d.duplicada ? 'Esa canción ya estaba en la lista: ¡gracias igual!' : '¡Listo! Tu canción quedó anotada.', true); f.reset(); }
+      else msg((d && d.mensaje) || 'No se pudo anotar. Probá de nuevo.', false);
+    } catch(e){ msg('No se pudo enviar: revisá la conexión y probá de nuevo.', false); }
+    b.disabled = false;
+  });
+})();
+/* "Click Eterno" del pie lleva al WhatsApp del negocio con el mensaje armado: quien vio la invitación y quiere una igual no tiene que explicar de dónde viene. */
+$('#firmaWsp').href = 'https://wa.me/5493412506451?text=' + encodeURIComponent('¡Hola! Vi la invitación de ' + (CONFIG.quien || 'una fiesta') + ' y quiero consultar por una.');
+$('#confirmarWsp').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensaje);
+
+/* ══ el borde arrancado de la foto ══
+   Una onda suave (dos senos) más un temblor chico, de una semilla fija: no
+   cambia entre cargas. Arriba y abajo no son iguales. La capa de adentro
+   corre la onda hacia adentro, y esa franja es la rebarba de papel. */
+(function(){
+  const a = $('#pA'), b = $('#pB'); if (!a || !b) return;
+  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const N = 48, ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28];
+  const onda = (i, k) => {
+    const t = i / N;
+    return .5 + .32 * Math.sin(t * 9.4 + ph[k]) + .24 * Math.sin(t * 21 + ph[k+1]) + (r() - .5) * .1;   // 0..1 aprox; el temblor es chico: tiene que ser onda y no serrucho
+  };
+  const borde = (alto, off) => {
+    const arriba = [], abajo = [];
+    for (let i = 0; i <= N; i++){
+      arriba.push([i / N, off + alto * Math.max(0, onda(i, 0))]);
+      abajo.push([i / N, 1 - off - alto * Math.max(0, onda(i, 2))]);
+    }
+    const f = p => p[0].toFixed(4) + ' ' + p[1].toFixed(4);
+    return 'M' + arriba.map(f).join('L') + 'L' + abajo.reverse().map(f).join('L') + 'Z';
+  };
+  a.setAttribute('d', borde(.030, 0));
+  b.setAttribute('d', borde(.026, .012));
+})();
+
+/* ══ cuenta regresiva ══ */
+(function(){
+  if (!F || !$('#cD')) return;
+  /* La cuenta llega a la HORA de la fiesta, con la zona escrita (−03:00: Santiago del Estero y Rosario son la misma); sin hora, al principio del día. */
+  const meta = F.hora == null ? new Date(F.anio, F.mes - 1, F.dia, 0, 0, 0).getTime()
+    : new Date(F.anio + '-' + dos(F.mes) + '-' + dos(F.dia) + 'T' + dos(F.hora) + ':' + dos(F.min) + ':00-03:00').getTime();
+  const pinta = () => {
+    let s = Math.max(0, Math.floor((meta - Date.now()) / 1000));
+    const d = Math.floor(s / 86400); s -= d * 86400;
+    const h = Math.floor(s / 3600);  s -= h * 3600;
+    const mi = Math.floor(s / 60);   s -= mi * 60;
+    $('#cD').textContent = d; $('#cH').textContent = dos(h);
+    $('#cM').textContent = dos(mi); $('#cS').textContent = dos(s);
+  };
+  pinta(); setInterval(pinta, 1000);
+})();
+
+/* ══ el sobre ══
+   Se abre con el toque del sello: la solapa se levanta, la carta sube y el
+   sobre se desvanece sobre la portada (cruce, no corte). Ese mismo toque es
+   el gesto que hace sonar la canción. Sin JS el sobre no se dibuja. */
+(function(){
+  const sobre = $('#sobre'), root = document.documentElement;
+  if (!sobre) return;
+  root.classList.add('cerrado');
+  const fin = () => { root.classList.remove('cerrado'); root.classList.add('listo'); setTimeout(() => sobre.remove(), 1300); };
+  let hecho = false;
+  $('#abrir').addEventListener('click', () => {
+    if (hecho) return; hecho = true;
+    sobre.classList.add('abierto');
+    if (window.__sonar) window.__sonar();
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => { sobre.classList.add('saliendo'); root.classList.remove('cerrado'); root.classList.add('listo'); }, quieto ? 50 : 1500);
+    setTimeout(() => sobre.remove(), quieto ? 200 : 2800);
+  });
+})();
+
+/* ══ la pareja del dress code ══ la imagen se pide primero y recién cuando cargó se acomoda el texto en su hueco; si falla, queda el texto solo. */
+(function(){
+  const caja = $('#sil'); if (!caja) return;
+  const im = new Image(); im.alt = ''; im.decoding = 'async'; im.setAttribute('aria-hidden', 'true');
+  im.addEventListener('load', () => { if (!im.naturalWidth) return; caja.insertBefore(im, caja.firstChild); caja.classList.add('con-img'); });
+  im.src = 'fotos/vestuario.webp';
+})();
+
+/* ══ copiar el alias ══ */
+(function(){
+  const b = $('#copiar'); if (!b) return;
+  b.addEventListener('click', async () => {
+    let ok = false;
+    try{ await navigator.clipboard.writeText(CONFIG.alias); ok = true; }catch(e){
+      try{ const t = document.createElement('textarea'); t.value = CONFIG.alias; t.style.position = 'fixed';
+        t.style.opacity = '0'; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); }catch(_){}
+    }
+    texto('copiarTxt', ok ? '¡Copiado!' : 'No se pudo copiar: tocá el alias');
+    setTimeout(() => texto('copiarTxt', 'Copiar alias'), 2200);
+  });
+})();
+
+/* ══ aparecer al bajar, una sola vez ══ */
+(function(){
+  const els = [...document.querySelectorAll('.ap')];
+  const todos = () => els.forEach(e => e.classList.add('ya'));
+  if (!('IntersectionObserver' in window)) return todos();
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('ya'); io.unobserve(e.target); }
+  }), { threshold: .12 });
+  els.forEach(e => io.observe(e));
+  setTimeout(todos, 6000);   // red de seguridad: nada queda escondido
+})();
+
+/* ══ el reproductor ══
+   Todos los mandos hacen algo: silenciar, retroceder 10 s, play/pausa
+   (hay dos: el chico de la fila de ondas y el grande), adelantar 15 s y
+   repetir. La canción suena UNA vez y al terminar se rebobina, salvo que
+   se active "repetir". Intenta arrancar al cargar; si el navegador no deja,
+   arranca con el sello del sobre o con el primer toque. */
+(function(){
+  const sec = $('#musica'), a = $('#aud'), lin = $('#lin'), ondas = $('#ondas');
+  if (!sec || !a) return;
+  const c = CONFIG.cancion || {};
+  const plays = [$('#play'), $('#play2')];
+  const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.500v15l13-7.500z"/></svg>';
+  const PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.500h4v15H6zM14 4.500h4v15h-4z"/></svg>';
+  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const N = 46;
+  for (let i = 0; i < N; i++){
+    const b = document.createElement('i');
+    b.style.height = Math.round(14 + (Math.sin(i / 3.1) * .5 + .5) * 26 + r() * 40) + '%';
+    ondas.appendChild(b);
+  }
+  const barras = [...ondas.children];
+  const total = () => (isFinite(a.duration) && a.duration) || +c.dura || 0;
+  const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  const pinta = () => {
+    const t = total(), f = t ? Math.min(1, a.currentTime / t) : 0;
+    $('#linI').style.width = (f * 100) + '%'; $('#linU').style.left = (f * 100) + '%';
+    barras.forEach((b, i) => b.classList.toggle('hecha', i / N < f));
+    texto('tAct', fmt(a.currentTime)); texto('tTot', fmt(t));
+    plays.forEach(p => { p.innerHTML = a.paused ? PLAY : PAUSA; p.setAttribute('aria-label', a.paused ? 'Escuchar la canción' : 'Pausar la canción'); });
+  };
+  pinta();
+  ['timeupdate','play','pause','loadedmetadata'].forEach(ev => a.addEventListener(ev, pinta));
+  a.addEventListener('ended', () => { a.currentTime = 0; a.pause(); pinta(); });
+  a.addEventListener('error', () => { sec.remove(); if (window.__cortes) window.__cortes(); });
+  a.querySelectorAll('source').forEach(s => s.addEventListener('error', () => {
+    if (a.networkState === 3){ sec.remove(); if (window.__cortes) window.__cortes(); }   // fallaron TODAS las fuentes
+  }));
+  sec.hidden = false;
+  plays.forEach(p => p.addEventListener('click', () => { a.paused ? a.play().catch(()=>{}) : a.pause(); }));
+  $('#rAtras').addEventListener('click', () => { a.currentTime = Math.max(0, a.currentTime - 10); pinta(); });
+  $('#rAdel').addEventListener('click', () => { const t = total(); a.currentTime = Math.min(Math.max(0, t - 1), a.currentTime + 15); pinta(); });
+  $('#rMute').addEventListener('click', ev => {
+    a.muted = !a.muted;
+    ev.currentTarget.setAttribute('aria-pressed', String(a.muted));
+    ev.currentTarget.setAttribute('aria-label', a.muted ? 'Activar el sonido' : 'Silenciar');
+    $('#tacha').style.display = a.muted ? '' : 'none'; $('#ondaVol').style.display = a.muted ? 'none' : '';
+  });
+  $('#rRep').addEventListener('click', ev => {
+    a.loop = !a.loop;
+    ev.currentTarget.setAttribute('aria-pressed', String(a.loop));
+    ev.currentTarget.classList.toggle('on', a.loop);
+  });
+  const ir = (el, cx) => {
+    const rc = el.getBoundingClientRect(), t = total();
+    if (t) a.currentTime = Math.max(0, Math.min(1, (cx - rc.left) / rc.width)) * t;
+    pinta();
+  };
+  let arrastra = null;
+  lin.addEventListener('pointerdown', ev => { arrastra = lin; ir(lin, ev.clientX); });
+  ondas.addEventListener('pointerdown', ev => { arrastra = ondas; ir(ondas, ev.clientX); });
+  addEventListener('pointermove', ev => { if (arrastra) ir(arrastra, ev.clientX); });
+  addEventListener('pointerup', () => { arrastra = null; });
+  const gestos = ['pointerdown','touchend','keydown'];
+  const primero = ev => {
+    if (ev && ev.target && ev.target.closest && ev.target.closest('.rep, a, button')) return;
+    gestos.forEach(g => removeEventListener(g, primero, true));
+    if (a.paused && a.currentTime === 0) a.play().catch(()=>{});
+  };
+  window.__sonar = () => { if (a.paused && a.currentTime === 0) a.play().catch(()=>{}); };
+  a.play().then(() => gestos.forEach(g => removeEventListener(g, primero, true))).catch(() => {});
+  gestos.forEach(g => addEventListener(g, primero, true));
+})();
+
+
+/* ══ el marco dorado de los botones ══ las tres piezas se piden primero; recién cuando cargaron se arman los marcos. */
+(function(){
+  const botones = [...document.querySelectorAll('.chips-nav a, #comoLlegar, #enviarCancion, #copiar, #confirmarWsp')];
+  if (!botones.length) return;
+  botones.forEach(b => b.classList.add('btn-oro', 'sin-marco'));
+  let faltan = 2, mal = false;
+  const listo = () => {
+    if (--faltan || mal) return;
+    botones.forEach(b => {
+      b.classList.remove('sin-marco');
+      ['m','l','r'].forEach(c => { const i = document.createElement('i'); i.className = 'fr ' + c; i.setAttribute('aria-hidden', 'true'); b.insertBefore(i, b.firstChild); });
+    });
+  };
+  ['fotos/marco-izq.webp', 'fotos/marco-medio.webp'].forEach(u => {
+    const im = new Image();
+    im.addEventListener('load', () => { if (im.naturalWidth) listo(); else mal = true; });
+    im.addEventListener('error', () => { mal = true; });
+    im.src = u;
+  });
+})();
+
+/* ══ los cortes arrancados entre secciones ══
+   Entre cada par de secciones va una franja con el borde de la siguiente
+   como papel arrancado: una onda suave, SIN línea de rebarba (el adorno dorado
+   del medio es lo que separa); donde las dos secciones son del mismo color, el corte no se ve. La onda sale
+   de una semilla fija (la fecha), así que no cambia entre cargas. Se arman al
+   final y se rehacen si una sección se saca (por ejemplo, si la canción no carga). */
+/* El adorno dorado del medio de cada corte: las dos imágenes se piden primero y recién cuando cargaron se dibujan. */
+const ORNA = { src: ['fotos/orna1.webp', 'fotos/orna2.webp'], ok: [false, false] };
+ORNA.src.forEach((u, i) => { const im = new Image(); im.addEventListener('load', () => { if (im.naturalWidth){ ORNA.ok[i] = true; if (window.__cortes) window.__cortes(); } }); im.src = u; });
+function armarCortes(){
+  const main = $('main'); if (!main) return;
+  main.querySelectorAll('.corte').forEach(n => n.remove());
+  const secs = [...main.children].filter(n => n.tagName === 'SECTION' && !n.hidden);
+  let x = (F ? F.anio * 10000 + F.mes * 100 + F.dia : 7) >>> 0;
+  const r = () => (x = (x * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const W = 1000, H = 28, N = 70;
+  const color = el => getComputedStyle(el).backgroundColor;
+  for (let k = 1; k < secs.length; k++){
+    const ph = [r()*6.28, r()*6.28, r()*6.28];
+    const ys = [];
+    for (let i = 0; i <= N; i++){
+      const t = i / N;
+      ys.push(H * (.42 + .20 * Math.sin(t * (7 + r()*0) + ph[0]) + .12 * Math.sin(t * 17 + ph[1]) + (r() - .5) * .05));
+    }
+    const trazo = (dy) => 'M0 ' + H + 'L' + ys.map((y, i) => (i * W / N).toFixed(1) + ' ' + Math.max(0, y + dy).toFixed(1)).join('L') + 'L' + W + ' ' + H + 'Z';
+    const sep = document.createElement('div');
+    sep.className = 'corte'; sep.setAttribute('aria-hidden', 'true');
+    sep.style.backgroundColor = color(secs[k-1]);
+    sep.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+      '<path d="' + trazo(0) + '" fill="' + color(secs[k]) + '"/></svg>';
+    if (ORNA.ok[k % 2]) sep.insertAdjacentHTML('beforeend', '<img class="orna" src="' + ORNA.src[k % 2] + '" alt="" aria-hidden="true">');
+    main.insertBefore(sep, secs[k]);
+  }
+}
+window.__cortes = armarCortes;
+armarCortes();
+</script>
+</body>
+</html>

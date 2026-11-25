@@ -642,7 +642,10 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
      que exista una clase ni un oyente: así da igual cómo esté hecho. */
   if (await pag.locator('.franja img').count()){
     const donde = await pag.evaluate(() => {
-      const f = document.querySelector('.franja');
+      /* La franja QUE TIENE la foto: la primera puede estar vacía y
+         escondida (mariapaz15 sólo tiene la del final), y medida esa el
+         scroll caía arriba de todo y la foto nunca entraba en pantalla. */
+      const f = document.querySelector('.franja img').closest('.franja');
       return f.getBoundingClientRect().top + scrollY;
     });
     const correr = async y => {
@@ -686,6 +689,11 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       es(/dec|eleg|venís|venis/.test(sinElegir), 'y sin elegir no deja mandar');
       await pag.locator('.radios label').first().click();
     }
+    /* Desde el 24/11/2026 cada acompañante va con su nombre: una
+       invitación que arranca en "2 personas" (mia15) no sale con el
+       segundo en blanco. Se completan como lo haría el invitado. */
+    await pag.evaluate(() => document.querySelectorAll('#acomp input[name^="Invitado "]')
+      .forEach((i, k) => { if (!i.value) { i.value = 'Acompañante ' + (k + 2); i.dispatchEvent(new Event('input', {bubbles:true})); } }));
 
     await pag.click('#enviar');
     await pag.waitForTimeout(600);
@@ -1022,8 +1030,12 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
     if (!hay) bien('esta invitación no trae canción');
     else {
       const enBucle = await pagM.evaluate(() => document.querySelector('audio').loop);
-      es(!enBucle, enBucle ? 'la canción queda en BUCLE: no se la puede dejar de escuchar'
-                           : 'la canción no queda en bucle');
+      /* El bucle solo molesta si no hay cómo parar: con su botón de pausa,
+         que se repita es una decisión del cliente (lucia15 lo pidió). */
+      const hayPausa = await pagM.evaluate(() => !!document.querySelector('.repro .play, .player .play'));
+      es(!enBucle || hayPausa, enBucle && !hayPausa
+        ? 'la canción queda en BUCLE y no hay cómo pausarla: no se la puede dejar de escuchar'
+        : enBucle ? 'la canción se repite, y tiene su botón de pausa' : 'la canción no queda en bucle');
       /* Se fuerza el final: en el camino normal hay que esperar la
          canción entera, así que esto no se recorre nunca. */
       const fin = await pagM.evaluate(async () => {
@@ -1554,6 +1566,51 @@ const titulo = t => console.log('\n─── ' + t + ' ───');
       }
     }
     await ctxN.close();
+  }
+
+  /* ── los acompañantes van con su nombre ──
+     Pedido del dueño (24/11/2026) con el tablero en la mano: tres
+     "(sin nombre)" seguidos, de alguien que dijo "somos 4" y no escribió
+     a nadie más. No tira ningún error: la fila entra igual y el que arma
+     las mesas no sabe a quién sentar. Se mide lo que pasa: con dos
+     acompañantes en blanco el formulario NO sale y lo dice; con los
+     nombres puestos, sí. */
+  titulo('los acompañantes van con su nombre');
+  {
+    const ctxA = await navegador.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+    const pagA = await ctxA.newPage();
+    let salio = 0;
+    await pagA.route(/script\.google\.com/, r => { salio++; r.fulfill({status:200, contentType:'application/json', body:'{"ok":true}'}); });
+    await pagA.goto(URL, {waitUntil:'domcontentloaded'});
+    if (await pagA.locator('#abrir').count()){ await pagA.click('#abrir'); await pagA.waitForTimeout(2700); }
+    const hayAcomp = await pagA.locator('#acomp').count() && await pagA.locator('#fLugares').count();
+    /* Con planilla propia (endpoint) o con la central (evento + PLANILLA). */
+    const conEndpoint = await pagA.evaluate(() =>
+      (typeof CONFIG !== 'undefined' && (!!CONFIG.endpoint || !!CONFIG.evento)) &&
+      (!!CONFIG.endpoint || (typeof PLANILLA !== 'undefined' && !!PLANILLA.exec)));
+    if (!hayAcomp) bien('esta invitación no pregunta por acompañantes');
+    else if (!conEndpoint) bien('esta invitación todavía no manda a ninguna planilla');
+    else {
+      await pagA.fill('#fNombre', 'Juan Pérez');
+      await pagA.locator('input[name="Confirma"][value="Sí"]').check();
+      await pagA.selectOption('#fLugares', '3');
+      await pagA.waitForTimeout(250);
+      await pagA.click('#enviar');
+      await pagA.waitForTimeout(500);
+      const aviso = (await pagA.textContent('#aviso') || '').trim();
+      es(salio === 0 && /nombre/i.test(aviso), salio === 0 && /nombre/i.test(aviso)
+        ? 'con los acompañantes en blanco no se manda, y avisa: "' + aviso + '"'
+        : 'se mandó con dos acompañantes sin nombre (o no avisó nada)');
+      if (salio === 0){
+        await pagA.fill('#fInv2', 'Ana Pérez');
+        await pagA.fill('#fInv3', 'Luis Pérez');
+        await pagA.click('#enviar');
+        await pagA.waitForTimeout(1500);
+        es(salio === 1, salio === 1 ? 'con los nombres puestos, se manda'
+                                    : 'con los nombres puestos igual no se manda');
+      }
+    }
+    await ctxA.close();
   }
 
   /* ── 9 · la carta no SALTA a la portada ──

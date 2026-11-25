@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- El modo oscuro de Android da vuelta la invitación entera. Se declara
+     que la pieza SABE de oscuro y que su versión oscura es la misma. -->
+<meta name="color-scheme" content="light dark">
+<style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
+<title>Guada · Mis XV</title>
+<meta name="description" content="Los XV de Guada. Sábado 6 de febrero de 2027. Estás en la lista.">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Guada · Mis XV">
+<meta property="og:description" content="Sábado 6 de febrero · Quinta Olavarría. Estás en la lista.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,900;1,900&family=Space+Grotesk:wght@300;400;500;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════
+   LOLA · MIS XV — modelo "afiche"
+   Negro, hueso y un solo acento. Todo el golpe es
+   tipográfico: letras que entran de un saque, tramas
+   de puntos dibujadas en el momento y cosas que se
+   mueven con el dedo. Ninguna foto.
+   ════════════════════════════════════════════════ */
+:root{
+  --negro:#0A0A0A;
+  --hueso:#ECE7DC;
+  --hueso-2:#CFCAC0;
+  --gris-n:#96928A;      /* gris sobre negro · 6,4:1 */
+  --gris-h:#57534C;      /* gris sobre hueso · 6,1:1 */
+  --acento:#FF3D8B;      /* SOLO sobre negro (5,9:1). Sobre hueso da 2,7: ahí no es texto */
+  --titulos:'Montserrat','Arial Black','Helvetica Neue',Arial,sans-serif;
+  --texto-f:'Space Grotesk','Helvetica Neue',Arial,sans-serif;
+  --mano:'Reenie Beanie','Segoe Script','Bradley Hand',cursive;
+  --col:min(100vw,540px);
+  --u:calc(var(--col) / 100);
+  --m:calc(var(--u) * 6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;background:var(--negro)}
+html.cerrado,html.cerrado body{overflow:hidden;height:100%}
+body{background:var(--negro);color:var(--hueso);font-family:var(--texto-f);font-size:16px;line-height:1.5;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+[hidden]{display:none!important}
+
+/* ── el tema "plata": blanco y plateado ──
+   El negro pasa a grafito, el hueso a blanco y el acento a plata. La
+   plata va SOLO sobre el grafito (11:1); sobre blanco no es texto. */
+html[data-tema="plata"]{
+  --negro:#1B1C20; --hueso:#FAFAF8; --hueso-2:#C9CCD2;
+  --gris-n:#9DA1A9; --gris-h:#5B5E66; --acento:#D4D8DF; --punto:#DDE1E7;
+}
+/* las secciones oscuras con un brillo de metal, y sus títulos en plata
+   pulida. `color` queda puesto: es lo que mide el contraste y lo que se
+   ve si el navegador no sabe recortar el degradé. */
+html[data-tema="plata"] .seccion.negra{background:linear-gradient(165deg,#2A2C32 0%,#1B1C20 38%,#16171A 70%,#26282D 100%)}
+html[data-tema="plata"] .negra .tit .ln>i{color:#DDE1E7;
+  background:linear-gradient(180deg,#FFFFFF 0%,#D9DDE3 38%,#9EA3AB 52%,#E8EBEF 70%,#B9BEC6 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+html[data-tema="plata"] .ahi{color:#FFFFFF;
+  text-shadow:0 0 1px #1B1C20,1px 1px 0 #1B1C20,-1px -1px 0 #1B1C20,1px -1px 0 #1B1C20,-1px 1px 0 #1B1C20,0 3px 10px rgba(0,0,0,.6)}
+
+/* el grano de toda la pieza: una sola capa quieta por arriba de todo */
+.grano{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.16;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.1 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+main{width:var(--col);margin:0 auto;position:relative;overflow:hidden}
+.seccion{position:relative;padding:calc(var(--u)*16) var(--m) calc(var(--u)*18);overflow:hidden}
+.hueso{background:var(--hueso);color:var(--negro)}
+.negra{background:var(--negro);color:var(--hueso)}
+
+/* ══════════ piezas compartidas ══════════ */
+.mini{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;line-height:1.5}
+.hueso .mini{color:var(--gris-h)} .negra .mini{color:var(--gris-n)}
+.fila{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.fila .der{text-align:right}
+.cuerpo{font-size:16px;line-height:1.55;max-width:34em}
+.mas{position:absolute;width:22px;height:22px;pointer-events:none}
+.mas::before,.mas::after{content:"";position:absolute;background:currentColor}
+.mas::before{left:50%;top:0;bottom:0;width:1px}
+.mas::after{top:50%;left:0;right:0;height:1px}
+
+/* los títulos de afiche: cada renglón llena el ancho (lo mide el JS) y
+   entra de abajo, de un saque. `--f` es el tamaño sin JS. */
+.tit{font-family:var(--titulos);font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.86}
+.ln{display:block;overflow:hidden;white-space:nowrap;padding-top:.16em;margin-top:-.1em;
+  font-size:calc(var(--u) * var(--f,18))}
+.ln>i{display:inline-block;font-style:normal;will-change:transform}
+.js .tit .ln>i{transform:translateY(112%) rotate(5deg);transform-origin:0 100%}
+.js .tit.entro .ln>i{transform:none;transition:transform .75s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--i,0) * 95ms)}
+.js .ap{opacity:0;transform:translateY(26px)}
+.js .ap.entro{opacity:1;transform:none;transition:opacity .7s ease,transform .8s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--i,0) * 90ms)}
+
+.pildora{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;
+  border-radius:99px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;text-decoration:none;
+  border:1.5px solid currentColor}
+.pildora.llena-h{background:var(--hueso);color:var(--negro);border-color:var(--hueso)}
+.pildora.llena-n{background:var(--negro);color:var(--hueso);border-color:var(--negro)}
+.pildora svg{width:14px;height:14px;flex:none}
+
+/* la cinta que corre con el dedo */
+.cinta{overflow:hidden;white-space:nowrap;pointer-events:none;padding:11px 0;
+  font-family:var(--titulos);font-weight:900;font-style:italic;font-size:15px;letter-spacing:.02em;text-transform:uppercase}
+.cinta span{display:inline-block;will-change:transform}
+.cinta.h{background:var(--hueso);color:var(--negro)}
+.cinta.n{background:var(--negro);color:var(--hueso);border-block:1px solid #2a2a2a}
+.cinta b{color:var(--acento);font-weight:900;padding:0 .5em}
+.cinta.h b{color:var(--negro)}
+
+/* ══════════ 1 · la entrada (hace de sobre) ══════════ */
+html:not(.js) #sobre{display:none}
+#sobre{position:fixed;inset:0;z-index:50;background:#000;color:var(--hueso);overflow:hidden}
+/* de la entrada a la portada va un CRUCE: una se apaga mientras la otra se enciende */
+/* la entrada se apaga un poco ANTES de que la portada termine de encenderse: si van parejas, en un teléfono lento se ve un instante la entrada todavía firme encima */
+#sobre.abierto{opacity:0;transform:scale(1.06);transition:opacity .42s ease-out,transform .62s ease;pointer-events:none}
+#portada{transition:opacity .62s ease}
+html.cerrado #portada{opacity:0}
+.golpes{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:3}
+.golpes span{grid-area:1/1;font-family:var(--titulos);font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.03em;line-height:1;opacity:0;font-size:calc(var(--u) * var(--s))}
+.destello{position:absolute;inset:0;z-index:4;background:var(--hueso);mix-blend-mode:difference;opacity:0;pointer-events:none}
+#sobre.va .golpes span{animation:golpe .68s cubic-bezier(.2,.9,.2,1) both}
+#sobre.va .golpes span:nth-child(1){animation-delay:.25s}
+#sobre.va .golpes span:nth-child(2){animation-delay:.95s}
+#sobre.va .golpes span:nth-child(3){animation-delay:1.65s;animation-duration:.95s}
+#sobre.va .destello{animation:destello .4s 1.1s linear both}
+@keyframes golpe{
+  0%{opacity:0;transform:rotate(-7deg) scale(2.7);filter:blur(14px)}
+  16%{opacity:1;transform:rotate(-7deg) scale(1);filter:blur(0)}
+  82%{opacity:1;transform:rotate(-7deg) scale(.95)}
+  100%{opacity:0;transform:rotate(-7deg) scale(.9)}
+}
+@keyframes destello{0%{opacity:0}8%,72%{opacity:1}100%{opacity:0}}
+
+.tapa{position:relative;width:var(--col);height:100%;margin:0 auto;display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 18px) var(--m) calc(env(safe-area-inset-bottom) + 22px)}
+#sobre.va .tapa{animation:aparece .9s 2.55s both}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+#ruido{position:absolute;left:0;top:0;width:100%;height:64%;pointer-events:none}
+.tapa .fila{position:relative;z-index:1}
+.tapa .mini{color:var(--hueso);background:#000;padding:4px 6px;margin:-4px -6px}
+.tapa-centro{margin-top:auto;position:relative;z-index:1}
+.goo{display:grid;font-family:var(--titulos);font-weight:900;text-transform:uppercase;letter-spacing:-.04em;line-height:.9;
+  background:#000;margin:0 calc(var(--m) * -1);padding:.1em var(--m) .06em}
+.goo span{grid-area:1/1;align-self:end;white-space:nowrap}
+/* las letras de la entrada NO se tocan: agrandadas e invisibles mientras
+   saltan, tapaban el botón de "Entrar a la fiesta" y el toque no entraba */
+.goo,.goo span{pointer-events:none}
+.goo .a{font-size:calc(var(--u) * var(--goo,31))}
+.goo .b{font-size:calc(var(--u) * 20.5);opacity:0}
+/* el nombre se APLASTA y salta la otra palabra, y vuelve. Pasa UNA vez.
+   Antes era un derretido (desenfoque + contraste alto) y en el iPhone se
+   veía como una mancha gris borrosa: Safari no aplica el contraste del
+   padre mientras el hijo anima su desenfoque. Ahora es solo transform y
+   opacidad, que andan igual en todos lados. */
+#sobre.va .goo.liquido{color:#fff}
+.goo .a{transform-origin:0 100%}
+.goo .b{transform-origin:20% 70%}
+#sobre.va .goo .a{animation:derriteA 4.4s 3.6s both}
+#sobre.va .goo .b{animation:derriteB 4.4s 3.6s both}
+@keyframes derriteA{
+  0%{transform:none;opacity:1} 12%{transform:scale(.94,1.12)} 21%{transform:scale(1.35,0);opacity:1} 22%,66%{transform:scale(1.35,0);opacity:0}
+  67%{transform:scale(1.35,0);opacity:1} 76%{transform:scale(.94,1.12)} 84%,100%{transform:none;opacity:1}
+}
+@keyframes derriteB{
+  0%,21%{transform:scale(2.6) rotate(-8deg);opacity:0} 29%{transform:scale(.9) rotate(2deg);opacity:1}
+  35%,58%{transform:none;opacity:1} 63%{transform:scale(1.12);opacity:1} 67%,100%{transform:scale(0);opacity:0}
+}
+#abrir{margin-top:22px;min-height:52px;padding:0 26px;border:1.5px solid var(--hueso);border-radius:99px;
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;display:inline-flex;align-items:center;gap:12px;
+  color:var(--hueso);background:#000}
+#abrir svg{width:16px;height:16px}
+#sobre.va #abrir svg{animation:empuja .7s 3.5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes empuja{0%{transform:translateX(-10px);opacity:0}100%{transform:none;opacity:1}}
+.tapa-pie{margin-top:calc(var(--u)*9);position:relative;z-index:1}
+
+/* la espera: sin un toque el navegador no deja sonar nada, así que la
+   entrada arranca con el dedo. El latido pasa tres veces y se queda. */
+.toca{position:absolute;inset:0;z-index:5;display:none;place-items:center;pointer-events:none}
+#sobre.espera .toca{display:grid}
+#sobre.espera .tapa{opacity:0}
+#empezar{pointer-events:auto;display:grid;justify-items:center;gap:16px;padding:28px;color:var(--hueso)}
+#empezar .aro{width:86px;height:86px;border:1.5px solid var(--hueso);border-radius:50%;display:grid;place-items:center;animation:latido 1.5s ease-in-out 3}
+#empezar .aro svg{width:26px;height:26px;margin-left:5px}
+#empezar b{font-size:11px;letter-spacing:.26em;text-transform:uppercase;font-weight:700}
+#empezar small{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris-n);margin-top:-8px}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+#sonido{position:fixed;z-index:70;right:max(12px,calc((100vw - var(--col)) / 2 + 12px));bottom:calc(env(safe-area-inset-bottom) + 14px);
+  width:46px;height:46px;border-radius:50%;background:#000;color:var(--hueso);border:1.5px solid var(--hueso);display:grid;place-items:center}
+#sonido svg{width:20px;height:20px}
+#sonido .raya{display:none}
+#sonido[aria-pressed="true"] .raya{display:block}
+#sonido[aria-pressed="true"] .onda{display:none}
+
+/* ══════════ 2 · la portada ══════════ */
+#portada{padding-top:calc(env(safe-area-inset-top) + 22px);padding-bottom:0}
+#portada .tit{margin-top:calc(var(--u)*9)}
+.quien-es{margin-top:calc(var(--u)*8);border-top:1.5px solid var(--negro);padding-top:14px}
+.quien-es strong{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:17px;letter-spacing:.01em;line-height:1.15;display:block}
+.cuenta{display:grid;grid-template-columns:repeat(4,1fr);margin-top:calc(var(--u)*6);border-top:1px solid rgba(10,10,10,.28)}
+.cuenta div{padding:14px 0 16px;border-right:1px solid rgba(10,10,10,.28);text-align:center}
+.cuenta div:last-child{border-right:0}
+.cuenta b{display:block;font-weight:300;font-size:calc(var(--u)*11.5);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.cuenta .mini{margin-top:8px;letter-spacing:.16em;font-size:9.5px}
+.noche{position:relative;background:var(--negro);color:var(--hueso);margin:0 calc(var(--m) * -1);height:calc(var(--u)*128);overflow:hidden}
+.noche canvas{position:absolute;left:0;top:-6%;width:100%;height:112%;pointer-events:none;will-change:transform}
+.noche .hora{position:absolute;left:var(--m);top:calc(var(--u)*5);font-weight:300;font-size:calc(var(--u)*17);line-height:1;letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums;background:var(--negro);padding-right:.1em}
+.noche .abajo{position:absolute;left:var(--m);bottom:calc(var(--u)*6);background:var(--negro);padding:6px 8px 6px 0}
+.noche .lado{position:absolute;right:calc(var(--u)*4);top:calc(var(--u)*8);writing-mode:vertical-rl;background:var(--negro);padding:6px 0}
+.noche .abajo.mini,.noche .lado.mini{color:var(--hueso-2)}
+
+/* ══════════ 3 · guardá la fecha ══════════ */
+#calendario{margin-top:calc(var(--u)*10)}
+#calendario .mes{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;display:flex;justify-content:space-between;
+  border-bottom:1px solid #3a3a3a;padding-bottom:12px}
+#calendario table{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}
+#calendario th{font-size:10px;letter-spacing:.14em;color:var(--gris-n);font-weight:500;padding:10px 0}
+#calendario td{text-align:center;font-size:17px;font-weight:300;height:calc(var(--u)*12.4);position:relative;color:var(--hueso-2);
+  font-variant-numeric:tabular-nums}
+#calendario td.elDia{color:var(--hueso);font-weight:700;font-size:20px}
+#calendario td.elDia svg{position:absolute;left:50%;top:50%;width:calc(var(--u)*11.6);height:calc(var(--u)*11.6);
+  transform:translate(-50%,-50%) rotate(-8deg);overflow:visible;pointer-events:none}
+#calendario td.elDia path{fill:none;stroke:var(--acento);stroke-width:3;stroke-linecap:round;stroke-dasharray:240;stroke-dashoffset:0}
+.js #calendario td.elDia path{stroke-dashoffset:240}
+.js #calendario.entro td.elDia path{stroke-dashoffset:0;transition:stroke-dashoffset 1.1s .5s cubic-bezier(.6,0,.2,1)}
+.cuando{margin-top:calc(var(--u)*7);display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.cuando strong{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:19px;line-height:1.15;display:block}
+
+/* ══════════ 4 · dónde ══════════ */
+.lugar{margin-top:calc(var(--u)*7);border-top:1.5px solid var(--negro);padding-top:14px}
+.lugar strong{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:22px;line-height:1.1;display:block}
+.lugar span{display:block;font-size:15px;margin-top:4px}
+.mapa{position:relative;background:var(--negro);color:var(--hueso);margin:calc(var(--u)*8) calc(var(--m) * -1) calc(var(--u) * -18);
+  height:calc(var(--u)*104);overflow:hidden}
+.mapa>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mapa .calles path{fill:none;stroke:#3b3b3b;stroke-width:1.2}
+.mapa .calles .av{stroke:#5a5a5a;stroke-width:2.6}
+.mapa .rio{fill:#161616;stroke:#2c2c2c;stroke-width:1}
+.mapa .ruta{fill:none;stroke:var(--acento);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.mapa .pin{fill:var(--acento)}
+.mapa .aro{fill:none;stroke:var(--acento);stroke-width:1.5;opacity:0;transform-box:fill-box;transform-origin:center}
+.mapa.entro .aro{animation:aro 1.6s .5s ease-out 2}
+@keyframes aro{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.6)}}
+.mapa .aca{position:absolute;left:calc(var(--u)*47);top:calc(var(--u)*27);background:var(--negro);padding:4px 6px;color:var(--hueso)}
+.mapa .pildora{position:absolute;right:var(--m);bottom:calc(var(--u)*7)}
+.mapa .mas{left:var(--m);top:calc(var(--u)*6);color:var(--gris-n)}
+
+/* ══════════ 5 · la trivia ══════════ */
+#trivia .tit{margin-bottom:calc(var(--u)*7)}
+.t-caja{border-top:1.5px solid var(--negro);padding-top:14px;min-height:calc(var(--u)*92)}
+.t-preg{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:21px;line-height:1.12;margin:10px 0 18px;letter-spacing:-.01em}
+.t-opc{display:grid;gap:10px}
+.t-opc button{min-height:50px;border:1.5px solid var(--negro);border-radius:99px;padding:8px 20px;text-align:left;font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;font-weight:500;display:flex;gap:14px;align-items:center;color:var(--negro);
+  transition:background .25s,color .25s,transform .25s}
+.t-opc button small{font-size:10px;font-weight:700;letter-spacing:.1em}
+.t-opc button.era{background:var(--negro);color:var(--hueso)}
+.t-opc button.no{text-decoration:line-through;opacity:.55;transform:translateX(8px)}
+.t-opc button:disabled{cursor:default}
+.t-sig{margin-top:16px;width:100%}
+.t-fin b{display:block;font-family:var(--titulos);font-weight:900;font-size:calc(var(--u)*34);line-height:.9;letter-spacing:-.05em;margin:10px 0 12px}
+
+/* ══════════ 6 · el plan ══════════ */
+.plan{position:relative;margin-top:calc(var(--u)*10);list-style:none}
+.plan li{display:grid;grid-template-columns:calc(var(--u)*27) 1fr;gap:calc(var(--u)*9);padding:0 0 calc(var(--u)*11);position:relative}
+.plan li:last-child{padding-bottom:0}
+.plan time{font-weight:300;font-size:calc(var(--u)*8.6);line-height:1;text-align:right;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.plan h3{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:17px;line-height:1.15}
+.plan p{font-size:14px;color:var(--hueso-2);margin-top:5px;line-height:1.45}
+.plan li::after{content:"";position:absolute;left:calc(var(--u)*31.5 - 5px);top:calc(var(--u)*2.6);width:10px;height:10px;border-radius:50%;
+  background:var(--negro);border:1.5px solid var(--hueso);z-index:1}
+.riel{position:absolute;left:calc(var(--u)*31.5 - .5px);top:calc(var(--u)*3);bottom:calc(var(--u)*6);width:1px;background:#333;pointer-events:none}
+.riel i{position:absolute;inset:0;background:var(--acento);transform-origin:0 0;transform:scaleY(1)}
+
+/* ══════════ 7 · dress code ══════════ */
+.placa{display:inline-block;background:var(--negro);color:var(--hueso);font-family:var(--titulos);font-weight:900;font-style:italic;
+  text-transform:uppercase;font-size:calc(var(--u)*7.4);line-height:1;padding:.42em .6em .4em;transform:rotate(-3deg);margin:calc(var(--u)*9) 0 calc(var(--u)*7) -4px}
+.percha{position:absolute;right:calc(var(--u)*2);bottom:calc(var(--u)*14);width:calc(var(--u)*30);pointer-events:none}
+.percha path{fill:none;stroke:var(--negro);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:520;stroke-dashoffset:0}
+.js .percha path{stroke-dashoffset:520}
+.js .percha.ap.entro path{stroke-dashoffset:0;transition:stroke-dashoffset 1.8s .3s cubic-bezier(.6,0,.2,1)}
+#dress .cuerpo{max-width:60%}
+
+/* ══════════ 8 · la playlist ══════════ */
+.marco{position:relative;margin-top:calc(var(--u)*9);border:1.5px solid var(--hueso);border-radius:calc(var(--u)*8);height:calc(var(--u)*84);overflow:hidden}
+.marco canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.marco .mas{right:calc(var(--u)*6);top:calc(var(--u)*6)}
+#playlist .pildora{width:100%;margin-top:14px}
+#playlist .cuerpo{margin-top:18px;color:var(--hueso-2)}
+
+/* ══════════ 9 · la confirmación ══════════ */
+#confirmar .cuerpo{margin-top:calc(var(--u)*6)}
+#rsvp{margin-top:26px;border-top:1.5px solid var(--negro)}
+.campo{margin-top:22px}
+.campo>label,.persona .quien{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.campo input[type=text],.campo select,.campo textarea{width:100%;min-height:50px;border:0;border-bottom:1.5px solid var(--negro);border-radius:0;
+  background:transparent;color:var(--negro);font:400 17px/1.4 var(--texto-f);padding:10px 2px;outline:0;appearance:none;-webkit-appearance:none}
+.campo textarea{resize:vertical;min-height:92px}
+.campo select{background-image:linear-gradient(45deg,transparent 50%,var(--negro) 50%),linear-gradient(135deg,var(--negro) 50%,transparent 50%);
+  background-position:calc(100% - 14px) 55%,calc(100% - 8px) 55%;background-size:6px 6px;background-repeat:no-repeat;padding-right:30px}
+.campo input:focus-visible,.campo select:focus-visible,.campo textarea:focus-visible{border-bottom-width:3px}
+.campo ::placeholder{color:var(--gris-h);opacity:1}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radios label{position:relative;min-height:60px;border:1.5px solid var(--negro);display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.04em;padding:8px;cursor:pointer;
+  transition:background .2s,color .2s}
+.radios input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+.radios label.elegida{background:var(--negro);color:var(--hueso)}
+.persona{margin-top:26px;padding-top:6px;border-top:1px dashed var(--negro)}
+.persona .quien{margin-top:16px;margin-bottom:0}
+.aviso-datos{margin-top:26px;font-size:13.5px;line-height:1.55}
+.aviso-datos summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+.aviso-datos a{display:inline-block;padding:13px 0;font-weight:700}
+#enviar{margin-top:18px;width:100%;min-height:60px;background:var(--negro);color:var(--hueso);font-family:var(--titulos);font-weight:900;
+  text-transform:uppercase;font-size:16px;letter-spacing:.06em}
+#enviar:disabled{opacity:.6}
+.aviso{margin-top:14px;font-size:15px;font-weight:500;min-height:1.5em}
+.aviso.mal{font-weight:700;text-decoration:underline}
+.aviso.bien{font-weight:700}
+.ya-fue{margin-top:26px;border:1.5px solid var(--negro);padding:22px}
+.ya-fue .ante{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.ya-nom{font-family:var(--titulos);font-weight:900;text-transform:uppercase;font-size:26px;line-height:1.05;margin:8px 0 10px}
+.btn.hueco{margin-top:14px;min-height:48px;padding:0 20px;border:1.5px solid var(--negro);border-radius:99px;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:700;color:var(--negro)}
+
+/* ══════════ 10 · el regalo (solo si hay alias) ══════════ */
+.alias-caja{margin-top:calc(var(--u)*8);border:1.5px solid var(--hueso);padding:20px}
+.alias-caja b{display:block;font-family:var(--titulos);font-weight:900;font-size:22px;margin:6px 0 4px;word-break:break-all}
+.alias-caja .pildora{margin-top:14px}
+
+/* ══════════ 11 · el cierre ══════════ */
+#cierre{padding-bottom:0}
+#cierre .tit{color:var(--hueso-2);position:relative;z-index:1}
+.ahi{position:absolute;z-index:2;right:calc(var(--u)*6);top:calc(var(--u)*63);font-family:var(--mano);font-size:calc(var(--u)*34);line-height:.7;
+  color:var(--acento);transform:rotate(-9deg);pointer-events:none;background:transparent}
+.js .ahi{clip-path:inset(-20% 100% -20% -10%)}
+.js .tit.entro ~ .ahi{clip-path:inset(-20% -10% -20% -10%);transition:clip-path 1s .75s cubic-bezier(.6,0,.2,1)}
+.final{position:relative;margin:calc(var(--u)*8) calc(var(--m) * -1) 0;height:calc(var(--u)*92);overflow:hidden}
+.final canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+/* el logo "Guada Fest" que mandó el dueño: SOLO las letras, recortadas
+   de su fondo gris ("es solo el Guada Fest, sin el degradado"). Con el
+   logo puesto no van los haces: queda él solo sobre el color de la
+   sección. Entra una vez, de lejos y con un destello. */
+.final.con-logo{height:auto;padding:calc(var(--u)*6) calc(var(--m) * .6) calc(var(--u)*14)}
+.final.con-logo canvas{display:none}
+.final .logo{display:block;width:100%;height:auto;pointer-events:none}
+.js .final .logo{opacity:0;transform:translateY(4%) scale(.9);filter:brightness(2.2) blur(6px)}
+.js .final .logo.entro{opacity:1;transform:none;filter:none;
+  transition:opacity .9s ease,transform 1.2s cubic-bezier(.16,1,.3,1),filter 1.2s ease}
+.firma-cierre{position:relative;z-index:1;margin-top:calc(var(--u)*24)}
+#pie{background:var(--negro);color:var(--gris-n);padding:26px var(--m) calc(env(safe-area-inset-bottom) + 30px);text-align:center;font-size:12px}
+.firma a{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--hueso);text-decoration:none;font-weight:700;letter-spacing:.04em}
+.ico-wsp{width:18px;height:18px}
+.muestra{margin-top:6px;letter-spacing:.16em;text-transform:uppercase;font-size:10px}
+
+/* ══════════ menos movimiento: todo quieto y a la vista ══════════ */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .golpes,.destello{display:none}
+  .js .ap,.js .tit .ln>i{opacity:1;transform:none}
+  .js .ahi{clip-path:none}
+  .js #calendario td.elDia path,.js .percha path{stroke-dashoffset:0}
+}
+</style>
+<script>document.documentElement.classList.add('js');
+/* el tema se pone ANTES de pintar: si no, se ve un instante el otro */
+(function(){ try{ var m = /[?&]tema=(plata|negro)/.exec(location.search);
+  if (m) document.documentElement.setAttribute('data-tema', m[1]); }catch(e){} })();</script>
+</head>
+<body>
+<div class="grano" aria-hidden="true"></div>
+
+<!-- ══════════ 1 · la entrada ══════════ -->
+<div id="sobre">
+  <div class="golpes" aria-hidden="true">
+    <span style="--s:19">¿Estás</span>
+    <span style="--s:27">para</span>
+    <span style="--s:22">esto?</span>
+  </div>
+  <div class="destello" aria-hidden="true"></div>
+  <div class="toca">
+    <button id="empezar" type="button">
+      <span class="aro"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2l17 10L4 22z"/></svg></span>
+      <b>Tocá para empezar</b>
+      <small>Con sonido</small>
+    </button>
+  </div>
+  <div class="tapa">
+    <canvas id="ruido" aria-hidden="true"></canvas>
+    <div class="fila">
+      <p class="mini">Mis XV<br>La noche</p>
+      <p class="mini der" id="tapaFecha"></p>
+    </div>
+    <div class="tapa-centro">
+      <p class="goo liquido" aria-label="Guada"><span class="a elNom" aria-hidden="true">Guada</span><span class="b" aria-hidden="true">Quince</span></p>
+      <button id="abrir" type="button">Entrar a la fiesta
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 8h13M9 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+    <div class="fila tapa-pie">
+      <p class="mini" id="tapaCiudad"></p>
+    </div>
+  </div>
+</div>
+
+<div class="repro"><button id="sonido" class="play" type="button" hidden aria-label="Pausar la música" aria-pressed="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="raya" d="M17 9l5 6M22 9l-5 6"/>
+  </svg>
+</button></div>
+
+<main id="papel">
+
+  <!-- ══════════ 2 · la portada ══════════ -->
+  <section class="seccion hueso" id="portada">
+    <div class="fila">
+      <p class="mini">Invitación<br>personal</p>
+      <p class="mini der">N.º 015<br>Entrada libre de excusas</p>
+    </div>
+    <h1 class="tit" id="titPortada">
+      <span class="ln" style="--f:21;--i:0"><i>Estás</i></span>
+      <span class="ln" style="--f:21;--i:1"><i>en la</i></span>
+      <span class="ln" style="--f:21;--i:2"><i>lista</i></span>
+    </h1>
+    <div class="quien-es fila ap">
+      <strong>Los XV de <span class="elNom">Guada</span></strong>
+      <p class="mini der" id="portFecha"></p>
+    </div>
+    <div class="cuenta ap" aria-label="Cuánto falta">
+      <div><b id="cD">0</b><p class="mini">Días</p></div>
+      <div><b id="cH">00</b><p class="mini">Horas</p></div>
+      <div><b id="cM">00</b><p class="mini">Min</p></div>
+      <div><b id="cS">00</b><p class="mini">Seg</p></div>
+    </div>
+    <div class="noche" id="noche">
+      <canvas id="bola" aria-hidden="true"></canvas>
+      <p class="hora" id="laHora"></p>
+      <span class="mas" style="right:22%;top:30%" aria-hidden="true"></span>
+      <span class="mas" style="left:12%;top:62%" aria-hidden="true"></span>
+      <p class="mini lado" aria-hidden="true">Música · Gente · Brillo</p>
+      <p class="mini abajo">No es una fiesta más.<br>Es la mía.</p>
+    </div>
+  </section>
+
+  <div class="cinta h" aria-hidden="true"><span data-desliza="-0.5" id="cinta1"></span></div>
+
+  <!-- ══════════ 3 · guardá la fecha ══════════ -->
+  <section class="seccion negra" id="sFecha">
+    <p class="mini ap">Anotalo ya</p>
+    <h2 class="tit" style="margin-top:14px">
+      <span class="ln" style="--f:17;--i:0"><i>Guardá</i></span>
+      <span class="ln" style="--f:15;--i:1"><i>la fecha</i></span>
+    </h2>
+    <div id="calendario" class="ap"></div>
+    <div class="cuando ap">
+      <div><p class="mini">Es el</p><strong id="cuando"></strong></div>
+      <span id="agendarAca"></span>
+    </div>
+  </section>
+
+  <!-- ══════════ 4 · dónde ══════════ -->
+  <section class="seccion hueso" id="donde">
+    <div class="fila ap"><p class="mini">La dirección</p><p class="mini der">Llegá a tiempo:<br>la entrada no se repite</p></div>
+    <h2 class="tit" style="margin-top:14px"><span class="ln" style="--f:23"><i>Dónde</i></span></h2>
+    <div class="lugar ap">
+      <strong id="lugar"></strong>
+      <span id="calle"></span>
+    </div>
+    <div class="mapa ap" id="mapa">
+      <svg viewBox="0 0 360 374" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path class="rio" d="M300 -10 C285 60 330 120 318 190 C308 250 345 300 338 390 L380 390 L380 -10 Z"/>
+        <g class="calles" transform="rotate(-14 180 187)">
+          <path d="M-40 20H420M-40 68H420M-40 116H420M-40 164H420M-40 212H420M-40 260H420M-40 308H420M-40 356H420"/>
+          <path d="M10 -60V440M58 -60V440M106 -60V440M154 -60V440M202 -60V440M250 -60V440M298 -60V440"/>
+          <path class="av" d="M-40 164H420M154 -60V440"/>
+          <path class="av" d="M-30 400L300 -40"/>
+        </g>
+        <g transform="rotate(-14 180 187)">
+          <path class="ruta" id="ruta" d="M10 356H106V260H154V164H202V116"/>
+          <circle class="aro" cx="202" cy="116" r="12"/>
+          <circle class="pin" cx="202" cy="116" r="7"/>
+        </g>
+      </svg>
+      <span class="mas" aria-hidden="true"></span>
+      <p class="mini aca">La fiesta<br>empieza acá</p>
+      <span id="mapaAca"></span>
+    </div>
+  </section>
+
+  <!-- ══════════ 5 · la trivia ══════════ -->
+  <section class="seccion hueso" id="trivia">
+    <p class="mini ap">Antes de venir, un examen</p>
+    <h2 class="tit" style="margin-top:14px">
+      <span class="ln" style="--f:11;--i:0"><i>¿Quién conoce</i></span>
+      <span class="ln" style="--f:13;--i:1"><i>más a <span class="elNom">Guada</span>?</i></span>
+    </h2>
+    <div class="t-caja ap" id="tCaja"></div>
+  </section>
+
+  <div class="cinta n" aria-hidden="true"><span data-desliza="0.5" id="cinta2"></span></div>
+
+  <!-- ══════════ 6 · el plan ══════════ -->
+  <section class="seccion negra" id="plan">
+    <div class="fila ap"><p class="mini">Minuto a minuto</p><p class="mini der">Sujeto a<br>ganas de bailar</p></div>
+    <h2 class="tit" style="margin-top:14px"><span class="ln" style="--f:19"><i>El plan</i></span></h2>
+    <ol class="plan" id="elPlan"></ol>
+  </section>
+
+  <!-- ══════════ 7 · dress code ══════════ -->
+  <section class="seccion hueso" id="dress">
+    <!-- Guada no quiso dress code: en su lugar, una frase para que vengan
+         a disfrutar. La frase es NUESTRA; si manda la suya, va la suya. -->
+    <p class="mini ap">Una sola regla</p>
+    <h2 class="tit" style="margin-top:14px">
+      <span class="ln" style="--f:21;--i:0"><i>Vení a</i></span>
+      <span class="ln" style="--f:25;--i:1"><i>disfrutar</i></span>
+    </h2>
+    <svg class="percha ap" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M100 18C104 72 128 96 182 100C128 104 104 128 100 182C96 128 72 104 18 100C72 96 96 72 100 18Z"/>
+    </svg>
+    <p class="placa ap" id="dressTitulo"></p>
+    <p class="cuerpo ap" id="dressTexto"></p>
+  </section>
+
+  <!-- ══════════ 8 · la playlist ══════════ -->
+  <section class="seccion negra" id="playlist">
+    <p class="mini ap">La banda sonora</p>
+    <h2 class="tit" style="margin-top:14px">
+      <span class="ln" style="--f:15;--i:0"><i>La música</i></span>
+      <span class="ln" style="--f:13;--i:1"><i>la ponés vos</i></span>
+    </h2>
+    <div class="marco ap">
+      <canvas id="haces" aria-hidden="true"></canvas>
+      <span class="mas" aria-hidden="true"></span>
+    </div>
+    <p class="cuerpo ap">Decime qué tema no puede faltar y lo sumo a la lista de la noche.</p>
+    <button class="pildora llena-h ap" type="button" id="irTema">Sumá tu canción
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 1v13M3 9l5 5 5-5"/></svg>
+    </button>
+  </section>
+
+  <!-- ══════════ 9 · la confirmación ══════════ -->
+  <section class="seccion hueso" id="confirmar">
+    <div class="fila ap"><p class="mini">Cuento con vos</p><p class="mini der" id="hasta"></p></div>
+    <h2 class="tit" style="margin-top:14px"><span class="ln" style="--f:21"><i>¿Venís?</i></span></h2>
+    <p class="cuerpo ap">Quiero que estés en mi noche de quince. Decime que sí.</p>
+
+    <div class="ya-fue ap" id="yaFue" hidden></div>
+
+    <form id="rsvp" class="ap" novalidate>
+      <div class="campo">
+        <label for="fNombre">Nombre y apellido</label>
+        <input id="fNombre" name="Nombre" type="text" autocomplete="name" required>
+      </div>
+
+      <div class="campo">
+        <label id="lblAsiste">¿Vas a asistir?</label>
+        <div class="radios" role="radiogroup" aria-labelledby="lblAsiste">
+          <label><input type="radio" name="Confirma" value="Sí"> Ahí voy</label>
+          <label><input type="radio" name="Confirma" value="No"> No puedo</label>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="fLugares">¿Cuántos son?</label>
+        <select id="fLugares" name="Cuántos">
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="fComida">¿Algún requerimiento en tu comida?</label>
+        <select id="fComida" name="Comida"></select>
+        <input id="fComidaOtro" type="text" placeholder="Contanos cuál"
+               style="margin-top:10px;display:none" aria-label="Qué comida">
+      </div>
+
+      <div id="acomp"></div>
+
+      <div class="campo">
+        <label for="fTema">Un tema que no puede faltar</label>
+        <input id="fTema" name="Canción" type="text" placeholder="Para la lista de la noche">
+      </div>
+
+      <!-- El mensaje sigue a la vista aunque contesten que no. -->
+      <div class="campo">
+        <label for="fMensaje">Un mensaje para <span class="elNom"></span></label>
+        <textarea id="fMensaje" name="Mensaje" rows="3" maxlength="500"
+                  placeholder="Un deseo, algo que le quieras decir…"></textarea>
+      </div>
+
+      <details class="aviso-datos">
+        <summary>Qué pasa con lo que escribís acá</summary>
+        <p>Lo que ponés se usa <b>solo para organizar la fiesta</b>: saber cuántos
+        son, armar las mesas, pasarle al salón las comidas especiales y darle a
+        <span class="elNom"></span> los mensajes que le dejen.
+        La lista la tiene <b><span class="elNom"></span> y su familia</b>, que son quienes organizan;
+        Click Eterno solo la guarda por su cuenta y orden.
+        Contestar es <b>voluntario</b> —podés confirmar sin decir nada de la
+        comida ni de la música— y la lista <b>se borra cuando pasa la fiesta</b>.
+        Si querés que borremos lo tuyo antes, escribinos a
+        <a href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>.</p>
+      </details>
+
+      <button id="enviar" type="submit">Confirmar</button>
+      <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <!-- ══════════ 10 · el regalo: solo con alias ══════════ -->
+  <section class="seccion negra" id="regalo" hidden>
+    <p class="mini ap">Si querés hacerme un regalo</p>
+    <h2 class="tit" style="margin-top:14px"><span class="ln" style="--f:19"><i>Regalo</i></span></h2>
+    <div class="alias-caja ap">
+      <p class="mini">Alias para transferir</p>
+      <b id="alias"></b>
+      <p class="mini" id="titular"></p>
+      <button class="pildora" type="button" id="copiar"><span id="copiarTxt">Copiar alias</span></button>
+    </div>
+  </section>
+
+  <!-- ══════════ 11 · el cierre ══════════ -->
+  <section class="seccion negra" id="cierre">
+    <p class="mini ap">Eso es todo. Ahora te toca a vos.</p>
+    <h2 class="tit" style="margin-top:14px" aria-label="Nos vemos ahí">
+      <span class="ln" style="--f:30;--i:0"><i>Nos</i></span>
+      <span class="ln" style="--f:19;--i:1"><i>vemos</i></span>
+    </h2>
+    <p class="ahi" aria-hidden="true">ahí</p>
+    <div class="fila firma-cierre ap">
+      <p class="mini">Te espero,<br><span class="elNom">Guada</span></p>
+      <p class="mini der" id="cierreFecha"></p>
+    </div>
+    <div class="final">
+      <canvas id="haces2" aria-hidden="true"></canvas>
+    </div>
+  </section>
+
+  <footer id="pie">
+    <p class="firma"><a href="https://clicketerno.com.ar" target="_blank" rel="noopener">Hecha por Click Eterno</a></p>
+      </footer>
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   LO ÚNICO QUE SE TOCA
+   Los XV de Guada. Lo mandó el dueño el 18 y el 19/11/2026.
+   `fiesta` va con la zona de Rosario escrita (−03:00) y el día sale de
+   la CADENA, no de `new Date(...)`. Un campo vacío no se dibuja.
+   ═══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  quien: "Guada",
+  fiesta: "2027-02-06T21:00:00-03:00",
+  hastaHora: "05:00",              // las 5 son del día siguiente
+  ciudad: "",                      // HUECO · no está claro si "Olavarría" es la ciudad o el nombre de la quinta
+  confirmarHasta: "",              // HUECO · no lo mandaron
+  lugar: "Quinta Olavarría",
+  calle: "Mitre 5457",
+  mapa: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Quinta Olavarría, Mitre 5457"),
+  /* En el lugar del dress code va una frase: Guada no quiso dress code. */
+  dressTitulo: "La noche es nuestra",
+  dressTexto: "Vení con ganas de bailar, de reírte y de disfrutar cada minuto. Lo demás corre por mi cuenta.",
+  plan: [],                        // no mandaron el minuto a minuto: la sección no va
+  /* `ok` es la posición de la respuesta buena, contando desde 0.
+     Las opciones y la buena son de ella; la PREGUNTA es nuestra. */
+  trivia: [
+    { p: "¿Qué es lo que más le gusta hacer?",
+      o: ["Jugar al fútbol", "Juntadas con amigos", "Ir a la escuela", "Comer sándwiches de milanesa"], ok: 0 }
+  ],
+  cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: 9.07 },
+  /* El logo "Guada Fest" que mandó el dueño (19/11/2026): va en el cierre. */
+  logo: "fotos/logo.webp",
+  alias: "china.correa291",
+  titular: "",                     // HUECO · no lo mandaron
+  /* Los colores: "negro" (como la de Lola) o "plata" (blanco y plateado,
+     por la decoración). Para compararlos: ?tema=plata en la dirección. */
+  tema: "negro",
+  evento: "",
+  endpoint: "https://script.google.com/macros/s/AKfycbxPGr7twvxCAFg7tL332_vhCJNApX8FKNNGUBAUT0RDHzxXdESqN5JQDtZwGoU4SuUUww/exec"   // su propia planilla, implementada por el dueño el 19/11/2026
+};
+
+
+if (!document.documentElement.hasAttribute('data-tema')) document.documentElement.setAttribute('data-tema', CONFIG.tema || 'negro');
+if (document.documentElement.getAttribute('data-tema') === 'plata'){
+  const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = '#1B1C20'; }
+const $  = (s, d) => (d || document).querySelector(s);
+const $$ = (s, d) => [...(d || document).querySelectorAll(s)];
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.documentElement.classList.add('js');
+const menosMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ══════════ la fecha, leída de la cadena ══════════ */
+const MESES   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS_S  = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const F = (function(){
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(CONFIG.fiesta || '');
+  if (!m) return null;
+  const f = { anio:+m[1], mes:+m[2], dia:+m[3], hora: m[4] ? m[4] + ':' + m[5] : '' };
+  f.semana = DIAS_S[new Date(f.anio, f.mes-1, f.dia).getDay()];
+  f.corta  = String(f.dia).padStart(2,'0') + '.' + String(f.mes).padStart(2,'0') + '.' + f.anio;
+  return f;
+})();
+const SEMILLA = (String(CONFIG.fiesta).replace(/\D/g,'').slice(0,8) | 0) || 15;
+function azar(s){ return function(){ s |= 0; s = s + 0x6D2B79F5 | 0;
+  let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const picado = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7 + SEMILLA % 97) * 43758.5453; return s - Math.floor(s); };
+
+/* ══════════ lo que sale de CONFIG ══════════ */
+(function(){
+  const pon = (q, t, html) => { const n = $(q); if (!n) return;
+    if (!t) { n.remove(); return; } if (html) n.innerHTML = t; else n.textContent = t; };
+  $$('.elNom').forEach(n => n.textContent = CONFIG.quien);
+  const goo = $('.goo'); if (goo) goo.setAttribute('aria-label', CONFIG.quien);
+  const rango = F && F.hora ? (CONFIG.hastaHora ? F.hora + ' a ' + CONFIG.hastaHora + ' h' : F.hora + ' h') : '';
+  pon('#tapaFecha', F ? esc(F.corta) + '<br>' + esc(F.semana) : '', true);
+  pon('#tapaCiudad', CONFIG.ciudad);
+  pon('#portFecha', F ? esc(F.semana + ' ' + F.corta) + (rango ? '<br>' + esc(rango) : '') : '', true);
+  pon('#laHora', F && F.hora);
+  pon('#cuando', F ? F.semana + ' ' + F.dia + ' de ' + MESES[F.mes-1] + (rango ? ' · ' + rango : '') : '');
+  pon('#cierreFecha', F ? esc(F.corta) + (CONFIG.lugar ? '<br>' + esc(CONFIG.lugar) : '') : '', true);
+  pon('#lugar', CONFIG.lugar);
+  pon('#calle', CONFIG.calle);
+  if (!CONFIG.lugar && !CONFIG.calle){ const d = $('#donde'); if (d) d.remove(); }
+  pon('#hasta', CONFIG.confirmarHasta ? 'Confirmá antes del<br>' + esc(CONFIG.confirmarHasta) : '', true);
+  pon('#dressTexto', CONFIG.dressTexto);
+  if (CONFIG.dressTitulo) $('#dressTitulo').textContent = CONFIG.dressTitulo;
+  else { const d = $('#dress'); if (d) d.remove(); }
+
+  const flecha = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12L12 4M5 4h7v7"/></svg>';
+  if (CONFIG.mapa && $('#mapaAca'))
+    $('#mapaAca').outerHTML = '<a class="pildora llena-h" target="_blank" rel="noopener" href="' + esc(CONFIG.mapa) + '">Abrir en Maps' + flecha + '</a>';
+  /* Agendar: Google Calendar pide el INSTANTE en UTC, y acá sí va
+     toISOString: no es "qué día es" sino "cuándo empieza". */
+  if (F && F.hora && $('#agendarAca')){
+    const ini = new Date(CONFIG.fiesta), durH = CONFIG.hastaHora ? ((+CONFIG.hastaHora.slice(0,2) + 24 - +F.hora.slice(0,2)) % 24 || 24) : 6,
+          fin = new Date(ini.getTime() + durH * 3600e3);
+    const z = d => d.toISOString().replace(/[-:]|\.\d{3}/g, '');
+    $('#agendarAca').outerHTML = '<a class="pildora" target="_blank" rel="noopener" href="' +
+      esc('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent('Los XV de ' + CONFIG.quien) +
+          '&dates=' + z(ini) + '/' + z(fin) +
+          '&location=' + encodeURIComponent([CONFIG.lugar, CONFIG.calle].filter(Boolean).join(', '))) +
+      '">Agendar' + flecha + '</a>';
+  }
+
+  const cinta = (F ? F.corta : '') + '<b>✦</b>Los XV de ' + esc(CONFIG.quien) + '<b>✦</b>Una noche para recordar<b>✦</b>';
+  $$('.cinta span').forEach(s => s.innerHTML = cinta.repeat(8));
+
+  const plan = $('#elPlan');
+  if (plan){
+    if (!CONFIG.plan || !CONFIG.plan.length) $('#plan').remove();
+    else plan.innerHTML = '<span class="riel" aria-hidden="true"><i id="rielI"></i></span>' +
+      CONFIG.plan.map((x, i) => '<li class="ap" style="--i:' + (i % 3) + '"><time>' + esc(x.h) + '</time><div><h3>' + esc(x.t) + '</h3>' +
+        (x.d ? '<p>' + esc(x.d) + '</p>' : '') + '</div></li>').join('');
+  }
+
+  if (CONFIG.alias){
+    $('#regalo').hidden = false;
+    $('#alias').textContent = CONFIG.alias;
+    pon('#titular', CONFIG.titular ? 'A nombre de ' + CONFIG.titular : '');
+    $('#copiar').addEventListener('click', async () => {
+      try{ await navigator.clipboard.writeText(CONFIG.alias); $('#copiarTxt').textContent = 'Copiado'; }
+      catch(e){ $('#copiarTxt').textContent = 'Mantené apretado el alias para copiarlo'; }
+    });
+  } else { const r = $('#regalo'); if (r) r.remove(); }
+})();
+
+/* ══════════ los renglones de afiche: cada uno llena el ancho ══════════
+   Se mide el texto a 100 px y se le da el tamaño que lo deja justo. Con
+   la tipografía que cargue, sea la pedida o la de reserva. */
+function ajustar(){
+  /* el nombre de la entrada: que ocupe el 86 % del ancho, sea corto o largo */
+  const g = $('.goo .a');
+  if (g){ g.style.setProperty('--goo', 31); const w = g.offsetWidth, hay = g.parentElement.clientWidth;
+    if (w && hay) g.style.setProperty('--goo', Math.min(31, 31 * hay * .86 / w)); }
+  $$('.tit .ln').forEach(ln => {
+    const i = ln.firstElementChild; if (!i) return;
+    ln.style.fontSize = '100px';
+    const w = i.offsetWidth, hay = ln.clientWidth;
+    if (!w || !hay){ ln.style.fontSize = ''; return; }
+    ln.style.fontSize = Math.min(100 * (hay - 2) / w, hay * .62) + 'px';
+  });
+}
+ajustar();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+let anchoAntes = innerWidth;
+addEventListener('resize', () => { if (innerWidth !== anchoAntes){ anchoAntes = innerWidth; ajustar(); pintarTramas(true); } });
+
+/* ══════════ las tramas: dibujos hechos de puntos ══════════
+   `luz(x, y, w, h)` devuelve de 0 a 1 cuánta luz hay en ese punto, y la
+   trama tira un punto con esa probabilidad. La semilla es la fecha: sale
+   siempre el mismo dibujo. */
+function tramar(cv, luz, paso){
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const c = cv.getContext('2d'); c.scale(dpr, dpr);
+  c.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--punto').trim() || '#ECE7DC';
+  const r = azar(SEMILLA + w), p = paso || 2.4;
+  for (let y = 0; y < h; y += p) for (let x = 0; x < w; x += p){
+    const v = luz(x, y, w, h);
+    if (v > 0 && r() < v){ const t = p * (.55 + r() * .6); c.fillRect(x + r() * p, y + r() * p, t, t); }
+  }
+}
+/* la lluvia de grano de la entrada: cerrada arriba, se deshace al bajar */
+const luzRuido = (x, y, w, h) => { const t = y / h; return Math.pow(1 - t, 1.6) * (.3 + .7 * Math.min(1, t * 4)) * (.45 + .55 * picado(Math.floor(x / 3), 1)); };
+/* la bola de espejos, con sus rayos */
+function luzBola(x, y, w, h){
+  const cx = w * .56, cy = h * .6, R = w * .33;
+  const dx = x - cx, dy = y - cy, d = Math.hypot(dx, dy);
+  if (d < R){
+    const nx = dx / R, ny = dy / R, nz = Math.sqrt(Math.max(0, 1 - nx*nx - ny*ny));
+    const K = 12, la = (Math.asin(ny) / Math.PI + .5) * K, lo = (Math.atan2(nx, nz) / Math.PI + .5) * K;
+    const fi = la - Math.floor(la), fj = lo - Math.floor(lo);
+    if (fi < .09 || fj < .09) return .03;
+    const hh = picado(Math.floor(la), Math.floor(lo));
+    const dif = Math.max(0, -nx * .45 - ny * .6 + nz * .65);
+    return hh > .84 ? 1 : Math.min(.95, (.08 + dif * .62) * (.45 + hh));
+  }
+  if (Math.abs(dx) < 1 && y < cy) return .55;                        /* el hilo */
+  const ang = Math.atan2(dy, dx) / (Math.PI * 2) * 54, b = Math.floor(ang), hr = picado(b, 9);
+  if (hr < .58) return .012;
+  const f = ang - b, perfil = Math.max(0, 1 - Math.abs(f - .5) * 3.2);
+  return perfil * (hr - .5) * 1.5 * Math.exp(-(d / R - 1) * (.9 + hr));
+}
+/* haces de luz que bajan del techo */
+function luzHaces(x, y, w, h){
+  let v = 0;
+  for (let k = 0; k < 5; k++){
+    const sx = w * (.08 + k * .21), a0 = (picado(k, 3) - .5) * 1.5, an = Math.atan2(x - sx, y + h * .06);
+    const dif = Math.abs(an - a0), ancho = .05 + picado(k, 5) * .07;
+    if (dif < ancho) v += (1 - dif / ancho) * (.75 - y / h * .45);
+  }
+  return Math.min(.9, v + Math.pow(y / h, 5) * .5 + .012);
+}
+const TRAMAS = [['#ruido', luzRuido, 2.2], ['#bola', luzBola, 2.3], ['#haces', luzHaces, 2.4], ['#haces2', luzHaces, 2.4]];
+const pintadas = new Set();
+function pintarTramas(deNuevo){
+  TRAMAS.forEach(([q, luz, paso]) => { const cv = $(q); if (cv && (pintadas.has(q) || q === '#ruido') && (deNuevo || !cv.width || q === '#ruido')) tramar(cv, luz, paso); });
+}
+if ('IntersectionObserver' in window){
+  const ojo = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const q = '#' + e.target.id, t = TRAMAS.find(x => x[0] === q);
+    if (t && !pintadas.has(q)){ pintadas.add(q); tramar(e.target, t[1], t[2]); }
+    ojo.unobserve(e.target);
+  }), {rootMargin:'300px'});
+  TRAMAS.forEach(t => { const cv = $(t[0]); if (cv) ojo.observe(cv); });
+} else TRAMAS.forEach(t => { const cv = $(t[0]); if (cv){ pintadas.add(t[0]); tramar(cv, t[1], t[2]); } });
+
+/* ══════════ EL SONIDO ══════════
+   No hay ningún archivo: los golpes y la música los fabrica el navegador
+   (Web Audio). Así cada golpe cae justo con su letra y no hay canción de
+   nadie adentro. La música es una base de pista a 124 que se escucha
+   APAGADA mientras se está en la entrada —como del lado de afuera— y se
+   abre con el toque de "Entrar a la fiesta".
+   Todo recibe su tiempo `t`: el mismo código sirve para sonar en vivo y
+   para volcarlo a un archivo y medirlo. */
+const SONIDO = (function(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const BPM = 124, S16 = 60 / BPM / 4;
+  /* La menor · Fa · Do · Sol: el bajo y las tres notas de cada acorde */
+  const ACORDES = [[55.00,[220.00,261.63,329.63]],[43.65,[174.61,220.00,261.63]],
+                   [65.41,[261.63,329.63,392.00]],[49.00,[196.00,246.94,293.66]]];
+  let A = null, master, musica, filtro, efectos, sala, ruido, activo = true, paso = 0, prox = 0, reloj = null, ultGolpe = 0;
+
+  /* ── la canción ──
+     Un <audio> de verdad, pasado por el mismo filtro que la base: así
+     se escucha apagada en la entrada y se abre al entrar. Suena UNA vez
+     y se rebobina; el botón queda diciendo "escuchar". */
+  const C = CONFIG.cancion, boton = $('#sonido');
+  let tema = null, sonando = false;
+  const rotulo = () => { if (!boton) return; const on = activo && (!tema || sonando);
+    boton.setAttribute('aria-pressed', String(!on));
+    boton.setAttribute('aria-label', on ? 'Pausar la música' : 'Escuchar la música'); };
+  if (C && C.archivos && C.archivos.length){
+    tema = document.createElement('audio'); tema.preload = 'metadata';
+    C.archivos.forEach(a => { const s = document.createElement('source'); s.src = a;
+      s.type = /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4'; tema.appendChild(s); });
+    tema.addEventListener('ended', () => { tema.currentTime = 0; sonando = false; rotulo(); });
+    tema.addEventListener('error', () => {}, true);
+    document.body.appendChild(tema);
+    /* PARA PODER SALTAR. El servidor no entrega el audio por pedazos, y
+       así el navegador no deja adelantarlo: un salto lo manda al
+       principio. Con la página ya cargada se baja la canción entera
+       (medio mega) y se le da al <audio> desde la memoria, que sí se
+       puede saltar. Si todavía no llegó cuando tocan, suena igual por el
+       camino normal y sin salto. */
+    const tipo = a => /\.ogg$/i.test(a) ? 'audio/ogg; codecs=opus' : 'audio/mp4';
+    const bajar = () => {
+      const a = C.archivos.find(x => tema.canPlayType(tipo(x))) || C.archivos[0];
+      fetch(a).then(r => r.ok ? r.blob() : Promise.reject()).then(b => {
+        if (sonando || !tema.paused) return;
+        tema.src = URL.createObjectURL(b);
+      }).catch(() => {});
+    };
+    if (document.readyState === 'complete') bajar(); else addEventListener('load', bajar);
+  }
+  const saltable = s => { try{ const k = tema.seekable; return k.length && k.end(k.length - 1) > s + 1; }catch(e){ return false; } };
+  const tocar = () => { if (!tema) return; sonando = true; const p = tema.play(); if (p && p.catch) p.catch(() => { sonando = false; rotulo(); }); rotulo(); };
+
+  function armar(ctx){
+    A = ctx;
+    const comp = A.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.ratio.value = 5; comp.attack.value = .004; comp.release.value = .16;
+    master = A.createGain(); master.gain.value = .66; master.connect(comp); comp.connect(A.destination);
+    filtro = A.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.value = 240; filtro.Q.value = .8;
+    musica = A.createGain(); musica.gain.value = .0001; musica.connect(filtro); filtro.connect(master);
+    efectos = A.createGain(); efectos.gain.value = 1; efectos.connect(master);
+    /* LA SALA: un eco largo hecho de ruido que se apaga. Solo lo usan los
+       sonidos de la intro, para que suenen a trailer y no a batería. */
+    sala = A.createGain(); sala.gain.value = .55;
+    const conv = A.createConvolver(), L = Math.floor(A.sampleRate * 2.6), ir = A.createBuffer(2, L, A.sampleRate);
+    for (let c = 0; c < 2; c++){ const d = ir.getChannelData(c), rr = azar(11 + c);
+      for (let i = 0; i < L; i++) d[i] = (rr() * 2 - 1) * Math.pow(1 - i / L, 3.2); }
+    conv.buffer = ir; sala.connect(conv); conv.connect(master);
+    ruido = A.createBuffer(1, A.sampleRate * 2, A.sampleRate);
+    const d = ruido.getChannelData(0), r = azar(7);
+    for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1;
+  }
+  const ya = t => Math.max(t, A.currentTime + .001);
+  function tono(dest, tipo, f0, f1, t, dur, vol){
+    t = ya(t);
+    const o = A.createOscillator(), g = A.createGain();
+    o.type = tipo; o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .006);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + .03);
+  }
+  function soplo(dest, t, dur, vol, tipo, f0, f1, q, ataque){
+    t = ya(t);
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true;
+    f.type = tipo; f.Q.value = q || .8; f.frequency.setValueAtTime(f0, t);
+    if (f1) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (ataque || .004));
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(dest); s.start(t, (t * 7.3) % 1.7); s.stop(t + dur + .03);
+  }
+  function filtrado(dest, tipo, f, desafino, t, dur, vol, c0, c1, ataque){
+    t = ya(t);
+    const o = A.createOscillator(), lp = A.createBiquadFilter(), g = A.createGain();
+    o.type = tipo; o.frequency.value = f; o.detune.value = desafino || 0;
+    lp.type = 'lowpass'; lp.Q.value = 1.2; lp.frequency.setValueAtTime(c0, t); lp.frequency.exponentialRampToValueAtTime(c1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (ataque || .006));
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(lp); lp.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + .03);
+  }
+
+  /* ── los siete "woosh" ──
+     Salen de una referencia que mandó el dueño (un muestrario de siete
+     soplos de transición). No se usó su audio: se MIDIÓ cada uno
+     —cuánto tarda en llegar al pico, cuánto en irse, qué tan grave es en
+     cada tramo— y se rehízo con ruido filtrado. `t` es el instante del
+     PICO, que es lo que tiene que caer con la imagen.
+     sube/baja: segundos antes y después del pico · f0→f1→f2: por dónde
+     pasa el filtro · sub: el grave de abajo · aire: la capa aguda, que
+     es la que se escucha en el parlante de un teléfono. */
+  const WOOSH = {
+    hondo:   { sube:.74, baja:1.5,  tipo:'lowpass',  q:.7,  f0:90,  f1:460, f2:70,  vol:.85, sub:46, subVol:.35, aire:.16 },  /* Deep, Low, cinematic */
+    limpio1: { sube:.28, baja:.5,   tipo:'bandpass', q:.9,  f0:240, f1:520, f2:220, vol:.55, aire:.22 },                      /* Classic, clean */
+    limpio2: { sube:.24, baja:.32,  tipo:'bandpass', q:.9,  f0:300, f1:620, f2:300, vol:.5,  aire:.24 },                      /* Classic, clean 2 */
+    limpio3: { sube:.29, baja:.4,   tipo:'bandpass', q:.9,  f0:220, f1:480, f2:200, vol:.55, aire:.2  },                      /* Classic, clean 3 */
+    oscuro:  { sube:.63, baja:1.1,  tipo:'lowpass',  q:.8,  f0:520, f1:170, f2:60,  vol:.8,  sub:40, subVol:.8,  aire:.08 },  /* Classic, Dark, Fast */
+    aireado: { sube:.85, baja:1.0,  tipo:'bandpass', q:.8,  f0:280, f1:720, f2:380, vol:.34, sub:50, subVol:.4,  aire:.3  },  /* Fast, Close, Airy */
+    hueco:   { sube:1.24, baja:2.6, tipo:'bandpass', q:3.2, f0:120, f1:270, f2:90,  vol:.75, sub:38, subVol:.45, aire:.06 }   /* Hollow, Low, Long */
+  };
+  function capa(tipo, q, f0, f1, f2, vol, ini, t, fin){
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true; f.type = tipo; f.Q.value = q;
+    f.frequency.setValueAtTime(f0, ini); f.frequency.exponentialRampToValueAtTime(f1, t); f.frequency.exponentialRampToValueAtTime(f2, fin);
+    g.gain.setValueAtTime(.0001, ini); g.gain.exponentialRampToValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, fin);
+    s.connect(f); f.connect(g); g.connect(efectos); s.start(ini, (ini * 5.1) % 1.6); s.stop(fin + .03);
+  }
+  function woosh(nombre, t, mas){
+    const o = WOOSH[nombre], k = mas || 1, ini = ya(t - o.sube);
+    t = Math.max(t, ini + .03); const fin = t + o.baja;
+    capa(o.tipo, o.q, o.f0, o.f1, o.f2, o.vol * k, ini, t, fin);
+    if (o.aire) capa('bandpass', .7, o.f0 * 5, o.f1 * 6, o.f2 * 5, o.vol * o.aire * k, ini, t, t + o.baja * .7);
+    if (o.sub) tono(efectos, 'sine', o.sub * 1.7, o.sub, t - .02, Math.min(1.2, o.baja * .8), o.subVol * k);
+  }
+
+  /* ── los golpes ── */
+  function impacto(t, f){            /* el golpe grave y el polvo; el soplo lo pone su woosh */
+    tono(efectos, 'sine', 160, 36, t, .5 + .2 * f, .95);
+    tono(efectos, 'triangle', 900, 180, t, .05, .3);
+    soplo(efectos, t, .28 * f, .42 * f, 'lowpass', 2200, 180, .7);
+  }
+  const chasquido = t => soplo(efectos, t, .13, .32, 'highpass', 5200, 5200, .7);
+
+  /* ── la intro, segunda versión (pedido del dueño, 19/11/2026) ──
+     "Los golpes parecen de tambor y no un sonido llamativo; elegí uno de
+     estos para cerrar la intro, que genere impacto." Se midió un
+     muestrario de "risers" que mandó (sin usar su audio) y se eligió el
+     RISER + HIT: un ascenso metálico que atraviesa las tres palabras, un
+     silencio cortito y el estampido cuando aparece el nombre.
+     Las palabras ya no llevan bombo: llevan un DESTELLO de metal (un
+     latigazo agudo, una campana inarmónica y un tartamudeo de vidrio),
+     cada una más aguda que la anterior. */
+  function destello(t, alto){
+    t = ya(t);
+    soplo(efectos, t - .09, .12, .16, 'highpass', 2500, 9000, .8, .085);     /* el latigazo que llega */
+    soplo(efectos, t, .07, .34, 'bandpass', 6500, 3000, 1.4);               /* el chasquido */
+    const f = 620 * alto;
+    [[1, .2], [2.76, .12], [5.4, .07], [8.93, .04]].forEach(([k, v]) => {   /* la campana de metal */
+      tono(efectos, 'sine', f * k, f * k * .985, t, 1.1 / Math.sqrt(k), v);
+      tono(sala, 'sine', f * k, 0, t, .5, v * .8);
+    });
+    for (let i = 1; i <= 3; i++)                                           /* el tartamudeo */
+      soplo(efectos, t + i * .045, .03, .12 / i, 'bandpass', 7800, 7800, 3);
+  }
+  function riserMetal(t0, t1){                                            /* "Long Metallic Riser" */
+    t0 = ya(t0); const d = t1 - t0; if (d < .2) return;
+    const s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain();
+    s.buffer = ruido; s.loop = true; f.type = 'bandpass'; f.Q.value = 2.2;
+    f.frequency.setValueAtTime(380, t0); f.frequency.exponentialRampToValueAtTime(8500, t1);
+    g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.05, t0 + d * .5);
+    g.gain.exponentialRampToValueAtTime(.3, t1 - .015); g.gain.linearRampToValueAtTime(0, t1);
+    s.connect(f); f.connect(g); g.connect(efectos); g.connect(sala); s.start(t0); s.stop(t1 + .02);
+    [[2210, 1], [4420, .6], [3310, .4]].forEach(([fr, v]) => {               /* las dos rayas de metal que suben */
+      const o = A.createOscillator(), og = A.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(fr * .5, t0); o.frequency.exponentialRampToValueAtTime(fr * 1.5, t1);
+      og.gain.setValueAtTime(.0001, t0); og.gain.exponentialRampToValueAtTime(.045 * v, t1 - .02); og.gain.linearRampToValueAtTime(0, t1);
+      o.connect(og); og.connect(efectos); o.start(t0); o.stop(t1 + .02);
+    });
+    const o = A.createOscillator(), og = A.createGain();                   /* el piso que tiembla */
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(38, t0); o.frequency.exponentialRampToValueAtTime(96, t1);
+    const lp = A.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180;
+    og.gain.setValueAtTime(.0001, t0); og.gain.exponentialRampToValueAtTime(.32, t1 - .02); og.gain.linearRampToValueAtTime(0, t1);
+    o.connect(lp); lp.connect(og); og.connect(efectos); o.start(t0); o.stop(t1 + .02);
+  }
+  function estampido(t, f){                                               /* el "Hit": sub largo, estallido y cola de metal */
+    t = ya(t); f = f || 1;
+    const o = A.createOscillator(), g = A.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(88, t); o.frequency.exponentialRampToValueAtTime(31, t + 1.6);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(1 * f, t + .012);
+    g.gain.setValueAtTime(1 * f, t + .35); g.gain.exponentialRampToValueAtTime(.0001, t + 2.3);
+    o.connect(g); g.connect(efectos); o.start(t); o.stop(t + 2.4);
+    soplo(efectos, t, .9, .55 * f, 'lowpass', 9000, 160, .6);              /* el estallido */
+    soplo(sala, t, .5, .5 * f, 'bandpass', 2400, 600, .7);                  /* lo que rebota en la sala */
+    [[293.66, .09], [587.33, .07], [440, .05], [880, .03]].forEach(([fr, v]) => {   /* la cola de metal: una quinta abierta */
+      const os = A.createOscillator(), gs = A.createGain();
+      os.type = 'triangle'; os.frequency.setValueAtTime(fr * .94, t); os.frequency.exponentialRampToValueAtTime(fr, t + .25);
+      gs.gain.setValueAtTime(.0001, t); gs.gain.exponentialRampToValueAtTime(v * f, t + .02); gs.gain.exponentialRampToValueAtTime(.0001, t + 2.2);
+      os.connect(gs); gs.connect(efectos); gs.connect(sala); os.start(t); os.stop(t + 2.3);
+    });
+  }
+  function gota(t, sube){            /* el nombre que se derrite */
+    tono(efectos, 'sine', sube ? 170 : 430, sube ? 430 : 170, t, .55, .2);
+    soplo(efectos, t, .5, .1, 'lowpass', sube ? 300 : 1800, sube ? 1800 : 300, 3);
+  }
+  function golpe(t){                 /* un título que entra al bajar: "Fast, Close, Airy" */
+    woosh('aireado', t, .9);
+  }
+  const tic = t => tono(efectos, 'triangle', 1500, 900, t, .035, .14);
+  function acierto(t){ tono(efectos, 'triangle', 880, 0, t, .14, .2); tono(efectos, 'triangle', 1318.5, 0, t + .09, .3, .2); }
+  const error = t => filtrado(efectos, 'square', 130, 0, t, .24, .16, 600, 200);
+
+  /* ── la música, de a un dieciseisavo ── */
+  function compas(n, t){
+    const s = n % 16, c = Math.floor(n / 16), ac = ACORDES[c % 4], vuelta = c % 8;
+    if (s % 4 === 0) tono(musica, 'sine', 145, 42, t, .3, .8);                                  /* bombo */
+    if (s === 4 || s === 12){ soplo(musica, t, .15, .26, 'bandpass', 1500, 1500, .9);            /* palmas */
+                              soplo(musica, t + .013, .12, .18, 'bandpass', 1900, 1900, .9); }
+    if (s % 4 === 2) soplo(musica, t, .055, .15, 'highpass', 7500, 7500);                        /* platillo */
+    else if (vuelta >= 4 && s % 2 === 1) soplo(musica, t, .03, .05, 'highpass', 8500, 8500);
+    if (s % 4 === 2 || s === 15) filtrado(musica, 'sawtooth', ac[0] * (s === 15 ? 4 : 2), 0, t, .2, .22, 520, 160);  /* bajo */
+    if (s === 0) ac[1].forEach((f, i) => filtrado(musica, 'sawtooth', f, i * 7 - 7, t, S16 * 16, .03, 500, 900, .35)); /* colchón */
+    if (vuelta >= 2){ const k = [0,3,6,8,11,14].indexOf(s);                                       /* punteo */
+      if (k >= 0){ const f = ac[1][(k + c) % 3] * 2;
+        filtrado(musica, 'sawtooth', f, 0, t, .22, .075, 3200, 500);
+        filtrado(musica, 'sawtooth', f, 0, t + S16 * 3, .2, .03, 2000, 400); } }
+    if (vuelta === 7 && s >= 12) soplo(musica, t, .08, .07 + .04 * (s - 12), 'bandpass', 2600, 2600, .8);  /* redoble */
+  }
+  function girar(){ while (prox < A.currentTime + .16){ compas(paso, prox); paso++; prox += S16; } }
+  function musicaDesde(t){ paso = 0; prox = t; if (!reloj) reloj = setInterval(girar, 40); girar(); }
+
+  /* ── lo que se llama desde la página ── */
+  function prender(){
+    if (A || !AC) return !!A;
+    try{ armar(new AC()); }catch(e){ A = null; return false; }
+    if (A.state === 'suspended') A.resume();
+    /* En iPhone el Web Audio obedece la tecla de silencio; un <audio>
+       mudo sonando cambia la sesión a "reproducción" y se escucha igual. */
+    try{ if (navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
+    try{ const m = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='); m.loop = true; m.play().catch(() => {}); }catch(e){}
+    if (tema) try{ A.createMediaElementSource(tema).connect(musica); }catch(e){}
+    if (boton){ boton.hidden = false; boton.addEventListener('click', () => {
+      /* con la canción terminada, el botón la vuelve a poner */
+      if (tema && activo && !sonando){ tocar(); return; }
+      activo = !activo;
+      master.gain.setTargetAtTime(activo ? .66 : .0001, A.currentTime, .03);
+      if (tema){ if (activo) tocar(); else { tema.pause(); sonando = false; } }
+      rotulo(); }); }
+    document.addEventListener('visibilitychange', () => { if (!A) return;
+      if (document.hidden){ A.suspend(); if (tema) tema.pause(); }
+      else { A.resume(); if (tema && sonando && activo) tema.play().catch(() => {}); } });
+    return true;
+  }
+  /* la entrada: los tiempos son los mismos de la animación del CSS */
+  function intro(t0){
+    woosh('limpio1', t0 + .36, .6);  destello(t0 + .36, 1);                    /* ¿ESTÁS */
+    woosh('limpio2', t0 + 1.06, .6); destello(t0 + 1.1, 1.26);                 /* PARA, con el destello */
+    woosh('limpio3', t0 + 1.79, .7); destello(t0 + 1.79, 1.5);                 /* ESTO? */
+    riserMetal(t0 + .2, t0 + 2.4);                                             /* sube por debajo de las tres… */
+    estampido(t0 + 2.6);                                                       /* …silencio, y el nombre: el cierre */
+    musica.gain.setValueAtTime(.0001, t0 + 2.55); musica.gain.exponentialRampToValueAtTime(tema ? .75 : .42, t0 + 3.4);
+    woosh('hueco', t0 + 4.84);                                                 /* el nombre se derrite… */
+    gota(t0 + 6.4, true);                                                      /* …y vuelve */
+  }
+  function entrar(t){
+    /* "Deep, Low, cinematic": crece mientras la entrada se apaga y pega
+       cuando el título de la portada cae. */
+    const p = t + .5;
+    tic(t); woosh('hondo', p, .8); estampido(p, .75); chasquido(p);
+    musica.gain.cancelScheduledValues(t); musica.gain.setValueAtTime(Math.max(.0001, musica.gain.value), t);
+    musica.gain.exponentialRampToValueAtTime(.9, p);
+    filtro.frequency.cancelScheduledValues(t); filtro.frequency.setValueAtTime(filtro.frequency.value, t);
+    filtro.frequency.setValueAtTime(filtro.frequency.value, t + .3);
+    filtro.frequency.exponentialRampToValueAtTime(17000, p + .05);
+    ultGolpe = t + 1.6;
+  }
+  const ahora = () => A.currentTime + .04;
+  return {
+    prender,
+    intro(){ if (!A) return; const t = ahora(); intro(t); if (tema){ tema.currentTime = 0; tocar(); } else musicaDesde(t + 2.55); },
+    entrar(){ if (!A) return; const t = ahora();
+      /* la canción salta a medio segundo antes de donde levanta: el
+         woosh crece ese medio segundo y el golpe cae con ella */
+      if (tema){ const s = Math.max(0, (C.entra || .5) - .5); if (saltable(s)) try{ tema.currentTime = s; }catch(e){} tocar(); }
+      else if (!reloj) musicaDesde(t + .02);
+      entrar(t); },
+    golpe(){ if (!A) return; const t = ahora(); if (t < ultGolpe + .5) return; ultGolpe = t; golpe(t + .3); },
+    tic(){ if (A) tic(ahora()); },
+    acierto(){ if (A) acierto(ahora()); },
+    error(){ if (A) error(ahora()); },
+    _: { armar, intro, entrar, compas, S16 }      /* para volcarlo a un archivo y medirlo */
+  };
+})();
+
+/* ══════════ aparecer al bajar ══════════
+   Arranca recién cuando se entra: lo de la portada tiene que golpear
+   cuando se ve, no atrás de la entrada. */
+function despertar(){
+  const todo = $$('.ap, .tit');
+  if (!('IntersectionObserver' in window) || menosMovimiento){ todo.forEach(n => n.classList.add('entro')); return; }
+  const ojo = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('entro'); ojo.unobserve(e.target);
+      if (e.target.classList.contains('tit')) SONIDO.golpe(); }
+  }), {threshold:.18, rootMargin:'0px 0px -6% 0px'});
+  todo.forEach(n => ojo.observe(n));
+}
+
+/* ══════════ la entrada ══════════ */
+(function(){
+  const sobre = $('#sobre'), raiz = document.documentElement;
+  if (!sobre){ despertar(); return; }
+  raiz.classList.add('cerrado');
+  scrollTo(0, 0);
+  tramar($('#ruido'), luzRuido, 2.2);
+  const b0 = $('.goo .b');
+  if (b0) b0.addEventListener('animationend', () => $('.goo').classList.remove('liquido'));
+  let abierto = false, arranco = false;
+  /* El primer toque en cualquier parte arranca la entrada, con sonido. */
+  function arrancar(){
+    if (arranco || abierto) return; arranco = true;
+    SONIDO.prender();
+    sobre.classList.remove('espera'); sobre.classList.add('va');
+    SONIDO.intro();
+  }
+  if (!menosMovimiento){
+    sobre.classList.add('espera');
+    sobre.addEventListener('click', e => { if (!e.target.closest('#abrir')) arrancar(); });
+  } else $('.goo').classList.remove('liquido');
+  $('#abrir').addEventListener('click', () => {
+    if (abierto) return; abierto = true;
+    SONIDO.prender(); SONIDO.entrar();
+    sobre.classList.add('abierto');
+    raiz.classList.remove('cerrado');
+    setTimeout(despertar, menosMovimiento ? 0 : 260);
+    setTimeout(() => sobre.remove(), menosMovimiento ? 0 : 700);
+  });
+})();
+
+/* ══════════ lo que se mueve con el dedo ══════════ */
+(function(){
+  if (menosMovimiento) return;
+  const cintas = $$('[data-desliza]').map(n => ({n, k:+n.dataset.desliza, caja:n.parentElement}));
+  const ruta = $('#ruta'), mapa = $('#mapa'), riel = $('#rielI'), plan = $('#elPlan'), bola = $('#bola'), noche = $('#noche');
+  let largo = 0;
+  if (ruta){ largo = ruta.getTotalLength(); ruta.style.strokeDasharray = largo; ruta.style.strokeDashoffset = largo; }
+  if (riel) riel.style.transform = 'scaleY(0)';
+  const entre = (v) => Math.max(0, Math.min(1, v));
+  let pedido = false;
+  function mover(){
+    pedido = false;
+    const H = innerHeight;
+    cintas.forEach(c => { const r = c.caja.getBoundingClientRect();
+      if (r.bottom < -40 || r.top > H + 40) return;
+      c.n.style.transform = 'translateX(' + ((c.k < 0 ? 0 : -260) + c.k * (H - r.top) * .5) + 'px)'; });
+    if (ruta && mapa){ const r = mapa.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < H) ruta.style.strokeDashoffset = largo * (1 - entre((H * .92 - r.top) / (r.height * .85))); }
+    if (riel && plan){ const r = plan.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < H) riel.style.transform = 'scaleY(' + entre((H * .7 - r.top) / r.height) + ')'; }
+    if (bola && noche){ const r = noche.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < H) bola.style.transform = 'translateY(' + ((r.top / H) * 26).toFixed(1) + 'px)'; }
+  }
+  addEventListener('scroll', () => { if (!pedido){ pedido = true; requestAnimationFrame(mover); } }, {passive:true});
+  mover();
+})();
+
+/* ══════════ la cuenta regresiva ══════════
+   El objetivo sale de la cadena CON su zona (−03:00). */
+(function(){
+  const d = $('#cD'), h = $('#cH'), m = $('#cM'), s = $('#cS');
+  if (!d) return;
+  const fz = /T/.test(CONFIG.fiesta) ? CONFIG.fiesta : CONFIG.fiesta + 'T00:00:00-03:00';
+  const destino = new Date(fz).getTime();
+  if (!destino) return;
+  const dd = n => String(n).padStart(2,'0');
+  function vuelta(){
+    const falta = destino - Date.now();
+    if (falta <= 0){ d.textContent = h.textContent = m.textContent = s.textContent = '0'; return true; }
+    const t = Math.floor(falta/1000);
+    d.textContent = Math.floor(t/86400);
+    h.textContent = dd(Math.floor(t%86400/3600));
+    m.textContent = dd(Math.floor(t%3600/60));
+    s.textContent = dd(t%60);
+    return false;
+  }
+  if (!vuelta()) setInterval(vuelta, 1000);
+})();
+
+/* ══════════ el calendario ══════════
+   Por componentes, sin zona. La semana arranca el lunes. */
+(function(){
+  const caja = $('#calendario');
+  if (!caja || !F) { if (caja) caja.remove(); return; }
+  const primero = (new Date(F.anio, F.mes-1, 1).getDay() + 6) % 7;
+  const cuantos = new Date(F.anio, F.mes, 0).getDate();
+  const celdas = [];
+  for (let i = 0; i < primero; i++) celdas.push('');
+  for (let dia = 1; dia <= cuantos; dia++) celdas.push(dia);
+  while (celdas.length % 7) celdas.push('');
+  const marca = '<svg viewBox="0 0 80 80" aria-hidden="true"><path d="M44 9C24 6 8 20 9 41c1 20 17 32 35 30 18-2 29-17 27-35C69 19 56 8 38 10"/></svg>';
+  let filas = '';
+  for (let i = 0; i < celdas.length; i += 7)
+    filas += '<tr>' + celdas.slice(i, i+7).map(dia =>
+      dia === '' ? '<td></td>' : dia === F.dia ? '<td class="elDia">' + marca + dia + '</td>' : '<td>' + dia + '</td>').join('') + '</tr>';
+  caja.innerHTML =
+    '<p class="mes"><span>' + esc(MESES[F.mes-1]) + '</span><span>' + F.anio + '</span></p>' +
+    '<table role="presentation"><thead><tr>' + ['L','M','M','J','V','S','D'].map(x => '<th>' + x + '</th>').join('') +
+    '</tr></thead><tbody>' + filas + '</tbody></table>';
+})();
+
+/* ══════════ la trivia ══════════ */
+(function(){
+  const caja = $('#tCaja'), T = CONFIG.trivia || [];
+  if (!caja) return;
+  if (!T.length){ $('#trivia').remove(); return; }
+  let n = 0, bien = 0;
+  const dd = x => String(x).padStart(2,'0');
+  function pregunta(){
+    const q = T[n];
+    caja.innerHTML = '<p class="mini">' + dd(n+1) + ' / ' + dd(T.length) + '</p><p class="t-preg">' + esc(q.p) + '</p>' +
+      '<div class="t-opc">' + q.o.map((o, i) => '<button type="button" data-i="' + i + '"><small>' + 'ABCD'[i] + '</small>' + esc(o) + '</button>').join('') + '</div>';
+    $$('.t-opc button', caja).forEach(b => b.addEventListener('click', () => {
+      const i = +b.dataset.i;
+      $$('.t-opc button', caja).forEach(x => { x.disabled = true; if (+x.dataset.i === q.ok) x.classList.add('era'); });
+      if (i === q.ok){ bien++; SONIDO.acierto(); } else { b.classList.add('no'); SONIDO.error(); }
+      caja.insertAdjacentHTML('beforeend', '<button type="button" class="pildora llena-n t-sig">' +
+        (n + 1 < T.length ? 'Siguiente' : 'Ver cómo me fue') + '</button>');
+      $('.t-sig', caja).addEventListener('click', () => { n++; if (n < T.length) pregunta(); else fin(); });
+    }));
+  }
+  function fin(){
+    const frase = bien === T.length ? 'Puntaje perfecto. Te ganaste un lugar cerca de la pista.'
+                : bien ? 'Nada mal. Lo que falta lo repasamos esa noche.'
+                       : 'Ni una. Vení igual: hay tiempo de conocernos.';
+    caja.innerHTML = '<div class="t-fin"><p class="mini">Tu resultado</p><b>' + bien + '/' + T.length + '</b><p class="cuerpo">' + frase + '</p>' +
+      '<button type="button" class="pildora t-sig" style="margin-top:18px">Jugar de nuevo</button></div>';
+    $('.t-sig', caja).addEventListener('click', () => { n = 0; bien = 0; pregunta(); });
+  }
+  pregunta();
+})();
+
+/* ══════════ el cartel del mapa va pegado al pin ══════════ */
+(function(){
+  const pin = $('.mapa .pin'), aca = $('.mapa .aca'), mapa = $('#mapa');
+  if (!pin || !aca) return;
+  const poner = () => { const p = pin.getBoundingClientRect(), m = mapa.getBoundingClientRect();
+    if (!m.width) return;
+    aca.style.left = (p.right - m.left + 10) + 'px'; aca.style.top = (p.top - m.top - 34) + 'px'; };
+  poner(); addEventListener('resize', poner); addEventListener('load', poner);
+})();
+
+/* ══════════ el logo del cierre ══════════
+   La <img> la crea el JS y aparece recién cuando cargó: si el archivo
+   falta, quedan los haces como antes y no un cuadrado roto. */
+(function(){
+  const caja = $('.final'); if (!caja || !CONFIG.logo) return;
+  const im = new Image();
+  im.className = 'logo'; im.alt = (CONFIG.quien || '') + ' Fest'; im.decoding = 'async';
+  im.onload = () => {
+    caja.classList.add('con-logo');
+    caja.appendChild(im);
+    if (menosMovimiento || !('IntersectionObserver' in window)){ im.classList.add('entro'); return; }
+    const ojo = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ im.classList.add('entro'); ojo.disconnect(); SONIDO.golpe(); }
+    }), {threshold:.35});
+    ojo.observe(caja);
+  };
+  im.src = CONFIG.logo;
+})();
+
+/* ══════════ la playlist lleva al renglón de la canción ══════════ */
+(function(){
+  const b = $('#irTema'); if (!b) return;
+  b.addEventListener('click', () => {
+    const y = $('#yaFue'), t = $('#fTema');
+    const a = (y && !y.hidden) ? y : t; if (!a) return;
+    a.scrollIntoView({behavior: menosMovimiento ? 'auto' : 'smooth', block:'center'});
+    if (a === t) setTimeout(() => t.focus({preventScroll:true}), menosMovimiento ? 0 : 700);
+  });
+})();
+
+/* ══════════ marcar la opción elegida ══════════ */
+(function(){
+  const pinta = () => $$('.radios label').forEach(l => l.classList.toggle('elegida', $('input', l).checked));
+  $$('.radios input').forEach(r => r.addEventListener('change', () => { pinta(); SONIDO.tic(); }));
+  pinta();
+})();
+
+/* ══════════ el pie: "Click Eterno" va a WhatsApp ══════════
+   Es el único renglón nuestro en toda la invitación y es por donde entra
+   el próximo cliente: el que la recibe y le gusta toca ahí. El mensaje
+   DICE DE QUÉ INVITACIÓN VIENE, así del otro lado se sabe qué está
+   mirando el que escribe sin tener que preguntarlo. El nombre sale de
+   `CONFIG.quien`, no escrito a mano.
+   El `href` del HTML apunta al sitio a propósito: si el JS no corre, el
+   enlace lleva igual a algún lado. Y el logo de WhatsApp se pone ACÁ, en
+   el mismo lugar donde se arma el enlace: sin JS el enlace va al sitio, y
+   ahí un logo de WhatsApp sería una promesa que no se cumple. */
+(function(){
+  const a = $('.firma a');
+  if (!a) return;
+  const TEL = '5493412506451';   /* 341 250-6451, el del negocio */
+  const texto = 'Hola Click Eterno! Vi la invitación de ' + (CONFIG.quien || '') +
+                ' y quiero consultar por una invitación para mi fiesta.';
+  a.href = 'https://wa.me/' + TEL + '?text=' + encodeURIComponent(texto);
+  /* fill-rule evenodd: sin eso el globo y el auricular se rellenan los dos
+     y queda una mancha en vez de un logo. */
+  a.insertAdjacentHTML('afterbegin',
+    '<svg class="ico-wsp" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true">' +
+    '<path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.4M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.4 1.3 4.9L2 22l5.3-1.4c1.4.8 3 1.2 4.7 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2"/></svg>');
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════
+   LA CONFIRMACIÓN
+   Portada tal cual de la de Mia, que es la que está medida contra una
+   fiesta de verdad. Lo que trae y por qué:
+
+   · UNA COMIDA POR PERSONA. Eligiendo 5 personas salía una sola opción
+     de comida y el salón recibía cinco platos sin TACC.
+   · EL QUE DICE QUE NO no llena lo que no es suyo. `new FormData(form)`
+     manda TODO lo que esté en el formulario, esté a la vista o no, así
+     que a la planilla le llegaba una fila que dice NO VIENE con
+     "Cuántos: 4" — justo la columna con la que se arman las mesas. Por
+     eso van `hidden` Y `disabled`: lo segundo es lo único que hace que
+     no viajen.
+   · UN SOLO VIAJE. El POST se manda pidiendo leer la respuesta.
+   · Y LA REGLA MÁS VIEJA DEL PROYECTO: si no sabemos que llegó, la
+     pantalla NO dice que llegó.
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const form = $('#rsvp'), aviso = $('#aviso'), boton = $('#enviar');
+  if (!form) return;
+
+  const decir = (txt, clase) => {
+    aviso.textContent = txt;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  /* El Apps Script nuevo contesta JSON: {"ok":true}. El viejo contestaba
+     el texto "si". Se aceptan los dos: leerlo mal no se ve como un error,
+     se ve como "no pudimos confirmar" arriba de una confirmación que SÍ
+     se guardó, y el invitado la manda de nuevo. */
+  async function llego(nombre){
+    try{
+      /* `evento` es de la planilla CENTRAL y acá no hay: ésta tiene la
+         suya. Mandado igual viajaría la cadena "undefined". */
+      const r = await fetch(CONFIG.endpoint +
+                            (CONFIG.evento ? '?evento=' + encodeURIComponent(CONFIG.evento) + '&' : '?') +
+                            'confirmado=' + encodeURIComponent(nombre),
+                            {cache:'no-store'});
+      if (!r.ok) return false;
+      const t = (await r.text()).trim();
+      try{
+        const d = JSON.parse(t);
+        if (d && typeof d.ok === 'boolean') return d.ok;
+      }catch(e){}
+      const p = t.toLowerCase();
+      return p === 'si' || p === 'sí' || p === 'true' || p === '1';
+    }catch(e){ return false; }
+  }
+
+  /* ── los nombres y las comidas de los que vienen ── */
+  (function(){
+    const sel = $('#fLugares'), caja = $('#acomp');
+    if (!sel || !caja) return;
+    const viene = () => { const r = $('input[name="Confirma"]:checked');
+      return !r || r.value === 'Sí'; };
+    const soloSiViene = ['#fLugares', '#fComida', '#fTema'];
+    /* Es una ELECCIÓN y no un campo libre: escrito a mano llegan
+       "celiaco", "CELÍACA", "sin tacc" y "no como gluten" en la misma
+       columna, y el que le pasa las comidas al salón las tiene que
+       ordenar a mano. */
+    const COMIDAS = ['Ninguno','Vegetariano','Celíaco','Diabético','Hipertenso',
+                     'No tolerante a la lactosa','Otro'];
+    const opciones = () => COMIDAS.map(o => '<option value="' + esc(o) + '">' + esc(o) + '</option>').join('');
+    /* Lo escrito vive AFUERA de `pintar`. Adentro se perdía en el único
+       caso que importa: contestar "no voy a poder" borra los renglones, y
+       al volver al "sí" ya no había de dónde leerlos. */
+    const tenia = {};
+    const pintar = () => {
+      const va = viene();
+      soloSiViene.forEach(q => {
+        const nodo = $(q); if (!nodo) return;
+        const campo = nodo.closest('.campo');
+        if (campo) campo.hidden = !va;
+        nodo.disabled = !va;
+      });
+      const n = va ? Math.max(1, +sel.value || 1) : 1;
+      $$('input,select', caja).forEach(i => { if (i.name) tenia[i.name] = i.value; });
+      let h = '';
+      for (let k = 2; k <= n; k++){
+        /* Los nombres de los campos SON los títulos de las columnas, y el
+           Apps Script crea la columna sola la primera vez que llega una
+           que no conocía: del otro lado no hay nada que tocar. */
+        const nom = 'Invitado ' + k, com = 'Comida ' + k;
+        h += '<div class="persona">' +
+               '<div class="quien">Invitado ' + k + '</div>' +
+               '<div class="campo"><label for="fInv' + k + '">Nombre y apellido</label>' +
+                 '<input id="fInv' + k + '" name="' + nom + '" type="text" autocomplete="name"' +
+                 ' value="' + esc(tenia[nom] || '') + '"></div>' +
+               '<div class="campo"><label for="fCom' + k + '">¿Algún requerimiento en su comida?</label>' +
+                 '<select id="fCom' + k + '" name="' + com + '">' + opciones() + '</select>' +
+                 '<input id="fCom' + k + 'Otro" type="text" placeholder="Contanos cuál"' +
+                 ' style="margin-top:10px;display:none" aria-label="Qué comida">' +
+               '</div>' +
+             '</div>';
+      }
+      caja.innerHTML = h;
+      $$('select', caja).forEach(se => { if (tenia[se.name]) se.value = tenia[se.name]; });
+      $$('select', caja).forEach(verOtro);
+    };
+    /* "Otro" abre su campito y lo cierra al cambiar de opción. El campo NO
+       tiene `name`: lo que viaja es la columna de la comida, con el texto
+       adentro (lo reemplaza el envío). */
+    function verOtro(se){
+      const otro = document.getElementById(se.id + 'Otro');
+      if (!otro) return;
+      const hay = se.value === 'Otro';
+      otro.style.display = hay ? 'block' : 'none';
+      if (!hay) otro.value = '';
+    }
+    caja.addEventListener('change', e => { if (e.target.tagName === 'SELECT') verOtro(e.target); });
+
+    const comida1 = $('#fComida');
+    if (comida1){
+      comida1.innerHTML = opciones();
+      comida1.addEventListener('change', () => verOtro(comida1));
+    }
+
+    sel.addEventListener('change', pintar);
+    $$('input[name="Confirma"]').forEach(r => r.addEventListener('change', pintar));
+    pintar();
+  })();
+
+  /* ── el que ya confirmó en ESTE aparato ──
+     El caso que de verdad llena la planilla es el mismo invitado
+     volviendo a abrir el link de WhatsApp dos días después y completando
+     todo otra vez. Confirmado una vez, la pantalla le muestra un cartel
+     con su nombre EN LUGAR del formulario. Queda el botón para cambiar
+     la respuesta, que es el otro caso real —el que pasó de "no" a "sí"—.
+     Se guarda SOLO cuando la confirmación llegó de verdad: guardarlo en
+     la muestra sería decirle "ya confirmaste" cuando no se mandó a
+     ningún lado. */
+  const LLAVE = 'ce:rsvp:' + location.pathname;
+  const leerYa = () => { try{ return JSON.parse(localStorage.getItem(LLAVE) || 'null'); }
+                         catch(e){ return null; } };
+  const guardarYa = (nombre, confirma) => { try{
+    localStorage.setItem(LLAVE, JSON.stringify({nombre, confirma}));
+  }catch(e){} };
+
+  const cartel = $('#yaFue');
+  const diaFiesta = F ? F.dia + ' de ' + MESES[F.mes-1] : 'la fiesta';
+  function pintarYa(){
+    const y = leerYa();
+    if (!y || !y.nombre){ cartel.hidden = true; form.hidden = false; return; }
+    cartel.hidden = false;
+    form.hidden = true;
+    cartel.innerHTML =
+      '<p class="ante" style="margin:0">Ya confirmaste</p>' +
+      '<p class="ya-nom">' + esc(y.nombre) + '</p>' +
+      '<p class="cuerpo" style="margin:0 0 4px">' +
+      (y.confirma === 'No' ? 'Nos avisaste que no vas a poder venir. Gracias por decirlo.'
+                           : 'Te esperamos el ' + diaFiesta + '.') + '</p>' +
+      '<button class="btn hueco" type="button" id="cambiarYa">Cambiar mi respuesta</button>';
+    /* El cartel nace con `.ap`, o sea escondido hasta que el observador lo
+       deja entrar — y lo acaba de dibujar el JS, así que puede haberse
+       perdido la vuelta. Se lo deja entrar a mano. */
+    cartel.classList.add('entro');
+    $('#cambiarYa').addEventListener('click', () => {
+      cartel.hidden = true;
+      form.hidden = false;
+      /* Escondido, el formulario nunca intersecó: sin esto vuelve a
+         aparecer recortado y no hay ningún error que lo diga. */
+      form.classList.add('entro');
+      $('#fNombre').value = y.nombre;
+      $('#fNombre').focus();
+    });
+  }
+  pintarYa();
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const nombre = ($('#fNombre').value || '').trim();
+    if (nombre.length < 3){ decir('Escribí tu nombre y apellido.', 'mal'); $('#fNombre').focus(); return; }
+
+    /* Nada viene preseleccionado y hay que elegir. Con el "Sí" puesto de
+       fábrica, el que toca Confirmar sin leer manda un sí que no quiso
+       decir — y eso se paga en comida encargada para gente que no va. */
+    if (!$('input[name="Confirma"]:checked')){
+      decir('Decinos si venís o no.', 'mal');
+      $('.radios').scrollIntoView({block:'center'});
+      return;
+    }
+
+    /* CADA PERSONA QUE VIENE, CON SU NOMBRE (pedido del dueño, 24/11/2026).
+       Con "Cuántos: 4" y los acompañantes en blanco, el tablero mostraba
+       tres "(sin nombre)" y nadie sabía a quién sentar. */
+    const faltaNombre = Array.from(document.querySelectorAll('#acomp input[name^="Invitado "]'))
+      .find(i => !i.disabled && (i.value || '').trim().length < 2);
+    if ($('input[name="Confirma"]:checked').value === 'Sí' && faltaNombre){
+      decir('Escribí el nombre y apellido de cada persona que viene con vos.', 'mal');
+      faltaNombre.focus();
+      return;
+    }
+
+    if (!CONFIG.endpoint){
+      /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
+      decir('Esto todavía es una muestra: la confirmación no se manda a ningún lado. ' +
+            'En la de verdad, acá te decimos que llegó.', 'bien');
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Mandando…');
+
+    /* Donde eligieron "Otro", lo que va a la planilla es lo que
+       escribieron, no la palabra "Otro": el que le pasa las comidas al
+       salón necesita leer "sin frutos secos". */
+    const fd = new FormData(form);
+    /* A qué pestaña de la planilla central va. No es una respuesta de
+       nadie: la planilla lo usa para elegir la hoja y no lo guarda como
+       columna. */
+    /* Sólo si hay: el doPost crea una columna con el nombre de cada
+       campo que le llega, así que un `evento` vacío le deja al cliente
+       una columna "evento" inútil en su planilla. */
+    if (CONFIG.evento) fd.set('evento', CONFIG.evento);
+    $$('select', form).forEach(se => {
+      if (se.name && se.value === 'Otro'){
+        const otro = document.getElementById(se.id + 'Otro');
+        const txt = otro && otro.value.trim();
+        fd.set(se.name, txt ? txt : 'Otro (sin detalle)');
+      }
+    });
+
+    try{
+      let entro = false;
+      try{
+        const r = await fetch(CONFIG.endpoint, {method:'POST', body:fd});
+        if (r.ok){
+          const t = (await r.text()).trim();
+          try{ const d = JSON.parse(t); entro = !!(d && d.ok); }catch(e){ entro = /ok/i.test(t); }
+        }
+      }catch(e){
+        /* Sin permiso para leer la respuesta: se manda a ciegas y se
+           pregunta. Dos intentos cortos en vez de una espera fija larga:
+           casi siempre contesta en el primero. */
+        await fetch(CONFIG.endpoint, {method:'POST', mode:'no-cors', body:fd});
+        for (let i = 0; i < 2 && !entro; i++){
+          await new Promise(res => setTimeout(res, i ? 1500 : 500));
+          entro = await llego(nombre);
+        }
+      }
+
+      if (entro){
+        const r = $('input[name="Confirma"]:checked');
+        guardarYa(nombre, r ? r.value : '');
+        decir('¡Listo, ' + nombre.split(' ')[0] + '! Nos vemos el ' + (F ? F.dia : '') + '.', 'bien');
+        pintarYa();
+      }
+      else decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }catch(e){
+      decir('No pudimos confirmar que haya llegado. Probá de nuevo, o escribinos.', 'mal');
+    }
+    boton.disabled = false;
+  });
+})();
+
+</script>
+</body>
+</html>

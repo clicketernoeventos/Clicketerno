@@ -189,7 +189,7 @@ const ruido = (t) => /favicon|net::ERR_|ERR_CERT|fonts\.googleapis|fonts\.gstati
        alguien lo escribe a mano, el día que entra una más dice otro
        número que el que hay dibujado. */
     const dice = await p.evaluate(() => (document.getElementById('aclara') || {}).textContent || '');
-    const pal = ['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+    const pal = ['cero','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte'];
     const esperadas = pal[cuantas] || String(cuantas);
     if (!dice.trim()) mal('no dice cuántas son ni cuáles son muestras nuestras');
     else if (!dice.toLowerCase().includes(esperadas))

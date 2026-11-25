@@ -19,6 +19,7 @@ mal pensado.
 | `/muro` | `muro.html` | **Muro en vivo**: fotos y saludos proyectados en el salón, + su panel |
 | `/rollo` | `rollo.html` | **Rollo eterno**: la cámara descartable, + su panel |
 | `/app` | `app.html` | redirección a `/muro`. **No borrar**: hay QR impresos apuntando ahí |
+| `/mansion` | `mansion/` | **La Mansión del Rey**: la app interna del salón del dueño (agenda, fichas, pagos, aumentos, stock). Ver más abajo |
 
 **Las miniaturas van por convención, no por columna.** La foto se sube a
 `CODIGO/ID.jpg` y su miniatura a `CODIGO/ID-min.jpg`; el álbum la arma con
@@ -2337,6 +2338,89 @@ dejaría peor parados.
    mira ahí es un cliente con un problema, o Defensa del Consumidor.
 5. **Rotar la clave maestra**, que nunca se cambió.
 
+## La Mansión del Rey (`/mansion`)
+
+App interna del salón de fiestas del dueño y su mamá (19/11/2026). No es
+un producto de Click Eterno: `noindex`, sin enlaces desde la página
+pública. Cuatro archivos sueltos (`datos.js` las cuentas, `carga.js` la
+carga rápida, `app.js` las pantallas, `estilo.css`), sin build.
+
+- **Hoy los datos viven en el teléfono** (`localStorage`, clave
+  `mansion.v1`), con datos de ejemplo. Es el esqueleto: cada aparato tiene
+  los suyos y no se comparten. El próximo paso es la base (otra cuenta de
+  Supabase si se quiere separar) con usuarios de verdad; solo cambian
+  `DB.cargar`/`DB.guardar` y `Sesion`.
+- **El PIN no es seguridad** mientras todo esté en el teléfono: separa
+  qué ve cada uno (dueño ve plata; encargado no; empleado agenda y stock).
+- **"La tarjeta" = el precio por cubierto.** Lo pagado se congela como
+  porcentaje de la fiesta al precio del día del pago; el saldo es lo que
+  falta, al precio de hoy. Al cargar un aumento se arma un aviso por
+  cliente con saldo, con el mensaje de WhatsApp listo (`wa.me`, un toque
+  cada uno). Mandarlo solo, sin tocar nada, necesita la API de WhatsApp
+  Business (paga): no está.
+- **Toda carga pasa por `cambiar()`** y queda en el registro con el antes
+  y el después: así se deshace o se corrige cualquier cosa.
+- **Una sola fiesta por fecha y turno** (noche / mediodía).
+
+## El álbum de la fiesta (servicio futuro, NO hecho)
+
+Analizado el 23/11/2026. **Todavía no se contrató nada**: es el mapa para
+cuando se quiera armar. Es un servicio **nuevo e independiente del muro y
+del rollo**, que se vende dentro del paquete de la invitación.
+
+**Cómo se ve.** Una dirección por fiesta al lado de la tarjeta,
+`<carpeta>/album`, con los colores y letras de esa invitación (como el
+listado y el panel de canciones). En la tarjeta, una sección con QR y botón
+que cambia sola según la fecha: antes ("el día de la fiesta acá vas a poder
+subir"), durante (subir) y después (ver y bajar). Un QR para las mesas. Un
+panel con clave para el cliente: ocultar fotos y bajar todo en .zip.
+
+**Dónde guardar las fotos, dos caminos:**
+
+- **A. Cloudflare R2 (el recomendado).** Mismo servicio donde ya vive la
+  web: no se pausa como Supabase gratis, 10 GB gratis y después ~USD 0,015
+  por GB al mes, mirar el álbum no cuesta (sin cobro por salida) y queda
+  separado del muro y el rollo. Hace falta activar R2 en la cuenta de
+  Cloudflare (pide tarjeta aunque sea gratis) y sumarle a `wrangler.json`
+  un Worker con el depósito: la subida pasa por el Worker, que controla el
+  código de la fiesta y el tope; el teléfono nunca elige dónde se guarda.
+- **B. El Drive del cliente**, por el Apps Script de su planilla. El
+  espacio lo pone él y las fotos quedan en su cuenta, pero Google acepta
+  ~30 subidas a la vez, sube lento, corta videos pesados y la cara linda
+  hay que hacerla igual. Sirve para fiestas chicas, no para un casamiento.
+- Descartados: álbum compartido de Google Fotos (pide cuenta y app, y
+  desde 2025 no se crean desde un programa) y meterlo en Supabase (es
+  mezclarlo con el muro y el rollo, y depende del Pro sin contratar).
+
+**El espacio.** La foto se achica en el teléfono (~400 KB) con su
+miniatura, tope de fotos por invitado, videos cortos. 100 invitados × 20
+fotos ≈ menos de 1 GB por fiesta. Vida fija (ej. 90 días) con aviso antes
+de borrar y el botón de bajarlo al lado, como en el muro.
+
+**El respaldo.** Copia automática cada noche a un segundo depósito (tarea
+programada del Worker, gratis) + el .zip del panel para el cliente.
+
+**La referencia que le gustó al dueño** (24/11/2026, digitalstories.app,
+de Polonia; capturas en el chat). Una sola pantalla con la cara de la
+invitación: título enorme, una pila de polaroids, UN botón negro "subir
+fotos" y la galería abajo. El botón abre una hoja negra: "elegir fotos",
+y el menú de Biblioteca / Cámara / Archivos / Drive **lo pone el teléfono
+solo** (es un `<input type=file multiple>` común, no hay que dibujarlo).
+Después muestra las elegidas en miniatura, cada una con su ✕ para
+sacarla, el contador "0 / 1 subidas" y "agregar más". Si una falla, le
+pone un "!" a ESA foto, avisa y ofrece "reintentar". Y abajo vende: "creá
+una invitación con este estilo", el mismo negocio que el nuestro.
+**Se copia el recurso, no la cara.** Lo que hay que hacer mejor: en la
+captura la subida FALLÓ. En un salón con mala señal, la cola tiene que
+reintentar sola y no perder las fotos si se corta, y achicarlas antes de
+mandar (subir el original de 5 MB es lo que más falla).
+
+**Lo que hay que decidir antes de arrancar:** A o B; si los invitados ven
+las fotos de todos durante la fiesta o solo después; si van videos y
+cuánto vive el álbum. Ley 25.326: el aviso de datos en la pantalla de
+subir, `noindex`, y el álbum no queda abierto a cualquiera (son fotos de
+menores).
+
 ## Lo que no se toca sin permiso
 
 - La clave maestra de administrador.
@@ -2345,6 +2429,44 @@ dejaría peor parados.
 - El número de WhatsApp.
 
 ## Pendiente, decidido y no hecho
+
+- **mia15**: `invitacion_mirar.js` dice "la portada APARECE de golpe: no
+  hay cruce con la carta". Ya fallaba en `main` el 25/11/2026; no se tocó.
+- **index.html**: `servicios` falla ("7 cuadraditos se salen de la pantalla
+  de 390px"). Viene de antes; es de la página pública.
+- **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
+  ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
+  7/12/2026.
+- **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
+  servicios y paquetes con precios** (los de la app son de ejemplo), cómo
+  se cobra (seña, cuotas, medios, recibo), los nombres y roles de quienes
+  van a entrar, y los datos en papel para cargar. Del lado nuestro: pasar
+  los datos a la base para que todos vean lo mismo.
+- **zaii (25/11/2026)**, lo tiene que mandar el dueño: el **titular** de la cuenta del
+  alias `Ssotoo.zai` (sin él, el renglón no se dibuja).
+- **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
+  **hasta cuándo** se confirma (el alias se sacó: ya no hace falta titular), y
+  probar una confirmación de verdad (la planilla ya está conectada; la
+  fila de prueba se borra a mano). Detalle en `invitaciones/HISTORIA.md`.
+- **guada15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
+  qué **color** elige (negro o plata: `CONFIG.tema`); el **titular** del
+  alias; **hasta cuándo** se confirma; si **Olavarría** es la ciudad o el
+  nombre de la quinta; qué era el **punto 7** ("sisi"); si la **canción**
+  queda; *(la **/exec** ya está conectada y el tablero vive en `/guada15/listado`; falta ver entrar una confirmación de prueba)*. Detalle en `invitaciones/HISTORIA.md`.
+- **lola15, la muestra modelo "afiche" (16/11/2026).** Es de ejemplo
+  (Lola no existe). Falta que el dueño diga: si el amigo la quiere, sus
+  datos reales (va en carpeta propia, con planilla y tablero); si entra a
+  la galería de Trabajos como muestra (la ficha la suma el chat de la
+  página: carpeta `lola15`, "XV años · Afiche", colores negro #0A0A0A,
+  hueso #ECE7DC y fucsia #FF3D8B); y si se le suma canción, lista de
+  regalos o el botón al Muro. Detalle en `invitaciones/HISTORIA.md`.
+- **Galería con las fiestas de clientes (12/11/2026).** Las ocho tarjetas
+  de clientes están en Trabajos y en `/invitaciones` con el permiso de las
+  familias (lo confirmó el dueño ese día) y con `cuidar:true`: adentro de
+  la galería van sin alias y con la confirmación apagada
+  (`lib/trabajos.js`, `CUIDAR_MARCO`). Si una familia pide salir, es
+  borrar su renglón de `lib/trabajos.js`. Detalle en
+  `invitaciones/HISTORIA.md`.
 
 - ~~**Implementar la planilla central**~~. **Hecho el 23/10/2026.** La
   dirección está en `lib/planilla.js` y `almi15/listado/` existe. Lo
@@ -2531,3 +2653,9 @@ dejaría peor parados.
   adentro.** Se borra al cerrar la pestaña y la CSP le cierra la puerta de
   salida a un script inyectado, pero sigue siendo la joya: conviene entrar
   como administrador solo cuando hace falta y cerrar la pestaña después.
+- **Lo que falta de `lucia15/`** (12/11/2026), y lo tiene que mandar la clienta o el dueño: la **ciudad del salón** (no es Rosario; hoy la dirección dice solo "Venezuela 4555" y el mapa usa el enlace que mandó); las **fotos** (portada y franjas); *(la hora —de 22 a 5 h— y el audio de Clocks, en bucle, ya están)*; **hasta cuándo se confirma**; el **valor de la tarjeta**; el **alias** con su **titular**; *(la **/exec** de su planilla ya está conectada y su tablero vive en `/lucia15/listado`; falta verla entrar una vez)*. Vacíos, no se dibujan. El mail de acceso va como `CLAVE_ELEGIDA` en la copia del editor, nunca en el repo.
+- **Lo que falta de `julieta/`** (16/11/2026), y lo tiene que mandar ella: el **titular** del alias `julieta.zap` *(qué festeja —XV años— y la hora —22:30— ya están)*. No tiene planilla ni tablero: confirma por WhatsApp a su número.
+- **Lo que falta de las canciones de `julieta/`** (17/11/2026): la planilla ya está conectada; falta VERLA entrar una vez (mandar una canción desde la invitación y mirar que aparezca en `/julieta/canciones`) y pasarle a Julieta la clave del panel, que muestra `preparar()`.
+- **La guía del panel de canciones** (17/11/2026) sale con `node flyer/armar-canciones.js <dirección> [clave] [salida.pdf]`: es un PDF A4 genérico (`flyer/canciones.html`, no nombra ninguna fiesta) con la dirección y la clave de cada clienta. Sin clave deja una línea en blanco. La captura sale de la demostración del propio panel. El PDF no va al repo.
+- **El respaldo de las tarjetas** (19/11/2026): `bash respaldo/armar-backup.sh` arma un .zip con las 15 tarjetas completas (lo que está en git) y un LEEME con cómo volver a subir una si algo falla. El .zip no va al repo. Lo que no cubre: las respuestas de las planillas de Google, las claves, las fotos del muro y del rollo y los originales de los clientes (ver el LEEME del zip).
+- **El álbum de la fiesta** (23/11/2026): servicio nuevo, sin contratar. Los caminos están en "El álbum de la fiesta" más arriba; falta que el dueño decida R2 o Drive y lo demás de esa lista.
