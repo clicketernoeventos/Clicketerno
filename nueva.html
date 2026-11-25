@@ -438,7 +438,7 @@ footer a:hover{color:var(--texto)}
     <a href="#precios">Precios</a>
     <a href="#preguntas">Preguntas</a>
     <a href="#entrar">Ya contraté</a>
-    <a class="btn btn-luz mag" href="#contacto" data-wsp="Hola Click Eterno! Quiero pedir un presupuesto. Mi evento es el:">Escribinos</a>
+    <a class="btn btn-luz mag" href="#contacto" data-wsp="Hola Click Eterno! Vi su anuncio de Google. Quiero pedir un presupuesto. Mi evento es el:">Escribinos</a>
   </div>
   <button class="burger" id="burger" type="button" aria-label="Abrir el menú" aria-expanded="false"><i></i><i></i><i></i></button>
 </div></nav>
@@ -648,7 +648,7 @@ footer a:hover{color:var(--texto)}
     <p class="ojo ap" style="justify-content:center">Escribinos</p>
     <h2 data-palabras style="margin-top:22px">Contanos de <em>tu fiesta.</em></h2>
     <p class="bajada ap">Decinos la fecha y qué te imaginás. Te respondemos el mismo día con la propuesta.</p>
-    <a class="btn btn-luz mag ap" id="ctaWsp" href="https://wa.me/5493412506451" data-wsp="Hola Click Eterno! Quiero pedir un presupuesto. Mi evento es el:">Escribinos por WhatsApp</a>
+    <a class="btn btn-luz mag ap" id="ctaWsp" href="https://wa.me/5493412506451" data-wsp="Hola Click Eterno! Vi su anuncio de Google. Quiero pedir un presupuesto. Mi evento es el:">Escribinos por WhatsApp</a>
     <a class="mail" href="mailto:clicketernoeventos@gmail.com">clicketernoeventos@gmail.com</a>
   </div>
 </section>
@@ -703,7 +703,7 @@ const SVG_WSP=`<svg class="ico-wsp" viewBox="0 0 24 24" fill="currentColor" fill
 const TEL='5493412506451';
 const wsp=t=>`https://wa.me/${TEL}?text=${encodeURIComponent(t)}`;
 const flota=document.getElementById('wspFlota');
-flota.href=wsp('Hola! Quiero info para mi evento 🎉'); flota.innerHTML=SVG_WSP;
+flota.href=wsp('Hola! Vi su anuncio de Google. Quiero info para mi evento 🎉'); flota.innerHTML=SVG_WSP;
 document.querySelectorAll('[data-wsp]').forEach(a=>{
   a.href=wsp(a.dataset.wsp); a.target='_blank'; a.rel='noopener';
   a.insertAdjacentHTML('afterbegin',SVG_WSP);
