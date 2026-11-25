@@ -1231,7 +1231,7 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
            valor que está arriba, así que partidos en dos se leían como dos
            pedidos distintos. -->
       <div class="bloque" id="bValor">
-        <h3>Valor de la tarjeta</h3>
+        <h3 id="tValor">Valor de la tarjeta</h3>
         <p class="cap-dato" id="valorTarjeta"></p>
         <p class="rotulo-alias">Alias para transferir</p>
         <b id="alias"></b>
@@ -1328,8 +1328,8 @@ const CONFIG = {
   franjas: {},
   /* El logo "Zaii Fest" que mandó el dueño: va al final, en su placa. */
   logo: "fotos/logo.webp",
-  alias: "",
-  titular: "",
+  alias: "Ssotoo.zai",           // tal cual lo mandó el dueño (25/11/2026), "el cbu para regalos"
+  titular: "",                   // FALTA: pedírselo
   endpoint: "",
   /* Se confirma por WhatsApp (24/11/2026): 297 414-9787. */
   whatsapp: "5492974149787",
@@ -1923,7 +1923,12 @@ function horaTexto(){
      el alias vive adentro, así que esconderlo por falta de valor se
      llevaría puesto el único dato para transferir. */
   if (CONFIG.valorTarjeta) $('#valorTarjeta').textContent = CONFIG.valorTarjeta;
-  else $('#valorTarjeta').hidden = true;
+  else {
+    $('#valorTarjeta').hidden = true;
+    /* Sin valor, el alias es para un regalo: el título no puede hablar
+       de un valor que no está. */
+    if (CONFIG.alias) $('#tValor').textContent = 'Regalos';
+  }
   if (!CONFIG.valorTarjeta && !CONFIG.alias) $('#bValor').hidden = true;
   /* El nombre de la clienta, en los cuatro renglones que la nombran. */
   $$('.elNom').forEach(n => { n.textContent = CONFIG.quien || '\u2026'; });

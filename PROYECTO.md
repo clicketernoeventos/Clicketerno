@@ -2442,6 +2442,8 @@ menores).
   se cobra (seña, cuotas, medios, recibo), los nombres y roles de quienes
   van a entrar, y los datos en papel para cargar. Del lado nuestro: pasar
   los datos a la base para que todos vean lo mismo.
+- **zaii (25/11/2026)**, lo tiene que mandar el dueño: el **titular** de la cuenta del
+  alias `Ssotoo.zai` (sin él, el renglón no se dibuja).
 - **mariapaz15 (19/11/2026)**, lo tiene que mandar la clienta o el dueño:
   **hasta cuándo** se confirma (el alias se sacó: ya no hace falta titular), y
   probar una confirmación de verdad (la planilla ya está conectada; la
