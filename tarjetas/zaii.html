@@ -1043,8 +1043,10 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
 #confirmar .btn.wsp{background:var(--acento);color:#0D1D2E;border:0;margin-top:22px;gap:10px;
   white-space:nowrap;letter-spacing:.12em;padding-left:22px;padding-right:22px;text-shadow:none}
 #portada .port-xv{white-space:nowrap;font-size:clamp(24px,7.6vw,50px)}
-/* el logo trae su propio fondo oscuro: la placa no le agrega otro */
-.placa-fest{background:none;padding:0;overflow:hidden;box-shadow:0 0 0 1px rgba(143,211,247,.45),0 24px 44px -22px rgba(13,29,46,.7)}
+/* el logo va SIN fondo (pedido del dueño, 25/11/2026): flota sobre el
+   papel del cierre, sin placa, sin borde y sin sombra (una sombra sobre
+   la imagen recortada dibujaba un recuadro gris) */
+.placa-fest{background:none;padding:0;border-radius:0;box-shadow:none;overflow:visible;width:min(100%,440px)}
 .placa-fest img{filter:none}
 </style>
 <script>document.documentElement.classList.add('js')</script>
