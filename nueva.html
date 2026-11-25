@@ -206,13 +206,13 @@ body.menu .menu-capa a{opacity:1;transform:none}
 .filtros button[aria-pressed="true"]{background:var(--texto);color:var(--negro);border-color:var(--texto)}
 .tendal{margin-top:50px;display:grid;gap:40px}
 .cuerda{position:relative}
-.pista{position:relative;display:grid;grid-template-columns:repeat(var(--cols,4),1fr);gap:28px;padding:0 0 30px}
+.pista{position:relative;display:grid;grid-template-columns:repeat(var(--cols,4),minmax(0,270px));justify-content:center;gap:34px;padding:0 0 30px}
 .hilo{position:absolute;left:-2%;top:0;width:104%;height:120px;overflow:visible;pointer-events:none}
 .hilo .cable{stroke:rgba(215,230,247,.5);stroke-width:1.3;fill:none}
-.hilo .halo{fill:var(--ambar);opacity:0;transition:opacity .6s}
+.hilo .halo{fill:#FFD27A;opacity:0;transition:opacity .6s}
 .hilo .lampara{fill:#5a5f6b;transition:fill .5s}
-.cuerda.ve .halo{opacity:.22}
-.cuerda.ve .lampara{fill:var(--ambar)}
+.cuerda.ve .halo{opacity:.4}
+.cuerda.ve .lampara{fill:#FFE3A1}
 .colgante{position:relative;transform-origin:50% 0;will-change:transform}
 .hebra{width:1px;margin:0 auto;background:linear-gradient(rgba(215,230,247,.55),rgba(215,230,247,.3))}
 .pinza{width:16px;height:22px;margin:-2px auto -10px;position:relative;z-index:3;border-radius:3px;
@@ -228,7 +228,8 @@ body.menu .menu-capa a{opacity:1;transform:none}
 /* frente: una credencial azul con la portada en la ventana */
 .cara{display:flex;flex-direction:column;padding:12px;background:linear-gradient(165deg,#16294a,#0c1830);cursor:pointer;text-align:left;width:100%}
 .cara .cab{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);padding:2px 4px 10px}
-.ventana{flex:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px;min-height:0}
+.ventana{flex:1;border-radius:12px;overflow:hidden;min-height:0;position:relative}
+.ventana img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
 .ventana .ad{font-size:12px;letter-spacing:.45em}
 .ventana .sub{font-size:9px;letter-spacing:.34em;text-transform:uppercase;margin-top:14px}
 .ventana .nom{font-family:var(--serif);font-style:italic;font-size:clamp(30px,3.2vw,42px);line-height:1;margin-top:8px}
@@ -513,10 +514,11 @@ footer a:hover{color:var(--texto)}
       <h2 data-palabras style="margin-top:18px">Ninguna es <em>de plantilla.</em></h2>
       <p class="bajada ap">Cada una se diseña para su fiesta. Tocá una y abrila como la ve un invitado.</p>
     </div>
-    <div class="filtros ap" id="filtros" role="group" aria-label="Filtrar modelos">
-      <button type="button" data-f="todas" aria-pressed="true">Todas</button>
-      <button type="button" data-f="xv" aria-pressed="false">XV años</button>
-      <button type="button" data-f="otras" aria-pressed="false">Otras fiestas</button>
+    <div class="filtros ap" id="filtros" role="group" aria-label="Elegí tu fiesta">
+      <button type="button" data-f="xv" aria-pressed="true">XV años</button>
+      <button type="button" data-f="egreso" aria-pressed="false">Egresados</button>
+      <button type="button" data-f="cumple" aria-pressed="false">Cumpleaños</button>
+      <button type="button" data-f="boda" aria-pressed="false">Casamientos</button>
     </div>
   </div>
   <div class="wrap">
@@ -810,9 +812,14 @@ cinta.innerHTML=[0,1,2].map(()=>EVENTOS.map((t,i)=>`<span class="${i%2?'':'lleno
 
 /* ═══ modelos: el tendedero ═══ */
 const tendal=document.getElementById('tendal');
-const esXV=t=>/XV/i.test(t.tipo);
-const TODOS=(window.TRABAJOS||[]).slice().sort((a,b)=>esXV(b)-esXV(a));
-let filtro='todas', colsActual=0, colgantes=[];
+/* Las que eligió el dueño (25/11/2026), separadas por la fiesta que busca
+   el que mira: se ve solo lo suyo. Las demás siguen en /invitaciones. */
+const VITRINA={xv:['pia/nueva/','lucia15/','guada15/'],egreso:['valentinaegreso/'],cumple:['gonzalo50/','maricel50/'],boda:['claraybruno/','juliayfranco/']};
+const TODOS=Object.values(VITRINA).flat().map(u=>(window.TRABAJOS||[]).find(t=>t.url===u)).filter(Boolean);
+/* El frente lleva la entrada REAL de cada invitación (captura del 25/11/2026), no un dibujo. */
+const PORTADA={'pia/nueva/':'pia','lucia15/':'lucia','guada15/':'guada','valentinaegreso/':'valentina','gonzalo50/':'gonzalo','maricel50/':'maricel','claraybruno/':'claraybruno','juliayfranco/':'juliayfranco'};
+const CAT=t=>Object.keys(VITRINA).find(k=>VITRINA[k].includes(t.url));
+let filtro='xv', colsActual=0, colgantes=[];
 if(!FINO) document.getElementById('ayudaTxt').textContent='Deslizá de costado · tocá una para darla vuelta';
 const absoluta=u=>/^https?:/.test(u)?u:'https://clicketerno.com.ar/'+u.replace(/^\//,'');
 const INCLUYE=['Sobre animado','Cuenta regresiva','Confirmación de asistencia'];
@@ -822,11 +829,7 @@ function tarjetaHTML(t,i,num){
    <div class="giro">
     <button class="cara" type="button" aria-label="Dar vuelta: ${t.nombre}">
       <div class="cab"><span>${clase}</span><span>Nº ${String(num).padStart(2,'0')}</span></div>
-      <div class="ventana" style="background:${t.fondo};color:${t.tinta}">
-        <div class="ad" style="color:${t.suave}">${t.ad||'✦ ✦ ✦'}</div>
-        <div class="sub" style="color:${t.suave}">${t.sub||'Mis XV'}</div>
-        <div class="nom">${t.nombre}</div>
-      </div>
+      <div class="ventana" style="background:${t.fondo}"><img src="muestra/portadas/${PORTADA[t.url]}.webp" alt="La entrada de la invitación de ${t.nombre}" width="600" height="985" loading="lazy" decoding="async"></div>
       <div class="pie"><div><b>${t.nombre}</b><small>${tema||clase}</small></div><span class="vuelta" aria-hidden="true">↻</span></div>
       <span class="holo"></span>
     </button>
@@ -850,11 +853,11 @@ function tarjetaHTML(t,i,num){
 function armarTendal(){
   const cols=ANCHO()?(innerWidth>=1100?4:3):0;
   colsActual=cols;
-  const lista=TODOS.map((t,i)=>({t,i})).filter(({t})=>filtro==='todas'||(filtro==='xv')===esXV(t));
+  const lista=TODOS.map((t,i)=>({t,i})).filter(({t})=>CAT(t)===filtro);
   const filas=cols?[]:[lista];
   if(cols) for(let k=0;k<lista.length;k+=cols) filas.push(lista.slice(k,k+cols));
   let num=0;
-  tendal.innerHTML=filas.map(f=>`<div class="cuerda"><div class="pista" style="--cols:${cols||f.length}">
+  tendal.innerHTML=filas.map(f=>`<div class="cuerda"><div class="pista" style="--cols:${f.length}">
       <svg class="hilo" aria-hidden="true"></svg>
       ${f.map(({t,i})=>`<div class="colgante"><div class="caida"><div class="hebra"></div><div class="pinza"></div>${tarjetaHTML(t,i,++num)}</div></div>`).join('')}
     </div></div>`).join('');
