@@ -1496,6 +1496,10 @@ function rutear(m,guardado,estado){
   const cupo=cupoDe(estado), hechos=Number(estado.disparos)||0;
   const est={...estado, cupo, disparos:hechos};
   if(hechos>=cupo) return vEsperando(m,guardado,est);
+  /* "Ya terminé": el invitado dio su rollo por cerrado sin gastar las que
+     le sobran. Va DESPUÉS de revelado y cerrado —esos dos mandan siempre—
+     y es reversible: la pantalla tiene su "seguir sacando". */
+  if(guardado&&guardado.terminado) return vEsperando(m,guardado,est);
   /* Va DESPUÉS de revelado y cerrado: esos dos mandan siempre. Si el
      organizador cierra el rollo mientras el invitado está en pausa, la
      próxima vuelta del sondeo lo saca de acá. */
@@ -1525,7 +1529,17 @@ function vPausa(m,guardado,estado){
     <p class="info">Las que sacaste ya están guardadas. Volvé cuando quieras:
       el rollo sigue abierto hasta que lo cierre el organizador.</p>
     <button class="oro-btn" id="seguir" style="max-width:280px;margin:26px auto 0">Seguir sacando fotos</button>
+    <button class="hilo-btn" id="termine" style="max-width:280px;margin:14px auto 0">Ya terminé, no saco más</button>
+    <p class="info" style="font-size:12px;margin-top:10px">Las que no uses quedan sin gastar, y se puede cambiar de idea.</p>
   </div>`;
+  /* "Ya terminé" no borra nada ni gasta nada: marca ESTE rollo, en este
+     teléfono, como cerrado por su dueño. Vive en el aparato y no en la
+     base a propósito —es de esta persona, no de la fiesta— y se puede
+     deshacer desde la pantalla siguiente. */
+  app.querySelector('#termine').onclick=()=>{
+    guardado.terminado=true; guardarRollo(m.codigo,guardado);
+    consultarEstado(m,guardado);
+  };
   app.querySelector('#seguir').onclick=()=>{
     pausado=false;
     /* Se vuelve a preguntar en vez de confiar en lo que teníamos: si el
@@ -1560,15 +1574,31 @@ function vGuardado(m,guardado){
 /* ── esperando el revelado ── */
 function vEsperando(m,guardado,estado){
   detenerPoll(); vistaViva=true;
+  /* Dos caminos llegan acá: gastó todo el rollo, o dijo "ya terminé" con
+     fotos sin usar. En el segundo no se le puede decir "ya sacaste tus 24":
+     sacó 5. Y se le deja arrepentirse, porque el que guarda el teléfono a
+     las diez puede querer volver a sacar en el brindis. */
+  const hechos=Number(estado.disparos)||0, sobran=Math.max(0,(Number(estado.cupo)||0)-hechos);
+  const cierroAntes=!!(guardado&&guardado.terminado)&&sobran>0;
   app.innerHTML=`
   <div class="centro">
     ${ESTRELLA}
-    <p class="espaciado" style="margin-top:16px">Rollo completo</p>
-    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">Ya sacaste tus ${esc(estado.cupo)} fotos</h1>
+    <p class="espaciado" style="margin-top:16px">${cierroAntes?'Rollo guardado':'Rollo completo'}</p>
+    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">${cierroAntes
+      ? (hechos?`Sacaste ${hechos} ${hechos===1?'foto':'fotos'}`:'No sacaste ninguna foto')
+      : `Ya sacaste tus ${esc(estado.cupo)} fotos`}</h1>
     <p class="info">${estado.revela_en?'Se revela solo cuando llegue la hora.':'El organizador todavía no reveló el rollo.'}</p>
     ${estado.revela_en?`<div class="cuenta-rev" id="cuenta"></div>`:''}
     <div class="filete" style="max-width:220px;margin:26px auto 0">${ESTRELLA}</div>
+    ${cierroAntes?`<button class="hilo-btn" id="seguirSacando" style="max-width:280px;margin:22px auto 0">
+      Me arrepentí: seguir sacando (${sobran} ${sobran===1?'foto':'fotos'})</button>`:''}
   </div>`;
+  const volver=app.querySelector('#seguirSacando');
+  if(volver) volver.onclick=()=>{
+    guardado.terminado=false; guardarRollo(m.codigo,guardado);
+    pausado=false;
+    consultarEstado(m,guardado);
+  };
   if(estado.revela_en){
     const cuenta=app.querySelector('#cuenta');
     let pedido=false;
