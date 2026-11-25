@@ -86,8 +86,22 @@ async function abrir(ctx) {
       'con un botón que invita a probar el otro lado');
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'se ve la cinta que avisa que es una demostración');
-    afirmar(/inventad/i.test(await leer(pg, '#cinta-demo')),
-      'la cinta dice que la fiesta y las fotos son inventadas');
+    /* La frase larga se ve en pantalla ancha; en un teléfono la cinta
+       muestra solo la etiqueta "Demo" (una línea de 48px en vez de un
+       zócalo de 129) y la frase entera va en su `title`. Se mide lo que de
+       verdad queda: que diga Demo a la vista y que lo de inventado esté
+       dicho, en pantalla o en el title. */
+    const cinta = await pg.evaluate(() => {
+      const c = document.querySelector('#cinta-demo .chip');
+      return { visible: !!c && c.getClientRects().length > 0,
+               texto: c ? c.innerText : '',
+               title: c ? c.title : '',
+               aviso: (document.querySelector('#cinta-demo .aviso') || {}).innerText || '' };
+    });
+    afirmar(cinta.visible && /demo/i.test(cinta.texto),
+      'la cinta avisa a la vista que es una demostración', JSON.stringify(cinta));
+    afirmar(/inventad/i.test(cinta.title + ' ' + cinta.aviso),
+      'y dice que la fiesta y las fotos son inventadas', JSON.stringify(cinta));
     afirmar(await pg.locator('#deNuevo').count() === 1,
       'y tiene el botón para empezar de nuevo');
     afirmar(espia.nube.length === 0,
