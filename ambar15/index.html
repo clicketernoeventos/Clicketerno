@@ -3267,6 +3267,17 @@ let sonar = null;
       return;
     }
 
+    /* CADA PERSONA QUE VIENE, CON SU NOMBRE (pedido del dueño, 24/11/2026).
+       Con "Cuántos: 4" y los acompañantes en blanco, el tablero mostraba
+       tres "(sin nombre)" y nadie sabía a quién sentar. */
+    const faltaNombre = Array.from(document.querySelectorAll('#acomp input[name^="Invitado "]'))
+      .find(i => !i.disabled && (i.value || '').trim().length < 2);
+    if ($('input[name="Confirma"]:checked').value === 'Sí' && faltaNombre){
+      decir('Escribí el nombre y apellido de cada persona que viene con vos.', 'mal');
+      faltaNombre.focus();
+      return;
+    }
+
     if (!CONFIG.endpoint){
       /* Es una muestra. Se dice, no se simula un "listo" que sería falso. */
       decir('Esto todavía es una muestra: la confirmación no se manda a ningún lado. ' +
