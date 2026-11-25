@@ -2434,9 +2434,6 @@ menores).
   hay cruce con la carta". Ya fallaba en `main` el 25/11/2026; no se tocó.
 - **index.html**: `servicios` falla ("7 cuadraditos se salen de la pantalla
   de 390px"). Viene de antes; es de la página pública.
-- **zaii (24/11/2026)**, lo tiene que mandar el dueño: la **hora**, la
-  **dirección** del Centro de Residentes Chilenos (mandaron "entre 13
-  diciembre": falta la otra calle o el número) y la **ciudad**.
 - **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
   ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
   7/12/2026.

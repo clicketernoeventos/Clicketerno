@@ -22,7 +22,7 @@
 <meta name="color-scheme" content="light dark">
 <style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
 <title>Zaii · Mis XV</title>
-<meta name="description" content="Los XV de Zaii. 12 de diciembre de 2026, Centro de Residentes Chilenos.">
+<meta name="description" content="Los XV de Zaii. 12 de diciembre de 2026, 21 h, Centro de Residentes Chilenos, Pico Truncado.">
 <meta name="theme-color" content="#183454">
 <!-- `noindex`: es la fiesta de una persona de verdad y acá se
      piden nombres de invitados. El que tiene el link entra igual; esto la
@@ -1042,6 +1042,8 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
 /* el botón de WhatsApp sobre el fondo de espejitos */
 #confirmar .btn.wsp{background:var(--acento);color:#0D1D2E;border:0;margin-top:22px;gap:10px;
   white-space:nowrap;letter-spacing:.12em;padding-left:22px;padding-right:22px;text-shadow:none}
+/* la dirección en dos renglones: la esquina y la ciudad */
+#calle{white-space:pre-line}
 #portada .port-xv{white-space:nowrap;font-size:clamp(24px,7.6vw,50px)}
 /* el logo va SIN fondo (pedido del dueño, 25/11/2026): flota sobre el
    papel del cierre, sin placa, sin borde y sin sombra (una sombra sobre
@@ -1269,14 +1271,11 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
    ══════════════════════════════════════════════════════════════════ */
 const CONFIG = {
   quien: "Zaii",
-  /* SIN HORA: no la mandaron. La cuenta llega al principio de ese día en
-     Rosario y ningún renglón dice una hora. Cuando llegue:
-     "2026-12-12T21:00:00-03:00". */
-  fiesta: "2026-12-12",
+  fiesta: "2026-12-12T21:00:00-03:00",   // 21 h: lo mandó el dueño el 25/11/2026 (Santa Cruz también es −03:00)
   hastaHora: "",
   confirmarHasta: "",
   lugar: "Centro de Residentes Chilenos",
-  calle: "",                     // HUECO · mandaron "entre 13 diciembre": falta la dirección completa
+  calle: "13 de Diciembre y pasaje Gabriela Mistral\nPico Truncado, Santa Cruz",   // del dueño, 25/11/2026 · un renglón cada parte
   mapa: "",
   dibujoSalon: "",
   /* La MISMA canción de lucia15 (pedido del dueño): "Clocks", el recorte
@@ -1876,7 +1875,7 @@ function horaTexto(){
   if (CONFIG.calle) $('#calle').textContent = CONFIG.calle;
   else $('#calle').hidden = true;
   if ($('#mapa')) $('#mapa').href = CONFIG.mapa ||
-    'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.lugar + (CONFIG.calle ? ', ' + CONFIG.calle : ''));
+    'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.lugar + (CONFIG.calle ? ', ' + CONFIG.calle.replace(/\n/g, ', ') : ''));
   $('#dressTitulo').textContent = CONFIG.dressTitulo;
   $('#dressTexto').textContent = CONFIG.dressTexto;
   /* El bloque entero desaparece sólo si no hay NI valor NI alias: un
