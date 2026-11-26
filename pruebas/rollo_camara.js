@@ -217,6 +217,23 @@ const disparar = async (p) => { await p.click('#disparo').catch(() => {}); await
           if (!new RegExp('\\b' + antes + '\\b').test(dice))
             mal(`la pantalla de pausa no dice cuántas le quedan (${antes}): "${dice.slice(0, 110)}"`);
           else bien(`y le dice cuántas le quedan (${antes})`);
+          /* "Tu rollo": un cuadrado redondeado por foto del cupo, con la
+             siguiente encendida. Referencia del dueño (1 Second Everyday).
+             Se cuenta de lo que de verdad pasó: sacadas + la que sigue +
+             las libres tienen que sumar el cupo, y las llenas ser las que
+             gastó. */
+          const g = await p3.evaluate(() => {
+            const q = (c) => document.querySelectorAll('.rollo-grilla .rg' + c).length;
+            return { total: q(''), hechas: q('.hecha'), sig: q('.sig'), libres: q('.libre') };
+          });
+          if (!g.total) mal('la pausa no dibuja "Tu rollo": falta la grilla de cuadrados');
+          else {
+            if (g.sig !== 1) mal(`la grilla tiene ${g.sig} cuadrados destacados y tiene que haber uno`);
+            else bien('la pausa dibuja el rollo en cuadrados, con el próximo destacado');
+            if (g.hechas + g.sig + g.libres !== g.total || g.total !== g.hechas + antes)
+              mal(`la grilla no cuadra: ${g.hechas} sacadas + ${antes} que quedan ≠ ${g.total} cuadrados`);
+            else bien(`y cuadra: ${g.hechas} sacadas + ${antes} que quedan = ${g.total}`);
+          }
         }
         /* La cámara tiene que APAGARSE: si no, sigue comiendo batería. */
         const viva = await p3.evaluate(() => !!document.querySelector('#video'));
