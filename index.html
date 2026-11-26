@@ -1003,6 +1003,16 @@ footer .datos{line-height:1.6}
   nav .btn-oro .corto{display:inline}
   nav .logo{width:96px}
 }
+/* En 320px la fila (logo + Presupuesto + hamburguesa) queda justa y el flex
+   le achicaba la hamburguesa a 43px: no llegaba a los 44 del dedo (lo
+   agarró pruebas/dispositivos.js). Ningún hijo de la barra se achica, y
+   en pantallas muy angostas el logo y el botón ceden lugar. */
+nav .wrap>*{flex:none}
+@media(max-width:360px){
+  nav .logo{width:78px}
+  nav .btn-oro{padding:9px 14px}
+  nav .wrap{gap:8px}
+}
 </style>
 </head>
 <body>
