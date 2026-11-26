@@ -8,7 +8,8 @@ const COLS_SENSIBLES = ['pagos', 'avisos', 'precios', 'servicios'];
 const Nube = {
   on: NUBE, ses: null, estado: 'ok', ultima: 0, enCurso: false, timer: null, espera: null, _ref: null,
   url(p) { return CONFIG.url.replace(/\/$/, '') + p; },
-  cab(t) { return { apikey: CONFIG.clave, Authorization: 'Bearer ' + (t || CONFIG.clave), 'Content-Type': 'application/json' }; },
+  /* La clave nueva (sb_publishable) no es un JWT: solo va en apikey. El Authorization lleva la sesión, si hay. */
+  cab(t) { const h = { apikey: CONFIG.clave, 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t; return h; },
 
   leerSes() { try { this.ses = JSON.parse(localStorage.getItem(SES)); } catch (e) { this.ses = null; } return this.ses; },
   guardarSes(s) { this.ses = s; try { if (s) localStorage.setItem(SES, JSON.stringify(s)); else localStorage.removeItem(SES); } catch (e) { } },
