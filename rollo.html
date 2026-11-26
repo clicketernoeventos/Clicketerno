@@ -666,6 +666,39 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .modos-sala{background:rgba(9,20,38,.88);
   box-shadow:inset 0 2px 3px rgba(255,255,255,.08),0 10px 20px -12px rgba(0,0,0,.7)}
 
+
+/* ═══ interfaz "de app" para el rollo: cuadrados, números y títulos grandes ═══
+   Referencia que mandó el dueño: 1 Second Everyday. Un cuadrado redondeado
+   por cada cosa, el número grande en la esquina, un cuadrado destacado para
+   la acción de ahora, y títulos enormes con una palabra de color. */
+.gran{margin:10px 0 0;font-weight:800;letter-spacing:-.035em;line-height:1.02;
+  font-size:clamp(34px,10.5vw,52px);text-wrap:balance}
+.gran em{font-style:normal;color:var(--oro)}
+.rollo-grilla{display:grid;grid-template-columns:repeat(var(--cols,6),1fr);gap:7px;
+  width:100%;max-width:340px;margin:24px auto 4px}
+.rg{position:relative;aspect-ratio:1;border-radius:15px;padding:6px 7px;text-align:left;
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.rg b{font-size:clamp(13px,4.2vw,17px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.rg.libre{border:1.5px dashed rgba(168,200,234,.28);color:rgba(169,187,211,.55)}
+.rg.hecha{color:var(--champan);
+  background:linear-gradient(180deg,#1C3C6A,#112746);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.12),inset 0 -3px 5px rgba(0,0,0,.35)}
+.rg.sig{color:#0B2A52;background:linear-gradient(180deg,#F4F9FF,#A8C8EA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -4px 6px rgba(60,110,180,.4),
+    0 8px 14px -8px rgba(0,0,0,.7)}
+.rg i{position:absolute;right:7px;bottom:3px;font-style:normal;font-size:26px;font-weight:300;line-height:1}
+/* el álbum: cuadrados redondeados con el número de foto grande, como los
+   días del calendario de la referencia */
+.grilla{gap:8px}
+.grilla figure{border-radius:24px}
+.grilla figure::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(7,16,30,.55),transparent 38%)}
+.grilla .nro{position:absolute;left:12px;top:9px;z-index:2;font-size:26px;font-weight:800;
+  letter-spacing:-.04em;line-height:1;color:#FFFFFF;text-shadow:0 1px 6px rgba(0,0,0,.5);
+  pointer-events:none}
+.grilla .nro small{display:block;font-size:9px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;margin-bottom:2px;opacity:.85}
+.grilla figcaption{z-index:2}
 /* El "Demo" de la cinta es un botón: parece uno, y si no hacía nada el
    visitante lo tocaba y creía que la demostración estaba rota. Ahora abre
    una notita que dice qué es esto (y se cierra tocándola). */
@@ -1587,6 +1620,26 @@ function rutear(m,guardado,estado){
    hasta gastar las 24 fotos. Una fiesta dura seis horas; el invitado saca
    dos en la entrada, guarda el teléfono, y vuelve en el brindis. Y
    mientras tanto la cámara quedaba PRENDIDA, comiéndole la batería. */
+/* ── "Tu rollo": una grilla de cuadrados redondeados, uno por foto ──
+   Sale de una referencia que mandó el dueño (1 Second Everyday): un
+   cuadrado por día con el número grande en la esquina y UNO destacado, el
+   de hoy, con el "+". Acá cada cuadrado es una foto del cupo: las sacadas
+   quedan llenas, la que sigue se enciende con el "+" y el resto espera
+   vacío. Es decorativa (aria-hidden): lo que se toca son los botones de
+   abajo, y el número en letras ya está en el título.
+   Arriba de 36 de cupo no se dibuja: sesenta cuadraditos no dicen nada. */
+function rolloGrilla(cupo,hechos){
+  cupo=Number(cupo)||0; hechos=Math.max(0,Number(hechos)||0);
+  if(cupo<1||cupo>36) return '';
+  const cols=cupo<=12?4:6;
+  let h='';
+  for(let i=1;i<=cupo;i++){
+    const clase=i<=hechos?'hecha':(i===hechos+1?'sig':'libre');
+    h+=`<span class="rg ${clase}"><b>${String(i).padStart(2,'0')}</b>${
+      clase==='sig'?'<i>+</i>':''}</span>`;
+  }
+  return `<div class="rollo-grilla" aria-hidden="true" style="--cols:${cols}">${h}</div>`;
+}
 function vPausa(m,guardado,estado){
   detenerCamara(); olvidarVigilia();
   /* El sondeo la vuelve a llamar cada quince segundos. Redibujar acá sería
@@ -1599,8 +1652,8 @@ function vPausa(m,guardado,estado){
   <div class="centro" id="pausa">
     ${ESTRELLA}
     <p class="espaciado" style="margin-top:16px">Tu rollo te espera</p>
-    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">
-      Te ${quedan===1?'queda':'quedan'} ${quedan} ${quedan===1?'foto':'fotos'}</h1>
+    <h1 class="gran">Te ${quedan===1?'queda':'quedan'} <em>${quedan}</em> ${quedan===1?'foto':'fotos'}</h1>
+    ${rolloGrilla(cupoDe(estado),cupoDe(estado)-quedan)}
     <p class="info">Las que sacaste ya están guardadas. Volvé cuando quieras:
       el rollo sigue abierto hasta que lo cierre el organizador.</p>
     <button class="oro-btn" id="seguir" style="max-width:280px;margin:26px auto 0">Seguir sacando fotos</button>
@@ -1659,9 +1712,10 @@ function vEsperando(m,guardado,estado){
   <div class="centro">
     ${ESTRELLA}
     <p class="espaciado" style="margin-top:16px">${cierroAntes?'Rollo guardado':'Rollo completo'}</p>
-    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">${cierroAntes
-      ? (hechos?`Sacaste ${hechos} ${hechos===1?'foto':'fotos'}`:'No sacaste ninguna foto')
-      : `Ya sacaste tus ${esc(estado.cupo)} fotos`}</h1>
+    <h1 class="gran">${cierroAntes
+      ? (hechos?`Sacaste <em>${hechos}</em> ${hechos===1?'foto':'fotos'}`:'No sacaste ninguna foto')
+      : `Ya sacaste tus <em>${esc(estado.cupo)}</em> fotos`}</h1>
+    ${rolloGrilla(estado.cupo,hechos)}
     <p class="info">${estado.revela_en?'Se revela solo cuando llegue la hora.':'El organizador todavía no reveló el rollo.'}</p>
     ${estado.revela_en?`<div class="cuenta-rev" id="cuenta"></div>`:''}
     <div class="filete" style="max-width:220px;margin:26px auto 0">${ESTRELLA}</div>
@@ -3118,9 +3172,10 @@ async function vAlbum(m,guardado){
        misma lista, o las flechas caen en el vacío. */
     const fotos=todasLasFotos.filter(f=>mapa[f.ruta]);
     if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">No pude traer las fotos. Recargá la página.</p>`; return; }
-    el.innerHTML=fotos.map(f=>`
+    el.innerHTML=fotos.map((f,i)=>`
       <figure class="${f.mia?'mia':''}" data-ruta="${esc(f.ruta)}">
         <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
+        <span class="nro" aria-hidden="true"><small>Foto</small>${String(i+1).padStart(2,'0')}</span>
         ${f.nombre?`<figcaption>${esc(f.nombre)}</figcaption>`:''}
       </figure>`).join('');
     [...el.querySelectorAll('figure')].forEach((fig,i)=>{
