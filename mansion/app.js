@@ -41,7 +41,7 @@ function hoja(titulo, cuerpo, alAbrir) {
   capa.className = 'velo';
   capa.innerHTML = `<section class="hoja" role="dialog" aria-modal="true" aria-label="${esc(titulo)}">
     <div class="asa"></div>
-    <div class="cab-h"><h2>${esc(titulo)}</h2><button class="redondo chico" data-a="cerrar" aria-label="Cerrar">${ico('x')}</button></div>
+    <div class="cab-h"><h2>${esc(titulo)}</h2><button class="redondo chico" data-a="calc" aria-label="Calculadora">${ico('calc', 'ch')}</button><button class="redondo chico" data-a="cerrar" aria-label="Cerrar">${ico('x')}</button></div>
     <div class="cuerpo">${cuerpo}</div></section>`;
   capa.addEventListener('click', e => { if (e.target === capa) cerrarHoja(capa); });
   $('#capas').appendChild(capa);
@@ -72,15 +72,13 @@ const NAV = () => {
   const r = Sesion.u ? Sesion.u.rol : 'empleado';
   const base = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda']];
   return r === 'empleado'
-    ? base.concat([['+'], ['stock', 'caja', 'Stock'], ['mas', 'grilla', 'Más']])
-    : base.concat([['+'], ['fiestas', 'copa', 'Fiestas'], ['mas', 'grilla', 'Más']]);
+    ? base.concat([['stock', 'caja', 'Stock'], ['mas', 'grilla', 'Más']])
+    : base.concat([['fiestas', 'copa', 'Fiestas'], ['mas', 'grilla', 'Más']]);
 };
 function pintarNav(ruta) {
   const actual = r => ruta === r || (r === 'fiestas' && ruta === 'fiesta') || (r === 'mas' && !['inicio', 'agenda', 'fiestas', 'fiesta', 'stock'].includes(ruta));
-  $('#abajo').innerHTML = NAV().map(([r, i, t]) => r === '+'
-    ? `<button class="fab" data-a="cargar" aria-label="Carga rápida">${ico('mas')}</button>`
-    : `<a href="#/${r}"${actual(r) ? ' aria-current="page"' : ''}>${ico(i)}<span>${t}</span></a>`).join('');
-  const lat = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda']];
+  $('#abajo').innerHTML = NAV().map(([r, i, t]) => `<a href="#/${r}"${actual(r) ? ' aria-current="page"' : ''}>${ico(i)}<span>${t}</span></a>`).join('');
+  const lat = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda'], ['buscar', 'buscar', 'Buscar']];
   if (puede('fiestas')) lat.push(['fiestas', 'copa', 'Fiestas']);
   if (puede('plata')) lat.push(['pagos', 'plata', 'Pagos'], ['precios', 'etiqueta', 'Precios y aumentos']);
   lat.push(['stock', 'caja', 'Stock'], ['proveedores', 'camion', 'Proveedores'], ['registro', 'reloj', 'Registro de cargas']);
@@ -217,21 +215,22 @@ RUTAS.inicio = () => {
   const pend = prox.filter(e => F.dif(hoy, e.fecha) <= 30).flatMap(e => e.tareas.filter(t => !t.hecha).map(t => ({ e, t }))).slice(0, 6);
 
   return `<div class="barra"><div class="marca" style="flex:1"><div class="sello">${ico('corona')}</div><div>${esc(DB.d.ajustes.salon)}<small>${esc(F.largo(hoy))}</small></div></div>
+      <a class="redondo" href="#/buscar" aria-label="Buscar">${ico('buscar')}</a>
       <a class="redondo" href="#/registro" aria-label="Registro de cargas">${ico('reloj')}</a>
       <a class="avatar" href="#/mas" aria-label="Mi usuario" style="text-decoration:none">${iniciales(u.nombre)}</a></div>
     ${DB.d.demo ? `<p style="margin:0 0 6px"><span class="aviso-demo">${ico('chispa', 'ch')}Datos de ejemplo</span></p>` : ''}
-    <h1 class="saludo">${saludo},<br><em>${esc(u.nombre)}</em></h1>
+    <h1 class="titulo-g">Inicio</h1><p class="bajada">${saludo}, ${esc(u.nombre)}</p>
     ${pildora}
     <div class="dos-col"><div>
       ${heroe}
       <h2 class="sec">Esta semana <a href="#/agenda">Agenda ${ico('der', 'ch')}</a></h2>
       <div class="semana">${semana}</div>
-      ${pend.length ? `<h2 class="sec">Para hacer</h2><div class="tarjeta">${pend.map(({ e, t }) => `<button class="tarea" data-a="tarea" data-e="${e.id}" data-t="${t.id}"><span class="caja"></span><span style="flex:1">${esc(t.texto)}<br><small class="sub">${esc(e.titulo)} · ${F.corto(e.fecha)}</small></span></button>`).join('')}</div>` : ''}
+      ${pend.length ? `<details class="grupo" open><summary>Para hacer<b>${pend.length}</b></summary><div>${pend.map(({ e, t }) => `<button class="tarea" data-a="tarea" data-e="${e.id}" data-t="${t.id}"><span class="caja"></span><span class="crece">${esc(t.texto)}<small class="sub">${esc(e.titulo)}</small></span><span class="chip ${F.dif(hoy, e.fecha) <= 7 ? 'falta' : ''}">${F.corto(e.fecha)}</span></button>`).join('')}</div></details>` : ''}
     </div><div>
       <h2 class="sec" style="margin-top:0">Resumen</h2>
       <div class="kpis">${kpis}</div>
       ${puede('fiestas') ? `<h2 class="sec">Próximas fiestas <a href="#/fiestas">Ver todas ${ico('der', 'ch')}</a></h2>
-      <div class="lista-t">${prox.slice(1, 5).map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Nada más por ahora.')}</div>`}</div>` : ''}
+      <div class="lista-t filas">${prox.slice(1, 5).map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Nada más por ahora.')}</div>`}</div>` : ''}
     </div></div>`;
 };
 
@@ -316,9 +315,14 @@ RUTAS.fiestas = (filtro = 'proximas') => {
   return `${barra('Fiestas', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" aria-label="Fiesta nueva">${ico('mas')}</button>` : '')}
     <label class="buscador">${ico('buscar')}<span class="oculto">Buscar</span><input type="search" id="buscar-f" placeholder="Buscar por nombre, cliente o teléfono" value="${esc(busca)}"></label>
     <div class="filtros">${Object.entries(F_).map(([k, [t, fn]]) => `<button data-a="ruta" data-r="fiestas/${k}"${pres(k === f)}>${t}<b>${DB.d.eventos.filter(fn).length}</b></button>`).join('')}</div>
-    <div class="lista-t" id="lista-f">${lista.map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', q ? 'No hay ninguna con ese nombre.' : 'No hay fiestas acá.')}</div>`}</div>`;
+    <div id="lista-f">${agrupadas(lista) || `<div class="tarjeta">${vacio('copa', q ? 'No hay ninguna con ese nombre.' : 'No hay fiestas acá.')}</div>`}</div>`;
 };
 
+function agrupadas(lista) {
+  const g = [];
+  for (const e of lista) { const k = e.fecha.slice(0, 7), u = g[g.length - 1]; if (u && u.k === k) u.es.push(e); else g.push({ k, es: [e] }); }
+  return g.map(({ k, es }) => `<details class="grupo" open><summary>${may(MESES[+k.slice(5) - 1])} ${k.slice(0, 4)}<b>${es.length}</b></summary><div class="lista-t filas">${es.map(filaFiesta).join('')}</div></details>`).join('');
+}
 RUTAS.fiesta = (id) => {
   const e = DB.get('eventos', id);
   if (!e) return barra('Fiesta', 'fiestas') + `<div class="tarjeta">${vacio('alerta', 'Esa fiesta no existe (¿se deshizo la carga?).')}</div>`;
@@ -550,7 +554,7 @@ RUTAS.stock = (vista = 'todo') => {
   const ps = DB.d.productos.filter(p => (!catStock || p.categoria === catStock) && (!q || norm(p.nombre + ' ' + (p.alias || []).join(' ')).includes(q)));
   return cab + `<label class="buscador">${ico('buscar')}<span class="oculto">Buscar producto</span><input type="search" id="buscar-s" placeholder="Buscar producto" value="${esc(busca)}"></label>
     <div class="filtros"><button data-a="cat"${pres(!catStock)} data-c="">Todas</button>${cats.map(c => `<button data-a="cat" data-c="${c}"${pres(catStock === c)}>${c}</button>`).join('')}</div>
-    <div class="lista-t">${ps.map(filaProducto).join('') || `<div class="tarjeta">${vacio('caja', 'No hay productos acá.')}</div>`}</div>`;
+    <div class="lista-t filas">${ps.map(filaProducto).join('') || `<div class="tarjeta">${vacio('caja', 'No hay productos acá.')}</div>`}</div>`;
 };
 function filaProducto(p) {
   const pct = Math.min(100, Math.round(p.stock / Math.max(1, p.minimo * 2) * 100));
@@ -597,7 +601,7 @@ function historialProducto(p) {
 
 /* ═════════════ Proveedores ═════════════ */
 RUTAS.proveedores = () => `${barra('Proveedores', 'mas', puede('editar') ? `<button class="redondo oscuro" data-a="proveedor" aria-label="Proveedor nuevo">${ico('mas')}</button>` : '')}
-  <div class="lista-t">${DB.d.proveedores.map(v => `<div class="tarjeta" data-id="${v.id}"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}${v.tel ? ' · ' + esc(v.tel) : ''} · ${DB.d.productos.filter(p => p.proveedor === v.id).length} productos</div></div>
+  <div class="lista-t filas">${DB.d.proveedores.map(v => `<div class="tarjeta" data-id="${v.id}"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}${v.tel ? ' · ' + esc(v.tel) : ''} · ${DB.d.productos.filter(p => p.proveedor === v.id).length} productos</div></div>
     ${v.tel ? `<a class="redondo chico" href="${esc(linkWa(v.tel, '¡Hola! '))}" target="_blank" rel="noopener" aria-label="WhatsApp">${ico('chat', 'ch')}</a>` : ''}${puede('editar') ? `<button class="redondo chico" data-a="proveedor" data-id="${v.id}" aria-label="Editar">${ico('lapiz', 'ch')}</button>` : ''}</div></div>`).join('') || `<div class="tarjeta">${vacio('camion', 'Sin proveedores.')}</div>`}</div>`;
 
 /* ═════════════ Registro de cargas ═════════════ */
@@ -612,6 +616,21 @@ RUTAS.registro = (filtro = 'todo') => {
     <div class="filtros">${[['todo', 'Todo'], ['hoy', 'Hoy'], ['mias', 'Lo mío']].filter(x => puede('registroTodo') || x[0] !== 'todo').map(([k, t]) => `<button data-a="ruta" data-r="registro/${k}"${pres(filtro === k)}>${t}</button>`).join('')}</div>
     <div class="tarjeta">${rs.map(r => { const u = DB.get('usuarios', r.usuario); return `<div class="fila ${r.deshecho ? 'deshecho' : ''}" data-id="${r.id}"><span class="avatar chico">${iniciales(u ? u.nombre : '?')}</span><div class="crece"><div class="texto">${esc(r.texto)}</div><div class="sub">${F.cuando(r.cuando)} · ${esc(u ? u.nombre : '—')}${r.deshecho ? ' · deshecho' : ''}</div></div>
       ${r.ir && !r.deshecho ? `<a class="redondo chico" href="#/${esc(r.ir)}" aria-label="Ir a corregir">${ico('lapiz', 'ch')}</a>` : ''}${!r.deshecho && (puede('registroTodo') || r.usuario === yo) ? `<button class="redondo chico" data-a="deshacer" data-id="${r.id}" aria-label="Deshacer">${ico('deshacer', 'ch')}</button>` : ''}</div>`; }).join('') || vacio('reloj', 'Todavía no hay cargas.')}</div>`;
+};
+
+/* ═════════════ Buscar en todo ═════════════ */
+RUTAS.buscar = (cat = 'todo') => {
+  const q = norm(busca), ver = puede('contacto');
+  const fs = q ? DB.d.eventos.filter(e => norm(e.titulo + ' ' + TIPOS[e.tipo].nombre + (ver ? ' ' + e.cliente.nombre + ' ' + e.cliente.tel : '')).includes(q)).sort((a, b) => a.fecha < b.fecha ? 1 : -1) : [];
+  const ps = q ? DB.d.productos.filter(p => norm(p.nombre + ' ' + (p.alias || []).join(' ') + ' ' + p.categoria).includes(q)) : [];
+  const vs = q ? DB.d.proveedores.filter(v => norm(v.nombre + ' ' + (v.rubro || '')).includes(q)) : [];
+  const chips = [['todo', 'Todo', fs.length + ps.length + vs.length], ['fiestas', 'Fiestas', fs.length], ['productos', 'Productos', ps.length], ['proveedores', 'Proveedores', vs.length]];
+  const sec = (k, t, arr, fn) => (cat === 'todo' || cat === k) && arr.length ? `<details class="grupo" open><summary>${t}<b>${arr.length}</b></summary><div class="lista-t filas">${(cat === 'todo' ? arr.slice(0, 5) : arr).map(fn).join('')}</div>${cat === 'todo' && arr.length > 5 ? `<button class="mas-r" data-a="ruta" data-r="buscar/${k}">Ver los ${arr.length}</button>` : ''}</details>` : '';
+  const cuerpo = sec('fiestas', 'Fiestas', fs, filaFiesta) + sec('productos', 'Productos', ps, filaProducto) + sec('proveedores', 'Proveedores', vs, v => `<div class="tarjeta"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}</div></div></div></div>`);
+  return `${barra('Buscar', 'inicio')}
+    <label class="buscador">${ico('buscar')}<span class="oculto">Buscar</span><input type="search" id="buscar-g" placeholder="Fiestas, clientes, productos…" value="${esc(busca)}" autofocus></label>
+    <div class="filtros">${chips.map(([k, t, n]) => `<button data-a="ruta" data-r="buscar/${k}"${pres(cat === k)}>${t}${q ? `<b>${n}</b>` : ''}</button>`).join('')}</div>
+    ${q ? (cuerpo || `<div class="tarjeta">${vacio('buscar', 'No encontré nada con eso.')}</div>`) : `<div class="tarjeta">${vacio('buscar', 'Buscá una fiesta, un cliente, un teléfono o un producto.')}</div>`}`;
 };
 
 /* ═════════════ Más, usuarios y ajustes ═════════════ */
@@ -771,6 +790,7 @@ const ACC = {
   salir: () => { Sesion.salir(); cerrarTodo(); location.hash = ''; render(); },
   ruta: b => ir(b.dataset.r),
   cargar: () => abrirCarga(),
+  calc: () => abrirCalc(),
   'cerrar-pil': (b, e) => { e.preventDefault(); e.stopPropagation(); try { sessionStorage.setItem('pil:' + b.dataset.t, '1'); } catch (x) { } b.closest('.pildora').remove(); },
   'deshacer-t': b => { const m = deshacer(b.dataset.id); $('#tostada').classList.remove('ver'); if (m) tostada(m); else { tostada('Listo, deshecho'); render(); } },
   deshacer: b => {
@@ -901,7 +921,7 @@ document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-a]')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('input', e => {
-  if (e.target.id === 'buscar-f' || e.target.id === 'buscar-s') {
+  if (e.target.id === 'buscar-f' || e.target.id === 'buscar-s' || e.target.id === 'buscar-g') {
     busca = e.target.value; const pos = e.target.selectionStart, id = e.target.id; render();
     const n = $('#' + id); if (n) { n.focus(); n.setSelectionRange(pos, pos); }
   }
