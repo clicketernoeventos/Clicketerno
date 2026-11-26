@@ -8,7 +8,8 @@ const COLS_SENSIBLES = ['pagos', 'avisos', 'precios', 'servicios'];
 const Nube = {
   on: NUBE, ses: null, estado: 'ok', ultima: 0, enCurso: false, timer: null, espera: null, _ref: null,
   url(p) { return CONFIG.url.replace(/\/$/, '') + p; },
-  cab(t) { return { apikey: CONFIG.clave, Authorization: 'Bearer ' + (t || CONFIG.clave), 'Content-Type': 'application/json' }; },
+  /* La clave nueva (sb_publishable) no es un JWT: solo va en apikey. El Authorization lleva la sesión, si hay. */
+  cab(t) { const h = { apikey: CONFIG.clave, 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t; return h; },
 
   leerSes() { try { this.ses = JSON.parse(localStorage.getItem(SES)); } catch (e) { this.ses = null; } return this.ses; },
   guardarSes(s) { this.ses = s; try { if (s) localStorage.setItem(SES, JSON.stringify(s)); else localStorage.removeItem(SES); } catch (e) { } },
@@ -17,7 +18,7 @@ const Nube = {
   /* La función de accesos (lista, crear dueño, entrar y, para dueños, altas y permisos) */
   async fn(accion, cuerpo, conSesion) {
     const t = conSesion ? await this.token() : null;
-    const r = await fetch(this.url('/functions/v1/mansion'), { method: 'POST', headers: this.cab(t), body: JSON.stringify(Object.assign({ accion }, cuerpo || {})) });
+    const r = await fetch(this.url('/functions/v1/' + (CONFIG.funcion || 'mansion')), { method: 'POST', headers: this.cab(t), body: JSON.stringify(Object.assign({ accion }, cuerpo || {})) });
     let j = {}; try { j = await r.json(); } catch (e) { }
     if (!r.ok) throw Object.assign(new Error(j.error || 'Error ' + r.status), { status: r.status });
     return j;
@@ -65,8 +66,8 @@ const Nube = {
     return a && a[0];
   },
   async lista() {
-    try { const j = await this.fn('lista'); try { localStorage.setItem(LISTA, JSON.stringify(j)); } catch (e) { } return j; }
-    catch (e) { try { return JSON.parse(localStorage.getItem(LISTA)) || { usuarios: [], pendientes: [] }; } catch (x) { return { usuarios: [], pendientes: [] }; } }
+    try { const j = await this.fn('lista'); j.enRed = true; try { localStorage.setItem(LISTA, JSON.stringify(j)); } catch (e) { } return j; }
+    catch (e) { try { const c = JSON.parse(localStorage.getItem(LISTA)) || { usuarios: [], pendientes: [] }; c.enRed = false; return c; } catch (x) { return { usuarios: [], pendientes: [] }; } }
   },
 
   /* ── Sincronizar ── */
