@@ -247,41 +247,51 @@ function filaFiesta(e) {
 }
 
 /* ═════════════ Agenda ═════════════ */
+let modoSemana = false;
 RUTAS.agenda = (dia) => {
   const hoy = F.hoy();
-  const elegidoDia = /^\d{4}-\d{2}-\d{2}$/.test(dia || '') ? dia : hoy;
-  const [y, m] = (/^\d{4}-\d{2}$/.test(dia || '') ? dia + '-01' : elegidoDia).split('-').map(Number);
+  const esDia = /^\d{4}-\d{2}-\d{2}$/.test(dia || ''), esMes = /^\d{4}-\d{2}$/.test(dia || '');
+  const sel_ = esDia ? dia : esMes ? (dia === hoy.slice(0, 7) ? hoy : dia + '-01') : hoy;
+  const [y, m] = sel_.split('-').map(Number);
   const primero = F.armar(y, m, 1);
-  const inicio = F.sumar(primero, -((F.dow(primero) + 6) % 7));
-  const mesAnt = m === 1 ? F.armar(y - 1, 12, 1) : F.armar(y, m - 1, 1);
-  const mesSig = m === 12 ? F.armar(y + 1, 1, 1) : F.armar(y, m + 1, 1);
+  const mm = String(m).padStart(2, '0');
+  const inicio = modoSemana ? F.sumar(sel_, -((F.dow(sel_) + 6) % 7)) : F.sumar(primero, -((F.dow(primero) + 6) % 7));
+  const mesAnt = (m === 1 ? F.armar(y - 1, 12, 1) : F.armar(y, m - 1, 1)).slice(0, 7);
+  const mesSig = (m === 12 ? F.armar(y + 1, 1, 1) : F.armar(y, m + 1, 1)).slice(0, 7);
+  const ant = modoSemana ? F.sumar(sel_, -7) : mesAnt, sig = modoSemana ? F.sumar(sel_, 7) : mesSig;
   const prioridad = ['confirmada', 'senada', 'consulta', 'realizada'];
+  const vivos = d => DB.d.eventos.filter(e => e.fecha === d && e.estado !== 'cancelada');
   let celdas = '';
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < (modoSemana ? 7 : 42); i++) {
     const d = F.sumar(inicio, i);
-    if (i >= 35 && d.slice(5, 7) !== String(m).padStart(2, '0')) break;
-    const evs = DB.d.eventos.filter(e => e.fecha === d && e.estado !== 'cancelada');
-    const top = prioridad.find(p => evs.some(e => e.estado === p));
-    const cls = [d.slice(5, 7) !== String(m).padStart(2, '0') ? 'otro' : '', top ? 'hay-' + top : '', d === hoy ? 'hoy' : ''].join(' ');
-    celdas += `<button class="${cls}" data-a="dia" data-d="${d}"${pres(d === elegidoDia)} aria-label="${F.largo(d)}${evs.length ? ', ' + evs.length + ' fiesta' + (evs.length > 1 ? 's' : '') : ''}"><b>${+d.slice(8)}</b><span class="puntos">${evs.length > 1 ? evs.map(e => `<i class="${e.estado}"></i>`).join('') : ''}</span></button>`;
+    if (!modoSemana && i >= 35 && d.slice(5, 7) !== mm) break;
+    const evs = vivos(d), top = prioridad.find(p => evs.some(e => e.estado === p));
+    const cls = [!modoSemana && d.slice(5, 7) !== mm ? 'otro' : '', top ? 'hay-' + top : '', d === hoy ? 'hoy' : ''].join(' ');
+    celdas += `<button class="${cls}" data-a="dia" data-d="${d}"${pres(d === sel_)} aria-label="${F.largo(d)}${evs.length ? ', ' + evs.length + ' fiesta' + (evs.length > 1 ? 's' : '') : ''}"><b>${+d.slice(8)}</b><span class="puntos">${evs.slice(0, 3).map(e => `<i class="${e.estado}"></i>`).join('')}</span></button>`;
   }
-  const delDia = DB.d.eventos.filter(e => e.fecha === elegidoDia).sort((a, b) => a.turno === 'mediodia' ? -1 : 1);
-  const libres = Object.keys(TURNOS).filter(t => !delDia.some(e => e.turno === t && e.estado !== 'cancelada'));
-  const delMes = DB.d.eventos.filter(e => e.fecha.slice(0, 7) === primero.slice(0, 7) && e.estado !== 'cancelada').sort((a, b) => a.fecha < b.fecha ? -1 : 1);
-  return `${barra('Agenda', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" data-d="${elegidoDia}" aria-label="Reservar fecha">${ico('mas')}</button>` : '')}
-    <div class="dos-col"><div class="tarjeta">
+  const delDia = vivos(sel_);
+  const libres = Object.keys(TURNOS).filter(t => !delDia.some(e => e.turno === t));
+  const prox = DB.d.eventos.filter(e => e.fecha >= sel_ && e.estado !== 'cancelada')
+    .sort((a, b) => a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : (a.turno === 'mediodia' ? -1 : 1)).slice(0, 40);
+  const grupos = []; for (const e of prox) { const g = grupos[grupos.length - 1]; if (g && g.d === e.fecha) g.es.push(e); else grupos.push({ d: e.fecha, es: [e] }); }
+  let mesPrev = sel_.slice(0, 7), lista = '';
+  for (const g of grupos) {
+    if (g.d.slice(0, 7) !== mesPrev) { mesPrev = g.d.slice(0, 7); lista += `<h2 class="sec ag-mes">${MESES[+g.d.slice(5, 7) - 1]}</h2>`; }
+    lista += `<div class="ag-dia"><div class="ag-f${g.d === hoy ? ' hoy' : ''}"><span>${DIAS[F.dow(g.d)].slice(0, 3)}</span><b>${+g.d.slice(8)}</b></div><div class="ag-evs">${g.es.map(e => `<a class="ag-ev ${e.estado}" href="#/fiesta/${e.id}" data-id="${e.id}"><i class="pt"></i><span class="min"><small>${TURNOS[e.turno]} · ${TIPOS[e.tipo].nombre}</small><b>${esc(e.titulo)}</b></span><span class="chip ${e.estado}">${ESTADOS[e.estado]}</span></a>`).join('')}</div></div>`;
+  }
+  return `${barra('Agenda', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" data-d="${sel_}" aria-label="Reservar fecha">${ico('mas')}</button>` : '')}
+    <div class="dos-col"><div class="tarjeta cal-t" data-ant="${ant}" data-sig="${sig}">
       <div class="cal-cab"><h2>${MESES[m - 1]} ${y}</h2>
-        <a class="redondo chico" href="#/agenda/${mesAnt.slice(0, 7)}" aria-label="Mes anterior">${ico('atras', 'ch')}</a>
-        <a class="redondo chico" href="#/agenda/${mesSig.slice(0, 7)}" aria-label="Mes siguiente">${ico('der', 'ch')}</a>
-        ${primero.slice(0, 7) !== hoy.slice(0, 7) ? `<a class="btn chico suave" href="#/agenda/${hoy}">Hoy</a>` : ''}</div>
+        <a class="redondo chico" href="#/agenda/${ant}" aria-label="${modoSemana ? 'Semana' : 'Mes'} anterior">${ico('atras', 'ch')}</a>
+        <a class="redondo chico" href="#/agenda/${sig}" aria-label="${modoSemana ? 'Semana' : 'Mes'} siguiente">${ico('der', 'ch')}</a></div>
       <div class="cal">${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => `<div class="dn">${x}</div>`).join('')}${celdas}</div>
-      <div class="leyenda"><span><i style="background:var(--verde-vivo)"></i>Confirmada</span><span><i style="background:var(--acento)"></i>Señada</span><span><i style="box-shadow:inset 0 0 0 2px var(--ambar-vivo)"></i>Consulta</span></div>
+      <div class="cal-pie"><div class="leyenda"><span><i style="background:var(--verde-vivo)"></i>Confirmada</span><span><i style="background:var(--acento)"></i>Señada</span><span><i style="background:var(--ambar-vivo)"></i>Consulta</span></div>
+        <div class="cal-modo"><button data-a="modo-cal" data-v="mes"${pres(!modoSemana)}>Mes</button><button data-a="modo-cal" data-v="semana"${pres(modoSemana)}>Semana</button></div></div>
+      ${sel_ !== hoy ? `<a class="btn chico suave" style="margin-top:10px" href="#/agenda/${hoy}">Ir a hoy</a>` : ''}
     </div><div>
-      <h2 class="sec">${esc(may(F.largo(elegidoDia)))}</h2>
-      <div class="lista-t">${delDia.map(filaFiesta).join('')}
-      ${puede('editar') ? libres.map(t => `<button class="turno-libre" data-a="nueva-fiesta" data-d="${elegidoDia}" data-turno="${t}">${ico('mas')}${TURNOS[t]} libre · Reservar</button>`).join('') : (delDia.length ? '' : `<div class="tarjeta">${vacio('cal', 'Sin fiestas este día.')}</div>`)}</div>
-      <h2 class="sec">Todo ${MESES[m - 1]} <span class="sub">${delMes.length} ${delMes.length === 1 ? 'fiesta' : 'fiestas'}</span></h2>
-      <div class="lista-t">${delMes.map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Mes libre.')}</div>`}</div>
+      <h2 class="sec" style="margin-top:0">${esc(may(F.largo(sel_)))}</h2>
+      ${puede('editar') && libres.length ? `<div class="libres">${libres.map(t => `<button class="turno-libre" data-a="nueva-fiesta" data-d="${sel_}" data-turno="${t}">${ico('mas')}${TURNOS[t]} libre · Reservar</button>`).join('')}</div>` : ''}
+      ${grupos.length ? `<h2 class="sec ag-mes" style="margin-top:18px">Lo que viene</h2>${lista}` : `<div class="tarjeta">${vacio('cal', 'No hay fiestas desde este día.')}</div>`}
     </div></div>`;
 };
 
@@ -770,6 +780,7 @@ const ACC = {
     else { tostada(m || 'Deshecho'); render(); }
   },
   dia: b => ir('agenda/' + b.dataset.d),
+  'modo-cal': b => { modoSemana = b.dataset.v === 'semana'; render(); },
   'nueva-fiesta': b => abrirFiesta({ fecha: b.dataset.d || '', turno: b.dataset.turno || 'noche', tipo: '15', estado: 'consulta', lista: DB.d.precios[0] && DB.d.precios[0].id, cliente: {} }),
   'editar-fiesta': b => abrirFiesta(DB.get('eventos', b.dataset.id)),
   'borrar-fiesta': b => {
@@ -877,6 +888,14 @@ document.addEventListener('click', e => {
   if (b.dataset.a === 'confirmar-carga') return;
   ACC[b.dataset.a](b, e);
 });
+/* Deslizar el calendario con el dedo cambia de mes o de semana */
+let toque = null;
+document.addEventListener('touchstart', e => { const c = e.target.closest('.cal-t'); toque = c ? { x: e.touches[0].clientX, y: e.touches[0].clientY, c } : null; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!toque) return; const t = e.changedTouches[0], dx = t.clientX - toque.x, dy = t.clientY - toque.y;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) ir('agenda/' + (dx < 0 ? toque.c.dataset.sig : toque.c.dataset.ant));
+  toque = null;
+}, { passive: true });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('#capas .velo')) { cerrarHoja(); return; }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-a]')) { e.preventDefault(); e.target.click(); }
