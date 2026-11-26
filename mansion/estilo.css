@@ -620,3 +620,17 @@ body:has(#app.sin-sesion) .flotantes, body:has(#capas .velo) .flotantes, body:ha
 .c-teclas .ig { color: #E8664F; font-size: 44px; }
 @media (min-width: 700px) { #calc { align-items: center; } .c-hoja { border-radius: 28px; } }
 @media (max-height: 640px) { .c-num { font-size: 64px !important; min-height: 70px; } .c-teclas button { height: 50px; } }
+
+/* Estado de la sincronización, resultados del panel y detalle de cambios */
+.sync-chip { border: 0; border-radius: 7px; padding: 4px 10px; font: 700 12px var(--texto-f); background: var(--gris-suave); color: var(--tinta-2); }
+.sync-chip.ok { background: var(--verde-suave); color: var(--verde); }
+.sync-chip.falta { background: var(--ambar-suave); color: var(--ambar); }
+#lateral .sync-chip { display: block; margin: 0 8px 10px; text-align: left; }
+.res { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid var(--linea); background: none; padding: 11px 2px; text-align: left; }
+.res .ico { width: 34px; height: 34px; border-radius: 10px; background: var(--acento-suave); color: var(--acento-texto); display: grid; place-items: center; flex: none; }
+.res .min { flex: 1; min-width: 0; }
+.res b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.res small { color: var(--tinta-2); font-weight: 600; font-size: 12.5px; }
+details.cambios { margin-top: 4px; }
+details.cambios summary { font-size: 12.5px; font-weight: 700; color: var(--acento-texto); cursor: pointer; }
+details.cambios div { font-size: 12.5px; color: var(--tinta-2); padding: 2px 0 0 2px; }

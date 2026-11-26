@@ -3,6 +3,8 @@
    se cambia DB.cargar/DB.guardar y las pantallas no se enteran. */
 'use strict';
 
+/* ¿Hay base conectada? Si no, la app anda sola en el teléfono con datos de ejemplo. */
+const NUBE = typeof CONFIG !== 'undefined' && !!CONFIG.url && !/PEGAR/.test(CONFIG.url);
 const ZONA = 'America/Argentina/Buenos_Aires';
 const CLAVE = 'mansion.v1';
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -153,18 +155,31 @@ function semilla() {
   };
 }
 
-/* ── Guardar y leer ── */
+/* Sin datos de ejemplo: así arranca cada usuario cuando hay base conectada */
+function datosVacios() {
+  return { version: 1, demo: false, ajustes: { salon: 'La Mansión del Rey', tel: '', plantilla: PLANTILLA_AUMENTO, revisarCada: 30 },
+    usuarios: [], precios: [], servicios: [], eventos: [], pagos: [], avisos: [], proveedores: [], productos: [], movimientos: [], pedidos: [], registro: [] };
+}
+
+/* ── Guardar y leer ──
+   Con base conectada, cada usuario tiene su copia en el teléfono y una lista de
+   lo que falta enviar ("dirty"). Sin base, es una sola copia de ejemplo. */
 const DB = {
-  d: null,
+  d: null, meta: { dirty: {}, desde: '' }, clave: CLAVE,
+  usar(uid) { this.clave = uid ? 'mansion.v2.' + uid : (NUBE ? 'mansion.v2' : CLAVE); },
   cargar() {
-    try { const t = localStorage.getItem(CLAVE); if (t) this.d = JSON.parse(t); } catch (e) { this.d = null; }
-    if (!this.d || this.d.version !== 1) this.d = semilla();
+    this.d = null; this.meta = { dirty: {}, desde: '' };
+    try { const t = localStorage.getItem(this.clave); if (t) this.d = JSON.parse(t); } catch (e) { this.d = null; }
+    try { const m = localStorage.getItem(this.clave + '.meta'); if (m) this.meta = JSON.parse(m); } catch (e) { }
+    if (!this.meta.dirty) this.meta.dirty = {};
+    if (!this.d || this.d.version !== 1) { this.d = NUBE ? datosVacios() : semilla(); this.meta = { dirty: {}, desde: '' }; }
     return this.d;
   },
   guardar() {
-    try { localStorage.setItem(CLAVE, JSON.stringify(this.d)); return true; }
+    try { localStorage.setItem(this.clave, JSON.stringify(this.d)); localStorage.setItem(this.clave + '.meta', JSON.stringify(this.meta)); return true; }
     catch (e) { return false; }
   },
+  marcar(col, id) { if (!NUBE) return; const k = col + '/' + id; this.meta.dirty[k] = (this.meta.dirty[k] || 0) + 1; },
   get(col, id) { return (this.d[col] || []).find(x => x.id === id); }
 };
 
@@ -176,6 +191,7 @@ function aplicarOps(ops) {
     if (o.despues == null) { if (i >= 0) arr.splice(i, 1); }
     else if (i >= 0) arr[i] = clon(o.despues);
     else arr.push(clon(o.despues));
+    DB.marcar(o.col, o.id);
   }
 }
 function cambiar(texto, cambios, meta = {}) {
@@ -186,8 +202,10 @@ function cambiar(texto, cambios, meta = {}) {
   aplicarOps(ops);
   const reg = { id: nid(), cuando: Date.now(), usuario: Sesion.u ? Sesion.u.id : '', texto, ops, ir: meta.ir || '', tipo: meta.tipo || '', deshecho: false };
   DB.d.registro.unshift(reg);
+  DB.marcar('registro', reg.id);
   if (DB.d.registro.length > 600) DB.d.registro.length = 600;
   DB.guardar();
+  if (typeof Nube !== 'undefined') Nube.pronto();
   return reg;
 }
 /* Devuelve '' si se pudo, o el motivo si algo se volvió a tocar después. */
@@ -205,7 +223,9 @@ function deshacer(regId, forzar) {
   if (c && !forzar) return c;
   aplicarOps(r.ops.slice().reverse().map(o => ({ col: o.col, id: o.id, despues: o.antes })));
   r.deshecho = true; r.deshechoPor = Sesion.u ? Sesion.u.id : ''; r.deshechoCuando = Date.now();
+  DB.marcar('registro', r.id);
   DB.guardar();
+  if (typeof Nube !== 'undefined') Nube.pronto();
   return '';
 }
 
