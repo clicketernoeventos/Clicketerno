@@ -4127,6 +4127,51 @@ efecto general: era de ESA foto, para que su fondo blanco de estudio
 se fundiera con el papel. Dejado puesto sobre una foto normal, la
 oscurece contra el fondo sin que nada avise.
 
+#### El mapa dibujado, el plan del save the date y más transiciones (26/11/2026)
+
+El dueño mandó una captura de otra invitación (*"pone este estilo de
+mapa"*) y pidió *"el plan del evento con la animación del save the
+date"* y *"más efectos de transición"*.
+
+**"¿Dónde?"** pasó al armado de la referencia, el mismo que ya tenían
+`zaii` y `mariapaz15`: título enorme en mayúsculas, "nos vemos" en la
+manuscrita, el lugar a la izquierda, un **mapa dibujado** (no el real,
+sin nombres de calles) con la flecha y el círculo trazados a mano una
+vez, y el botón verde a su enlace de Maps. Pintado en SU paleta: papel
+champagne, plazas en salvia, tinta antracita. **La polaroid del salón
+de la referencia no va**: no mandaron foto del lugar, y una de internet
+no es de ellos.
+
+**El cronograma** dejó la grilla de columnas y es el plan de `lola15`:
+la hora a la izquierda, un riel que se llena atado al scroll, un punto
+por momento que se enciende cuando el riel le llega, y "Momento 01…04"
+con su icono. Los momentos entran de a uno desde el riel.
+
+**Las transiciones nuevas**, todas una sola vez y apagadas con "menos
+movimiento": el eco de cada título se escribe de izquierda a derecha
+después del título; las dos fotos de la fecha se descubren (la de
+arriba baja, la de abajo sube); y la del cierre llega de más cerca y
+se asienta. **El eco iba corrido desde el costado y la prueba lo
+cazó**: corrido se salía de su caja ("Regalos" 99 en 97); con
+`clip-path` no ocupa más lugar.
+
+#### "La siento vacía": las fotos con impacto (26/11/2026)
+
+*"Queda muy insulso. Buscá algo de impacto y que quede bien con la
+temática."* Las fotos eran rectángulos en blanco y negro y nada más.
+
+- **La portada va en un ARCO**, el mismo del calendario, con un filete
+  dorado corrido afuera como el marco de un espejo: la portada y la
+  fecha pasan a hablar el mismo idioma.
+- **"Nuestra historia" son copias reveladas sobre el verde**: borde de
+  papel más ancho abajo, una cinta champagne cruzada arriba, giradas y
+  encimadas a un lado y al otro. Entran de a una cayendo sobre la mesa,
+  una sola vez. Antes eran tres cuadraditos en fila sobre una banda
+  marfil; la banda se fue, porque con las copias encima era un marco
+  dentro de otro.
+- Sirve para dos, tres o cuatro fotos: cada una se apoya sobre la
+  anterior. El día que llegue la de las mascotas entra sola.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
