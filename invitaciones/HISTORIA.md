@@ -4155,6 +4155,23 @@ se asienta. **El eco iba corrido desde el costado y la prueba lo
 cazó**: corrido se salía de su caja ("Regalos" 99 en 97); con
 `clip-path` no ocupa más lugar.
 
+#### "La siento vacía": las fotos con impacto (26/11/2026)
+
+*"Queda muy insulso. Buscá algo de impacto y que quede bien con la
+temática."* Las fotos eran rectángulos en blanco y negro y nada más.
+
+- **La portada va en un ARCO**, el mismo del calendario, con un filete
+  dorado corrido afuera como el marco de un espejo: la portada y la
+  fecha pasan a hablar el mismo idioma.
+- **"Nuestra historia" son copias reveladas sobre el verde**: borde de
+  papel más ancho abajo, una cinta champagne cruzada arriba, giradas y
+  encimadas a un lado y al otro. Entran de a una cayendo sobre la mesa,
+  una sola vez. Antes eran tres cuadraditos en fila sobre una banda
+  marfil; la banda se fue, porque con las copias encima era un marco
+  dentro de otro.
+- Sirve para dos, tres o cuatro fotos: cada una se apoya sobre la
+  anterior. El día que llegue la de las mascotas entra sola.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
