@@ -139,7 +139,7 @@ function vIngreso() {
       <div class="quienes">${us.map(u => `<button data-a="elegir" data-id="${u.id}"><span class="avatar">${iniciales(u.nombre)}</span><span>${esc(u.nombre)}<small>${u.rol ? ROLES[u.rol] : 'Tocá y poné tu PIN'}</small></span>${ico('der')}</button>`).join('')}
         ${pend.map(u => `<button data-a="elegir-pend" data-n="${esc(u.nombre)}"><span class="avatar">${iniciales(u.nombre)}</span><span>${esc(u.nombre)}<small>Primera vez: creá tu PIN</small></span>${ico('der')}</button>`).join('')}</div>
       ${NUBE && !listaNube ? '<p style="margin-top:20px">Buscando usuarios…</p>' : ''}
-      ${NUBE && listaNube && !us.length && !pend.length ? `<p style="margin-top:20px">No pude traer la lista de usuarios. ¿Hay señal?</p><button class="btn borde" data-a="reintentar-lista">Probar de nuevo</button>` : ''}
+      ${NUBE && listaNube && !us.length && !pend.length ? `<p style="margin-top:20px">${listaNube.enRed ? 'Todavía no hay usuarios cargados en la base.' : 'No pude traer la lista de usuarios. ¿Hay señal?'}</p><button class="btn borde" data-a="reintentar-lista">Probar de nuevo</button>` : ''}
       ${DB.d.demo ? `<p style="margin-top:22px"><span class="aviso-demo">${ico('chispa', 'ch')}Datos de ejemplo · PIN 1111, 2222 o 3333</span></p>` : ''}
     </section>`;
   const sub = fase === 'crear1' ? 'Elegí tu PIN de 6 números' : fase === 'crear2' ? 'Repetilo para confirmar' : `Poné tu PIN de ${LARGO} números`;
