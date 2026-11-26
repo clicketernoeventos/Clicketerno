@@ -969,6 +969,40 @@ footer .datos{line-height:1.6}
   .puerta-c:hover,.btn:hover{transform:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ═══ portada "de app" ═══
+   Referencia que mandó el dueño (la portada de Framer en el teléfono): una
+   barra limpia con el botón blanco a la vista, el título enorme sin nada
+   delante, UN botón blanco en forma de píldora y, abajo, el recuadro del
+   producto con un brillo azul en el borde.
+   Acá: en el teléfono el menú muestra el botón de presupuesto (antes se
+   escondía y quedaba solo la hamburguesa), el logo de la portada se achica
+   para que el título aparezca en la primera pantalla, los botones pasan a
+   píldoras (el principal blanco con letra marino) y el teléfono dibujado
+   lleva el brillo. */
+.btn .corto{display:none}
+.hero .btn{border-radius:999px;text-transform:none;letter-spacing:.02em;font-size:15.5px;
+  font-weight:600;padding:14px 28px}
+.hero .btn-oro{background:#FFFFFF;color:#0B2A52;
+  box-shadow:0 10px 30px -12px rgba(120,170,255,.55)}
+.hero .btn-oro:after{display:none}
+.hero .btn-hilo{border:1px solid rgba(168,200,234,.32);color:#D7E6F7}
+.telefono{filter:drop-shadow(0 0 26px rgba(70,120,255,.42)) drop-shadow(0 30px 60px rgba(40,90,230,.35))}
+@media(max-width:860px){
+  nav .btn-oro{display:inline-flex;margin-left:auto;border-radius:999px;background:#FFFFFF;
+    color:#0B2A52;text-transform:none;letter-spacing:.01em;font-size:14px;font-weight:600;
+    padding:9px 18px;min-height:44px}
+  nav .btn-oro:after{display:none}
+  nav .wrap{gap:12px}
+  .burger{margin-left:0}
+  .hero .logo-full{width:min(52%,190px);margin-bottom:18px}
+  .hero .acciones{flex-direction:column;align-items:center}
+}
+@media(max-width:420px){
+  nav .btn-oro .largo{display:none}
+  nav .btn-oro .corto{display:inline}
+  nav .logo{width:96px}
+}
 </style>
 </head>
 <body>
@@ -986,7 +1020,7 @@ footer .datos{line-height:1.6}
     <a href="#preguntas">Preguntas</a>
     <a href="#entrar">Ya contraté</a>
   </div>
-  <a class="btn btn-oro" href="#contacto">Pedir presupuesto</a>
+  <a class="btn btn-oro" href="#contacto"><span class="largo">Pedir presupuesto</span><span class="corto">Presupuesto</span></a>
   <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
 </div></nav>
 
