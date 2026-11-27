@@ -202,9 +202,9 @@ function telefono(x, y, s, color){
 }
 
 /* ── la marca, abajo de todo ── */
-function marca(t, y = 1800, a = 1){
+function marca(t, y = 1800, a = 1, h = 110){
   if (logo){
-    const h = 120, w = h * logo.width / logo.height;
+    const w = h * logo.width / logo.height;
     ctx.save(); ctx.globalAlpha = a; ctx.drawImage(logo, 540 - w / 2, y - h / 2 - 20, w, h); ctx.restore();
     return;
   }
@@ -430,7 +430,7 @@ function s8(t){ // 47,5–55 · resumen y contacto
     ctx.save(); ctx.globalAlpha = d; telefono(290, 1315, 1.5, CLARO); ctx.restore();
     txt('341 215-8338', 575, 1337, F.j(60, 600), CLARO, d);
   }
-  marca(t, 1640, sale5(inv(t, t0 + 3, t0 + 3.8)));
+  marca(t, 1640, sale5(inv(t, t0 + 3, t0 + 3.8)), 210);
 }
 
 /* ═════ el cuadro ═════ */
