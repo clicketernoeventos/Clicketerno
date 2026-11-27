@@ -4172,6 +4172,31 @@ temática."* Las fotos eran rectángulos en blanco y negro y nada más.
 - Sirve para dos, tres o cuatro fotos: cada una se apoya sobre la
   anterior. El día que llegue la de las mascotas entra sola.
 
+#### La versión AFICHE, para comparar (27/11/2026): `facuymaxiafiche/`
+
+*"¿Y si la hacés estilo save the date?"* Se le preguntó y eligió:
+**el armado de afiche con la paleta de ellos**, y **aparte, para
+comparar** — la de `facuymaxi/` no se tocó.
+
+Es copia de `gonzalo50/` (el save the date más completo: tiene fotos en
+polaroid y el tocadiscos) con un tema fijo nuevo: bandas en el **verde
+hondo** con brillo, títulos en **dorado pulido**, el marfil de ellos y
+el champagne de acento (5,0:1 sobre el verde, solo ahí). La entrada
+dice *"Sí, / nos / casamos"*, el nombre salta a **"Sí"** y aparece la
+foto del jardín como polaroid; el cierre es un **"SÍ" de puntos** con
+la foto del mar encima. El plan es el cronograma que mandaron, el dress
+code el suyo, y "Nuestra historia" son cuatro polaroid **en blanco y
+negro**, como en su invitación.
+
+**Lo que se volvió a poner**: la comida por persona, que `gonzalo50`
+había sacado — en un casamiento el salón la necesita. Y el aviso de
+datos dice que la lista la tienen ellos.
+**Lo que no va**: el nombre de la canción (lo sacó el dueño el
+07/11/2026); la trivia (no la mandaron); el titular del alias y el día
+exacto para confirmar (siguen faltando).
+**El formulario no manda a ningún lado** (`endpoint` vacío): es para
+mirar. Si la eligen, pasa a `facuymaxi/` con su planilla.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
