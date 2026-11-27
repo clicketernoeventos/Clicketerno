@@ -2437,8 +2437,8 @@ menores).
 - **gonzalo50 (21/11/2026)**, fiesta sorpresa: (alias y titular ya están), **hasta cuándo** se confirma, y
   ver entrar una confirmación de prueba (la /exec ya está; tablero en `/gonzalo50/listado`). Confirmar que la fecha es el **lunes**
   7/12/2026.
-- **sofi15 (27/11/2026)**, lo tiene que mandar la clienta: las **preguntas del juego** "¿Quién conoce
-  más a Sofi?" (pregunta, opciones y la buena), el **alias** con su titular, **hasta cuándo** se
+- **sofi15 (27/11/2026)**, lo tiene que mandar Marina: **la respuesta buena de cada pregunta** del juego
+  (las preguntas ya están; sin las buenas no se muestra), el **titular** del alias, **hasta cuándo** se
   confirma, y confirmar el año (**2027**, viernes 21/05). Del dueño: la **/exec** de su planilla.
 - **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
   servicios y paquetes con precios** (los de la app son de ejemplo), cómo
