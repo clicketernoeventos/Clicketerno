@@ -266,10 +266,15 @@ html.cerrado #portada{opacity:0}
 .mapa{position:relative;background:var(--negro);color:var(--hueso);margin:calc(var(--u)*8) calc(var(--m) * -1) calc(var(--u) * -18);
   height:calc(var(--u)*104);overflow:hidden}
 .mapa>svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.mapa .calles path{fill:none;stroke:#3b3b3b;stroke-width:1.2}
+.mapa .calles path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.mapa .calles .fino{stroke:#4C4F57;stroke-width:1}
+.mapa .calles .grueso{stroke:#8E929A;stroke-width:2.3}
+/* overflow:hidden no recorta nada en un <text> de SVG: es para que la prueba de "texto que se sale" no mida la caja de un renglón GIRADO (da más angosta que la letra) */
+.mapa .nombres text{overflow:hidden;font-family:var(--mono);font-size:6.6px;letter-spacing:.14em;fill:#8E929A;text-anchor:middle}
+.mapa .punta{fill:none}
 .mapa .calles .av{stroke:#5a5a5a;stroke-width:2.6}
 .mapa .rio{fill:#161616;stroke:#2c2c2c;stroke-width:1}
-.mapa .ruta{fill:none;stroke:var(--acento);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.mapa .ruta{fill:none;stroke:var(--hueso);stroke-width:1.1;stroke-linecap:round}
 .mapa .pin{fill:var(--acento)}
 .mapa .aro{fill:none;stroke:var(--acento);stroke-width:1.5;opacity:0;transform-box:fill-box;transform-origin:center}
 .mapa.entro .aro{animation:aro 1.6s .5s ease-out 2}
@@ -320,6 +325,12 @@ html.cerrado #portada{opacity:0}
 .marco{position:relative;margin-top:calc(var(--u)*9);border:1.5px solid var(--hueso);border-radius:calc(var(--u)*8);height:calc(var(--u)*84);overflow:hidden}
 .marco canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .marco .mas{right:calc(var(--u)*6);top:calc(var(--u)*6)}
+/* la tarjeta del recital: el título adentro, arriba, sobre lo oscuro */
+.marco.recital{height:calc(var(--u)*118);margin-top:calc(var(--u)*7);background:#0E0F11}
+.recital .tit{position:absolute;left:0;right:0;top:0;padding:calc(var(--u)*6) calc(var(--u)*6) calc(var(--u)*10);
+  background:linear-gradient(180deg,#0E0F11 0%,#0E0F11 62%,rgba(14,15,17,0));z-index:1}
+.recital .suena{position:absolute;left:calc(var(--u)*5);bottom:calc(var(--u)*5);background:#0E0F11;padding:5px 8px;color:var(--hueso-2);z-index:1}
+#playlist .fila .der{line-height:1.35}
 #playlist .pildora{width:100%;margin-top:14px}
 #playlist .cuerpo{margin-top:18px;color:var(--hueso-2)}
 
@@ -372,6 +383,25 @@ html.cerrado #portada{opacity:0}
 .js .tit.entro ~ .ahi{clip-path:inset(-20% -10% -20% -10%);transition:clip-path 1s .75s cubic-bezier(.6,0,.2,1)}
 .final{position:relative;margin:calc(var(--u)*8) calc(var(--m) * -1) 0;height:calc(var(--u)*92);overflow:hidden}
 .final canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+html:not(.js) .foto-final{display:none}
+.foto-final{height:calc(var(--u)*132);margin-top:calc(var(--u)*10);background:#0E0F11}
+.foto-final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;
+  filter:grayscale(1) contrast(1.25) brightness(.72);transform-origin:50% 40%}
+.foto-final::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(14,15,17,.92) 0%,rgba(14,15,17,.55) 24%,rgba(14,15,17,0) 46%,rgba(14,15,17,0) 70%,rgba(14,15,17,.85) 100%)}
+.foto-final>p,.foto-final>span{position:absolute;z-index:2}
+.foto-final .hora-f{left:var(--m);top:calc(var(--u)*6);font-weight:300;font-size:calc(var(--u)*20);line-height:1;letter-spacing:-.04em;color:#F4F5F7}
+.foto-final .dato-f{left:var(--m);top:calc(var(--u)*29);color:#DDE1E7;background:#0E0F11;padding:3px 6px 3px 0}
+.foto-final .raya-f{left:var(--m);top:calc(var(--u)*40);width:calc(var(--u)*12);height:1.5px;background:#DDE1E7}
+.foto-final .mas{right:calc(var(--u)*9);top:calc(var(--u)*58);width:calc(var(--u)*12);height:calc(var(--u)*12);color:#F4F5F7}
+.foto-final .lado-f{right:var(--m);top:calc(var(--u)*76);text-align:right;line-height:1.4;color:#DDE1E7;background:#0E0F11;padding:4px 0 4px 6px}
+.foto-final .pie-f{left:var(--m);bottom:calc(var(--u)*6);color:#DDE1E7;background:#0E0F11;padding:4px 6px 4px 0}
+/* entra una vez: la foto se acerca y se aclara, la hora sube */
+.js .foto-final img{transform:scale(1.14);filter:grayscale(1) contrast(1.25) brightness(.25)}
+.js .foto-final.entro img{transform:none;filter:grayscale(1) contrast(1.25) brightness(.72);
+  transition:transform 2.6s cubic-bezier(.16,1,.3,1),filter 1.8s ease}
+.js .foto-final .hora-f{opacity:0;transform:translateY(30%)}
+.js .foto-final.entro .hora-f{opacity:1;transform:none;transition:opacity .8s .5s,transform 1s .5s cubic-bezier(.16,1,.3,1)}
 .firma-cierre{position:relative;z-index:1;margin-top:calc(var(--u)*24)}
 #pie{background:var(--negro);color:var(--gris-n);padding:26px var(--m) calc(env(safe-area-inset-bottom) + 30px);text-align:center;font-size:12px}
 .firma a{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--hueso);text-decoration:none;font-weight:700;letter-spacing:.04em}
@@ -428,6 +458,8 @@ html:not(.js) #fotos{display:none}
   .js #calendario td.elDia path,.js .percha path{stroke-dashoffset:0}
   .js .foto.cargo .cuadro{clip-path:none}.js .foto.cargo .cuadro img{filter:grayscale(1) contrast(1.08)}
   .js .prohibidos .tela::after{transform:rotate(-45deg)}
+  .js .foto-final img{transform:none;filter:grayscale(1) contrast(1.25) brightness(.72)}
+  .js .foto-final .hora-f{opacity:1;transform:none}
 }
 </style>
 <script>document.documentElement.classList.add('js')</script>
@@ -533,18 +565,14 @@ html:not(.js) #fotos{display:none}
     </div>
     <div class="mapa ap" id="mapa">
       <svg viewBox="0 0 360 374" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <path class="rio" d="M300 -10 C285 60 330 120 318 190 C308 250 345 300 338 390 L380 390 L380 -10 Z"/>
-        <g class="calles" transform="rotate(-14 180 187)">
-          <path d="M-40 20H420M-40 68H420M-40 116H420M-40 164H420M-40 212H420M-40 260H420M-40 308H420M-40 356H420"/>
-          <path d="M10 -60V440M58 -60V440M106 -60V440M154 -60V440M202 -60V440M250 -60V440M298 -60V440"/>
-          <path class="av" d="M-40 164H420M154 -60V440"/>
-          <path class="av" d="M-30 400L300 -40"/>
-        </g>
-        <g transform="rotate(-14 180 187)">
-          <path class="ruta" id="ruta" d="M10 356H106V260H154V164H202V116"/>
-          <circle class="aro" cx="202" cy="116" r="12"/>
-          <circle class="pin" cx="202" cy="116" r="7"/>
-        </g>
+        <!-- las calles de verdad alrededor de Vera Mujica 68 (OpenStreetMap,
+             bajadas una vez y guardadas acá: la página no llama a nadie) -->
+        <g class="calles"><path class="fino" d="M116.0 384.0L98.0 380.0L78.0 376.0L41.0 368.0L21.0 364.0L3.0 360.0M111.0 220.0L103.0 260.0L95.0 298.0L89.0 324.0L86.0 337.0L83.0 354.0L78.0 376.0L74.0 396.0L70.0 414.0L63.0 446.0M121.0 362.0L83.0 354.0L45.0 346.0M116.0 384.0L121.0 362.0L124.0 345.0M155.0 372.0L130.0 367.0M165.0 355.0L200.0 362.0M200.0 362.0L196.0 380.0L192.0 395.0M200.0 362.0L236.0 370.0L275.0 378.0L312.0 386.0M-26.0 313.0L-8.0 317.0L12.0 321.0L49.0 329.0L86.0 337.0L105.0 341.0L124.0 345.0M26.0 438.0L33.0 406.0L37.0 388.0L41.0 368.0L45.0 346.0L49.0 329.0L57.0 290.0L61.0 271.0M124.0 345.0L133.0 306.0L141.0 268.0M124.0 345.0L159.0 353.0M225.0 244.0L216.0 284.0L208.0 322.0L200.0 362.0M220.0 446.0L228.0 408.0L233.0 388.0L236.0 370.0L245.0 330.0M77.0 321.0L89.0 324.0M245.0 330.0L253.0 292.0M61.0 271.0L65.0 252.0M253.0 292.0L261.0 252.0L269.0 215.0L277.0 177.0M300.0 260.0L261.0 252.0L225.0 244.0M65.0 252.0L72.0 219.0L75.0 216.0M184.0 236.0L149.0 229.0L111.0 220.0M141.0 268.0L149.0 229.0L152.0 213.0L157.0 191.0M225.0 244.0L189.0 237.0M233.0 207.0L229.0 227.0L225.0 244.0M82.0 215.0L78.0 215.0L75.0 216.0M111.0 220.0L82.0 215.0M193.0 219.0L229.0 227.0M197.0 199.0L233.0 207.0L269.0 215.0L307.0 223.0M116.0 198.0L111.0 220.0M144.0 188.0L157.0 191.0M157.0 191.0L192.0 198.0M241.0 169.0L233.0 207.0M353.0 193.0L315.0 185.0L304.0 182.0L277.0 177.0M277.0 177.0L241.0 169.0L228.0 166.0L217.0 164.0M286.0 150.0L294.0 149.0M294.0 149.0L352.0 147.0L376.0 147.0M123.0 100.0L118.0 100.0L91.0 102.0L89.0 102.0L25.0 105.0L7.0 106.0L-18.0 107.0L-32.0 105.0L-33.0 105.0L-37.0 104.0M182.0 102.0L181.0 102.0L173.0 101.0L165.0 100.0L160.0 100.0L144.0 99.0L136.0 99.0L129.0 100.0L128.0 100.0L123.0 100.0M241.0 93.0L251.0 93.0L260.0 93.0L291.0 92.0L317.0 88.0M120.0 10.0L120.0 13.0L120.0 32.0L120.0 39.0L120.0 55.0L120.0 58.0L121.0 74.0L122.0 95.0L123.0 100.0M127.0 57.0L135.0 57.0L143.0 57.0L145.0 57.0L148.0 60.0L153.0 63.0L165.0 69.0L173.0 75.0L175.0 76.0L177.0 75.0L178.0 74.0M178.0 67.0L173.0 70.0M319.0 86.0L319.0 83.0L318.0 70.0L323.0 55.0M192.0 93.0L191.0 96.0L191.0 98.0L189.0 100.0L187.0 101.0L186.0 102.0L183.0 102.0L182.0 102.0M317.0 88.0L319.0 86.0L327.0 84.0L337.0 84.0L349.0 83.0L361.0 82.0L371.0 82.0L374.0 81.0M105.0 341.0L110.0 314.0M281.0 161.0L277.0 177.0M383.0 239.0L376.0 276.0L367.0 316.0L359.0 354.0L351.0 394.0L343.0 432.0L335.0 470.0L328.0 502.0L319.0 547.0M33.0 225.0L28.0 245.0"/><path class="grueso" d="M3.0 360.0L-1.0 380.0L-5.0 398.0M283.0 338.0L275.0 378.0L267.0 416.0L260.0 449.0L259.0 454.0M312.0 386.0L320.0 345.0L327.0 308.0L336.0 268.0L344.0 231.0M20.0 283.0L12.0 321.0L3.0 360.0M165.0 355.0L172.0 319.0L173.0 314.0M283.0 338.0L245.0 330.0L208.0 322.0L179.0 315.0L173.0 314.0M471.0 377.0L457.0 374.0L435.0 370.0L397.0 362.0L359.0 354.0L320.0 345.0L283.0 338.0M167.0 313.0L133.0 306.0M291.0 300.0L290.0 304.0L283.0 338.0M291.0 300.0L295.0 301.0L327.0 308.0L367.0 316.0L404.0 324.0L443.0 332.0M20.0 283.0L-18.0 275.0M133.0 306.0L95.0 298.0L57.0 290.0L20.0 283.0M175.0 276.0L173.0 289.0L168.0 308.0L167.0 313.0M181.0 277.0L216.0 284.0L253.0 292.0L289.0 300.0L291.0 300.0M300.0 260.0L292.0 297.0L291.0 300.0M28.0 245.0L20.0 283.0M65.0 252.0L96.0 259.0L103.0 260.0L141.0 268.0M141.0 268.0L175.0 276.0M184.0 236.0L184.0 239.0L175.0 276.0M-11.0 236.0L2.0 239.0L28.0 245.0M28.0 245.0L65.0 252.0M307.0 223.0L300.0 260.0M192.0 198.0L185.0 234.0L184.0 236.0M-59.0 149.0L-52.0 150.0L-51.0 150.0L-44.0 150.0L-12.0 153.0L21.0 155.0L38.0 157.0L38.0 157.0L52.0 157.0L90.0 155.0L124.0 152.0L124.0 152.0L140.0 151.0M197.0 199.0L198.0 195.0L200.0 191.0L208.0 182.0L212.0 177.0M140.0 151.0L157.0 148.0L173.0 145.0L174.0 145.0L185.0 142.0L191.0 139.0L195.0 135.0L199.0 128.0L199.0 127.0L202.0 124.0L205.0 120.0L208.0 119.0L212.0 119.0M214.0 163.0L213.0 166.0L211.0 171.0L203.0 182.0L196.0 190.0L194.0 195.0L192.0 198.0M258.0 159.0L262.0 161.0L267.0 161.0L281.0 161.0M281.0 161.0L317.0 160.0L321.0 160.0M198.0 111.0L199.0 115.0L199.0 117.0L198.0 121.0L196.0 125.0L195.0 127.0L193.0 131.0L190.0 135.0L185.0 138.0L173.0 141.0L173.0 141.0L155.0 145.0L138.0 147.0L125.0 148.0L125.0 148.0L98.0 150.0L68.0 152.0L50.0 153.0L39.0 153.0L38.0 153.0L7.0 150.0L-38.0 147.0L-46.0 145.0L-50.0 144.0L-50.0 144.0L-55.0 143.0L-58.0 142.0M217.0 164.0L219.0 159.0L220.0 153.0L221.0 151.0L221.0 150.0L226.0 137.0L227.0 135.0L227.0 132.0L227.0 130.0L227.0 125.0L227.0 123.0L228.0 120.0L231.0 115.0M240.0 119.0L253.0 150.0M214.0 119.0L219.0 119.0L223.0 118.0L227.0 117.0L231.0 115.0M204.0 74.0L203.0 74.0L199.0 78.0L196.0 82.0L194.0 87.0L192.0 93.0M228.0 87.0L229.0 89.0L229.0 91.0L233.0 100.0M144.0 12.0L165.0 29.0L180.0 43.0L203.0 62.0L206.0 64.0M229.0 74.0L224.0 69.0L222.0 67.0L221.0 63.0M239.0 105.0L240.0 101.0L241.0 97.0L241.0 93.0L240.0 88.0L239.0 84.0L236.0 80.0L233.0 77.0L229.0 74.0M221.0 63.0L224.0 53.0L234.0 23.0L234.0 21.0L235.0 18.0L236.0 12.0L240.0 -5.0L241.0 -10.0L242.0 -20.0L243.0 -21.0L244.0 -24.0M214.0 119.0L221.0 123.0L223.0 124.0L223.0 127.0L224.0 131.0L222.0 137.0L217.0 151.0L217.0 153.0L216.0 155.0L215.0 160.0L214.0 163.0M321.0 160.0L315.0 185.0L307.0 223.0"/></g>
+        <g class="nombres"><text transform="translate(136.6 287.0) rotate(-78.0)" dy="-3">VERA MUJICA</text><text transform="translate(228.9 37.8) rotate(-72.5)" dy="-3">AV. FRANCIA</text><text transform="translate(104.6 100.8) rotate(-3.0)" dy="-3">AV. CENTRAL ARGENTINO</text><text transform="translate(243.1 248.1) rotate(11.8)" dy="-3">JUJUY</text><text transform="translate(121.6 264.3) rotate(12.0)" dy="-3">SALTA</text><text transform="translate(256.9 272.0) rotate(-78.1)" dy="-3">PICHINCHA</text><text transform="translate(251.0 210.9) rotate(12.4)" dy="-3">BROWN</text></g>
+        <path class="ruta" id="ruta" d="M150 215L232 140"/>
+        <circle class="aro" cx="150" cy="215" r="11"/>
+        <rect class="pin" x="146" y="211" width="8" height="8"/>
+        <circle class="punta" cx="232" cy="140" r="1"/>
       </svg>
       <span class="mas" aria-hidden="true"></span>
       <p class="mini aca">La fiesta<br>empieza acá</p>
@@ -601,14 +629,14 @@ html:not(.js) #fotos{display:none}
 
   <!-- ══════════ 8 · la playlist ══════════ -->
   <section class="seccion negra" id="playlist">
-    <p class="mini ap">La banda sonora</p>
-    <h2 class="tit" style="margin-top:14px">
-      <span class="ln" style="--f:15;--i:0"><i>La música</i></span>
-      <span class="ln" style="--f:13;--i:1"><i>la ponés vos</i></span>
-    </h2>
-    <div class="marco ap">
+    <div class="fila ap"><p class="mini">La playlist<br>de esta noche</p><p class="mini der">Música<br>Gente<br>Brillo<br>Historias</p></div>
+    <div class="marco recital ap">
       <canvas id="haces" aria-hidden="true"></canvas>
-      <span class="mas" aria-hidden="true"></span>
+      <h2 class="tit">
+        <span class="ln" style="--f:15;--i:0"><i>La música</i></span>
+        <span class="ln" style="--f:13;--i:1"><i>la ponés vos</i></span>
+      </h2>
+      <p class="mini suena" id="suena">Suena · Cupido · TINI</p>
     </div>
     <p class="cuerpo ap">Decime qué tema no puede faltar y lo sumo a la lista de la noche.</p>
     <button class="pildora llena-h ap" type="button" id="irTema">Sumá tu canción
@@ -709,8 +737,15 @@ html:not(.js) #fotos{display:none}
       <p class="mini">Te espero,<br><span class="elNom">Sofi</span></p>
       <p class="mini der" id="cierreFecha"></p>
     </div>
-    <div class="final">
-      <canvas id="haces2" aria-hidden="true"></canvas>
+    <!-- la foto del final, como la referencia: a todo el ancho, con la
+         hora enorme y los datos chicos encima. La <img> la crea el JS. -->
+    <div class="final foto-final" id="fotoFinal" hidden>
+      <p class="hora-f" id="horaFinal"></p>
+      <p class="mini dato-f" id="datoFinal"></p>
+      <span class="raya-f" aria-hidden="true"></span>
+      <span class="mas" aria-hidden="true"></span>
+      <p class="mini lado-f" aria-hidden="true">Música<br>Gente<br>Brillo<br>Historias</p>
+      <p class="mini pie-f" id="pieFinal"></p>
     </div>
   </section>
 
@@ -732,7 +767,7 @@ const CONFIG = {
   hastaHora: "04:00",              // las 4 son del día siguiente
   ciudad: "",                      // no la dijeron
   folio: "Sofi / XV / 2027",
-  coordenadas: "",
+  coordenadas: "32.9327° S · 60.6648° O",   // las de Vera Mujica 68 (OpenStreetMap)
   confirmarHasta: "",              // HUECO · no lo mandaron
   lugar: "La Mansión del Rey",
   calle: "Vera Mujica 68",
@@ -760,6 +795,8 @@ const CONFIG = {
   ],
   /* las fotos que mandó, en blanco y negro (recortadas en el archivo:
      en la de la noche se sacó el cartel del local de atrás) */
+  /* la foto del final (como la referencia del dueño, 27/11/2026) */
+  fotoFinal: "fotos/brillo.webp",
   fotos: [
     { src: "fotos/noche.webp",   pie: "01 · De noche" },
     { src: "fotos/sonrisa.webp", pie: "02 · Así" },
@@ -867,6 +904,17 @@ const picado = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7 + SEMILLA % 
     pl.appendChild(fig);
   });
   else { const f = $('#fotos'); if (f) f.remove(); }
+
+  /* la foto del final: aparece recién cuando cargó */
+  const ff = $('#fotoFinal');
+  if (ff && CONFIG.fotoFinal){
+    pon('#horaFinal', F && F.hora);
+    pon('#datoFinal', [CONFIG.lugar, CONFIG.calle].filter(Boolean).map(esc).join('<br>'), true);
+    pon('#pieFinal', CONFIG.hastaHora ? 'Hasta las ' + CONFIG.hastaHora : '');
+    const im = new Image(); im.alt = ''; im.decoding = 'async';
+    im.onload = () => { ff.prepend(im); ff.hidden = false; };
+    im.src = CONFIG.fotoFinal;
+  } else if (ff) ff.remove();
 
   if (CONFIG.alias){
     $('#regalo').hidden = false;
@@ -976,6 +1024,32 @@ function luzBola(x, y, w, h){
   const f = ang - b, perfil = Math.max(0, 1 - Math.abs(f - .5) * 3.2);
   return perfil * (hr - .5) * 1.5 * Math.exp(-(d / R - 1) * (.9 + hr));
 }
+/* el recital: el escenario encendido en el medio, los rayos que salen
+   y la gente de espaldas con las manos arriba, recortada en negro.
+   Arriba queda oscuro: ahí va el título. */
+function luzRecital(x, y, w, h){
+  const u = x / w, v = y / h, n = 20, k = w / h;
+  /* el escenario y su luz */
+  const sx = (u - .5) * k, sy = v - .5, d = Math.hypot(sx, sy), a = Math.atan2(sy, sx);
+  let L = Math.exp(-d * 5) * 1.1 + Math.pow(Math.max(0, Math.cos(a * 9 + 1.3)), 10) * Math.exp(-d * 1.8) * .8;
+  if ((Math.abs(u - .34) < .03 || Math.abs(u - .66) < .03) && v > .4 && v < .64 && (Math.floor(v * 50) % 2)) L += .6;
+  L += .5 * Math.exp(-Math.pow((v - .6) / .09, 2)) + .03;          /* el humo encendido detrás de la gente */
+  /* la gente, de espaldas y recortada en negro; algunos con el brazo arriba */
+  for (let c = Math.floor(u * n) - 1; c <= Math.floor(u * n) + 1; c++){
+    const cx = (c + .5) / n + (picado(c, 7) - .5) * .02, alto = .64 + picado(c, 1) * .06, r = .42 / n;
+    const dx = (u - cx) * k;
+    if (Math.abs(u - cx) < r * 1.9 && v > alto + r * k * .8) return .01;            /* hombros */
+    if (Math.hypot(dx, v - alto) < r * k) return .01;                                 /* cabeza */
+    if (picado(c, 2) > .62){
+      const top = .44 + picado(c, 4) * .12, lado = (picado(c, 6) - .5) * .08, t = (v - top) / (alto - top);
+      const ax = cx + r * (picado(c, 8) > .5 ? 1 : -1) + lado * (1 - t);
+      if (t > 0 && t < 1 && Math.abs(u - ax) < .009) return .01;
+      if (Math.hypot((u - (cx + r * (picado(c, 8) > .5 ? 1 : -1) + lado)) * k, v - top) < .016) return .01;
+    }
+  }
+  const osc = v < .3 ? Math.pow(v / .3, 3) : 1;
+  return Math.min(.95, L * osc);
+}
 /* haces de luz que bajan del techo */
 function luzHaces(x, y, w, h){
   let v = 0;
@@ -986,7 +1060,7 @@ function luzHaces(x, y, w, h){
   }
   return Math.min(.9, v + Math.pow(y / h, 5) * .5 + .012);
 }
-const TRAMAS = [['#ruido', luzRuido, 2.2], ['#bola', luzBola, 2.3], ['#haces', luzHaces, 2.4], ['#haces2', luzHaces, 2.4]];
+const TRAMAS = [['#ruido', luzRuido, 2.2], ['#bola', luzBola, 2.3], ['#haces', luzRecital, 2.2]];
 const pintadas = new Set();
 function pintarTramas(deNuevo){
   TRAMAS.forEach(([q, luz, paso]) => { const cv = $(q); if (cv && (pintadas.has(q) || q === '#ruido') && (deNuevo || !cv.width || q === '#ruido')) tramar(cv, luz, paso); });
@@ -1297,7 +1371,7 @@ const SONIDO = (function(){
    Arranca recién cuando se entra: lo de la portada tiene que golpear
    cuando se ve, no atrás de la entrada. */
 function despertar(){
-  const todo = $$('.ap, .tit, .titila, .foto');
+  const todo = $$('.ap, .tit, .titila, .foto, .foto-final');
   if (!('IntersectionObserver' in window) || menosMovimiento){ todo.forEach(n => n.classList.add('entro')); return; }
   const ojo = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting){ e.target.classList.add('entro'); ojo.unobserve(e.target);
@@ -1444,11 +1518,11 @@ function despertar(){
 
 /* ══════════ el cartel del mapa va pegado al pin ══════════ */
 (function(){
-  const pin = $('.mapa .pin'), aca = $('.mapa .aca'), mapa = $('#mapa');
+  const pin = $('.mapa .punta'), aca = $('.mapa .aca'), mapa = $('#mapa');
   if (!pin || !aca) return;
   const poner = () => { const p = pin.getBoundingClientRect(), m = mapa.getBoundingClientRect();
     if (!m.width) return;
-    aca.style.left = (p.right - m.left + 10) + 'px'; aca.style.top = (p.top - m.top - 34) + 'px'; };
+    aca.style.left = (p.left - m.left + 4) + 'px'; aca.style.top = (p.top - m.top - 30) + 'px'; };
   poner(); addEventListener('resize', poner); addEventListener('load', poner);
 })();
 
