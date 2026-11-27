@@ -1659,6 +1659,7 @@ Se rehacen con `bash video/armar.sh <cual>` y tardan uno o dos minutos.
 | `invitaciones` | `invitaciones.mp4` | la invitación digital, 24 s |
 | `reel` | `reel-invitaciones.mp4` | el reel con música, 15 s (ver `video/DECISIONES.md`) |
 | `vivo` | `muro-vivo-comercial.mp4` | el comercial del muro, vertical, 26 s con música |
+| `lista` | `lista-de-invitados.mp4` | instructivo de La Mansión del Rey: cómo traer la lista de invitados (impresa, 10 días antes, por apellido), vertical, 55 s. Nombres inventados; logo en `video/logo-mansion.png` |
 
 **Las pantallas no se dibujan: se capturan de la app de verdad.** Mostrar
 una pantalla que no existe como si existiera es mentirle al cliente.

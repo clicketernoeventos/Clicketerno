@@ -7,6 +7,7 @@
 #     bash video/armar.sh invitaciones   -> video/invitaciones.mp4
 #     bash video/armar.sh reel           -> video/reel-invitaciones.mp4
 #     bash video/armar.sh vivo           -> video/muro-vivo-comercial.mp4
+#     bash video/armar.sh lista          -> video/lista-de-invitados.mp4 (La Mansión del Rey)
 #     bash video/armar.sh                -> los cinco
 #
 # El reel y el comercial del muro llevan musica: se compone y se
@@ -127,4 +128,12 @@ if [ "$QUE" = "reel" ] || [ "$QUE" = "todos" ]; then
   if [ -n "$LEVANTE" ]; then kill "$LEVANTE" 2>/dev/null || true; fi
   python3 musica.py musica.wav
   armar_uno reel reel-invitaciones.mp4 musica.wav
+fi
+
+if [ "$QUE" = "lista" ]; then
+  # Instructivo de la lista de invitados del salón (no es de Click Eterno).
+  # El logo sale de video/logo-mansion.png si está. Va con CRF alto: es
+  # casi todo fondo liso y tiene que pasar por WhatsApp.
+  python3 musica-lista.py musica-lista.wav
+  CRF=26 armar_uno lista lista-de-invitados.mp4 musica-lista.wav
 fi
