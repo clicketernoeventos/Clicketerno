@@ -747,7 +747,17 @@ const CONFIG = {
     { n: "Verde",    c: "#2F8F5B" }
   ],
   plan: [],                        // no mandaron el minuto a minuto: la sección no va
-  trivia: [],                      // HUECO · quiere el juego: faltan las preguntas, las opciones y la buena
+  /* el juego, tal cual lo mandó Marina (26/11/2026). `t` es el rótulo de
+     la pregunta, `ok` la posición de la buena desde 0. HUECO: no mandó
+     cuáles son las buenas; mientras falte un `ok`, la sección no va. */
+  trivia: [
+    { p: "¿Qué elegiría Sofi en una noche de fiesta?",
+      o: ["Llegar temprano e irse temprano.", "Ser la última en irse.", "Sacarse mil fotos.", "Bailar hasta que no dé más."], ok: null },
+    { t: "¿Quién tiene más chances?", p: "¿Qué es lo más probable que haga Sofi?",
+      o: ["Cambiarse de outfit tres veces.", "Decir «cinco minutos» y tardar una hora.", "Reírse en el peor momento.", "Hacer todo a último momento."], ok: null },
+    { t: "El archivo Sofi", p: "¿Qué frase representa más a Sofi?",
+      o: ["«yendo».", "«No tengo ropa».", "«xdlol».", "«ahora lo hago»."], ok: null }
+  ],
   /* las fotos que mandó, en blanco y negro (recortadas en el archivo:
      en la de la noche se sacó el cartel del local de atrás) */
   fotos: [
@@ -758,8 +768,8 @@ const CONFIG = {
   /* "Cupido", TINI. Se le sacó lo hablado del principio (6,8 s): arranca
      cuando empieza a cantar, y al entrar salta al principio. */
   cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: .5 },
-  alias: "",                       // HUECO · no lo mandaron
-  titular: "",
+  alias: "marinatenerife.mp",      // tal cual (26/11/2026)
+  titular: "",                     // HUECO · no lo mandaron
   tema: "plata",
   evento: "",
   endpoint: ""                     // HUECO · la /exec de su planilla
@@ -1405,12 +1415,12 @@ function despertar(){
 (function(){
   const caja = $('#tCaja'), T = CONFIG.trivia || [];
   if (!caja) return;
-  if (!T.length){ $('#trivia').remove(); return; }
+  if (!T.length || T.some(q => !Number.isInteger(q.ok))){ $('#trivia').remove(); return; }
   let n = 0, bien = 0;
   const dd = x => String(x).padStart(2,'0');
   function pregunta(){
     const q = T[n];
-    caja.innerHTML = '<p class="mini">' + dd(n+1) + ' / ' + dd(T.length) + '</p><p class="t-preg">' + esc(q.p) + '</p>' +
+    caja.innerHTML = '<p class="mini">' + dd(n+1) + ' / ' + dd(T.length) + (q.t ? ' — ' + esc(q.t) : '') + '</p><p class="t-preg">' + esc(q.p) + '</p>' +
       '<div class="t-opc">' + q.o.map((o, i) => '<button type="button" data-i="' + i + '"><small>' + 'ABCD'[i] + '</small>' + esc(o) + '</button>').join('') + '</div>';
     $$('.t-opc button', caja).forEach(b => b.addEventListener('click', () => {
       const i = +b.dataset.i;
