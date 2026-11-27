@@ -1328,8 +1328,8 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
    ══════════════════════════════════════════════════════════════════ */
 const CONFIG = {
   quien: "Nahi",
-  fiesta: "2027-06-19",          // FALTA la hora: sin ella no se dibuja ningún horario
-  hastaHora: "",
+  fiesta: "2027-06-19T21:00:00-03:00",   // de 21 a 4 h: lo mandó el dueño el 27/11/2026
+  hastaHora: "04:00",
   confirmarHasta: "",            // FALTA
   lugar: "Jarana Eventos",
   calle: "Eva Perón 379\nFray Luis Beltrán",   // del enlace de Maps que mandó el dueño (27/11/2026)
@@ -1340,7 +1340,7 @@ const CONFIG = {
   cancion: { nombre: "", autor: "", dura: 172, archivos: ["musica.m4a", "musica.ogg"] },
   dressTitulo: "Elegante sport",
   dressTexto: "Colores prohibidos: blanco, plateado y azul.",
-  valorTarjeta: "",
+  valorTarjeta: "Mayores: $116.500\nJóvenes: $60.000",   // del dueño, 27/11/2026
   portada: "",                   // sin fotos: no mandaron
   franjas: {},
   logo: "",
@@ -1949,6 +1949,8 @@ function horaTexto(){
   /* El nombre de la clienta, en los cuatro renglones que la nombran. */
   $$('.elNom').forEach(n => { n.textContent = CONFIG.quien || '\u2026'; });
   $('#alias').textContent = CONFIG.alias;
+  /* Con valor y sin alias, ni el rótulo ni el botón de copiar: copiarían nada. */
+  if (!CONFIG.alias) ['.rotulo-alias', '#alias', '#copiar'].forEach(s => { const n = $(s); if (n) n.style.display = 'none'; });
   /* Sin titular no se escribe nada, y el renglón no queda vacío
      ocupando lugar: se saca. */
   if (CONFIG.titular) $('#titular').textContent = CONFIG.titular;

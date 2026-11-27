@@ -2440,8 +2440,8 @@ menores).
 - **sofi15 (27/11/2026)**, lo tiene que mandar Marina: el **titular** del alias, **hasta cuándo** se
   confirma, y confirmar el año (**2027**, viernes 21/05). Del dueño: ver entrar una confirmación
   de prueba (la /exec ya está; tablero en `/sofi15/listado`) y borrarla.
-- **nahi15 (27/11/2026)**, lo tiene que mandar la clienta: la **hora**, hasta cuándo se **confirma**,
-  y el **alias** con su titular si quiere regalo. (La dirección ya está.)
+- **nahi15 (27/11/2026)**, lo tiene que mandar la clienta: hasta cuándo se **confirma**
+  y el **alias** con su titular (ya hay valor de la tarjeta, falta dónde pagarlo).
 - **La Mansión del Rey (19/11/2026)**, del lado del dueño: la **lista de
   servicios y paquetes con precios** (los de la app son de ejemplo), cómo
   se cobra (seña, cuotas, medios, recibo), los nombres y roles de quienes
