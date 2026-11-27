@@ -1283,6 +1283,27 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
     0 18px 30px -14px rgba(0,0,0,.7)}
 #demoInfo b{display:block;margin-bottom:4px;color:#1F5FA8;font-weight:700}
 body.en-demo.cinta-chica #demoInfo{display:none}
+
+/* ═══ letra mínima legible ═══
+   Lo recomienda checklist.design (tipografía: "tamaño mínimo legible") y lo
+   medimos: los mandos de la pantalla del salón (Pantalla completa, Probá
+   mandar, las solapas Código/Tablero/Muro) estaban en 9 a 9,5px, y son
+   botones. Se suben a 11px. Va al final de la hoja para pisar también lo
+   que está adentro de los @media. */
+.modos-sala button,.dejar,.top .sub,.consigna .et,.cab-inv .arriba,.tapa-g .arriba{font-size:11px}
+.modos-sala button{letter-spacing:.12em}
+.dejar{letter-spacing:.14em}
+.envivo,.consola .envivo,.cuenta small,.barra-abajo em,.accesos em{font-size:10.5px}
+/* En un teléfono de 320px las etiquetas de la barra de abajo no entran a
+   10,5px con su separación: la quinta se salía 9px del borde (lo agarró
+   pruebas/dispositivos.js). Ahí vuelven a 9,5px y más apretadas. */
+@media (max-width:360px){
+  .accesos em,.barra-abajo em{font-size:9.5px;letter-spacing:.04em}
+}
+@media (max-width:640px){
+  .modos-sala button{padding:7px 9px;font-size:11px;letter-spacing:.08em}
+  .botones-sala .dejar,.dejar{padding:8px 13px;font-size:11px;letter-spacing:.1em}
+}
 </style>
 </head>
 <body>
