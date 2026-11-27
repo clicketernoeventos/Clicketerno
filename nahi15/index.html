@@ -22,7 +22,7 @@
 <meta name="color-scheme" content="light dark">
 <style>@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}</style>
 <title>Nahi · Mis XV</title>
-<meta name="description" content="Los XV de Nahi. 19 de junio de 2027, Jarana Eventos, Fray Luis Beltrán.">
+<meta name="description" content="Los XV de Nahi. 19 de junio de 2027, Jarana Eventos, Eva Perón 379, Fray Luis Beltrán.">
 <meta name="theme-color" content="#3D3121">
 <!-- `noindex`: es la fiesta de una persona de verdad y acá se
      piden nombres de invitados. El que tiene el link entra igual; esto la
@@ -1067,6 +1067,9 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
 .mapa-dib{border-radius:18px;overflow:hidden;line-height:0;
   box-shadow:0 0 0 1px rgba(114,91,61,.2),0 20px 36px -24px rgba(34,27,18,.45)}
 .mapa-dib svg{width:100%;height:auto;aspect-ratio:340/220;display:block}
+.mapa-dib svg *{pointer-events:none}
+.mapa-dib .calle-n text{overflow:hidden}
+.mapa-dib .calle-n{font-family:var(--texto-f,sans-serif);font-size:6.8px;letter-spacing:.1em;font-weight:500;fill:var(--gris);text-anchor:middle;dominant-baseline:middle}
 .js .mapa-dib .trazo path{stroke-dasharray:1;stroke-dashoffset:1}
 .js .mapa-dib.visto .trazo path{transition:stroke-dashoffset .9s var(--e) .2s;stroke-dashoffset:0}
 .js .mapa-dib.visto .trazo path + path{transition-delay:1s}
@@ -1198,20 +1201,21 @@ html:not(.js) .bola{opacity:1;transform:none;animation:none}
         <p class="donde-nom" id="lugar"></p>
         <p class="donde-calle" id="calle"></p>
       </div>
+      <!-- Las calles DE VERDAD alrededor de Eva Perón 379 (Fray Luis Beltrán),
+           sacadas de OpenStreetMap una vez (27/11/2026) y guardadas acá como
+           dibujo: la página no llama a ningún servicio de mapas. -->
       <div class="mapa-dib ap d2" aria-hidden="true">
         <svg viewBox="0 0 340 220" preserveAspectRatio="xMidYMid slice">
           <rect width="340" height="220" fill="#F2ECE4"/>
-          <path d="M228 162q26-10 44 4t-6 34q-30 8-44-8t6-30z" fill="#E6DDD0"/>
-          <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"><path d="M37 -5L39 225"/><path d="M99 -5L93 225"/><path d="M148 -5L152 225"/><path d="M210 -5L218 225"/><path d="M274 -5L278 225"/><path d="M-5 30L345 30"/><path d="M-5 82L345 82"/><path d="M-5 151L345 149"/><path d="M-5 197L345 199"/></g>
-          <path d="M-5 112L345 104" fill="none" stroke="#FFFFFF" stroke-width="14"/>
-          <path d="M-5 214L180 -5" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+          <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"><path d="M161 282L159 283L156 283L105 272L47 261L-3 251L-12 247L-19 246M179 203L174 229L164 278L163 280L161 282M296 226L238 215L179 203M-33 187L-1 194L57 206L116 218L174 229M311 147L301 199L296 226M-64 132L-55 128L-47 130L10 141L68 153L126 164L184 176L243 187L301 199M-12 247L-1 194L10 141L20 88L36 7L37 2L45 -38L52 -76L58 -104M311 147L253 135L195 123L137 111L78 100L20 88L-41 76L-61 71M291 -57L285 -28L278 9L271 50L270 55L253 135L243 187L238 215M327 66L311 147M327 66L380 76L429 87M-88 -64L-15 -50L45 -38L103 -26L162 -14L166 -13L213 -4L219 -3L278 9L297 13M332 -17L320 -19L304 -25L285 -28L227 -40L169 -52L110 -64L52 -76L-7 -88L-98 -107M345 -45L343 -32L339 -21L332 -17M115 -93L110 -64L103 -26L95 14L94 18L78 100L68 153L63 180L57 206L47 261M105 272L116 218L121 191L126 164L137 111L153 30L154 25L154 23L160 -6L162 -14L169 -52L175 -80M414 167L364 157L311 147M179 203L121 191L63 180M232 -69L227 -40L219 -3L218 6L212 36L211 37L210 42L195 123L184 176L179 203M380 76L364 157M-1 -116L-7 -88L-15 -50L-23 -10L-24 -5L-41 76M329 61L327 66" stroke-width="6"/><path d="M-80 -15L-24 -5L36 7L94 18L153 30L210 42L270 55L327 66M329 61L271 50L211 37L204 36L180 31L158 26L154 25L95 14L37 2L-23 -10L-81 -21" stroke-width="8"/></g>
+          <g class="calle-n"><text transform="translate(306 173) rotate(-78.7)">CHACABUCO</text><text transform="translate(214 181) rotate(11.1)">BELGRANO</text><text transform="translate(276 139) rotate(11.3)">EVA PERÓN</text><text transform="translate(262 95) rotate(-78.3)">MAIPÚ</text><text transform="translate(240 49) rotate(12.1)">BULEVAR URQUIZA</text><text transform="translate(86 59) rotate(-78.8)">25 DE MAYO</text><text transform="translate(154 26) rotate(-78.7)">3 DE FEBRERO</text><text transform="translate(206 68) rotate(-79.0)">12 DE OCTUBRE</text></g>
           <g class="trazo" fill="none" stroke="#4D3D29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path pathLength="1" d="M52 34C92 30 118 44 140 82"/>
-            <path pathLength="1" d="M126 74l15 10 3-18"/>
-            <path class="t2" pathLength="1" d="M183 124c-34-4-62 6-60 22s44 22 78 12 46-28 24-38-58-6-72 10"/>
+            <path pathLength="1" d="M44 26C86 22 114 40 136 78"/>
+            <path pathLength="1" d="M122 70l15 10 3-18"/>
+            <path class="t2" pathLength="1" d="M183 118c-34-4-62 6-60 22s44 22 78 12 46-28 24-38-58-6-72 10"/>
           </g>
-          <circle cx="176" cy="132" r="6.5" fill="#4D3D29"/>
-          <circle cx="176" cy="132" r="11" fill="none" stroke="#4D3D29" stroke-opacity=".25" stroke-width="5"/>
+          <circle cx="176" cy="126" r="6.5" fill="#4D3D29"/>
+          <circle cx="176" cy="126" r="11" fill="none" stroke="#4D3D29" stroke-opacity=".25" stroke-width="5"/>
         </svg>
       </div>
       <a class="btn donde-btn ap d3" id="mapa" target="_blank" rel="noopener">Ver cómo llegar <span aria-hidden="true">→</span></a>
@@ -1328,8 +1332,8 @@ const CONFIG = {
   hastaHora: "",
   confirmarHasta: "",            // FALTA
   lugar: "Jarana Eventos",
-  calle: "Fray Luis Beltrán",    // FALTA la dirección: mandaron solo la ciudad
-  mapa: "",
+  calle: "Eva Perón 379\nFray Luis Beltrán",   // del enlace de Maps que mandó el dueño (27/11/2026)
+  mapa: "https://maps.app.goo.gl/HviRfwWt9hXjjJC17",   // el enlace exacto que mandó el dueño
   dibujoSalon: "",
   /* "Siempre brillarás", de TINI: el audio entero del video que mandó el
      dueño (27/11/2026), con una caída suave al final. Sin el nombre a la vista. */
