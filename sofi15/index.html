@@ -373,6 +373,8 @@ html.cerrado #portada{opacity:0}
 .alias-caja{margin-top:calc(var(--u)*8);border:1.5px solid var(--hueso);padding:20px}
 .alias-caja b{display:block;font-family:var(--titulos);font-weight:900;font-size:22px;margin:6px 0 4px;word-break:break-all}
 .alias-caja .pildora{margin-top:14px}
+.alias-caja .cbu{margin-top:20px;padding-top:18px;border-top:1px solid var(--gris-n)}
+.alias-caja .cbu b{font-family:var(--mono);font-weight:500;font-size:17px;letter-spacing:.04em}
 
 /* ══════════ 11 · el cierre ══════════ */
 #cierre{padding-bottom:0}
@@ -722,6 +724,11 @@ html:not(.js) #fotos{display:none}
       <b id="alias"></b>
       <p class="mini" id="titular"></p>
       <button class="pildora" type="button" id="copiar"><span id="copiarTxt">Copiar alias</span></button>
+      <div class="cbu" id="cbuCaja">
+        <p class="mini">CBU</p>
+        <b id="cbu"></b>
+        <button class="pildora" type="button" id="copiarCbu"><span id="copiarCbuTxt">Copiar CBU</span></button>
+      </div>
     </div>
   </section>
 
@@ -805,7 +812,8 @@ const CONFIG = {
   /* "S&M", Rihanna (27/11/2026, reemplaza a "Cupido"): el minuto del video que mandó,
      tal cual. Suena una vez y se rebobina; al entrar salta al principio. */
   cancion: { archivos: ["musica.m4a", "musica.ogg"], entra: .5 },
-  alias: "marinatenerife.mp",      // tal cual (26/11/2026)
+  alias: "sofiavalverde.",         // tal cual, CON el punto final (27/11/2026)
+  cbu: "0000003100080535992320",
   titular: "",                     // HUECO · no lo mandaron
   tema: "plata",
   evento: "",
@@ -924,6 +932,13 @@ const picado = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7 + SEMILLA % 
       try{ await navigator.clipboard.writeText(CONFIG.alias); $('#copiarTxt').textContent = 'Copiado'; }
       catch(e){ $('#copiarTxt').textContent = 'Mantené apretado el alias para copiarlo'; }
     });
+    if (CONFIG.cbu){
+      $('#cbu').textContent = CONFIG.cbu;
+      $('#copiarCbu').addEventListener('click', async () => {
+        try{ await navigator.clipboard.writeText(CONFIG.cbu); $('#copiarCbuTxt').textContent = 'Copiado'; }
+        catch(e){ $('#copiarCbuTxt').textContent = 'Mantené apretado el CBU para copiarlo'; }
+      });
+    } else $('#cbuCaja').remove();
   } else { const r = $('#regalo'); if (r) r.remove(); }
 })();
 
