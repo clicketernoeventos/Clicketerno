@@ -86,8 +86,32 @@ async function abrir(ctx) {
       'con un botón que invita a probar el otro lado');
     afirmar(await pg.locator('#cinta-demo').count() === 1,
       'se ve la cinta que avisa que es una demostración');
-    afirmar(/inventad/i.test(await leer(pg, '#cinta-demo')),
-      'la cinta dice que la fiesta y las fotos son inventadas');
+    /* La frase larga se ve en pantalla ancha; en un teléfono la cinta
+       muestra solo el botón "Demo ?" (una línea de 48px en vez de un
+       zócalo de 129). Ese botón TIENE que hacer algo: el dueño lo tocó y
+       no pasaba nada, y parecía que la demostración estaba rota. Al tocarlo
+       abre una nota que dice que todo es inventado. */
+    const cinta = await pg.evaluate(() => {
+      const c = document.querySelector('#cinta-demo .chip');
+      return { visible: !!c && c.getClientRects().length > 0,
+               texto: c ? c.innerText : '', esBoton: !!c && c.tagName === 'BUTTON' };
+    });
+    afirmar(cinta.visible && /demo/i.test(cinta.texto),
+      'la cinta avisa a la vista que es una demostración', JSON.stringify(cinta));
+    afirmar(cinta.esBoton, 'y el "Demo" es un botón, no un cartel que parece botón');
+    await pg.locator('#infoDemo').click();
+    await pg.waitForTimeout(300);
+    const nota = await pg.evaluate(() => {
+      const n = document.getElementById('demoInfo');
+      return { visible: !!n && !n.hidden && n.getClientRects().length > 0,
+               texto: n ? n.innerText : '' };
+    });
+    afirmar(nota.visible && /inventad/i.test(nota.texto),
+      'tocarlo abre una nota que dice que la fiesta y las fotos son inventadas', JSON.stringify(nota));
+    await pg.locator('#demoInfo').click();
+    await pg.waitForTimeout(200);
+    afirmar(await pg.evaluate(() => document.getElementById('demoInfo').hidden),
+      'y tocando la nota se cierra');
     afirmar(await pg.locator('#deNuevo').count() === 1,
       'y tiene el botón para empezar de nuevo');
     afirmar(espia.nube.length === 0,

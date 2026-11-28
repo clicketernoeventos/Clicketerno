@@ -14,7 +14,14 @@ const pres = b => ` aria-pressed="${b ? 'true' : 'false'}"`;
 const SESION = 'mansion.sesion';
 const Sesion = {
   u: null,
-  leer() { try { const id = localStorage.getItem(SESION); this.u = DB.d.usuarios.find(x => x.id === id && x.activo) || null; } catch (e) { this.u = null; } },
+  leer() {
+    if (NUBE) {
+      const x = Nube.leerSes();
+      if (x && x.perfil) { DB.usar(x.uid); DB.cargar(); this.u = x.perfil; return; }
+      DB.usar(''); DB.cargar(); this.u = null; return;
+    }
+    try { const id = localStorage.getItem(SESION); this.u = DB.d.usuarios.find(x => x.id === id && x.activo) || null; } catch (e) { this.u = null; }
+  },
   entrar(u) { this.u = u; try { localStorage.setItem(SESION, u.id); } catch (e) { } },
   salir() { this.u = null; try { localStorage.removeItem(SESION); } catch (e) { } }
 };
@@ -41,7 +48,7 @@ function hoja(titulo, cuerpo, alAbrir) {
   capa.className = 'velo';
   capa.innerHTML = `<section class="hoja" role="dialog" aria-modal="true" aria-label="${esc(titulo)}">
     <div class="asa"></div>
-    <div class="cab-h"><h2>${esc(titulo)}</h2><button class="redondo chico" data-a="cerrar" aria-label="Cerrar">${ico('x')}</button></div>
+    <div class="cab-h"><h2>${esc(titulo)}</h2><button class="redondo chico" data-a="calc" aria-label="Calculadora">${ico('calc', 'ch')}</button><button class="redondo chico" data-a="cerrar" aria-label="Cerrar">${ico('x')}</button></div>
     <div class="cuerpo">${cuerpo}</div></section>`;
   capa.addEventListener('click', e => { if (e.target === capa) cerrarHoja(capa); });
   $('#capas').appendChild(capa);
@@ -72,15 +79,13 @@ const NAV = () => {
   const r = Sesion.u ? Sesion.u.rol : 'empleado';
   const base = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda']];
   return r === 'empleado'
-    ? base.concat([['+'], ['stock', 'caja', 'Stock'], ['mas', 'grilla', 'Más']])
-    : base.concat([['+'], ['fiestas', 'copa', 'Fiestas'], ['mas', 'grilla', 'Más']]);
+    ? base.concat([['stock', 'caja', 'Stock'], ['mas', 'grilla', 'Más']])
+    : base.concat([['fiestas', 'copa', 'Fiestas'], ['mas', 'grilla', 'Más']]);
 };
 function pintarNav(ruta) {
   const actual = r => ruta === r || (r === 'fiestas' && ruta === 'fiesta') || (r === 'mas' && !['inicio', 'agenda', 'fiestas', 'fiesta', 'stock'].includes(ruta));
-  $('#abajo').innerHTML = NAV().map(([r, i, t]) => r === '+'
-    ? `<button class="fab" data-a="cargar" aria-label="Carga rápida">${ico('mas')}</button>`
-    : `<a href="#/${r}"${actual(r) ? ' aria-current="page"' : ''}>${ico(i)}<span>${t}</span></a>`).join('');
-  const lat = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda']];
+  $('#abajo').innerHTML = NAV().map(([r, i, t]) => `<a href="#/${r}"${actual(r) ? ' aria-current="page"' : ''}>${ico(i)}<span>${t}</span></a>`).join('');
+  const lat = [['inicio', 'casa', 'Inicio'], ['agenda', 'cal', 'Agenda'], ['buscar', 'buscar', 'Buscar']];
   if (puede('fiestas')) lat.push(['fiestas', 'copa', 'Fiestas']);
   if (puede('plata')) lat.push(['pagos', 'plata', 'Pagos'], ['precios', 'etiqueta', 'Precios y aumentos']);
   lat.push(['stock', 'caja', 'Stock'], ['proveedores', 'camion', 'Proveedores'], ['registro', 'reloj', 'Registro de cargas']);
@@ -89,7 +94,7 @@ function pintarNav(ruta) {
   $('#lateral').innerHTML = `<div class="marca"><div class="sello">${ico('corona')}</div><div>${esc(DB.d.ajustes.salon)}<small>${esc(Sesion.u.nombre)} · ${ROLES[Sesion.u.rol]}</small></div></div>
     <button class="btn acento cargar" data-a="cargar">${ico('mas')}Carga rápida</button>
     ${lat.map(([r, i, t]) => `<a href="#/${r}"${ruta === r || (r === 'fiestas' && ruta === 'fiesta') ? ' aria-current="page"' : ''}>${ico(i)}${t}</a>`).join('')}
-    <div class="pie"><button class="nav" data-a="salir">${ico('salir')}Salir</button></div>`;
+    <div class="pie">${chipSync()}<button class="nav" data-a="salir">${ico('salir')}Salir</button></div>`;
 }
 
 const RUTAS = {};
@@ -120,41 +125,95 @@ const vacio = (i, t) => `<div class="vacio-t">${ico(i)}${esc(t)}</div>`;
 const barra = (titulo, atras, extra = '') => `<div class="barra">${atras ? `<a class="redondo" href="#/${atras}" aria-label="Volver">${ico('atras')}</a>` : ''}<h1>${esc(titulo)}</h1>${extra}</div>`;
 
 /* ═════════════ Ingreso ═════════════ */
-let elegido = null, pin = '';
+let elegido = null, pin = '', pin1 = '', fase = 'pin', msgIngreso = '', ocupado = false, listaNube = null;
+const LARGO = NUBE ? 6 : 4;
+function cargarLista() { if (NUBE) Nube.lista().then(l => { listaNube = l; if (!Sesion.u) render(); }); }
 function vIngreso() {
-  const us = DB.d.usuarios.filter(u => u.activo);
+  const us = NUBE ? (listaNube ? listaNube.usuarios : []) : DB.d.usuarios.filter(u => u.activo);
+  const pend = NUBE && listaNube ? listaNube.pendientes : [];
+  if (ocupado) return `<section class="ingreso"><div class="sello-g">${ico('corona')}</div><h1>Entrando…</h1><p>Un segundito</p></section>`;
   if (!elegido) return `<section class="ingreso">
       <div class="sello-g">${ico('corona')}</div>
       <h1>${esc(DB.d.ajustes.salon)}</h1>
       <p>¿Quién entra?</p>
-      <div class="quienes">${us.map(u => `<button data-a="elegir" data-id="${u.id}"><span class="avatar">${iniciales(u.nombre)}</span><span>${esc(u.nombre)}<small>${ROLES[u.rol]}</small></span>${ico('der')}</button>`).join('')}</div>
+      <div class="quienes">${us.map(u => `<button data-a="elegir" data-id="${u.id}"><span class="avatar">${iniciales(u.nombre)}</span><span>${esc(u.nombre)}<small>${u.rol ? ROLES[u.rol] : 'Tocá y poné tu PIN'}</small></span>${ico('der')}</button>`).join('')}
+        ${pend.map(u => `<button data-a="elegir-pend" data-n="${esc(u.nombre)}"><span class="avatar">${iniciales(u.nombre)}</span><span>${esc(u.nombre)}<small>Primera vez: creá tu PIN</small></span>${ico('der')}</button>`).join('')}</div>
+      ${NUBE && !listaNube ? '<p style="margin-top:20px">Buscando usuarios…</p>' : ''}
+      ${NUBE && listaNube && !us.length && !pend.length ? `<p style="margin-top:20px">${listaNube.enRed ? 'Todavía no hay usuarios cargados en la base.' : 'No pude traer la lista de usuarios. ¿Hay señal?'}</p><button class="btn borde" data-a="reintentar-lista">Probar de nuevo</button>` : ''}
       ${DB.d.demo ? `<p style="margin-top:22px"><span class="aviso-demo">${ico('chispa', 'ch')}Datos de ejemplo · PIN 1111, 2222 o 3333</span></p>` : ''}
     </section>`;
+  const sub = fase === 'crear1' ? 'Elegí tu PIN de 6 números' : fase === 'crear2' ? 'Repetilo para confirmar' : `Poné tu PIN de ${LARGO} números`;
   return `<section class="ingreso">
       <span class="avatar" style="width:64px;height:64px;font-size:22px;margin:0 auto 12px">${iniciales(elegido.nombre)}</span>
       <h1 style="font-size:28px">${esc(elegido.nombre)}</h1>
-      <p>Poné tu PIN de 4 números</p>
-      <div class="pin-puntos" aria-live="polite" aria-label="${pin.length} de 4">${[0, 1, 2, 3].map(i => `<i class="${i < pin.length ? 'lleno' : ''}"></i>`).join('')}</div>
+      <p>${sub}</p>
+      <div class="pin-puntos" aria-live="polite" aria-label="${pin.length} de ${LARGO}">${[...Array(LARGO).keys()].map(i => `<i class="${i < pin.length ? 'lleno' : ''}"></i>`).join('')}</div>
+      ${msgIngreso ? `<div class="error-campo" style="justify-content:center">${esc(msgIngreso)}</div>` : ''}
       <div class="teclado">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-a="tecla" data-n="${n}">${n}</button>`).join('')}
         <button data-a="otro-usuario" aria-label="Elegir otro usuario">${ico('atras')}</button><button data-a="tecla" data-n="0">0</button><button data-a="borrar-tecla" aria-label="Borrar">${ico('x')}</button></div>
     </section>`;
 }
+function malPin() { render(); const p = $('.pin-puntos'); if (p) p.classList.add('mal'); }
 function tecla(n) {
-  if (pin.length >= 4) return;
-  pin += n;
-  if (pin.length === 4) {
-    if (pin === elegido.pin) { Sesion.entrar(elegido); elegido = null; pin = ''; location.hash = '#/inicio'; render(); return; }
-    render(); const p = $('.pin-puntos'); p.classList.add('mal');
-    setTimeout(() => { pin = ''; render(); }, 450);
-    return;
+  if (ocupado || pin.length >= LARGO) return;
+  pin += n; msgIngreso = '';
+  if (pin.length < LARGO) return render();
+  if (NUBE) { render(); return terminarPin(); }
+  if (pin === elegido.pin) { Sesion.entrar(elegido); elegido = null; pin = ''; location.hash = '#/inicio'; render(); return; }
+  render(); const p = $('.pin-puntos'); p.classList.add('mal');
+  setTimeout(() => { pin = ''; render(); }, 450);
+}
+async function terminarPin() {
+  const p = pin;
+  try {
+    if (elegido.pendiente) {
+      if (fase === 'crear1') { pin1 = p; pin = ''; fase = 'crear2'; return render(); }
+      if (p !== pin1) { pin = ''; pin1 = ''; fase = 'crear1'; msgIngreso = 'Los dos PIN no coinciden. Probá de nuevo.'; return malPin(); }
+      ocupado = true; render();
+      await Nube.fn('crear_dueno', { nombre: elegido.nombre, pin: p });
+      listaNube = await Nube.lista();
+      const u = listaNube.usuarios.find(x => x.nombre === elegido.nombre);
+      if (!u) throw new Error('No se pudo crear el usuario');
+      elegido = u;
+    } else { ocupado = true; render(); }
+    const perfil = await Nube.entrar(elegido.id, p);
+    abrirSesion(perfil);
+  } catch (e) {
+    ocupado = false; pin = '';
+    msgIngreso = (e instanceof TypeError || /fetch|network/i.test(e.message)) ? 'No hay conexión. La primera vez en cada teléfono hace falta internet.' : e.message;
+    malPin();
   }
-  render();
+}
+function abrirSesion(perfil) {
+  Sesion.u = perfil; DB.usar(Nube.ses.uid); DB.cargar();
+  elegido = null; pin = ''; pin1 = ''; fase = 'pin'; ocupado = false; msgIngreso = '';
+  location.hash = '#/inicio'; render(); Nube.iniciar();
 }
 document.addEventListener('keydown', e => {
-  if (Sesion.u || !elegido) return;
+  if (Sesion.u || !elegido || ocupado) return;
   if (/^\d$/.test(e.key)) tecla(e.key);
   else if (e.key === 'Backspace') { pin = pin.slice(0, -1); render(); }
 });
+
+/* Avisos de la sincronización */
+function textoSync() {
+  if (!NUBE) return '';
+  const n = Nube.pendientes();
+  if (Nube.enCurso) return 'Sincronizando…';
+  if (Nube.estado === 'offline') return 'Sin conexión' + (n ? ' · ' + n + ' por enviar' : '');
+  if (Nube.estado === 'error') return 'No se pudo sincronizar' + (n ? ' · ' + n + ' por enviar' : '');
+  return n ? n + ' por enviar' : 'Sincronizado';
+}
+function claseSync() { return !NUBE ? '' : (Nube.enCurso ? '' : (Nube.estado === 'ok' && !Nube.pendientes() ? 'ok' : 'falta')); }
+const chipSync = () => NUBE ? `<button class="sync-chip ${claseSync()}" data-a="sync" aria-label="Sincronizar ahora">${esc(textoSync())}</button>` : '';
+function pintarEstado() { $$('.sync-chip').forEach(c => { c.textContent = textoSync(); c.className = 'sync-chip ' + claseSync(); }); }
+function alLlegarCambios() {
+  const a = document.activeElement;
+  if ($('#capas .velo') || $('#calc') || (a && a.matches && a.matches('input,textarea,select'))) return;
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+}
+function alSinPermiso() { Nube.parar(); Nube.guardarSes(null); Sesion.salir(); cerrarTodo(); DB.usar(''); DB.cargar(); cargarLista(); render(); tostada('Ya no tenés permiso para entrar'); }
+function alVencerSesion() { DB.guardar(); Nube.parar(); Nube.guardarSes(null); Sesion.salir(); cerrarTodo(); elegido = null; DB.usar(''); DB.cargar(); cargarLista(); render(); tostada('Tu sesión venció: entrá de nuevo con tu PIN'); }
 
 /* ═════════════ Inicio ═════════════ */
 RUTAS.inicio = () => {
@@ -217,21 +276,22 @@ RUTAS.inicio = () => {
   const pend = prox.filter(e => F.dif(hoy, e.fecha) <= 30).flatMap(e => e.tareas.filter(t => !t.hecha).map(t => ({ e, t }))).slice(0, 6);
 
   return `<div class="barra"><div class="marca" style="flex:1"><div class="sello">${ico('corona')}</div><div>${esc(DB.d.ajustes.salon)}<small>${esc(F.largo(hoy))}</small></div></div>
+      <button class="redondo" data-a="cargar" aria-label="Cargar o buscar">${ico('buscar')}</button>
       <a class="redondo" href="#/registro" aria-label="Registro de cargas">${ico('reloj')}</a>
       <a class="avatar" href="#/mas" aria-label="Mi usuario" style="text-decoration:none">${iniciales(u.nombre)}</a></div>
-    ${DB.d.demo ? `<p style="margin:0 0 6px"><span class="aviso-demo">${ico('chispa', 'ch')}Datos de ejemplo</span></p>` : ''}
-    <h1 class="saludo">${saludo},<br><em>${esc(u.nombre)}</em></h1>
+    ${(chipSync() || DB.d.demo) ? `<p style="margin:0 0 6px;display:flex;gap:8px;flex-wrap:wrap">${chipSync()}${DB.d.demo ? `<span class="aviso-demo">${ico('chispa', 'ch')}Datos de ejemplo</span>` : ''}</p>` : ''}
+    <h1 class="titulo-g">Inicio</h1><p class="bajada">${saludo}, ${esc(u.nombre)}</p>
     ${pildora}
     <div class="dos-col"><div>
       ${heroe}
       <h2 class="sec">Esta semana <a href="#/agenda">Agenda ${ico('der', 'ch')}</a></h2>
       <div class="semana">${semana}</div>
-      ${pend.length ? `<h2 class="sec">Para hacer</h2><div class="tarjeta">${pend.map(({ e, t }) => `<button class="tarea" data-a="tarea" data-e="${e.id}" data-t="${t.id}"><span class="caja"></span><span style="flex:1">${esc(t.texto)}<br><small class="sub">${esc(e.titulo)} · ${F.corto(e.fecha)}</small></span></button>`).join('')}</div>` : ''}
+      ${pend.length ? `<details class="grupo" open><summary>Para hacer<b>${pend.length}</b></summary><div>${pend.map(({ e, t }) => `<button class="tarea" data-a="tarea" data-e="${e.id}" data-t="${t.id}"><span class="caja"></span><span class="crece">${esc(t.texto)}<small class="sub">${esc(e.titulo)}</small></span><span class="chip ${F.dif(hoy, e.fecha) <= 7 ? 'falta' : ''}">${F.corto(e.fecha)}</span></button>`).join('')}</div></details>` : ''}
     </div><div>
       <h2 class="sec" style="margin-top:0">Resumen</h2>
       <div class="kpis">${kpis}</div>
       ${puede('fiestas') ? `<h2 class="sec">Próximas fiestas <a href="#/fiestas">Ver todas ${ico('der', 'ch')}</a></h2>
-      <div class="lista-t">${prox.slice(1, 5).map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Nada más por ahora.')}</div>`}</div>` : ''}
+      <div class="lista-t filas">${prox.slice(1, 5).map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Nada más por ahora.')}</div>`}</div>` : ''}
     </div></div>`;
 };
 
@@ -247,41 +307,51 @@ function filaFiesta(e) {
 }
 
 /* ═════════════ Agenda ═════════════ */
+let modoSemana = false;
 RUTAS.agenda = (dia) => {
   const hoy = F.hoy();
-  const elegidoDia = /^\d{4}-\d{2}-\d{2}$/.test(dia || '') ? dia : hoy;
-  const [y, m] = (/^\d{4}-\d{2}$/.test(dia || '') ? dia + '-01' : elegidoDia).split('-').map(Number);
+  const esDia = /^\d{4}-\d{2}-\d{2}$/.test(dia || ''), esMes = /^\d{4}-\d{2}$/.test(dia || '');
+  const sel_ = esDia ? dia : esMes ? (dia === hoy.slice(0, 7) ? hoy : dia + '-01') : hoy;
+  const [y, m] = sel_.split('-').map(Number);
   const primero = F.armar(y, m, 1);
-  const inicio = F.sumar(primero, -((F.dow(primero) + 6) % 7));
-  const mesAnt = m === 1 ? F.armar(y - 1, 12, 1) : F.armar(y, m - 1, 1);
-  const mesSig = m === 12 ? F.armar(y + 1, 1, 1) : F.armar(y, m + 1, 1);
+  const mm = String(m).padStart(2, '0');
+  const inicio = modoSemana ? F.sumar(sel_, -((F.dow(sel_) + 6) % 7)) : F.sumar(primero, -((F.dow(primero) + 6) % 7));
+  const mesAnt = (m === 1 ? F.armar(y - 1, 12, 1) : F.armar(y, m - 1, 1)).slice(0, 7);
+  const mesSig = (m === 12 ? F.armar(y + 1, 1, 1) : F.armar(y, m + 1, 1)).slice(0, 7);
+  const ant = modoSemana ? F.sumar(sel_, -7) : mesAnt, sig = modoSemana ? F.sumar(sel_, 7) : mesSig;
   const prioridad = ['confirmada', 'senada', 'consulta', 'realizada'];
+  const vivos = d => DB.d.eventos.filter(e => e.fecha === d && e.estado !== 'cancelada');
   let celdas = '';
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < (modoSemana ? 7 : 42); i++) {
     const d = F.sumar(inicio, i);
-    if (i >= 35 && d.slice(5, 7) !== String(m).padStart(2, '0')) break;
-    const evs = DB.d.eventos.filter(e => e.fecha === d && e.estado !== 'cancelada');
-    const top = prioridad.find(p => evs.some(e => e.estado === p));
-    const cls = [d.slice(5, 7) !== String(m).padStart(2, '0') ? 'otro' : '', top ? 'hay-' + top : '', d === hoy ? 'hoy' : ''].join(' ');
-    celdas += `<button class="${cls}" data-a="dia" data-d="${d}"${pres(d === elegidoDia)} aria-label="${F.largo(d)}${evs.length ? ', ' + evs.length + ' fiesta' + (evs.length > 1 ? 's' : '') : ''}"><b>${+d.slice(8)}</b><span class="puntos">${evs.length > 1 ? evs.map(e => `<i class="${e.estado}"></i>`).join('') : ''}</span></button>`;
+    if (!modoSemana && i >= 35 && d.slice(5, 7) !== mm) break;
+    const evs = vivos(d), top = prioridad.find(p => evs.some(e => e.estado === p));
+    const cls = [!modoSemana && d.slice(5, 7) !== mm ? 'otro' : '', top ? 'hay-' + top : '', d === hoy ? 'hoy' : ''].join(' ');
+    celdas += `<button class="${cls}" data-a="dia" data-d="${d}"${pres(d === sel_)} aria-label="${F.largo(d)}${evs.length ? ', ' + evs.length + ' fiesta' + (evs.length > 1 ? 's' : '') : ''}"><b>${+d.slice(8)}</b><span class="puntos">${evs.slice(0, 3).map(e => `<i class="${e.estado}"></i>`).join('')}</span></button>`;
   }
-  const delDia = DB.d.eventos.filter(e => e.fecha === elegidoDia).sort((a, b) => a.turno === 'mediodia' ? -1 : 1);
-  const libres = Object.keys(TURNOS).filter(t => !delDia.some(e => e.turno === t && e.estado !== 'cancelada'));
-  const delMes = DB.d.eventos.filter(e => e.fecha.slice(0, 7) === primero.slice(0, 7) && e.estado !== 'cancelada').sort((a, b) => a.fecha < b.fecha ? -1 : 1);
-  return `${barra('Agenda', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" data-d="${elegidoDia}" aria-label="Reservar fecha">${ico('mas')}</button>` : '')}
-    <div class="dos-col"><div class="tarjeta">
+  const delDia = vivos(sel_);
+  const libres = Object.keys(TURNOS).filter(t => !delDia.some(e => e.turno === t));
+  const prox = DB.d.eventos.filter(e => e.fecha >= sel_ && e.estado !== 'cancelada')
+    .sort((a, b) => a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : (a.turno === 'mediodia' ? -1 : 1)).slice(0, 40);
+  const grupos = []; for (const e of prox) { const g = grupos[grupos.length - 1]; if (g && g.d === e.fecha) g.es.push(e); else grupos.push({ d: e.fecha, es: [e] }); }
+  let mesPrev = sel_.slice(0, 7), lista = '';
+  for (const g of grupos) {
+    if (g.d.slice(0, 7) !== mesPrev) { mesPrev = g.d.slice(0, 7); lista += `<h2 class="sec ag-mes">${MESES[+g.d.slice(5, 7) - 1]}</h2>`; }
+    lista += `<div class="ag-dia"><div class="ag-f${g.d === hoy ? ' hoy' : ''}"><span>${DIAS[F.dow(g.d)].slice(0, 3)}</span><b>${+g.d.slice(8)}</b></div><div class="ag-evs">${g.es.map(e => `<a class="ag-ev ${e.estado}" href="#/fiesta/${e.id}" data-id="${e.id}"><i class="pt"></i><span class="min"><small>${TURNOS[e.turno]} · ${TIPOS[e.tipo].nombre}</small><b>${esc(e.titulo)}</b></span><span class="chip ${e.estado}">${ESTADOS[e.estado]}</span></a>`).join('')}</div></div>`;
+  }
+  return `${barra('Agenda', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" data-d="${sel_}" aria-label="Reservar fecha">${ico('mas')}</button>` : '')}
+    <div class="dos-col"><div class="tarjeta cal-t" data-ant="${ant}" data-sig="${sig}">
       <div class="cal-cab"><h2>${MESES[m - 1]} ${y}</h2>
-        <a class="redondo chico" href="#/agenda/${mesAnt.slice(0, 7)}" aria-label="Mes anterior">${ico('atras', 'ch')}</a>
-        <a class="redondo chico" href="#/agenda/${mesSig.slice(0, 7)}" aria-label="Mes siguiente">${ico('der', 'ch')}</a>
-        ${primero.slice(0, 7) !== hoy.slice(0, 7) ? `<a class="btn chico suave" href="#/agenda/${hoy}">Hoy</a>` : ''}</div>
+        <a class="redondo chico" href="#/agenda/${ant}" aria-label="${modoSemana ? 'Semana' : 'Mes'} anterior">${ico('atras', 'ch')}</a>
+        <a class="redondo chico" href="#/agenda/${sig}" aria-label="${modoSemana ? 'Semana' : 'Mes'} siguiente">${ico('der', 'ch')}</a></div>
       <div class="cal">${['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => `<div class="dn">${x}</div>`).join('')}${celdas}</div>
-      <div class="leyenda"><span><i style="background:var(--verde-vivo)"></i>Confirmada</span><span><i style="background:var(--acento)"></i>Señada</span><span><i style="box-shadow:inset 0 0 0 2px var(--ambar-vivo)"></i>Consulta</span></div>
+      <div class="cal-pie"><div class="leyenda"><span><i style="background:var(--verde-vivo)"></i>Confirmada</span><span><i style="background:var(--acento)"></i>Señada</span><span><i style="background:var(--ambar-vivo)"></i>Consulta</span></div>
+        <div class="cal-modo"><button data-a="modo-cal" data-v="mes"${pres(!modoSemana)}>Mes</button><button data-a="modo-cal" data-v="semana"${pres(modoSemana)}>Semana</button></div></div>
+      ${sel_ !== hoy ? `<a class="btn chico suave" style="margin-top:10px" href="#/agenda/${hoy}">Ir a hoy</a>` : ''}
     </div><div>
-      <h2 class="sec">${esc(may(F.largo(elegidoDia)))}</h2>
-      <div class="lista-t">${delDia.map(filaFiesta).join('')}
-      ${puede('editar') ? libres.map(t => `<button class="turno-libre" data-a="nueva-fiesta" data-d="${elegidoDia}" data-turno="${t}">${ico('mas')}${TURNOS[t]} libre · Reservar</button>`).join('') : (delDia.length ? '' : `<div class="tarjeta">${vacio('cal', 'Sin fiestas este día.')}</div>`)}</div>
-      <h2 class="sec">Todo ${MESES[m - 1]} <span class="sub">${delMes.length} ${delMes.length === 1 ? 'fiesta' : 'fiestas'}</span></h2>
-      <div class="lista-t">${delMes.map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', 'Mes libre.')}</div>`}</div>
+      <h2 class="sec" style="margin-top:0">${esc(may(F.largo(sel_)))}</h2>
+      ${puede('editar') && libres.length ? `<div class="libres">${libres.map(t => `<button class="turno-libre" data-a="nueva-fiesta" data-d="${sel_}" data-turno="${t}">${ico('mas')}${TURNOS[t]} libre · Reservar</button>`).join('')}</div>` : ''}
+      ${grupos.length ? `<h2 class="sec ag-mes" style="margin-top:18px">Lo que viene</h2>${lista}` : `<div class="tarjeta">${vacio('cal', 'No hay fiestas desde este día.')}</div>`}
     </div></div>`;
 };
 
@@ -306,9 +376,14 @@ RUTAS.fiestas = (filtro = 'proximas') => {
   return `${barra('Fiestas', '', puede('editar') ? `<button class="redondo oscuro" data-a="nueva-fiesta" aria-label="Fiesta nueva">${ico('mas')}</button>` : '')}
     <label class="buscador">${ico('buscar')}<span class="oculto">Buscar</span><input type="search" id="buscar-f" placeholder="Buscar por nombre, cliente o teléfono" value="${esc(busca)}"></label>
     <div class="filtros">${Object.entries(F_).map(([k, [t, fn]]) => `<button data-a="ruta" data-r="fiestas/${k}"${pres(k === f)}>${t}<b>${DB.d.eventos.filter(fn).length}</b></button>`).join('')}</div>
-    <div class="lista-t" id="lista-f">${lista.map(filaFiesta).join('') || `<div class="tarjeta">${vacio('copa', q ? 'No hay ninguna con ese nombre.' : 'No hay fiestas acá.')}</div>`}</div>`;
+    <div id="lista-f">${agrupadas(lista) || `<div class="tarjeta">${vacio('copa', q ? 'No hay ninguna con ese nombre.' : 'No hay fiestas acá.')}</div>`}</div>`;
 };
 
+function agrupadas(lista) {
+  const g = [];
+  for (const e of lista) { const k = e.fecha.slice(0, 7), u = g[g.length - 1]; if (u && u.k === k) u.es.push(e); else g.push({ k, es: [e] }); }
+  return g.map(({ k, es }) => `<details class="grupo" open><summary>${may(MESES[+k.slice(5) - 1])} ${k.slice(0, 4)}<b>${es.length}</b></summary><div class="lista-t filas">${es.map(filaFiesta).join('')}</div></details>`).join('');
+}
 RUTAS.fiesta = (id) => {
   const e = DB.get('eventos', id);
   if (!e) return barra('Fiesta', 'fiestas') + `<div class="tarjeta">${vacio('alerta', 'Esa fiesta no existe (¿se deshizo la carga?).')}</div>`;
@@ -540,7 +615,7 @@ RUTAS.stock = (vista = 'todo') => {
   const ps = DB.d.productos.filter(p => (!catStock || p.categoria === catStock) && (!q || norm(p.nombre + ' ' + (p.alias || []).join(' ')).includes(q)));
   return cab + `<label class="buscador">${ico('buscar')}<span class="oculto">Buscar producto</span><input type="search" id="buscar-s" placeholder="Buscar producto" value="${esc(busca)}"></label>
     <div class="filtros"><button data-a="cat"${pres(!catStock)} data-c="">Todas</button>${cats.map(c => `<button data-a="cat" data-c="${c}"${pres(catStock === c)}>${c}</button>`).join('')}</div>
-    <div class="lista-t">${ps.map(filaProducto).join('') || `<div class="tarjeta">${vacio('caja', 'No hay productos acá.')}</div>`}</div>`;
+    <div class="lista-t filas">${ps.map(filaProducto).join('') || `<div class="tarjeta">${vacio('caja', 'No hay productos acá.')}</div>`}</div>`;
 };
 function filaProducto(p) {
   const pct = Math.min(100, Math.round(p.stock / Math.max(1, p.minimo * 2) * 100));
@@ -587,10 +662,50 @@ function historialProducto(p) {
 
 /* ═════════════ Proveedores ═════════════ */
 RUTAS.proveedores = () => `${barra('Proveedores', 'mas', puede('editar') ? `<button class="redondo oscuro" data-a="proveedor" aria-label="Proveedor nuevo">${ico('mas')}</button>` : '')}
-  <div class="lista-t">${DB.d.proveedores.map(v => `<div class="tarjeta" data-id="${v.id}"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}${v.tel ? ' · ' + esc(v.tel) : ''} · ${DB.d.productos.filter(p => p.proveedor === v.id).length} productos</div></div>
+  <div class="lista-t filas">${DB.d.proveedores.map(v => `<div class="tarjeta" data-id="${v.id}"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}${v.tel ? ' · ' + esc(v.tel) : ''} · ${DB.d.productos.filter(p => p.proveedor === v.id).length} productos</div></div>
     ${v.tel ? `<a class="redondo chico" href="${esc(linkWa(v.tel, '¡Hola! '))}" target="_blank" rel="noopener" aria-label="WhatsApp">${ico('chat', 'ch')}</a>` : ''}${puede('editar') ? `<button class="redondo chico" data-a="proveedor" data-id="${v.id}" aria-label="Editar">${ico('lapiz', 'ch')}</button>` : ''}</div></div>`).join('') || `<div class="tarjeta">${vacio('camion', 'Sin proveedores.')}</div>`}</div>`;
 
 /* ═════════════ Registro de cargas ═════════════ */
+const ETQ = { titulo: 'Quién festeja', fecha: 'Fecha', turno: 'Turno', estado: 'Estado', tipo: 'Tipo', adultos: 'Adultos', menores: 'Menores', monto: 'Monto', medio: 'Medio', concepto: 'Concepto', nota: 'Nota', stock: 'Hay', minimo: 'Mínimo', proveedor: 'Proveedor', nombre: 'Nombre', categoria: 'Categoría', unidad: 'Unidad', precio: 'Precio', pedir: 'A pedir', lista: 'Tarjeta', alias: 'Otros nombres', durable: 'Se rompe', rubro: 'Rubro', tel: 'Teléfono', mail: 'Mail', dni: 'DNI', activo: 'Activo', rol: 'Rol', hecha: 'Hecho', texto: 'Texto', desde: 'Desde', adulto: 'Adulto', menor: 'Menor', cant: 'Cantidad', llego: 'Llegó', recibido: 'Recibido el' };
+function verV(k, v) {
+  if (v == null || v === '') return '—';
+  if (k === 'monto' || k === 'precio') return plata(v);
+  if (k === 'fecha' || k === 'desde' || k === 'recibido') return F.num(v);
+  if (k === 'estado') return ESTADOS[v] || v;
+  if (k === 'turno') return TURNOS[v] || v;
+  if (k === 'tipo') return (TIPOS[v] || {}).nombre || v;
+  if (k === 'proveedor') { const x = DB.get('proveedores', v); return x ? x.nombre : v; }
+  if (k === 'lista') { const x = DB.get('precios', v); return x ? x.nombre : v; }
+  if (typeof v === 'boolean') return v ? 'Sí' : 'No';
+  if (Array.isArray(v)) return v.length + (v.length === 1 ? ' elemento' : ' elementos');
+  if (typeof v === 'object') return '…';
+  return String(v);
+}
+function cambiosDe(o) {
+  const a = o.antes, b = o.despues, nom = x => (x && (x.titulo || x.nombre || x.texto)) || '';
+  if (!a && b) return ['Nuevo: ' + nom(b)];
+  if (a && !b) return ['Borrado: ' + nom(a)];
+  const out = [];
+  const comparar = (x, y, pre) => {
+    for (const k of new Set([...Object.keys(x), ...Object.keys(y)])) {
+      if (['id', 'creado', 'usuario', 'cuando'].includes(k)) continue;
+      const u = x[k], v = y[k];
+      if (JSON.stringify(u) === JSON.stringify(v)) continue;
+      if (k === 'cliente' && u && v && typeof u === 'object') { comparar(u, v, 'Cliente · '); continue; }
+      if (k === 'tareas' && Array.isArray(u) && Array.isArray(v)) { out.push(`Tareas: ${u.filter(t => t.hecha).length}/${u.length} → ${v.filter(t => t.hecha).length}/${v.length}`); continue; }
+      if (k === 'extras' && Array.isArray(u) && Array.isArray(v)) { out.push(`Extras: ${u.map(e => e.nombre).join(', ') || '—'} → ${v.map(e => e.nombre).join(', ') || '—'}`); continue; }
+      if (k === 'notas') { out.push('Nota agregada'); continue; }
+      if (k === 'historial') { out.push('Precio nuevo de la tarjeta'); continue; }
+      out.push(`${pre || ''}${ETQ[k] || k}: ${verV(k, u)} → ${verV(k, v)}`);
+    }
+  };
+  comparar(a, b, '');
+  return out;
+}
+function cambiosHtml(r) {
+  const filas = (r.ops || []).filter(o => o.col !== 'movimientos' && o.col !== 'avisos').flatMap(cambiosDe).slice(0, 8);
+  return filas.length ? `<details class="cambios"><summary>Ver cambios</summary>${filas.map(t => `<div>${esc(t)}</div>`).join('')}</details>` : '';
+}
 RUTAS.registro = (filtro = 'todo') => {
   const hoy = F.hoy(), yo = Sesion.u.id;
   let rs = DB.d.registro;
@@ -598,10 +713,26 @@ RUTAS.registro = (filtro = 'todo') => {
   if (filtro === 'hoy') rs = rs.filter(r => F.desdeMs(r.cuando - 3 * 36e5) === hoy);
   rs = rs.slice(0, 120);
   return `${barra('Registro de cargas', 'mas')}
+    ${chipSync() ? `<p style="margin:-6px 0 10px">${chipSync()}</p>` : ''}
     <p class="sub" style="margin:-6px 2px 14px">Todo lo que se carga queda acá, con quién y cuándo. Si algo quedó mal, se corrige o se deshace.</p>
     <div class="filtros">${[['todo', 'Todo'], ['hoy', 'Hoy'], ['mias', 'Lo mío']].filter(x => puede('registroTodo') || x[0] !== 'todo').map(([k, t]) => `<button data-a="ruta" data-r="registro/${k}"${pres(filtro === k)}>${t}</button>`).join('')}</div>
-    <div class="tarjeta">${rs.map(r => { const u = DB.get('usuarios', r.usuario); return `<div class="fila ${r.deshecho ? 'deshecho' : ''}" data-id="${r.id}"><span class="avatar chico">${iniciales(u ? u.nombre : '?')}</span><div class="crece"><div class="texto">${esc(r.texto)}</div><div class="sub">${F.cuando(r.cuando)} · ${esc(u ? u.nombre : '—')}${r.deshecho ? ' · deshecho' : ''}</div></div>
+    <div class="tarjeta">${rs.map(r => { const u = DB.get('usuarios', r.usuario); return `<div class="fila ${r.deshecho ? 'deshecho' : ''}" data-id="${r.id}"><span class="avatar chico">${iniciales(u ? u.nombre : '?')}</span><div class="crece"><div class="texto">${esc(r.texto)}</div><div class="sub">${F.cuando(r.cuando)} · ${esc(u ? u.nombre : '—')}${r.deshecho ? ' · deshecho' : ''}</div>${cambiosHtml(r)}</div>
       ${r.ir && !r.deshecho ? `<a class="redondo chico" href="#/${esc(r.ir)}" aria-label="Ir a corregir">${ico('lapiz', 'ch')}</a>` : ''}${!r.deshecho && (puede('registroTodo') || r.usuario === yo) ? `<button class="redondo chico" data-a="deshacer" data-id="${r.id}" aria-label="Deshacer">${ico('deshacer', 'ch')}</button>` : ''}</div>`; }).join('') || vacio('reloj', 'Todavía no hay cargas.')}</div>`;
+};
+
+/* ═════════════ Buscar en todo ═════════════ */
+RUTAS.buscar = (cat = 'todo') => {
+  const q = norm(busca), ver = puede('contacto');
+  const fs = q ? DB.d.eventos.filter(e => norm(e.titulo + ' ' + TIPOS[e.tipo].nombre + (ver ? ' ' + e.cliente.nombre + ' ' + e.cliente.tel : '')).includes(q)).sort((a, b) => a.fecha < b.fecha ? 1 : -1) : [];
+  const ps = q ? DB.d.productos.filter(p => norm(p.nombre + ' ' + (p.alias || []).join(' ') + ' ' + p.categoria).includes(q)) : [];
+  const vs = q ? DB.d.proveedores.filter(v => norm(v.nombre + ' ' + (v.rubro || '')).includes(q)) : [];
+  const chips = [['todo', 'Todo', fs.length + ps.length + vs.length], ['fiestas', 'Fiestas', fs.length], ['productos', 'Productos', ps.length], ['proveedores', 'Proveedores', vs.length]];
+  const sec = (k, t, arr, fn) => (cat === 'todo' || cat === k) && arr.length ? `<details class="grupo" open><summary>${t}<b>${arr.length}</b></summary><div class="lista-t filas">${(cat === 'todo' ? arr.slice(0, 5) : arr).map(fn).join('')}</div>${cat === 'todo' && arr.length > 5 ? `<button class="mas-r" data-a="ruta" data-r="buscar/${k}">Ver los ${arr.length}</button>` : ''}</details>` : '';
+  const cuerpo = sec('fiestas', 'Fiestas', fs, filaFiesta) + sec('productos', 'Productos', ps, filaProducto) + sec('proveedores', 'Proveedores', vs, v => `<div class="tarjeta"><div class="fila" style="padding:0"><span class="avatar">${iniciales(v.nombre)}</span><div class="crece"><b>${esc(v.nombre)}</b><div class="sub">${esc(v.rubro || '')}</div></div></div></div>`);
+  return `${barra('Buscar', 'inicio')}
+    <label class="buscador">${ico('buscar')}<span class="oculto">Buscar</span><input type="search" id="buscar-g" placeholder="Fiestas, clientes, productos…" value="${esc(busca)}" autofocus></label>
+    <div class="filtros">${chips.map(([k, t, n]) => `<button data-a="ruta" data-r="buscar/${k}"${pres(cat === k)}>${t}${q ? `<b>${n}</b>` : ''}</button>`).join('')}</div>
+    ${q ? (cuerpo || `<div class="tarjeta">${vacio('buscar', 'No encontré nada con eso.')}</div>`) : `<div class="tarjeta">${vacio('buscar', 'Buscá una fiesta, un cliente, un teléfono o un producto.')}</div>`}`;
 };
 
 /* ═════════════ Más, usuarios y ajustes ═════════════ */
@@ -609,6 +740,7 @@ RUTAS.mas = () => {
   const t = (r, i, b, s) => `<a href="#/${r}"><span class="ico">${ico(i)}</span><span><b>${b}</b><small>${s}</small></span></a>`;
   const av = DB.d.avisos.filter(a => a.estado === 'pendiente').length;
   return `<div class="barra"><span class="avatar">${iniciales(Sesion.u.nombre)}</span><h1>${esc(Sesion.u.nombre)}<div class="sub" style="font-weight:600">${ROLES[Sesion.u.rol]}</div></h1></div>
+    ${chipSync() ? `<p style="margin:-6px 0 12px">${chipSync()}</p>` : ''}
     <div class="mosaico">
       ${puede('plata') ? t('pagos', 'plata', 'Pagos', 'Planilla y saldos') + t('precios', 'etiqueta', 'Precios', 'Tarjetas y aumentos') + t('avisos', 'campana', 'Avisos', av ? av + ' para mandar' : 'Al día') : ''}
       ${Sesion.u.rol !== 'empleado' ? t('stock', 'caja', 'Stock', DB.d.productos.filter(enFalta).length + ' faltantes') : ''}
@@ -638,10 +770,10 @@ RUTAS.ajustes = () => {
       <button class="btn acento ancho">Guardar</button></form>
     <h2 class="sec">Copia de seguridad</h2>
     <div class="tarjeta"><p class="sub" style="margin:0 0 12px">Por ahora los datos viven en este teléfono. Bajá una copia de vez en cuando.</p>
-      <div class="botones"><button class="btn borde" data-a="exportar">${ico('bajar', 'ch')}Bajar copia</button><label class="btn borde" style="cursor:pointer">Restaurar copia<input type="file" accept="application/json" id="restaurar" class="oculto"></label></div></div>
-    <h2 class="sec">Datos</h2>
+      <div class="botones"><button class="btn borde" data-a="excel">${ico('bajar', 'ch')}Bajar Excel</button><button class="btn borde" data-a="exportar">${ico('bajar', 'ch')}Bajar copia</button><label class="btn borde" style="cursor:pointer">Restaurar copia<input type="file" accept="application/json" id="restaurar" class="oculto"></label></div></div>
+    ${NUBE ? `<h2 class="sec">Para empezar</h2><div class="tarjeta"><p class="sub" style="margin:0 0 12px">Carga una lista de ejemplo de tarjetas, extras, proveedores y productos para ir corrigiendo con los valores reales. No toca fiestas ni pagos.</p><button class="btn borde" data-a="base-ejemplo">Cargar lista de ejemplo</button></div>` : `<h2 class="sec">Datos</h2>
     <div class="tarjeta"><div class="botones"><button class="btn borde" data-a="demo">Volver a los de ejemplo</button><button class="btn peligro" data-a="cero">Empezar de cero</button></div>
-      <p class="sub" style="margin:12px 0 0;font-size:12.5px">"Empezar de cero" borra fiestas, pagos, stock y registro de este teléfono. Quedan los usuarios, las tarjetas y los proveedores.</p></div>
+      <p class="sub" style="margin:12px 0 0;font-size:12.5px">"Empezar de cero" borra fiestas, pagos, stock y registro de este teléfono. Quedan los usuarios, las tarjetas y los proveedores.</p></div>`}
     <div class="tarjeta"><h3>Instalar en el teléfono</h3><p class="sub" style="margin:4px 0 0">iPhone: Compartir → "Agregar a inicio". Android: menú ⋮ → "Instalar app" o "Agregar a la pantalla principal".</p></div>`;
 };
 
@@ -655,10 +787,11 @@ const EJEMPLOS = () => {
 };
 function abrirCarga(texto = '') {
   const habla = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-  hoja('Carga rápida', `<form data-f="rapida"><div class="rapida"><textarea name="q" rows="1" placeholder="Escribí lo que pasó…" aria-label="Qué querés cargar" autofocus>${esc(texto)}</textarea>
+  hoja('Cargar o buscar', `<form data-f="rapida"><div class="rapida"><textarea name="q" rows="1" placeholder="Escribí lo que pasó o buscá…" aria-label="Qué querés cargar" autofocus>${esc(texto)}</textarea>
       ${habla ? `<button type="button" class="redondo mic" data-a="dictar" aria-label="Dictar">${ico('mic')}</button>` : ''}</div></form>
     <div class="ejemplos">${EJEMPLOS().map(x => `<button data-a="ejemplo" data-t="${esc(x)}">${esc(x)}</button>`).join('')}</div>
     <div id="entendido"></div>
+    <div id="resultados"></div>
     <h3 class="sub" style="margin:18px 2px 6px;font-weight:700">O elegí qué cargar</h3>
     <div class="manual">${puede('editar') ? `<button data-a="m-fiesta">${ico('copa')}Fiesta</button>` : ''}${puede('plata') ? `<button data-a="m-pago">${ico('plata')}Pago</button>` : ''}<button data-a="m-stock">${ico('caja')}Stock</button>${puede('fiestas') ? `<button data-a="m-nota">${ico('lapiz')}Nota</button>` : ''}</div>`, h => {
     const ta = $('textarea', h);
@@ -669,8 +802,24 @@ function abrirCarga(texto = '') {
   });
 }
 let entendidoAhora = null;
+function buscarRapido(h, q) {
+  const box = $('#resultados', h), ws = norm(q).split(/\s+/).filter(Boolean);
+  if (!ws.length || norm(q).trim().length < 2) { box.innerHTML = ''; return; }
+  const ok = t => { const n = norm(t); return ws.every(w => n.includes(w)); };
+  const ver = puede('contacto');
+  const fs = puede('fiestas') ? DB.d.eventos.filter(e => ok(e.titulo + ' ' + TIPOS[e.tipo].nombre + (ver ? ' ' + e.cliente.nombre + ' ' + e.cliente.tel : ''))).sort((a, b) => a.fecha < b.fecha ? 1 : -1).slice(0, 4) : [];
+  const ps = DB.d.productos.filter(p => ok(p.nombre + ' ' + (p.alias || []).join(' '))).slice(0, 3);
+  const vs = DB.d.proveedores.filter(v => ok(v.nombre + ' ' + (v.rubro || ''))).slice(0, 2);
+  if (!fs.length && !ps.length && !vs.length) { box.innerHTML = ''; return; }
+  const fila = (r, id, t, sb, i) => `<button class="res" data-a="ir-res" data-r="${r}" data-id="${id}"><span class="ico">${ico(i, 'ch')}</span><span class="min"><b>${esc(t)}</b><small>${esc(sb)}</small></span>${ico('der', 'ch')}</button>`;
+  box.innerHTML = `<h3 class="sub" style="margin:16px 2px 4px;font-weight:700">Encontré</h3>`
+    + fs.map(e => fila('fiesta/' + e.id, e.id, e.titulo, `${F.num(e.fecha)} · ${TIPOS[e.tipo].nombre} · ${ESTADOS[e.estado]}`, 'copa')).join('')
+    + ps.map(p => fila('stock/todo', p.id, p.nombre, `Hay ${p.stock} ${p.unidad}`, 'caja')).join('')
+    + vs.map(v => fila('proveedores', v.id, v.nombre, v.rubro || '', 'camion')).join('');
+}
 function entender(h) {
   const q = $('textarea', h).value;
+  buscarRapido(h, q);
   let r = interpretar(q);
   if (r.tipo === 'pago' && !puede('plata')) r = { tipo: '' };
   if ((r.tipo === 'evento' || r.tipo === 'nota') && !puede('fiestas')) r = { tipo: '' };
@@ -754,13 +903,22 @@ function guardarMov(pid, mov, cant, evento) {
 /* ═════════════ Toques ═════════════ */
 const ACC = {
   cerrar: () => cerrarHoja(),
-  elegir: b => { elegido = DB.get('usuarios', b.dataset.id); pin = ''; render(); },
-  'otro-usuario': () => { elegido = null; pin = ''; render(); },
+  elegir: b => { elegido = NUBE ? (listaNube.usuarios.find(u => u.id === b.dataset.id)) : DB.get('usuarios', b.dataset.id); fase = 'pin'; pin = ''; msgIngreso = ''; render(); },
+  'otro-usuario': () => { elegido = null; pin = ''; pin1 = ''; fase = 'pin'; msgIngreso = ''; render(); },
   tecla: b => tecla(b.dataset.n),
   'borrar-tecla': () => { pin = pin.slice(0, -1); render(); },
-  salir: () => { Sesion.salir(); cerrarTodo(); location.hash = ''; render(); },
+  salir: () => {
+    if (NUBE) { DB.guardar(); Nube.parar(); Nube.guardarSes(null); DB.usar(''); DB.cargar(); cargarLista(); }
+    Sesion.salir(); cerrarTodo(); location.hash = ''; elegido = null; render();
+  },
   ruta: b => ir(b.dataset.r),
   cargar: () => abrirCarga(),
+  'ir-res': b => { cerrarTodo(); ir(b.dataset.r, b.dataset.id); },
+  sync: () => { tostada('Sincronizando…'); Nube.sincronizar(); },
+  excel: () => { bajarExcel().then(() => tostada('Excel listo'), e => tostada(e.message)); },
+  'reintentar-lista': () => cargarLista(),
+  'elegir-pend': b => { elegido = { nombre: b.dataset.n, pendiente: true }; fase = 'crear1'; pin = ''; pin1 = ''; msgIngreso = ''; render(); },
+  calc: () => abrirCalc(),
   'cerrar-pil': (b, e) => { e.preventDefault(); e.stopPropagation(); try { sessionStorage.setItem('pil:' + b.dataset.t, '1'); } catch (x) { } b.closest('.pildora').remove(); },
   'deshacer-t': b => { const m = deshacer(b.dataset.id); $('#tostada').classList.remove('ver'); if (m) tostada(m); else { tostada('Listo, deshecho'); render(); } },
   deshacer: b => {
@@ -770,6 +928,7 @@ const ACC = {
     else { tostada(m || 'Deshecho'); render(); }
   },
   dia: b => ir('agenda/' + b.dataset.d),
+  'modo-cal': b => { modoSemana = b.dataset.v === 'semana'; render(); },
   'nueva-fiesta': b => abrirFiesta({ fecha: b.dataset.d || '', turno: b.dataset.turno || 'noche', tipo: '15', estado: 'consulta', lista: DB.d.precios[0] && DB.d.precios[0].id, cliente: {} }),
   'editar-fiesta': b => abrirFiesta(DB.get('eventos', b.dataset.id)),
   'borrar-fiesta': b => {
@@ -823,7 +982,22 @@ const ACC = {
     hoja('Llegó el pedido', `<form data-f="llego" data-id="${o.id}"><p class="sub" style="margin:-6px 2px 12px">Corregí lo que llegó distinto de lo pedido.</p>${o.items.map(i => { const p = DB.get('productos', i.producto); return p ? `<label class="fila"><span class="crece"><b>${esc(p.nombre)}</b><span class="sub"> · pedido ${i.cant}</span></span><input name="l-${p.id}" inputmode="numeric" value="${i.cant}" style="width:72px;text-align:center;border:1.5px solid var(--linea);border-radius:12px;padding:8px;background:var(--superficie)"></label>` : ''; }).join('')}<button class="btn acento ancho" style="margin-top:12px">Sumar al stock</button></form>`);
   },
   proveedor: b => { const v = b.dataset.id ? DB.get('proveedores', b.dataset.id) : {}; hoja(v.id ? 'Editar proveedor' : 'Proveedor nuevo', `<form data-f="proveedor" data-id="${v.id || ''}"><label class="campo"><span>Nombre</span><input name="nombre" value="${esc(v.nombre || '')}" required autofocus></label><label class="campo"><span>Qué trae</span><input name="rubro" value="${esc(v.rubro || '')}"></label><label class="campo"><span>WhatsApp / teléfono</span><input name="tel" type="tel" value="${esc(v.tel || '')}"></label><button class="btn acento ancho">Guardar</button></form>`); },
+  'cambiar-pin': async b => {
+    const h = b.closest('.hoja'), pin = val(h, 'pin2');
+    if (!/^\d{6}$/.test(pin)) { tostada('El PIN tiene que tener 6 números'); return; }
+    try { await Nube.fn('cambiar_pin', { id: b.dataset.id, pin }, true); tostada('PIN cambiado'); $('[name="pin2"]', h).value = ''; }
+    catch (e) { tostada(e instanceof TypeError ? 'Hace falta internet para esto' : e.message); }
+  },
   usuario: b => {
+    if (NUBE) {
+      const u = b.dataset.id ? DB.get('usuarios', b.dataset.id) : null;
+      return hoja(u ? u.nombre : 'Usuario nuevo', `<form data-f="usuario" data-id="${u ? u.id : ''}">
+        ${u ? '' : `<label class="campo"><span>Nombre</span><input name="nombre" required autofocus></label>`}
+        <label class="campo"><span>Qué puede hacer</span><select name="rol">${Object.entries(ROLES).map(([k, t]) => `<option value="${k}"${sel(u ? u.rol : 'empleado', k)}>${t}</option>`).join('')}</select></label>
+        ${u ? `<label class="extra-item"><input type="checkbox" name="activo"${u.activo ? ' checked' : ''}><span>Puede entrar</span></label>` : `<label class="campo"><span>PIN (6 números)</span><input name="pin" inputmode="numeric" maxlength="6" pattern="\\d{6}" required></label>`}
+        <button class="btn acento ancho" style="margin-top:8px">${u ? 'Guardar permisos' : 'Crear usuario'}</button></form>
+        ${u ? `<h3 style="margin:22px 2px 8px;font-size:15px">Cambiar el PIN</h3><div class="rapida"><input name="pin2" inputmode="numeric" maxlength="6" placeholder="Nuevo PIN de 6 números" style="flex:1;border:1.5px solid var(--linea);border-radius:14px;padding:12px;background:var(--superficie);min-height:48px;font-size:16px"><button class="btn" data-a="cambiar-pin" data-id="${u.id}">Cambiar</button></div>` : ''}`);
+    }
     const u = b.dataset.id ? DB.get('usuarios', b.dataset.id) : { rol: 'empleado', activo: true };
     hoja(u.id ? u.nombre : 'Usuario nuevo', `<form data-f="usuario" data-id="${u.id || ''}"><label class="campo"><span>Nombre</span><input name="nombre" value="${esc(u.nombre || '')}" required autofocus></label>
       <label class="campo"><span>Rol</span><select name="rol">${Object.entries(ROLES).map(([k, t]) => `<option value="${k}"${sel(u.rol, k)}>${t}</option>`).join('')}</select></label>
@@ -831,6 +1005,13 @@ const ACC = {
       ${u.id ? `<label class="extra-item"><input type="checkbox" name="activo"${u.activo ? ' checked' : ''}><span>Puede entrar</span></label>` : ''}
       <button class="btn acento ancho" style="margin-top:8px">Guardar</button></form>`);
   },
+  'base-ejemplo': () => confirmar('¿Cargar la lista de ejemplo?', 'Agrega tarjetas, extras, proveedores y productos de ejemplo. Después los corregís con los valores reales.', 'Cargar', () => {
+    const m = semilla(), cambios = [];
+    for (const col of ['precios', 'servicios', 'proveedores', 'productos']) for (const x of m[col]) if (!DB.get(col, x.id)) cambios.push({ col, nuevo: x });
+    if (!cambios.length) { tostada('Ya está cargada'); return; }
+    const reg = cambiar('Cargó la lista de ejemplo (' + cambios.length + ' ítems)', cambios, { ir: 'precios' });
+    ok(reg, 'Lista de ejemplo cargada'); render();
+  }),
   exportar: () => bajar('mansion-copia-' + F.hoy() + '.json', JSON.stringify(DB.d), 'application/json'),
   demo: () => confirmar('¿Volver a los datos de ejemplo?', 'Se pierde todo lo que cargaste en este teléfono. Bajá una copia antes si la querés.', 'Sí, volver', () => { DB.d = semilla(); DB.guardar(); Sesion.leer(); if (!Sesion.u) Sesion.salir(); tostada('Datos de ejemplo cargados'); ir('inicio'); }, true),
   cero: () => confirmar('¿Empezar de cero?', 'Se borran fiestas, pagos, avisos, stock, pedidos y registro de este teléfono. No se puede deshacer.', 'Borrar todo', () => {
@@ -877,12 +1058,22 @@ document.addEventListener('click', e => {
   if (b.dataset.a === 'confirmar-carga') return;
   ACC[b.dataset.a](b, e);
 });
+/* Deslizar el calendario con el dedo cambia de mes o de semana */
+let toque = null;
+document.addEventListener('touchstart', e => { const c = e.target.closest('.cal-t'); toque = c ? { x: e.touches[0].clientX, y: e.touches[0].clientY, c } : null; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!toque) return; const t = e.changedTouches[0], dx = t.clientX - toque.x, dy = t.clientY - toque.y;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) ir('agenda/' + (dx < 0 ? toque.c.dataset.sig : toque.c.dataset.ant));
+  toque = null;
+}, { passive: true });
 document.addEventListener('keydown', e => {
+  const escribiendo = /INPUT|TEXTAREA|SELECT/.test(e.target.tagName);
+  if (Sesion.u && !(typeof Calc !== 'undefined' && Calc.abierta) && !$('#capas .velo') && ((e.key === '/' && !escribiendo) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'))) { e.preventDefault(); abrirCarga(); return; }
   if (e.key === 'Escape' && $('#capas .velo')) { cerrarHoja(); return; }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-a]')) { e.preventDefault(); e.target.click(); }
 });
 document.addEventListener('input', e => {
-  if (e.target.id === 'buscar-f' || e.target.id === 'buscar-s') {
+  if (e.target.id === 'buscar-f' || e.target.id === 'buscar-s' || e.target.id === 'buscar-g') {
     busca = e.target.value; const pos = e.target.selectionStart, id = e.target.id; render();
     const n = $('#' + id); if (n) { n.focus(); n.setSelectionRange(pos, pos); }
   }
@@ -985,6 +1176,7 @@ document.addEventListener('submit', e => {
     const v = id ? clon(DB.get('proveedores', id)) : { id: nid() }; Object.assign(v, { nombre: val(h, 'nombre'), rubro: val(h, 'rubro'), tel: val(h, 'tel') }); if (!v.nombre) return;
     const reg = cambiar(`${id ? 'Editó' : 'Nuevo'} proveedor: ${v.nombre}`, [{ col: 'proveedores', nuevo: v }], { ir: 'proveedores' }); cerrarTodo(); ok(reg, 'Guardado'); return render();
   }
+  if (tipo === 'usuario' && NUBE) return usuarioNube(h, id);
   if (tipo === 'usuario') {
     const u = id ? clon(DB.get('usuarios', id)) : { id: nid(), activo: true };
     Object.assign(u, { nombre: val(h, 'nombre'), rol: val(h, 'rol'), pin: val(h, 'pin') });
@@ -999,10 +1191,18 @@ document.addEventListener('submit', e => {
   }
   if (tipo === 'ajustes') {
     DB.d.ajustes = { salon: val(h, 'salon') || 'La Mansión del Rey', plantilla: val(h, 'plantilla') || PLANTILLA_AUMENTO, revisarCada: num(h, 'revisarCada'), tel: DB.d.ajustes.tel || '' };
-    DB.guardar(); tostada('Ajustes guardados'); return render();
+    DB.marcar('ajustes', 'general'); DB.guardar(); if (NUBE) Nube.pronto(); tostada('Ajustes guardados'); return render();
   }
 });
 
+async function usuarioNube(h, id) {
+  const btn = $('button.btn.acento', h); if (btn) btn.disabled = true;
+  try {
+    if (!id) await Nube.fn('alta', { nombre: val(h, 'nombre'), rol: val(h, 'rol'), pin: val(h, 'pin') }, true);
+    else await Nube.fn('permiso', { id, rol: val(h, 'rol'), activo: $('[name="activo"]', h).checked }, true);
+    cerrarTodo(); tostada('Guardado'); await Nube.sincronizar(); render();
+  } catch (e) { tostada(e instanceof TypeError ? 'Hace falta internet para esto' : e.message); if (btn) btn.disabled = false; }
+}
 function confirmarCarga(h) {
   const r = entendidoAhora; if (!r) return;
   if (r.tipo === 'pago') {
@@ -1038,8 +1238,8 @@ document.addEventListener('click', e => {
 });
 
 /* ── Arranque ── */
-DB.cargar();
-DB.guardar();
-Sesion.leer();
+if (NUBE) Sesion.leer(); else { DB.cargar(); DB.guardar(); Sesion.leer(); }
 if (!location.hash && Sesion.u) location.hash = '#/inicio';
 render();
+if (NUBE) { if (Sesion.u) Nube.iniciar(); else cargarLista(); }
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { });

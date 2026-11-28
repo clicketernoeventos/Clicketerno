@@ -217,6 +217,23 @@ const disparar = async (p) => { await p.click('#disparo').catch(() => {}); await
           if (!new RegExp('\\b' + antes + '\\b').test(dice))
             mal(`la pantalla de pausa no dice cuántas le quedan (${antes}): "${dice.slice(0, 110)}"`);
           else bien(`y le dice cuántas le quedan (${antes})`);
+          /* "Tu rollo": un cuadrado redondeado por foto del cupo, con la
+             siguiente encendida. Referencia del dueño (1 Second Everyday).
+             Se cuenta de lo que de verdad pasó: sacadas + la que sigue +
+             las libres tienen que sumar el cupo, y las llenas ser las que
+             gastó. */
+          const g = await p3.evaluate(() => {
+            const q = (c) => document.querySelectorAll('.rollo-grilla .rg' + c).length;
+            return { total: q(''), hechas: q('.hecha'), sig: q('.sig'), libres: q('.libre') };
+          });
+          if (!g.total) mal('la pausa no dibuja "Tu rollo": falta la grilla de cuadrados');
+          else {
+            if (g.sig !== 1) mal(`la grilla tiene ${g.sig} cuadrados destacados y tiene que haber uno`);
+            else bien('la pausa dibuja el rollo en cuadrados, con el próximo destacado');
+            if (g.hechas + g.sig + g.libres !== g.total || g.total !== g.hechas + antes)
+              mal(`la grilla no cuadra: ${g.hechas} sacadas + ${antes} que quedan ≠ ${g.total} cuadrados`);
+            else bien(`y cuadra: ${g.hechas} sacadas + ${antes} que quedan = ${g.total}`);
+          }
         }
         /* La cámara tiene que APAGARSE: si no, sigue comiendo batería. */
         const viva = await p3.evaluate(() => !!document.querySelector('#video'));
@@ -239,6 +256,45 @@ const disparar = async (p) => { await p.click('#disparo').catch(() => {}); await
           const luego = (await mirar(p3)).quedan;
           if (luego !== antes) mal(`al volver le cambió el cupo: ${antes} → ${luego}`);
           else bien(`y le conserva las ${luego} que le quedaban`);
+
+          /* ── "Ya terminé" ──
+             Pedido del dueño: que el invitado pueda dar el rollo por
+             terminado SIN gastar las 24, y que además pueda sacar las que
+             quiera, salir y volver a entrar con el resto. Lo segundo ya
+             estaba; esto es lo primero, y tiene que ser reversible. */
+          await p3.click('#salirCam');
+          await p3.waitForTimeout(1200);
+          if (!(await hay('#termine')))
+            mal('en la pausa no hay un "Ya terminé": solo se puede seguir o dejar colgado');
+          else {
+            bien('la pausa ofrece "Ya terminé, no saco más"');
+            const t = await p3.evaluate(() => {
+              const r = document.querySelector('#termine').getBoundingClientRect();
+              return { w: r.width, h: r.height };
+            });
+            if (t.h < 44) mal(`el botón "Ya terminé" mide ${Math.round(t.w)}x${Math.round(t.h)}, no llega a 44 de alto`);
+            else bien(`y llega a 44 de alto (${Math.round(t.h)})`);
+            await p3.click('#termine');
+            await p3.waitForTimeout(1500);
+            if (await hay('#disparo')) mal('tocando "Ya terminé" sigue en la cámara');
+            else bien('"Ya terminé" saca de la cámara');
+            const txt = (await p3.evaluate(() => document.body.innerText)).toLowerCase();
+            if (/ya sacaste tus \d+ fotos/.test(txt))
+              mal('le dice "ya sacaste tus 24" y no las sacó: ' + txt.slice(0, 100));
+            else bien('y no le miente diciendo que gastó todas');
+            if (!(await hay('#seguirSacando')))
+              mal('terminado no hay forma de arrepentirse: el que guarda el teléfono a las diez no puede volver en el brindis');
+            else {
+              bien('puede arrepentirse');
+              await p3.click('#seguirSacando');
+              await p3.waitForTimeout(2500);
+              if (!(await hay('#disparo'))) mal('"Me arrepentí" no reabre la cámara');
+              else bien('y reabre la cámara');
+              const fin = (await mirar(p3)).quedan;
+              if (fin !== antes) mal(`terminar y arrepentirse le cambió el cupo: ${antes} → ${fin}`);
+              else bien(`con las ${fin} que le quedaban`);
+            }
+          }
         }
       }
     }

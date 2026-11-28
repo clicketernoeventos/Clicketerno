@@ -58,10 +58,10 @@
 <style>
 :root{
   color-scheme: dark;   /* si no, el calendario del teléfono sale blanco sobre negro */
-  --negro:#000; --carbon:#0A0908; --humo:#131110;
-  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#9B9287;
-  --hilo:rgba(217,174,114,.24); --hilo2:rgba(217,174,114,.5); --gris:rgba(255,255,255,.09);
+  --negro:#07101E; --carbon:#0C1A33; --humo:#13284A;
+  --oro:#A8C8EA; --oro-hondo:#6FA3DC; --champan:#D7E6F7;
+  --texto:#F2F6FB; --mute:#9FB3CC;
+  --hilo:rgba(168,200,234,.26); --hilo2:rgba(168,200,234,.55); --gris:rgba(255,255,255,.09);
   --e:cubic-bezier(.22,.7,.24,1);
 }
 *{box-sizing:border-box}
@@ -92,28 +92,76 @@ img{max-width:100%;display:block}
 .filete:before,.filete:after{content:'';height:1px;background:linear-gradient(90deg,transparent,var(--hilo2),transparent);flex:1}
 
 #brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(120% 70% at 50% -10%,rgba(217,174,114,.1),transparent 60%)}
+  background:radial-gradient(120% 70% at 50% -10%,rgba(168,200,234,.1),transparent 60%)}
 #grano{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.04;mix-blend-mode:soft-light;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
 #app{position:relative;z-index:2;min-height:100svh}
 
-/* ── cinta de la demostración ── */
-/* Alto AUTOMÁTICO y medido, no clavado en 38px: en un teléfono los
-   botones no entran en una línea, y con alto fijo lo que sobra se sale de
-   la pantalla —el ✕ y "Salir" quedaban afuera, sin forma de llegar—.
-   Envuelve, y el JS pone el alto real en --cinta. */
-#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:90;min-height:38px;display:flex;
-  flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:6px 12px;
-  background:linear-gradient(90deg,#D9AE72,#EFDCBC);color:#2A1B08;
-  font:500 11.5px/1 Jost,system-ui,sans-serif;letter-spacing:.06em}
-#cinta-demo b{font-weight:600}
-#cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
-#cinta-demo button{font:500 11px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;
-  text-transform:uppercase;color:#2A1B08;background:rgba(42,27,8,.12);
-  border:1px solid rgba(42,27,8,.3);border-radius:20px;padding:5px 12px;cursor:pointer;
-  white-space:nowrap;flex:none}
-#cinta-demo button:hover{background:rgba(42,27,8,.2)}
-body.en-demo{--cinta:38px;padding-top:var(--cinta)}
+/* ── cinta de la demostración ──
+   Claymorfismo, en azul, celeste y blanco: una pastilla de arcilla blanda
+   (luz adentro arriba, sombra adentro abajo y una sombra larga y suave
+   afuera) con botones "inflados". Antes era un zócalo dorado de 129px en un
+   teléfono —más de un séptimo de la pantalla— con tres botones apilados:
+   el cliente que probaba lo sentía como un cartel molesto y no como una
+   muestra. Ahora es UNA línea de ~48px.
+   Alto AUTOMÁTICO y medido, no clavado: si en una pantalla angosta los
+   botones no entran, envuelve, y el JS pone el alto real en --cinta para
+   que las capas fijas se corran lo que haga falta.
+   Cada botón mide 44 de alto (el dedo) pero se DIBUJA de 34: el borde es
+   transparente y el fondo se recorta al relleno. Así llega al mínimo sin
+   agrandar la cinta. */
+#cinta-demo{position:fixed;top:0;left:8px;right:8px;z-index:90;display:flex;
+  flex-wrap:wrap;align-items:center;justify-content:center;gap:0 6px;padding:2px 8px;
+  background:linear-gradient(180deg,#FFFFFF,#E4EFFB);color:#0F3B73;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 12px 22px -12px rgba(31,95,160,.55),inset 0 2px 2px #FFFFFF,
+    inset 0 -4px 8px rgba(120,170,230,.32);
+  font-family:Jost,system-ui,sans-serif;font-size:12px;font-weight:500;line-height:1;letter-spacing:.03em;
+  text-align:center}
+#cinta-demo .chip{padding:5px 11px;border-radius:999px;font-weight:700;font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:#1F5FA8;
+  background:linear-gradient(180deg,#F3F9FF,#CFE3F8);
+  box-shadow:inset 0 1.5px 2px #FFFFFF,inset 0 -2px 4px rgba(90,150,215,.35)}
+#cinta-demo .aviso{color:#35639B}
+#cinta-demo button,#cinta-demo a{font-family:inherit;font-size:12px;font-weight:600;
+  letter-spacing:.02em;text-decoration:none;white-space:nowrap;flex:none;cursor:pointer;
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  padding:0 10px;border:5px solid transparent;border-radius:999px;background-clip:padding-box;
+  color:#1F5FA8;background-image:linear-gradient(180deg,#FFFFFF,#D9E9FA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -3px 5px rgba(100,155,220,.35);
+  filter:drop-shadow(0 3px 3px rgba(31,95,160,.38))}
+/* La sombra de afuera va con drop-shadow y no con box-shadow: el borde
+   transparente que le da los 44px hace que un box-shadow se dibuje
+   alrededor de la caja de 44 y no de la pastilla de 34, y se ve un halo
+   blanco de más. El drop-shadow sigue lo que de verdad se pintó. */
+/* el principal, el de "empezar de nuevo": azul macizo */
+#cinta-demo .p{color:#FFFFFF;background-image:linear-gradient(180deg,#4F98EA,#2A6BB8);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.55),inset 0 -3px 6px rgba(10,50,110,.4);
+  filter:drop-shadow(0 3px 3px rgba(20,70,140,.5))}
+#cinta-demo .c{display:none}
+#cinta-demo button:active,#cinta-demo a:active{transform:translateY(1px) scale(.97)}
+body.en-demo{--cinta:48px;padding-top:var(--cinta)}
+/* ── la cinta se pliega ──
+   Un ✕ la deja en una tira de 18px que se toca y vuelve. No se esconde del
+   todo a propósito: es la única salida al sitio y el único "Empezar de
+   nuevo". */
+#cinta-demo .plegar{min-width:44px;padding:0;font-size:12px;letter-spacing:0}
+#cinta-demo .mini{display:none;font-size:9px;font-weight:700;letter-spacing:.26em;
+  text-transform:uppercase;color:#1F5FA8}
+body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
+  flex-wrap:nowrap;cursor:pointer;border-radius:0 0 12px 12px;
+  background:linear-gradient(180deg,#FFFFFF,#D7E6F7)}
+body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
+body.en-demo.cinta-chica #cinta-demo .mini{display:block}
+/* En un teléfono el aviso largo sobra: queda la etiqueta "Demo" y los
+   rótulos cortos. La frase entera sigue en el `title` de la etiqueta. */
+@media(max-width:640px){
+  #cinta-demo .aviso{display:none}
+  #cinta-demo .l{display:none}
+  #cinta-demo .c{display:inline}
+  #cinta-demo button,#cinta-demo a{padding:0 6px}
+  #cinta-demo .chip{padding:5px 9px}
+}
 body.en-demo .pie-fijo{bottom:0}
 /* position:fixed no lo corre el padding del body. La cámara, el cuarto
    oscuro y el visor de fotos se dibujan con inset:0, así que sin esto la
@@ -121,22 +169,6 @@ body.en-demo .pie-fijo{bottom:0}
 body.en-demo .camara,
 body.en-demo .cuarto,
 body.en-demo .visorf{top:var(--cinta)}
-/* ── la cinta se pliega ──
-   En un teléfono, 38px fijos arriba le comen la pantalla a la app. Con el
-   ✕ queda una tira de 18px que se toca y vuelve, así no se pierde "Salir"
-   ni "Empezar de nuevo" (que es lo que pasaría escondiéndola del todo). */
-#cinta-demo .plegar{padding:5px 9px;border-radius:50%;line-height:1;font-size:12px;
-  letter-spacing:0;border-color:transparent;background:transparent}
-#cinta-demo .mini{display:none;font-size:9px;letter-spacing:.26em;
-  text-transform:uppercase;opacity:.9}
-body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
-  flex-wrap:nowrap;cursor:pointer}
-body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
-body.en-demo.cinta-chica #cinta-demo .mini{display:block}
-@media(max-width:400px){
-  #cinta-demo{font-size:10.5px;gap:9px}
-  #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-}
 /* ── tarjetas para cortar y repartir ──
    Lo único del producto que el cliente necesita en la mano y no existía:
    antes le sacaba una captura al QR de la pantalla. Mismas medidas que
@@ -146,16 +178,16 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   display:grid;gap:0;border:1px solid var(--gris)}
 .hoja-tarjetas.de2{grid-template-columns:1fr}
 .hoja-tarjetas.de4,.hoja-tarjetas.de8{grid-template-columns:1fr 1fr}
-.tarjeta-qr{background:#0b0908;color:#F6F2EA;text-align:center;padding:16px 12px;
-  border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
+.tarjeta-qr{background:#0b0908;color:#F2F6FB;text-align:center;padding:16px 12px;
+  border:1px dashed rgba(168,200,234,.35);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
 .tarjeta-qr .marca-t{width:88px;opacity:.9}
 .tarjeta-qr .nom-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:24px;line-height:1.1}
-.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
+.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#94A8C2;text-transform:uppercase}
 .tarjeta-qr .ped-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;margin:6px 0}
 .tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
 .tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
-.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}
+.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#94A8C2;text-transform:uppercase;line-height:1.7}
 .tarjeta-qr .cod-t{font-size:9.5px;letter-spacing:.24em;color:var(--oro)}
 .hoja-tarjetas.de8 .tarjeta-qr{padding:9px 8px;gap:4px}
 .hoja-tarjetas.de8 .tarjeta-qr .marca-t{width:54px}
@@ -187,7 +219,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   padding:14px 18px;border-bottom:1px solid var(--gris)}
 .fila-res:last-child{border-bottom:0}
 .fila-res span{font-size:12.5px;letter-spacing:.06em;color:var(--mute);flex:none}
-.fila-res b{font-weight:400;font-size:14.5px;color:#F6F2EA;text-align:right}
+.fila-res b{font-weight:400;font-size:14.5px;color:#F2F6FB;text-align:right}
 /* ══════════ interfaz ══════════
    Lo mismo que en muro.html, y por los mismos motivos medidos: todo lo
    que se toca llega a 44x44 (el "atrás" de este archivo medía 23x26, que
@@ -199,7 +231,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
   display:inline-flex;align-items:center;justify-content:flex-start}
 .acepto{display:flex;gap:12px;align-items:flex-start;margin-top:20px;padding:14px 16px;
   text-align:left;border:1px solid var(--gris);border-radius:2px;
-  background:rgba(217,174,114,.04);cursor:pointer;transition:border-color .3s var(--e)}
+  background:rgba(168,200,234,.04);cursor:pointer;transition:border-color .3s var(--e)}
 .acepto.falta{border-color:#FF7B94}
 .acepto input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--oro);cursor:pointer}
 .acepto span{font-size:13px;line-height:1.7;color:var(--mute)}
@@ -216,7 +248,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
    abierto dice todo. Plegado no es esconderlo: el renglón dice de qué se
    trata y está en la misma pantalla donde se pide el dato. */
 .aviso-datos{margin:18px auto 0;max-width:420px;text-align:left;
-  border:1px solid var(--gris);background:rgba(217,174,114,.04);border-radius:2px}
+  border:1px solid var(--gris);background:rgba(168,200,234,.04);border-radius:2px}
 .aviso-datos summary{list-style:none;cursor:pointer;padding:13px 16px;
   font-size:12px;letter-spacing:.08em;color:var(--oro);
   display:flex;align-items:center;gap:10px;min-height:var(--toque)}
@@ -228,7 +260,7 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .aviso-datos[open] summary:after{content:'Cerrar'}
 .aviso-datos .cuerpo{padding:2px 16px 16px}
 .aviso-datos p{font-size:13px;line-height:1.75;color:var(--mute);margin-top:10px}
-.aviso-datos b{color:#EDE6DA;font-weight:500}
+.aviso-datos b{color:#E6EEF8;font-weight:500}
 .aviso-datos a{color:var(--oro);text-decoration:underline;text-underline-offset:3px;
   /* enlace suelto adentro de un párrafo: crece a lo alto sin romper el
      renglón, que es como se llega a 44px sin desarmar el texto */
@@ -266,9 +298,9 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .cab img{width:82px;opacity:.7;margin-bottom:16px}
 .cab h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(24px,7vw,30px)}
 .centro{min-height:80svh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 24px}
-.centro p.info{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:32ch;margin:14px auto 0}
+.centro p.info{color:#A9BBD3;line-height:1.8;font-size:14.5px;max-width:32ch;margin:14px auto 0}
 .oro-btn{width:100%;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
-  color:#0A0806;border-radius:2px;padding:16px;font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
+  color:#0B2A52;border-radius:2px;padding:16px;font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;
   transition:transform .25s var(--e),filter .3s}
 .oro-btn:disabled{opacity:.55}
 .oro-btn:not(:disabled):active{transform:scale(.99)}
@@ -294,7 +326,7 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .portada-r .marca-gr{width:150px;margin:0 auto 26px;opacity:.85}
 .portada-r h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(30px,9vw,40px);line-height:1.1;margin:10px 0 0}
 .portada-r h1 em{display:block;font-style:italic;color:var(--oro)}
-.bajada{color:#B5AC9E;line-height:1.8;font-size:14.5px;max-width:34ch;margin:16px auto 26px;text-align:center}
+.bajada{color:#A9BBD3;line-height:1.8;font-size:14.5px;max-width:34ch;margin:16px auto 26px;text-align:center}
 .link-abajo{display:block;width:100%;text-align:center;color:var(--mute);font-size:12.5px;
   padding:16px 0;letter-spacing:.04em}
 .link-abajo:hover{color:var(--oro)}
@@ -306,10 +338,10 @@ input[type=text]:focus{outline:none;border-color:var(--oro)}
 .paso-cab .barra i{display:block;height:100%;background:var(--oro);transition:width .45s var(--e)}
 .paso-cuerpo{padding-top:44px;padding-bottom:150px;max-width:460px}
 .paso-cuerpo h2{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(25px,7.4vw,32px);line-height:1.15;font-weight:400}
-.paso-cuerpo .sub{color:#B5AC9E;line-height:1.75;font-size:14px;margin:14px 0 30px;max-width:32ch}
+.paso-cuerpo .sub{color:#A9BBD3;line-height:1.75;font-size:14px;margin:14px 0 30px;max-width:32ch}
 input.grande{font-size:21px;padding:14px 2px}
 .pie-fijo{position:fixed;left:0;right:0;bottom:0;padding:16px 26px calc(20px + env(safe-area-inset-bottom));
-  background:linear-gradient(0deg,#000 62%,transparent);max-width:512px;margin:0 auto}
+  background:linear-gradient(0deg,var(--negro) 62%,transparent);max-width:512px;margin:0 auto}
 
 /* la pantalla del rollo */
 .instruccion{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(22px,6.4vw,27px);line-height:1.25;
@@ -324,13 +356,13 @@ input.grande{font-size:21px;padding:14px 2px}
 .estado.gris{color:var(--mute);border-color:var(--gris)}
 /* el aviso de que el álbum se borra pronto (mismo trato que en el muro) */
 .aviso-vence{border:1px solid var(--oro);padding:20px 22px;margin:26px auto 0;max-width:34ch;
-  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+  background:linear-gradient(160deg,rgba(168,200,234,.11),rgba(168,200,234,.02))}
 .aviso-vence.tarde{border-color:rgba(255,123,148,.5);
   background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
 .aviso-vence b.tit{display:block;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
   color:var(--oro);font-weight:400;margin-bottom:12px}
 .aviso-vence.tarde b.tit{color:#FF7B94}
-.aviso-vence p{color:#B5AC9E;line-height:1.75;font-size:14px;text-align:left;margin:0}
+.aviso-vence p{color:#A9BBD3;line-height:1.75;font-size:14px;text-align:left;margin:0}
 
 /* piezas sueltas */
 .rotulito{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin:30px 0 12px}
@@ -343,14 +375,14 @@ input.grande{font-size:21px;padding:14px 2px}
 .fila-ev .fl{color:var(--oro);font-size:17px;flex:none}
 .punto{width:8px;height:8px;border-radius:50%;flex:none;background:var(--mute)}
 .punto.vivo{background:#6FCF8B;box-shadow:0 0 0 4px rgba(111,207,139,.14)}
-.punto.oro{background:var(--oro);box-shadow:0 0 0 4px rgba(217,174,114,.14)}
+.punto.oro{background:var(--oro);box-shadow:0 0 0 4px rgba(168,200,234,.14)}
 .punto.gris{background:#5b5550}
 .chips{display:flex;flex-wrap:wrap;gap:9px}
 .chips button{padding:12px 18px;border:1px solid var(--gris);border-radius:22px;font-size:13.5px;color:var(--mute)}
-.chips button[aria-pressed=true]{border-color:var(--oro);color:var(--oro);background:rgba(217,174,114,.06)}
+.chips button[aria-pressed=true]{border-color:var(--oro);color:var(--oro);background:rgba(168,200,234,.06)}
 .dos-cartas{display:grid;gap:12px}
 .dos-cartas button{border:1px solid var(--gris);border-radius:8px;padding:20px 18px;text-align:left;position:relative}
-.dos-cartas button[aria-pressed=true]{border-color:var(--oro);background:rgba(217,174,114,.06)}
+.dos-cartas button[aria-pressed=true]{border-color:var(--oro);background:rgba(168,200,234,.06)}
 .dos-cartas b{display:block;font-weight:400;font-size:16px;margin-bottom:6px}
 .dos-cartas span{font-size:13px;color:var(--mute);line-height:1.5}
 .dos-cartas .reco{position:absolute;top:16px;right:16px;font-style:normal;font-size:9px;
@@ -386,8 +418,8 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .tapa{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end}
 .tapa .foto{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
 .tapa .foto:after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 30%,rgba(0,0,0,.88) 72%,#000 100%)}
-.tapa .foto.vacia{background:radial-gradient(120% 80% at 50% 0%,rgba(217,174,114,.16),transparent 60%),#0A0908}
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 30%,rgba(0,0,0,.88) 72%,var(--negro) 100%)}
+.tapa .foto.vacia{background:radial-gradient(120% 80% at 50% 0%,rgba(168,200,234,.16),transparent 60%),#0C1A33}
 .tapa .arriba{position:relative;z-index:2;padding:34px 26px 0;text-align:center}
 .tapa .arriba img{width:88px;margin:0 auto;opacity:.75}
 .tapa .medio{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
@@ -396,10 +428,10 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .tapa .fechita{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--oro);margin-top:14px}
 .tapa .abajo{position:relative;z-index:2;padding:22px 26px calc(30px + env(safe-area-inset-bottom))}
 .promesa{border:1px solid var(--hilo);border-radius:6px;padding:18px 20px;margin-bottom:22px;
-  background:rgba(12,10,8,.5);backdrop-filter:blur(10px);text-align:center}
+  background:rgba(9,20,38,.5);backdrop-filter:blur(10px);text-align:center}
 .promesa b{display:block;font-size:15.5px;font-weight:400;line-height:1.5;margin-bottom:6px}
 .promesa b em{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;color:var(--oro);font-size:17px}
-.promesa span{font-size:13px;color:#B5AC9E;line-height:1.6}
+.promesa span{font-size:13px;color:#A9BBD3;line-height:1.6}
 .tapa .campo{margin:0 0 14px;text-align:left}
 .sin-app{text-align:center;font-size:11.5px;color:var(--mute);margin-top:14px;letter-spacing:.04em}
 
@@ -425,7 +457,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .cam-arriba{position:relative;z-index:3;display:flex;align-items:center;gap:12px;
   padding:calc(14px + env(safe-area-inset-top)) 18px 0}
 .cam-arriba .nombre-ev{flex:1;text-align:center;font-size:11px;letter-spacing:.26em;
-  text-transform:uppercase;color:rgba(246,242,234,.82)}
+  text-transform:uppercase;color:rgba(242,246,251,.82)}
 .girar{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
   display:flex;align-items:center;justify-content:center;flex:none}
 .girar svg{width:19px;height:19px;stroke:var(--texto);fill:none;stroke-width:1.6;stroke-linecap:round}
@@ -446,10 +478,10 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
    columna empujaba la tira entera más abajo que las otras. */
 .filtro-op{flex:none;width:66px;display:flex;flex-direction:column;align-items:center;gap:7px;
   scroll-snap-align:center}
-.filtro-op canvas{width:56px;height:56px;border-radius:10px;display:block;background:#141210;
+.filtro-op canvas{width:56px;height:56px;border-radius:10px;display:block;background:#13284A;
   border:2px solid transparent;transition:border-color .25s,transform .25s var(--e)}
 .filtro-op[aria-pressed=true] canvas{border-color:var(--oro);transform:scale(1.06)}
-.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(246,242,234,.6);text-align:center;
+.filtro-op span{font-size:9.5px;letter-spacing:.04em;color:rgba(242,246,251,.6);text-align:center;
   line-height:1.25;white-space:nowrap}
 .filtro-op[aria-pressed=true] span{color:var(--oro)}
 
@@ -462,10 +494,10 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .rollo-tira{position:relative;z-index:3;padding:12px 18px 0;text-align:center}
 .cuadros{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;max-width:320px;margin:0 auto}
 .cuadros i{display:block;width:8px;height:12px;border-radius:2px;background:var(--oro);
-  box-shadow:0 0 6px rgba(217,174,114,.45);transition:background .4s,box-shadow .4s}
-.cuadros i.gastado{background:rgba(246,242,234,.14);box-shadow:none}
+  box-shadow:0 0 6px rgba(168,200,234,.45);transition:background .4s,box-shadow .4s}
+.cuadros i.gastado{background:rgba(242,246,251,.14);box-shadow:none}
 .rollo-cuenta{margin-top:6px;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(246,242,234,.5);display:flex;align-items:baseline;justify-content:center;gap:7px}
+  color:rgba(242,246,251,.5);display:flex;align-items:baseline;justify-content:center;gap:7px}
 .rollo-cuenta b{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:30px;line-height:1;letter-spacing:0;
   color:var(--texto);text-transform:none;text-shadow:0 2px 14px rgba(0,0,0,.6)}
 /* cuando quedan pocas, el número lo dice sin que haya que leer */
@@ -477,12 +509,12 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 /* la ficha del filtro, cuando la tira está plegada */
 .filtro-chip{display:flex;align-items:center;gap:9px;margin:0 auto 14px;padding:9px 16px;
   border-radius:999px;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
-  border:1px solid rgba(246,242,234,.16);min-height:var(--toque)}
+  border:1px solid rgba(242,246,251,.16);min-height:var(--toque)}
 .filtro-chip .pto{width:12px;height:12px;border-radius:3px;background:var(--oro);flex:none}
 .filtro-chip span{font-size:12.5px;color:var(--texto)}
 .filtro-chip em{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(246,242,234,.5);font-style:normal}
-.disparar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(246,242,234,.9);
+  color:rgba(242,246,251,.5);font-style:normal}
+.disparar{width:76px;height:76px;border-radius:50%;border:3px solid rgba(242,246,251,.9);
   position:relative;flex:none;transition:transform .12s}
 .disparar:before{content:'';position:absolute;inset:5px;border-radius:50%;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));transition:inset .12s}
@@ -491,7 +523,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .disparar:not(:disabled):active:before{inset:9px}
 .hueco{width:62px;flex:none}
 .pie-camara{position:relative;z-index:3;text-align:center;font-size:11.5px;
-  color:rgba(246,242,234,.45);padding:16px 30px 0;line-height:1.5}
+  color:rgba(242,246,251,.45);padding:16px 30px 0;line-height:1.5}
 .native-alt{position:relative;z-index:3;display:block;text-align:center;margin:0 22px;padding:13px;
   border:1px dashed var(--hilo2);border-radius:6px;color:var(--oro);font-size:12.5px;cursor:pointer;
   background:rgba(0,0,0,.5)}
@@ -526,7 +558,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
   font-size:23px;color:#FFEDE8;margin-top:8px}
 /* la bandeja donde se apilan las copias */
 .bandeja{position:relative;z-index:5;width:min(70vw,286px);aspect-ratio:3/4}
-.copia{position:absolute;inset:0;border-radius:2px;overflow:hidden;background:#EDE6DA;
+.copia{position:absolute;inset:0;border-radius:2px;overflow:hidden;background:#E6EEF8;
   padding:7px 7px 26px;box-shadow:0 22px 55px rgba(0,0,0,.65);
   opacity:0;transform:translateY(-22px) scale(.96) rotate(var(--giro,0deg));
   transition:opacity .55s var(--e),transform .85s var(--e)}
@@ -548,7 +580,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
 .tabs{display:flex;gap:10px;justify-content:center;margin:22px 0 6px}
 .tabs button{padding:9px 18px;border:1px solid var(--hilo2);border-radius:20px;font-size:11px;
   letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.tabs button[aria-pressed=true]{color:#0A0806;background:var(--oro);border-color:var(--oro)}
+.tabs button[aria-pressed=true]{color:#0B2A52;background:var(--oro);border-color:var(--oro)}
 .grilla{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 4px 30px}
 .grilla figure{margin:0;position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#111;
   opacity:0;filter:blur(14px);transform:scale(.96);transition:opacity .9s var(--e),filter .9s var(--e),transform .9s var(--e)}
@@ -562,7 +594,7 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
    latiendo para siempre en la pantalla de alguien. */
 @keyframes lateFoto{0%,100%{opacity:.35}50%{opacity:.75}}
 .grilla figure::before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,transparent 30%,rgba(217,174,114,.10) 50%,transparent 70%),#111;
+  background:linear-gradient(105deg,transparent 30%,rgba(168,200,234,.10) 50%,transparent 70%),#111;
   animation:lateFoto 1.6s ease-in-out infinite}
 .grilla figure:has(img[data-lista])::before{animation:none;opacity:0}
 @supports not selector(:has(*)){
@@ -603,6 +635,90 @@ input[type=date]:focus,input[type=datetime-local]:focus{outline:none;border-colo
   font-size:12.5px;color:var(--mute);letter-spacing:.12em}
 .visorf .pie b{display:block;color:var(--texto);font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;
   font-size:16px;letter-spacing:0;margin-bottom:4px}
+
+/* ═══ claymorfismo: azul, celeste y blanco ═══
+   Pedido del dueño, con una interfaz "de arcilla" de referencia: botones
+   blandos e inflados —luz adentro arriba, sombra adentro abajo y una
+   sombra larga afuera— en vez de los rectángulos dorados de borde fino.
+   Va AL FINAL de la hoja a propósito: pisa lo de arriba sin tener que
+   reescribir cada regla (y varias están repetidas en @media).
+   El principal es de arcilla CLARA con tinta marino (>9:1): un botón
+   blanco-celeste con letra blanca no se lee. El secundario es de arcilla
+   OSCURA con letra celeste clara. */
+.oro-btn{background:linear-gradient(180deg,#F4F9FF 0%,#BBD5F0 55%,#8FB6E3 100%);
+  color:#0B2A52;border-radius:999px;font-weight:600;
+  box-shadow:inset 0 2px 3px #FFFFFF,inset 0 -5px 8px rgba(60,110,180,.45),
+    0 12px 20px -10px rgba(0,0,0,.65)}
+.hilo-btn{border:1px solid rgba(168,200,234,.28);border-radius:999px;color:#D7E6F7;
+  background:linear-gradient(180deg,#1C3C6A,#112746);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.14),inset 0 -4px 7px rgba(0,0,0,.35),
+    0 10px 18px -10px rgba(0,0,0,.6)}
+.chips button,.tabs button,.modos-sala button,.seg button{border-radius:999px}
+.chips button,.tabs button{border:1px solid rgba(168,200,234,.2);color:#A9BBD3;
+  background:linear-gradient(180deg,#183560,#0F2444);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.1),inset 0 -3px 6px rgba(0,0,0,.3),
+    0 6px 12px -8px rgba(0,0,0,.6)}
+.chips button[aria-pressed=true],.tabs button[aria-pressed=true],
+.modos-sala button[aria-pressed=true]{color:#0B2A52;border-color:transparent;
+  background:linear-gradient(180deg,#F4F9FF,#A8C8EA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -3px 6px rgba(60,110,180,.4),
+    0 6px 12px -6px rgba(0,0,0,.6)}
+.modos-sala{background:rgba(9,20,38,.88);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.08),0 10px 20px -12px rgba(0,0,0,.7)}
+
+
+/* ═══ interfaz "de app" para el rollo: cuadrados, números y títulos grandes ═══
+   Referencia que mandó el dueño: 1 Second Everyday. Un cuadrado redondeado
+   por cada cosa, el número grande en la esquina, un cuadrado destacado para
+   la acción de ahora, y títulos enormes con una palabra de color. */
+.gran{margin:10px 0 0;font-weight:800;letter-spacing:-.035em;line-height:1.02;
+  font-size:clamp(34px,10.5vw,52px);text-wrap:balance}
+.gran em{font-style:normal;color:var(--oro)}
+.rollo-grilla{display:grid;grid-template-columns:repeat(var(--cols,6),1fr);gap:7px;
+  width:100%;max-width:340px;margin:24px auto 4px}
+.rg{position:relative;aspect-ratio:1;border-radius:15px;padding:6px 7px;text-align:left;
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.rg b{font-size:clamp(13px,4.2vw,17px);font-weight:800;letter-spacing:-.03em;line-height:1}
+.rg.libre{border:1.5px dashed rgba(168,200,234,.28);color:rgba(169,187,211,.55)}
+.rg.hecha{color:var(--champan);
+  background:linear-gradient(180deg,#1C3C6A,#112746);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.12),inset 0 -3px 5px rgba(0,0,0,.35)}
+.rg.sig{color:#0B2A52;background:linear-gradient(180deg,#F4F9FF,#A8C8EA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -4px 6px rgba(60,110,180,.4),
+    0 8px 14px -8px rgba(0,0,0,.7)}
+.rg i{position:absolute;right:7px;bottom:3px;font-style:normal;font-size:26px;font-weight:300;line-height:1}
+/* el álbum: cuadrados redondeados con el número de foto grande, como los
+   días del calendario de la referencia */
+.grilla{gap:8px}
+.grilla figure{border-radius:24px}
+.grilla figure::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(7,16,30,.55),transparent 38%)}
+.grilla .nro{position:absolute;left:12px;top:9px;z-index:2;font-size:26px;font-weight:800;
+  letter-spacing:-.04em;line-height:1;color:#FFFFFF;text-shadow:0 1px 6px rgba(0,0,0,.5);
+  pointer-events:none}
+.grilla .nro small{display:block;font-size:9px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;margin-bottom:2px;opacity:.85}
+.grilla figcaption{z-index:2}
+/* El "Demo" de la cinta es un botón: parece uno, y si no hacía nada el
+   visitante lo tocaba y creía que la demostración estaba rota. Ahora abre
+   una notita que dice qué es esto (y se cierra tocándola). */
+#demoInfo{position:fixed;top:calc(var(--cinta,48px) + 8px);left:16px;right:16px;
+  max-width:420px;margin-inline:auto;z-index:95;cursor:pointer;
+  padding:14px 18px;border-radius:22px;text-align:center;
+  font-family:inherit;font-size:13px;font-weight:500;line-height:1.5;color:#0F3B73;background:linear-gradient(180deg,#FFFFFF,#E4EFFB);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -4px 8px rgba(120,170,230,.3),
+    0 18px 30px -14px rgba(0,0,0,.7)}
+#demoInfo b{display:block;margin-bottom:4px;color:#1F5FA8;font-weight:700}
+body.en-demo.cinta-chica #demoInfo{display:none}
+
+/* ═══ letra mínima legible ═══
+   Lo recomienda checklist.design (tipografía: "tamaño mínimo legible") y lo
+   medimos en las pantallas del invitado: los nombres de los filtros de la
+   cámara y la palabra "quedan" estaban en 9,5px —el invitado los lee con
+   el teléfono en una mano y poca luz—. Se suben a 11px. Va al final de la
+   hoja para pisar las reglas de arriba sin reescribir cada una. */
+.filtro-op span,.rollo-cuenta,.filtro-chip em,.estado{font-size:11px}
+.espaciado{font-size:11px}
 </style>
 </head>
 <body>
@@ -673,7 +789,8 @@ const guarda = HAY_DEMO ? (()=>{
    disparador. El del oro es el que estaba escrito a mano desde siempre y
    se deja igual: es el aspecto actual de todo y ya pasó por la prueba de
    contraste. Los otros tres salen de masHondo(). */
-const TONOS=[{n:'Oro',          c:'#D9AE72', h:'#A87B43'},
+const TONOS=[{n:'Celeste',      c:'#A8C8EA', h:'#6FA3DC'},
+             {n:'Oro',          c:'#D9AE72', h:'#A87B43'},
              {n:'Perla',        c:'#E8E4DC', h:'#B6A990'},
              {n:'Rosa antiguo', c:'#D8A0A6', h:'#B95560'},
              {n:'Salvia',       c:'#9FB39B', h:'#6D8968'}];
@@ -702,7 +819,7 @@ const masHondo=(hex,cuanto)=>{
    disparador es un degradé de las dos, y con solo el acento cambiado el
    botón quedaba de dorado a verde en el mismo círculo. */
 const tono=t=>{
-  const c=t||'#D9AE72';
+  const c=t||'#A8C8EA';
   const r=document.documentElement.style;
   const enPaleta=TONOS.find(x=>x.c.toLowerCase()===String(c).toLowerCase());
   r.setProperty('--oro', c);
@@ -1037,7 +1154,7 @@ if(HAY_DEMO){
   const NOMBRES=['Delfina','Tomás','Mica','Abuela Nélida','Francisco','Lucía',
                  'Nacho','Sofía','Tío Beto','Caro','Juampi','Las primas'];
   const ev={
-    codigo:DEMO_COD, nombre:'Los 15 de Delfina', tipo:'XV', tono:'#D9AE72',
+    codigo:DEMO_COD, nombre:'Los 15 de Delfina', tipo:'XV', tono:'#A8C8EA',
     fecha:hoy(), camara:true, cerrado:false,
     /* Nace REVELADO: lo que hay que mostrar es el álbum, que es el momento
        del producto. Con ?camara=1 nace sin revelar y se ve el otro lado,
@@ -1174,10 +1291,10 @@ if(HAY_DEMO){
    en 390px sin scrollear. El nombre entero sigue estando en la ficha. */
 const FILTROS=[
   {id:'natural', nombre:'Natural',        corto:'Natural', css:'none', grano:0,  muestra:'linear-gradient(135deg,#3a3a3a,#8a8a8a)'},
-  {id:'clasico', nombre:'Clásico',        corto:'Clásico', css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#d9ae72)'},
+  {id:'clasico', nombre:'Clásico',        corto:'Clásico', css:'contrast(1.08) saturate(1.25) sepia(.22) brightness(1.03)', grano:14, muestra:'linear-gradient(135deg,#7a5a34,#A8C8EA)'},
   {id:'bn',      nombre:'Blanco y negro', corto:'B y N',   css:'grayscale(1) contrast(1.15) brightness(1.05)', grano:20, muestra:'linear-gradient(135deg,#111,#ccc)'},
   {id:'flash',   nombre:'Flash',          corto:'Flash',   css:'contrast(1.28) brightness(1.15) saturate(.85)', grano:8,  muestra:'linear-gradient(135deg,#20242c,#eef2f8)'},
-  {id:'dorado',  nombre:'Dorado',         corto:'Dorado',  css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#a87b43,#efdcbc)'}
+  {id:'dorado',  nombre:'Dorado',         corto:'Dorado',  css:'sepia(.35) saturate(1.4) hue-rotate(-8deg) contrast(1.05) brightness(1.02)', grano:16, muestra:'linear-gradient(135deg,#6FA3DC,#D7E6F7)'}
 ];
 
 /* ══════════ el filtro de la foto guardada ══════════
@@ -1370,7 +1487,7 @@ function avisar(msg){
        atajar un dedo — y encima el que lo toca cree que tocó el botón.
        Lo encontró pruebas/barrido.js sobre el disparador de la cámara. */
     n.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#171310;'
-      +'color:#F6F2EA;border:1px solid var(--hilo2);padding:12px 20px;border-radius:30px;font-size:12.5px;'
+      +'color:#F2F6FB;border:1px solid var(--hilo2);padding:12px 20px;border-radius:30px;font-size:12.5px;'
       +'z-index:80;max-width:86vw;text-align:center;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.5)';
     document.body.appendChild(n);
   }
@@ -1496,6 +1613,10 @@ function rutear(m,guardado,estado){
   const cupo=cupoDe(estado), hechos=Number(estado.disparos)||0;
   const est={...estado, cupo, disparos:hechos};
   if(hechos>=cupo) return vEsperando(m,guardado,est);
+  /* "Ya terminé": el invitado dio su rollo por cerrado sin gastar las que
+     le sobran. Va DESPUÉS de revelado y cerrado —esos dos mandan siempre—
+     y es reversible: la pantalla tiene su "seguir sacando". */
+  if(guardado&&guardado.terminado) return vEsperando(m,guardado,est);
   /* Va DESPUÉS de revelado y cerrado: esos dos mandan siempre. Si el
      organizador cierra el rollo mientras el invitado está en pausa, la
      próxima vuelta del sondeo lo saca de acá. */
@@ -1508,6 +1629,26 @@ function rutear(m,guardado,estado){
    hasta gastar las 24 fotos. Una fiesta dura seis horas; el invitado saca
    dos en la entrada, guarda el teléfono, y vuelve en el brindis. Y
    mientras tanto la cámara quedaba PRENDIDA, comiéndole la batería. */
+/* ── "Tu rollo": una grilla de cuadrados redondeados, uno por foto ──
+   Sale de una referencia que mandó el dueño (1 Second Everyday): un
+   cuadrado por día con el número grande en la esquina y UNO destacado, el
+   de hoy, con el "+". Acá cada cuadrado es una foto del cupo: las sacadas
+   quedan llenas, la que sigue se enciende con el "+" y el resto espera
+   vacío. Es decorativa (aria-hidden): lo que se toca son los botones de
+   abajo, y el número en letras ya está en el título.
+   Arriba de 36 de cupo no se dibuja: sesenta cuadraditos no dicen nada. */
+function rolloGrilla(cupo,hechos){
+  cupo=Number(cupo)||0; hechos=Math.max(0,Number(hechos)||0);
+  if(cupo<1||cupo>36) return '';
+  const cols=cupo<=12?4:6;
+  let h='';
+  for(let i=1;i<=cupo;i++){
+    const clase=i<=hechos?'hecha':(i===hechos+1?'sig':'libre');
+    h+=`<span class="rg ${clase}"><b>${String(i).padStart(2,'0')}</b>${
+      clase==='sig'?'<i>+</i>':''}</span>`;
+  }
+  return `<div class="rollo-grilla" aria-hidden="true" style="--cols:${cols}">${h}</div>`;
+}
 function vPausa(m,guardado,estado){
   detenerCamara(); olvidarVigilia();
   /* El sondeo la vuelve a llamar cada quince segundos. Redibujar acá sería
@@ -1520,12 +1661,22 @@ function vPausa(m,guardado,estado){
   <div class="centro" id="pausa">
     ${ESTRELLA}
     <p class="espaciado" style="margin-top:16px">Tu rollo te espera</p>
-    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">
-      Te ${quedan===1?'queda':'quedan'} ${quedan} ${quedan===1?'foto':'fotos'}</h1>
+    <h1 class="gran">Te ${quedan===1?'queda':'quedan'} <em>${quedan}</em> ${quedan===1?'foto':'fotos'}</h1>
+    ${rolloGrilla(cupoDe(estado),cupoDe(estado)-quedan)}
     <p class="info">Las que sacaste ya están guardadas. Volvé cuando quieras:
       el rollo sigue abierto hasta que lo cierre el organizador.</p>
     <button class="oro-btn" id="seguir" style="max-width:280px;margin:26px auto 0">Seguir sacando fotos</button>
+    <button class="hilo-btn" id="termine" style="max-width:280px;margin:14px auto 0">Ya terminé, no saco más</button>
+    <p class="info" style="font-size:12px;margin-top:10px">Las que no uses quedan sin gastar, y se puede cambiar de idea.</p>
   </div>`;
+  /* "Ya terminé" no borra nada ni gasta nada: marca ESTE rollo, en este
+     teléfono, como cerrado por su dueño. Vive en el aparato y no en la
+     base a propósito —es de esta persona, no de la fiesta— y se puede
+     deshacer desde la pantalla siguiente. */
+  app.querySelector('#termine').onclick=()=>{
+    guardado.terminado=true; guardarRollo(m.codigo,guardado);
+    consultarEstado(m,guardado);
+  };
   app.querySelector('#seguir').onclick=()=>{
     pausado=false;
     /* Se vuelve a preguntar en vez de confiar en lo que teníamos: si el
@@ -1560,15 +1711,32 @@ function vGuardado(m,guardado){
 /* ── esperando el revelado ── */
 function vEsperando(m,guardado,estado){
   detenerPoll(); vistaViva=true;
+  /* Dos caminos llegan acá: gastó todo el rollo, o dijo "ya terminé" con
+     fotos sin usar. En el segundo no se le puede decir "ya sacaste tus 24":
+     sacó 5. Y se le deja arrepentirse, porque el que guarda el teléfono a
+     las diez puede querer volver a sacar en el brindis. */
+  const hechos=Number(estado.disparos)||0, sobran=Math.max(0,(Number(estado.cupo)||0)-hechos);
+  const cierroAntes=!!(guardado&&guardado.terminado)&&sobran>0;
   app.innerHTML=`
   <div class="centro">
     ${ESTRELLA}
-    <p class="espaciado" style="margin-top:16px">Rollo completo</p>
-    <h1 class="ital" style="font-size:clamp(24px,7vw,30px);margin-top:8px">Ya sacaste tus ${esc(estado.cupo)} fotos</h1>
+    <p class="espaciado" style="margin-top:16px">${cierroAntes?'Rollo guardado':'Rollo completo'}</p>
+    <h1 class="gran">${cierroAntes
+      ? (hechos?`Sacaste <em>${hechos}</em> ${hechos===1?'foto':'fotos'}`:'No sacaste ninguna foto')
+      : `Ya sacaste tus <em>${esc(estado.cupo)}</em> fotos`}</h1>
+    ${rolloGrilla(estado.cupo,hechos)}
     <p class="info">${estado.revela_en?'Se revela solo cuando llegue la hora.':'El organizador todavía no reveló el rollo.'}</p>
     ${estado.revela_en?`<div class="cuenta-rev" id="cuenta"></div>`:''}
     <div class="filete" style="max-width:220px;margin:26px auto 0">${ESTRELLA}</div>
+    ${cierroAntes?`<button class="hilo-btn" id="seguirSacando" style="max-width:280px;margin:22px auto 0">
+      Me arrepentí: seguir sacando (${sobran} ${sobran===1?'foto':'fotos'})</button>`:''}
   </div>`;
+  const volver=app.querySelector('#seguirSacando');
+  if(volver) volver.onclick=()=>{
+    guardado.terminado=false; guardarRollo(m.codigo,guardado);
+    pausado=false;
+    consultarEstado(m,guardado);
+  };
   if(estado.revela_en){
     const cuenta=app.querySelector('#cuenta');
     let pedido=false;
@@ -2014,7 +2182,7 @@ function pintarQR(nodo,texto,tam){
      mano, que para eso está el botón de copiar justo abajo. */
   nodo.innerHTML=`<div style="width:${tam}px;height:${tam}px;box-sizing:border-box;display:flex;
     flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px;
-    color:#2A1B08;font:400 12px/1.5 Jost,system-ui,sans-serif;text-align:center">
+    color:#0B2A52;font:400 12px/1.5 Jost,system-ui,sans-serif;text-align:center">
     <b style="font-weight:500">No pude dibujar el código</b>
     <span style="word-break:break-all;opacity:.75;font-size:10.5px">${esc(texto)}</span>
     </div>`;
@@ -2073,7 +2241,7 @@ function vPedirClave(codigoPrevio){
       const r=[ev];
       /* La única forma de saber si la clave sirve es usarla: escribimos algo
          que no cambia nada. Si la clave está mal, la base rechaza. */
-      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#D9AE72'},cl);
+      await SB.editar('ce_eventos',`codigo=eq.${encodeURIComponent(cod)}`,{tono:r[0].tono||'#A8C8EA'},cl);
       /* ¿Era la maestra? Entonces NO va al disco. Antes se guardaba en
          ce:claves como si fuera la clave de ese evento: la llave que abre
          todos los eventos de todos los clientes quedaba escrita en el
@@ -2383,7 +2551,7 @@ async function crearRollo(){
      vence nunca, el depósito crece todos los meses y no para. */
   const vence=new Date(nuevo.fecha); vence.setDate(vence.getDate()+DIAS_QUE_VIVE);
   const fila={
-    codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#D9AE72',
+    codigo, nombre:nuevo.nombre, fecha:nuevo.fecha, tipo:nuevo.tipo, tono:'#A8C8EA',
     vence:vence.toISOString().slice(0,10), moderar:false, cerrado:false, creado:Date.now(),
     camara:true, cupo_fotos:nuevo.cupo, cupo_invitados:nuevo.gente, revelado:false,
     acepto:Date.now(),
@@ -2687,7 +2855,7 @@ async function vAjustes(codigo){
     <p class="ayudita" style="margin:0 0 12px">Tiñe la cámara del invitado y el álbum.</p>
     <div class="tonos" id="tonos">${TONOS.map(t=>`
       <button class="tono" data-c="${t.c}" title="${esc(t.n)}" aria-label="${esc(t.n)}"
-        aria-pressed="${(m.tono||'#D9AE72').toLowerCase()===t.c.toLowerCase()}"
+        aria-pressed="${(m.tono||'#A8C8EA').toLowerCase()===t.c.toLowerCase()}"
         style="background:${t.c}"></button>`).join('')}</div>
 
     <div class="llave-fila">
@@ -2761,7 +2929,7 @@ async function vAjustes(codigo){
       /* No mentirle: si no se guardó, se vuelve el color de antes. */
       tono(m.tono);
       app.querySelectorAll('#tonos .tono').forEach(x=>x.setAttribute('aria-pressed',
-        String((m.tono||'#D9AE72').toLowerCase()===x.dataset.c.toLowerCase())));
+        String((m.tono||'#A8C8EA').toLowerCase()===x.dataset.c.toLowerCase())));
       avisar('No se pudo guardar el color: '+(e.message||e));
     }
   });
@@ -2872,7 +3040,7 @@ async function vAlbum(m,guardado){
     ${HAY_DEMO?`<button class="hilo-btn" id="verRevelado"
       style="width:auto;margin:14px auto 0;padding:11px 20px;font-size:11px">Ver cómo se revela</button>`:''}</div>
   <div class="wrap">
-    <p style="text-align:center;color:#B5AC9E;font-size:13.5px;margin-top:6px">
+    <p style="text-align:center;color:#A9BBD3;font-size:13.5px;margin-top:6px">
       ${esc(datos.total_fotos!=null?datos.total_fotos:todas.length)} fotos de ${esc(datos.total_invitados!=null?datos.total_invitados:'?')} invitados esta noche</p>
     ${hayMas?`<p style="text-align:center;color:var(--mute);font-size:12.5px;margin:-4px 0 4px">
       En el álbum completo se ven las ${esc(todas.length)} últimas.</p>`:''}
@@ -3013,9 +3181,10 @@ async function vAlbum(m,guardado){
        misma lista, o las flechas caen en el vacío. */
     const fotos=todasLasFotos.filter(f=>mapa[f.ruta]);
     if(!fotos.length){ el.innerHTML=`<p style="grid-column:1/-1;text-align:center;color:var(--mute);padding:30px 0">No pude traer las fotos. Recargá la página.</p>`; return; }
-    el.innerHTML=fotos.map(f=>`
+    el.innerHTML=fotos.map((f,i)=>`
       <figure class="${f.mia?'mia':''}" data-ruta="${esc(f.ruta)}">
         <img src="${esc(mapa[f.ruta]||'')}" alt="" loading="lazy">
+        <span class="nro" aria-hidden="true"><small>Foto</small>${String(i+1).padStart(2,'0')}</span>
         ${f.nombre?`<figcaption>${esc(f.nombre)}</figcaption>`:''}
       </figure>`).join('');
     [...el.querySelectorAll('figure')].forEach((fig,i)=>{
@@ -3115,15 +3284,25 @@ if(HAY_DEMO){
     const enCamara=/(?:^|[?&])camara=1(?:&|$)/.test(location.search);
     document.body.insertAdjacentHTML('afterbegin',
       '<div id="cinta-demo"><span class="mini">Demostración</span>'
-      +'<span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>'
+      +'<button class="chip" id="infoDemo" type="button" aria-expanded="false" aria-controls="demoInfo">Demo ?</button>'
+      +'<span class="aviso">la fiesta y las fotos son inventadas</span>'
       /* Los dos lados del rollo en un botón. La prueba entra por el álbum
          revelado, que es lo que hay que vender, pero lo otro —el invitado
          gastando fotos sin ver ninguna— también es el producto, y sin esto
          solo se llegaba escribiendo ?camara=1 a mano. */
-      +'<button id="otroLado">'+(enCamara?'Ver el álbum revelado':'Ver la cámara del invitado')+'</button>'
-      +'<button id="deNuevo">Empezar de nuevo</button>'
+      +'<button id="otroLado"><span class="l">'+(enCamara?'Ver el álbum revelado':'Ver la cámara del invitado')
+      +'</span><span class="c">'+(enCamara?'Álbum':'Cámara')+'</span></button>'
+      +'<button class="p" id="deNuevo"><span class="l">Empezar de nuevo</span><span class="c">Reiniciar</span></button>'
       +(ENMARCADO?'':'<a href="/">Salir</a>')
-      +'<button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button></div>');
+      +'<button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button></div>'
+      +'<div id="demoInfo" role="status" hidden><b>Esto es una demostración</b>La fiesta y las fotos son inventadas, y lo que saques se devuelve solo a los 2 minutos. Tocá acá para cerrar.</div>');
+    const info=document.getElementById('infoDemo'), nota=document.getElementById('demoInfo');
+    if(info&&nota){
+      const cerrarNota=()=>{ nota.hidden=true; info.setAttribute('aria-expanded','false'); };
+      info.onclick=e=>{ e.stopPropagation(); nota.hidden=!nota.hidden;
+        info.setAttribute('aria-expanded',String(!nota.hidden)); };
+      nota.onclick=cerrarNota;
+    }
     const bo=document.getElementById('otroLado');
     if(bo) bo.onclick=()=>location.replace(
       location.pathname+'?demo=1'+(enCamara?'':'&camara=1'));
@@ -3144,7 +3323,7 @@ if(HAY_DEMO){
     var medirCinta=function(){
       if(!cinta) return;
       requestAnimationFrame(function(){
-        document.body.style.setProperty('--cinta',(cinta.offsetHeight||38)+'px');
+        document.body.style.setProperty('--cinta',(cinta.offsetHeight||48)+'px');
       });
     };
     if(plegar) plegar.addEventListener('click',medirCinta);

@@ -66,11 +66,11 @@
 
 <style>
 :root{
-  --negro:#000; --carbon:#0B0A08; --humo:#141210;
-  --oro:#D9AE72; --oro-hondo:#A87B43; --champan:#EFDCBC;
-  --texto:#F6F2EA; --mute:#9B9287;
-  --hilo:rgba(217,174,114,.22); --hilo2:rgba(217,174,114,.45); --gris:rgba(255,255,255,.08);
-  --acc:#D9AE72;
+  --negro:#07101E; --carbon:#0C1A33; --humo:#13284A;
+  --oro:#A8C8EA; --oro-hondo:#6FA3DC; --champan:#D7E6F7;
+  --texto:#F2F6FB; --mute:#9FB3CC;
+  --hilo:rgba(168,200,234,.24); --hilo2:rgba(168,200,234,.5); --gris:rgba(255,255,255,.08);
+  --acc:#A8C8EA;
   --e:cubic-bezier(.22,.7,.24,1);
 }
 /* ── la tipografía de las dedicatorias ──
@@ -129,8 +129,8 @@ button{border:0;background:none;cursor:pointer}
 
 /* ── atmósfera ── */
 #brillo{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(120% 80% at 50% -10%,rgba(217,174,114,.09),transparent 60%),
-             radial-gradient(80% 60% at 50% 110%,rgba(217,174,114,.05),transparent 60%)}
+  background:radial-gradient(120% 80% at 50% -10%,rgba(168,200,234,.09),transparent 60%),
+             radial-gradient(80% 60% at 50% 110%,rgba(168,200,234,.05),transparent 60%)}
 #polvo{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 #polvo i{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--oro);
   opacity:0;animation:titilar 7s var(--e) infinite}
@@ -142,7 +142,7 @@ button{border:0;background:none;cursor:pointer}
 /* ── portada ── */
 .portada{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:60px 26px;max-width:620px;margin:0 auto;text-align:center}
 .logo-full{width:min(78%,320px);margin:0 auto 6px;display:block}
-.portada .lema{font-size:15px;line-height:1.8;color:#B5AC9E;max-width:34ch;margin:0 auto}
+.portada .lema{font-size:15px;line-height:1.8;color:#A9BBD3;max-width:34ch;margin:0 auto}
 .sube{opacity:0;transform:translateY(16px);animation:sube 1s var(--e) forwards}
 @keyframes sube{to{opacity:1;transform:none}}
 
@@ -175,7 +175,7 @@ input::placeholder,textarea::placeholder{color:var(--mute);opacity:.75}
 textarea{min-height:88px;resize:vertical;line-height:1.6;border:1px solid var(--gris);border-radius:2px;padding:14px}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--oro)}
 select{appearance:none;background:transparent}
-option{background:#0B0A08}
+option{background:#0C1A33}
 .tonos{display:flex;gap:10px;padding-top:4px;flex-wrap:wrap}
 /* 34px era lindo y se le erraba: 44 es lo que un dedo acierta. */
 .tono{width:44px;height:44px;border-radius:50%;position:relative;transition:transform .3s var(--e)}
@@ -184,7 +184,7 @@ option{background:#0B0A08}
 .tono[aria-pressed=true]{transform:scale(1.05)}
 
 .oro-btn{width:100%;background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 55%,var(--champan));
-  color:#0A0806;border-radius:2px;padding:17px;font-size:13px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;
+  color:#0B2A52;border-radius:2px;padding:17px;font-size:13px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;
   transition:transform .25s var(--e),filter .3s}
 .oro-btn:hover{filter:brightness(1.08)}
 .oro-btn:active{transform:scale(.99)}
@@ -201,14 +201,14 @@ option{background:#0B0A08}
 .seg button[aria-pressed=true]{color:var(--oro);border-bottom-color:var(--oro)}
 
 /* ── invitado ── */
-.consigna{border:1px solid var(--hilo);border-radius:2px;padding:20px;margin-bottom:26px;text-align:center;background:rgba(217,174,114,.035)}
+.consigna{border:1px solid var(--hilo);border-radius:2px;padding:20px;margin-bottom:26px;text-align:center;background:rgba(168,200,234,.035)}
 .consigna .et{font-size:9.5px;letter-spacing:.34em;color:var(--oro);text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:12px}
 .consigna .et .estrella{width:9px;height:9px}
 .consigna p{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:19px;line-height:1.45;font-style:italic}
 
 .lente{display:block;border:1px solid var(--gris);border-radius:2px;padding:52px 22px;text-align:center;
   margin-bottom:24px;transition:border-color .4s,background .4s}
-.lente:hover{border-color:var(--hilo2);background:rgba(217,174,114,.03)}
+.lente:hover{border-color:var(--hilo2);background:rgba(168,200,234,.03)}
 .lente .aro{width:54px;height:54px;margin:0 auto 18px;border-radius:50%;border:1px solid var(--hilo);display:grid;place-items:center;color:var(--oro)}
 .lente .aro .estrella{width:17px;height:17px}
 .lente b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;font-weight:400;margin-bottom:8px}
@@ -234,8 +234,8 @@ option{background:#0B0A08}
   border:1px solid var(--hilo2);opacity:0;animation:halo 1.8s var(--e) forwards}
 .chispas:after{animation-delay:.34s}
 @keyframes halo{0%{opacity:0;transform:scale(.25)}20%{opacity:.7}100%{opacity:0;transform:scale(3.6)}}
-@keyframes brillo-c{0%,100%{filter:drop-shadow(0 0 9px rgba(217,174,114,.3))}
-  50%{filter:drop-shadow(0 0 20px rgba(217,174,114,.6))}}
+@keyframes brillo-c{0%,100%{filter:drop-shadow(0 0 9px rgba(168,200,234,.3))}
+  50%{filter:drop-shadow(0 0 20px rgba(168,200,234,.6))}}
 .chispas .estrella{position:absolute;color:var(--oro);opacity:0}
 .chispas .c1{width:42px;height:42px;left:44px;top:44px;
   animation:chispa 1.1s var(--e) .05s forwards,brillo-c 3.4s var(--e) 1.3s infinite}
@@ -246,7 +246,7 @@ option{background:#0B0A08}
 @keyframes chispa{0%{opacity:0;transform:scale(.2) rotate(-40deg)}60%{opacity:1;transform:scale(1.15) rotate(6deg)}100%{opacity:.95;transform:scale(1) rotate(0)}}
 
 /* ── proyección ── */
-.sala{position:fixed;inset:0;background:#000;z-index:50;display:flex;flex-direction:column}
+.sala{position:fixed;inset:0;background:var(--negro);z-index:50;display:flex;flex-direction:column}
 .tela{flex:1;position:relative;overflow:hidden}
 .toma{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 1.4s var(--e)}
 .toma.on{opacity:1}
@@ -271,7 +271,7 @@ option{background:#0B0A08}
 .epigrafe .recien .estrella{width:11px;height:11px;animation:gira 3.4s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
 .epigrafe .quien{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(30px,5.6vw,52px);color:var(--champan);line-height:1}
-.epigrafe .dice{font-family:var(--dedi);font-size:clamp(15px,2.4vw,21px);margin-top:12px;color:#D9D2C6;line-height:1.5;max-width:38ch;font-weight:300}
+.epigrafe .dice{font-family:var(--dedi);font-size:clamp(15px,2.4vw,21px);margin-top:12px;color:#DCE7F4;line-height:1.5;max-width:38ch;font-weight:300}
 .placa{padding:9vh 9vw;text-align:center;max-width:1200px}
 .placa .cita{font-family:var(--dedi);font-size:clamp(28px,4.4vw,54px);line-height:1.3}
 .placa .quien{margin-top:30px;font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(19px,2.4vw,28px);color:var(--oro)}
@@ -283,7 +283,7 @@ option{background:#0B0A08}
    lo que exige el artículo 6 de la Ley 25.326. Plegado NO es esconderlo:
    el renglón dice de qué se trata y está arriba del botón. */
 .acepto{display:flex;gap:12px;align-items:flex-start;margin-top:18px;padding:14px 16px;
-  border:1px solid var(--gris);border-radius:2px;background:rgba(217,174,114,.04);
+  border:1px solid var(--gris);border-radius:2px;background:rgba(168,200,234,.04);
   cursor:pointer;transition:border-color .3s var(--e)}
 .acepto.falta{border-color:#FF7B94}
 .acepto input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--oro);cursor:pointer}
@@ -297,7 +297,7 @@ option{background:#0B0A08}
   .acepto input{width:var(--toque);height:var(--toque)}
 }
 .aviso-datos{margin:18px auto 0;width:min(100% - 36px,560px);
-  border:1px solid var(--gris);background:rgba(217,174,114,.04);border-radius:2px}
+  border:1px solid var(--gris);background:rgba(168,200,234,.04);border-radius:2px}
 .aviso-datos summary{list-style:none;cursor:pointer;padding:13px 16px;
   font-size:12px;letter-spacing:.08em;color:var(--oro);
   display:flex;align-items:center;gap:10px;min-height:var(--toque)}
@@ -326,7 +326,7 @@ option{background:#0B0A08}
 .botones-sala{position:fixed;top:18px;right:18px;z-index:60;display:flex;gap:8px;flex-wrap:wrap;
   justify-content:flex-end;max-width:min(60vw,520px)}
 .botones-sala .dejar{position:static;top:auto;right:auto}
-.dejar.llamada{background:linear-gradient(135deg,var(--oro),var(--champan));color:#2A1B08;
+.dejar.llamada{background:linear-gradient(135deg,var(--oro),var(--champan));color:#0B2A52;
   border-color:transparent;font-weight:500}
 .dejar{position:fixed;top:18px;right:18px;z-index:60;border:1px solid var(--hilo);border-radius:2px;
   padding:9px 18px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--champan);background:rgba(0,0,0,.5);backdrop-filter:blur(8px)}
@@ -347,7 +347,7 @@ option{background:#0B0A08}
 .qr-caja .qr img,.qr-caja .qr canvas{width:106px;height:106px;display:block}
 /* el aviso de que el álbum se borra pronto */
 .aviso-vence{border-color:var(--hilo2);
-  background:linear-gradient(160deg,rgba(217,174,114,.11),rgba(217,174,114,.02))}
+  background:linear-gradient(160deg,rgba(168,200,234,.11),rgba(168,200,234,.02))}
 .aviso-vence.tarde{border-color:rgba(255,123,148,.5);
   background:linear-gradient(160deg,rgba(255,123,148,.12),rgba(255,123,148,.02))}
 .aviso-vence.tarde .titu-s{color:#FF7B94}
@@ -366,18 +366,18 @@ option{background:#0B0A08}
 .espera .par{display:flex;border-top:1px solid var(--gris)}
 .espera .par button{flex:1;min-width:0;padding:13px 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 .espera .par button+button{border-left:1px solid var(--gris)}
-.si{color:var(--oro)}.no{color:#8A8177}
+.si{color:var(--oro)}.no{color:#7D93AE}
 .cierre{text-align:center;padding-top:30px}
 .cierre .filete{max-width:190px;margin:0 auto 20px}
 .cierre-tit{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-weight:400;
   font-size:clamp(30px,8.5vw,40px);margin:12px 0 8px;line-height:1.15}
-.cierre-sub{font-size:13.5px;color:#B5AC9E;line-height:1.7}
+.cierre-sub{font-size:13.5px;color:#A9BBD3;line-height:1.7}
 .cierre-res{margin-top:20px;padding-top:18px;border-top:1px solid var(--gris);
-  font-size:14px;color:#B5AC9E;line-height:1.8}
+  font-size:14px;color:#A9BBD3;line-height:1.8}
 .cierre-res b{color:var(--champan);font-weight:400;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:19px}
 .publicados{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px}
 .publi{position:relative;border:1px solid var(--gris);overflow:hidden;aspect-ratio:1;
-  min-height:0;background:#141210;cursor:pointer}
+  min-height:0;background:#13284A;cursor:pointer}
 /* la imagen va fuera del flujo: si no, su alto real estira la miniatura y
    las filas quedan de distinto tamaño */
 .publi img,.publi video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -391,7 +391,7 @@ option{background:#0B0A08}
   background:rgba(10,9,8,.93);animation:aparece .18s}
 .publi .velo button{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:0 3px;width:100%}
 .publi .velo .sacar{color:#FF7B94}
-.publi .velo .dejar-ahi{color:#8A8177;border-top:1px solid var(--gris)}
+.publi .velo .dejar-ahi{color:#7D93AE;border-top:1px solid var(--gris)}
 @keyframes aparece{from{opacity:0}to{opacity:1}}
 .tag-g{margin-top:14px;font-size:clamp(13px,1.5vw,17px);letter-spacing:.2em;text-transform:uppercase;
   color:var(--oro);opacity:.85}
@@ -407,7 +407,7 @@ option{background:#0B0A08}
 .tapa{height:210px;position:relative;overflow:hidden;margin-bottom:76px}
 .tapa .fondo{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(.75) brightness(.75);transform:scale(1.08);animation:kbtapa 24s var(--e) forwards}
 @keyframes kbtapa{to{transform:scale(1.18)}}
-.tapa:after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 20%,#000 92%)}
+.tapa:after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 20%,var(--negro) 92%)}
 .tapa .medallon{position:absolute;left:50%;bottom:-62px;transform:translateX(-50%);width:132px;height:132px;
   border-radius:50%;overflow:hidden;border:1px solid var(--hilo2);z-index:3;background:var(--carbon)}
 .tapa .medallon img{width:100%;height:100%;object-fit:cover}
@@ -443,7 +443,7 @@ option{background:#0B0A08}
 .final{min-height:100svh;display:grid;place-items:center;text-align:center;padding:34px}
 .vacio{text-align:center;color:var(--mute);padding:70px 24px;line-height:1.8;font-size:14.5px}
 .recado{position:fixed;left:50%;top:86px;transform:translate(-50%,-14px);z-index:95;
-  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 60%,var(--champan));color:#0A0806;
+  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 60%,var(--champan));color:#0B2A52;
   border:0;padding:15px 26px;font-size:14px;font-weight:500;letter-spacing:.04em;opacity:0;
   transition:.35s var(--e);pointer-events:none;max-width:92vw;text-align:center;
   box-shadow:0 16px 40px -14px rgba(0,0,0,.9)}
@@ -460,12 +460,12 @@ option{background:#0B0A08}
 .plegable[open]>summary:after{content:'−'}
 .plegable[open]>summary{color:var(--oro);border-bottom:1px solid var(--gris)}
 .plegable .cuerpo-p{padding:24px 22px}
-.pendientes{border:1px solid var(--hilo2);background:rgba(217,174,114,.05);padding:20px 22px;margin-top:26px}
+.pendientes{border:1px solid var(--hilo2);background:rgba(168,200,234,.05);padding:20px 22px;margin-top:26px}
 .pendientes .titu{display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.3em;
   text-transform:uppercase;color:var(--oro);margin-bottom:6px}
-.pendientes .globo{background:var(--oro);color:#0A0806;border-radius:999px;min-width:22px;height:22px;
+.pendientes .globo{background:var(--oro);color:#0B2A52;border-radius:999px;min-width:22px;height:22px;
   display:grid;place-items:center;font-size:11.5px;font-weight:600;letter-spacing:0;padding:0 7px}
-.pendientes p{font-size:13.5px;color:#B5AC9E;line-height:1.6}
+.pendientes p{font-size:13.5px;color:#A9BBD3;line-height:1.6}
 
 /* ═══════════ estructura de app ═══════════
    Cabecera fija, el pulso del evento siempre a la vista, el contenido en
@@ -489,23 +489,71 @@ option{background:#0B0A08}
 .pulso-ev b{display:block;font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:21px;font-weight:400;line-height:1}
 .pulso-ev span{font-size:8px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:6px;display:block}
 
-/* ── cinta de la demostración ── */
-/* Alto AUTOMÁTICO y medido, no clavado en 38px: en un teléfono los
-   botones no entran en una línea, y con alto fijo lo que sobra se sale de
-   la pantalla —el ✕ y "Salir" quedaban afuera, sin forma de llegar—.
-   Envuelve, y el JS pone el alto real en --cinta para que las capas fijas
-   se corran lo que haga falta. */
-#cinta-demo{position:fixed;top:0;left:0;right:0;z-index:70;min-height:38px;display:flex;
-  flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;padding:6px 12px;
-  background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
-  color:#2A1B08;font-size:11.5px;letter-spacing:.1em;text-align:center}
-#cinta-demo b{font-weight:500}
-#cinta-demo a{color:#2A1B08;text-decoration:underline;white-space:nowrap;flex:none;opacity:.85}
-#cinta-demo button{font:500 11px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
-  color:#2A1B08;background:rgba(42,27,8,.12);border:1px solid rgba(42,27,8,.3);
-  border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:none}
-#cinta-demo button:hover{background:rgba(42,27,8,.2)}
-body.en-demo{--cinta:38px;padding-top:var(--cinta)}
+/* ── cinta de la demostración ──
+   Claymorfismo, en azul, celeste y blanco: una pastilla de arcilla blanda
+   (luz adentro arriba, sombra adentro abajo y una sombra larga y suave
+   afuera) con botones "inflados". Antes era un zócalo dorado de 129px en un
+   teléfono —más de un séptimo de la pantalla— con tres botones apilados:
+   el cliente que probaba lo sentía como un cartel molesto y no como una
+   muestra. Ahora es UNA línea de ~48px.
+   Alto AUTOMÁTICO y medido, no clavado: si en una pantalla angosta los
+   botones no entran, envuelve, y el JS pone el alto real en --cinta para
+   que las capas fijas se corran lo que haga falta.
+   Cada botón mide 44 de alto (el dedo) pero se DIBUJA de 34: el borde es
+   transparente y el fondo se recorta al relleno. Así llega al mínimo sin
+   agrandar la cinta. */
+#cinta-demo{position:fixed;top:0;left:8px;right:8px;z-index:70;display:flex;
+  flex-wrap:wrap;align-items:center;justify-content:center;gap:0 6px;padding:2px 8px;
+  background:linear-gradient(180deg,#FFFFFF,#E4EFFB);color:#0F3B73;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 12px 22px -12px rgba(31,95,160,.55),inset 0 2px 2px #FFFFFF,
+    inset 0 -4px 8px rgba(120,170,230,.32);
+  font-family:inherit;font-size:12px;font-weight:500;line-height:1;letter-spacing:.03em;
+  text-align:center}
+#cinta-demo .chip{padding:5px 11px;border-radius:999px;font-weight:700;font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:#1F5FA8;
+  background:linear-gradient(180deg,#F3F9FF,#CFE3F8);
+  box-shadow:inset 0 1.5px 2px #FFFFFF,inset 0 -2px 4px rgba(90,150,215,.35)}
+#cinta-demo .aviso{color:#35639B}
+#cinta-demo button,#cinta-demo a{font-family:inherit;font-size:12px;font-weight:600;
+  letter-spacing:.02em;text-decoration:none;white-space:nowrap;flex:none;cursor:pointer;
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  padding:0 10px;border:5px solid transparent;border-radius:999px;background-clip:padding-box;
+  color:#1F5FA8;background-image:linear-gradient(180deg,#FFFFFF,#D9E9FA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -3px 5px rgba(100,155,220,.35);
+  filter:drop-shadow(0 3px 3px rgba(31,95,160,.38))}
+/* La sombra de afuera va con drop-shadow y no con box-shadow: el borde
+   transparente que le da los 44px hace que un box-shadow se dibuje
+   alrededor de la caja de 44 y no de la pastilla de 34, y se ve un halo
+   blanco de más. El drop-shadow sigue lo que de verdad se pintó. */
+/* el principal, el de "empezar de nuevo": azul macizo */
+#cinta-demo .p{color:#FFFFFF;background-image:linear-gradient(180deg,#4F98EA,#2A6BB8);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.55),inset 0 -3px 6px rgba(10,50,110,.4);
+  filter:drop-shadow(0 3px 3px rgba(20,70,140,.5))}
+#cinta-demo .c{display:none}
+#cinta-demo button:active,#cinta-demo a:active{transform:translateY(1px) scale(.97)}
+body.en-demo{--cinta:48px;padding-top:var(--cinta)}
+/* ── la cinta se pliega ──
+   Un ✕ la deja en una tira de 18px que se toca y vuelve. No se esconde del
+   todo a propósito: es la única salida al sitio y el único "Empezar de
+   nuevo". */
+#cinta-demo .plegar{min-width:44px;padding:0;font-size:12px;letter-spacing:0}
+#cinta-demo .mini{display:none;font-size:9px;font-weight:700;letter-spacing:.26em;
+  text-transform:uppercase;color:#1F5FA8}
+body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
+  flex-wrap:nowrap;cursor:pointer;border-radius:0 0 12px 12px;
+  background:linear-gradient(180deg,#FFFFFF,#D7E6F7)}
+body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
+body.en-demo.cinta-chica #cinta-demo .mini{display:block}
+/* En un teléfono el aviso largo sobra: queda la etiqueta "Demo" y los
+   rótulos cortos. La frase entera sigue en el `title` de la etiqueta. */
+@media(max-width:640px){
+  #cinta-demo .aviso{display:none}
+  #cinta-demo .l{display:none}
+  #cinta-demo .c{display:inline}
+  #cinta-demo button,#cinta-demo a{padding:0 6px}
+  #cinta-demo .chip{padding:5px 9px}
+}
 body.en-demo .cabecera{top:var(--cinta)}
 /* La pantalla del salón y el álbum a pantalla completa se dibujan con
    position:fixed, así que el padding del body no los corre: la cinta les
@@ -519,43 +567,25 @@ body.en-demo .dejar{top:calc(var(--cinta) + 18px)}
 @media (max-width:640px){
   body.en-demo .botones-sala{top:calc(var(--cinta) + 16px + var(--modos, 38px) + 8px)}
 }
-/* ── la cinta se pliega ──
-   En un teléfono, 38px fijos arriba le comen la pantalla a la proyección:
-   los botones de modo y el de salir quedan apretados contra el borde. Con
-   el ✕ la cinta queda en una tira de 18px que se toca y vuelve, así el que
-   está mirando la demostración no pierde "Salir" ni "Empezar de nuevo"
-   (que es lo que pasaría si la escondiéramos del todo). */
-#cinta-demo .plegar{padding:5px 9px;border-radius:50%;line-height:1;font-size:12px;
-  letter-spacing:0;border-color:transparent;background:transparent}
-#cinta-demo .mini{display:none;font-size:9px;letter-spacing:.26em;
-  text-transform:uppercase;opacity:.9}
-body.en-demo.cinta-chica #cinta-demo{min-height:0;height:18px;gap:0;padding:0;
-  flex-wrap:nowrap;cursor:pointer}
-body.en-demo.cinta-chica #cinta-demo>:not(.mini){display:none}
-body.en-demo.cinta-chica #cinta-demo .mini{display:block}
-@media (max-width:420px){
-  #cinta-demo{font-size:10.5px;gap:9px}
-  #cinta-demo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-}
 
 .barra-abajo{position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(15px + env(safe-area-inset-bottom));z-index:45;
   width:min(348px,calc(100% - 36px));display:grid;grid-auto-flow:column;grid-auto-columns:1fr;
-  background:rgba(13,11,9,.9);backdrop-filter:blur(22px) saturate(1.3);
+  background:rgba(9,20,38,.9);backdrop-filter:blur(22px) saturate(1.3);
   border:1px solid var(--hilo);border-radius:999px;padding:6px;
   box-shadow:0 22px 46px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.05)}
 .barra-abajo button{position:relative;border-radius:999px;padding:11px 6px 12px;
   display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--mute);
   transition:color .35s var(--e),background .35s var(--e)}
-.barra-abajo button[aria-selected=true]{color:#0A0806;
+.barra-abajo button[aria-selected=true]{color:#0B2A52;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
 .barra-abajo svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .barra-abajo em{font-style:normal;font-size:9px;letter-spacing:.16em;text-transform:uppercase}
 .barra-abajo .globo-n{position:absolute;top:5px;left:calc(50% + 7px);min-width:17px;height:17px;padding:0 5px;
-  background:var(--oro);color:#0A0806;border-radius:999px;display:grid;place-items:center;
+  background:var(--oro);color:#0B2A52;border-radius:999px;display:grid;place-items:center;
   font-size:10px;font-weight:600;letter-spacing:0;border:1.5px solid #0D0B09}
-.barra-abajo button[aria-selected=true] .globo-n{background:#0A0806;color:var(--oro);border-color:transparent}
+.barra-abajo button[aria-selected=true] .globo-n{background:#0B2A52;color:var(--oro);border-color:transparent}
 
 /* accesos rápidos: circulitos en fila */
 .accesos{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 8px}
@@ -567,9 +597,9 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   display:grid;place-items:center;color:var(--champan);background:rgba(255,255,255,.02);
   transition:border-color .35s var(--e),transform .3s var(--e),background .35s}
 .accesos button:active .aro-a{transform:scale(.94)}
-.accesos button:hover .aro-a{border-color:var(--hilo2);background:rgba(217,174,114,.06)}
+.accesos button:hover .aro-a{border-color:var(--hilo2);background:rgba(168,200,234,.06)}
 .accesos .destacado .aro-a{background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan));
-  border-color:transparent;color:#0A0806}
+  border-color:transparent;color:#0B2A52}
 .accesos em{font-style:normal;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
   text-align:center;line-height:1.4}
 .accesos svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.5;
@@ -581,11 +611,11 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .tapa-g .foto{position:absolute;inset:0;background-size:cover;background-position:center;
   transform:scale(1.06);animation:kbtapa 26s var(--e) forwards}
 .tapa-g:after{content:'';position:absolute;inset:0;
-  background:linear-gradient(transparent 18%,rgba(0,0,0,.5) 58%,#000 96%)}
+  background:linear-gradient(transparent 18%,rgba(0,0,0,.5) 58%,var(--negro) 96%)}
 .tapa-g .texto{position:relative;z-index:2;padding:0 26px 30px;width:100%;max-width:620px;margin:0 auto}
 .tapa-g .arriba{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
 .tapa-g h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:clamp(38px,12vw,54px);line-height:1}
-.tapa-g .cuando{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#B5AC9E;margin-top:14px}
+.tapa-g .cuando{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:#A9BBD3;margin-top:14px}
 .pastillas{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .pastilla{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hilo);
   border-radius:999px;padding:7px 14px;font-size:11px;letter-spacing:.12em;color:var(--champan);
@@ -608,7 +638,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .mosaico-a a{display:block;break-inside:avoid;margin-bottom:7px;border-radius:12px;overflow:hidden;
   position:relative;background:var(--humo);line-height:0}
 .mosaico-a a::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(105deg,transparent 30%,rgba(217,174,114,.12) 50%,transparent 70%),var(--humo);
+  background:linear-gradient(105deg,transparent 30%,rgba(168,200,234,.12) 50%,transparent 70%),var(--humo);
   animation:lateFoto 1.6s ease-in-out infinite}
 .mosaico-a a:has(img[data-lista])::before,.mosaico-a a:has(video)::before{animation:none;opacity:0}
 .mosaico-a img,.mosaico-a video{width:100%;height:auto;display:block;position:relative;z-index:2;
@@ -626,11 +656,11 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 }
 .mosaico-a a:hover img{transform:scale(1.04);filter:brightness(1.06)}
 .mosaico-a .quien-f{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;
-  font-size:10.5px;letter-spacing:.12em;color:#F3EDE0;line-height:1.3;
+  font-size:10.5px;letter-spacing:.12em;color:#EEF4FB;line-height:1.3;
   background:linear-gradient(transparent,rgba(0,0,0,.78));opacity:0;transition:opacity .4s var(--e)}
 .mosaico-a a:hover .quien-f{opacity:1}
 .mosaico-a .marca-video{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#F3EDE0;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#EEF4FB;
   font-size:9px;border:1px solid rgba(255,255,255,.16)}
 .wrap-a{max-width:620px;margin:0 auto;padding:0 26px 130px}
 /* chips de modo, como las filas de filtros de las apps */
@@ -642,14 +672,14 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
   color:var(--mute);transition:.32s var(--e);white-space:nowrap}
 .chips button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;
   stroke-linecap:round;stroke-linejoin:round}
-.chips button[aria-pressed=true]{color:#0A0806;border-color:transparent;
+.chips button[aria-pressed=true]{color:#0B2A52;border-color:transparent;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
 .chips button:active{transform:scale(.97)}
 
 /* barra de acción fija: el botón principal siempre al alcance del pulgar */
 .accion-abajo{position:fixed;left:0;right:0;bottom:0;z-index:44;
   padding:14px 26px calc(14px + env(safe-area-inset-bottom));
-  background:linear-gradient(transparent,rgba(0,0,0,.82) 24%,#000 62%)}
+  background:linear-gradient(transparent,rgba(0,0,0,.82) 24%,var(--negro) 62%)}
 .accion-abajo .dentro{max-width:620px;margin:0 auto}
 .accion-abajo .pie-nota{margin-top:11px}
 
@@ -683,7 +713,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 /* puertas de la portada, con icono */
 .puerta .ico-p{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--gris);
   display:grid;place-items:center;color:var(--oro);transition:border-color .35s,background .35s}
-.puerta:hover .ico-p{border-color:var(--hilo2);background:rgba(217,174,114,.06)}
+.puerta:hover .ico-p{border-color:var(--hilo2);background:rgba(168,200,234,.06)}
 .puerta .ico-p svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;
   stroke-linecap:round;stroke-linejoin:round}
 
@@ -708,7 +738,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .sala-cartel .marca-c2{width:clamp(96px,9vw,150px);opacity:.7}
 .sala-cartel h1{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;
   font-size:clamp(38px,6.4vh,92px);line-height:1;color:var(--champan)}
-.sala-cartel .invita{font-size:clamp(15px,2.1vh,28px);color:#D9D2C6;font-weight:200;
+.sala-cartel .invita{font-size:clamp(15px,2.1vh,28px);color:#DCE7F4;font-weight:200;
   line-height:1.35;max-width:30ch}
 /* con el cartel en pantalla la consola sobra: repite el QR y el contador */
 .sala.en-cartel .consola{display:none}
@@ -751,7 +781,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .tab-foto .epigrafe .dice{font-size:clamp(13px,1.9vh,24px)}
 .tab-foto .autoria{display:flex;align-items:center;gap:10px;margin-top:clamp(8px,1.2vh,16px)}
 .tab-foto .avatar{width:clamp(22px,3vh,34px);height:clamp(22px,3vh,34px);border-radius:50%;
-  background:linear-gradient(140deg,var(--oro-hondo),var(--champan));color:#0A0806;
+  background:linear-gradient(140deg,var(--oro-hondo),var(--champan));color:#0B2A52;
   display:grid;place-items:center;font-size:clamp(10px,1.4vh,16px);font-weight:600;flex:none}
 .tab-foto .cuando-f{font-size:clamp(10px,1.3vh,15px);color:var(--mute);letter-spacing:.1em}
 
@@ -774,7 +804,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
    sobra a los costados no se nota. */
 .tab-cola .prox img,.tab-cola .prox video{width:100%;height:100%;object-fit:contain}
 .tab-cola .prox .nom-p{position:absolute;left:0;right:0;bottom:0;padding:22px 11px 8px;
-  font-size:clamp(10px,1.4vh,16px);color:#F3EDE0;font-weight:500;
+  font-size:clamp(10px,1.4vh,16px);color:#EEF4FB;font-weight:500;
   background:linear-gradient(transparent,rgba(0,0,0,.85));
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* ── las fichas de "entrando ahora" que son un saludo escrito ──
@@ -797,7 +827,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 
 .tab-qr{flex:none;display:flex;gap:clamp(9px,1.2vw,15px);align-items:center;
   border:1px solid var(--hilo);border-radius:10px;padding:clamp(9px,1.2vh,15px);
-  background:rgba(217,174,114,.06)}
+  background:rgba(168,200,234,.06)}
 .tab-qr .caja-q{background:#fff;padding:6px;line-height:0;border-radius:5px;flex:none}
 .tab-qr .caja-q canvas,.tab-qr .caja-q img{
   width:clamp(58px,8vh,92px)!important;height:clamp(58px,8vh,92px)!important;display:block}
@@ -829,18 +859,18 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .tab-tira .pista-t.quieta{animation:none;justify-content:center;width:100%}
 @keyframes correrT{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.tab-tira .pista-t{animation:none}}
-.tab-tira .dicho{font-family:var(--dedi);white-space:nowrap;font-size:clamp(12px,1.7vh,21px);color:#D9D2C6;font-weight:300}
+.tab-tira .dicho{font-family:var(--dedi);white-space:nowrap;font-size:clamp(12px,1.7vh,21px);color:#DCE7F4;font-weight:300}
 .tab-tira .dicho b{color:var(--oro);font-weight:400;margin-left:10px;font-size:.88em}
 .tab-tira .vacia{font-size:clamp(11px,1.5vh,17px);color:var(--mute);letter-spacing:.2em;
   text-transform:uppercase}
 
 /* selector de modo de la pantalla */
 .modos-sala{position:fixed;top:16px;left:18px;z-index:60;display:flex;gap:5px;
-  background:rgba(13,11,9,.88);backdrop-filter:blur(14px);border:1px solid var(--hilo);
+  background:rgba(9,20,38,.88);backdrop-filter:blur(14px);border:1px solid var(--hilo);
   border-radius:999px;padding:5px}
 .modos-sala button{border-radius:999px;padding:8px 15px;font-size:10px;letter-spacing:.22em;
   text-transform:uppercase;color:var(--mute);transition:.3s var(--e)}
-.modos-sala button[aria-pressed=true]{color:#0A0806;
+.modos-sala button[aria-pressed=true]{color:#0B2A52;
   background:linear-gradient(100deg,var(--oro-hondo),var(--oro) 58%,var(--champan))}
 /* ── los mandos del salón en un teléfono ──
    Son cuatro solapas a la izquierda y dos botones a la derecha, los dos
@@ -945,9 +975,9 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 /* la clave del evento, para mostrarla y para dictarla */
 .clave-grande{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:clamp(38px,13vw,58px);letter-spacing:.22em;
   color:var(--champan);line-height:1;margin:6px 0 4px;word-break:break-all}
-.clave-caja{border:1px solid var(--hilo2);background:rgba(217,174,114,.06);border-radius:4px;
+.clave-caja{border:1px solid var(--hilo2);background:rgba(168,200,234,.06);border-radius:4px;
   padding:26px 22px;text-align:center;margin:22px 0}
-.clave-caja .aviso{font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-top:16px}
+.clave-caja .aviso{font-size:13.5px;color:#A9BBD3;line-height:1.7;margin-top:16px}
 .clave-fila{display:flex;align-items:center;justify-content:space-between;gap:14px;
   border:1px solid var(--gris);border-radius:3px;padding:14px 16px;margin-top:12px}
 /* el código no se puede partir al medio: es lo que la gente copia */
@@ -959,8 +989,8 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 /* zona de peligro: rojo apagado, separado del oro de la marca */
 .peligro{border-color:rgba(196,86,78,.4)}
 .peligro .titu-s{color:#C4564E}
-.peligro p{font-size:13.5px;color:#B5AC9E;line-height:1.7}
-.peligro ul{list-style:none;margin:14px 0 18px;font-size:13.5px;color:#B5AC9E;line-height:1.9}
+.peligro p{font-size:13.5px;color:#A9BBD3;line-height:1.7}
+.peligro ul{list-style:none;margin:14px 0 18px;font-size:13.5px;color:#A9BBD3;line-height:1.9}
 .peligro ul b{color:var(--champan);font-weight:400}
 .btn-peligro{width:100%;border:1px solid rgba(196,86,78,.55);border-radius:2px;padding:15px;
   font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#E08A82;margin-top:10px;
@@ -992,9 +1022,9 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 /* "Bajar" no es una puerta más: es la única copia que existe de las fotos
    de un cliente. Va en dorado para que se vea antes que "Borrar". */
 .aviso-copia{font-size:12.5px;line-height:1.7;color:#E8CFA8;margin:0 0 16px;
-  padding:12px 14px;border-left:2px solid var(--oro);background:rgba(217,174,114,.07)}
+  padding:12px 14px;border-left:2px solid var(--oro);background:rgba(168,200,234,.07)}
 .btn-fila.ir.guardar{border-color:var(--oro);color:var(--oro)}
-.btn-fila.ir.guardar:hover{background:rgba(217,174,114,.12)}
+.btn-fila.ir.guardar:hover{background:rgba(168,200,234,.12)}
 @media (max-width:520px){
   /* En un teléfono la fila no entra en una línea: nombre arriba, y los
      botones abajo alineados a la derecha. */
@@ -1004,7 +1034,7 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 }
 .sello-admin{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--hilo2);
   border-radius:999px;padding:6px 13px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--oro);background:rgba(217,174,114,.08)}
+  color:var(--oro);background:rgba(168,200,234,.08)}
 .pastilla-prog{display:inline-block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--oro);border:1px solid var(--hilo);border-radius:999px;padding:4px 9px;margin-top:7px}
 
@@ -1042,8 +1072,8 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .oro-btn,.hilo-btn,.lente{transition:transform .18s var(--e),filter .3s,border-color .3s,color .3s}
 .oro-btn:active,.hilo-btn:active{transform:scale(.975)}
 .lente:active{transform:scale(.99)}
-.puerta:active,.fila:active{background:rgba(217,174,114,.05)}
-.espera .par button:active{background:rgba(217,174,114,.09)}
+.puerta:active,.fila:active{background:rgba(168,200,234,.05)}
+.espera .par button:active{background:rgba(168,200,234,.09)}
 
 /* barrido dorado, igual que en el sitio */
 .oro-btn{position:relative;overflow:hidden}
@@ -1052,14 +1082,14 @@ body.en-demo.cinta-chica #cinta-demo .mini{display:block}
 .oro-btn:hover:after{left:140%}
 /* durante la subida el propio botón se llena */
 .oro-btn.subiendo{background:linear-gradient(90deg,
-  var(--oro) 0 var(--avance,0%),rgba(217,174,114,.25) var(--avance,0%) 100%);
+  var(--oro) 0 var(--avance,0%),rgba(168,200,234,.25) var(--avance,0%) 100%);
   color:var(--champan);transition:background .25s linear}
 .oro-btn.subiendo:after{display:none}
 
 /* esqueleto con brillo mientras carga */
 @keyframes brilla{to{background-position:-220% 0}}
 .hueso{border-radius:2px;background:linear-gradient(100deg,
-  rgba(255,255,255,.035) 30%,rgba(217,174,114,.11) 50%,rgba(255,255,255,.035) 70%);
+  rgba(255,255,255,.035) 30%,rgba(168,200,234,.11) 50%,rgba(255,255,255,.035) 70%);
   background-size:220% 100%;animation:brilla 1.5s linear infinite}
 .rejilla-hueso{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:26px}
 .rejilla-hueso i{aspect-ratio:1;display:block}
@@ -1154,16 +1184,16 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
 .hoja-tarjetas.de2{grid-template-columns:1fr}
 .hoja-tarjetas.de4{grid-template-columns:1fr 1fr}
 .hoja-tarjetas.de8{grid-template-columns:1fr 1fr}
-.tarjeta-qr{background:#000;color:#F6F2EA;text-align:center;padding:16px 12px;
-  border:1px dashed rgba(217,174,114,.35);display:flex;flex-direction:column;
+.tarjeta-qr{background:#000;color:#F2F6FB;text-align:center;padding:16px 12px;
+  border:1px dashed rgba(168,200,234,.35);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:7px;break-inside:avoid;page-break-inside:avoid}
 .tarjeta-qr .marca-t{width:88px;opacity:.9}
 .tarjeta-qr .nom-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-style:italic;font-size:24px;line-height:1.1}
-.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#A79E92;text-transform:uppercase}
+.tarjeta-qr .fec-t{font-size:8.5px;letter-spacing:.3em;color:#94A8C2;text-transform:uppercase}
 .tarjeta-qr .ped-t{font-family:'Hanken Grotesk',system-ui,sans-serif;font-size:15px;line-height:1.4;margin:6px 0}
 .tarjeta-qr .qr-t{background:#fff;padding:6px;line-height:0}
 .tarjeta-qr .qr-t canvas,.tarjeta-qr .qr-t img{width:128px;height:128px;display:block}
-.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#A79E92;text-transform:uppercase;line-height:1.7}
+.tarjeta-qr .ins-t{font-size:8px;letter-spacing:.14em;color:#94A8C2;text-transform:uppercase;line-height:1.7}
 .tarjeta-qr .cod-t{font-size:9.5px;letter-spacing:.24em;color:var(--oro)}
 .hoja-tarjetas.de8 .tarjeta-qr{padding:9px 8px;gap:4px}
 .hoja-tarjetas.de8 .tarjeta-qr .marca-t{width:54px}
@@ -1201,6 +1231,79 @@ button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
   body.imp-album .pie-marca{opacity:1}
 }
 @media(min-width:820px){.rejilla{grid-template-columns:repeat(4,1fr)}}
+
+/* ═══ claymorfismo: azul, celeste y blanco ═══
+   Pedido del dueño, con una interfaz "de arcilla" de referencia: botones
+   blandos e inflados —luz adentro arriba, sombra adentro abajo y una
+   sombra larga afuera— en vez de los rectángulos dorados de borde fino.
+   Va AL FINAL de la hoja a propósito: pisa lo de arriba sin tener que
+   reescribir cada regla (y varias están repetidas en @media).
+   El principal es de arcilla CLARA con tinta marino (>9:1): un botón
+   blanco-celeste con letra blanca no se lee. El secundario es de arcilla
+   OSCURA con letra celeste clara. */
+.oro-btn{background:linear-gradient(180deg,#F4F9FF 0%,#BBD5F0 55%,#8FB6E3 100%);
+  color:#0B2A52;border-radius:999px;font-weight:600;
+  box-shadow:inset 0 2px 3px #FFFFFF,inset 0 -5px 8px rgba(60,110,180,.45),
+    0 12px 20px -10px rgba(0,0,0,.65)}
+.hilo-btn{border:1px solid rgba(168,200,234,.28);border-radius:999px;color:#D7E6F7;
+  background:linear-gradient(180deg,#1C3C6A,#112746);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.14),inset 0 -4px 7px rgba(0,0,0,.35),
+    0 10px 18px -10px rgba(0,0,0,.6)}
+.chips button,.tabs button,.modos-sala button,.seg button{border-radius:999px}
+.chips button,.tabs button{border:1px solid rgba(168,200,234,.2);color:#A9BBD3;
+  background:linear-gradient(180deg,#183560,#0F2444);
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.1),inset 0 -3px 6px rgba(0,0,0,.3),
+    0 6px 12px -8px rgba(0,0,0,.6)}
+.chips button[aria-pressed=true],.tabs button[aria-pressed=true],
+.modos-sala button[aria-pressed=true]{color:#0B2A52;border-color:transparent;
+  background:linear-gradient(180deg,#F4F9FF,#A8C8EA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -3px 6px rgba(60,110,180,.4),
+    0 6px 12px -6px rgba(0,0,0,.6)}
+.modos-sala{background:rgba(9,20,38,.88);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.08),0 10px 20px -12px rgba(0,0,0,.7)}
+
+/* Los mandos de la pantalla del salón (Pantalla completa, Probá mandar…) y
+   las barras de abajo, con la misma arcilla. */
+.dejar{border-radius:999px;border:1px solid rgba(168,200,234,.26);color:#D7E6F7;
+  background:linear-gradient(180deg,#1C3C6A,#112746);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.14),inset 0 -4px 7px rgba(0,0,0,.35),
+    0 10px 18px -10px rgba(0,0,0,.6)}
+.dejar.llamada{color:#0B2A52;border-color:transparent;font-weight:600;
+  background:linear-gradient(180deg,#F4F9FF,#A8C8EA);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -4px 7px rgba(60,110,180,.4),
+    0 10px 18px -10px rgba(0,0,0,.65)}
+/* El "Demo" de la cinta es un botón: parece uno, y si no hacía nada el
+   visitante lo tocaba y creía que la demostración estaba rota. Ahora abre
+   una notita que dice qué es esto (y se cierra tocándola). */
+#demoInfo{position:fixed;top:calc(var(--cinta,48px) + 8px);left:16px;right:16px;
+  max-width:420px;margin-inline:auto;z-index:95;cursor:pointer;
+  padding:14px 18px;border-radius:22px;text-align:center;
+  font-family:inherit;font-size:13px;font-weight:500;line-height:1.5;color:#0F3B73;background:linear-gradient(180deg,#FFFFFF,#E4EFFB);
+  box-shadow:inset 0 2px 2px #FFFFFF,inset 0 -4px 8px rgba(120,170,230,.3),
+    0 18px 30px -14px rgba(0,0,0,.7)}
+#demoInfo b{display:block;margin-bottom:4px;color:#1F5FA8;font-weight:700}
+body.en-demo.cinta-chica #demoInfo{display:none}
+
+/* ═══ letra mínima legible ═══
+   Lo recomienda checklist.design (tipografía: "tamaño mínimo legible") y lo
+   medimos: los mandos de la pantalla del salón (Pantalla completa, Probá
+   mandar, las solapas Código/Tablero/Muro) estaban en 9 a 9,5px, y son
+   botones. Se suben a 11px. Va al final de la hoja para pisar también lo
+   que está adentro de los @media. */
+.modos-sala button,.dejar,.top .sub,.consigna .et,.cab-inv .arriba,.tapa-g .arriba{font-size:11px}
+.modos-sala button{letter-spacing:.12em}
+.dejar{letter-spacing:.14em}
+.envivo,.consola .envivo,.cuenta small,.barra-abajo em,.accesos em{font-size:10.5px}
+/* En un teléfono de 320px las etiquetas de la barra de abajo no entran a
+   10,5px con su separación: la quinta se salía 9px del borde (lo agarró
+   pruebas/dispositivos.js). Ahí vuelven a 9,5px y más apretadas. */
+@media (max-width:360px){
+  .accesos em,.barra-abajo em{font-size:9.5px;letter-spacing:.04em}
+}
+@media (max-width:640px){
+  .modos-sala button{padding:7px 9px;font-size:11px;letter-spacing:.08em}
+  .botones-sala .dejar,.dejar{padding:8px 13px;font-size:11px;letter-spacing:.1em}
+}
 </style>
 </head>
 <body>
@@ -2124,7 +2227,7 @@ function contador(sel){
   };
   el.addEventListener('input',refrescar); refrescar();
 }
-const tono=t=>document.documentElement.style.setProperty('--acc',t||'#D9AE72');
+const tono=t=>document.documentElement.style.setProperty('--acc',t||'#A8C8EA');
 
 /* Bloque de referencia: lo ve el invitado después de subir y al final del
    álbum. Es de dónde salen las consultas de las fiestas siguientes. */
@@ -2207,7 +2310,7 @@ let pinOK=guarda.leerSesion('ce:pinOK')==='1';
 /* Cuántas miniaturas dibujamos de una: en una fiesta grande hay cientos y
    el celular del organizador no tiene por qué renderizarlas todas. */
 const TOPE_PUBLI=60;
-const TONOS=[{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
+const TONOS=[{n:'Celeste',c:'#A8C8EA'},{n:'Oro',c:'#D9AE72'},{n:'Perla',c:'#E8E4DC'},{n:'Rosa antiguo',c:'#D8A0A6'},{n:'Salvia',c:'#9FB39B'}];
 const TIPOS={XV:'QUI',Boda:'BOD',Cumpleaños:'CUM',Corporativo:'COR'};
 /* Cuánto vive el álbum después de la fiesta. Una foto pesa como 441 KB y
    un casamiento de cien invitados es un giga: si no vence nunca, la cuenta
@@ -2509,7 +2612,7 @@ async function sembrar(){
     /* Sin moderación: en la demostración lo que manda el visitante tiene que
        aparecer EN LA PANTALLA, que es todo el punto. Con moderar en true le
        decía "Enviado, el organizador lo aprueba" y no se veía nunca. */
-    const datos={codigo,nombre:'Los 15 de Delfina',fecha:enDias(12),tipo:'XV',tono:'#D9AE72',
+    const datos={codigo,nombre:'Los 15 de Delfina',fecha:enDias(12),tipo:'XV',tono:'#A8C8EA',
       hashtag:'#Delfina15',lugar:'Salón Las Acacias · Rosario',
       moderar:false,cerrado:false,portada:tapa,creado:Date.now(),claveNueva:claveEv};
     /* En la nube las fotos van al depósito de archivos: antes se guardaban
@@ -2588,7 +2691,7 @@ async function vAcceso(){
     <div class="tarjeta principal" style="margin-top:10px;text-align:center">
       <div style="width:56px;height:56px;border:1px solid var(--hilo);border-radius:50%;
         display:grid;place-items:center;margin:0 auto 22px;color:var(--oro)">${ESTRELLA}</div>
-      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:26px">
+      <p style="font-size:14px;color:#A9BBD3;line-height:1.7;margin-bottom:26px">
         ${nuevo?'Elegí una clave de 4 a 8 números. La vas a necesitar cada vez que entres al panel.'
                :'Solo vos entrás acá. Los invitados no necesitan clave.'}</p>
       <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••"
@@ -2831,7 +2934,7 @@ async function vLimpieza(){
     <button class="volver">Salir</button>
   </header>
   <div class="wrap-inv" style="padding-bottom:40px">
-    <p style="font-size:13.5px;line-height:1.8;color:#B5AC9E;margin:0 0 8px">
+    <p style="font-size:13.5px;line-height:1.8;color:#A9BBD3;margin:0 0 8px">
       Todos los eventos del negocio, ordenados por lo que les queda. Desde acá
       se entra a cualquiera —al muro o al rollo— sin depender del teléfono donde
       se creó. Cada álbum vive <b style="color:var(--oro);font-weight:400">${DIAS_QUE_VIVE} días</b>
@@ -2846,7 +2949,7 @@ async function vLimpieza(){
     <div class="seccion-a" style="margin-top:26px"><h2>Códigos de activación</h2>
       <span id="cuentaCod"></span></div>
     <div class="tarjeta">
-      <p style="font-size:13px;line-height:1.75;color:#B5AC9E;margin:0 0 16px">
+      <p style="font-size:13px;line-height:1.75;color:#A9BBD3;margin:0 0 16px">
         Uno por evento vendido, y se gasta al usarlo. Sin código, nadie puede
         crear un evento — salvo vos con esta clave.</p>
       <div class="campo" style="margin-bottom:14px">
@@ -3029,7 +3132,7 @@ function vPorCodigo(){
   </header>
   <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
     <div class="tarjeta principal" style="margin-top:10px">
-      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+      <p style="font-size:14px;color:#A9BBD3;line-height:1.7;margin-bottom:22px">
         Para el que contrató la fiesta. Escribí el código que te pasamos y
         después la clave, que es lo que te deja
         <b style="color:var(--champan);font-weight:400">moderar y bajarte el álbum</b>.<br>
@@ -3143,7 +3246,7 @@ function vPedirClave(codigo,m){
     <div class="tarjeta principal" style="text-align:center">
       <div style="width:56px;height:56px;border:1px solid var(--hilo);border-radius:50%;
         display:grid;place-items:center;margin:0 auto 22px;color:var(--oro)">${ESTRELLA}</div>
-      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:24px">
+      <p style="font-size:14px;color:#A9BBD3;line-height:1.7;margin-bottom:24px">
         Para moderar o cambiar algo de este evento hace falta su clave.
         Es la que se mostró al crearlo.</p>
       <input id="claveEv" type="text" autocomplete="off" autocapitalize="characters"
@@ -3243,7 +3346,7 @@ async function vEvento(codigo, abrirEn){
         const vencido=d<0;
         return `<div class="tarjeta aviso-vence${vencido?' tarde':''}">
           <p class="titu-s">${vencido?'El álbum ya venció':'Bajá tu copia'}</p>
-          <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin-bottom:18px">
+          <p style="font-size:14.5px;line-height:1.75;color:#A9BBD3;margin-bottom:18px">
             ${vencido
               ? `Venció el ${bonito(vence)}. Puede que las fotos ya no estén: si todavía se ven, bajalas ahora mismo.`
               : d===0
@@ -3270,7 +3373,7 @@ async function vEvento(codigo, abrirEn){
       </div>
       <div class="tarjeta">
         <p class="titu-s">Pasarle el álbum</p>
-        <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+        <p style="font-size:13.5px;color:#A9BBD3;line-height:1.7;margin-bottom:18px">
           Este enlace abre el álbum terminado. Es el que le mandás a quien organizó la fiesta.</p>
         <button class="hilo-btn" id="copiarAlbum">Copiar el enlace del álbum</button>
         <a class="hilo-btn" id="wspAlbum" href="${wsp(`Acá está el álbum de ${m.nombre}: ${enlaceAlbumDe(codigo)}`)}"
@@ -3280,7 +3383,7 @@ async function vEvento(codigo, abrirEn){
         ?`<p class="pie-nota">El álbum se puede descargar hasta el ${bonito(v)}.</p>`:''; })()}
       <div class="tarjeta" style="margin-top:26px">
         <p class="titu-s">¿Lo cerraste antes de tiempo?</p>
-        <p style="font-size:13.5px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+        <p style="font-size:13.5px;color:#A9BBD3;line-height:1.7;margin-bottom:18px">
           Al reabrirlo, los invitados vuelven a poder subir con el mismo código de siempre.</p>
         <button class="hilo-btn" id="reabrir">Reabrir el muro</button>
       </div>
@@ -3288,7 +3391,7 @@ async function vEvento(codigo, abrirEn){
       <div class="tarjeta principal" style="text-align:center">
         <p class="titu-s">Código del evento</p>
         <div class="qr" id="qr" style="display:inline-block;background:#fff;padding:13px;line-height:0"></div>
-        <p style="font-size:14.5px;line-height:1.75;color:#B5AC9E;margin:20px auto 0;max-width:30ch">
+        <p style="font-size:14.5px;line-height:1.75;color:#A9BBD3;margin:20px auto 0;max-width:30ch">
           Escanean con la cámara del celular y suben. No hay que instalar nada.</p>
         <button class="hilo-btn" id="copiar">Copiar enlace</button>
       </div>
@@ -3341,7 +3444,7 @@ async function vEvento(codigo, abrirEn){
         <div class="campo"><label for="edLugar">Dónde es</label>
           <input id="edLugar" type="text" maxlength="60"
             placeholder="Salón Las Acacias · Rosario" value="${esc(m.lugar||'')}"></div>
-        <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+        <p style="font-size:13px;color:#A9BBD3;line-height:1.7;margin-bottom:18px">
           Aparecen en el cartel de mesa, en la pantalla del salón y en el álbum.
           Sirve para que lo que suban a Instagram quede todo junto.</p>
         <button class="hilo-btn" id="guardarTag">Guardar</button>
@@ -3356,7 +3459,7 @@ async function vEvento(codigo, abrirEn){
           ? `<div class="clave-fila"><span style="margin:0">Clave guardada</span>
                <b>${esc(clavesGuardadas()[codigo])}</b></div>
              <button class="hilo-btn" id="copiarClaveEv">Copiar la clave</button>`
-          : `<p style="font-size:13.5px;color:#B5AC9E;line-height:1.7">
+          : `<p style="font-size:13.5px;color:#A9BBD3;line-height:1.7">
                En este aparato no está guardada${esAdmin?' (entraste con la clave de administrador)':''}.</p>`}
         <button class="hilo-btn" id="cambiarClaveEv">${clavesGuardadas()[codigo]?'Cambiar la clave':'Ponerle una clave nueva'}</button>
         <div id="zonaClave"></div>
@@ -3365,7 +3468,7 @@ async function vEvento(codigo, abrirEn){
         <p class="titu-s">Cuándo se abre el muro</p>
         <div class="campo"><label for="lanza">Día y hora</label>
           <input id="lanza" type="datetime-local" value="${esc(m.lanza||'')}"></div>
-        <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:18px">
+        <p style="font-size:13px;color:#A9BBD3;line-height:1.7;margin-bottom:18px">
           Hasta esa hora, los invitados ven una cuenta regresiva en vez del
           formulario. Dejalo vacío para que esté abierto desde ya.</p>
         <button class="hilo-btn" id="guardarL">Guardar horario</button>
@@ -3469,7 +3572,7 @@ async function vEvento(codigo, abrirEn){
   const porta=app.querySelector('#porta');
   const hayTapa=!!urlSegura(m.portada);
   porta.innerHTML=`${hayTapa?imgMini(m.portada,'class="mini" alt="Portada"'):`<span class="mini vacia">${ESTRELLA}</span>`}
-    <span style="flex:1;font-size:13.5px;color:#B5AC9E;line-height:1.6">${hayTapa?'Se usa en la tapa del álbum.':'Sin elegir: usamos la primera foto que llegue.'}</span>
+    <span style="flex:1;font-size:13.5px;color:#A9BBD3;line-height:1.6">${hayTapa?'Se usa en la tapa del álbum.':'Sin elegir: usamos la primera foto que llegue.'}</span>
     <label class="hilo-btn" style="width:auto;margin:0;padding:11px 18px;cursor:pointer">Elegir<input id="fporta" type="file" accept="image/*" hidden></label>`;
   porta.querySelector('#fporta').onchange=async e=>{
     const a=e.target.files[0]; if(!a) return;
@@ -3822,7 +3925,7 @@ async function vElegir(destino,titulo){
   </header>
   <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
     <div class="tarjeta principal" style="margin-top:10px">
-      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+      <p style="font-size:14px;color:#A9BBD3;line-height:1.7;margin-bottom:22px">
         Escribí el código de la fiesta y la proyección abre en esta pantalla.
         <b style="color:var(--champan);font-weight:400">Conectá el celular o la
         notebook al proyector y ponelo en pantalla completa.</b></p>
@@ -3873,7 +3976,7 @@ async function vInvitado(){
   </header>
   <div class="wrap-inv" style="max-width:430px;padding-bottom:40px">
     <div class="tarjeta principal" style="margin-top:10px">
-      <p style="font-size:14px;color:#B5AC9E;line-height:1.7;margin-bottom:22px">
+      <p style="font-size:14px;color:#A9BBD3;line-height:1.7;margin-bottom:22px">
         Escribí el código que está en el cartel de tu mesa.
         <b style="color:var(--champan);font-weight:400">No hace falta clave ni crear una cuenta.</b></p>
       <div class="campo"><label for="codInv">Código de la fiesta</label>
@@ -4096,7 +4199,7 @@ function vTodavia(m){
     <img src="${LOGO_MARK}" style="width:150px;opacity:.6" alt="Click Eterno">
     <p class="espaciado" style="margin-top:26px">Todavía no</p>
     <h1>${esc(m.nombre)}</h1>
-    <p style="color:#B5AC9E;line-height:1.8;font-size:15px;max-width:30ch;margin:0 auto">
+    <p style="color:#A9BBD3;line-height:1.8;font-size:15px;max-width:30ch;margin:0 auto">
       Guardá este enlace: cuando arranque la fiesta vas a poder mandar tus fotos y saludos.</p>
     <div class="cuenta-lanza" id="cuentaEspera"></div>
     <p class="cuando-abre">Se abre el ${esc(horaLinda(abre))}</p>
@@ -4115,7 +4218,7 @@ function vMomento(m,autor){
       ${ESTRELLA.replace('estrella','estrella c5')}
     </div>
     <h1 class="ital sube" style="font-size:40px">${m.moderar?'Enviado':'Ya está en la pantalla'}</h1>
-    <p class="sube" style="animation-delay:.15s;color:#B5AC9E;line-height:1.8;max-width:30ch;margin:18px auto 0;font-size:15px">
+    <p class="sube" style="animation-delay:.15s;color:#A9BBD3;line-height:1.8;max-width:30ch;margin:18px auto 0;font-size:15px">
       ${m.moderar?'El organizador lo aprueba y se proyecta enseguida.':'Levantá la vista, '+esc(autor)+'. Es tuya la que está pasando.'}</p>
     ${HAY_DEMO?`<p class="sube" style="animation-delay:.2s;color:var(--oro);font-size:12.5px;
       letter-spacing:.06em;line-height:1.7;max-width:30ch;margin:14px auto 0">
@@ -4557,7 +4660,7 @@ function vFinal(m){
     <div class="filete" style="max-width:260px;margin:26px auto">${ESTRELLA}</div>
     <p class="espaciado sube">Evento finalizado</p>
     <h1 class="ital sube" style="font-size:clamp(44px,13vw,62px);margin:16px 0 12px;animation-delay:.12s">${esc(m.nombre)}</h1>
-    <p class="sube" style="animation-delay:.22s;color:#B5AC9E;line-height:1.8">${bonito(m.fecha)}<br>El álbum ya está listo.</p>
+    <p class="sube" style="animation-delay:.22s;color:#A9BBD3;line-height:1.8">${bonito(m.fecha)}<br>El álbum ya está listo.</p>
     <div class="sube" style="animation-delay:.34s;max-width:330px;margin:38px auto 0">
       <button class="oro-btn" id="ver">Ver el álbum digital</button></div>
     <div class="sube" style="animation-delay:.5s;max-width:420px;margin:22px auto 0">
@@ -4642,7 +4745,7 @@ async function vAlbum(codigo,abrirEn){
       <section id="aGuardar" hidden>
         <div class="seccion-a"><h2>Llevate el álbum</h2></div>
         ${items.length?`
-          <p style="color:#B5AC9E;font-size:14.5px;line-height:1.8;margin-bottom:24px">
+          <p style="color:#A9BBD3;font-size:14.5px;line-height:1.8;margin-bottom:24px">
             ${items.length} recuerdos de ${gente} ${gente===1?'persona':'personas'}.
             Se descargan en calidad original.</p>
           <div class="acciones" style="margin-top:0"><button id="dl">Descargar todo</button><button id="pdf">Guardar en PDF</button></div>
@@ -4774,7 +4877,7 @@ async function vTarjetas(codigo){
   ${barra('Tarjetas','Para cortar y repartir')}
   <div class="wrap">
     <div class="no-imprime">
-      <p style="color:#B5AC9E;font-size:14px;line-height:1.75;text-align:center;max-width:40ch;margin:0 auto">
+      <p style="color:#A9BBD3;font-size:14px;line-height:1.75;text-align:center;max-width:40ch;margin:0 auto">
         Imprimí esta hoja y cortá por la línea. Una tarjeta en cada mesa y
         los invitados ya están sacando fotos.</p>
       <div class="cuantas">
@@ -4830,12 +4933,12 @@ async function vDiagnostico(){
   app.innerHTML=`${barra('Diagnóstico','Versión v12')}
   <div class="wrap" style="padding-top:24px">
     <div id="res" style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.9;
-      white-space:pre-wrap;word-break:break-word;color:#B5AC9E"></div>
+      white-space:pre-wrap;word-break:break-word;color:#A9BBD3"></div>
     <div id="zonaPrueba" style="margin-top:30px"></div>
   </div>`;
   app.querySelector('.vuelve').onclick=()=>ir('portada');
   const out=app.querySelector('#res');
-  const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
+  const linea=(t,ok)=>{ out.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#A9BBD3'}">${esc(t)}</div>`; };
   const titulo=t=>{ out.innerHTML += `<div style="color:var(--oro);margin:18px 0 6px;letter-spacing:.16em;text-transform:uppercase;font-size:10.5px">${esc(t)}</div>`; };
   /* deja anotado si algo salió mal, para el resumen del final */
   const problemas=[];
@@ -4926,7 +5029,7 @@ async function vDiagnostico(){
   /* ── la prueba de fondo: escribe de verdad y después se limpia sola ── */
   const zona=app.querySelector('#zonaPrueba');
   zona.innerHTML=`
-    <p style="font-size:13px;color:#B5AC9E;line-height:1.7;margin-bottom:16px">
+    <p style="font-size:13px;color:#A9BBD3;line-height:1.7;margin-bottom:16px">
       La prueba de fondo crea un evento de mentira, comprueba que los permisos
       funcionen de verdad y después lo borra. No toca ninguna fiesta tuya.</p>
     <button class="hilo-btn" id="probarTodo">Probar los permisos de verdad</button>
@@ -4944,7 +5047,7 @@ async function pruebaDeFondo(boton, salida){
   boton.dataset.ocupado='1'; boton.disabled=true; boton.textContent='Probando…';
   salida.innerHTML='';
   const fallas=[];
-  const di=(t,ok)=>{ salida.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#B5AC9E'}">${esc(t)}</div>`; };
+  const di=(t,ok)=>{ salida.innerHTML += `<div style="color:${ok===true?'#7BE0A5':ok===false?'#FF7B94':'#A9BBD3'}">${esc(t)}</div>`; };
   const probar=(t,ok)=>{ di((ok?'✓ ':'✗ ')+t, ok); if(!ok) fallas.push(t); };
   /* el código lleva PRUEBA adelante: si algo queda colgado, se ve enseguida */
   const cod='PRUEBA-'+nuevaClave();
@@ -4954,12 +5057,12 @@ async function pruebaDeFondo(boton, salida){
     // 1. crear: la base tiene que exigir clave
     try{
       await SB.crear('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
-        fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()});
+        fecha:hoy(),tipo:'XV',tono:'#A8C8EA',moderar:true,cerrado:false,creado:Date.now()});
       probar('Sin clave NO se puede crear un evento', false);
     }catch(e){ probar('Sin clave NO se puede crear un evento', true); }
 
     await SB.crear('ce_eventos',{codigo:cod,nombre:'Prueba de Click Eterno',
-      fecha:hoy(),tipo:'XV',tono:'#D9AE72',moderar:true,cerrado:false,creado:Date.now()}, clave);
+      fecha:hoy(),tipo:'XV',tono:'#A8C8EA',moderar:true,cerrado:false,creado:Date.now()}, clave);
     probar('Con clave sí se crea', !!(await meta(cod)));
 
     // 2. un invitado sube: la base decide el estado, no el celular
@@ -5046,7 +5149,7 @@ function pantallaError(e){
     <div class="filete" style="max-width:240px;margin:24px auto">${ESTRELLA}</div>
     <p class="espaciado">Algo se cortó</p>
     <h1 class="ital" style="font-size:clamp(30px,8vw,42px);margin:14px 0 14px">Probá de nuevo</h1>
-    <p style="color:#B5AC9E;line-height:1.8;max-width:32ch;margin:0 auto;font-size:14.5px">${esc(motivo(e))}</p>
+    <p style="color:#A9BBD3;line-height:1.8;max-width:32ch;margin:0 auto;font-size:14.5px">${esc(motivo(e))}</p>
     <div style="max-width:320px;margin:32px auto 0">
       <button class="oro-btn" id="recargar">Recargar</button>
       <button class="hilo-btn" id="alInicio">Volver al inicio</button>
@@ -5139,11 +5242,20 @@ addEventListener('error',e=>{
     if(!EN_MARCO) document.body.insertAdjacentHTML('afterbegin', `
       <div id="cinta-demo">
         <span class="mini">Demostración</span>
-        <span><b>Demostración</b> · la fiesta y las fotos son inventadas</span>
-        <button id="deNuevo">Empezar de nuevo</button>
+        <button class="chip" id="infoDemo" type="button" aria-expanded="false" aria-controls="demoInfo">Demo ?</button>
+        <span class="aviso">la fiesta y las fotos son inventadas</span>
+        <button class="p" id="deNuevo"><span class="l">Empezar de nuevo</span><span class="c">Reiniciar</span></button>
         ${ENMARCADO?'':'<a href="/">Salir</a>'}
         <button class="plegar" id="plegarCinta" aria-label="Achicar este aviso">✕</button>
-      </div>`);
+      </div>
+      <div id="demoInfo" role="status" hidden><b>Esto es una demostración</b>La fiesta y las fotos son inventadas, y lo que mandes se borra solo a los 2 minutos. Tocá acá para cerrar.</div>`);
+    const info=document.getElementById('infoDemo'), nota=document.getElementById('demoInfo');
+    if(info&&nota){
+      const cerrarNota=()=>{ nota.hidden=true; info.setAttribute('aria-expanded','false'); };
+      info.onclick=e=>{ e.stopPropagation(); nota.hidden=!nota.hidden;
+        info.setAttribute('aria-expanded',String(!nota.hidden)); };
+      nota.onclick=cerrarNota;
+    }
     const bn=document.getElementById('deNuevo');
     if(bn) bn.onclick=reiniciarDemo;
     /* Plegar y desplegar. Plegada, toda la tira es el botón de volver a
@@ -5165,7 +5277,7 @@ addEventListener('error',e=>{
     function medirCinta(){
       if(!cinta) return;
       requestAnimationFrame(()=>document.body.style.setProperty(
-        '--cinta', (cinta.offsetHeight||38)+'px'));
+        '--cinta', (cinta.offsetHeight||48)+'px'));
     }
     if(plegar) plegar.addEventListener('click',medirCinta);
     addEventListener('resize',medirCinta);

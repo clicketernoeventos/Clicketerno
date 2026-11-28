@@ -4127,6 +4127,76 @@ efecto general: era de ESA foto, para que su fondo blanco de estudio
 se fundiera con el papel. Dejado puesto sobre una foto normal, la
 oscurece contra el fondo sin que nada avise.
 
+#### El mapa dibujado, el plan del save the date y más transiciones (26/11/2026)
+
+El dueño mandó una captura de otra invitación (*"pone este estilo de
+mapa"*) y pidió *"el plan del evento con la animación del save the
+date"* y *"más efectos de transición"*.
+
+**"¿Dónde?"** pasó al armado de la referencia, el mismo que ya tenían
+`zaii` y `mariapaz15`: título enorme en mayúsculas, "nos vemos" en la
+manuscrita, el lugar a la izquierda, un **mapa dibujado** (no el real,
+sin nombres de calles) con la flecha y el círculo trazados a mano una
+vez, y el botón verde a su enlace de Maps. Pintado en SU paleta: papel
+champagne, plazas en salvia, tinta antracita. **La polaroid del salón
+de la referencia no va**: no mandaron foto del lugar, y una de internet
+no es de ellos.
+
+**El cronograma** dejó la grilla de columnas y es el plan de `lola15`:
+la hora a la izquierda, un riel que se llena atado al scroll, un punto
+por momento que se enciende cuando el riel le llega, y "Momento 01…04"
+con su icono. Los momentos entran de a uno desde el riel.
+
+**Las transiciones nuevas**, todas una sola vez y apagadas con "menos
+movimiento": el eco de cada título se escribe de izquierda a derecha
+después del título; las dos fotos de la fecha se descubren (la de
+arriba baja, la de abajo sube); y la del cierre llega de más cerca y
+se asienta. **El eco iba corrido desde el costado y la prueba lo
+cazó**: corrido se salía de su caja ("Regalos" 99 en 97); con
+`clip-path` no ocupa más lugar.
+
+#### "La siento vacía": las fotos con impacto (26/11/2026)
+
+*"Queda muy insulso. Buscá algo de impacto y que quede bien con la
+temática."* Las fotos eran rectángulos en blanco y negro y nada más.
+
+- **La portada va en un ARCO**, el mismo del calendario, con un filete
+  dorado corrido afuera como el marco de un espejo: la portada y la
+  fecha pasan a hablar el mismo idioma.
+- **"Nuestra historia" son copias reveladas sobre el verde**: borde de
+  papel más ancho abajo, una cinta champagne cruzada arriba, giradas y
+  encimadas a un lado y al otro. Entran de a una cayendo sobre la mesa,
+  una sola vez. Antes eran tres cuadraditos en fila sobre una banda
+  marfil; la banda se fue, porque con las copias encima era un marco
+  dentro de otro.
+- Sirve para dos, tres o cuatro fotos: cada una se apoya sobre la
+  anterior. El día que llegue la de las mascotas entra sola.
+
+#### La versión AFICHE, para comparar (27/11/2026): `facuymaxiafiche/`
+
+*"¿Y si la hacés estilo save the date?"* Se le preguntó y eligió:
+**el armado de afiche con la paleta de ellos**, y **aparte, para
+comparar** — la de `facuymaxi/` no se tocó.
+
+Es copia de `gonzalo50/` (el save the date más completo: tiene fotos en
+polaroid y el tocadiscos) con un tema fijo nuevo: bandas en el **verde
+hondo** con brillo, títulos en **dorado pulido**, el marfil de ellos y
+el champagne de acento (5,0:1 sobre el verde, solo ahí). La entrada
+dice *"Sí, / nos / casamos"*, el nombre salta a **"Sí"** y aparece la
+foto del jardín como polaroid; el cierre es un **"SÍ" de puntos** con
+la foto del mar encima. El plan es el cronograma que mandaron, el dress
+code el suyo, y "Nuestra historia" son cuatro polaroid **en blanco y
+negro**, como en su invitación.
+
+**Lo que se volvió a poner**: la comida por persona, que `gonzalo50`
+había sacado — en un casamiento el salón la necesita. Y el aviso de
+datos dice que la lista la tienen ellos.
+**Lo que no va**: el nombre de la canción (lo sacó el dueño el
+07/11/2026); la trivia (no la mandaron); el titular del alias y el día
+exacto para confirmar (siguen faltando).
+**El formulario no manda a ningún lado** (`endpoint` vacío): es para
+mirar. Si la eligen, pasa a `facuymaxi/` con su planilla.
+
 ### `magali15/`: la cuarta de un cliente — Magali
 
 13 de febrero de 2027 · Salón Valmar · de 21 a 5 h. Quince años.
@@ -4943,3 +5013,45 @@ No eran formularios vacíos: era **un invitado que dijo "somos 4" y no escribió
 ## Permiso para la galería: guada15 y gonzalo50 (25/11/2026)
 
 El dueño confirmó que **las dos familias dieron permiso** para mostrar sus invitaciones en la web. Entran a `lib/trabajos.js` con `cuidar:true` (alias y confirmación apagados en la muestra). En el borrador `/nueva` la vitrina muestra solo las que eligió, por fiesta: XV (Pia, Lucía, Guada), egresados (Valentina), cumpleaños (Gonzalo, Maricel) y casamientos (Clara & Bruno, Julia & Franco, las de la pareja hecha con IA). El frente de cada tarjeta es la captura de la entrada real (`muestra/portadas/`).
+
+**Segunda vuelta de zaii (25/11/2026).** *"Poné en la invitación que es un XV. Y alguna frase que quede linda."* Ahora dice **"Mis XV"** cruzando el nombre (en lugar de "La fiesta de"), la carta del sobre *"Te invito a mis XV"*, el mensaje de WhatsApp *"…a tus XV del 12 de diciembre…"* y la imagen para compartir también. La frase de la portada es NUESTRA: *"Quince años, mil sueños y una noche para brillar con vos."*
+**El logo sin fondo** se mostró como VISTA PREVIA, sin tocar lo publicado: recorte por brillo desde los bordes (más el violeta liso que queda encerrado por el anillo), sin comerse las baldosas oscuras de la bola. Un `drop-shadow` sobre la imagen recortada dibujaba un recuadro gris: sin sombra queda limpio. Falta que el dueño diga si lo quiere así.
+**El logo, sin fondo (25/11/2026).** *"Me gusta cómo queda. Fijate que en el anillo de abajo no está sin fondo. Corregilo y mandalo a la invitación."* El violeta encerrado por el anillo de abajo estaba pegado a las baldosas de la bola: se sacó solo lo LISO de esa zona (poca variación de brillo), y las baldosas quedaron. `fotos/logo.webp` es ahora el recorte con transparencia (1100 px) y la placa del cierre no lleva fondo, borde ni sombra.
+**Dirección y hora (25/11/2026).** *"La dirección es por Trece de Diciembre y pasaje Gabriela Mistral, es en Pico Truncado, Santa Cruz. 21 hs comienza el evento."* El "entre 13 diciembre" era esa esquina. Va en dos renglones (la esquina y la ciudad) y "Cómo llegar" busca el salón con la esquina y la ciudad. La fiesta es a las 21 (Santa Cruz es −03:00, como Rosario); sin hora de fin.
+**"¿Dónde?" como la referencia (25/11/2026).** El dueño mandó el enlace de Maps del salón y la misma captura que para `mariapaz15` (*"hacele el mapa al estilo de la foto"*). Se trajo ese armado, en los azules de Zaii: "¿DÓNDE?" y *nos vemos*, "LUGAR" con el salón, la esquina y la ciudad, el **mapa dibujado** (no es el real: sin nombres de calles) con la flecha y el círculo que se trazan una vez, y **"Ver cómo llegar →"** con SU enlace exacto (`maps.app.goo.gl/wyz6Wa7TDie3hgrU8`). Sin la polaroid de la referencia.
+**El logo, retocado (25/11/2026).** Con cuatro capturas ampliadas: *"Analizá y retocá eso que queda mal."* Quedaban **manchas del brillo de fondo** (violeta alrededor del anillo, azul arriba y abajo de la bola) y **miguitas** de baldosas sueltas. Se sacó el brillo LISO de brillo medio que toca el fondo, creciendo desde afuera de a un píxel (el borde negro de las letras lo frena), se borraron los pedazos opacos sueltos y el borde quedó un pelo más adentro, sin flecos. Queda un escalón mínimo en el canto de la bola, que es del propio dibujo de las baldosas.
+**El alias para regalos (25/11/2026).** *"Ssotoo.zai es el cbu para regalos."* Va tal cual (con la S mayúscula) en la cápsula de las bolas de espejos, con el rótulo "Alias para transferir" y el botón de copiar. Como no hay valor de tarjeta, el título del bloque dice **"Regalos"** y no "Valor de la tarjeta". Falta el **titular**: no se dibuja hasta que llegue.
+**Sin la mitad celeste (25/11/2026).** *"Quedó lindo pero le sacaría esa mitad celeste."* La imagen de las bolas traía su fondo celeste liso y tapaba media cápsula. Se le sacó el fondo (transparente desde el borde izquierdo, sin tocar el interior de las bolas): ahora las bolas flotan sobre el papel crema. Mismo nombre de archivo, así que el HTML no cambia.
+
+## sofi15 — Los XV de Sofi (27/11/2026)
+
+**Pidió** (el dueño, con las respuestas de la clienta y tres fotos en blanco y negro): *"1. SOFI · 2. 21/05 · 3. Vera Mujica 68 - la mansión del rey de 21hs a 4am · 5. cupido - tini el tema · 6. sisi · 7. blanco y plateado · 8. dress code: formal, colores prohibidos: Rosa en todas sus tonalidades, Blanco, Plateado, verde · 11. el juego de quien conoce más a sofi me encanta y agrega algo que vaya y quede lindo quedaría encantada."* Y: *"Fijate que las fotos queden copadas y causen impacto. Al tema sacale los primeros 5 s, que es cuando hablan, y que arranque cuando empieza a cantar."* Confirmó que son **sus XV**.
+
+**Base**: copia de `lola15/` (el modelo con fogonazos, papel, folio y titileo solo en títulos) con el **tema "plata" de `guada15/`** fijo (`data-tema="plata"` en el `<html>`) y el "de 21 a 4 h" de Guada. La entrada dice *"¿Listos / para / brillar?"*.
+**Lo nuevo**: (1) **"Primera plana · Esta soy yo"**: las tres fotos como copias de laboratorio tiradas sobre la mesa, torcidas y pisándose, con epígrafe a máquina; cada una **se abre como un obturador y se revela** (sale quemada y se asienta) una vez, con un brillo que la cruza; al bajar se corren a distinta velocidad; detrás, "SOFI" enorme en filete. (2) En el dress code, **"Colores que no van"**: cuatro muestras de tela tachadas (rosa en todas sus tonalidades, blanco, plateado, verde), la raya se traza al aparecer.
+**Las fotos**: recortadas a 4:5; en la de la noche se **sacó el cartel luminoso del local** de atrás (es la marca de otro). Blanco y negro también por CSS.
+**La canción**: "Cupido" de TINI, sin lo hablado: hablan hasta el 6,4 s y hay silencio hasta el 6,8 s; se cortó ahí (no en el 5, que todavía era charla) y sin la cola muda del video. Al entrar arranca desde el canto.
+**El juego**: le encanta, pero **no mandó preguntas**: la sección no se dibuja hasta que lleguen (decisión del dueño). El año (2027) se dedujo: el próximo 21/05.
+**Faltan**: las preguntas del juego, el **alias** con su titular, **hasta cuándo** se confirma, y la **/exec** de su planilla.
+**Segunda vuelta de sofi15 (27/11/2026).** Marina (la mamá, por WhatsApp) mandó las tres preguntas del juego con sus opciones y rótulos ("¿Quién tiene más chances?", "El archivo Sofi"), el alias **marinatenerife.mp** y su mail. Las preguntas y opciones van **tal cual**, con el rótulo junto al "02 / 03". **No mandó cuáles son las buenas**: quedan en `ok: null` y mientras falte una la sección no se dibuja (decisión del dueño: pedírselas). El alias va con su botón de copiar; falta el **titular**. **El mail es la contraseña del tablero** (lo confirmó el dueño, avisado del riesgo): va solo en la copia del Apps Script, no en el repo.
+**Las buenas del juego (27/11/2026).** 1-D (bailar hasta que no dé más), 2-C (reírse en el peor momento), 3-A («yendo»). Con las tres, la sección "¿Quién conoce más a Sofi?" ya se ve.
+**Tercera vuelta de sofi15 (27/11/2026): tres cosas de la referencia.** El dueño mandó tres capturas de una invitación de 18 (*digitalstories*): *"1) Una foto ponela así como en la primera foto pero al final de la invitación. 2) Ese tipo de mapas, ¿cómo se hace? 3) Hacé algún estilo así para donde va lo de la música."*
+- **La foto del final**: debajo de "Nos vemos ahí", a todo el ancho, Sofi con el brazo arriba (`fotos/brillo.webp`, la misma de la primera plana: no hay otra) oscurecida, con **"21:00" enorme** arriba, el salón y la calle a máquina, una raya, la cruz, "Música / Gente / Brillo / Historias" al costado y "Hasta las 04:00" abajo. Entra una vez: se acerca y se aclara. Reemplaza a los haces de puntos.
+- **El mapa**: ahora son **las calles de verdad** alrededor de Vera Mujica 68 (la rotonda de Av. Francia y Central Argentino, Brown, Jujuy, Salta, Pichincha), sacadas de OpenStreetMap UNA vez y guardadas en el HTML como dibujo: la página no llama a ningún servicio de mapas (la CSP no lo deja y no hace falta). Nombres de calles a máquina, las coordenadas reales arriba, un cuadradito en el lugar y una línea fina hasta "La fiesta empieza acá", que se traza al bajar. Overpass y la API de OSM no se alcanzan desde acá: las calles salieron de Nominatim (una grilla de consultas "¿qué calle hay acá?"). Para otra fiesta se rehace igual.
+- **La música**: "La playlist de esta noche" con la columna "Música / Gente / Brillo / Historias", y una **tarjeta de bordes redondeados** con el título adentro y un **recital dibujado en puntos** (el escenario encendido, rayos, humo y la gente de espaldas con las manos arriba, recortada en negro), y "Suena · Cupido · TINI" al pie. Foto de recital de internet, no: son personas.
+**La canción, otra (27/11/2026).** *"Cambio de tema: S&M - Rihanna"*, con un video de un minuto. Va **el audio de ese video tal cual** (60 s, ya arranca con la música), en los mismos `musica.m4a` / `musica.ogg`, y la tarjeta del recital dice "Suena · S&M · Rihanna". "Cupido" se fue.
+**El alias, otro (27/11/2026).** *"El alias hay que cambiarlo: sofiavalverde. CBU: 0000003100080535992320."* Va **sofiavalverde.** con el punto final, tal cual, y debajo el **CBU** (en letra de máquina, con su propio botón de copiar; `CONFIG.cbu`, vacío no se dibuja). marinatenerife.mp se fue. Sigue faltando el **titular**.
+**Planilla de sofi15 (27/11/2026).** El dueño creó la planilla e implementó; la `/exec` está en `CONFIG.endpoint` y el tablero en `sofi15/listado` ("Los XV de Sofi"), copia de la plantilla con sus dos líneas. La contraseña es el mail de Marina (solo en la copia del editor). Desde acá no se llega a Google: falta ver entrar una confirmación de prueba y borrarla después.
+
+## nahi15 — Los XV de Nahi (27/11/2026)
+
+**Pidió** (el dueño, con las respuestas de la clienta y un video de TikTok con la canción): *"Una tarjeta como la de Lucía pero con estos detalles nomás: 1. nahi · 2. 19/06/2027 · 3. Jarana eventos, fray luis beltran · 4. elegante sport, colores prohibidos blanco, plateado y azul. Me gustaría que sea la paleta de beige · los invitados 3476213021 · 5. Música: siempre brillarás - tini. Y ponele un countdown. La temática es disco así que podemos usar el mismo que Lucía."* Confirmó que son **sus XV** y que el número es para que **los invitados confirmen por WhatsApp, sin planilla**.
+
+**Base**: copia de `zaii/` (la de Lucía con confirmación por WhatsApp). **Beige**: los colores del HTML y las cuatro texturas de Lucía (plata, granito, espejitos, bolas) se tiñeron a un beige cálido **con la misma luminancia**, así el contraste medido sigue valiendo; los detalles son champaña (#DDC7AB) y las bandas oscuras, café. Las baldosas de las bolas y de los anillos, con tinte beige.
+**La entrada es otra**: ni el fogonazo de Zaii ni solo las bolas de Lucía: al disolverse la carta, **reflejos de bola de espejos barren la portada** de izquierda a derecha y un **destello cruza el nombre** en diagonal; una vez.
+**La canción**: "Siempre brillarás" de TINI, el audio entero del video (2:52, arranca con la música, sin charla), con una caída suave al final. El video es de TikTok: se usó solo el audio.
+**La frase de la portada es NUESTRA** ("Quince años, una noche de luces y vos, brillando conmigo."). Si manda la suya, va la suya.
+**Confirmación**: botón a WhatsApp **347 621-3021** con el mensaje listo. Sin formulario, sin aviso de datos, sin tablero.
+**Faltan (no se inventan, su renglón no se dibuja)**: la **hora**, la **dirección** del salón (solo vino la ciudad; "Cómo llegar" busca "Jarana Eventos, Fray Luis Beltrán"), hasta cuándo se **confirma**, el **alias** con su titular y fotos (no mandó).
+**Segunda vuelta de nahi15 (27/11/2026): el mapa real.** El dueño mandó el enlace de Maps del salón y una captura de referencia (*digitalstories*: "WHERE?", el mapa claro con una flecha y un círculo a mano alrededor del punto): *"Poné este mapa pero que sea el dibujo real."* El enlace dio la dirección: **Eva Perón 379, Fray Luis Beltrán** (para abrirlo se habilitó `maps.app.goo.gl` en la red de la sesión). El mapa ahora son **las calles de verdad** alrededor del salón (Bulevar Urquiza, 25 de Mayo, 3 de Febrero, 12 de Octubre, Maipú, Chacabuco, Belgrano), sacadas de OpenStreetMap con Nominatim una vez y guardadas como dibujo, con sus nombres, la flecha y el círculo a mano que se trazan al bajar. "Ver cómo llegar" abre SU enlace. La foto del lugar de la referencia no va: no hay foto del salón.
+**Tercera vuelta de nahi15 (27/11/2026).** *"Valor de la tarjeta: mayores $116500 y jóvenes $60000. De 21:00 a 4:00 el horario."* Van tal cual ("Mayores: $116.500 / Jóvenes: $60.000") y "de 21 a 4 h"; la cuenta regresiva ahora llega a las 21. **Sin alias** el bloque del valor no muestra el rótulo "Alias para transferir" ni el botón de copiar (copiarían nada); aparecen solos cuando llegue el alias.
