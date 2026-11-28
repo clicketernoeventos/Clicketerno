@@ -1045,6 +1045,127 @@ nav .wrap>*{flex:none}
 </div>
 
 <main>
+<!-- ═══ LA PRESENTACIÓN (28/11/2026) ═══
+     Pedido del dueño: los del anuncio no convertían porque la página "da
+     muchas vueltas". Apenas se abre, la invitación de Lola (ficticia, la
+     muestra modelo) se abre SOLA y se recorre sola, con el WhatsApp a la
+     vista. El marco no atrapa el dedo (pointer-events:none): deslizar
+     sigue bajando la página, no se queda nadie encerrado adentro. -->
+<style>
+.presenta{position:relative;min-height:100svh;padding:84px 16px 20px;display:grid;grid-template-columns:1fr auto;gap:56px;align-items:center;
+  max-width:1180px;margin:0 auto}
+.presenta::before{content:"";position:absolute;inset:0 -50vw;z-index:-1;background:radial-gradient(50% 60% at 70% 45%,rgba(44,92,150,.45),transparent 70%)}
+.pr-ojo{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--oro);font-weight:500}
+.presenta .pr-titulo{font-size:clamp(44px,6.4vw,92px);font-weight:800;letter-spacing:-.035em;line-height:1;margin:18px 0 0}
+.presenta .pr-titulo em{color:var(--oro);font-style:italic}
+.pr-baja{color:var(--mute);font-size:18px;max-width:40ch;margin-top:22px;line-height:1.6}
+.pr-precio{margin-top:26px;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.pr-precio b{display:block;font-size:44px;letter-spacing:-.03em;color:var(--texto);font-weight:800;text-transform:none}
+.pr-acc{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.pr-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;font-size:13px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;transition:transform .3s var(--e),box-shadow .3s}
+.pr-btn.luz{background:linear-gradient(120deg,#D7E6F7,#A8C8EA);color:#07101E;box-shadow:0 12px 36px -12px rgba(168,200,234,.7)}
+.pr-btn.luz:hover{transform:translateY(-2px);box-shadow:0 16px 44px -10px rgba(168,200,234,.9)}
+.pr-btn.hilo{border:1px solid rgba(168,200,234,.45);color:var(--texto)}
+.pr-btn.hilo:hover{background:var(--texto);color:#07101E}
+.pr-btn .ico-wsp{width:18px;height:18px}
+.pr-tel{position:relative;width:360px;height:min(740px,calc(100svh - 120px));border-radius:46px;padding:10px;
+  background:linear-gradient(145deg,#3a4456,#11161f 40%,#2b3342);box-shadow:0 60px 120px -40px #000,0 0 0 1px rgba(255,255,255,.08),0 0 120px -20px rgba(44,92,150,.6)}
+.pr-pantalla{position:relative;height:100%;border-radius:37px;overflow:hidden;background:#000}
+.pr-pantalla iframe{width:100%;height:100%;border:0;display:block;pointer-events:none;background:#000}
+.pr-rotulo{position:absolute;left:12px;bottom:14px;z-index:2;font-size:10px;letter-spacing:.24em;text-transform:uppercase;white-space:nowrap;
+  background:rgba(7,16,30,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#F2F6FB;padding:7px 12px;border-radius:999px;border:1px solid rgba(168,200,234,.3)}
+.pr-fin{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;text-align:center;
+  background:rgba(7,16,30,.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s}
+.pr-fin.ve{opacity:1;visibility:visible}
+.pr-fin b{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.pr-fin b em{color:var(--oro);font-style:italic}
+.pr-fin p{color:var(--mute);font-size:15px}
+.pr-fin .pr-btn{width:100%}
+.pr-otra{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);padding:12px;background:none;border:0;cursor:pointer}
+.pr-otra:hover{color:var(--texto)}
+.pr-barra{display:none}
+@media (max-width:899px){
+  .presenta{grid-template-columns:1fr;padding:70px 0 0;gap:0;min-height:0}
+  .pr-texto{display:none}
+  .pr-tel{width:100%;height:calc(100svh - 70px - 118px);min-height:440px;border-radius:0;padding:0;background:none;box-shadow:none}
+  .pr-pantalla{border-radius:0}
+  .pr-barra{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#07101E;border-top:1px solid rgba(168,200,234,.18)}
+  .pr-barra .pr-precio{margin:0;font-size:10px;letter-spacing:.16em;flex:none}
+  .pr-barra .pr-precio b{font-size:24px}
+  .pr-barra .pr-btn{flex:1;min-height:52px;padding:0 14px;font-size:12px}
+  .pr-baja-m{display:block;text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);padding:0 16px 14px;background:#07101E}
+}
+@media (min-width:900px){.pr-baja-m{display:none}}
+</style>
+<section class="presenta" id="presentacion" aria-label="Invitación de muestra">
+  <div class="pr-texto">
+    <p class="pr-ojo">Invitación de muestra</p>
+    <div class="pr-titulo">Así se abre <em>tu invitación.</em></div>
+    <p class="pr-baja">Esta es la de Lola, de muestra: se abre sola acá al lado. La tuya se diseña para tu fiesta, con tu nombre, tus colores y tu música.</p>
+    <p class="pr-precio">Desde<b>$20.000</b></p>
+    <div class="pr-acc">
+      <a class="pr-btn luz" href="#contacto" data-wsp="Hola Click Eterno! Vi su anuncio de Google. Vi la invitación de muestra y quiero la mía. Mi fiesta es el:">Quiero la mía</a>
+      <a class="pr-btn hilo" href="#trabajos">Ver más modelos ↓</a>
+    </div>
+  </div>
+  <div>
+    <div class="pr-tel">
+      <div class="pr-pantalla">
+        <span class="pr-rotulo" aria-hidden="true">Invitación de muestra</span>
+        <iframe id="prMarco" src="lola15/" title="Invitación de muestra: los XV de Lola" tabindex="-1" loading="eager"></iframe>
+        <div class="pr-fin" id="prFin">
+          <b>Esta puede ser <em>la tuya.</em></b>
+          <p>Desde $20.000 · lista en 72 horas</p>
+          <a class="pr-btn luz" href="#contacto" data-wsp="Hola Click Eterno! Vi su anuncio de Google. Vi la invitación de muestra y quiero la mía. Mi fiesta es el:">Quiero la mía</a>
+          <a class="pr-btn hilo" href="lola15/" target="_blank" rel="noopener">Abrirla entera ↗</a>
+          <button class="pr-otra" type="button" id="prOtra">↺ Verla de nuevo</button>
+        </div>
+      </div>
+    </div>
+    <div class="pr-barra">
+      <p class="pr-precio">Desde<b>$20.000</b></p>
+      <a class="pr-btn luz" href="#contacto" data-wsp="Hola Click Eterno! Vi su anuncio de Google. Vi la invitación de muestra y quiero la mía. Mi fiesta es el:">Quiero la mía</a>
+    </div>
+    <a class="pr-baja-m" href="#inicio">Deslizá para ver más ↓</a>
+  </div>
+</section>
+<script>
+/* La presentación: abre el sobre de Lola, entra y recorre la invitación
+   sola; al final, el cartel con el WhatsApp. Se pausa si la sección no se
+   ve. Con "menos movimiento" no corre nada: queda la entrada quieta. */
+(function(){
+  const marco=document.getElementById('prMarco'), fin=document.getElementById('prFin');
+  if(!marco) return;
+  const quieto=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let visible=true, y=0, alto=0, ultimo=0, corriendo=false, timers=[];
+  new IntersectionObserver(es=>{ visible=es[0].isIntersecting; if(visible&&corriendo) requestAnimationFrame(bajar); },{threshold:.3}).observe(marco);
+  function limpiar(){ timers.forEach(clearTimeout); timers=[]; corriendo=false; }
+  function bajar(t){
+    if(!corriendo||!visible) return;
+    let w; try{ w=marco.contentWindow; }catch(e){ return; }
+    const dt=Math.min(.05,(t-(ultimo||t))/1000); ultimo=t;
+    alto=w.document.documentElement.scrollHeight-w.innerHeight;
+    y=Math.min(alto,y+dt*170);
+    w.scrollTo(0,y);
+    if(y>=alto-2){ corriendo=false; timers.push(setTimeout(()=>fin.classList.add('ve'),900)); return; }
+    requestAnimationFrame(bajar);
+  }
+  function arrancar(){
+    limpiar(); fin.classList.remove('ve'); y=0; ultimo=0;
+    if(quieto){ return; }
+    let d; try{ d=marco.contentDocument; }catch(e){ return; }
+    if(!d) return;
+    d.documentElement.style.scrollBehavior='auto';
+    timers.push(setTimeout(()=>{ const s=d.getElementById('sobre'); if(s) s.click(); },700));
+    timers.push(setTimeout(()=>{ const a=d.getElementById('abrir'); if(a) a.click(); },4600));
+    timers.push(setTimeout(()=>{ corriendo=true; requestAnimationFrame(bajar); },6400));
+  }
+  marco.addEventListener('load',arrancar);
+  document.getElementById('prOtra').addEventListener('click',()=>{ limpiar(); fin.classList.remove('ve'); marco.src='lola15/'; });
+})();
+</script>
+
 <div class="wrap" id="inicio">
   <header class="hero">
     <div>
