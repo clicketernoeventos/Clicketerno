@@ -162,7 +162,10 @@ const dentro=(c,v)=>!!(c&&c.x>=-1&&c.y>=-1&&c.x2<=v.width+1&&c.y2<=v.height+1);
     await p.goto(BASE+'/',{waitUntil:'domcontentloaded'});
     await p.waitForTimeout(1200);
     const orden=await p.$$eval('section[id]',ns=>ns.map(n=>n.id));
-    if(orden[0]!=='app')
+    /* 28/11/2026: el dueño puso ARRIBA de todo la invitación de Lola
+       abriéndose sola (#presentacion), por las conversiones del anuncio;
+       los tres servicios andando van inmediatamente después. */
+    if(orden[0]!=='presentacion' || orden[1]!=='app')
       mal('la presentación no es lo primero: '+orden.slice(0,3).join(' · '));
     else bien('los tres andando son la primera sección');
     const tarjetas=await p.$$eval('.servicios .pastilla[data-prueba]',
